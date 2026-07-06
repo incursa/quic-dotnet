@@ -49,4 +49,29 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0003
         Assert.True(state.CanSend(minimumAllowedMaximumDatagramSizeBytes));
         Assert.False(state.CanSend(minimumAllowedMaximumDatagramSizeBytes + 1));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Requirement("REQ-QUIC-RFC9000-S14-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S14-0006")]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_CanSend_TracksTheDiscoveredMaximumDatagramSize()
+    {
+        ulong[] discoveredSizes =
+        [
+            QuicConnectionPathMaximumDatagramSizeState.MinimumAllowedMaximumDatagramSizeBytes,
+            1_250,
+            1_350,
+            1_472,
+        ];
+
+        foreach (ulong discoveredSize in discoveredSizes)
+        {
+            QuicConnectionPathMaximumDatagramSizeState state =
+                QuicConnectionPathMaximumDatagramSizeState.CreateInitial().WithMaximumDatagramSize(discoveredSize);
+
+            Assert.True(state.CanSend(discoveredSize));
+            Assert.False(state.CanSend(discoveredSize + 1));
+        }
+    }
 }

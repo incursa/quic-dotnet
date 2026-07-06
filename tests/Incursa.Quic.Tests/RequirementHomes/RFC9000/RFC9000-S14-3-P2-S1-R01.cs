@@ -35,4 +35,29 @@ public sealed class REQ_QUIC_RFC9000_0877
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => new QuicDplpmtudState(QuicDplpmtudState.BasePlpmtuBytes + 1));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_GetPathSnapshot_UsesTheQuicMinimumAsBasePlpmtuForEveryAddressPair()
+    {
+        QuicConnectionPathIdentity[] paths =
+        [
+            new("203.0.113.12", "192.0.2.10", 443, 55_555),
+            new("203.0.113.13", "192.0.2.10", 443, 55_555),
+            new("203.0.113.12", "192.0.2.11", 443, 55_555),
+            new("203.0.113.12", "192.0.2.10", 444, 55_555),
+            new("203.0.113.12", "192.0.2.10", 443, 55_556),
+        ];
+
+        QuicDplpmtudState state = new();
+
+        foreach (QuicConnectionPathIdentity path in paths)
+        {
+            QuicDplpmtudPathSnapshot snapshot = state.GetPathSnapshot(path);
+
+            Assert.Equal(QuicConnectionPathMaximumDatagramSizeState.MinimumAllowedMaximumDatagramSizeBytes, snapshot.BasePlpmtuBytes);
+            Assert.Equal(snapshot.BasePlpmtuBytes, snapshot.MaximumPacketSizeBytes);
+        }
+    }
 }

@@ -117,4 +117,35 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0009
         Assert.Equal(candidatePath.MaximumDatagramSizeState, validatedPath.MaximumDatagramSizeState);
         Assert.Equal(candidatePath.MaximumDatagramSizeState, copiedCandidatePath.MaximumDatagramSizeState);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_PathRecordsMaintainIndependentMaximumDatagramSizesPerAddressPair()
+    {
+        (QuicConnectionPathIdentity Identity, ulong MaximumDatagramSizeBytes)[] cases =
+        [
+            (new QuicConnectionPathIdentity("198.51.100.44", "203.0.113.44", 443, 55_555), 1_200),
+            (new QuicConnectionPathIdentity("198.51.100.45", "203.0.113.44", 443, 55_555), 1_280),
+            (new QuicConnectionPathIdentity("198.51.100.44", "203.0.113.45", 443, 55_555), 1_350),
+            (new QuicConnectionPathIdentity("198.51.100.44", "203.0.113.44", 444, 55_555), 1_400),
+            (new QuicConnectionPathIdentity("198.51.100.44", "203.0.113.44", 443, 55_556), 1_472),
+        ];
+
+        Dictionary<QuicConnectionPathIdentity, QuicConnectionPathMaximumDatagramSizeState> maximumDatagramSizeByPath = [];
+
+        foreach ((QuicConnectionPathIdentity identity, ulong maximumDatagramSizeBytes) in cases)
+        {
+            maximumDatagramSizeByPath[identity] = new QuicConnectionPathMaximumDatagramSizeState(maximumDatagramSizeBytes);
+        }
+
+        foreach ((QuicConnectionPathIdentity identity, ulong maximumDatagramSizeBytes) in cases)
+        {
+            QuicConnectionPathMaximumDatagramSizeState state = maximumDatagramSizeByPath[identity];
+
+            Assert.Equal(maximumDatagramSizeBytes, state.MaximumDatagramSizeBytes);
+            Assert.True(state.CanSend(maximumDatagramSizeBytes));
+            Assert.False(state.CanSend(maximumDatagramSizeBytes + 1));
+        }
+    }
 }

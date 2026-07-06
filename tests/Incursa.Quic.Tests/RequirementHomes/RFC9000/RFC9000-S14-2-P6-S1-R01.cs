@@ -53,4 +53,30 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0010
         Assert.Equal(initialMaximumDatagramSizeBytes, runtime.ActivePath!.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes);
         Assert.Equal(initialMaximumDatagramSizeBytes, runtime.SendRuntime.FlowController.CongestionControlState.MaxDatagramSizeBytes);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TrySetActivePathMaximumDatagramSize_AcceptsConservativeEstimatesAtAndAboveTheRfcMinimum()
+    {
+        ulong[] conservativeMaximumDatagramSizeBytesValues =
+        [
+            QuicConnectionPathMaximumDatagramSizeState.MinimumAllowedMaximumDatagramSizeBytes,
+            QuicConnectionPathMaximumDatagramSizeState.MinimumAllowedMaximumDatagramSizeBytes + 1,
+            1_280,
+            1_350,
+            1_472,
+        ];
+
+        foreach (ulong conservativeMaximumDatagramSizeBytes in conservativeMaximumDatagramSizeBytesValues)
+        {
+            QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+
+            Assert.True(runtime.TrySetActivePathMaximumDatagramSize(conservativeMaximumDatagramSizeBytes));
+            Assert.True(runtime.ActivePath.HasValue);
+            Assert.Equal(conservativeMaximumDatagramSizeBytes, runtime.ActivePath!.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes);
+            Assert.True(runtime.ActivePath.Value.MaximumDatagramSizeState.CanSend(conservativeMaximumDatagramSizeBytes));
+            Assert.Equal(conservativeMaximumDatagramSizeBytes, runtime.SendRuntime.FlowController.CongestionControlState.MaxDatagramSizeBytes);
+        }
+    }
 }

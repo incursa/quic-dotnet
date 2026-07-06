@@ -37,4 +37,26 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0004
 
         Assert.Equal(0, paddingLength);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryGetVersion1InitialDatagramPaddingLength_PadsOnlyPayloadsBelowTheSmallestAllowedMaximumDatagramSize()
+    {
+        (int PayloadLength, int ExpectedPaddingLength)[] cases =
+        [
+            (0, QuicVersionNegotiation.Version1MinimumDatagramPayloadSize),
+            (1, QuicVersionNegotiation.Version1MinimumDatagramPayloadSize - 1),
+            (1_000, QuicVersionNegotiation.Version1MinimumDatagramPayloadSize - 1_000),
+            (QuicVersionNegotiation.Version1MinimumDatagramPayloadSize - 1, 1),
+            (QuicVersionNegotiation.Version1MinimumDatagramPayloadSize, 0),
+            (QuicVersionNegotiation.Version1MinimumDatagramPayloadSize + 1, 0),
+        ];
+
+        foreach ((int payloadLength, int expectedPaddingLength) in cases)
+        {
+            Assert.True(QuicAddressValidation.TryGetVersion1InitialDatagramPaddingLength(payloadLength, out int paddingLength));
+            Assert.Equal(expectedPaddingLength, paddingLength);
+        }
+    }
 }
