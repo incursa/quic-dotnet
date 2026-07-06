@@ -38,4 +38,32 @@ public sealed class REQ_QUIC_RFC9000_S19P20_0004
         Assert.True(sentPacket.AckEliciting);
         Assert.True(sentPacket.Retransmittable);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P20-0004")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void HandshakeDoneRoleFuzz_ServerSendsAndClientNeverOriginatesTheFrame()
+    {
+        for (int iteration = 0; iteration < 8; iteration++)
+        {
+            using QuicConnectionRuntime clientRuntime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+            Assert.DoesNotContain(
+                clientRuntime.SendRuntime.SentPackets.Values,
+                QuicS19P20HandshakeDoneTestSupport.IsHandshakeDonePlaintext);
+
+            using QuicConnectionRuntime serverRuntime = QuicS19P20HandshakeDoneTestSupport.CreateServerRuntimeReadyToEvaluateHandshakeDoneSend();
+
+            QuicConnectionTransitionResult result = QuicS19P20HandshakeDoneTestSupport.CompletePeerHandshakeTranscript(
+                serverRuntime,
+                observedAtTicks: 10 + iteration);
+
+            Assert.True(result.StateChanged);
+            QuicConnectionSentPacket sentPacket = Assert.Single(
+                serverRuntime.SendRuntime.SentPackets.Values,
+                QuicS19P20HandshakeDoneTestSupport.IsHandshakeDonePlaintext);
+            Assert.Equal(QuicPacketNumberSpace.ApplicationData, sentPacket.PacketNumberSpace);
+            Assert.True(sentPacket.AckEliciting);
+        }
+    }
 }

@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-05T22:12:26.1011425-06:00",
+    "generated_at": "2026-07-05T22:16:13.8046312-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1657,
-      "full_executable_proof": 1020
+      "deferred_proof_not_executed": 1655,
+      "full_executable_proof": 1022
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 604,
-          "full_executable_proof": 846
+          "deferred_proof_not_executed": 602,
+          "full_executable_proof": 848
         }
       },
       {
@@ -26182,9 +26182,9 @@
       "rfc": "RFC9000",
       "title": "The server MUST use a HANDSHAKE_DONE frame (type=0x1e) to signal confirmation of the handshak...",
       "statement": "The server MUST use a HANDSHAKE_DONE frame (type=0x1e) to signal confirmation of the handshake to the client.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -26193,14 +26193,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0001.cs"
@@ -26283,9 +26282,9 @@
       "rfc": "RFC9000",
       "title": "A HANDSHAKE_DONE frame MAY only be sent by the server",
       "statement": "A HANDSHAKE_DONE frame MAY only be sent by the server.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "negative",
@@ -26296,14 +26295,13 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P20-0004.cs"

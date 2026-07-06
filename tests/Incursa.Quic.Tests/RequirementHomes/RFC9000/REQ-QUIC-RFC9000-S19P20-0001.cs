@@ -37,4 +37,36 @@ public sealed class REQ_QUIC_RFC9000_S19P20_0001
         Assert.True(runtime.HandshakeConfirmed);
         Assert.Null(runtime.TerminalState);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P20-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void HandshakeDoneReceiveFuzz_ConfirmsHandshakeWithValidFrameAndTrailingPadding()
+    {
+        for (int paddingBytes = 0; paddingBytes < 8; paddingBytes++)
+        {
+            using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+            byte[] payload =
+            [
+                .. QuicFrameTestData.BuildHandshakeDoneFrame(),
+                .. Enumerable.Repeat((byte)0x00, paddingBytes),
+            ];
+            byte[] protectedPacket = QuicS19P20HandshakeDoneTestSupport.CreateProtectedApplicationDataPacket(runtime, payload);
+            QuicConnectionPathIdentity pathIdentity = runtime.ActivePath?.Identity
+                ?? QuicS19P20HandshakeDoneTestSupport.PacketPathIdentity;
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 20 + paddingBytes,
+                    pathIdentity,
+                    protectedPacket),
+                nowTicks: 20 + paddingBytes);
+
+            Assert.True(result.StateChanged);
+            Assert.True(runtime.HandshakeConfirmed);
+            Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+            Assert.Null(runtime.TerminalState);
+        }
+    }
 }
