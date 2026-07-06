@@ -105,4 +105,43 @@ public sealed class REQ_QUIC_RFC9002_S5P3_0006
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => new QuicRttEstimator(initialRttMicros: 0));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ConstructorAndReset_SeedEstimatorFromConfiguredInitialRtt()
+    {
+        foreach (ulong initialRttMicros in new[]
+        {
+            1UL,
+            2UL,
+            333UL,
+            QuicRttEstimator.DefaultInitialRttMicros,
+            1_000_000UL,
+            uint.MaxValue,
+            ulong.MaxValue,
+        })
+        {
+            QuicRttEstimator estimator = new(initialRttMicros);
+
+            Assert.False(estimator.HasRttSample);
+            Assert.Equal(initialRttMicros, estimator.InitialRttMicros);
+            Assert.Equal(initialRttMicros, estimator.SmoothedRttMicros);
+            Assert.Equal(initialRttMicros / 2, estimator.RttVarMicros);
+
+            Assert.True(estimator.TryUpdateFromAck(
+                largestAcknowledgedPacketSentAtMicros: 10,
+                ackReceivedAtMicros: 20,
+                largestAcknowledgedPacketNewlyAcknowledged: true,
+                newlyAcknowledgedAckElicitingPacket: true));
+
+            estimator.Reset();
+
+            Assert.False(estimator.HasRttSample);
+            Assert.Equal(0UL, estimator.LatestRttMicros);
+            Assert.Equal(0UL, estimator.MinRttMicros);
+            Assert.Equal(initialRttMicros, estimator.SmoothedRttMicros);
+            Assert.Equal(initialRttMicros / 2, estimator.RttVarMicros);
+        }
+    }
 }

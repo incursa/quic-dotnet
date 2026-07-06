@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T04:56:28.5643284-06:00",
+    "generated_at": "2026-07-06T04:58:45.2790865-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1293,
-      "full_executable_proof": 1384
+      "deferred_proof_not_executed": 1292,
+      "full_executable_proof": 1385
     },
     "by_rfc": [
       {
@@ -37,8 +37,8 @@
         "rfc": "RFC9002",
         "total": 226,
         "by_proof_state": {
-          "deferred_proof_not_executed": 172,
-          "full_executable_proof": 54
+          "deferred_proof_not_executed": 171,
+          "full_executable_proof": 55
         }
       },
       {
@@ -41947,9 +41947,9 @@
       "rfc": "RFC9002",
       "title": "Seed new-path RTT estimation with the initial RTT",
       "statement": "Before any RTT samples are available for a new path, or when the estimator is reset, the RTT estimator MUST be initialized using the initial RTT.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -41961,15 +41961,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0006.cs"

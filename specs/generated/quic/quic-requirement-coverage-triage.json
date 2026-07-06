@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T04:56:19.5586666-06:00",
+  "generated_at": "2026-07-06T04:58:36.1386395-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T04:56:19.5553612-06:00",
+    "generated_at": "2026-07-06T04:58:36.1346581-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -229403,14 +229403,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 7,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 3,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -229520,6 +229520,28 @@
           ],
           "categories": [
             "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P3-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P3-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0006.cs",
+          "class": "REQ_QUIC_RFC9002_S5P3_0006",
+          "member": "REQ_QUIC_RFC9002_S5P3_0006.Fuzz_ConstructorAndReset_SeedEstimatorFromConfiguredInitialRtt",
+          "method": "Fuzz_ConstructorAndReset_SeedEstimatorFromConfiguredInitialRtt",
+          "line": 112,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
