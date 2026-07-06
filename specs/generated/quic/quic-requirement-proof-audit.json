@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-05T23:59:52.2023326-06:00",
+    "generated_at": "2026-07-06T00:02:26.2384839-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1523,
-      "full_executable_proof": 1154
+      "deferred_proof_not_executed": 1522,
+      "full_executable_proof": 1155
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 470,
-          "full_executable_proof": 980
+          "deferred_proof_not_executed": 469,
+          "full_executable_proof": 981
         }
       },
       {
@@ -5522,9 +5522,9 @@
       "rfc": "RFC9000",
       "title": "UDP datagrams may carry multiple QUIC packets",
       "statement": "A UDP datagram MAY include one or more QUIC packets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -5534,18 +5534,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 4,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0851.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-CoalescedDatagram-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P4-R01.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S1-R01.cs"
       ],
