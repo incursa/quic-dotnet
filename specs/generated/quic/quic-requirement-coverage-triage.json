@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T22:41:37.3167364-06:00",
+  "generated_at": "2026-07-05T22:45:23.7069216-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-05T22:41:37.3116908-06:00",
+    "generated_at": "2026-07-05T22:45:23.7022330-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -13374,14 +13374,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 8,
+        "total": 9,
+        "focused": 9,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 4,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -13570,6 +13570,29 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-0215",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-ConnectionIdLegacy-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_ConnectionIdLegacy_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_ConnectionIdLegacy_DeferredFuzzClosure.LongHeaderConnectionIdFuzz_ParsesZeroLengthAndVariableHandshakeSourceConnectionIds",
+          "method": "LongHeaderConnectionIdFuzz_ParsesZeroLengthAndVariableHandshakeSourceConnectionIds",
+          "line": 13,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0215",
+            "REQ-QUIC-RFC9000-0219"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -13600,14 +13623,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -13746,6 +13769,29 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-0219",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-ConnectionIdLegacy-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_ConnectionIdLegacy_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_ConnectionIdLegacy_DeferredFuzzClosure.LongHeaderConnectionIdFuzz_ParsesZeroLengthAndVariableHandshakeSourceConnectionIds",
+          "method": "LongHeaderConnectionIdFuzz_ParsesZeroLengthAndVariableHandshakeSourceConnectionIds",
+          "line": 13,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0215",
+            "REQ-QUIC-RFC9000-0219"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -13776,14 +13822,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -13922,6 +13968,29 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-0220",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-ConnectionIdLegacy-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_ConnectionIdLegacy_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_ConnectionIdLegacy_DeferredFuzzClosure.ImplicitConnectionIdSequenceFuzz_RetiresInitialAndPreferredAddressConnectionIds",
+          "method": "ImplicitConnectionIdSequenceFuzz_RetiresInitialAndPreferredAddressConnectionIds",
+          "line": 43,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0220",
+            "REQ-QUIC-RFC9000-0221"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -13952,14 +14021,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -14098,6 +14167,29 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-0221",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-ConnectionIdLegacy-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_ConnectionIdLegacy_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_ConnectionIdLegacy_DeferredFuzzClosure.ImplicitConnectionIdSequenceFuzz_RetiresInitialAndPreferredAddressConnectionIds",
+          "method": "ImplicitConnectionIdSequenceFuzz_RetiresInitialAndPreferredAddressConnectionIds",
+          "line": 43,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0220",
+            "REQ-QUIC-RFC9000-0221"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -14128,14 +14220,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -14274,6 +14366,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-0222",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-ConnectionIdLegacy-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_ConnectionIdLegacy_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_ConnectionIdLegacy_DeferredFuzzClosure.LocalConnectionIdReplenishmentFuzz_IssuesTheNextSequenceWhenPeerRetiresAnActiveId",
+          "method": "LocalConnectionIdReplenishmentFuzz_IssuesTheNextSequenceWhenPeerRetiresAnActiveId",
+          "line": 104,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0222"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
