@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T06:53:05.8002350-06:00",
+    "generated_at": "2026-07-06T06:59:22.6595726-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1252,
-      "full_executable_proof": 1425
+      "deferred_proof_not_executed": 1251,
+      "full_executable_proof": 1426
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 227,
-          "full_executable_proof": 1223
+          "deferred_proof_not_executed": 226,
+          "full_executable_proof": 1224
         }
       },
       {
@@ -36442,9 +36442,9 @@
       "rfc": "RFC9000",
       "title": "Do not use updated transport-parameter values in 0-RTT",
       "statement": "When sending frames in 0-RTT packets, a client MUST NOT use updated values it learns from the server's updated transport parameters or from frames received in 1-RTT packets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -36454,15 +36454,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0010.cs"
