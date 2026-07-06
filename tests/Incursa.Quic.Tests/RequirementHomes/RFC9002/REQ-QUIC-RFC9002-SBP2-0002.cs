@@ -65,4 +65,54 @@ public sealed class REQ_QUIC_RFC9002_SBP2_0002
 
         Assert.Equal(0UL, state.BytesInFlightBytes);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_BytesInFlightTracksOnlyUnresolvedEligiblePacketsAcrossMixedSequences()
+    {
+        foreach ((ulong firstEligibleBytes, ulong ackOnlyBytes, ulong secondEligibleBytes, bool resolveFirstByAck) in new[]
+        {
+            (400UL, 91UL, 250UL, true),
+            (1_200UL, 64UL, 300UL, false),
+            (2_048UL, 512UL, 1_024UL, true),
+            (3_000UL, 1UL, 700UL, false),
+        })
+        {
+            QuicCongestionControlState state = new();
+
+            state.RegisterPacketSent(firstEligibleBytes);
+            Assert.Equal(firstEligibleBytes, state.BytesInFlightBytes);
+
+            state.RegisterPacketSent(ackOnlyBytes, isAckOnlyPacket: true);
+            Assert.Equal(firstEligibleBytes, state.BytesInFlightBytes);
+
+            state.RegisterPacketSent(secondEligibleBytes);
+            Assert.Equal(firstEligibleBytes + secondEligibleBytes, state.BytesInFlightBytes);
+
+            if (resolveFirstByAck)
+            {
+                Assert.True(state.TryRegisterAcknowledgedPacket(
+                    firstEligibleBytes,
+                    sentAtMicros: 1_000,
+                    packetInFlight: true,
+                    applicationLimited: true));
+            }
+            else
+            {
+                Assert.True(state.TryRegisterLoss(
+                    firstEligibleBytes,
+                    sentAtMicros: 1_000,
+                    packetInFlight: true));
+            }
+
+            Assert.Equal(secondEligibleBytes, state.BytesInFlightBytes);
+
+            Assert.True(state.TryRegisterLoss(
+                secondEligibleBytes,
+                sentAtMicros: 2_000,
+                packetInFlight: true));
+            Assert.Equal(0UL, state.BytesInFlightBytes);
+        }
+    }
 }
