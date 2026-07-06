@@ -73,4 +73,44 @@ public sealed class REQ_QUIC_RFC9000_0499
                 out _,
                 out _));
     }
+
+    [Fact]
+    [Requirement("RFC9000-S9-3-3-P4-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void PacketFromANewAddressFuzz_StartsPathValidationWithAChallenge()
+    {
+        QuicConnectionPathIdentity activePath = new("203.0.113.70", RemotePort: 443);
+        QuicConnectionPathIdentity[] migratedPaths =
+        [
+            new("203.0.113.71", RemotePort: 443),
+            new("203.0.113.72", RemotePort: 444),
+            activePath with { RemotePort = activePath.RemotePort + 2 },
+        ];
+
+        foreach (QuicConnectionPathIdentity migratedPath in migratedPaths)
+        {
+            QuicConnectionRuntime runtime =
+                QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
+            byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 20,
+                    migratedPath,
+                    datagram),
+                nowTicks: 20);
+
+            Assert.True(result.StateChanged);
+            Assert.True(runtime.ActivePath.HasValue);
+            Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+            Assert.True(runtime.CandidatePaths.TryGetValue(migratedPath, out QuicConnectionCandidatePathRecord candidatePath));
+            Assert.False(candidatePath.Validation.IsValidated);
+            Assert.Equal(1UL, candidatePath.Validation.ChallengeSendCount);
+            QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+                result,
+                migratedPath,
+                runtime: runtime);
+        }
+    }
 }

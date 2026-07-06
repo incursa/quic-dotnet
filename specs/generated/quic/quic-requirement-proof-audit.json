@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T12:17:16.9425908-06:00",
+    "generated_at": "2026-07-06T12:22:23.5681467-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1082,
-      "full_executable_proof": 1595
+      "deferred_proof_not_executed": 1078,
+      "full_executable_proof": 1599
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 57,
-          "full_executable_proof": 1393
+          "deferred_proof_not_executed": 53,
+          "full_executable_proof": 1397
         }
       },
       {
@@ -83492,9 +83492,9 @@
       "rfc": "RFC9000",
       "title": "Validate the previously active path with PATH_CHALLENGE",
       "statement": "In response to an apparent migration, endpoints MUST validate the previously active path using a PATH_CHALLENGE frame.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -83504,23 +83504,23 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs"
       ],
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs::PacketFromANewAddressStartsPathValidationWithAChallenge",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs::PacketFromTheActiveAddressDoesNotStartPathValidation"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs::PacketFromTheActiveAddressDoesNotStartPathValidation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs::PacketFromANewAddressFuzz_StartsPathValidationWithAChallenge"
       ]
     },
     {
@@ -84007,38 +84007,40 @@
       "rfc": "RFC9000",
       "title": "At any time, endpoints MAY change the Destination Connection ID they transmit with to a value that has not been used on another path",
       "statement": "At any time, endpoints MAY change the Destination Connection ID they transmit with to a value that has not been used on another path.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P2-R01.cs"
       ],
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P2-R01.cs::EndpointCanRegisterDistinctConnectionIdsOnDistinctPaths"
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P2-R01.cs::EndpointCanRegisterDistinctConnectionIdsOnDistinctPaths",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P2-R01.cs::EndpointCanRegisterDistinctConnectionIdsOnDistinctPathsFuzz"
+      ]
     },
     {
       "requirement_id": "RFC9000-S9-5-P3-R01",
       "rfc": "RFC9000",
       "title": "Do not reuse a connection ID across multiple local addresses",
       "statement": "An endpoint MUST NOT reuse a connection ID when sending from more than one local address.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -84049,23 +84051,23 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0244.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P3-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P3-R01.cs::EndpointRejectsConnectionIdReuseAcrossDifferentLocalAddresses",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P3-R01.cs::EndpointRejectsConnectionIdReuseAcrossDifferentLocalAddressesFuzz",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0244.cs::ValidatedMigrationUsesANewPeerConnectionIdForTheNewAddressPair",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0244.cs::ValidatedMigrationUsesAMaximumLengthPeerConnectionIdOnTheNewAddressPair"
       ]
@@ -84075,9 +84077,9 @@
       "rfc": "RFC9000",
       "title": "Prevent connection-id reuse across destination addresses",
       "statement": "Similarly, an endpoint MUST NOT reuse a connection ID when sending to more than one destination address.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -84089,23 +84091,23 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0244.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P4-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P4-R01.cs::EndpointRejectsConnectionIdReuseAcrossDifferentDestinationAddresses",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P4-R01.cs::EndpointRejectsConnectionIdReuseAcrossDifferentDestinationAddressesFuzz",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0244.cs::ValidatedMigrationUsesANewPeerConnectionIdForTheNewAddressPair",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0244.cs::ValidatedMigrationUsesAMaximumLengthPeerConnectionIdOnTheNewAddressPair"
       ]

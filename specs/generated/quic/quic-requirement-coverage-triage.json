@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T12:16:58.3338106-06:00",
+  "generated_at": "2026-07-06T12:22:09.8068424-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T12:16:58.3302465-06:00",
+    "generated_at": "2026-07-06T12:22:09.8031187-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -436728,21 +436728,22 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs::PacketFromANewAddressStartsPathValidationWithAChallenge",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs::PacketFromTheActiveAddressDoesNotStartPathValidation"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs::PacketFromTheActiveAddressDoesNotStartPathValidation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs::PacketFromANewAddressFuzz_StartsPathValidationWithAChallenge"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -436750,6 +436751,50 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S9-3-3-P4-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0499",
+          "member": "REQ_QUIC_RFC9000_0499.PacketFromANewAddressFuzz_StartsPathValidationWithAChallenge",
+          "method": "PacketFromANewAddressFuzz_StartsPathValidationWithAChallenge",
+          "line": 81,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-3-3-P4-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S9-3-3-P4-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs::PacketFromANewAddressFuzz_StartsPathValidationWithAChallenge",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0499",
+          "member": "REQ_QUIC_RFC9000_0499.PacketFromANewAddressFuzz_StartsPathValidationWithAChallenge",
+          "method": "PacketFromANewAddressFuzz_StartsPathValidationWithAChallenge",
+          "line": 81,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-3-3-P4-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S9-3-3-P4-S1-R01",
           "source": "requirement_attribute",
@@ -439356,18 +439401,21 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P2-R01.cs::EndpointCanRegisterDistinctConnectionIdsOnDistinctPaths",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P2-R01.cs::EndpointCanRegisterDistinctConnectionIdsOnDistinctPaths",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P2-R01.cs::EndpointCanRegisterDistinctConnectionIdsOnDistinctPathsFuzz"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 0,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -439418,6 +439466,50 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S9-5-P2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P2-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S9P5_0001",
+          "member": "REQ_QUIC_RFC9000_S9P5_0001.EndpointCanRegisterDistinctConnectionIdsOnDistinctPathsFuzz",
+          "method": "EndpointCanRegisterDistinctConnectionIdsOnDistinctPathsFuzz",
+          "line": 48,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-5-P2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S9-5-P2-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P2-R01.cs::EndpointCanRegisterDistinctConnectionIdsOnDistinctPathsFuzz",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P2-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S9P5_0001",
+          "member": "REQ_QUIC_RFC9000_S9P5_0001.EndpointCanRegisterDistinctConnectionIdsOnDistinctPathsFuzz",
+          "method": "EndpointCanRegisterDistinctConnectionIdsOnDistinctPathsFuzz",
+          "line": 48,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-5-P2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -439440,22 +439532,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P3-R01.cs::EndpointRejectsConnectionIdReuseAcrossDifferentLocalAddresses",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P3-R01.cs::EndpointRejectsConnectionIdReuseAcrossDifferentLocalAddressesFuzz",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0244.cs::ValidatedMigrationUsesANewPeerConnectionIdForTheNewAddressPair",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0244.cs::ValidatedMigrationUsesAMaximumLengthPeerConnectionIdOnTheNewAddressPair"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -439602,6 +439695,50 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S9-5-P3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P3-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0515",
+          "member": "REQ_QUIC_RFC9000_0515.EndpointRejectsConnectionIdReuseAcrossDifferentLocalAddressesFuzz",
+          "method": "EndpointRejectsConnectionIdReuseAcrossDifferentLocalAddressesFuzz",
+          "line": 36,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-5-P3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S9-5-P3-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P3-R01.cs::EndpointRejectsConnectionIdReuseAcrossDifferentLocalAddressesFuzz",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P3-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0515",
+          "member": "REQ_QUIC_RFC9000_0515.EndpointRejectsConnectionIdReuseAcrossDifferentLocalAddressesFuzz",
+          "method": "EndpointRejectsConnectionIdReuseAcrossDifferentLocalAddressesFuzz",
+          "line": 36,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-5-P3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -439624,22 +439761,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P4-R01.cs::EndpointRejectsConnectionIdReuseAcrossDifferentDestinationAddresses",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P4-R01.cs::EndpointRejectsConnectionIdReuseAcrossDifferentDestinationAddressesFuzz",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0244.cs::ValidatedMigrationUsesANewPeerConnectionIdForTheNewAddressPair",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0244.cs::ValidatedMigrationUsesAMaximumLengthPeerConnectionIdOnTheNewAddressPair"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -439779,6 +439917,50 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-5-P4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S9-5-P4-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P4-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S9P5_0003",
+          "member": "REQ_QUIC_RFC9000_S9P5_0003.EndpointRejectsConnectionIdReuseAcrossDifferentDestinationAddressesFuzz",
+          "method": "EndpointRejectsConnectionIdReuseAcrossDifferentDestinationAddressesFuzz",
+          "line": 36,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-5-P4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S9-5-P4-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P4-R01.cs::EndpointRejectsConnectionIdReuseAcrossDifferentDestinationAddressesFuzz",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P4-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S9P5_0003",
+          "member": "REQ_QUIC_RFC9000_S9P5_0003.EndpointRejectsConnectionIdReuseAcrossDifferentDestinationAddressesFuzz",
+          "method": "EndpointRejectsConnectionIdReuseAcrossDifferentDestinationAddressesFuzz",
+          "line": 36,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [

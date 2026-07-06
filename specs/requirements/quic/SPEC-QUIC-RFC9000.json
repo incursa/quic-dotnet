@@ -4937,7 +4937,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs::PacketFromANewAddressStartsPathValidationWithAChallenge",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs::PacketFromTheActiveAddressDoesNotStartPathValidation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs::PacketFromTheActiveAddressDoesNotStartPathValidation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs::PacketFromANewAddressFuzz_StartsPathValidationWithAChallenge"
         ],
         "upstream_refs": [
           "RFC9000-S9P3P3-B4-P4-S1",
@@ -5061,6 +5062,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P3-R01.cs::EndpointRejectsConnectionIdReuseAcrossDifferentLocalAddresses",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P3-R01.cs::EndpointRejectsConnectionIdReuseAcrossDifferentLocalAddressesFuzz",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0244.cs::ValidatedMigrationUsesANewPeerConnectionIdForTheNewAddressPair",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0244.cs::ValidatedMigrationUsesAMaximumLengthPeerConnectionIdOnTheNewAddressPair"
         ],
@@ -44899,7 +44901,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.5"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P2-R01.cs::EndpointCanRegisterDistinctConnectionIdsOnDistinctPaths"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P2-R01.cs::EndpointCanRegisterDistinctConnectionIdsOnDistinctPaths",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P2-R01.cs::EndpointCanRegisterDistinctConnectionIdsOnDistinctPathsFuzz"
         ]
       }
     },
@@ -44929,6 +44932,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P4-R01.cs::EndpointRejectsConnectionIdReuseAcrossDifferentDestinationAddresses",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-5-P4-R01.cs::EndpointRejectsConnectionIdReuseAcrossDifferentDestinationAddressesFuzz",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0244.cs::ValidatedMigrationUsesANewPeerConnectionIdForTheNewAddressPair",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0244.cs::ValidatedMigrationUsesAMaximumLengthPeerConnectionIdOnTheNewAddressPair"
         ]
