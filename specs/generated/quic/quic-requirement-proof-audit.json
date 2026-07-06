@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T07:37:42.1213953-06:00",
+    "generated_at": "2026-07-06T07:40:04.5563577-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1238,
-      "full_executable_proof": 1439
+      "deferred_proof_not_executed": 1237,
+      "full_executable_proof": 1440
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 213,
-          "full_executable_proof": 1237
+          "deferred_proof_not_executed": 212,
+          "full_executable_proof": 1238
         }
       },
       {
@@ -72674,9 +72674,9 @@
       "rfc": "RFC9000",
       "title": "Use each stateless reset token for only one connection ID",
       "statement": "The same stateless reset token MUST NOT be used for multiple connection IDs.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -72687,15 +72687,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-2-P6-S1-R01.cs"

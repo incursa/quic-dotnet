@@ -100,4 +100,37 @@ public sealed class REQ_QUIC_RFC9000_0651
         Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
         Assert.Equal(0UL, runtime.TransitionSequence);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S10-3-2-P6-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryRegisterStatelessResetToken_RejectsTokenReuseAcrossConnectionIds()
+    {
+        for (int index = 0; index < 5; index++)
+        {
+            using QuicConnectionRuntimeEndpoint endpoint = new(2);
+            using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+            QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+            QuicConnectionPathIdentity pathIdentity = new($"203.0.113.{150 + index}");
+            byte[] token = QuicStatelessResetRequirementTestData.CreateToken((byte)(0x80 + index));
+            ulong firstConnectionId = 800UL + (ulong)(index * 2);
+            ulong secondConnectionId = firstConnectionId + 1UL;
+
+            Assert.True(endpoint.TryRegisterConnection(handle, runtime));
+            Assert.True(endpoint.TryUpdateEndpointBinding(handle, pathIdentity));
+            Assert.True(endpoint.TryRegisterStatelessResetToken(handle, firstConnectionId, token));
+            Assert.False(endpoint.TryRegisterStatelessResetToken(handle, secondConnectionId, token));
+
+            QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(
+                QuicStatelessResetRequirementTestData.FormatDatagram(token),
+                pathIdentity);
+
+            Assert.Equal(QuicConnectionIngressDisposition.EndpointHandling, ingressResult.Disposition);
+            Assert.Equal(QuicConnectionEndpointHandlingKind.StatelessReset, ingressResult.HandlingKind);
+            Assert.Equal(handle, ingressResult.Handle);
+            Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
+            Assert.Equal(0UL, runtime.TransitionSequence);
+        }
+    }
 }
