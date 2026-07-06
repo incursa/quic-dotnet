@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T11:00:02.6271558-06:00",
+    "generated_at": "2026-07-06T11:02:45.0018664-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1116,
-      "full_executable_proof": 1561
+      "deferred_proof_not_executed": 1115,
+      "full_executable_proof": 1562
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 91,
-          "full_executable_proof": 1359
+          "deferred_proof_not_executed": 90,
+          "full_executable_proof": 1360
         }
       },
       {
@@ -76958,9 +76958,9 @@
       "rfc": "RFC9000",
       "title": "An endpoint therefore needs to understand the syntax of all frames before it MAY successfully...",
       "statement": "An endpoint MUST understand the syntax of all frames before it can successfully process a packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "negative",
@@ -76971,14 +76971,13 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-21-P1-R01.cs"
