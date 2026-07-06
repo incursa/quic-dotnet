@@ -74,4 +74,31 @@ public sealed class REQ_QUIC_RFC9000_S7P2_0004
         Assert.False(QuicS7P2FirstFlightConnectionIdTestSupport.IsAllZero(routeConnectionId));
         Assert.False(initialDestinationConnectionId.AsSpan().SequenceEqual(routeConnectionId));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("RFC9000-S5-1-P4-S1-R01")]
+    public async Task ClientHostFuzzGeneratesDistinctNonZeroFirstInitialDestinationConnectionIds()
+    {
+        HashSet<string> generatedInitialDestinationConnectionIds = [];
+
+        for (int index = 0; index < 4; index++)
+        {
+            var remoteEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+            QuicClientConnectionSettings settings = QuicClientConnectionOptionsValidator.Capture(
+                QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(remoteEndPoint),
+                "options");
+
+            await using QuicClientConnectionHost host = new(settings);
+
+            byte[] initialDestinationConnectionId = host.InitialDestinationConnectionId;
+            byte[] routeConnectionId = host.RouteConnectionId;
+
+            Assert.Equal(8, initialDestinationConnectionId.Length);
+            Assert.False(QuicS7P2FirstFlightConnectionIdTestSupport.IsAllZero(initialDestinationConnectionId));
+            Assert.False(initialDestinationConnectionId.AsSpan().SequenceEqual(routeConnectionId));
+            Assert.True(generatedInitialDestinationConnectionIds.Add(Convert.ToHexString(initialDestinationConnectionId)));
+        }
+    }
 }

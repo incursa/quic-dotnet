@@ -87,4 +87,66 @@ public sealed class REQ_QUIC_RFC9000_S5P2P2_0005
         Assert.Equal(QuicConnectionIngressDisposition.Unroutable, unmatched.Disposition);
         Assert.Null(unmatched.Handle);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void EndpointFuzzMatchesSupportedVersionPacketsByConnectionIdOrLocalAddressTuple()
+    {
+        byte[][] routeIds =
+        [
+            [0x30],
+            [0x30, 0x31],
+            [0x30, 0x31, 0x32, 0x33],
+        ];
+
+        foreach (byte[] routeId in routeIds)
+        {
+            using QuicConnectionRuntimeEndpoint endpoint = new(1);
+            using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+            QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+
+            Assert.True(endpoint.TryRegisterConnection(handle, runtime));
+            Assert.True(endpoint.TryRegisterConnectionId(handle, routeId));
+
+            QuicConnectionIngressResult matched = endpoint.ReceiveDatagram(
+                QuicS5P2P2ServerPreAcceptanceTestSupport.BuildVersion1HandshakeDatagram(routeId),
+                QuicS5P2P2ServerPreAcceptanceTestSupport.CreatePathIdentity());
+            byte[] unknownRouteId = routeId.ToArray();
+            unknownRouteId[^1] ^= 0x7F;
+            QuicConnectionIngressResult unmatched = endpoint.ReceiveDatagram(
+                QuicS5P2P2ServerPreAcceptanceTestSupport.BuildVersion1HandshakeDatagram(unknownRouteId),
+                QuicS5P2P2ServerPreAcceptanceTestSupport.CreatePathIdentity());
+
+            Assert.Equal(QuicConnectionIngressDisposition.RoutedToConnection, matched.Disposition);
+            Assert.Equal(handle, matched.Handle);
+            Assert.Equal(QuicConnectionIngressDisposition.Unroutable, unmatched.Disposition);
+            Assert.Null(unmatched.Handle);
+        }
+
+        using QuicConnectionRuntimeEndpoint zeroLengthEndpoint = new(1);
+        using QuicConnectionRuntime zeroLengthRuntime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicConnectionHandle zeroLengthHandle = zeroLengthEndpoint.AllocateConnectionHandle();
+        QuicConnectionPathIdentity registeredPath = QuicS5P2P2ServerPreAcceptanceTestSupport.CreatePathIdentity(
+            remoteAddress: "203.0.113.20",
+            localAddress: "192.0.2.20",
+            remotePort: 44331,
+            localPort: 4433);
+        QuicConnectionPathIdentity matchingLocalAddress = QuicS5P2P2ServerPreAcceptanceTestSupport.CreatePathIdentity(
+            remoteAddress: "203.0.113.21",
+            localAddress: "192.0.2.20",
+            remotePort: 44332,
+            localPort: 4433);
+
+        Assert.True(zeroLengthEndpoint.TryRegisterConnection(zeroLengthHandle, zeroLengthRuntime));
+        Assert.True(zeroLengthEndpoint.TryUpdateEndpointBinding(zeroLengthHandle, registeredPath));
+        Assert.True(zeroLengthEndpoint.TryRegisterConnectionId(zeroLengthHandle, ReadOnlySpan<byte>.Empty));
+
+        QuicConnectionIngressResult zeroLengthMatched = zeroLengthEndpoint.ReceiveDatagram(
+            QuicS5P2P2ServerPreAcceptanceTestSupport.BuildShortHeaderDatagram(),
+            matchingLocalAddress);
+
+        Assert.Equal(QuicConnectionIngressDisposition.RoutedToConnection, zeroLengthMatched.Disposition);
+        Assert.Equal(zeroLengthHandle, zeroLengthMatched.Handle);
+    }
 }
