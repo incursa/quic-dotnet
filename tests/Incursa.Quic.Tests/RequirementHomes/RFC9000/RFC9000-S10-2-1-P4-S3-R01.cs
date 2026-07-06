@@ -112,4 +112,71 @@ public sealed class REQ_QUIC_RFC9000_0579
         Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
         Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ClosingRuntimeUsesRetainedKeysForVariedProtectedCloseAndNonClosePackets()
+    {
+        for (int caseIndex = 0; caseIndex < 6; caseIndex++)
+        {
+            QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+            Assert.True(runtime.ActivePath.HasValue);
+            QuicConnectionPathIdentity path = runtime.ActivePath!.Value.Identity;
+            Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
+            QuicTlsPacketProtectionMaterial material = runtime.TlsState.OneRttOpenPacketProtectionMaterial.Value;
+
+            QuicConnectionCloseMetadata closeMetadata = new(
+                TransportErrorCode: QuicTransportErrorCode.ProtocolViolation,
+                ApplicationErrorCode: null,
+                TriggeringFrameType: 0x1c,
+                ReasonPhrase: null);
+
+            runtime.Transition(
+                new QuicConnectionLocalCloseRequestedEvent(
+                    ObservedAtTicks: 10,
+                    closeMetadata),
+                nowTicks: 10);
+
+            bool carriesPeerClose = caseIndex % 2 == 0;
+            byte[] payload = carriesPeerClose
+                ? QuicFrameTestData.BuildConnectionCloseFrame(new QuicConnectionCloseFrame(
+                    QuicTransportErrorCode.ProtocolViolation,
+                    triggeringFrameType: (ulong)(0x1c + caseIndex),
+                    []))
+                : QuicFrameTestData.BuildPingFrame();
+
+            byte[] protectedPacket = QuicS17P3P1TestSupport.CreateProtectedApplicationDataPacket(
+                runtime.CurrentPeerDestinationConnectionId.Span,
+                [0x00, 0x00, 0x00, (byte)(0x20 + caseIndex)],
+                payload,
+                material,
+                declaredPacketNumberLength: 4);
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 20 + caseIndex,
+                    path,
+                    protectedPacket),
+                nowTicks: 20 + caseIndex);
+
+            if (carriesPeerClose)
+            {
+                Assert.True(result.StateChanged);
+                Assert.Equal(QuicConnectionPhase.Draining, runtime.Phase);
+                Assert.Equal(QuicConnectionSendingMode.None, runtime.SendingMode);
+                Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionSendDatagramEffect);
+            }
+            else
+            {
+                QuicConnectionSendDatagramEffect[] sends = result.Effects
+                    .OfType<QuicConnectionSendDatagramEffect>()
+                    .ToArray();
+                Assert.NotEmpty(sends);
+                Assert.All(sends, effect => Assert.Equal(path, effect.PathIdentity));
+                Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+                Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
+            }
+        }
+    }
 }
