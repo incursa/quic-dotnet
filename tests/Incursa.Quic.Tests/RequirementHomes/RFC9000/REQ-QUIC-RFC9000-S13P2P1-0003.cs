@@ -25,4 +25,35 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0003
 
         Assert.Equal(2_500UL, probeTimeoutMicros);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryComputeProbeTimeoutMicros_FuzzIncludesReceiverMaxAckDelayForApplicationDataPackets()
+    {
+        foreach ((ulong SmoothedRttMicros, ulong RttVarianceMicros, ulong MaxAckDelayMicros, ulong TimerGranularityMicros) testCase in new[]
+        {
+            (1_000UL, 250UL, 500UL, 1UL),
+            (4_000UL, 100UL, 25_000UL, 1_000UL),
+            (250UL, 1UL, 33UL, 10UL),
+        })
+        {
+            Assert.True(QuicRecoveryTiming.TryComputeProbeTimeoutMicros(
+                QuicPacketNumberSpace.ApplicationData,
+                testCase.SmoothedRttMicros,
+                testCase.RttVarianceMicros,
+                testCase.MaxAckDelayMicros,
+                handshakeConfirmed: true,
+                out ulong probeTimeoutMicros,
+                testCase.TimerGranularityMicros));
+
+            ulong expectedProbeTimeoutMicros =
+                testCase.SmoothedRttMicros
+                + Math.Max(testCase.RttVarianceMicros * 4, testCase.TimerGranularityMicros)
+                + testCase.MaxAckDelayMicros;
+
+            Assert.Equal(expectedProbeTimeoutMicros, probeTimeoutMicros);
+            Assert.True(probeTimeoutMicros >= testCase.SmoothedRttMicros + testCase.MaxAckDelayMicros);
+        }
+    }
 }
