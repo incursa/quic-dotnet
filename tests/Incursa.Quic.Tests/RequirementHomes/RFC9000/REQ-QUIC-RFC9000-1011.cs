@@ -66,4 +66,49 @@ public sealed class REQ_QUIC_RFC9000_1011
             out _));
         Assert.Equal(0UL, parsedAckFrame.LargestAcknowledged);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void AckResponsePayloadVariantsOpenOnlyWithOneRttPacketProtection()
+    {
+        QuicTlsPacketProtectionMaterial oneRttMaterial = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.OneRtt);
+        QuicTlsPacketProtectionMaterial handshakeMaterial = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.Handshake);
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P2P3TestSupport.CreatePacketCoordinator();
+
+        foreach (ulong largestAcknowledged in new ulong[] { 0, 1, 7, 63 })
+        {
+            byte[] ackResponsePayload = QuicFrameTestData.BuildAckFrame(new QuicAckFrame
+            {
+                FrameType = 0x02,
+                LargestAcknowledged = largestAcknowledged,
+                AckDelay = 0,
+                FirstAckRange = largestAcknowledged,
+            });
+            byte[] oneRttPacket = QuicS17P2P3TestSupport.BuildExpectedOneRttPacket(
+                ackResponsePayload,
+                oneRttMaterial,
+                keyPhase: false);
+
+            Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+                oneRttPacket,
+                oneRttMaterial,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength));
+            Assert.False(coordinator.TryOpenProtectedApplicationDataPacket(
+                oneRttPacket,
+                handshakeMaterial,
+                out _,
+                out _,
+                out _));
+            Assert.True(QuicFrameCodec.TryParseAckFrame(
+                openedPacket.AsSpan(payloadOffset, payloadLength),
+                out QuicAckFrame parsedAckFrame,
+                out _));
+            Assert.Equal(largestAcknowledged, parsedAckFrame.LargestAcknowledged);
+        }
+    }
 }

@@ -96,6 +96,46 @@ public sealed class REQ_QUIC_RFC9000_0682
         Assert.Equal(0, packetLength);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryGetPacketLength_FuzzWalksLengthDelimitedCoalescedPackets()
+    {
+        for (int payloadLength = 0; payloadLength <= 6; payloadLength++)
+        {
+            byte[] firstPayload = Enumerable.Range(0, payloadLength)
+                .Select(value => (byte)(0xB0 + value))
+                .ToArray();
+            byte[] secondPayload = Enumerable.Range(0, payloadLength + 1)
+                .Select(value => (byte)(0xC0 + value))
+                .ToArray();
+            byte[] firstPacket = QuicHeaderTestData.BuildLongHeader(
+                headerControlBits: 0x41,
+                version: 1,
+                destinationConnectionId: [0x10, (byte)payloadLength],
+                sourceConnectionId: [0x20],
+                QuicHeaderTestData.BuildInitialVersionSpecificData(
+                    token: [(byte)(0xA0 + payloadLength)],
+                    packetNumber: [0x01, 0x02],
+                    protectedPayload: firstPayload));
+            byte[] secondPacket = QuicHeaderTestData.BuildLongHeader(
+                headerControlBits: 0x61,
+                version: 1,
+                destinationConnectionId: [0x10, (byte)payloadLength],
+                sourceConnectionId: [0x20],
+                QuicHeaderTestData.BuildZeroRttVersionSpecificData(
+                    packetNumber: [0x03, 0x04],
+                    protectedPayload: secondPayload));
+            byte[] datagram = [.. firstPacket, .. secondPacket];
+
+            Assert.True(QuicPacketParser.TryGetPacketLength(datagram, out int firstPacketLength));
+            Assert.Equal(firstPacket.Length, firstPacketLength);
+            Assert.True(QuicPacketParser.TryGetPacketLength(datagram.AsSpan(firstPacketLength), out int secondPacketLength));
+            Assert.Equal(secondPacket.Length, secondPacketLength);
+            Assert.Equal(datagram.Length, firstPacketLength + secondPacketLength);
+        }
+    }
+
     private static byte[] BuildInitialVersionSpecificDataWithDeclaredPayloadLength(
         ReadOnlySpan<byte> token,
         ReadOnlySpan<byte> packetNumber,

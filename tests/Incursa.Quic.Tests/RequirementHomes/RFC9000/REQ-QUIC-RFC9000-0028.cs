@@ -43,4 +43,27 @@ public sealed class REQ_QUIC_RFC9000_0028
         Assert.False(idle.HasTimedOut(190));
         Assert.True(idle.HasTimedOut(191));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void RecordPeerPacketProcessed_FuzzRestartsIdleDeadlineAfterClientActivity()
+    {
+        for (ulong timeoutMicros = 25; timeoutMicros <= 125; timeoutMicros += 25)
+        {
+            ulong sentAtMicros = timeoutMicros - 5;
+            ulong receivedAtMicros = timeoutMicros + 3;
+            QuicIdleTimeoutState idle = new(effectiveIdleTimeoutMicros: timeoutMicros);
+
+            idle.RecordAckElicitingPacketSent(sentAtMicros);
+            idle.RecordPeerPacketProcessed(receivedAtMicros);
+
+            ulong expectedDeadline = receivedAtMicros + timeoutMicros;
+            Assert.Equal(receivedAtMicros, idle.IdleTimerRestartAtMicros);
+            Assert.Equal(expectedDeadline, idle.IdleTimeoutDeadlineMicros);
+            Assert.False(idle.HasAckElicitingPacketBeenSentSinceLastPeerPacket);
+            Assert.False(idle.HasTimedOut(expectedDeadline));
+            Assert.True(idle.HasTimedOut(expectedDeadline + 1));
+        }
+    }
 }
