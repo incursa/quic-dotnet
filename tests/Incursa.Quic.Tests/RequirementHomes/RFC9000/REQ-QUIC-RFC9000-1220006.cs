@@ -62,4 +62,29 @@ public sealed class REQ_QUIC_RFC9000_1220006
         Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
         Assert.True(versionSpecificData.AsSpan().SequenceEqual(header.VersionSpecificData));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryParseLongHeader_FuzzesLengthDelimitedPayloadBoundaries()
+    {
+        for (int payloadLength = 0; payloadLength <= 8; payloadLength++)
+        {
+            byte[] protectedPayload = Enumerable.Range(0, payloadLength)
+                .Select(value => (byte)(0xA0 + value))
+                .ToArray();
+            byte[] versionSpecificData = QuicHeaderTestData.BuildZeroRttVersionSpecificData(
+                packetNumber: [(byte)(0x10 + payloadLength), (byte)(0x20 + payloadLength)],
+                protectedPayload);
+            byte[] packet = QuicHeaderTestData.BuildLongHeader(
+                headerControlBits: 0x61,
+                version: 1,
+                destinationConnectionId: [0x10, (byte)payloadLength],
+                sourceConnectionId: [0x20],
+                versionSpecificData);
+
+            Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+            Assert.True(versionSpecificData.AsSpan().SequenceEqual(header.VersionSpecificData));
+        }
+    }
 }

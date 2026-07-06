@@ -51,4 +51,28 @@ public sealed class REQ_QUIC_RFC9000_1273
             triggeringFrameType: 0x0E);
         Assert.Equal(0UL, runtime.StreamRegistry.Bookkeeping.ConnectionAccountedBytesReceived);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryReceiveStreamFrame_FuzzRejectsConnectionBytesAboveAdvertisedMaxData()
+    {
+        for (ulong connectionLimit = 1; connectionLimit <= 8; connectionLimit++)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                connectionReceiveLimit: connectionLimit,
+                peerBidirectionalReceiveLimit: 32);
+            byte[] data = Enumerable.Range(0, (int)connectionLimit + 1)
+                .Select(value => (byte)(0x30 + value))
+                .ToArray();
+
+            Assert.True(QuicStreamParser.TryParseStreamFrame(
+                QuicStreamTestData.BuildStreamFrame(0x0E, streamId: 1, streamData: data, offset: 0),
+                out QuicStreamFrame frame));
+
+            Assert.False(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+            Assert.Equal(QuicTransportErrorCode.FlowControlError, errorCode);
+            Assert.Equal(0UL, state.ConnectionAccountedBytesReceived);
+        }
+    }
 }

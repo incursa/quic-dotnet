@@ -118,4 +118,40 @@ public sealed class REQ_QUIC_RFC9000_1282
         Assert.Equal(default, dataBlockedFrame);
         Assert.Equal(default, streamDataBlockedFrame);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryReserveSendCapacity_FuzzRejectsBytesBeyondAdvertisedStreamCredit()
+    {
+        for (ulong streamLimit = 1; streamLimit <= 8; streamLimit++)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                connectionReceiveLimit: 32,
+                connectionSendLimit: 32,
+                localBidirectionalSendLimit: 0);
+
+            Assert.True(state.TryOpenLocalStream(
+                bidirectional: true,
+                out QuicStreamId streamId,
+                out QuicStreamsBlockedFrame blockedFrame));
+            Assert.Equal(default, blockedFrame);
+            Assert.True(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(streamId.Value, streamLimit), out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+
+            Assert.False(state.TryReserveSendCapacity(
+                streamId.Value,
+                offset: streamLimit,
+                length: 1,
+                fin: false,
+                out QuicDataBlockedFrame dataBlockedFrame,
+                out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+                out errorCode));
+
+            Assert.Equal(default, errorCode);
+            Assert.Equal(default, dataBlockedFrame);
+            Assert.Equal(streamId.Value, streamDataBlockedFrame.StreamId);
+            Assert.Equal(streamLimit, streamDataBlockedFrame.MaximumStreamData);
+        }
+    }
 }

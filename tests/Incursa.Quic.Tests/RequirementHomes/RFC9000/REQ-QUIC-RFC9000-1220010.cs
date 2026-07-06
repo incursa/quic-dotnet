@@ -43,4 +43,22 @@ public sealed class REQ_QUIC_RFC9000_1220010
         Assert.Equal(3, header.Remainder.Length);
         Assert.True(expectedRemainder.AsSpan().SequenceEqual(header.Remainder));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryParseShortHeader_FuzzesTrailingDatagramBytesAsPacketRemainder()
+    {
+        for (int trailingLength = 1; trailingLength <= 9; trailingLength++)
+        {
+            byte[] trailingBytes = Enumerable.Range(0, trailingLength)
+                .Select(value => (byte)(0x80 + value))
+                .ToArray();
+            byte[] packet = QuicHeaderTestData.BuildShortHeader(0x24, trailingBytes);
+
+            Assert.True(QuicPacketParser.TryParseShortHeader(packet, out QuicShortHeaderPacket header));
+            Assert.Equal(trailingBytes.Length, header.Remainder.Length);
+            Assert.True(trailingBytes.AsSpan().SequenceEqual(header.Remainder));
+        }
+    }
 }
