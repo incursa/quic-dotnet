@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T09:10:41.1331034-06:00",
+  "generated_at": "2026-07-06T09:14:13.9955356-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T09:10:41.1293572-06:00",
+    "generated_at": "2026-07-06T09:14:13.9914317-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -398191,14 +398191,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 4,
+        "total": 8,
+        "focused": 5,
         "broad": 3,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 1,
-          "fuzz": 1,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -398408,6 +398408,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S17-2-1-P6-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-1-P6-R01.cs",
+          "class": "RFC9000_S17_2_1_P6_R01",
+          "member": "RFC9000_S17_2_1_P6_R01.VersionNegotiationVersionFieldFuzz_AcceptsOnlyTheZeroVersionField",
+          "method": "VersionNegotiationVersionFieldFuzz_AcceptsOnlyTheZeroVersionField",
+          "line": 196,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S17-2-1-P6-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -398437,14 +398459,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -398532,6 +398554,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S17-2-1-P8-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S17-2-1-P8-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-1-P8-R01.cs",
+          "class": "RFC9000_S17_2_1_P8_R01",
+          "member": "RFC9000_S17_2_1_P8_R01.ShouldSendVersionNegotiationFuzz_IgnoresVersionSpecificConnectionIdLimits",
+          "method": "ShouldSendVersionNegotiationFuzz_IgnoresVersionSpecificConnectionIdLimits",
+          "line": 49,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [

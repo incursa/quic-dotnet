@@ -188,4 +188,27 @@ public sealed class RFC9000_S17_2_1_P6_R01
 
         Assert.False(QuicPacketParser.TryParseVersionNegotiation(packet, out _));
     }
+
+    [Fact]
+    [Requirement("RFC9000-S17-2-1-P6-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void VersionNegotiationVersionFieldFuzz_AcceptsOnlyTheZeroVersionField()
+    {
+        for (int versionFieldOffset = 1; versionFieldOffset <= 4; versionFieldOffset++)
+        {
+            byte[] packet = QuicHeaderTestData.BuildVersionNegotiation(
+                headerControlBits: 0x4C,
+                destinationConnectionId: [0x10, 0x11],
+                sourceConnectionId: [0x20],
+                supportedVersions: [0x11223344]);
+
+            Assert.True(QuicPacketParser.TryParseVersionNegotiation(packet, out QuicVersionNegotiationPacket parsed));
+            Assert.Equal(0u, parsed.Version);
+
+            packet[versionFieldOffset] = 0x01;
+
+            Assert.False(QuicPacketParser.TryParseVersionNegotiation(packet, out _));
+        }
+    }
 }
