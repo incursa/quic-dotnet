@@ -125,6 +125,66 @@ public sealed class REQ_QUIC_RFC9000_0583
         Assert.Equal(sentBeforeClose, runtime.ActivePath.Value.AmplificationState.SentPayloadBytes);
     }
 
+    [Fact]
+    [Requirement("RFC9000-S10-2-1-P7-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ClosingRuntimeKeepsUnvalidatedAddressRepliesWithinThreeToOneBudget()
+    {
+        int[] receivedPayloadSizes = [1, 2, 16, 1200, 8000];
+
+        foreach (int receivedPayloadBytes in receivedPayloadSizes)
+        {
+            QuicConnectionRuntime runtime = CreateRuntime();
+            QuicConnectionPathIdentity path = new("203.0.113.10", RemotePort: 443);
+
+            Assert.True(runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 0,
+                    path,
+                    new byte[receivedPayloadBytes]),
+                nowTicks: 0).StateChanged);
+
+            Assert.True(runtime.ActivePath.HasValue);
+            Assert.False(runtime.ActivePath.Value.AmplificationState.IsAddressValidated);
+            Assert.False(runtime.HasValidatedPath);
+
+            QuicConnectionCloseMetadata closeMetadata = new(
+                TransportErrorCode: QuicTransportErrorCode.ProtocolViolation,
+                ApplicationErrorCode: null,
+                TriggeringFrameType: 0x1c,
+                ReasonPhrase: "closing");
+
+            runtime.Transition(
+                new QuicConnectionLocalCloseRequestedEvent(
+                    ObservedAtTicks: 1,
+                    closeMetadata),
+                nowTicks: 1);
+
+            QuicConnectionTransitionResult replyResult = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 2,
+                    path,
+                    new byte[receivedPayloadBytes]),
+                nowTicks: 2);
+
+            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+            Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
+            Assert.True(runtime.ActivePath.HasValue);
+            Assert.False(runtime.ActivePath.Value.AmplificationState.IsAddressValidated);
+            Assert.False(runtime.HasValidatedPath);
+            Assert.Equal((ulong)(receivedPayloadBytes * 2), runtime.ActivePath.Value.AmplificationState.ReceivedPayloadBytes);
+            Assert.True(
+                runtime.ActivePath.Value.AmplificationState.SentPayloadBytes
+                <= runtime.ActivePath.Value.AmplificationState.ReceivedPayloadBytes * 3UL);
+
+            foreach (QuicConnectionSendDatagramEffect send in replyResult.Effects.OfType<QuicConnectionSendDatagramEffect>())
+            {
+                Assert.Equal(path, send.PathIdentity);
+            }
+        }
+    }
+
     private static QuicConnectionRuntime CreateRuntime()
     {
         byte[] localHandshakePrivateKey = new byte[32];
