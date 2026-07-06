@@ -162,4 +162,60 @@ public sealed class REQ_QUIC_RFC9002_S6P2P2_0005
         Assert.Null(runtime.LossDetectionDeadlineMicros);
         Assert.Empty(runtime.SentPackets);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryDiscardPacketNumberSpace_ResetsTimersForDiscardedInitialAndHandshakeKeys()
+    {
+        foreach ((QuicPacketNumberSpace discardedSpace, QuicTlsEncryptionLevel protectionLevel, ulong nowMicros, ulong smoothedRttMicros, ulong rttVarMicros) in new[]
+        {
+            (QuicPacketNumberSpace.Initial, QuicTlsEncryptionLevel.Initial, 10UL, 1_000UL, 250UL),
+            (QuicPacketNumberSpace.Initial, QuicTlsEncryptionLevel.Initial, 777UL, 333UL, 44UL),
+            (QuicPacketNumberSpace.Handshake, QuicTlsEncryptionLevel.Handshake, 100UL, 2_500UL, 750UL),
+            (QuicPacketNumberSpace.Handshake, QuicTlsEncryptionLevel.Handshake, 9_999UL, 1UL, 0UL),
+        })
+        {
+            QuicConnectionSendRuntime runtime = new();
+            TrackPacket(runtime, discardedSpace, protectionLevel, packetNumber: 1, packetByte: 0x51);
+            TrackPacket(runtime, QuicPacketNumberSpace.ApplicationData, QuicTlsEncryptionLevel.OneRtt, packetNumber: 2, packetByte: 0x52);
+
+            Assert.True(runtime.TryArmProbeTimeout(
+                discardedSpace,
+                nowMicros,
+                smoothedRttMicros,
+                rttVarMicros,
+                maxAckDelayMicros: 25_000,
+                handshakeConfirmed: false));
+            Assert.Equal(1, runtime.ProbeTimeoutCount);
+            Assert.NotNull(runtime.LossDetectionDeadlineMicros);
+
+            Assert.True(runtime.TryDiscardPacketNumberSpace(discardedSpace));
+
+            Assert.Equal(0, runtime.ProbeTimeoutCount);
+            Assert.Null(runtime.LossDetectionDeadlineMicros);
+            Assert.DoesNotContain(runtime.SentPackets.Keys, key => key.PacketNumberSpace == discardedSpace);
+            Assert.Contains(runtime.SentPackets.Keys, key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData);
+        }
+    }
+
+    private static void TrackPacket(
+        QuicConnectionSendRuntime runtime,
+        QuicPacketNumberSpace packetNumberSpace,
+        QuicTlsEncryptionLevel protectionLevel,
+        ulong packetNumber,
+        byte packetByte)
+    {
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            packetNumberSpace,
+            packetNumber,
+            PayloadBytes: 1_200,
+            SentAtMicros: packetNumber * 100,
+            AckEliciting: true,
+            CryptoMetadata: packetNumberSpace is QuicPacketNumberSpace.Initial or QuicPacketNumberSpace.Handshake
+                ? new QuicConnectionCryptoSendMetadata(protectionLevel)
+                : null,
+            PacketBytes: new byte[] { packetByte },
+            PacketProtectionLevel: protectionLevel));
+    }
 }
