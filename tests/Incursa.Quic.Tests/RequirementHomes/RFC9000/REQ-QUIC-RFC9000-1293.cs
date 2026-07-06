@@ -58,4 +58,34 @@ public sealed class REQ_QUIC_RFC9000_1293
         Assert.False(state.TryReceiveStreamFrame(nextStreamFrame, out errorCode));
         Assert.Equal(QuicTransportErrorCode.StreamLimitError, errorCode);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryReceiveStreamFrame_FuzzCountsClosedStreamsTowardCumulativeLimit()
+    {
+        for (ulong streamLimit = 1; streamLimit <= 5; streamLimit++)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                incomingUnidirectionalStreamLimit: streamLimit);
+
+            for (ulong streamIndex = 0; streamIndex < streamLimit; streamIndex++)
+            {
+                ulong closedStreamId = streamIndex * 4 + 3;
+                Assert.True(QuicStreamParser.TryParseStreamFrame(
+                    QuicStreamTestData.BuildStreamFrame(0x0B, streamId: closedStreamId, streamData: []),
+                    out QuicStreamFrame closedStreamFrame));
+                Assert.True(state.TryReceiveStreamFrame(closedStreamFrame, out QuicTransportErrorCode errorCode));
+                Assert.Equal(default, errorCode);
+            }
+
+            ulong nextStreamId = streamLimit * 4 + 3;
+            Assert.True(QuicStreamParser.TryParseStreamFrame(
+                QuicStreamTestData.BuildStreamFrame(0x08, nextStreamId, streamData: [0x51]),
+                out QuicStreamFrame nextStreamFrame));
+
+            Assert.False(state.TryReceiveStreamFrame(nextStreamFrame, out QuicTransportErrorCode finalErrorCode));
+            Assert.Equal(QuicTransportErrorCode.StreamLimitError, finalErrorCode);
+        }
+    }
 }

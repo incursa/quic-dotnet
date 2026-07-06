@@ -89,4 +89,34 @@ public sealed class REQ_QUIC_RFC9000_0057
             QuicApplicationSendQueue.ReturnRentedQueuedWrites(sortedWrites);
         }
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-0057")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void QueuedPrioritySelection_FuzzOrdersQueuedWritesByDescendingPriority()
+    {
+        for (int priorityOffset = -3; priorityOffset <= 3; priorityOffset++)
+        {
+            QuicApplicationSendQueue sendQueue = new();
+            sendQueue.Enqueue(streamId: 1, priority: priorityOffset, streamPayload: [0x11], streamPayloadLength: 1);
+            sendQueue.Enqueue(streamId: 5, priority: priorityOffset + 4, streamPayload: [0x22], streamPayloadLength: 1);
+            sendQueue.Enqueue(streamId: 9, priority: priorityOffset + 2, streamPayload: [0x33], streamPayloadLength: 1);
+
+            PendingApplicationSendRequest[] sortedWrites = sendQueue.RentSortedQueuedWrites(out int queuedWriteCount);
+            try
+            {
+                ReadOnlySpan<PendingApplicationSendRequest> selectedWrites = sortedWrites.AsSpan(0, queuedWriteCount);
+
+                Assert.Equal(3, selectedWrites.Length);
+                Assert.Equal(5UL, selectedWrites[0].StreamId);
+                Assert.Equal(9UL, selectedWrites[1].StreamId);
+                Assert.Equal(1UL, selectedWrites[2].StreamId);
+            }
+            finally
+            {
+                QuicApplicationSendQueue.ReturnRentedQueuedWrites(sortedWrites);
+            }
+        }
+    }
 }

@@ -39,4 +39,23 @@ public sealed class REQ_QUIC_RFC9000_1259
         Assert.False(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
         Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryReceiveStreamFrame_FuzzRejectsUncreatedLocalBidirectionalStreams()
+    {
+        for (ulong streamIndex = 0; streamIndex < 6; streamIndex++)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(isServer: false);
+            ulong locallyInitiatedStreamId = streamIndex * 4;
+            QuicStreamFrame frame = QuicS19P8StreamFrameTestSupport.Parse(
+                0x0A,
+                locallyInitiatedStreamId,
+                streamData: [(byte)(0xA0 + streamIndex)]);
+
+            Assert.False(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+            Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
+        }
+    }
 }
