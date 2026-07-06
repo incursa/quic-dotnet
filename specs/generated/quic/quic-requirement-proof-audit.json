@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T09:34:28.6130946-06:00",
+    "generated_at": "2026-07-06T09:37:19.0575376-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1158,
-      "full_executable_proof": 1519
+      "deferred_proof_not_executed": 1155,
+      "full_executable_proof": 1522
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 133,
-          "full_executable_proof": 1317
+          "deferred_proof_not_executed": 130,
+          "full_executable_proof": 1320
         }
       },
       {
@@ -81251,9 +81251,9 @@
       "rfc": "RFC9000",
       "title": "Include the first sent Initial Source CID in transport parameters",
       "statement": "Each endpoint MUST include the value of the Source Connection ID field from the first Initial packet it sent in the initial_source_connection_id transport parameter.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -81264,6 +81264,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -81272,13 +81273,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P2-S1-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P2-S1-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7P3P2-ConnectionIdTransportParameter-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -81292,9 +81292,9 @@
       "rfc": "RFC9000",
       "title": "Echo the client Initial Destination Connection ID in original_destination_connection_id",
       "statement": "A server MUST include the Destination Connection ID field from the first Initial packet it received from the client in the original_destination_connection_id transport parameter.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -81306,6 +81306,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -81314,13 +81315,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P2-S2-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P2-S2-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7P3P2-ConnectionIdTransportParameter-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -81334,9 +81334,9 @@
       "rfc": "RFC9000",
       "title": "Echo the Retry Source Connection ID when Retry is used",
       "statement": "If it sends a Retry packet, a server MUST also include the Source Connection ID field from the Retry packet in the retry_source_connection_id transport parameter.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -81345,6 +81345,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [
@@ -81352,13 +81353,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P2-S3-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P2-S3-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7P3P2-ConnectionIdTransportParameter-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P2-S3-R01.cs::TryFormatTransportParameters_EmitsRetrySourceConnectionIdFromServer"
