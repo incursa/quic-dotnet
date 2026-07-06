@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-05T19:21:14.2011277-06:00",
+    "generated_at": "2026-07-05T19:26:56.2117289-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1838,
-      "full_executable_proof": 839
+      "deferred_proof_not_executed": 1828,
+      "full_executable_proof": 849
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 785,
-          "full_executable_proof": 665
+          "deferred_proof_not_executed": 775,
+          "full_executable_proof": 675
         }
       },
       {
@@ -9674,9 +9674,9 @@
       "rfc": "RFC9000",
       "title": "After the handshake is confirmed (see Section 4",
       "statement": "After the handshake is confirmed (see Section 4.1.2 of [QUIC-TLS]), an endpoint MUST send any CONNECTION_CLOSE frames in a 1-RTT packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -9688,15 +9688,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs"
@@ -9709,9 +9708,9 @@
       "rfc": "RFC9000",
       "title": "However, prior to confirming the handshake, it is possible that more advanced packet protection keys are not available to the peer, so another CONNECTION_CLOSE frame MAY be sent in a packet that uses a lower packet protection level",
       "statement": "However, prior to confirming the handshake, it is possible that more advanced packet protection keys are not available to the peer, so another CONNECTION_CLOSE frame MAY be sent in a packet that uses a lower packet protection level.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
@@ -9719,15 +9718,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs"
@@ -9740,9 +9738,9 @@
       "rfc": "RFC9000",
       "title": "Under these circumstances, a server SHOULD send a CONNECTION_CLOSE frame in both Handshake and Initial packets to ensure that at least one of them is processable by the client",
       "statement": "Under these circumstances, a server SHOULD send a CONNECTION_CLOSE frame in both Handshake and Initial packets to ensure that at least one of them is processable by the client.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -9754,15 +9752,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs"
@@ -9775,9 +9772,9 @@
       "rfc": "RFC9000",
       "title": "Prior to confirming the handshake, a peer might be unable to process 1-RTT packets, so an endpoint SHOULD send a CONNECTION_CLOSE frame in both Handshake and 1-RTT packets",
       "statement": "Prior to confirming the handshake, a peer might be unable to process 1-RTT packets, so an endpoint SHOULD send a CONNECTION_CLOSE frame in both Handshake and 1-RTT packets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -9787,15 +9784,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs"
@@ -9808,9 +9804,9 @@
       "rfc": "RFC9000",
       "title": "Also send a CONNECTION_CLOSE frame in an Initial packet",
       "statement": "A server SHOULD also send a CONNECTION_CLOSE frame in an Initial packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -9822,15 +9818,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs"
@@ -9874,9 +9869,9 @@
       "rfc": "RFC9000",
       "title": "Send post-handshake close in 1-RTT",
       "statement": "After the handshake is confirmed, an endpoint MUST send any CONNECTION_CLOSE frames in a 1-RTT packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -9888,15 +9883,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs"
@@ -9909,9 +9903,9 @@
       "rfc": "RFC9000",
       "title": "Allow lower-protection close before handshake confirmation",
       "statement": "Prior to confirming the handshake, another CONNECTION_CLOSE frame MAY be sent in a packet that uses a lower packet protection level.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "negative",
@@ -9922,15 +9916,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs"
@@ -9943,9 +9936,9 @@
       "rfc": "RFC9000",
       "title": "Close in Handshake and 1-RTT before confirmation",
       "statement": "Prior to confirming the handshake, an endpoint SHOULD send a CONNECTION_CLOSE frame in both Handshake and 1-RTT packets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -9957,15 +9950,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs"
@@ -9978,9 +9970,9 @@
       "rfc": "RFC9000",
       "title": "Downgrade close type for Initial and Handshake",
       "statement": "A CONNECTION_CLOSE frame of type 0x1d MUST be replaced by a CONNECTION_CLOSE frame of type 0x1c when sending the frame in Initial or Handshake packets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -9992,15 +9984,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs"
@@ -10017,9 +10008,9 @@
       "rfc": "RFC9000",
       "title": "Clear Reason Phrase when downgrading close type",
       "statement": "Endpoints MUST clear the value of the Reason Phrase field when converting to a CONNECTION_CLOSE of type 0x1c.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -10028,14 +10019,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P3-0011.cs"

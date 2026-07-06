@@ -227,15 +227,103 @@ public sealed class REQ_QUIC_RFC9000_S10P2P3_0011
         Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionSendDatagramEffect);
     }
 
+    [Theory]
+    [InlineData(0UL, "")]
+    [InlineData(42UL, "lower protection close fuzz")]
+    [InlineData(0x4000UL, "longer application scoped close reason")]
+    [Requirement("REQ-QUIC-RFC9000-S10P2P3-0002")]
+    [Requirement("REQ-QUIC-RFC9000-S10P2P3-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S10P2P3-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S10P2P3-0005")]
+    [Requirement("REQ-QUIC-RFC9000-S10P2P3-0009")]
+    [Requirement("REQ-QUIC-RFC9000-S10P2P3-0010")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void PreConfirmationCloseFuzz_EmitsLowerProtectionAndOneRttCloses(
+        ulong applicationErrorCode,
+        string reasonPhrase)
+    {
+        PreConfirmationCloseSend close = CreatePreConfirmationApplicationCloseSend(
+            applicationErrorCode,
+            reasonPhrase);
+
+        Assert.Equal(3, close.SendEffects.Length);
+        AssertDowngradedApplicationClosePayload(OpenInitialClosePayload(
+            AssertSingleSendByPacketNumberSpace(close.SendEffects, QuicPacketNumberSpace.Initial).Datagram));
+        AssertDowngradedApplicationClosePayload(OpenHandshakeClosePayload(
+            close.Runtime,
+            AssertSingleSendByPacketNumberSpace(close.SendEffects, QuicPacketNumberSpace.Handshake).Datagram));
+        AssertApplicationClosePayload(
+            OpenApplicationClosePayload(
+                close.Runtime,
+                AssertSingleSendByPacketNumberSpace(close.SendEffects, QuicPacketNumberSpace.ApplicationData).Datagram),
+            applicationErrorCode,
+            expectReasonPhrase: !string.IsNullOrEmpty(reasonPhrase));
+    }
+
+    [Theory]
+    [InlineData(1UL, "")]
+    [InlineData(42UL, "must be stripped below one rtt")]
+    [InlineData(0x3fffUL, "converted close retains only transport APPLICATION_ERROR")]
+    [Requirement("REQ-QUIC-RFC9000-S10P2P3-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S10P2P3-0012")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ApplicationCloseDowngradeFuzz_StripsApplicationSpecificFieldsBelowOneRtt(
+        ulong applicationErrorCode,
+        string reasonPhrase)
+    {
+        PreConfirmationCloseSend close = CreatePreConfirmationApplicationCloseSend(
+            applicationErrorCode,
+            reasonPhrase);
+
+        AssertDowngradedApplicationClosePayload(OpenInitialClosePayload(
+            AssertSingleSendByPacketNumberSpace(close.SendEffects, QuicPacketNumberSpace.Initial).Datagram));
+        AssertDowngradedApplicationClosePayload(OpenHandshakeClosePayload(
+            close.Runtime,
+            AssertSingleSendByPacketNumberSpace(close.SendEffects, QuicPacketNumberSpace.Handshake).Datagram));
+    }
+
+    [Theory]
+    [InlineData(0UL, "")]
+    [InlineData(17UL, "one rtt close fuzz")]
+    [InlineData(0x4001UL, "application close after handshake confirmation")]
+    [Requirement("REQ-QUIC-RFC9000-S10P2P3-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S10P2P3-0008")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void PostHandshakeCloseFuzz_SendsOnlyOneRttApplicationClose(
+        ulong applicationErrorCode,
+        string reasonPhrase)
+    {
+        (QuicConnectionRuntime runtime, QuicConnectionSendDatagramEffect send) = CreateOneRttApplicationCloseSend(
+            applicationErrorCode,
+            reasonPhrase);
+
+        AssertApplicationClosePayload(
+            OpenApplicationClosePayload(runtime, send.Datagram),
+            applicationErrorCode,
+            expectReasonPhrase: !string.IsNullOrEmpty(reasonPhrase));
+    }
+
     private static PreConfirmationCloseSend CreatePreConfirmationApplicationCloseSend()
+    {
+        return CreatePreConfirmationApplicationCloseSend(
+            applicationErrorCode: 42,
+            reasonPhrase: "must not be sent below 1-RTT");
+    }
+
+    private static PreConfirmationCloseSend CreatePreConfirmationApplicationCloseSend(
+        ulong applicationErrorCode,
+        string? reasonPhrase)
     {
         QuicConnectionRuntime runtime = CreatePreConfirmationServerRuntimeWithCloseKeys();
 
         QuicConnectionCloseMetadata closeMetadata = new(
             TransportErrorCode: null,
-            ApplicationErrorCode: 42,
+            ApplicationErrorCode: applicationErrorCode,
             TriggeringFrameType: null,
-            ReasonPhrase: "must not be sent below 1-RTT");
+            ReasonPhrase: reasonPhrase);
 
         QuicConnectionTransitionResult result = runtime.Transition(
             new QuicConnectionLocalCloseRequestedEvent(
@@ -255,6 +343,15 @@ public sealed class REQ_QUIC_RFC9000_S10P2P3_0011
 
     private static (QuicConnectionRuntime Runtime, QuicConnectionSendDatagramEffect Send) CreateOneRttApplicationCloseSend()
     {
+        return CreateOneRttApplicationCloseSend(
+            applicationErrorCode: 0,
+            reasonPhrase: null);
+    }
+
+    private static (QuicConnectionRuntime Runtime, QuicConnectionSendDatagramEffect Send) CreateOneRttApplicationCloseSend(
+        ulong applicationErrorCode,
+        string? reasonPhrase)
+    {
         QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.True(runtime.TlsState.OneRttProtectPacketProtectionMaterial.HasValue);
@@ -270,9 +367,9 @@ public sealed class REQ_QUIC_RFC9000_S10P2P3_0011
 
         QuicConnectionCloseMetadata closeMetadata = new(
             TransportErrorCode: null,
-            ApplicationErrorCode: 0,
+            ApplicationErrorCode: applicationErrorCode,
             TriggeringFrameType: null,
-            ReasonPhrase: null);
+            ReasonPhrase: reasonPhrase);
 
         QuicConnectionTransitionResult result = runtime.Transition(
             new QuicConnectionLocalCloseRequestedEvent(
@@ -465,14 +562,22 @@ public sealed class REQ_QUIC_RFC9000_S10P2P3_0011
 
     private static void AssertApplicationClosePayload(ReadOnlySpan<byte> payload)
     {
+        AssertApplicationClosePayload(payload, expectedErrorCode: 42, expectReasonPhrase: true);
+    }
+
+    private static void AssertApplicationClosePayload(
+        ReadOnlySpan<byte> payload,
+        ulong expectedErrorCode,
+        bool expectReasonPhrase)
+    {
         Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(
             payload,
             out QuicConnectionCloseFrame parsedFrame,
             out int bytesConsumed));
         Assert.True(parsedFrame.IsApplicationError);
         Assert.Equal((byte)0x1D, parsedFrame.FrameType);
-        Assert.Equal(42UL, parsedFrame.ErrorCode);
-        Assert.False(parsedFrame.ReasonPhrase.IsEmpty);
+        Assert.Equal(expectedErrorCode, parsedFrame.ErrorCode);
+        Assert.Equal(expectReasonPhrase, !parsedFrame.ReasonPhrase.IsEmpty);
         Assert.True(payload[bytesConsumed..].SequenceEqual(new byte[payload.Length - bytesConsumed]));
     }
 
