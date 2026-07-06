@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T23:04:04.3733073-06:00",
+  "generated_at": "2026-07-05T23:09:35.9631704-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-05T23:04:04.3693257-06:00",
+    "generated_at": "2026-07-05T23:09:35.9586730-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -23317,14 +23317,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -23419,6 +23419,29 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-0607",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-StatelessReset-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_StatelessReset_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_StatelessReset_DeferredFuzzClosure.TokenGenerationFuzz_BindsAndRegeneratesTokensPerConnectionId",
+          "method": "TokenGenerationFuzz_BindsAndRegeneratesTokensPerConnectionId",
+          "line": 13,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0607",
+            "REQ-QUIC-RFC9000-0644"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -23448,14 +23471,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -23550,6 +23573,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-0610",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-StatelessReset-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_StatelessReset_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_StatelessReset_DeferredFuzzClosure.RetiredTokenFuzz_RemovesOnlyTheRetiredStatelessResetToken",
+          "method": "RetiredTokenFuzz_RemovesOnlyTheRetiredStatelessResetToken",
+          "line": 50,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0610"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -23580,14 +23625,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -23726,6 +23771,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-0622",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-StatelessReset-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_StatelessReset_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_StatelessReset_DeferredFuzzClosure.LoopPreventionFuzz_RejectsStatelessResetDatagramsAtOrAboveThreeTimesTheTriggeringPacket",
+          "method": "LoopPreventionFuzz_RejectsStatelessResetDatagramsAtOrAboveThreeTimesTheTriggeringPacket",
+          "line": 94,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0622"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -23755,14 +23822,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -23857,6 +23924,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-0639",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-StatelessReset-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_StatelessReset_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_StatelessReset_DeferredFuzzClosure.MatchingTokenFuzz_EntersDrainingOnlyWhenTheDatagramTailMatches",
+          "method": "MatchingTokenFuzz_EntersDrainingOnlyWhenTheDatagramTailMatches",
+          "line": 127,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0639"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -23887,14 +23976,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 3,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
           "positive": 1,
           "negative": 1,
           "edge": 1,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -23967,6 +24056,29 @@
           ],
           "requirement_tagged": false,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-0644",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-StatelessReset-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_StatelessReset_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_StatelessReset_DeferredFuzzClosure.TokenGenerationFuzz_BindsAndRegeneratesTokensPerConnectionId",
+          "method": "TokenGenerationFuzz_BindsAndRegeneratesTokensPerConnectionId",
+          "line": 13,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0607",
+            "REQ-QUIC-RFC9000-0644"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
