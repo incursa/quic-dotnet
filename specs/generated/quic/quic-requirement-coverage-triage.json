@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T14:52:13.1394957-06:00",
+  "generated_at": "2026-07-06T14:54:51.2557688-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T14:52:13.1361315-06:00",
+    "generated_at": "2026-07-06T14:54:51.2513058-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -237545,14 +237545,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P1-0001.cs::TryComputePersistentCongestionDurationMicros_UsesTheExpectedFormulaAndReductionHelper",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 3,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 1,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -237618,6 +237618,28 @@
           "requirement_id": "REQ-QUIC-RFC9002-S7P6P1-0001",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P1-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S7P6P1_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S7P6P1_DeferredFuzzClosure.Fuzz_PersistentCongestionDurationUsesRttVarianceAndGranularity",
+          "method": "Fuzz_PersistentCongestionDurationUsesRttVarianceAndGranularity",
+          "line": 12,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S7P6P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S7P6P1-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0001.cs",
           "class": "REQ_QUIC_RFC9002_S7P6P2_0001",
           "member": "REQ_QUIC_RFC9002_S7P6P2_0001.TryDetectPersistentCongestion_RequiresAckElicitingLossesAcrossTheWindow",
@@ -237667,14 +237689,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P1-0002.cs::TryComputePersistentCongestionDurationMicros_IncludesMaxAckDelayForEverySpace",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 4,
           "negative": 1,
           "edge": 1,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -237752,6 +237774,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S7P6P1-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P1-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S7P6P1_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S7P6P1_DeferredFuzzClosure.Fuzz_MaxAckDelayContributesToPersistentCongestionDuration",
+          "method": "Fuzz_MaxAckDelayContributesToPersistentCongestionDuration",
+          "line": 33,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S7P6P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         },
         {
           "requirement_id": "REQ-QUIC-RFC9002-S7P6P1-0002",

@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T14:52:22.8578084-06:00",
+    "generated_at": "2026-07-06T14:55:00.5761851-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 944,
-      "full_executable_proof": 1733
+      "deferred_proof_not_executed": 942,
+      "full_executable_proof": 1735
     },
     "by_rfc": [
       {
@@ -37,8 +37,8 @@
         "rfc": "RFC9002",
         "total": 226,
         "by_proof_state": {
-          "deferred_proof_not_executed": 65,
-          "full_executable_proof": 161
+          "deferred_proof_not_executed": 63,
+          "full_executable_proof": 163
         }
       },
       {
@@ -43276,9 +43276,9 @@
       "rfc": "RFC9002",
       "title": "Compute persistent congestion duration from RTT and max_ack_delay",
       "statement": "The persistent congestion duration MUST be computed as (smoothed_rtt + max(4*rttvar, kGranularity) + max_ack_delay) * kPersistentCongestionThreshold.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -43288,18 +43288,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P1-0001.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P1-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0001.cs"
       ],
       "spec_test_ref_count": 1,
@@ -43310,9 +43310,9 @@
       "rfc": "RFC9002",
       "title": "Include max_ack_delay in persistent congestion duration",
       "statement": "Unlike PTO computation, this duration MUST include max_ack_delay irrespective of the packet number spaces in which losses are established.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -43322,19 +43322,19 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 4,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P1-0001.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P1-0002.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P1-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0001.cs"
       ],
       "spec_test_ref_count": 1,
