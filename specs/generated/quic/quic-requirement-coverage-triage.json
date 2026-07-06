@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T03:11:24.0410444-06:00",
+  "generated_at": "2026-07-06T03:13:41.4613911-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T03:11:24.0375184-06:00",
+    "generated_at": "2026-07-06T03:13:41.4576180-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -9059,7 +9059,7 @@
           "class": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure.PeerReceivePartCreationFuzz_CreatesRecvStateFromFirstPeerDataAndControlFrames",
           "method": "PeerReceivePartCreationFuzz_CreatesRecvStateFromFirstPeerDataAndControlFrames",
-          "line": 14,
+          "line": 15,
           "kinds": [
             "fuzz"
           ],
@@ -9070,7 +9070,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9000-0097",
             "REQ-QUIC-RFC9000-0098",
-            "REQ-QUIC-RFC9000-0110"
+            "REQ-QUIC-RFC9000-0110",
+            "REQ-QUIC-RFC9000-S11P2-0004"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -9303,7 +9304,7 @@
           "class": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure.PeerReceivePartCreationFuzz_CreatesRecvStateFromFirstPeerDataAndControlFrames",
           "method": "PeerReceivePartCreationFuzz_CreatesRecvStateFromFirstPeerDataAndControlFrames",
-          "line": 14,
+          "line": 15,
           "kinds": [
             "fuzz"
           ],
@@ -9314,7 +9315,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9000-0097",
             "REQ-QUIC-RFC9000-0098",
-            "REQ-QUIC-RFC9000-0110"
+            "REQ-QUIC-RFC9000-0110",
+            "REQ-QUIC-RFC9000-S11P2-0004"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -9458,7 +9460,7 @@
           "class": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure.PeerReceivePartCreationFuzz_CreatesRecvStateFromFirstPeerDataAndControlFrames",
           "method": "PeerReceivePartCreationFuzz_CreatesRecvStateFromFirstPeerDataAndControlFrames",
-          "line": 14,
+          "line": 15,
           "kinds": [
             "fuzz"
           ],
@@ -9469,7 +9471,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9000-0097",
             "REQ-QUIC-RFC9000-0098",
-            "REQ-QUIC-RFC9000-0110"
+            "REQ-QUIC-RFC9000-0110",
+            "REQ-QUIC-RFC9000-S11P2-0004"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -9613,7 +9616,7 @@
           "class": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure.DataRecvdFuzz_EntersDataRecvdOnlyAfterAllDataArrivesAndMovesAfterRead",
           "method": "DataRecvdFuzz_EntersDataRecvdOnlyAfterAllDataArrivesAndMovesAfterRead",
-          "line": 66,
+          "line": 67,
           "kinds": [
             "fuzz"
           ],
@@ -9767,7 +9770,7 @@
           "class": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure.DataRecvdFuzz_EntersDataRecvdOnlyAfterAllDataArrivesAndMovesAfterRead",
           "method": "DataRecvdFuzz_EntersDataRecvdOnlyAfterAllDataArrivesAndMovesAfterRead",
-          "line": 66,
+          "line": 67,
           "kinds": [
             "fuzz"
           ],
@@ -9921,7 +9924,7 @@
           "class": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure.ResetAndFinalSizeFuzz_DiscardsReceiveDataPreservesSendDirectionAndKeepsFinalSizeImmutable",
           "method": "ResetAndFinalSizeFuzz_DiscardsReceiveDataPreservesSendDirectionAndKeepsFinalSizeImmutable",
-          "line": 118,
+          "line": 119,
           "kinds": [
             "fuzz"
           ],
@@ -12970,7 +12973,7 @@
           "class": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure.ResetAndFinalSizeFuzz_DiscardsReceiveDataPreservesSendDirectionAndKeepsFinalSizeImmutable",
           "method": "ResetAndFinalSizeFuzz_DiscardsReceiveDataPreservesSendDirectionAndKeepsFinalSizeImmutable",
-          "line": 118,
+          "line": 119,
           "kinds": [
             "fuzz"
           ],
@@ -13185,7 +13188,7 @@
           "class": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure.ResetAndFinalSizeFuzz_DiscardsReceiveDataPreservesSendDirectionAndKeepsFinalSizeImmutable",
           "method": "ResetAndFinalSizeFuzz_DiscardsReceiveDataPreservesSendDirectionAndKeepsFinalSizeImmutable",
-          "line": 118,
+          "line": 119,
           "kinds": [
             "fuzz"
           ],
@@ -13416,7 +13419,7 @@
           "class": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure.ResetAndFinalSizeFuzz_DiscardsReceiveDataPreservesSendDirectionAndKeepsFinalSizeImmutable",
           "method": "ResetAndFinalSizeFuzz_DiscardsReceiveDataPreservesSendDirectionAndKeepsFinalSizeImmutable",
-          "line": 118,
+          "line": 119,
           "kinds": [
             "fuzz"
           ],
@@ -61401,14 +61404,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -61416,6 +61419,31 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S11P2-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-ReceiveState-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure.PeerReceivePartCreationFuzz_CreatesRecvStateFromFirstPeerDataAndControlFrames",
+          "method": "PeerReceivePartCreationFuzz_CreatesRecvStateFromFirstPeerDataAndControlFrames",
+          "line": 15,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0097",
+            "REQ-QUIC-RFC9000-0098",
+            "REQ-QUIC-RFC9000-0110",
+            "REQ-QUIC-RFC9000-S11P2-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S11P2-0004",
           "source": "requirement_attribute",

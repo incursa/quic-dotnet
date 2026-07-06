@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T03:11:33.1439210-06:00",
+    "generated_at": "2026-07-06T03:13:50.4851727-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1333,
-      "full_executable_proof": 1344
+      "deferred_proof_not_executed": 1332,
+      "full_executable_proof": 1345
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 288,
-          "full_executable_proof": 1162
+          "deferred_proof_not_executed": 287,
+          "full_executable_proof": 1163
         }
       },
       {
@@ -11276,9 +11276,9 @@
       "rfc": "RFC9000",
       "title": "A local instance of the application protocol uses a direct API call, and a remote instance uses the STOP_SENDING frame, which triggers an automatic RESET_STREAM",
       "statement": "A local instance of MUST the application protocol uses a direct API call, and a remote instance uses the STOP_SENDING frame, which triggers an automatic RESET_STREAM.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -11287,17 +11287,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-ReceiveState-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P2-0004.cs"
       ],
       "spec_test_ref_count": 2,

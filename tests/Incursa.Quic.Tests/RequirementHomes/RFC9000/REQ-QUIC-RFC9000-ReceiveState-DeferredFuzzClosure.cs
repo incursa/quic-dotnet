@@ -9,6 +9,7 @@ public sealed class REQ_QUIC_RFC9000_ReceiveState_DeferredFuzzClosure
     [Requirement("REQ-QUIC-RFC9000-0097")]
     [Requirement("REQ-QUIC-RFC9000-0098")]
     [Requirement("REQ-QUIC-RFC9000-0110")]
+    [Requirement("REQ-QUIC-RFC9000-S11P2-0004")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Fuzz")]
     public void PeerReceivePartCreationFuzz_CreatesRecvStateFromFirstPeerDataAndControlFrames()
