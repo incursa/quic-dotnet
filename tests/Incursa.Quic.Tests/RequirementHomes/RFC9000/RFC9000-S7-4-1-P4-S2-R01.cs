@@ -73,6 +73,46 @@ public sealed class REQ_QUIC_RFC9000_0345
         Assert.Null(resolved.RetrySourceConnectionId);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ClientHandshakeValueResolutionFuzz_UsesOnlyServerHandshakeOrDefaults()
+    {
+        foreach (byte prefix in new byte[] { 0x01, 0x20, 0x7F })
+        {
+            QuicTransportParameters remembered = CreateProhibitedValues(prefix);
+            QuicTransportParameters handshake = prefix == 0x7F
+                ? new QuicTransportParameters()
+                : CreateProhibitedValues((byte)(prefix + 0x10));
+
+            QuicTransportParameters resolved =
+                QuicZeroRttTransportParameterPolicy.ResolveClientHandshakeValuesForProhibitedZeroRttParameters(
+                    remembered,
+                    handshake);
+
+            if (handshake.InitialSourceConnectionId is null)
+            {
+                Assert.Null(resolved.OriginalDestinationConnectionId);
+                Assert.Null(resolved.StatelessResetToken);
+                Assert.Equal(QuicMaxAckDelayPolicy.DefaultMaxAckDelayMicros, resolved.MaxAckDelay);
+                Assert.Null(resolved.PreferredAddress);
+                Assert.Null(resolved.InitialSourceConnectionId);
+                Assert.Null(resolved.RetrySourceConnectionId);
+            }
+            else
+            {
+                Assert.Equal(handshake.OriginalDestinationConnectionId, resolved.OriginalDestinationConnectionId);
+                Assert.Equal(handshake.StatelessResetToken, resolved.StatelessResetToken);
+                Assert.Equal(handshake.MaxAckDelay, resolved.MaxAckDelay);
+                Assert.Equal(handshake.PreferredAddress!.ConnectionId, resolved.PreferredAddress!.ConnectionId);
+                Assert.Equal(handshake.InitialSourceConnectionId, resolved.InitialSourceConnectionId);
+                Assert.Equal(handshake.RetrySourceConnectionId, resolved.RetrySourceConnectionId);
+            }
+
+            Assert.NotEqual(remembered.InitialSourceConnectionId, resolved.InitialSourceConnectionId);
+        }
+    }
+
     private static QuicTransportParameters CreateProhibitedValues(byte prefix)
     {
         return new QuicTransportParameters

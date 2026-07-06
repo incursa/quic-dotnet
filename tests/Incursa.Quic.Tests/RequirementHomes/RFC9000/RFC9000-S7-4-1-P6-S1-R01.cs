@@ -43,6 +43,37 @@ public sealed class REQ_QUIC_RFC9000_S7P4P1_0006
         Assert.Equal(parameterName, decision.ParameterName);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ServerZeroRttAcceptanceFuzz_RejectsAnyReducedSection18P2Limit()
+    {
+        string[] parameterNames =
+        [
+            "active_connection_id_limit",
+            "initial_max_data",
+            "initial_max_stream_data_bidi_local",
+            "initial_max_stream_data_bidi_remote",
+            "initial_max_stream_data_uni",
+            "initial_max_streams_bidi",
+            "initial_max_streams_uni",
+        ];
+
+        foreach (string parameterName in parameterNames)
+        {
+            QuicZeroRttTransportParameterAcceptanceDecision reducedDecision =
+                QuicS7P4P1ZeroRttTransportParameterPolicyTestSupport.Evaluate(
+                    configureCurrent: current => ReduceRequiredParameter(current, parameterName));
+            QuicZeroRttTransportParameterAcceptanceDecision preservedDecision =
+                QuicS7P4P1ZeroRttTransportParameterPolicyTestSupport.Evaluate();
+
+            Assert.False(reducedDecision.CanAccept);
+            Assert.Equal(QuicZeroRttTransportParameterAcceptanceFailure.ReducedRequiredLimit, reducedDecision.Failure);
+            Assert.Equal(parameterName, reducedDecision.ParameterName);
+            Assert.True(preservedDecision.CanAccept);
+        }
+    }
+
     private static void ReduceRequiredParameter(QuicTransportParameters parameters, string parameterName)
     {
         switch (parameterName)

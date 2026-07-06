@@ -3638,7 +3638,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P4-S2-R01.cs::ClientUsesServerHandshakeValuesInsteadOfRememberedProhibitedValues",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P4-S2-R01.cs::ClientUsesDefaultValuesWhenServerOmitsNewHandshakeValues",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P4-S2-R01.cs::ClientDoesNotRetainRememberedProhibitedValuesWhenServerOmitsNewHandshakeValues"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P4-S2-R01.cs::ClientDoesNotRetainRememberedProhibitedValuesWhenServerOmitsNewHandshakeValues",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P4-S2-R01.cs::ClientHandshakeValueResolutionFuzz_UsesOnlyServerHandshakeOrDefaults"
         ],
         "upstream_refs": [
           "RFC9000-S7P4P1-B4-P4-S2",
@@ -3671,7 +3672,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P5-R01.cs::DetachedTicketSnapshotRemembersProcessablePeerTransportParametersForZeroRtt",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P5-R01.cs::DetachedTicketSnapshotWithoutProcessablePeerTransportParametersDoesNotEnableZeroRttReadiness"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P5-R01.cs::DetachedTicketSnapshotWithoutProcessablePeerTransportParametersDoesNotEnableZeroRttReadiness",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P5-R01.cs::DetachedTicketSnapshotFuzz_RemembersOnlyProcessableZeroRttParameters"
         ],
         "upstream_refs": [
           "RFC9000-S7P4P1-B5-P5-S1",
@@ -42227,7 +42229,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P6-R01.cs::ServerZeroRttAcceptanceAllowsCurrentValuesThatPreserveRememberedClientUsableValues",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P6-R01.cs::ServerZeroRttAcceptanceRejectsReducedLimitThatClientDataCouldViolate"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P6-R01.cs::ServerZeroRttAcceptanceRejectsReducedLimitThatClientDataCouldViolate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P6-R01.cs::ServerZeroRttAcceptanceFuzz_AcceptsOnlyNonReducedClientUsableValues"
         ]
       }
     },
@@ -42260,7 +42263,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P6-S1-R01.cs::ServerZeroRttAcceptanceAllowsEqualRememberedSection18P2Limits",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P6-S1-R01.cs::ServerZeroRttAcceptanceRejectsReducedRememberedSection18P2Limit"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P6-S1-R01.cs::ServerZeroRttAcceptanceRejectsReducedRememberedSection18P2Limit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P6-S1-R01.cs::ServerZeroRttAcceptanceFuzz_RejectsAnyReducedSection18P2Limit"
         ]
       }
     },

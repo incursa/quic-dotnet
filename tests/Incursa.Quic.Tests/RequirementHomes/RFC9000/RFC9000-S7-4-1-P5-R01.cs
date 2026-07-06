@@ -64,6 +64,50 @@ public sealed class REQ_QUIC_RFC9000_0346
         Assert.False(snapshot.HasEarlyDataPrerequisiteMaterial);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void DetachedTicketSnapshotFuzz_RemembersOnlyProcessableZeroRttParameters()
+    {
+        for (ulong value = 1; value <= 4; value++)
+        {
+            QuicTransportParameters peerTransportParameters = new()
+            {
+                MaxIdleTimeout = 20 + value,
+                MaxUdpPayloadSize = 1_200 + value,
+                MaxDatagramFrameSize = 256 + value,
+                InitialMaxData = 1_000 + value,
+                InitialMaxStreamDataBidiLocal = 100 + value,
+                InitialMaxStreamDataBidiRemote = 120 + value,
+                InitialMaxStreamDataUni = 80 + value,
+                InitialMaxStreamsBidi = value,
+                InitialMaxStreamsUni = value + 1,
+                DisableActiveMigration = value % 2 == 0,
+                ActiveConnectionIdLimit = 2 + value,
+                MaxAckDelay = 30 + value,
+                InitialSourceConnectionId = [(byte)(0xA0 + value)],
+            };
+
+            QuicDetachedResumptionTicketSnapshot snapshot = CreateSnapshot(peerTransportParameters);
+            QuicTransportParameters remembered = Assert.IsType<QuicTransportParameters>(snapshot.ZeroRttTransportParameters);
+
+            Assert.Equal(peerTransportParameters.MaxIdleTimeout, remembered.MaxIdleTimeout);
+            Assert.Equal(peerTransportParameters.MaxUdpPayloadSize, remembered.MaxUdpPayloadSize);
+            Assert.Equal(peerTransportParameters.MaxDatagramFrameSize, remembered.MaxDatagramFrameSize);
+            Assert.Equal(peerTransportParameters.InitialMaxData, remembered.InitialMaxData);
+            Assert.Equal(peerTransportParameters.InitialMaxStreamDataBidiLocal, remembered.InitialMaxStreamDataBidiLocal);
+            Assert.Equal(peerTransportParameters.InitialMaxStreamDataBidiRemote, remembered.InitialMaxStreamDataBidiRemote);
+            Assert.Equal(peerTransportParameters.InitialMaxStreamDataUni, remembered.InitialMaxStreamDataUni);
+            Assert.Equal(peerTransportParameters.InitialMaxStreamsBidi, remembered.InitialMaxStreamsBidi);
+            Assert.Equal(peerTransportParameters.InitialMaxStreamsUni, remembered.InitialMaxStreamsUni);
+            Assert.Equal(peerTransportParameters.DisableActiveMigration, remembered.DisableActiveMigration);
+            Assert.Equal(peerTransportParameters.ActiveConnectionIdLimit, remembered.ActiveConnectionIdLimit);
+            Assert.Null(remembered.MaxAckDelay);
+            Assert.Null(remembered.InitialSourceConnectionId);
+            Assert.True(snapshot.HasEarlyDataPrerequisiteMaterial);
+        }
+    }
+
     private static QuicDetachedResumptionTicketSnapshot CreateSnapshot(QuicTransportParameters peerTransportParameters)
     {
         return new QuicDetachedResumptionTicketSnapshot(
