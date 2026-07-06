@@ -97,4 +97,51 @@ public sealed class REQ_QUIC_RFC9000_0571
         Assert.False(emission.Emitted);
         Assert.True(emission.Datagram.IsEmpty);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S10-2-P7-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryCreateStatelessResetDatagramForPacket_EmitsForRetainedRoutesAfterDiscard()
+    {
+        using QuicConnectionRuntimeEndpoint endpoint = new(8, maximumStatelessResetEmissionsPerRemoteAddress: 1);
+
+        for (int index = 0; index < 4; index++)
+        {
+            using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+            QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+            QuicConnectionPathIdentity pathIdentity = new($"203.0.113.{110 + index}", RemotePort: 443 + index);
+            byte[] routeConnectionId = QuicStatelessResetRequirementTestData.CreateConnectionId(
+                start: (byte)(0x70 + index),
+                length: 4 + index);
+            byte[] token = QuicStatelessResetRequirementTestData.CreateToken((byte)(0xA0 + index));
+            int triggeringPacketLength = 80 + (index * 4);
+
+            QuicStatelessResetEndpointHostTestSupport.ConfigureDiscardedRetainedRouteEndpoint(
+                endpoint,
+                runtime,
+                handle,
+                pathIdentity,
+                routeConnectionId,
+                resetConnectionId: 200UL + (ulong)index,
+                token,
+                enteredAtTicks: 10 + index);
+
+            byte[] triggeringPacket = QuicStatelessResetEndpointHostTestSupport.CreateRetainedRouteShortHeaderDatagram(
+                routeConnectionId,
+                triggeringPacketLength);
+
+            QuicConnectionStatelessResetEmissionResult emission = endpoint.TryCreateStatelessResetDatagramForPacket(
+                triggeringPacket,
+                pathIdentity,
+                hasLoopPreventionState: true);
+
+            Assert.True(emission.Emitted);
+            Assert.Equal(QuicConnectionStatelessResetEmissionDisposition.Emitted, emission.Disposition);
+            Assert.Equal(pathIdentity, emission.PathIdentity);
+            Assert.Equal(triggeringPacket.Length - 1, emission.Datagram.Length);
+            Assert.True(QuicStatelessReset.IsPotentialStatelessReset(emission.Datagram.Span));
+            QuicStatelessResetRequirementTestData.AssertTailTokenMatches(emission.Datagram.Span, token);
+        }
+    }
 }
