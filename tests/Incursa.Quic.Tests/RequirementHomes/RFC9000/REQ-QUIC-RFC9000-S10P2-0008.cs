@@ -86,10 +86,73 @@ public sealed class REQ_QUIC_RFC9000_S10P2_0008
         Assert.False(pair.ServerStream.WritesClosed.IsCompleted);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task Fuzz_ConnectionCloseEmitsTerminationNotificationsAcrossCloseInitiatorsAndErrorCodes()
+    {
+        ConnectionCloseNotificationCase[] scenarios =
+        [
+            new(CloseFromClient: true, ApplicationErrorCode: 0),
+            new(CloseFromClient: true, ApplicationErrorCode: 21),
+            new(CloseFromClient: false, ApplicationErrorCode: 1),
+            new(CloseFromClient: false, ApplicationErrorCode: 0x3fff),
+        ];
+
+        foreach (ConnectionCloseNotificationCase scenario in scenarios)
+        {
+            await using LoopbackStreamPair pair = await LoopbackStreamPair.CreateAsync();
+
+            QuicConnectionRuntime clientRuntime = GetRuntime(pair.ClientConnection);
+            QuicConnectionRuntime serverRuntime = GetRuntime(pair.ServerConnection);
+
+            TaskCompletionSource<QuicStreamNotification> clientNotification = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            TaskCompletionSource<QuicStreamNotification> serverNotification = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            _ = clientRuntime.RegisterStreamObserver((ulong)pair.ClientStream.Id, notification => clientNotification.TrySetResult(notification));
+            _ = serverRuntime.RegisterStreamObserver((ulong)pair.ServerStream.Id, notification => serverNotification.TrySetResult(notification));
+
+            if (scenario.CloseFromClient)
+            {
+                await pair.ClientConnection.CloseAsync(scenario.ApplicationErrorCode);
+            }
+            else
+            {
+                await pair.ServerConnection.CloseAsync(scenario.ApplicationErrorCode);
+            }
+
+            QuicStreamNotification clientStreamNotification = await clientNotification.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            QuicStreamNotification serverStreamNotification = await serverNotification.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+            AssertConnectionTerminatedNotification(clientStreamNotification, scenario.ApplicationErrorCode);
+            AssertConnectionTerminatedNotification(serverStreamNotification, scenario.ApplicationErrorCode);
+
+            Assert.False(pair.ClientStream.CanRead);
+            Assert.False(pair.ClientStream.CanWrite);
+            Assert.False(pair.ServerStream.CanRead);
+            Assert.False(pair.ServerStream.CanWrite);
+        }
+    }
+
     private static QuicConnectionRuntime GetRuntime(QuicConnection connection)
     {
         return connection.Runtime;
     }
+
+    private static void AssertConnectionTerminatedNotification(
+        QuicStreamNotification notification,
+        long expectedApplicationErrorCode)
+    {
+        Assert.Equal(QuicStreamNotificationKind.ConnectionTerminated, notification.Kind);
+
+        QuicException exception = Assert.IsType<QuicException>(notification.Exception);
+        Assert.Equal(QuicError.ConnectionAborted, exception.QuicError);
+        Assert.Equal(expectedApplicationErrorCode, exception.ApplicationErrorCode);
+    }
+
+    private readonly record struct ConnectionCloseNotificationCase(
+        bool CloseFromClient,
+        long ApplicationErrorCode);
 
     private sealed class LoopbackStreamPair : IAsyncDisposable
     {
