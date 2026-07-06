@@ -21,4 +21,24 @@ public sealed class REQ_QUIC_RFC9000_S21P1P1P1_0001
 
         Assert.Equal(expected, QuicAddressValidation.CanConsiderPeerAddressValidated(connectionId, chosenByEndpoint));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void CanConsiderPeerAddressValidatedFuzz_AcceptsOnlyEndpointChosenConnectionIdsWithAtLeast64BitsOfEntropy()
+    {
+        foreach (bool chosenByEndpoint in new[] { false, true })
+        {
+            for (int connectionIdLength = 0; connectionIdLength <= 20; connectionIdLength++)
+            {
+                byte[] connectionId = Enumerable
+                    .Range(0, connectionIdLength)
+                    .Select(index => (byte)(0xA0 + index))
+                    .ToArray();
+                bool expected = chosenByEndpoint && connectionIdLength >= 8;
+
+                Assert.Equal(expected, QuicAddressValidation.CanConsiderPeerAddressValidated(connectionId, chosenByEndpoint));
+            }
+        }
+    }
 }

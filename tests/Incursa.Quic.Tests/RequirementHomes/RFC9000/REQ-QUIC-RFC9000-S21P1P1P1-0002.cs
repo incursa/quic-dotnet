@@ -61,4 +61,43 @@ public sealed class REQ_QUIC_RFC9000_S21P1P1P1_0002
         Assert.True(budget.TryConsumeSendBudget(int.MaxValue));
         Assert.Equal((ulong)int.MaxValue, budget.SentPayloadBytes);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Requirement("RFC9000-S14-1-P5-S1-R01")]
+    [Trait("Category", "Fuzz")]
+    public void CanSendFuzz_EnforcesThreeTimesReceivedPayloadUntilTheAddressIsValidated()
+    {
+        foreach (int receivedBytes in new[]
+        {
+            0,
+            1,
+            64,
+            1_200,
+            4_096,
+            16_384,
+        })
+        {
+            QuicAntiAmplificationBudget budget = new();
+
+            Assert.True(budget.TryRegisterReceivedDatagramPayloadBytes(receivedBytes, uniquelyAttributedToSingleConnection: true));
+
+            int allowedBytes = checked(receivedBytes * 3);
+            Assert.Equal((ulong)receivedBytes, budget.ReceivedPayloadBytes);
+            Assert.Equal((ulong)allowedBytes, budget.RemainingSendBudget);
+            Assert.True(budget.CanSend(allowedBytes));
+            Assert.False(budget.CanSend(allowedBytes + 1));
+
+            int firstSend = allowedBytes / 2;
+            Assert.True(budget.TryConsumeSendBudget(firstSend));
+            Assert.True(budget.TryConsumeSendBudget(allowedBytes - firstSend));
+            Assert.Equal((ulong)allowedBytes, budget.SentPayloadBytes);
+            Assert.Equal(0UL, budget.RemainingSendBudget);
+            Assert.False(budget.TryConsumeSendBudget(1));
+
+            budget.MarkAddressValidated();
+            Assert.True(budget.CanSend(int.MaxValue));
+            Assert.True(budget.TryConsumeSendBudget(int.MaxValue));
+        }
+    }
 }
