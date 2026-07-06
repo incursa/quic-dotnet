@@ -99,6 +99,60 @@ public sealed class REQ_QUIC_RFC9000_0580
         Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionSendDatagramEffect);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ClosingRuntimeRepliesToReceivedDatagramsWithConnectionClose()
+    {
+        byte[][] receivedDatagrams =
+        [
+            [0x00],
+            [0xFF],
+            [0x40, 0x00],
+            new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize],
+        ];
+
+        foreach (byte[] receivedDatagram in receivedDatagrams)
+        {
+            QuicConnectionRuntime runtime = CreateRuntime();
+            QuicConnectionPathIdentity path = new("203.0.113.64", RemotePort: 443);
+
+            Assert.True(runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 0,
+                    path,
+                    new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+                nowTicks: 0).StateChanged);
+
+            QuicConnectionCloseMetadata closeMetadata = new(
+                TransportErrorCode: QuicTransportErrorCode.ProtocolViolation,
+                ApplicationErrorCode: null,
+                TriggeringFrameType: 0x1c,
+                ReasonPhrase: null);
+
+            Assert.True(runtime.Transition(
+                new QuicConnectionLocalCloseRequestedEvent(
+                    ObservedAtTicks: 1,
+                    closeMetadata),
+                nowTicks: 1).StateChanged);
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 2,
+                    path,
+                    receivedDatagram),
+                nowTicks: 2);
+
+            QuicConnectionSendDatagramEffect send = Assert.IsType<QuicConnectionSendDatagramEffect>(
+                Assert.Single(result.Effects, effect => effect is QuicConnectionSendDatagramEffect));
+
+            Assert.Equal(path, send.PathIdentity);
+            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+            Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
+            Assert.False(runtime.CanSendOrdinaryPackets);
+        }
+    }
+
     private static QuicConnectionRuntime CreateRuntime()
     {
         byte[] localHandshakePrivateKey = new byte[32];
