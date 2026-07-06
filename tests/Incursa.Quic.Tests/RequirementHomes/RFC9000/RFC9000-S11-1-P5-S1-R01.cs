@@ -112,6 +112,53 @@ public sealed class REQ_QUIC_RFC9000_S11P1_0007
         Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ServerRuntimeDiscardsInvalidInitialPacketsWithoutProcessingFrames()
+    {
+        byte[] initialDestinationConnectionId =
+        [
+            0x83, 0x94, 0xC8, 0xF0,
+            0x3E, 0x51, 0x57, 0x08,
+        ];
+        byte[] protectedPacket = CreateProtectedInitialPacket(
+            initialDestinationConnectionId,
+            QuicTlsRole.Client);
+        byte[][] invalidPackets =
+        [
+            protectedPacket[..^1],
+            protectedPacket[..^QuicInitialPacketProtection.AuthenticationTagLength],
+            TamperProtectedPacket(protectedPacket, protectedPacket.Length - 1, 0x80),
+            TamperProtectedPacket(protectedPacket, protectedPacket.Length / 2, 0x40),
+        ];
+
+        foreach (byte[] invalidPacket in invalidPackets)
+        {
+            QuicConnectionPathIdentity path = new("203.0.113.76", RemotePort: 443);
+            using QuicConnectionRuntime runtime = CreateServerRuntime(initialDestinationConnectionId);
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 3,
+                    path,
+                    invalidPacket),
+                nowTicks: 3);
+
+            Assert.Empty(result.Effects);
+            Assert.NotNull(runtime.ActivePath);
+            Assert.Equal(path, runtime.ActivePath.Value.Identity);
+            Assert.Equal(QuicConnectionPhase.Establishing, runtime.Phase);
+            Assert.False(runtime.TlsState.InitialKeysAvailable);
+            Assert.False(runtime.TlsState.HandshakeKeysAvailable);
+            Assert.Null(runtime.TlsState.HandshakeMessageType);
+            Assert.False(runtime.TlsState.PeerHandshakeTranscriptCompleted);
+            Assert.Empty(runtime.SendRuntime.SentPackets);
+            Assert.Null(runtime.TerminalState);
+            Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
+        }
+    }
+
     private static byte[] CreateProtectedInitialPacket(
         ReadOnlySpan<byte> initialDestinationConnectionId,
         QuicTlsRole protectionRole)
@@ -145,6 +192,13 @@ public sealed class REQ_QUIC_RFC9000_S11P1_0007
         Assert.Equal(protectedPacket.Length, bytesWritten);
 
         return protectedPacket;
+    }
+
+    private static byte[] TamperProtectedPacket(byte[] packet, int offset, byte mask)
+    {
+        byte[] tamperedPacket = packet.ToArray();
+        tamperedPacket[offset] ^= mask;
+        return tamperedPacket;
     }
 
     private static QuicConnectionRuntime CreateServerRuntime(ReadOnlySpan<byte> initialDestinationConnectionId)

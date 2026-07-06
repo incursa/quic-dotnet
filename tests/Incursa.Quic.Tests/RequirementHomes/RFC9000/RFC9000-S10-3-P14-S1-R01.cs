@@ -89,4 +89,31 @@ public sealed class RFC9000_S10_3_P14_S1_R01
     {
         Assert.False(QuicPacketParser.TryParseLongHeader(packet, out _));
     }
+
+    [Theory]
+    [MemberData(nameof(TruncatedLongHeaderCases))]
+    [Requirement("RFC9000-S10-3-P14-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryParseLongHeader_DiscardsPacketsTooSmallToBeValid(byte[] packet)
+    {
+        Assert.False(QuicPacketParser.TryParseLongHeader(packet, out _));
+    }
+
+    [Theory]
+    [MemberData(nameof(InvalidInitialVersionSpecificDataCases))]
+    [Requirement("RFC9000-S10-3-P14-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryGetPacketLength_DiscardsInitialPacketsWithTooLittleVersionSpecificData(byte[] versionSpecificData)
+    {
+        byte[] packet = QuicHeaderTestData.BuildLongHeader(
+            headerControlBits: 0x40,
+            version: QuicVersionNegotiation.Version1,
+            destinationConnectionId: [0x11, 0x12, 0x13, 0x14],
+            sourceConnectionId: [0x21, 0x22, 0x23, 0x24],
+            versionSpecificData: versionSpecificData);
+
+        Assert.False(QuicPacketParser.TryGetPacketLength(packet, out _));
+    }
 }

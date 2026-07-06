@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T08:34:03.7340899-06:00",
+    "generated_at": "2026-07-06T08:38:44.9195417-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1209,
-      "full_executable_proof": 1468
+      "deferred_proof_not_executed": 1206,
+      "full_executable_proof": 1471
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 184,
-          "full_executable_proof": 1266
+          "deferred_proof_not_executed": 181,
+          "full_executable_proof": 1269
         }
       },
       {
@@ -72772,9 +72772,9 @@
       "rfc": "RFC9000",
       "title": "Discard undersized QUIC packets",
       "statement": "Endpoints MUST discard packets that are too small to be valid QUIC packets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -72784,6 +72784,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -72791,10 +72792,8 @@
         "negative"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P14-S1-R01.cs"
@@ -72981,9 +72980,9 @@
       "rfc": "RFC9000",
       "title": "As the AEAD for Initial packets does not provide strong authentication, an endpoint MAY discard an invalid Initial packet",
       "statement": "As the AEAD for Initial packets does not provide strong authentication, an endpoint MAY discard an invalid Initial packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "negative",
@@ -72994,15 +72993,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-1-P5-S1-R01.cs"
@@ -73015,9 +73013,9 @@
       "rfc": "RFC9000",
       "title": "Discard packets only without retained processing effects",
       "statement": "An endpoint MUST not discard a packet unless it does not process the frames in the packet or it reverts the effects of any processing.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -73028,15 +73026,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-1-P5-S3-R01.cs"
