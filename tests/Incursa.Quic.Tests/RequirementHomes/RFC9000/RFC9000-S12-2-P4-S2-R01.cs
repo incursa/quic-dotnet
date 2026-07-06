@@ -268,6 +268,25 @@ public sealed class REQ_QUIC_RFC9000_0686
         Assert.True(applicationPacket.Span.Slice(1, rotatedDestinationConnectionId.Length).SequenceEqual(rotatedDestinationConnectionId));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_CoalescedHandshakeAndApplicationProbeUsesTheCurrentPeerDestinationConnectionIdAfterPeerRotation()
+    {
+        foreach ((byte[] rotatedDestinationConnectionId, string requestPath) in new[]
+        {
+            (new byte[] { 0x82 }, "/cid-1"),
+            (new byte[] { 0x82, 0x5F, 0xC9, 0x1F }, "/cid-4"),
+            (new byte[] { 0x83, 0x94, 0xC8, 0xF0, 0x3E, 0x51, 0x57, 0x08 }, "/cid-8"),
+            (Enumerable.Range(0, QuicConnectionIdKey.MaximumLength).Select(index => (byte)(0xA0 + index)).ToArray(), "/cid-20"),
+        })
+        {
+            AssertCoalescedProbeUsesCurrentPeerDestinationConnectionIdAfterPeerRotation(
+                rotatedDestinationConnectionId,
+                requestPath);
+        }
+    }
+
     private static QuicConnectionTransitionResult ProcessNewConnectionIdFrame(
         QuicConnectionRuntime runtime,
         ulong sequenceNumber,
@@ -296,6 +315,88 @@ public sealed class REQ_QUIC_RFC9000_0686
                 runtime.ActivePath!.Value.Identity,
                 protectedPacket),
             nowTicks: observedAtTicks);
+    }
+
+    private static void AssertCoalescedProbeUsesCurrentPeerDestinationConnectionIdAfterPeerRotation(
+        byte[] rotatedDestinationConnectionId,
+        string requestPath)
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        byte[] originalDestinationConnectionId = runtime.CurrentPeerDestinationConnectionId.ToArray();
+
+        QuicConnectionTransitionResult newConnectionIdResult = ProcessNewConnectionIdFrame(
+            runtime,
+            sequenceNumber: 1,
+            retirePriorTo: 1,
+            connectionId: rotatedDestinationConnectionId,
+            statelessResetToken: [0x93, 0xCA, 0x79, 0x2B, 0xDC, 0xF0, 0xA9, 0x2A, 0x83, 0xF3, 0x64, 0x93, 0xE1, 0x0D, 0xBD, 0x47],
+            observedAtTicks: 10);
+
+        Assert.True(newConnectionIdResult.StateChanged);
+        Assert.True(runtime.CurrentPeerDestinationConnectionId.Span.SequenceEqual(rotatedDestinationConnectionId));
+
+        Assert.True(runtime.TlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial handshakeMaterial));
+        byte[] handshakeCrypto = QuicS12P3TestSupport.CreateSequentialBytes(0x70, 36);
+        QuicHandshakeFlowCoordinator handshakeCoordinator = new(
+            originalDestinationConnectionId,
+            runtime.CurrentHandshakeSourceConnectionId.ToArray());
+        Assert.True(handshakeCoordinator.TryBuildProtectedHandshakePacket(
+            handshakeCrypto,
+            cryptoPayloadOffset: 0,
+            handshakeMaterial,
+            out ulong handshakePacketNumber,
+            out byte[] handshakePacketBytes));
+
+        runtime.SendRuntime.QueueRetransmission(new QuicConnectionRetransmissionPlan(
+            QuicPacketNumberSpace.Handshake,
+            handshakePacketNumber,
+            PayloadBytes: (ulong)handshakePacketBytes.Length,
+            SentAtMicros: 11,
+            ProbePacket: false,
+            PacketBytes: handshakePacketBytes,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.Handshake));
+
+        byte[] requestPayload = Encoding.ASCII.GetBytes($"GET {requestPath}\r\n");
+        byte[] requestFrame = QuicStreamTestData.BuildStreamFrame(
+            frameType: 0x0E,
+            streamId: 0,
+            requestPayload,
+            offset: 0);
+        QuicHandshakeFlowCoordinator applicationCoordinator = new(rotatedDestinationConnectionId);
+        Assert.True(applicationCoordinator.TryBuildProtectedApplicationDataPacket(
+            requestFrame,
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            keyPhase: false,
+            out ulong applicationPacketNumber,
+            out byte[] applicationPacketBytes));
+
+        runtime.SendRuntime.QueueRetransmission(new QuicConnectionRetransmissionPlan(
+            QuicPacketNumberSpace.ApplicationData,
+            applicationPacketNumber,
+            PayloadBytes: (ulong)applicationPacketBytes.Length,
+            SentAtMicros: 12,
+            ProbePacket: false,
+            PacketBytes: applicationPacketBytes,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            StreamIds: [0UL],
+            PlaintextPayload: requestFrame));
+
+        List<QuicConnectionEffect>? effects = [];
+        Assert.True(InvokeTrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram(
+            runtime,
+            nowTicks: 13,
+            ref effects));
+
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+            effects!.OfType<QuicConnectionSendDatagramEffect>());
+        (ReadOnlyMemory<byte> handshakePacket, ReadOnlyMemory<byte> applicationPacket) =
+            SplitCoalescedHandshakeAndApplicationProbeDatagram(sendEffect.Datagram);
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(handshakePacket.Span, out QuicLongHeaderPacket handshakeHeader));
+        Assert.True(handshakeHeader.DestinationConnectionId.SequenceEqual(rotatedDestinationConnectionId));
+
+        Assert.True(applicationPacket.Span.Length > 1 + rotatedDestinationConnectionId.Length);
+        Assert.True(applicationPacket.Span.Slice(1, rotatedDestinationConnectionId.Length).SequenceEqual(rotatedDestinationConnectionId));
     }
 
     private static bool InvokeTrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram(
