@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T01:09:06.2327324-06:00",
+    "generated_at": "2026-07-06T01:12:27.0171758-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1451,
-      "full_executable_proof": 1226
+      "deferred_proof_not_executed": 1449,
+      "full_executable_proof": 1228
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 398,
-          "full_executable_proof": 1052
+          "deferred_proof_not_executed": 396,
+          "full_executable_proof": 1054
         }
       },
       {
@@ -81570,9 +81570,9 @@
       "rfc": "RFC9000",
       "title": "The values provided by a peer for these transport parameters MUST match the values that an endpoint used in the Destination and Source Connection ID fields of Initial packets that it sent (and received, for servers)",
       "statement": "The values provided by a peer for these transport parameters MUST match the values that an endpoint used in the Destination and Source Connection ID fields of Initial packets that it sent (and received, for servers).",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -81584,15 +81584,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P3-S1-R01.cs"
@@ -81609,9 +81608,9 @@
       "rfc": "RFC9000",
       "title": "Validate transport parameters against connection ID values",
       "statement": "Endpoints MUST validate that received transport parameters match received connection ID values.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -81621,15 +81620,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P3-S1-R01.cs",

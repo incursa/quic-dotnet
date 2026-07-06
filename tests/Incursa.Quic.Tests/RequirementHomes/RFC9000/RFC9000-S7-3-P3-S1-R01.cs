@@ -83,4 +83,64 @@ public sealed class REQ_QUIC_RFC9000_S7P3_0005
 
         Assert.Equal(QuicConnectionIdBindingValidationError.None, validationError);
     }
+
+    [Theory]
+    [MemberData(nameof(QuicTransportParameterTestData.MatchingConnectionIdBindingCases), MemberType = typeof(QuicTransportParameterTestData))]
+    [Requirement("RFC9000-S7-3-P3-S1-R01")]
+    [Requirement("RFC9000-S7-3-P3-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryValidateConnectionIdBindings_AcceptsMatchingObservedConnectionIds(
+        object receiverRoleValue,
+        byte[] initialDestinationConnectionId,
+        byte[] initialSourceConnectionId,
+        bool usedRetry,
+        byte[] retrySourceConnectionId,
+        object peerParametersValue)
+    {
+        QuicTransportParameterRole receiverRole = (QuicTransportParameterRole)receiverRoleValue;
+        QuicTransportParameters peerParameters = (QuicTransportParameters)peerParametersValue;
+
+        Assert.True(QuicTransportParametersCodec.TryValidateConnectionIdBindings(
+            receiverRole,
+            initialDestinationConnectionId,
+            initialSourceConnectionId,
+            usedRetry,
+            retrySourceConnectionId,
+            peerParameters,
+            out QuicConnectionIdBindingValidationError validationError));
+
+        Assert.Equal(QuicConnectionIdBindingValidationError.None, validationError);
+    }
+
+    [Theory]
+    [MemberData(nameof(QuicTransportParameterTestData.MismatchedConnectionIdBindingCases), MemberType = typeof(QuicTransportParameterTestData))]
+    [Requirement("RFC9000-S7-3-P3-S1-R01")]
+    [Requirement("RFC9000-S7-3-P3-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryValidateConnectionIdBindings_RejectsMismatchedObservedConnectionIds(
+        object receiverRoleValue,
+        byte[] initialDestinationConnectionId,
+        byte[] initialSourceConnectionId,
+        bool usedRetry,
+        byte[] retrySourceConnectionId,
+        object peerParametersValue,
+        object expectedErrorValue)
+    {
+        QuicTransportParameterRole receiverRole = (QuicTransportParameterRole)receiverRoleValue;
+        QuicTransportParameters peerParameters = (QuicTransportParameters)peerParametersValue;
+        QuicConnectionIdBindingValidationError expectedError = (QuicConnectionIdBindingValidationError)expectedErrorValue;
+
+        Assert.False(QuicTransportParametersCodec.TryValidateConnectionIdBindings(
+            receiverRole,
+            initialDestinationConnectionId,
+            initialSourceConnectionId,
+            usedRetry,
+            retrySourceConnectionId,
+            peerParameters,
+            out QuicConnectionIdBindingValidationError validationError));
+
+        Assert.Equal(expectedError, validationError);
+    }
 }
