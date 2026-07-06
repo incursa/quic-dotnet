@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T17:05:26.9068163-06:00",
+    "generated_at": "2026-07-06T17:09:02.0997561-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 896,
-      "full_executable_proof": 1781
+      "deferred_proof_not_executed": 892,
+      "full_executable_proof": 1785
     },
     "by_rfc": [
       {
@@ -37,8 +37,8 @@
         "rfc": "RFC9002",
         "total": 226,
         "by_proof_state": {
-          "deferred_proof_not_executed": 17,
-          "full_executable_proof": 209
+          "deferred_proof_not_executed": 13,
+          "full_executable_proof": 213
         }
       },
       {
@@ -87605,9 +87605,9 @@
       "rfc": "RFC9002",
       "title": "Enter recovery on loss or ECN-CE increase",
       "statement": "A sender MUST enter a recovery period when it detects packet loss or when the ECN-CE count reported by its peer increases.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -87616,18 +87616,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-1-P3-S1-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-1-P3-S1-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -87640,9 +87640,9 @@
       "rfc": "RFC9002",
       "title": "Cut the slow start threshold on recovery entry",
       "statement": "On entering a recovery period, a sender MUST set the slow start threshold to half the congestion window when loss is detected.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -87654,17 +87654,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-2-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-2-P2-S1-R01.cs"
       ],
       "spec_test_ref_count": 2,
@@ -87678,9 +87678,9 @@
       "rfc": "RFC9002",
       "title": "Restore congestion window before leaving recovery",
       "statement": "The congestion window MUST be set to the reduced value of the slow start threshold before exiting the recovery period.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -87692,17 +87692,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-2-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-2-P2-S2-R01.cs"
       ],
       "spec_test_ref_count": 2,
@@ -87716,9 +87716,9 @@
       "rfc": "RFC9002",
       "title": "Permit gentler recovery-window reduction",
       "statement": "Implementations MAY reduce the congestion window immediately upon entering a recovery period or use other mechanisms, such as Proportional Rate Reduction, to reduce the congestion window more gradually.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
@@ -87726,16 +87726,16 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-2-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-2-P3-S1-R01.cs"
       ],
       "spec_test_ref_count": 1,
