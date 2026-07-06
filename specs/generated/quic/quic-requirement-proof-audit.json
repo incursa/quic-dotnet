@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T05:06:30.0199769-06:00",
+    "generated_at": "2026-07-06T05:10:29.3978676-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1289,
-      "full_executable_proof": 1388
+      "deferred_proof_not_executed": 1288,
+      "full_executable_proof": 1389
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 261,
-          "full_executable_proof": 1189
+          "deferred_proof_not_executed": 260,
+          "full_executable_proof": 1190
         }
       },
       {
@@ -74851,9 +74851,9 @@
       "rfc": "RFC9000",
       "title": "Pad server Initial datagrams to 1200 bytes",
       "statement": "A server MUST expand the payload of all UDP datagrams carrying ack-eliciting Initial packets to at least the smallest allowed maximum datagram size of 1200 bytes.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -74865,15 +74865,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-1-P1-S3-R01.cs"
