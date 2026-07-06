@@ -85,4 +85,60 @@ public sealed class RFC9000_S10_3_1_P1_S4_R01
         Assert.False(state.IsDraining);
         Assert.True(state.CanSendPackets);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("RFC9000-S10-3-1-P4-R01")]
+    public void MatchesAnyStatelessResetTokenFuzz_RequiresCompleteTrailingTokenMatch()
+    {
+        byte[] matchingToken = new byte[QuicStatelessReset.StatelessResetTokenLength];
+        Span<byte> datagram = stackalloc byte[QuicStatelessReset.MinimumDatagramLength + 4];
+        Span<byte> candidateTokens = stackalloc byte[QuicStatelessReset.StatelessResetTokenLength * 3];
+
+        for (int caseIndex = 0; caseIndex < 6; caseIndex++)
+        {
+            for (int tokenIndex = 0; tokenIndex < matchingToken.Length; tokenIndex++)
+            {
+                matchingToken[tokenIndex] = (byte)(0x20 + (caseIndex * 7) + tokenIndex);
+            }
+
+            int datagramLength = QuicStatelessReset.MinimumDatagramLength + (caseIndex % 4);
+            Assert.True(QuicStatelessReset.TryFormatStatelessResetDatagram(
+                matchingToken,
+                datagramLength,
+                datagram,
+                out int bytesWritten));
+
+            ReadOnlySpan<byte> packet = datagram[..bytesWritten];
+            Assert.True(QuicStatelessReset.IsPotentialStatelessReset(packet));
+
+            for (int matchingSlot = 0; matchingSlot < 3; matchingSlot++)
+            {
+                FillNonMatchingTokens(candidateTokens, caseIndex);
+                matchingToken.AsSpan().CopyTo(candidateTokens.Slice(
+                    matchingSlot * QuicStatelessReset.StatelessResetTokenLength,
+                    QuicStatelessReset.StatelessResetTokenLength));
+
+                Assert.True(QuicStatelessReset.MatchesAnyStatelessResetToken(packet, candidateTokens));
+            }
+
+            for (int mutatedByteIndex = 0; mutatedByteIndex < matchingToken.Length; mutatedByteIndex++)
+            {
+                FillNonMatchingTokens(candidateTokens, caseIndex);
+                matchingToken.AsSpan().CopyTo(candidateTokens[..QuicStatelessReset.StatelessResetTokenLength]);
+                candidateTokens[mutatedByteIndex] ^= 0x01;
+
+                Assert.False(QuicStatelessReset.MatchesAnyStatelessResetToken(packet, candidateTokens));
+            }
+        }
+    }
+
+    private static void FillNonMatchingTokens(Span<byte> candidateTokens, int caseIndex)
+    {
+        for (int index = 0; index < candidateTokens.Length; index++)
+        {
+            candidateTokens[index] = (byte)(0xA0 + caseIndex + index);
+        }
+    }
 }

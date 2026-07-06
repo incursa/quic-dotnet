@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T10:27:14.0991764-06:00",
+    "generated_at": "2026-07-06T10:30:52.2642661-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1127,
-      "full_executable_proof": 1550
+      "deferred_proof_not_executed": 1126,
+      "full_executable_proof": 1551
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 102,
-          "full_executable_proof": 1348
+          "deferred_proof_not_executed": 101,
+          "full_executable_proof": 1349
         }
       },
       {
@@ -72354,7 +72354,7 @@
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 3,
+      "focused_method_count": 4,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-DeferredFuzzClosure.cs",
@@ -72480,9 +72480,9 @@
       "rfc": "RFC9000",
       "title": "Avoid leaking token values during comparison",
       "statement": "When comparing a datagram to stateless reset token values, endpoints MUST perform the comparison without leaking information about the value of the token.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -72491,15 +72491,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-1-P1-S4-R01.cs"
