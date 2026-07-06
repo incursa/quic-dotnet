@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T04:07:36.4718010-06:00",
+    "generated_at": "2026-07-06T04:09:52.5905606-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1307,
-      "full_executable_proof": 1370
+      "deferred_proof_not_executed": 1306,
+      "full_executable_proof": 1371
     },
     "by_rfc": [
       {
@@ -37,8 +37,8 @@
         "rfc": "RFC9002",
         "total": 226,
         "by_proof_state": {
-          "deferred_proof_not_executed": 181,
-          "full_executable_proof": 45
+          "deferred_proof_not_executed": 180,
+          "full_executable_proof": 46
         }
       },
       {
@@ -86607,9 +86607,9 @@
       "rfc": "RFC9002",
       "title": "Restart PTO on send, acknowledgment, or key discard",
       "statement": "A sender SHOULD restart its PTO timer every time an ack-eliciting packet is sent or acknowledged, or when Initial or Handshake keys are discarded.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -86621,15 +86621,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 5,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 6,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-1-P8-S1-R01.cs"
