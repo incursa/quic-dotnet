@@ -8,6 +8,7 @@ public sealed class REQ_QUIC_RFC9000_S13P4P1_DeferredFuzzClosure
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P4P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P1-0002")]
+    [Requirement("RFC9000-S13-4-1-P6-S1-R01")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Fuzz")]
     public void Fuzz_AckFramesReportEcnOnlyWhenReceivedEcnFieldsAreAvailable()

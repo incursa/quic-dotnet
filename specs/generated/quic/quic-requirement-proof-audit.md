@@ -6,15 +6,15 @@ This report is stricter than trace coverage. It only counts focused executable m
 
 | Proof state | Count |
 | --- | ---: |
-| deferred_proof_not_executed | 1318 |
-| full_executable_proof | 1359 |
+| deferred_proof_not_executed | 1317 |
+| full_executable_proof | 1360 |
 
 ## RFC Breakdown
 
 | RFC | Total | full_executable_proof | missing_required_focused_proof | deferred_proof_not_executed | no_focused_executable_proof |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | RFC8999 | 8 | 8 | 0 | 0 | 0 |
-| RFC9000 | 1450 | 1177 | 0 | 273 | 0 |
+| RFC9000 | 1450 | 1178 | 0 | 272 | 0 |
 | RFC9001 | 96 | 68 | 0 | 28 | 0 |
 | RFC9002 | 226 | 41 | 0 | 185 | 0 |
 | RFC9114 | 8 | 0 | 0 | 8 | 0 |

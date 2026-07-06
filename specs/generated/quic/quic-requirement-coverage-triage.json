@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T03:33:03.7078692-06:00",
+  "generated_at": "2026-07-06T03:35:15.9071342-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T03:33:03.7043887-06:00",
+    "generated_at": "2026-07-06T03:35:15.9035555-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -76854,7 +76854,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P1_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_S13P4P1_DeferredFuzzClosure.Fuzz_AckFramesReportEcnOnlyWhenReceivedEcnFieldsAreAvailable",
           "method": "Fuzz_AckFramesReportEcnOnlyWhenReceivedEcnFieldsAreAvailable",
-          "line": 13,
+          "line": 14,
           "kinds": [
             "fuzz"
           ],
@@ -76864,7 +76864,8 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9000-S13P4P1-0001",
-            "REQ-QUIC-RFC9000-S13P4P1-0002"
+            "REQ-QUIC-RFC9000-S13P4P1-0002",
+            "RFC9000-S13-4-1-P6-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -76961,7 +76962,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P1_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_S13P4P1_DeferredFuzzClosure.Fuzz_AckFramesReportEcnOnlyWhenReceivedEcnFieldsAreAvailable",
           "method": "Fuzz_AckFramesReportEcnOnlyWhenReceivedEcnFieldsAreAvailable",
-          "line": 13,
+          "line": 14,
           "kinds": [
             "fuzz"
           ],
@@ -76971,7 +76972,8 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9000-S13P4P1-0001",
-            "REQ-QUIC-RFC9000-S13P4P1-0002"
+            "REQ-QUIC-RFC9000-S13P4P1-0002",
+            "RFC9000-S13-4-1-P6-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -77572,7 +77574,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P1_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_S13P4P1_DeferredFuzzClosure.Fuzz_EachPacketNumberSpaceMaintainsIndependentAckAndEcnState",
           "method": "Fuzz_EachPacketNumberSpaceMaintainsIndependentAckAndEcnState",
-          "line": 58,
+          "line": 59,
           "kinds": [
             "fuzz"
           ],
@@ -77803,7 +77805,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P1_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_S13P4P1_DeferredFuzzClosure.Fuzz_CoalescedInitialAndHandshakePacketsIncrementEcnCountsOncePerQuicPacket",
           "method": "Fuzz_CoalescedInitialAndHandshakePacketsIncrementEcnCountsOncePerQuicPacket",
-          "line": 93,
+          "line": 94,
           "kinds": [
             "fuzz"
           ],
@@ -78001,7 +78003,7 @@
           "class": "REQ_QUIC_RFC9000_S13P4P1_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_S13P4P1_DeferredFuzzClosure.Fuzz_CoalescedInitialHandshakeAndOneRttPacketsIncrementEcnCountsForAllThreeSpaces",
           "method": "Fuzz_CoalescedInitialHandshakeAndOneRttPacketsIncrementEcnCountsForAllThreeSpaces",
-          "line": 126,
+          "line": 127,
           "kinds": [
             "fuzz"
           ],
@@ -389420,14 +389422,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -389435,6 +389437,30 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S13-4-1-P6-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P1-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_S13P4P1_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_S13P4P1_DeferredFuzzClosure.Fuzz_AckFramesReportEcnOnlyWhenReceivedEcnFieldsAreAvailable",
+          "method": "Fuzz_AckFramesReportEcnOnlyWhenReceivedEcnFieldsAreAvailable",
+          "line": 14,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P4P1-0001",
+            "REQ-QUIC-RFC9000-S13P4P1-0002",
+            "RFC9000-S13-4-1-P6-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S13-4-1-P6-S1-R01",
           "source": "requirement_attribute",
