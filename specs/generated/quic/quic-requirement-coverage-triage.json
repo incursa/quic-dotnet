@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T01:22:57.6055559-06:00",
+  "generated_at": "2026-07-06T01:30:10.6371099-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T01:22:57.6020431-06:00",
+    "generated_at": "2026-07-06T01:30:10.6332795-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -264308,7 +264308,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.LargeDnsResponsesFlowThroughTheDoqStreamPath",
           "method": "LargeDnsResponsesFlowThroughTheDoqStreamPath",
-          "line": 215,
+          "line": 273,
           "kinds": [
             "positive"
           ],
@@ -264330,7 +264330,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.LargeDnsResponsesFlowThroughTheDoqStreamPath",
           "method": "LargeDnsResponsesFlowThroughTheDoqStreamPath",
-          "line": 215,
+          "line": 273,
           "kinds": [
             "positive"
           ],
@@ -264527,14 +264527,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 4,
+        "total": 8,
+        "focused": 5,
         "broad": 3,
         "by_kind": {
           "positive": 5,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -264626,7 +264626,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerTreatsMultipleQueriesOnOneStreamAsFatalProtocolError",
           "method": "ServerTreatsMultipleQueriesOnOneStreamAsFatalProtocolError",
-          "line": 494,
+          "line": 552,
           "kinds": [
             "negative"
           ],
@@ -264650,7 +264650,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerTreatsMultipleQueriesOnOneStreamAsFatalProtocolError",
           "method": "ServerTreatsMultipleQueriesOnOneStreamAsFatalProtocolError",
-          "line": 494,
+          "line": 552,
           "kinds": [
             "negative"
           ],
@@ -264662,6 +264662,31 @@
             "REQ-QUIC-RFC9250-0002",
             "REQ-QUIC-RFC9250-0008",
             "REQ-QUIC-RFC9250-0055"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.VariedDnsMessageIdsUseSeparateClientStreamsRegardlessOfDnsId",
+          "method": "VariedDnsMessageIdsUseSeparateClientStreamsRegardlessOfDnsId",
+          "line": 188,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0002",
+            "REQ-QUIC-RFC9250-0008",
+            "REQ-QUIC-RFC9250-0017",
+            "REQ-QUIC-RFC9250-0023"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -265120,14 +265145,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 4,
+        "total": 8,
+        "focused": 5,
         "broad": 3,
         "by_kind": {
           "positive": 5,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -265219,7 +265244,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerTreatsMultipleQueriesOnOneStreamAsFatalProtocolError",
           "method": "ServerTreatsMultipleQueriesOnOneStreamAsFatalProtocolError",
-          "line": 494,
+          "line": 552,
           "kinds": [
             "negative"
           ],
@@ -265243,7 +265268,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerTreatsMultipleQueriesOnOneStreamAsFatalProtocolError",
           "method": "ServerTreatsMultipleQueriesOnOneStreamAsFatalProtocolError",
-          "line": 494,
+          "line": 552,
           "kinds": [
             "negative"
           ],
@@ -265255,6 +265280,31 @@
             "REQ-QUIC-RFC9250-0002",
             "REQ-QUIC-RFC9250-0008",
             "REQ-QUIC-RFC9250-0055"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.VariedDnsMessageIdsUseSeparateClientStreamsRegardlessOfDnsId",
+          "method": "VariedDnsMessageIdsUseSeparateClientStreamsRegardlessOfDnsId",
+          "line": 188,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0002",
+            "REQ-QUIC-RFC9250-0008",
+            "REQ-QUIC-RFC9250-0017",
+            "REQ-QUIC-RFC9250-0023"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -265361,14 +265411,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 4,
+        "total": 8,
+        "focused": 5,
         "broad": 3,
         "by_kind": {
           "positive": 5,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -265414,7 +265464,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.QueryAsyncSendsSelectedStreamQueryAndFin",
           "method": "QueryAsyncSendsSelectedStreamQueryAndFin",
-          "line": 353,
+          "line": 411,
           "kinds": [
             "positive"
           ],
@@ -265437,7 +265487,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerDoesNotDispatchQueryBeforeClientStreamFin",
           "method": "ServerDoesNotDispatchQueryBeforeClientStreamFin",
-          "line": 379,
+          "line": 437,
           "kinds": [
             "negative"
           ],
@@ -265461,7 +265511,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerRejectsIncompleteDoqQueryFrame",
           "method": "ServerRejectsIncompleteDoqQueryFrame",
-          "line": 410,
+          "line": 468,
           "kinds": [
             "negative"
           ],
@@ -265484,7 +265534,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerWritesResponseOnTheSameQueryStream",
           "method": "ServerWritesResponseOnTheSameQueryStream",
-          "line": 186,
+          "line": 244,
           "kinds": [
             "positive"
           ],
@@ -265494,6 +265544,31 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0009",
+            "RFC9250-S4-2-P7-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.VariedDnsMessageIdsPreserveResponseMappingWithZeroedDoqIds",
+          "method": "VariedDnsMessageIdsPreserveResponseMappingWithZeroedDoqIds",
+          "line": 200,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0009",
+            "REQ-QUIC-RFC9250-0022",
+            "RFC9250-S4-2-P6-S1-R01",
             "RFC9250-S4-2-P7-R01"
           ],
           "requirement_tagged": true,
@@ -265601,14 +265676,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -265624,7 +265699,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
           "method": "ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
-          "line": 268,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -265651,7 +265726,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
           "method": "ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
-          "line": 268,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -265678,7 +265753,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
           "method": "ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
-          "line": 299,
+          "line": 357,
           "kinds": [
             "negative"
           ],
@@ -265705,7 +265780,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
           "method": "ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
-          "line": 299,
+          "line": 357,
           "kinds": [
             "negative"
           ],
@@ -265720,6 +265795,31 @@
             "REQ-QUIC-RFC9250-0101",
             "RFC9250-S4-2-P5-S1-R01",
             "RFC9250-S4-2-P5-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0017",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.VariedDnsMessageIdsUseSeparateClientStreamsRegardlessOfDnsId",
+          "method": "VariedDnsMessageIdsUseSeparateClientStreamsRegardlessOfDnsId",
+          "line": 188,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0002",
+            "REQ-QUIC-RFC9250-0008",
+            "REQ-QUIC-RFC9250-0017",
+            "REQ-QUIC-RFC9250-0023"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -265846,7 +265946,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DanglingStreamLimitClosesConnectionWithExcessiveLoad",
           "method": "DanglingStreamLimitClosesConnectionWithExcessiveLoad",
-          "line": 665,
+          "line": 723,
           "kinds": [
             "negative"
           ],
@@ -265871,7 +265971,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DanglingStreamLimitClosesConnectionWithExcessiveLoad",
           "method": "DanglingStreamLimitClosesConnectionWithExcessiveLoad",
-          "line": 665,
+          "line": 723,
           "kinds": [
             "negative"
           ],
@@ -266012,7 +266112,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DanglingStreamLimitClosesConnectionWithExcessiveLoad",
           "method": "DanglingStreamLimitClosesConnectionWithExcessiveLoad",
-          "line": 665,
+          "line": 723,
           "kinds": [
             "negative"
           ],
@@ -266037,7 +266137,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DanglingStreamLimitClosesConnectionWithExcessiveLoad",
           "method": "DanglingStreamLimitClosesConnectionWithExcessiveLoad",
-          "line": 665,
+          "line": 723,
           "kinds": [
             "negative"
           ],
@@ -266178,7 +266278,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DanglingStreamLimitClosesConnectionWithExcessiveLoad",
           "method": "DanglingStreamLimitClosesConnectionWithExcessiveLoad",
-          "line": 665,
+          "line": 723,
           "kinds": [
             "negative"
           ],
@@ -266203,7 +266303,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DanglingStreamLimitClosesConnectionWithExcessiveLoad",
           "method": "DanglingStreamLimitClosesConnectionWithExcessiveLoad",
-          "line": 665,
+          "line": 723,
           "kinds": [
             "negative"
           ],
@@ -266324,14 +266424,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 4,
+        "total": 8,
+        "focused": 5,
         "broad": 3,
         "by_kind": {
           "positive": 5,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -266461,6 +266561,31 @@
           "requirement_id": "REQ-QUIC-RFC9250-0022",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.VariedDnsMessageIdsPreserveResponseMappingWithZeroedDoqIds",
+          "method": "VariedDnsMessageIdsPreserveResponseMappingWithZeroedDoqIds",
+          "line": 200,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0009",
+            "REQ-QUIC-RFC9250-0022",
+            "RFC9250-S4-2-P6-S1-R01",
+            "RFC9250-S4-2-P7-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0022",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0002.cs",
           "class": "REQ_QUIC_RFC9250_0002",
           "member": "REQ_QUIC_RFC9250_0002.DoqStreamLifecycleCodeAndTestsAreTraceLinked",
@@ -266559,14 +266684,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 4,
+        "total": 8,
+        "focused": 5,
         "broad": 3,
         "by_kind": {
           "positive": 5,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -266688,6 +266813,31 @@
             "RFC9250-S4-2-P6-S1-R02",
             "RFC9250-S4-2-P7-R01",
             "RFC9250-S4-2-P7-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0023",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.VariedDnsMessageIdsUseSeparateClientStreamsRegardlessOfDnsId",
+          "method": "VariedDnsMessageIdsUseSeparateClientStreamsRegardlessOfDnsId",
+          "line": 188,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0002",
+            "REQ-QUIC-RFC9250-0008",
+            "REQ-QUIC-RFC9250-0017",
+            "REQ-QUIC-RFC9250-0023"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -268806,7 +268956,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.QueryCancellationAbortsReadSideAndLeavesConnectionUsable",
           "method": "QueryCancellationAbortsReadSideAndLeavesConnectionUsable",
-          "line": 530,
+          "line": 588,
           "kinds": [
             "negative"
           ],
@@ -268998,7 +269148,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.QueryCancellationAbortsReadSideAndLeavesConnectionUsable",
           "method": "QueryCancellationAbortsReadSideAndLeavesConnectionUsable",
-          "line": 530,
+          "line": 588,
           "kinds": [
             "negative"
           ],
@@ -269190,7 +269340,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.QueryCancellationAbortsReadSideAndLeavesConnectionUsable",
           "method": "QueryCancellationAbortsReadSideAndLeavesConnectionUsable",
-          "line": 530,
+          "line": 588,
           "kinds": [
             "negative"
           ],
@@ -269385,7 +269535,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ClientTreatsNonZeroResponseMessageIdAsFatalProtocolError",
           "method": "ClientTreatsNonZeroResponseMessageIdAsFatalProtocolError",
-          "line": 469,
+          "line": 527,
           "kinds": [
             "negative"
           ],
@@ -269407,7 +269557,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerTreatsNonZeroQueryMessageIdAsFatalProtocolError",
           "method": "ServerTreatsNonZeroQueryMessageIdAsFatalProtocolError",
-          "line": 439,
+          "line": 497,
           "kinds": [
             "negative"
           ],
@@ -269791,7 +269941,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerTreatsMultipleQueriesOnOneStreamAsFatalProtocolError",
           "method": "ServerTreatsMultipleQueriesOnOneStreamAsFatalProtocolError",
-          "line": 494,
+          "line": 552,
           "kinds": [
             "negative"
           ],
@@ -271745,7 +271895,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DiscardsConnectionBeforeIdleTimeoutExpires",
           "method": "DiscardsConnectionBeforeIdleTimeoutExpires",
-          "line": 811,
+          "line": 869,
           "kinds": [
             "positive"
           ],
@@ -271767,7 +271917,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DiscardsConnectionBeforeIdleTimeoutExpires",
           "method": "DiscardsConnectionBeforeIdleTimeoutExpires",
-          "line": 811,
+          "line": 869,
           "kinds": [
             "positive"
           ],
@@ -271789,7 +271939,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.KeepsConnectionWhenIdleTimeIsSafelyBelowTimeout",
           "method": "KeepsConnectionWhenIdleTimeIsSafelyBelowTimeout",
-          "line": 847,
+          "line": 905,
           "kinds": [
             "negative"
           ],
@@ -271811,7 +271961,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.KeepsConnectionWhenIdleTimeIsSafelyBelowTimeout",
           "method": "KeepsConnectionWhenIdleTimeIsSafelyBelowTimeout",
-          "line": 847,
+          "line": 905,
           "kinds": [
             "negative"
           ],
@@ -271879,7 +272029,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DisposeAsyncWithoutOutstandingQueryDoesNotEmitDoqNoErrorClose",
           "method": "DisposeAsyncWithoutOutstandingQueryDoesNotEmitDoqNoErrorClose",
-          "line": 931,
+          "line": 989,
           "kinds": [
             "negative"
           ],
@@ -271903,7 +272053,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DisposeAsyncWithoutOutstandingQueryDoesNotEmitDoqNoErrorClose",
           "method": "DisposeAsyncWithoutOutstandingQueryDoesNotEmitDoqNoErrorClose",
-          "line": 931,
+          "line": 989,
           "kinds": [
             "negative"
           ],
@@ -271927,7 +272077,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DisposeAsyncWithOutstandingQueryClosesConnectionWithDoqNoError",
           "method": "DisposeAsyncWithOutstandingQueryClosesConnectionWithDoqNoError",
-          "line": 900,
+          "line": 958,
           "kinds": [
             "positive"
           ],
@@ -271950,7 +272100,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DisposeAsyncWithOutstandingQueryClosesConnectionWithDoqNoError",
           "method": "DisposeAsyncWithOutstandingQueryClosesConnectionWithDoqNoError",
-          "line": 900,
+          "line": 958,
           "kinds": [
             "positive"
           ],
@@ -272151,7 +272301,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DisposeAsyncWithoutOutstandingQueryDoesNotEmitDoqNoErrorClose",
           "method": "DisposeAsyncWithoutOutstandingQueryDoesNotEmitDoqNoErrorClose",
-          "line": 931,
+          "line": 989,
           "kinds": [
             "negative"
           ],
@@ -272175,7 +272325,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DisposeAsyncWithoutOutstandingQueryDoesNotEmitDoqNoErrorClose",
           "method": "DisposeAsyncWithoutOutstandingQueryDoesNotEmitDoqNoErrorClose",
-          "line": 931,
+          "line": 989,
           "kinds": [
             "negative"
           ],
@@ -272199,7 +272349,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DisposeAsyncWithOutstandingQueryClosesConnectionWithDoqNoError",
           "method": "DisposeAsyncWithOutstandingQueryClosesConnectionWithDoqNoError",
-          "line": 900,
+          "line": 958,
           "kinds": [
             "positive"
           ],
@@ -272222,7 +272372,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DisposeAsyncWithOutstandingQueryClosesConnectionWithDoqNoError",
           "method": "DisposeAsyncWithOutstandingQueryClosesConnectionWithDoqNoError",
-          "line": 900,
+          "line": 958,
           "kinds": [
             "positive"
           ],
@@ -272420,7 +272570,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DisposeAsyncCompletesWithoutThrowing",
           "method": "DisposeAsyncCompletesWithoutThrowing",
-          "line": 876,
+          "line": 934,
           "kinds": [
             "positive"
           ],
@@ -272442,7 +272592,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DisposeAsyncCompletesWithoutThrowing",
           "method": "DisposeAsyncCompletesWithoutThrowing",
-          "line": 876,
+          "line": 934,
           "kinds": [
             "positive"
           ],
@@ -272464,7 +272614,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DisposeAsyncWithoutOutstandingQueryDoesNotEmitDoqNoErrorClose",
           "method": "DisposeAsyncWithoutOutstandingQueryDoesNotEmitDoqNoErrorClose",
-          "line": 931,
+          "line": 989,
           "kinds": [
             "negative"
           ],
@@ -272488,7 +272638,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DisposeAsyncWithoutOutstandingQueryDoesNotEmitDoqNoErrorClose",
           "method": "DisposeAsyncWithoutOutstandingQueryDoesNotEmitDoqNoErrorClose",
-          "line": 931,
+          "line": 989,
           "kinds": [
             "negative"
           ],
@@ -272686,7 +272836,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.AllowsZeroRttForReplayableQueryOpcode",
           "method": "AllowsZeroRttForReplayableQueryOpcode",
-          "line": 1362,
+          "line": 1420,
           "kinds": [
             "positive"
           ],
@@ -272709,7 +272859,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.AllowsZeroRttForReplayableQueryOpcode",
           "method": "AllowsZeroRttForReplayableQueryOpcode",
-          "line": 1362,
+          "line": 1420,
           "kinds": [
             "positive"
           ],
@@ -272732,7 +272882,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream",
           "method": "RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream",
-          "line": 1386,
+          "line": 1444,
           "kinds": [
             "negative"
           ],
@@ -272755,7 +272905,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream",
           "method": "RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream",
-          "line": 1386,
+          "line": 1444,
           "kinds": [
             "negative"
           ],
@@ -272825,7 +272975,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.RejectsQueryAfterConnectivityChange",
           "method": "RejectsQueryAfterConnectivityChange",
-          "line": 1335,
+          "line": 1393,
           "kinds": [
             "negative"
           ],
@@ -272848,7 +272998,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.RejectsQueryWhenResumptionTicketIsAlreadyUsed",
           "method": "RejectsQueryWhenResumptionTicketIsAlreadyUsed",
-          "line": 1244,
+          "line": 1302,
           "kinds": [
             "negative"
           ],
@@ -272870,7 +273020,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream",
           "method": "RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream",
-          "line": 1386,
+          "line": 1444,
           "kinds": [
             "negative"
           ],
@@ -273202,7 +273352,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerProcessesNonReplayableTransactionWhenZeroRttSignalIsAbsent",
           "method": "ServerProcessesNonReplayableTransactionWhenZeroRttSignalIsAbsent",
-          "line": 1440,
+          "line": 1498,
           "kinds": [
             "negative"
           ],
@@ -273224,7 +273374,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerProcessesNonReplayableTransactionWhenZeroRttSignalIsAbsent",
           "method": "ServerProcessesNonReplayableTransactionWhenZeroRttSignalIsAbsent",
-          "line": 1440,
+          "line": 1498,
           "kinds": [
             "negative"
           ],
@@ -273246,7 +273396,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerRefusesNonReplayableZeroRttTransactionWithTooEarlyResponse",
           "method": "ServerRefusesNonReplayableZeroRttTransactionWithTooEarlyResponse",
-          "line": 1412,
+          "line": 1470,
           "kinds": [
             "positive"
           ],
@@ -273269,7 +273419,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerRefusesNonReplayableZeroRttTransactionWithTooEarlyResponse",
           "method": "ServerRefusesNonReplayableZeroRttTransactionWithTooEarlyResponse",
-          "line": 1412,
+          "line": 1470,
           "kinds": [
             "positive"
           ],
@@ -273470,7 +273620,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerProcessesNonReplayableTransactionWhenZeroRttSignalIsAbsent",
           "method": "ServerProcessesNonReplayableTransactionWhenZeroRttSignalIsAbsent",
-          "line": 1440,
+          "line": 1498,
           "kinds": [
             "negative"
           ],
@@ -273492,7 +273642,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerRefusesNonReplayableZeroRttTransactionWithTooEarlyResponse",
           "method": "ServerRefusesNonReplayableZeroRttTransactionWithTooEarlyResponse",
-          "line": 1412,
+          "line": 1470,
           "kinds": [
             "positive"
           ],
@@ -273515,7 +273665,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerRefusesNonReplayableZeroRttTransactionWithTooEarlyResponse",
           "method": "ServerRefusesNonReplayableZeroRttTransactionWithTooEarlyResponse",
-          "line": 1412,
+          "line": 1470,
           "kinds": [
             "positive"
           ],
@@ -274290,7 +274440,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.KeyPinnedEndpointMayRetryDuringShortBackoffWindow",
           "method": "KeyPinnedEndpointMayRetryDuringShortBackoffWindow",
-          "line": 1547,
+          "line": 1605,
           "kinds": [
             "positive"
           ],
@@ -274312,7 +274462,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.KeyPinnedEndpointMayRetryDuringShortBackoffWindow",
           "method": "KeyPinnedEndpointMayRetryDuringShortBackoffWindow",
-          "line": 1547,
+          "line": 1605,
           "kinds": [
             "positive"
           ],
@@ -274334,7 +274484,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.OpportunisticProfileRejectsQueryWhileEndpointIsBackedOff",
           "method": "OpportunisticProfileRejectsQueryWhileEndpointIsBackedOff",
-          "line": 1516,
+          "line": 1574,
           "kinds": [
             "negative"
           ],
@@ -274357,7 +274507,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.OpportunisticProfileRejectsQueryWhileEndpointIsBackedOff",
           "method": "OpportunisticProfileRejectsQueryWhileEndpointIsBackedOff",
-          "line": 1516,
+          "line": 1574,
           "kinds": [
             "negative"
           ],
@@ -275045,7 +275195,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerDoesNotApplyZeroRttAmplificationLimitWithoutZeroRttSignal",
           "method": "ServerDoesNotApplyZeroRttAmplificationLimitWithoutZeroRttSignal",
-          "line": 1491,
+          "line": 1549,
           "kinds": [
             "negative"
           ],
@@ -275067,7 +275217,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerDoesNotApplyZeroRttAmplificationLimitWithoutZeroRttSignal",
           "method": "ServerDoesNotApplyZeroRttAmplificationLimitWithoutZeroRttSignal",
-          "line": 1491,
+          "line": 1549,
           "kinds": [
             "negative"
           ],
@@ -275089,7 +275239,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerRejectsOversizedZeroRttResponseByAmplificationLimit",
           "method": "ServerRejectsOversizedZeroRttResponseByAmplificationLimit",
-          "line": 1463,
+          "line": 1521,
           "kinds": [
             "positive"
           ],
@@ -275111,7 +275261,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerRejectsOversizedZeroRttResponseByAmplificationLimit",
           "method": "ServerRejectsOversizedZeroRttResponseByAmplificationLimit",
-          "line": 1463,
+          "line": 1521,
           "kinds": [
             "positive"
           ],
@@ -276015,7 +276165,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
           "method": "ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
-          "line": 268,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -276042,7 +276192,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
           "method": "ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
-          "line": 268,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -276069,7 +276219,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
           "method": "ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
-          "line": 299,
+          "line": 357,
           "kinds": [
             "negative"
           ],
@@ -276096,7 +276246,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
           "method": "ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
-          "line": 299,
+          "line": 357,
           "kinds": [
             "negative"
           ],
@@ -276240,7 +276390,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
           "method": "ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
-          "line": 268,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -276267,7 +276417,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
           "method": "ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
-          "line": 268,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -276294,7 +276444,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
           "method": "ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
-          "line": 299,
+          "line": 357,
           "kinds": [
             "negative"
           ],
@@ -276321,7 +276471,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
           "method": "ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
-          "line": 299,
+          "line": 357,
           "kinds": [
             "negative"
           ],
@@ -276465,7 +276615,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
           "method": "ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
-          "line": 268,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -276492,7 +276642,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
           "method": "ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
-          "line": 268,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -276519,7 +276669,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
           "method": "ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
-          "line": 299,
+          "line": 357,
           "kinds": [
             "negative"
           ],
@@ -276546,7 +276696,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
           "method": "ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
-          "line": 299,
+          "line": 357,
           "kinds": [
             "negative"
           ],
@@ -276690,7 +276840,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DoesNotReuseConnectionTooCloseToIdleTimeout",
           "method": "DoesNotReuseConnectionTooCloseToIdleTimeout",
-          "line": 743,
+          "line": 801,
           "kinds": [
             "negative"
           ],
@@ -276716,7 +276866,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DoesNotReuseConnectionTooCloseToIdleTimeout",
           "method": "DoesNotReuseConnectionTooCloseToIdleTimeout",
-          "line": 743,
+          "line": 801,
           "kinds": [
             "negative"
           ],
@@ -276742,7 +276892,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ReusesExistingHealthyConnection",
           "method": "ReusesExistingHealthyConnection",
-          "line": 714,
+          "line": 772,
           "kinds": [
             "positive"
           ],
@@ -276767,7 +276917,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ReusesExistingHealthyConnection",
           "method": "ReusesExistingHealthyConnection",
-          "line": 714,
+          "line": 772,
           "kinds": [
             "positive"
           ],
@@ -277015,7 +277165,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentIxfrTransfersUseSeparateStreamsOnOneConnection",
           "method": "ConcurrentIxfrTransfersUseSeparateStreamsOnOneConnection",
-          "line": 1017,
+          "line": 1075,
           "kinds": [
             "positive"
           ],
@@ -277037,7 +277187,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentIxfrTransfersUseSeparateStreamsOnOneConnection",
           "method": "ConcurrentIxfrTransfersUseSeparateStreamsOnOneConnection",
-          "line": 1017,
+          "line": 1075,
           "kinds": [
             "positive"
           ],
@@ -277059,7 +277209,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentZoneTransfersAreSupportedOnOneConnection",
           "method": "ConcurrentZoneTransfersAreSupportedOnOneConnection",
-          "line": 960,
+          "line": 1018,
           "kinds": [
             "positive"
           ],
@@ -277085,7 +277235,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.LaterIxfrTransferDoesNotWaitForBlockedEarlierIxfr",
           "method": "LaterIxfrTransferDoesNotWaitForBlockedEarlierIxfr",
-          "line": 1073,
+          "line": 1131,
           "kinds": [
             "negative"
           ],
@@ -277107,7 +277257,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.LaterIxfrTransferDoesNotWaitForBlockedEarlierIxfr",
           "method": "LaterIxfrTransferDoesNotWaitForBlockedEarlierIxfr",
-          "line": 1073,
+          "line": 1131,
           "kinds": [
             "negative"
           ],
@@ -277172,7 +277322,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentAxfrTransfersUseSeparateStreamsOnOneConnection",
           "method": "ConcurrentAxfrTransfersUseSeparateStreamsOnOneConnection",
-          "line": 1045,
+          "line": 1103,
           "kinds": [
             "positive"
           ],
@@ -277194,7 +277344,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentAxfrTransfersUseSeparateStreamsOnOneConnection",
           "method": "ConcurrentAxfrTransfersUseSeparateStreamsOnOneConnection",
-          "line": 1045,
+          "line": 1103,
           "kinds": [
             "positive"
           ],
@@ -277216,7 +277366,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentZoneTransfersAreSupportedOnOneConnection",
           "method": "ConcurrentZoneTransfersAreSupportedOnOneConnection",
-          "line": 960,
+          "line": 1018,
           "kinds": [
             "positive"
           ],
@@ -277242,7 +277392,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.LaterAxfrTransferDoesNotWaitForBlockedEarlierAxfr",
           "method": "LaterAxfrTransferDoesNotWaitForBlockedEarlierAxfr",
-          "line": 1103,
+          "line": 1161,
           "kinds": [
             "negative"
           ],
@@ -277264,7 +277414,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.LaterAxfrTransferDoesNotWaitForBlockedEarlierAxfr",
           "method": "LaterAxfrTransferDoesNotWaitForBlockedEarlierAxfr",
-          "line": 1103,
+          "line": 1161,
           "kinds": [
             "negative"
           ],
@@ -277329,7 +277479,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentZoneTransfersAreSupportedOnOneConnection",
           "method": "ConcurrentZoneTransfersAreSupportedOnOneConnection",
-          "line": 960,
+          "line": 1018,
           "kinds": [
             "positive"
           ],
@@ -277355,7 +277505,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentZoneTransfersAreSupportedOnOneConnection",
           "method": "ConcurrentZoneTransfersAreSupportedOnOneConnection",
-          "line": 960,
+          "line": 1018,
           "kinds": [
             "positive"
           ],
@@ -277381,7 +277531,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.MixedZoneTransfersDoNotWaitForEarlierBlockedTransfer",
           "method": "MixedZoneTransfersDoNotWaitForEarlierBlockedTransfer",
-          "line": 1135,
+          "line": 1193,
           "kinds": [
             "negative"
           ],
@@ -277405,7 +277555,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.MixedZoneTransfersDoNotWaitForEarlierBlockedTransfer",
           "method": "MixedZoneTransfersDoNotWaitForEarlierBlockedTransfer",
-          "line": 1135,
+          "line": 1193,
           "kinds": [
             "negative"
           ],
@@ -277472,7 +277622,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentZoneTransfersAreSupportedOnOneConnection",
           "method": "ConcurrentZoneTransfersAreSupportedOnOneConnection",
-          "line": 960,
+          "line": 1018,
           "kinds": [
             "positive"
           ],
@@ -277498,7 +277648,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.MixedZoneTransfersDoNotWaitForEarlierBlockedTransfer",
           "method": "MixedZoneTransfersDoNotWaitForEarlierBlockedTransfer",
-          "line": 1135,
+          "line": 1193,
           "kinds": [
             "negative"
           ],
@@ -277522,7 +277672,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.MixedZoneTransfersDoNotWaitForEarlierBlockedTransfer",
           "method": "MixedZoneTransfersDoNotWaitForEarlierBlockedTransfer",
-          "line": 1135,
+          "line": 1193,
           "kinds": [
             "negative"
           ],
@@ -277546,7 +277696,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.QueuedZoneTransfersSentWithoutWaiting",
           "method": "QueuedZoneTransfersSentWithoutWaiting",
-          "line": 989,
+          "line": 1047,
           "kinds": [
             "positive"
           ],
@@ -277569,7 +277719,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.QueuedZoneTransfersSentWithoutWaiting",
           "method": "QueuedZoneTransfersSentWithoutWaiting",
-          "line": 989,
+          "line": 1047,
           "kinds": [
             "positive"
           ],
@@ -277635,7 +277785,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentZoneTransfersAreSupportedOnOneConnection",
           "method": "ConcurrentZoneTransfersAreSupportedOnOneConnection",
-          "line": 960,
+          "line": 1018,
           "kinds": [
             "positive"
           ],
@@ -277661,7 +277811,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.MixedZoneTransfersDoNotWaitForEarlierBlockedTransfer",
           "method": "MixedZoneTransfersDoNotWaitForEarlierBlockedTransfer",
-          "line": 1135,
+          "line": 1193,
           "kinds": [
             "negative"
           ],
@@ -277685,7 +277835,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.MixedZoneTransfersDoNotWaitForEarlierBlockedTransfer",
           "method": "MixedZoneTransfersDoNotWaitForEarlierBlockedTransfer",
-          "line": 1135,
+          "line": 1193,
           "kinds": [
             "negative"
           ],
@@ -277709,7 +277859,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.QueuedZoneTransfersSentWithoutWaiting",
           "method": "QueuedZoneTransfersSentWithoutWaiting",
-          "line": 989,
+          "line": 1047,
           "kinds": [
             "positive"
           ],
@@ -277732,7 +277882,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.QueuedZoneTransfersSentWithoutWaiting",
           "method": "QueuedZoneTransfersSentWithoutWaiting",
-          "line": 989,
+          "line": 1047,
           "kinds": [
             "positive"
           ],
@@ -454036,7 +454186,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
           "method": "ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
-          "line": 268,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -454063,7 +454213,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
           "method": "ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
-          "line": 268,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -454090,7 +454240,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
           "method": "ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
-          "line": 299,
+          "line": 357,
           "kinds": [
             "negative"
           ],
@@ -454117,7 +454267,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
           "method": "ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
-          "line": 299,
+          "line": 357,
           "kinds": [
             "negative"
           ],
@@ -454261,7 +454411,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
           "method": "ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
-          "line": 268,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -454288,7 +454438,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
           "method": "ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
-          "line": 268,
+          "line": 326,
           "kinds": [
             "positive"
           ],
@@ -454315,7 +454465,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
           "method": "ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
-          "line": 299,
+          "line": 357,
           "kinds": [
             "negative"
           ],
@@ -454342,7 +454492,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
           "method": "ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
-          "line": 299,
+          "line": 357,
           "kinds": [
             "negative"
           ],
@@ -454463,14 +454613,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 4,
+        "total": 8,
+        "focused": 5,
         "broad": 3,
         "by_kind": {
           "positive": 5,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -454516,7 +454666,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.QueryAsyncSendsSelectedStreamQueryAndFin",
           "method": "QueryAsyncSendsSelectedStreamQueryAndFin",
-          "line": 353,
+          "line": 411,
           "kinds": [
             "positive"
           ],
@@ -454539,7 +454689,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.QueryAsyncSendsSelectedStreamQueryAndFin",
           "method": "QueryAsyncSendsSelectedStreamQueryAndFin",
-          "line": 353,
+          "line": 411,
           "kinds": [
             "positive"
           ],
@@ -454562,7 +454712,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerDoesNotDispatchQueryBeforeClientStreamFin",
           "method": "ServerDoesNotDispatchQueryBeforeClientStreamFin",
-          "line": 379,
+          "line": 437,
           "kinds": [
             "negative"
           ],
@@ -454586,7 +454736,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerDoesNotDispatchQueryBeforeClientStreamFin",
           "method": "ServerDoesNotDispatchQueryBeforeClientStreamFin",
-          "line": 379,
+          "line": 437,
           "kinds": [
             "negative"
           ],
@@ -454598,6 +454748,31 @@
             "RFC9250-S4-2-P6-S1-R01",
             "RFC9250-S4-2-P6-S1-R02",
             "RFC9250-S4-2-P9-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-2-P6-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.VariedDnsMessageIdsPreserveResponseMappingWithZeroedDoqIds",
+          "method": "VariedDnsMessageIdsPreserveResponseMappingWithZeroedDoqIds",
+          "line": 200,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0009",
+            "REQ-QUIC-RFC9250-0022",
+            "RFC9250-S4-2-P6-S1-R01",
+            "RFC9250-S4-2-P7-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -454787,7 +454962,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.QueryAsyncSendsSelectedStreamQueryAndFin",
           "method": "QueryAsyncSendsSelectedStreamQueryAndFin",
-          "line": 353,
+          "line": 411,
           "kinds": [
             "positive"
           ],
@@ -454810,7 +454985,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerDoesNotDispatchQueryBeforeClientStreamFin",
           "method": "ServerDoesNotDispatchQueryBeforeClientStreamFin",
-          "line": 379,
+          "line": 437,
           "kinds": [
             "negative"
           ],
@@ -454834,7 +455009,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerDoesNotDispatchQueryBeforeClientStreamFin",
           "method": "ServerDoesNotDispatchQueryBeforeClientStreamFin",
-          "line": 379,
+          "line": 437,
           "kinds": [
             "negative"
           ],
@@ -454952,14 +455127,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 4,
+        "total": 8,
+        "focused": 5,
         "broad": 3,
         "by_kind": {
           "positive": 5,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -455005,7 +455180,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerRejectsIncompleteDoqQueryFrame",
           "method": "ServerRejectsIncompleteDoqQueryFrame",
-          "line": 410,
+          "line": 468,
           "kinds": [
             "negative"
           ],
@@ -455028,7 +455203,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerRejectsIncompleteDoqQueryFrame",
           "method": "ServerRejectsIncompleteDoqQueryFrame",
-          "line": 410,
+          "line": 468,
           "kinds": [
             "negative"
           ],
@@ -455051,7 +455226,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerWritesResponseOnTheSameQueryStream",
           "method": "ServerWritesResponseOnTheSameQueryStream",
-          "line": 186,
+          "line": 244,
           "kinds": [
             "positive"
           ],
@@ -455074,7 +455249,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerWritesResponseOnTheSameQueryStream",
           "method": "ServerWritesResponseOnTheSameQueryStream",
-          "line": 186,
+          "line": 244,
           "kinds": [
             "positive"
           ],
@@ -455084,6 +455259,31 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0009",
+            "RFC9250-S4-2-P7-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-2-P7-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.VariedDnsMessageIdsPreserveResponseMappingWithZeroedDoqIds",
+          "method": "VariedDnsMessageIdsPreserveResponseMappingWithZeroedDoqIds",
+          "line": 200,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0009",
+            "REQ-QUIC-RFC9250-0022",
+            "RFC9250-S4-2-P6-S1-R01",
             "RFC9250-S4-2-P7-R01"
           ],
           "requirement_tagged": true,
@@ -455244,7 +455444,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerRejectsIncompleteDoqQueryFrame",
           "method": "ServerRejectsIncompleteDoqQueryFrame",
-          "line": 410,
+          "line": 468,
           "kinds": [
             "negative"
           ],
@@ -455267,7 +455467,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerWritesResponseOnTheSameQueryStream",
           "method": "ServerWritesResponseOnTheSameQueryStream",
-          "line": 186,
+          "line": 244,
           "kinds": [
             "positive"
           ],
@@ -455407,7 +455607,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerDoesNotDispatchQueryBeforeClientStreamFin",
           "method": "ServerDoesNotDispatchQueryBeforeClientStreamFin",
-          "line": 379,
+          "line": 437,
           "kinds": [
             "negative"
           ],
@@ -455431,7 +455631,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerDoesNotDispatchQueryBeforeClientStreamFin",
           "method": "ServerDoesNotDispatchQueryBeforeClientStreamFin",
-          "line": 379,
+          "line": 437,
           "kinds": [
             "negative"
           ],
@@ -455455,7 +455655,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerMayDeferHandlerUntilCompleteLengthPrefixedQueryArrives",
           "method": "ServerMayDeferHandlerUntilCompleteLengthPrefixedQueryArrives",
-          "line": 329,
+          "line": 387,
           "kinds": [
             "positive"
           ],
@@ -455477,7 +455677,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ServerMayDeferHandlerUntilCompleteLengthPrefixedQueryArrives",
           "method": "ServerMayDeferHandlerUntilCompleteLengthPrefixedQueryArrives",
-          "line": 329,
+          "line": 387,
           "kinds": [
             "positive"
           ],
@@ -455613,7 +455813,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.QueryCancellationAbortsReadSideAndLeavesConnectionUsable",
           "method": "QueryCancellationAbortsReadSideAndLeavesConnectionUsable",
-          "line": 530,
+          "line": 588,
           "kinds": [
             "negative"
           ],
@@ -455889,7 +456089,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.EarlyResetBeforeFinDoesNotDispatchQueryAndLeavesConnectionUsable",
           "method": "EarlyResetBeforeFinDoesNotDispatchQueryAndLeavesConnectionUsable",
-          "line": 606,
+          "line": 664,
           "kinds": [
             "negative"
           ],
@@ -456075,7 +456275,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.QueryCancellationAbortsReadSideAndLeavesConnectionUsable",
           "method": "QueryCancellationAbortsReadSideAndLeavesConnectionUsable",
-          "line": 530,
+          "line": 588,
           "kinds": [
             "negative"
           ],
@@ -456369,7 +456569,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.CancellationVolumeLimitClosesConnectionWithExcessiveLoad",
           "method": "CancellationVolumeLimitClosesConnectionWithExcessiveLoad",
-          "line": 559,
+          "line": 617,
           "kinds": [
             "negative"
           ],
@@ -456556,7 +456756,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.CancellationVolumeLimitClosesConnectionWithExcessiveLoad",
           "method": "CancellationVolumeLimitClosesConnectionWithExcessiveLoad",
-          "line": 559,
+          "line": 617,
           "kinds": [
             "negative"
           ],
@@ -456743,7 +456943,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DanglingStreamLimitClosesConnectionWithExcessiveLoad",
           "method": "DanglingStreamLimitClosesConnectionWithExcessiveLoad",
-          "line": 665,
+          "line": 723,
           "kinds": [
             "negative"
           ],
@@ -456932,7 +457132,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.EarlyResetBeforeFinDoesNotDispatchQueryAndLeavesConnectionUsable",
           "method": "EarlyResetBeforeFinDoesNotDispatchQueryAndLeavesConnectionUsable",
-          "line": 606,
+          "line": 664,
           "kinds": [
             "negative"
           ],
@@ -457118,7 +457318,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.EarlyResetBeforeFinDoesNotDispatchQueryAndLeavesConnectionUsable",
           "method": "EarlyResetBeforeFinDoesNotDispatchQueryAndLeavesConnectionUsable",
-          "line": 606,
+          "line": 664,
           "kinds": [
             "negative"
           ],
@@ -457308,7 +457508,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.QueryAsync_PropagatesServfailResponseCodeFromHandler",
           "method": "QueryAsync_PropagatesServfailResponseCodeFromHandler",
-          "line": 240,
+          "line": 298,
           "kinds": [
             "positive"
           ],
@@ -457330,7 +457530,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.QueryAsync_PropagatesServfailResponseCodeFromHandler",
           "method": "QueryAsync_PropagatesServfailResponseCodeFromHandler",
-          "line": 240,
+          "line": 298,
           "kinds": [
             "positive"
           ],
@@ -457480,7 +457680,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.HandlerFailureAbortsStreamWithInternalErrorAndClosesConnection",
           "method": "HandlerFailureAbortsStreamWithInternalErrorAndClosesConnection",
-          "line": 640,
+          "line": 698,
           "kinds": [
             "negative"
           ],
@@ -457668,7 +457868,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.HandlerFailureAbortsStreamWithInternalErrorAndClosesConnection",
           "method": "HandlerFailureAbortsStreamWithInternalErrorAndClosesConnection",
-          "line": 640,
+          "line": 698,
           "kinds": [
             "negative"
           ],
@@ -457856,7 +458056,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.HandlerFailureAbortsStreamWithInternalErrorAndClosesConnection",
           "method": "HandlerFailureAbortsStreamWithInternalErrorAndClosesConnection",
-          "line": 640,
+          "line": 698,
           "kinds": [
             "negative"
           ],
@@ -458532,7 +458732,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DoesNotReuseConnectionTooCloseToIdleTimeout",
           "method": "DoesNotReuseConnectionTooCloseToIdleTimeout",
-          "line": 743,
+          "line": 801,
           "kinds": [
             "negative"
           ],
@@ -458558,7 +458758,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DoesNotReuseConnectionTooCloseToIdleTimeout",
           "method": "DoesNotReuseConnectionTooCloseToIdleTimeout",
-          "line": 743,
+          "line": 801,
           "kinds": [
             "negative"
           ],
@@ -458584,7 +458784,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ReusesExistingHealthyConnection",
           "method": "ReusesExistingHealthyConnection",
-          "line": 714,
+          "line": 772,
           "kinds": [
             "positive"
           ],
@@ -458609,7 +458809,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ReusesExistingHealthyConnection",
           "method": "ReusesExistingHealthyConnection",
-          "line": 714,
+          "line": 772,
           "kinds": [
             "positive"
           ],
@@ -458677,7 +458877,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DoesNotReuseConnectionTooCloseToIdleTimeout",
           "method": "DoesNotReuseConnectionTooCloseToIdleTimeout",
-          "line": 743,
+          "line": 801,
           "kinds": [
             "negative"
           ],
@@ -458703,7 +458903,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DoesNotReuseConnectionTooCloseToIdleTimeout",
           "method": "DoesNotReuseConnectionTooCloseToIdleTimeout",
-          "line": 743,
+          "line": 801,
           "kinds": [
             "negative"
           ],
@@ -458729,7 +458929,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ReusesExistingHealthyConnection",
           "method": "ReusesExistingHealthyConnection",
-          "line": 714,
+          "line": 772,
           "kinds": [
             "positive"
           ],
@@ -458754,7 +458954,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ReusesExistingHealthyConnection",
           "method": "ReusesExistingHealthyConnection",
-          "line": 714,
+          "line": 772,
           "kinds": [
             "positive"
           ],
@@ -458822,7 +459022,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DoesNotReuseConnectionTooCloseToIdleTimeout",
           "method": "DoesNotReuseConnectionTooCloseToIdleTimeout",
-          "line": 743,
+          "line": 801,
           "kinds": [
             "negative"
           ],
@@ -458848,7 +459048,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DoesNotReuseConnectionTooCloseToIdleTimeout",
           "method": "DoesNotReuseConnectionTooCloseToIdleTimeout",
-          "line": 743,
+          "line": 801,
           "kinds": [
             "negative"
           ],
@@ -458874,7 +459074,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ReusesExistingHealthyConnection",
           "method": "ReusesExistingHealthyConnection",
-          "line": 714,
+          "line": 772,
           "kinds": [
             "positive"
           ],
@@ -458899,7 +459099,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.ReusesExistingHealthyConnection",
           "method": "ReusesExistingHealthyConnection",
-          "line": 714,
+          "line": 772,
           "kinds": [
             "positive"
           ],
@@ -458967,7 +459167,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DoesNotReuseConnectionTooCloseToIdleTimeout",
           "method": "DoesNotReuseConnectionTooCloseToIdleTimeout",
-          "line": 743,
+          "line": 801,
           "kinds": [
             "negative"
           ],
@@ -458993,7 +459193,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.DoesNotReuseConnectionTooCloseToIdleTimeout",
           "method": "DoesNotReuseConnectionTooCloseToIdleTimeout",
-          "line": 743,
+          "line": 801,
           "kinds": [
             "negative"
           ],
@@ -459019,7 +459219,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.OpensReplacementConnectionWhenIdleTimeIsNotLowEnough",
           "method": "OpensReplacementConnectionWhenIdleTimeIsNotLowEnough",
-          "line": 774,
+          "line": 832,
           "kinds": [
             "positive"
           ],
@@ -459041,7 +459241,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.OpensReplacementConnectionWhenIdleTimeIsNotLowEnough",
           "method": "OpensReplacementConnectionWhenIdleTimeIsNotLowEnough",
-          "line": 774,
+          "line": 832,
           "kinds": [
             "positive"
           ],
@@ -459109,7 +459309,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.AllowsZeroRttForReplayableQueryOpcode",
           "method": "AllowsZeroRttForReplayableQueryOpcode",
-          "line": 1362,
+          "line": 1420,
           "kinds": [
             "positive"
           ],
@@ -459132,7 +459332,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream",
           "method": "RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream",
-          "line": 1386,
+          "line": 1444,
           "kinds": [
             "negative"
           ],
@@ -459330,7 +459530,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.AllowsZeroRttForReplayableQueryOpcode",
           "method": "AllowsZeroRttForReplayableQueryOpcode",
-          "line": 1362,
+          "line": 1420,
           "kinds": [
             "positive"
           ],
@@ -459353,7 +459553,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.AllowsZeroRttForReplayableQueryOpcode",
           "method": "AllowsZeroRttForReplayableQueryOpcode",
-          "line": 1362,
+          "line": 1420,
           "kinds": [
             "positive"
           ],
@@ -459376,7 +459576,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream",
           "method": "RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream",
-          "line": 1386,
+          "line": 1444,
           "kinds": [
             "negative"
           ],
@@ -459399,7 +459599,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream",
           "method": "RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream",
-          "line": 1386,
+          "line": 1444,
           "kinds": [
             "negative"
           ],
@@ -460138,7 +460338,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.OpportunisticProfileAllowsQueryAfterBackoffIsCleared",
           "method": "OpportunisticProfileAllowsQueryAfterBackoffIsCleared",
-          "line": 1577,
+          "line": 1635,
           "kinds": [
             "positive"
           ],
@@ -460160,7 +460360,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.OpportunisticProfileAllowsQueryAfterBackoffIsCleared",
           "method": "OpportunisticProfileAllowsQueryAfterBackoffIsCleared",
-          "line": 1577,
+          "line": 1635,
           "kinds": [
             "positive"
           ],
@@ -460182,7 +460382,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.OpportunisticProfileRejectsQueryWhileEndpointIsBackedOff",
           "method": "OpportunisticProfileRejectsQueryWhileEndpointIsBackedOff",
-          "line": 1516,
+          "line": 1574,
           "kinds": [
             "negative"
           ],
@@ -460205,7 +460405,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.OpportunisticProfileRejectsQueryWhileEndpointIsBackedOff",
           "method": "OpportunisticProfileRejectsQueryWhileEndpointIsBackedOff",
-          "line": 1516,
+          "line": 1574,
           "kinds": [
             "negative"
           ],
@@ -460359,7 +460559,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.AllowsQueryWhenResumptionTicketIsNotMarkedUsed",
           "method": "AllowsQueryWhenResumptionTicketIsNotMarkedUsed",
-          "line": 1222,
+          "line": 1280,
           "kinds": [
             "positive"
           ],
@@ -460381,7 +460581,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.AllowsQueryWhenResumptionTicketIsNotMarkedUsed",
           "method": "AllowsQueryWhenResumptionTicketIsNotMarkedUsed",
-          "line": 1222,
+          "line": 1280,
           "kinds": [
             "positive"
           ],
@@ -460403,7 +460603,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.RejectsQueryWhenResumptionTicketIsAlreadyUsed",
           "method": "RejectsQueryWhenResumptionTicketIsAlreadyUsed",
-          "line": 1244,
+          "line": 1302,
           "kinds": [
             "negative"
           ],
@@ -460425,7 +460625,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.RejectsQueryWhenResumptionTicketIsAlreadyUsed",
           "method": "RejectsQueryWhenResumptionTicketIsAlreadyUsed",
-          "line": 1244,
+          "line": 1302,
           "kinds": [
             "negative"
           ],
@@ -460490,7 +460690,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.AllowsQueryWhenConnectivityIsUnchanged",
           "method": "AllowsQueryWhenConnectivityIsUnchanged",
-          "line": 1310,
+          "line": 1368,
           "kinds": [
             "positive"
           ],
@@ -460513,7 +460713,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.AllowsQueryWhenConnectivityIsUnchanged",
           "method": "AllowsQueryWhenConnectivityIsUnchanged",
-          "line": 1310,
+          "line": 1368,
           "kinds": [
             "positive"
           ],
@@ -460536,7 +460736,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.RejectsQueryAfterConnectivityChange",
           "method": "RejectsQueryAfterConnectivityChange",
-          "line": 1335,
+          "line": 1393,
           "kinds": [
             "negative"
           ],
@@ -460559,7 +460759,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.RejectsQueryAfterConnectivityChange",
           "method": "RejectsQueryAfterConnectivityChange",
-          "line": 1335,
+          "line": 1393,
           "kinds": [
             "negative"
           ],
@@ -460627,7 +460827,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.AddressValidationTokenPolicyAllowsTokenWithSessionResumption",
           "method": "AddressValidationTokenPolicyAllowsTokenWithSessionResumption",
-          "line": 1269,
+          "line": 1327,
           "kinds": [
             "positive"
           ],
@@ -460649,7 +460849,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.AddressValidationTokenPolicyAllowsTokenWithSessionResumption",
           "method": "AddressValidationTokenPolicyAllowsTokenWithSessionResumption",
-          "line": 1269,
+          "line": 1327,
           "kinds": [
             "positive"
           ],
@@ -460671,7 +460871,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.AddressValidationTokenPolicyRejectsTokenWithoutSessionResumptionByDefault",
           "method": "AddressValidationTokenPolicyRejectsTokenWithoutSessionResumptionByDefault",
-          "line": 1289,
+          "line": 1347,
           "kinds": [
             "negative"
           ],
@@ -460693,7 +460893,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.AddressValidationTokenPolicyRejectsTokenWithoutSessionResumptionByDefault",
           "method": "AddressValidationTokenPolicyRejectsTokenWithoutSessionResumptionByDefault",
-          "line": 1289,
+          "line": 1347,
           "kinds": [
             "negative"
           ],
@@ -461159,7 +461359,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.AllowsQueryWhenConnectivityIsUnchanged",
           "method": "AllowsQueryWhenConnectivityIsUnchanged",
-          "line": 1310,
+          "line": 1368,
           "kinds": [
             "positive"
           ],
@@ -461182,7 +461382,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.AllowsQueryWhenConnectivityIsUnchanged",
           "method": "AllowsQueryWhenConnectivityIsUnchanged",
-          "line": 1310,
+          "line": 1368,
           "kinds": [
             "positive"
           ],
@@ -461205,7 +461405,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.RejectsQueryAfterConnectivityChange",
           "method": "RejectsQueryAfterConnectivityChange",
-          "line": 1335,
+          "line": 1393,
           "kinds": [
             "negative"
           ],
@@ -461228,7 +461428,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.RejectsQueryAfterConnectivityChange",
           "method": "RejectsQueryAfterConnectivityChange",
-          "line": 1335,
+          "line": 1393,
           "kinds": [
             "negative"
           ],
@@ -461382,7 +461582,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.LaterStreamResponseDoesNotWaitForBlockedEarlierStream",
           "method": "LaterStreamResponseDoesNotWaitForBlockedEarlierStream",
-          "line": 1194,
+          "line": 1252,
           "kinds": [
             "negative"
           ],
@@ -461404,7 +461604,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.LaterStreamResponseDoesNotWaitForBlockedEarlierStream",
           "method": "LaterStreamResponseDoesNotWaitForBlockedEarlierStream",
-          "line": 1194,
+          "line": 1252,
           "kinds": [
             "negative"
           ],
@@ -461426,7 +461626,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.OutOfOrderResponseDelivery",
           "method": "OutOfOrderResponseDelivery",
-          "line": 1165,
+          "line": 1223,
           "kinds": [
             "positive"
           ],
@@ -461448,7 +461648,7 @@
           "class": "DoqStreamLifecycleTests",
           "member": "DoqStreamLifecycleTests.OutOfOrderResponseDelivery",
           "method": "OutOfOrderResponseDelivery",
-          "line": 1165,
+          "line": 1223,
           "kinds": [
             "positive"
           ],

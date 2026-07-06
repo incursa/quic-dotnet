@@ -179,6 +179,64 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0002")]
+    [Requirement("REQ-QUIC-RFC9250-0008")]
+    [Requirement("REQ-QUIC-RFC9250-0017")]
+    [Requirement("REQ-QUIC-RFC9250-0023")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public Task VariedDnsMessageIdsUseSeparateClientStreamsRegardlessOfDnsId()
+    {
+        return AssertVariedDnsMessageIdsUseSeparateStreamsWithZeroedDoqIds();
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0009")]
+    [Requirement("REQ-QUIC-RFC9250-0022")]
+    [Requirement("RFC9250-S4-2-P6-S1-R01")]
+    [Requirement("RFC9250-S4-2-P7-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public Task VariedDnsMessageIdsPreserveResponseMappingWithZeroedDoqIds()
+    {
+        return AssertVariedDnsMessageIdsUseSeparateStreamsWithZeroedDoqIds();
+    }
+
+    private static async Task AssertVariedDnsMessageIdsUseSeparateStreamsWithZeroedDoqIds()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        byte[][] queries =
+        [
+            [0x12, 0x34, 0x41],
+            [0xAB, 0xCD, 0x42],
+            [0x00, 0x7F, 0x43],
+        ];
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, context.Query.Span[2])));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        foreach (byte[] query in queries)
+        {
+            DoqQueryResult result = await client.QueryAsync(query).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+            Assert.Equal([0x00, 0x00, query[2]], result.Response.ToArray());
+        }
+
+        DoqQueryContext[] observedQueries = handler.Queries;
+        Assert.Equal(queries.Length, observedQueries.Length);
+        for (int index = 0; index < queries.Length; index++)
+        {
+            Assert.Equal(index * 4, observedQueries[index].StreamId);
+            Assert.Equal([0x00, 0x00, queries[index][2]], observedQueries[index].Query.ToArray());
+        }
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0009")]
     [Requirement("RFC9250-S4-2-P7-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
