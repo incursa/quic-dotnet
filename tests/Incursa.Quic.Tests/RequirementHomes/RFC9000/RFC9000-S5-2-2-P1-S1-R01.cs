@@ -55,6 +55,7 @@ public sealed class REQ_QUIC_RFC9000_S5P2P2_0001
     }
 
     [Fact]
+    [Requirement("RFC9000-S5-2-2-P2-S4-R01")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Fuzz")]
     public void Fuzz_ShouldSendVersionNegotiation_RequiresUnsupportedVersionAndSufficientDatagramSize()
