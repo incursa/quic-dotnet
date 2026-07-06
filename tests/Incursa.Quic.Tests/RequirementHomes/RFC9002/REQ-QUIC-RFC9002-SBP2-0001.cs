@@ -58,4 +58,41 @@ public sealed class REQ_QUIC_RFC9002_SBP2_0001
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => QuicCongestionControlState.NormalizeMaxDatagramSizeForRecovery(0));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_PathMtuValuesPreservePathValueWhileClampingRecoveryFloor()
+    {
+        ulong minimum = QuicCongestionControlState.MinimumMaxDatagramSizeBytes;
+
+        foreach (ulong pathMtuBytes in new[]
+        {
+            1UL,
+            minimum - 2,
+            minimum - 1,
+            minimum,
+            minimum + 1,
+            1_350UL,
+            1_472UL,
+            9_000UL,
+            uint.MaxValue,
+            ulong.MaxValue / 10,
+            ulong.MaxValue,
+        })
+        {
+            ulong expectedRecoveryMaxDatagramSize = Math.Max(pathMtuBytes, minimum);
+
+            QuicCongestionControlState state = new(maxDatagramSizeBytes: pathMtuBytes);
+
+            Assert.Equal(pathMtuBytes, state.MaxDatagramSizeBytes);
+            Assert.Equal(expectedRecoveryMaxDatagramSize, state.RecoveryMaxDatagramSizeBytes);
+            Assert.Equal(
+                QuicCongestionControlState.ComputeInitialCongestionWindowBytes(pathMtuBytes),
+                state.CongestionWindowBytes);
+            Assert.Equal(
+                QuicCongestionControlState.ComputeMinimumCongestionWindowBytes(pathMtuBytes),
+                state.MinimumCongestionWindowBytes);
+        }
+    }
 }

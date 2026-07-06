@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T04:40:43.2546553-06:00",
+    "generated_at": "2026-07-06T04:44:12.2598790-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1298,
-      "full_executable_proof": 1379
+      "deferred_proof_not_executed": 1297,
+      "full_executable_proof": 1380
     },
     "by_rfc": [
       {
@@ -37,8 +37,8 @@
         "rfc": "RFC9002",
         "total": 226,
         "by_proof_state": {
-          "deferred_proof_not_executed": 177,
-          "full_executable_proof": 49
+          "deferred_proof_not_executed": 176,
+          "full_executable_proof": 50
         }
       },
       {
@@ -45358,9 +45358,9 @@
       "rfc": "RFC9002",
       "title": "Set the maximum datagram size from path MTU",
       "statement": "The sender MUST set `max_datagram_size` based on its Path Maximum Transmission Unit and not use a value below 1200 bytes.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -45372,15 +45372,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0001.cs"

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T04:40:29.1745603-06:00",
+  "generated_at": "2026-07-06T04:44:02.9662552-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T04:40:29.1711896-06:00",
+    "generated_at": "2026-07-06T04:44:02.9626258-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -244496,14 +244496,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 8,
+        "total": 9,
+        "focused": 9,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 4,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -244591,6 +244591,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-SBP2-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-SBP2-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP2-0001.cs",
+          "class": "REQ_QUIC_RFC9002_SBP2_0001",
+          "member": "REQ_QUIC_RFC9002_SBP2_0001.Fuzz_PathMtuValuesPreservePathValueWhileClampingRecoveryFloor",
+          "method": "Fuzz_PathMtuValuesPreservePathValueWhileClampingRecoveryFloor",
+          "line": 65,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
