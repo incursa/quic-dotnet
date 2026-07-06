@@ -71,4 +71,45 @@ public sealed class REQ_QUIC_RFC9000_0393
             QuicS8P1P3ServerTokenValidationTestSupport.TokenMismatchFailureCode,
             scenario.ListenerHost.RetryBootstrapReplayValidationFailureCode);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S8-1-3-P2-S5-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task Fuzz_RetryReplayCandidatesWithoutTheExpectedTokenAreDiscardedWithoutAdmission()
+    {
+        for (int variation = 0; variation < 3; variation++)
+        {
+            await using QuicS8P1P3ServerTokenValidationTestSupport.RetryValidationScenario scenario =
+                await QuicS8P1P3ServerTokenValidationTestSupport.StartRetryValidationScenarioAsync();
+            QuicRetryBootstrapMetadata retryMetadata = await scenario.IssueRetryAsync();
+
+            byte[] unexpectedToken = CreateUnexpectedToken(retryMetadata.RetryToken, variation);
+            scenario.SendRetryReplay(unexpectedToken);
+
+            await scenario.WaitForNoCallbackAsync();
+            Assert.False(scenario.ListenerHost.RetryBootstrapReplayValidated);
+            Assert.False(scenario.ListenerHost.RetryBootstrapReplayAdmitted);
+            Assert.Equal(
+                QuicS8P1P3ServerTokenValidationTestSupport.TokenMismatchFailureCode,
+                scenario.ListenerHost.RetryBootstrapReplayValidationFailureCode);
+        }
+    }
+
+    private static byte[] CreateUnexpectedToken(ReadOnlySpan<byte> retryToken, int variation)
+    {
+        if (variation == 0)
+        {
+            return [];
+        }
+
+        byte[] unexpectedToken = retryToken.ToArray();
+        if (variation == 1)
+        {
+            unexpectedToken[^1] ^= 0x40;
+            return unexpectedToken;
+        }
+
+        return unexpectedToken[..^1];
+    }
 }

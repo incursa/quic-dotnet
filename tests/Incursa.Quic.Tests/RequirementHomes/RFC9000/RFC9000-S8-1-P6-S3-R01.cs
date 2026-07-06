@@ -89,6 +89,47 @@ public sealed class REQ_QUIC_RFC9000_S8P1_0005
         Assert.True(runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery) > recoveryGeneration);
     }
 
+    [Fact]
+    /// <workbench-requirements generated="true" source="manual">
+    ///   <workbench-requirement requirementId="RFC9000-S8-1-P6-S3-R01">To prevent this deadlock, clients MUST send a packet on a Probe Timeout (PTO); see Section 6.2 of [QUIC-RECOVERY].</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("RFC9000-S8-1-P6-S3-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_RecoveryTimerExpirySendsInitialProbePackets()
+    {
+        for (int variation = 0; variation < 4; variation++)
+        {
+            using QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+
+            long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
+            Assert.NotNull(recoveryDueTicks);
+            ulong recoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
+
+            QuicConnectionTransitionResult timerResult = runtime.Transition(
+                new QuicConnectionTimerExpiredEvent(
+                    ObservedAtTicks: recoveryDueTicks.Value + variation,
+                    QuicConnectionTimerKind.Recovery,
+                    recoveryGeneration),
+                nowTicks: recoveryDueTicks.Value + variation);
+
+            QuicConnectionSendDatagramEffect sendEffect = FindInitialProbeEffect(
+                timerResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+
+            Assert.True(QuicPacketParser.TryParseLongHeader(sendEffect.Datagram.Span, out QuicLongHeaderPacket packet));
+            Assert.Equal(QuicLongPacketTypeBits.Initial, packet.LongPacketTypeBits);
+            Assert.Contains(
+                runtime.SendRuntime.SentPackets.Values,
+                sentPacket => sentPacket.PacketNumberSpace == QuicPacketNumberSpace.Initial
+                    && sentPacket.ProbePacket
+                    && sentPacket.PacketBytes.Span.SequenceEqual(sendEffect.Datagram.Span));
+            Assert.Contains(timerResult.Effects, effect =>
+                effect is QuicConnectionArmTimerEffect armEffect
+                && armEffect.TimerKind == QuicConnectionTimerKind.Recovery);
+            Assert.True(runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery) > recoveryGeneration);
+        }
+    }
+
     private static QuicConnectionSendDatagramEffect FindInitialProbeEffect(
         IEnumerable<QuicConnectionSendDatagramEffect> sendEffects)
     {
