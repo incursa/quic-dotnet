@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T01:15:16.4002724-06:00",
+    "generated_at": "2026-07-06T01:20:02.7711722-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1447,
-      "full_executable_proof": 1230
+      "deferred_proof_not_executed": 1443,
+      "full_executable_proof": 1234
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 394,
-          "full_executable_proof": 1056
+          "deferred_proof_not_executed": 390,
+          "full_executable_proof": 1060
         }
       },
       {
@@ -36685,9 +36685,9 @@
       "rfc": "RFC9000",
       "title": "This token MUST be repeated by the client in all Initial packets it sends for that connection after it receives the Retry packet",
       "statement": "This token MUST be repeated by the client in all Initial packets it sends for that connection after it receives the Retry packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -36699,17 +36699,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-2-P1-R01.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-2-P3-R01.cs"
       ],
       "spec_test_ref_count": 3,
@@ -36757,9 +36757,9 @@
       "rfc": "RFC9000",
       "title": "Validate Retry token returns",
       "statement": "The Retry token MUST be repeated by the client in all Initial packets it sends for that connection after it receives the Retry packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -36771,17 +36771,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-2-P1-R01.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-2-P3-R01.cs"
       ],
       "spec_test_ref_count": 3,
@@ -76278,9 +76278,9 @@
       "rfc": "RFC9000",
       "title": "Limit Retry processing to one packet per connection attempt",
       "statement": "A client MUST accept and process at most one Retry packet for each connection attempt.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -76291,15 +76291,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-2-P1-R01.cs"
@@ -76424,9 +76423,9 @@
       "rfc": "RFC9000",
       "title": "The client responds to a Retry packet with an Initial packet that MUST include the provided R...",
       "statement": "The client responds to a Retry packet with an Initial packet that MUST include the provided Retry token to continue connection establishment.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -76438,15 +76437,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-2-P1-R01.cs",
