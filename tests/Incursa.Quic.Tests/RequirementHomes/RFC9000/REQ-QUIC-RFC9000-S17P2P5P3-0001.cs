@@ -93,4 +93,65 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P3_0001
 
         Assert.Equal((ulong)originalClientHelloBytes.Length, expectedOffset);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P3-0001")]
+    [Requirement("RFC9000-S17-2-5-3-P1-R01")]
+    [Requirement("RFC9000-S17-2-5-3-P2-S2-R01")]
+    public void Fuzz_ClientRetryReplayInitialPacketsPreserveRetryValuesAndOriginalHandshakeBytes()
+    {
+        (byte[] RetrySourceConnectionId, byte[] RetryToken)[] scenarios =
+        [
+            ([0x31], [0x41]),
+            (QuicS17P2P5P2TestSupport.RetrySourceConnectionId, QuicS17P2P5P2TestSupport.RetryToken),
+            (CreateBytes(length: 8, firstByte: 0x60), CreateBytes(length: 12, firstByte: 0x90)),
+            (QuicS17P2P5P2TestSupport.MaximumLengthRetrySourceConnectionId, QuicS17P2P5P2TestSupport.SingleByteRetryToken),
+        ];
+
+        foreach ((byte[] retrySourceConnectionId, byte[] retryToken) in scenarios)
+        {
+            using QuicConnectionRuntime clientRuntime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+            byte[] originalClientHelloBytes = QuicResumptionClientHelloTestSupport.GetInitialBootstrapClientHelloBytes(clientRuntime);
+
+            QuicConnectionTransitionResult retryResult = clientRuntime.Transition(
+                QuicS17P2P5P2TestSupport.CreateRetryReceivedEvent(
+                    1,
+                    retrySourceConnectionId,
+                    retryToken),
+                nowTicks: 1);
+
+            QuicS17P2P5P3TestSupport.RetryReplayInitialPacket[] replayPackets =
+                QuicS17P2P5P3TestSupport.ReadRetryReplayInitialPackets(
+                    retryResult,
+                    QuicS17P2P5P3TestSupport.CreateServerProtection(retrySourceConnectionId));
+
+            Assert.NotEmpty(replayPackets);
+            ulong expectedOffset = 0;
+            foreach (QuicS17P2P5P3TestSupport.RetryReplayInitialPacket replayPacket in replayPackets)
+            {
+                Assert.Equal(retrySourceConnectionId, replayPacket.DestinationConnectionId);
+                Assert.Equal(retryToken, replayPacket.Token);
+                Assert.Equal(expectedOffset, replayPacket.CryptoOffset);
+                Assert.True(originalClientHelloBytes.AsSpan(
+                    checked((int)replayPacket.CryptoOffset),
+                    replayPacket.CryptoPayload.Length).SequenceEqual(replayPacket.CryptoPayload));
+                expectedOffset += (ulong)replayPacket.CryptoPayload.Length;
+            }
+
+            Assert.Equal((ulong)originalClientHelloBytes.Length, expectedOffset);
+        }
+    }
+
+    private static byte[] CreateBytes(int length, byte firstByte)
+    {
+        byte[] bytes = new byte[length];
+        for (int index = 0; index < bytes.Length; index++)
+        {
+            bytes[index] = (byte)(firstByte + index);
+        }
+
+        return bytes;
+    }
 }
