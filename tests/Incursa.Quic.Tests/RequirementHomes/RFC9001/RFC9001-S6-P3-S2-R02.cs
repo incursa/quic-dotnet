@@ -106,4 +106,48 @@ public sealed class RFC9001_S6_P3_S2_R02
             out _,
             out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryOpenProtectedApplicationDataPacket_DecryptsChangedKeyPhasePacketsWithSuccessorMaterial()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        QuicRfc9001KeyPhaseTestSupport.ConfigureKeyPhaseDestinationConnectionId(runtime);
+
+        Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
+            runtime,
+            out QuicTlsPacketProtectionMaterial successorOpenMaterial,
+            out _));
+
+        foreach (byte[] payload in new[]
+        {
+            QuicRfc9001KeyPhaseTestSupport.CreatePingPayload(),
+            new byte[] { 0x00, 0x01 },
+            new byte[] { 0x00, 0x00, 0x01 },
+            new byte[] { 0x01, 0x00, 0x00, 0x00 },
+        })
+        {
+            byte[] protectedPacket = QuicRfc9001KeyPhaseTestSupport.BuildProtectedApplicationPacket(
+                successorOpenMaterial,
+                keyPhase: true,
+                payload);
+
+            QuicHandshakeFlowCoordinator coordinator = QuicRfc9001KeyPhaseTestSupport.CreatePacketCoordinator();
+
+            Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+                protectedPacket,
+                successorOpenMaterial,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength,
+                out bool observedKeyPhase));
+
+            Assert.True(observedKeyPhase);
+            ReadOnlySpan<byte> openedPayload = openedPacket.AsSpan(payloadOffset, payloadLength);
+            Assert.True(openedPayload.Length >= payload.Length);
+            Assert.Equal(payload, openedPayload[..payload.Length].ToArray());
+            Assert.All(openedPayload[payload.Length..].ToArray(), static value => Assert.Equal(0, value));
+        }
+    }
 }

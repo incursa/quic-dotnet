@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T05:27:44.4243456-06:00",
+  "generated_at": "2026-07-06T05:32:03.7145443-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T05:27:44.4199237-06:00",
+    "generated_at": "2026-07-06T05:32:03.7109630-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -442499,14 +442499,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 3,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -442550,6 +442550,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-P3-S2-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-P3-S2-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P3-S2-R02.cs",
+          "class": "RFC9001_S6_P3_S2_R02",
+          "member": "RFC9001_S6_P3_S2_R02.Fuzz_TryOpenProtectedApplicationDataPacket_DecryptsChangedKeyPhasePacketsWithSuccessorMaterial",
+          "method": "Fuzz_TryOpenProtectedApplicationDataPacket_DecryptsChangedKeyPhasePacketsWithSuccessorMaterial",
+          "line": 113,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [

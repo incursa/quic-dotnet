@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T05:27:53.3545661-06:00",
+    "generated_at": "2026-07-06T05:32:12.4571559-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1281,
-      "full_executable_proof": 1396
+      "deferred_proof_not_executed": 1280,
+      "full_executable_proof": 1397
     },
     "by_rfc": [
       {
@@ -29,8 +29,8 @@
         "rfc": "RFC9001",
         "total": 96,
         "by_proof_state": {
-          "deferred_proof_not_executed": 25,
-          "full_executable_proof": 71
+          "deferred_proof_not_executed": 24,
+          "full_executable_proof": 72
         }
       },
       {
@@ -85490,9 +85490,9 @@
       "rfc": "RFC9001",
       "title": "Decrypt the packet with the changed Key Phase",
       "statement": "An endpoint that notices a changed Key Phase bit MUST decrypt the packet that contains the changed value.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -85502,15 +85502,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P3-S2-R02.cs"
