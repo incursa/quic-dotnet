@@ -114,6 +114,58 @@ public sealed class REQ_QUIC_RFC9000_19150008
         Assert.Empty(retiredSequenceNumbers);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-19150008")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryAcceptNewConnectionId_FuzzReportsStaleSequenceRetirementWithoutChangingCurrentDestination()
+    {
+        for (ulong currentSequenceNumber = 3; currentSequenceNumber <= 6; currentSequenceNumber++)
+        {
+            QuicConnectionPeerConnectionIdState state = new();
+            byte[] activeConnectionId =
+            [
+                unchecked((byte)(0x30 + currentSequenceNumber)),
+                0x31,
+                0x32,
+                0x33,
+            ];
+            ulong staleSequenceNumber = currentSequenceNumber - 2;
+
+            Assert.True(AcceptFrame(
+                state,
+                currentSequenceNumber,
+                retirePriorTo: currentSequenceNumber - 1,
+                activeConnectionId,
+                out QuicTransportErrorCode errorCode,
+                out bool destinationConnectionIdChanged,
+                out _));
+            Assert.Equal(QuicTransportErrorCode.NoError, errorCode);
+            Assert.True(destinationConnectionIdChanged);
+
+            Assert.True(AcceptFrame(
+                state,
+                staleSequenceNumber,
+                retirePriorTo: 0,
+                connectionId:
+                [
+                    unchecked((byte)(0x10 + staleSequenceNumber)),
+                    0x11,
+                    0x12,
+                    0x13,
+                ],
+                out errorCode,
+                out destinationConnectionIdChanged,
+                out ulong[] retiredSequenceNumbers));
+
+            Assert.Equal(QuicTransportErrorCode.NoError, errorCode);
+            Assert.False(destinationConnectionIdChanged);
+            Assert.Equal([staleSequenceNumber], retiredSequenceNumbers);
+            Assert.Equal(currentSequenceNumber, state.CurrentDestinationConnectionIdSequence);
+            Assert.True(activeConnectionId.AsSpan().SequenceEqual(state.CurrentDestinationConnectionId.Span));
+        }
+    }
+
     private static bool AcceptFrame(
         QuicConnectionPeerConnectionIdState state,
         ulong sequenceNumber,

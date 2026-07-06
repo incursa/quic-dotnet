@@ -75,6 +75,34 @@ public sealed class REQ_QUIC_RFC9000_19150002
         Assert.True(firstConnectionId.AsSpan().SequenceEqual(state.CurrentDestinationConnectionId.Span));
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-19150002")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryAcceptNewConnectionId_FuzzZeroLengthDestinationConnectionIdModeRejectsAnyPeerConnectionId()
+    {
+        for (ulong sequenceNumber = 1; sequenceNumber <= 4; sequenceNumber++)
+        {
+            QuicConnectionPeerConnectionIdState state = new();
+            byte[] connectionId =
+            [
+                unchecked((byte)(0x10 + sequenceNumber)),
+                unchecked((byte)(0x20 + sequenceNumber)),
+                unchecked((byte)(0x30 + sequenceNumber)),
+            ];
+
+            Assert.False(state.TryAcceptNewConnectionId(
+                new QuicNewConnectionIdFrame(sequenceNumber, 0x00, connectionId, CreateStatelessResetToken(unchecked((byte)(0x40 + sequenceNumber)))),
+                requiresZeroLengthDestinationConnectionId: true,
+                out QuicTransportErrorCode errorCode,
+                out bool destinationConnectionIdChanged));
+            Assert.Equal(QuicTransportErrorCode.ProtocolViolation, errorCode);
+            Assert.False(destinationConnectionIdChanged);
+            Assert.True(state.CurrentDestinationConnectionId.IsEmpty);
+            Assert.Null(state.CurrentDestinationConnectionIdSequence);
+        }
+    }
+
     private static byte[] CreateStatelessResetToken(byte startValue)
     {
         byte[] token = new byte[QuicStatelessReset.StatelessResetTokenLength];
