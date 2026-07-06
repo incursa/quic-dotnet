@@ -56,6 +56,50 @@ public sealed class REQ_QUIC_RFC9000_0569
         Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
     }
 
+    [Fact]
+    [Requirement("RFC9000-S10-2-P6-S3-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ServerTerminalStatesPersistUntilTheirLifetimeExpires()
+    {
+        long[] observedTicks = [1, 9, 37, 101];
+        bool[] terminalTransitions = [true, false];
+
+        foreach (long nowTicks in observedTicks)
+        {
+            foreach (bool useLocalCloseRequest in terminalTransitions)
+            {
+                QuicConnectionRuntime runtime = CreateRuntime();
+
+                QuicConnectionTransitionResult terminalResult =
+                    ApplyTerminalTransition(runtime, useLocalCloseRequest, nowTicks);
+
+                QuicConnectionTimerKind timerKind = useLocalCloseRequest
+                    ? QuicConnectionTimerKind.CloseLifetime
+                    : QuicConnectionTimerKind.DrainLifetime;
+
+                Assert.Equal(
+                    useLocalCloseRequest ? QuicConnectionPhase.Closing : QuicConnectionPhase.Draining,
+                    runtime.Phase);
+                Assert.DoesNotContain(terminalResult.Effects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
+
+                long dueTicks = runtime.TimerState.GetDueTicks(timerKind)!.Value;
+                ulong generation = runtime.TimerState.GetGeneration(timerKind);
+
+                QuicConnectionTransitionResult expiryResult = runtime.Transition(
+                    new QuicConnectionTimerExpiredEvent(
+                        ObservedAtTicks: dueTicks,
+                        timerKind,
+                        generation),
+                    nowTicks: dueTicks);
+
+                Assert.Equal(QuicConnectionPhase.Discarded, runtime.Phase);
+                Assert.Equal(QuicConnectionSendingMode.None, runtime.SendingMode);
+                Assert.Contains(expiryResult.Effects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
+            }
+        }
+    }
+
     private static QuicConnectionTransitionResult ApplyTerminalTransition(
         QuicConnectionRuntime runtime,
         bool useLocalCloseRequest,
