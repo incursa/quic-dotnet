@@ -14,10 +14,34 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P1_0006
     [Trait("Category", "Negative")]
     public void ServerRuntimeBuffersAllowedZeroRttStreamPayloadWithoutClosingTheConnection()
     {
+        AssertServerRuntimeBuffersAllowedZeroRttStreamPayload([0x51, 0x52, 0x53, 0x54]);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P5P1-0006")]
+    public void Fuzz_ServerRuntimeBuffersAllowedZeroRttStreamPayloadsWithoutClosingTheConnection()
+    {
+        byte[][] payloads =
+        [
+            [0x01],
+            [0x10, 0x11],
+            [0x20, 0x21, 0x22, 0x23, 0x24, 0x25],
+            [0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37],
+        ];
+
+        foreach (byte[] payload in payloads)
+        {
+            AssertServerRuntimeBuffersAllowedZeroRttStreamPayload(payload);
+        }
+    }
+
+    private static void AssertServerRuntimeBuffersAllowedZeroRttStreamPayload(byte[] streamPayload)
+    {
         QuicTlsPacketProtectionMaterial zeroRttMaterial = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
             QuicTlsEncryptionLevel.ZeroRtt);
         using QuicConnectionRuntime runtime = CreateServerRuntimeWithZeroRttOpenMaterial(zeroRttMaterial);
-        byte[] streamPayload = [0x51, 0x52, 0x53, 0x54];
         byte[] streamFrame = QuicStreamTestData.BuildStreamFrame(
             QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask,
             streamId: 0,

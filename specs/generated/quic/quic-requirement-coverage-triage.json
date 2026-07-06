@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T07:05:27.2099006-06:00",
+  "generated_at": "2026-07-06T07:07:41.4779620-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T07:05:27.2064305-06:00",
+    "generated_at": "2026-07-06T07:07:41.4746120-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -108303,14 +108303,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0006.cs::ServerRuntimeBuffersAllowedZeroRttStreamPayloadWithoutClosingTheConnection",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
           "positive": 0,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -108318,6 +108318,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0006.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P5P1_0006",
+          "member": "REQ_QUIC_RFC9000_S17P2P5P1_0006.Fuzz_ServerRuntimeBuffersAllowedZeroRttStreamPayloadsWithoutClosingTheConnection",
+          "method": "Fuzz_ServerRuntimeBuffersAllowedZeroRttStreamPayloadsWithoutClosingTheConnection",
+          "line": 24,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P5P1-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0006",
           "source": "requirement_attribute",
