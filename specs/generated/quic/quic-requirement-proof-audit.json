@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T08:28:06.3394006-06:00",
+    "generated_at": "2026-07-06T08:31:11.7988421-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1213,
-      "full_executable_proof": 1464
+      "deferred_proof_not_executed": 1211,
+      "full_executable_proof": 1466
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 188,
-          "full_executable_proof": 1262
+          "deferred_proof_not_executed": 186,
+          "full_executable_proof": 1264
         }
       },
       {
@@ -82932,9 +82932,9 @@
       "rfc": "RFC9000",
       "title": "Limit PATH_CHALLENGE probe frequency",
       "statement": "An endpoint SHOULD NOT probe a new path with packets containing a PATH_CHALLENGE frame more frequently than it would send an Initial packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -82945,15 +82945,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P3-S1-R01.cs"
@@ -83851,9 +83850,9 @@
       "rfc": "RFC9000",
       "title": "Allow Probe-Packet Loss Exceptions",
       "statement": "A sender MAY make exceptions for probe packets so their loss detection is independent and does not unduly cause the congestion controller to reduce its sending rate.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
@@ -83861,15 +83860,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S1-R01.cs"

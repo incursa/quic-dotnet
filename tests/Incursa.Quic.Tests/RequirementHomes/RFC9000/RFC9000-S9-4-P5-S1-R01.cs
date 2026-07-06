@@ -99,4 +99,40 @@ public sealed class RFC9000_S9_4_P5_S1_R01
         Assert.Equal(initialSlowStartThresholdBytes, state.SlowStartThresholdBytes);
         Assert.Null(state.RecoveryStartTimeMicros);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ProbePacketLossDoesNotReduceCongestionAcrossPacketSizes()
+    {
+        (ulong SentBytes, ulong SentAtMicros)[] cases =
+        [
+            (1UL, 1_000UL),
+            (64UL, 1_100UL),
+            (1_200UL, 1_300UL),
+            (1_472UL, 1_500UL),
+        ];
+
+        foreach ((ulong sentBytes, ulong sentAtMicros) in cases)
+        {
+            QuicCongestionControlState state = new();
+            ulong initialCongestionWindowBytes = state.CongestionWindowBytes;
+            ulong initialSlowStartThresholdBytes = state.SlowStartThresholdBytes;
+
+            state.RegisterPacketSent(
+                sentBytes,
+                isProbePacket: true);
+
+            Assert.True(state.TryRegisterLoss(
+                sentBytes,
+                sentAtMicros,
+                packetInFlight: true,
+                isProbePacket: true));
+
+            Assert.Equal(0UL, state.BytesInFlightBytes);
+            Assert.Equal(initialCongestionWindowBytes, state.CongestionWindowBytes);
+            Assert.Equal(initialSlowStartThresholdBytes, state.SlowStartThresholdBytes);
+            Assert.Null(state.RecoveryStartTimeMicros);
+        }
+    }
 }
