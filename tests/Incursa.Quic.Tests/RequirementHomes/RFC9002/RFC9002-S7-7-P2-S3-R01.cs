@@ -49,4 +49,29 @@ public sealed class REQ_QUIC_RFC9002_S7P7_0003
 
         Assert.Equal(12_000UL, burstLimitBytes);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryGetBurstLimitBytes_CapsBurstsAtInitialCongestionWindow()
+    {
+        foreach ((ulong initialCongestionWindowBytes, ulong? largerBurstLimitBytes) in new (ulong, ulong?)[]
+        {
+            (1UL, null),
+            (1UL, 2UL),
+            (1_200UL, 24_000UL),
+            (12_000UL, 24_000UL),
+            (14_720UL, 65_535UL),
+            (uint.MaxValue, ulong.MaxValue),
+        })
+        {
+            Assert.True(QuicCongestionControlState.TryGetBurstLimitBytes(
+                initialCongestionWindowBytes,
+                pathCanAbsorbLargerBursts: false,
+                out ulong burstLimitBytes,
+                largerBurstLimitBytes));
+
+            Assert.Equal(initialCongestionWindowBytes, burstLimitBytes);
+        }
+    }
 }

@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T05:04:16.8458048-06:00",
+    "generated_at": "2026-07-06T05:06:30.0199769-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1290,
-      "full_executable_proof": 1387
+      "deferred_proof_not_executed": 1289,
+      "full_executable_proof": 1388
     },
     "by_rfc": [
       {
@@ -37,8 +37,8 @@
         "rfc": "RFC9002",
         "total": 226,
         "by_proof_state": {
-          "deferred_proof_not_executed": 170,
-          "full_executable_proof": 56
+          "deferred_proof_not_executed": 169,
+          "full_executable_proof": 57
         }
       },
       {
@@ -88220,9 +88220,9 @@
       "rfc": "RFC9002",
       "title": "Limit bursts to the initial congestion window",
       "statement": "Senders SHOULD limit bursts to the initial congestion window.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -88234,15 +88234,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-7-P1-S1-R01.cs",
