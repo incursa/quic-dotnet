@@ -600,6 +600,49 @@ public sealed class DoqFoundationTests
         Assert.Equal(dnsMessageWithSmallEdnsPayloadSize, message.Payload.ToArray());
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0084")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryDecodeIgnoresEdnsUdpPayloadSizeAcrossRepresentativeValues()
+    {
+        foreach (int udpPayloadSize in new[] { 0, 16, 512, 1_232, 4_096, ushort.MaxValue })
+        {
+            byte[] dnsMessage = BuildDnsResponseWithEdnsUdpPayloadSize(udpPayloadSize);
+            byte[] encoded = DoqMessageCodec.Encode(dnsMessage);
+
+            Assert.True(DoqMessageCodec.TryDecode(encoded, out DoqMessage message, out int bytesConsumed));
+
+            Assert.Equal(encoded.Length, bytesConsumed);
+            Assert.Equal(dnsMessage, message.Payload.ToArray());
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0085")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_MessageCodecEnforcesPayloadLengthBoundary()
+    {
+        foreach (int acceptedLength in new[] { 0, 1, 1_232, DoqMessageCodec.MaxPayloadLength - 1, DoqMessageCodec.MaxPayloadLength })
+        {
+            byte[] payload = CreateDnsFuzzPayload(acceptedLength);
+            byte[] encoded = DoqMessageCodec.Encode(payload);
+
+            Assert.Equal(DoqMessageCodec.LengthPrefixSize + acceptedLength, encoded.Length);
+            Assert.True(DoqMessageCodec.TryDecode(encoded, out DoqMessage message, out int bytesConsumed));
+            Assert.Equal(encoded.Length, bytesConsumed);
+            Assert.Equal(payload, message.Payload.ToArray());
+        }
+
+        byte[] oversizedPayload = new byte[DoqMessageCodec.MaxPayloadLength + 1];
+        Span<byte> destination = stackalloc byte[DoqMessageCodec.LengthPrefixSize + 16];
+
+        Assert.False(DoqMessageCodec.TryEncode(oversizedPayload, destination, out int bytesWritten));
+        Assert.Equal(0, bytesWritten);
+        Assert.Throws<ArgumentOutOfRangeException>(() => DoqMessageCodec.Encode(oversizedPayload));
+    }
+
     private static byte[] BuildFramedMessage(int payloadLength)
     {
         byte[] source = new byte[DoqMessageCodec.LengthPrefixSize + payloadLength];
@@ -1264,6 +1307,8 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0095")]
+    [Requirement("REQ-QUIC-RFC9250-0096")]
     [Requirement("REQ-QUIC-RFC9250-0097")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Fuzz")]

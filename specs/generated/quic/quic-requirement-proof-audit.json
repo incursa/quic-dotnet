@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T17:30:58.4607763-06:00",
+    "generated_at": "2026-07-06T17:34:07.3138557-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 862,
-      "full_executable_proof": 1815
+      "deferred_proof_not_executed": 858,
+      "full_executable_proof": 1819
     },
     "by_rfc": [
       {
@@ -73,8 +73,8 @@
         "rfc": "RFC9250",
         "total": 141,
         "by_proof_state": {
-          "deferred_proof_not_executed": 115,
-          "full_executable_proof": 26
+          "deferred_proof_not_executed": 111,
+          "full_executable_proof": 30
         }
       },
       {
@@ -50689,9 +50689,9 @@
       "rfc": "RFC9250",
       "title": "Ignore EDNS(0) UDP payload size",
       "statement": "DoQ implementations MUST ignore the EDNS(0) UDP payload size when determining DoQ message size.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -50701,15 +50701,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
@@ -50725,9 +50724,9 @@
       "rfc": "RFC9250",
       "title": "Enforce the 65535-byte DoQ message maximum",
       "statement": "DoQ implementations MUST enforce a maximum DNS message size of 65535 bytes.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -50737,15 +50736,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 8,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 9,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
@@ -50993,9 +50991,9 @@
       "rfc": "RFC9250",
       "title": "Add EDNS(0) padding to DoQ messages",
       "statement": "Implementations SHOULD add EDNS(0) padding to DoQ messages to mitigate traffic analysis.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -51005,15 +51003,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
@@ -51029,9 +51026,9 @@
       "rfc": "RFC9250",
       "title": "Padding policy aligned with RFC 7830/8467",
       "statement": "The padding policy SHOULD follow the recommendations in RFC 7830 and RFC 8467.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -51041,15 +51038,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
