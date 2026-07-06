@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T05:14:48.5664974-06:00",
+  "generated_at": "2026-07-06T05:16:49.4263885-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T05:14:48.5611203-06:00",
+    "generated_at": "2026-07-06T05:16:49.4226565-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -401628,14 +401628,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 8,
+        "total": 9,
+        "focused": 9,
         "broad": 0,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -401643,6 +401643,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S19-13-P2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P2-R01.cs",
+          "class": "REQ_QUIC_RFC9000_1299",
+          "member": "REQ_QUIC_RFC9000_1299.Fuzz_TryReceiveStreamDataBlockedFrame_RejectsSendOnlyStreams",
+          "method": "Fuzz_TryReceiveStreamDataBlockedFrame_RejectsSendOnlyStreams",
+          "line": 112,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S19-13-P2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "RFC9000-S19-13-P2-R01",
           "source": "requirement_attribute",

@@ -105,4 +105,32 @@ public sealed class REQ_QUIC_RFC9000_1299
         Assert.Equal(QuicTransportErrorCode.StreamStateError, runtime.TerminalState.Value.Close.TransportErrorCode);
         Assert.Equal(0x15UL, runtime.TerminalState.Value.Close.TriggeringFrameType);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryReceiveStreamDataBlockedFrame_RejectsSendOnlyStreams()
+    {
+        foreach (ulong maximumStreamData in new[] { 0UL, 1UL, 4UL, 63UL, 16_383UL })
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                peerUnidirectionalStreamLimit: 8);
+
+            Assert.True(state.TryOpenLocalStream(
+                bidirectional: false,
+                out QuicStreamId streamId,
+                out QuicStreamsBlockedFrame blockedFrame));
+            Assert.Equal(default, blockedFrame);
+
+            Assert.False(state.TryReceiveStreamDataBlockedFrame(
+                new QuicStreamDataBlockedFrame(streamId.Value, maximumStreamData),
+                out QuicTransportErrorCode errorCode));
+
+            Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
+            Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
+            Assert.Equal(QuicStreamType.Unidirectional, snapshot.StreamType);
+            Assert.Equal(QuicStreamSendState.Ready, snapshot.SendState);
+            Assert.Equal(QuicStreamReceiveState.None, snapshot.ReceiveState);
+        }
+    }
 }
