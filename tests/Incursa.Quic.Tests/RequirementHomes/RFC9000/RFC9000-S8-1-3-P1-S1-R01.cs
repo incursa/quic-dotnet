@@ -27,4 +27,53 @@ public sealed class REQ_QUIC_RFC9000_S8P1P3_0001
         Assert.Equal(encoded.Length, bytesWritten);
         Assert.True(encoded.AsSpan().SequenceEqual(destination[..bytesWritten]));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_NewTokenFrameRoundTripsProvidedTokensForSubsequentConnections()
+    {
+        foreach (byte[] token in CreateTokenVariants())
+        {
+            QuicNewTokenFrame frame = new(token);
+            byte[] encoded = QuicFrameTestData.BuildNewTokenFrame(frame);
+
+            Assert.True(QuicFrameCodec.TryParseNewTokenFrame(
+                encoded,
+                out QuicNewTokenFrame parsed,
+                out int bytesConsumed));
+            Assert.Equal(encoded.Length, bytesConsumed);
+            Assert.True(token.AsSpan().SequenceEqual(parsed.Token));
+
+            byte[] destination = new byte[encoded.Length];
+            Assert.True(QuicFrameCodec.TryFormatNewTokenFrame(parsed, destination, out int bytesWritten));
+            Assert.Equal(encoded.Length, bytesWritten);
+            Assert.True(encoded.AsSpan().SequenceEqual(destination));
+
+            Assert.False(QuicFrameCodec.TryParseNewTokenFrame(encoded[..^1], out _, out _));
+        }
+    }
+
+    private static byte[][] CreateTokenVariants()
+    {
+        return
+        [
+            [0x01],
+            [0x10, 0x20, 0x30, 0x40],
+            CreateSequentialToken(63),
+            CreateSequentialToken(64),
+            CreateSequentialToken(128),
+        ];
+    }
+
+    private static byte[] CreateSequentialToken(int tokenLength)
+    {
+        byte[] token = new byte[tokenLength];
+        for (int index = 0; index < token.Length; index++)
+        {
+            token[index] = unchecked((byte)(0x40 + index));
+        }
+
+        return token;
+    }
 }
