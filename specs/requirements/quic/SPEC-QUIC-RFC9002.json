@@ -863,7 +863,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S1-R01.cs::TryUpdateFromAck_InitializesMinRttFromTheFirstSample",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S1-R01.cs::TryUpdateFromAck_IgnoresAckDelayWhenInitializingTheFirstSample",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S1-R01.cs::TryUpdateFromAck_InitializesTheFirstSampleAtTheZeroBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S1-R01.cs::TryUpdateFromAck_InitializesTheFirstSampleAtTheZeroBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples"
         ]
       }
     },
@@ -894,7 +895,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S2-R01.cs::TryUpdateFromAck_UpdatesMinRttWhenALaterSampleIsSmaller",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S2-R01.cs::TryUpdateFromAck_DoesNotRaiseMinRttWhenALaterSampleIsLarger",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S2-R01.cs::TryUpdateFromAck_LeavesMinRttUnchangedWhenALaterSampleMatchesIt"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S2-R01.cs::TryUpdateFromAck_LeavesMinRttUnchangedWhenALaterSampleMatchesIt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples"
         ]
       }
     },
@@ -925,7 +927,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_SeedsMinRttFromTheLocalObservationEvenWhenPeerDelayFieldsArePresent",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_DoesNotUsePeerAckDelayWhenUpdatingMinRttOnLaterSamples",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_LeavesMinRttAtTheLocalBoundaryWhenLocalDelayConsumesTheSlack"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_LeavesMinRttAtTheLocalBoundaryWhenLocalDelayConsumesTheSlack",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples"
         ]
       }
     },
@@ -955,7 +958,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0004.cs::TryUpdateFromAck_IgnoresPeerAckDelayWhenMaintainingMinRtt",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0004.cs::TryUpdateFromAck_DoesNotReduceMinRttUsingPeerAckDelayOnASmallerSample"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0004.cs::TryUpdateFromAck_DoesNotReduceMinRttUsingPeerAckDelayOnASmallerSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples"
         ]
       }
     },
@@ -986,7 +990,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P5-S1-R01.cs::RefreshMinRttFromLatestSample_AllowsExplicitMinRttReestablishment",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P5-S1-R01.cs::RefreshMinRttFromLatestSample_ReestablishesTheMinimumRtt",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P5-S1-R01.cs::RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P5-S1-R01.cs::RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory"
         ]
       }
     },
@@ -1016,7 +1021,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S1-R01.cs::RefreshMinRttFromLatestSample_AllowsOpportunisticReestablishmentAfterALowDelayAck",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S1-R01.cs::TryUpdateFromAck_LeavesMinRttAtTheCurrentFloorWhenTheCallerDoesNotRefreshIt"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S1-R01.cs::TryUpdateFromAck_LeavesMinRttAtTheCurrentFloorWhenTheCallerDoesNotRefreshIt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory"
         ]
       }
     },
@@ -1047,7 +1053,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S2-R01.cs::RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutAlteringDerivedState",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S2-R01.cs::RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S2-R01.cs::RefreshMinRttFromLatestSample_IsIdempotentWhenTheSameSampleIsReapplied"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S2-R01.cs::RefreshMinRttFromLatestSample_IsIdempotentWhenTheSameSampleIsReapplied",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory"
         ]
       }
     },

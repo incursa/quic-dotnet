@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T13:26:49.3194223-06:00",
+    "generated_at": "2026-07-06T13:30:43.8567253-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1043,
-      "full_executable_proof": 1634
+      "deferred_proof_not_executed": 1036,
+      "full_executable_proof": 1641
     },
     "by_rfc": [
       {
@@ -37,8 +37,8 @@
         "rfc": "RFC9002",
         "total": 226,
         "by_proof_state": {
-          "deferred_proof_not_executed": 164,
-          "full_executable_proof": 62
+          "deferred_proof_not_executed": 157,
+          "full_executable_proof": 69
         }
       },
       {
@@ -41752,9 +41752,9 @@
       "rfc": "RFC9002",
       "title": "Compute min_rtt from local observations",
       "statement": "An endpoint MUST use only locally observed times when computing min_rtt.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -41766,24 +41766,25 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_SeedsMinRttFromTheLocalObservationEvenWhenPeerDelayFieldsArePresent",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_DoesNotUsePeerAckDelayWhenUpdatingMinRttOnLaterSamples",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_LeavesMinRttAtTheLocalBoundaryWhenLocalDelayConsumesTheSlack"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_LeavesMinRttAtTheLocalBoundaryWhenLocalDelayConsumesTheSlack",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples"
       ]
     },
     {
@@ -41791,9 +41792,9 @@
       "rfc": "RFC9002",
       "title": "Ignore peer delay in min_rtt",
       "statement": "An endpoint MUST NOT adjust min_rtt for acknowledgment delays reported by the peer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -41803,23 +41804,24 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0004.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0004.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs"
       ],
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0004.cs::TryUpdateFromAck_IgnoresPeerAckDelayWhenMaintainingMinRtt",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0004.cs::TryUpdateFromAck_DoesNotReduceMinRttUsingPeerAckDelayOnASmallerSample"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0004.cs::TryUpdateFromAck_DoesNotReduceMinRttUsingPeerAckDelayOnASmallerSample",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples"
       ]
     },
     {
@@ -85784,9 +85786,9 @@
       "rfc": "RFC9002",
       "title": "Initialize min_rtt from the first sample",
       "statement": "min_rtt MUST be set to latest_rtt on the first RTT sample.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -85798,24 +85800,25 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S1-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S1-R01.cs::TryUpdateFromAck_InitializesMinRttFromTheFirstSample",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S1-R01.cs::TryUpdateFromAck_IgnoresAckDelayWhenInitializingTheFirstSample",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S1-R01.cs::TryUpdateFromAck_InitializesTheFirstSampleAtTheZeroBoundary"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S1-R01.cs::TryUpdateFromAck_InitializesTheFirstSampleAtTheZeroBoundary",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples"
       ]
     },
     {
@@ -85823,9 +85826,9 @@
       "rfc": "RFC9002",
       "title": "Update min_rtt on later samples",
       "statement": "On all RTT samples after the first, min_rtt MUST be set to the lesser of min_rtt and latest_rtt.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -85837,24 +85840,25 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S2-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S2-R01.cs::TryUpdateFromAck_UpdatesMinRttWhenALaterSampleIsSmaller",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S2-R01.cs::TryUpdateFromAck_DoesNotRaiseMinRttWhenALaterSampleIsLarger",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S2-R01.cs::TryUpdateFromAck_LeavesMinRttUnchangedWhenALaterSampleMatchesIt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S2-R01.cs::TryUpdateFromAck_LeavesMinRttUnchangedWhenALaterSampleMatchesIt",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples"
       ]
     },
     {
@@ -85862,9 +85866,9 @@
       "rfc": "RFC9002",
       "title": "Refresh min_rtt after persistent congestion",
       "statement": "Endpoints SHOULD set min_rtt to the newest RTT sample after persistent congestion is established.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -85876,24 +85880,25 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P5-S1-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P5-S1-R01.cs::RefreshMinRttFromLatestSample_AllowsExplicitMinRttReestablishment",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P5-S1-R01.cs::RefreshMinRttFromLatestSample_ReestablishesTheMinimumRtt",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P5-S1-R01.cs::RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P5-S1-R01.cs::RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory"
       ]
     },
     {
@@ -85901,32 +85906,33 @@
       "rfc": "RFC9002",
       "title": "Allow opportunistic min_rtt reestablishment",
       "statement": "Endpoints MAY reestablish min_rtt at other times in the connection, such as when traffic volume is low and an acknowledgment is received with a low acknowledgment delay.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S1-R01.cs"
       ],
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S1-R01.cs::RefreshMinRttFromLatestSample_AllowsOpportunisticReestablishmentAfterALowDelayAck",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S1-R01.cs::TryUpdateFromAck_LeavesMinRttAtTheCurrentFloorWhenTheCallerDoesNotRefreshIt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S1-R01.cs::TryUpdateFromAck_LeavesMinRttAtTheCurrentFloorWhenTheCallerDoesNotRefreshIt",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory"
       ]
     },
     {
@@ -85934,9 +85940,9 @@
       "rfc": "RFC9002",
       "title": "Avoid over-refreshing min_rtt",
       "statement": "Implementations SHOULD NOT refresh the min_rtt value too often.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -85947,24 +85953,25 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S2-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S2-R01.cs::RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutAlteringDerivedState",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S2-R01.cs::RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S2-R01.cs::RefreshMinRttFromLatestSample_IsIdempotentWhenTheSameSampleIsReapplied"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S2-R01.cs::RefreshMinRttFromLatestSample_IsIdempotentWhenTheSameSampleIsReapplied",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory"
       ]
     },
     {

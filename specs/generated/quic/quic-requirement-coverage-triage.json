@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T13:26:34.3668983-06:00",
+  "generated_at": "2026-07-06T13:30:29.3304822-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T13:26:34.3630974-06:00",
+    "generated_at": "2026-07-06T13:30:29.3266170-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -229943,22 +229943,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_SeedsMinRttFromTheLocalObservationEvenWhenPeerDelayFieldsArePresent",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_DoesNotUsePeerAckDelayWhenUpdatingMinRttOnLaterSamples",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_LeavesMinRttAtTheLocalBoundaryWhenLocalDelayConsumesTheSlack"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0003.cs::TryUpdateFromAck_LeavesMinRttAtTheLocalBoundaryWhenLocalDelayConsumesTheSlack",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -230097,6 +230098,56 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P2-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure.Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "method": "Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "line": 15,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P2-0003",
+            "REQ-QUIC-RFC9002-S5P2-0004",
+            "RFC9002-S5-2-P2-S1-R01",
+            "RFC9002-S5-2-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P2-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure.Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "method": "Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "line": 15,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P2-0003",
+            "REQ-QUIC-RFC9002-S5P2-0004",
+            "RFC9002-S5-2-P2-S1-R01",
+            "RFC9002-S5-2-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -230119,21 +230170,22 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0004.cs::TryUpdateFromAck_IgnoresPeerAckDelayWhenMaintainingMinRtt",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0004.cs::TryUpdateFromAck_DoesNotReduceMinRttUsingPeerAckDelayOnASmallerSample"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0004.cs::TryUpdateFromAck_DoesNotReduceMinRttUsingPeerAckDelayOnASmallerSample",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -230228,6 +230280,56 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P2-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure.Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "method": "Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "line": 15,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P2-0003",
+            "REQ-QUIC-RFC9002-S5P2-0004",
+            "RFC9002-S5-2-P2-S1-R01",
+            "RFC9002-S5-2-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S5P2-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure.Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "method": "Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "line": 15,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P2-0003",
+            "REQ-QUIC-RFC9002-S5P2-0004",
+            "RFC9002-S5-2-P2-S1-R01",
+            "RFC9002-S5-2-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -451760,22 +451862,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S1-R01.cs::TryUpdateFromAck_InitializesMinRttFromTheFirstSample",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S1-R01.cs::TryUpdateFromAck_IgnoresAckDelayWhenInitializingTheFirstSample",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S1-R01.cs::TryUpdateFromAck_InitializesTheFirstSampleAtTheZeroBoundary"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S1-R01.cs::TryUpdateFromAck_InitializesTheFirstSampleAtTheZeroBoundary",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -451783,6 +451886,56 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9002-S5-2-P2-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure.Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "method": "Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "line": 15,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P2-0003",
+            "REQ-QUIC-RFC9002-S5P2-0004",
+            "RFC9002-S5-2-P2-S1-R01",
+            "RFC9002-S5-2-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9002-S5-2-P2-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure.Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "method": "Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "line": 15,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P2-0003",
+            "REQ-QUIC-RFC9002-S5P2-0004",
+            "RFC9002-S5-2-P2-S1-R01",
+            "RFC9002-S5-2-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9002-S5-2-P2-S1-R01",
           "source": "requirement_attribute",
@@ -451936,22 +452089,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S2-R01.cs::TryUpdateFromAck_UpdatesMinRttWhenALaterSampleIsSmaller",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S2-R01.cs::TryUpdateFromAck_DoesNotRaiseMinRttWhenALaterSampleIsLarger",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S2-R01.cs::TryUpdateFromAck_LeavesMinRttUnchangedWhenALaterSampleMatchesIt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S2-R01.cs::TryUpdateFromAck_LeavesMinRttUnchangedWhenALaterSampleMatchesIt",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -451959,6 +452113,56 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9002-S5-2-P2-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure.Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "method": "Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "line": 15,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P2-0003",
+            "REQ-QUIC-RFC9002-S5P2-0004",
+            "RFC9002-S5-2-P2-S1-R01",
+            "RFC9002-S5-2-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9002-S5-2-P2-S2-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure.Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "method": "Fuzz_TryUpdateFromAck_MaintainsMinRttFromLocalLatestRttSamples",
+          "line": 15,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S5P2-0003",
+            "REQ-QUIC-RFC9002-S5P2-0004",
+            "RFC9002-S5-2-P2-S1-R01",
+            "RFC9002-S5-2-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9002-S5-2-P2-S2-R01",
           "source": "requirement_attribute",
@@ -452112,22 +452316,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P5-S1-R01.cs::RefreshMinRttFromLatestSample_AllowsExplicitMinRttReestablishment",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P5-S1-R01.cs::RefreshMinRttFromLatestSample_ReestablishesTheMinimumRtt",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P5-S1-R01.cs::RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P5-S1-R01.cs::RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -452135,6 +452340,54 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9002-S5-2-P5-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure.Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory",
+          "method": "Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory",
+          "line": 62,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9002-S5-2-P5-S1-R01",
+            "RFC9002-S5-2-P6-S1-R01",
+            "RFC9002-S5-2-P6-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9002-S5-2-P5-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure.Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory",
+          "method": "Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory",
+          "line": 62,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9002-S5-2-P5-S1-R01",
+            "RFC9002-S5-2-P6-S1-R01",
+            "RFC9002-S5-2-P6-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9002-S5-2-P5-S1-R01",
           "source": "requirement_attribute",
@@ -452290,21 +452543,22 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S1-R01.cs::RefreshMinRttFromLatestSample_AllowsOpportunisticReestablishmentAfterALowDelayAck",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S1-R01.cs::TryUpdateFromAck_LeavesMinRttAtTheCurrentFloorWhenTheCallerDoesNotRefreshIt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S1-R01.cs::TryUpdateFromAck_LeavesMinRttAtTheCurrentFloorWhenTheCallerDoesNotRefreshIt",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -452312,6 +452566,54 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9002-S5-2-P6-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure.Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory",
+          "method": "Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory",
+          "line": 62,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9002-S5-2-P5-S1-R01",
+            "RFC9002-S5-2-P6-S1-R01",
+            "RFC9002-S5-2-P6-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9002-S5-2-P6-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure.Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory",
+          "method": "Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory",
+          "line": 62,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9002-S5-2-P5-S1-R01",
+            "RFC9002-S5-2-P6-S1-R01",
+            "RFC9002-S5-2-P6-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9002-S5-2-P6-S1-R01",
           "source": "requirement_attribute",
@@ -452421,22 +452723,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S2-R01.cs::RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutAlteringDerivedState",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S2-R01.cs::RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S2-R01.cs::RefreshMinRttFromLatestSample_IsIdempotentWhenTheSameSampleIsReapplied"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S2-R01.cs::RefreshMinRttFromLatestSample_IsIdempotentWhenTheSameSampleIsReapplied",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -452444,6 +452747,54 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9002-S5-2-P6-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure.Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory",
+          "method": "Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory",
+          "line": 62,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9002-S5-2-P5-S1-R01",
+            "RFC9002-S5-2-P6-S1-R01",
+            "RFC9002-S5-2-P6-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9002-S5-2-P6-S2-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs::Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S5P2_DeferredFuzzClosure.Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory",
+          "method": "Fuzz_RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutChangingRttHistory",
+          "line": 62,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9002-S5-2-P5-S1-R01",
+            "RFC9002-S5-2-P6-S1-R01",
+            "RFC9002-S5-2-P6-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9002-S5-2-P6-S2-R01",
           "source": "requirement_attribute",
