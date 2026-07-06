@@ -61,6 +61,43 @@ public sealed class REQ_QUIC_RFC9000_1051
         Assert.Empty(result.Effects);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("RFC9000-S17-2-5-3-P2-S3-R01")]
+    public void ServerRuntimeFuzz_DiscardsRetryReplaysThatCarryDifferentClientHelloBytes()
+    {
+        byte[] bootstrapClientHelloBytes = QuicS17P2P5P2TestSupport.GetOriginalClientHelloBytes();
+        Assert.True(bootstrapClientHelloBytes.Length > 64);
+
+        int[] mutationOffsets =
+        [
+            38,
+            bootstrapClientHelloBytes.Length / 2,
+            bootstrapClientHelloBytes.Length - 2,
+        ];
+
+        foreach (int mutationOffset in mutationOffsets)
+        {
+            using QuicConnectionRuntime serverRuntime = CreateServerRuntime(QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId);
+
+            byte[] differentClientHelloBytes = new byte[bootstrapClientHelloBytes.Length];
+            bootstrapClientHelloBytes.CopyTo(differentClientHelloBytes, 0);
+            differentClientHelloBytes[mutationOffset] ^= 0x7F;
+
+            QuicConnectionTransitionResult result = serverRuntime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: mutationOffset,
+                    new QuicConnectionPathIdentity("203.0.113.10", "198.51.100.20", 443, 12345),
+                    BuildProtectedRetryReplayInitialPacket(differentClientHelloBytes)),
+                nowTicks: mutationOffset);
+
+            Assert.True(result.StateChanged);
+            Assert.Null(serverRuntime.TerminalState);
+            Assert.Empty(result.Effects);
+        }
+    }
+
     private static QuicConnectionRuntime CreateServerRuntime(ReadOnlySpan<byte> initialDestinationConnectionId)
     {
         QuicConnectionRuntime runtime = new(
@@ -69,5 +106,27 @@ public sealed class REQ_QUIC_RFC9000_1051
 
         Assert.True(runtime.TryConfigureInitialPacketProtection(initialDestinationConnectionId));
         return runtime;
+    }
+
+    private static byte[] BuildProtectedRetryReplayInitialPacket(ReadOnlySpan<byte> clientHelloBytes)
+    {
+        QuicConnectionRetryReceivedEvent retryReceivedEvent = QuicS17P2P5P2TestSupport.CreateRetryReceivedEvent(1);
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId,
+            out QuicInitialPacketProtection clientProtection));
+
+        QuicHandshakeFlowCoordinator coordinator = new(
+            QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId,
+            QuicS17P2P5P2TestSupport.InitialSourceConnectionId);
+        Assert.True(coordinator.TryBuildProtectedInitialPacket(
+            clientHelloBytes,
+            cryptoPayloadOffset: 0,
+            retryReceivedEvent.RetrySourceConnectionId.Span,
+            retryReceivedEvent.RetryToken.Span,
+            clientProtection,
+            out byte[] protectedPacket));
+
+        return protectedPacket;
     }
 }

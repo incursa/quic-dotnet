@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T10:48:21.2592785-06:00",
+    "generated_at": "2026-07-06T10:50:40.0929164-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1120,
-      "full_executable_proof": 1557
+      "deferred_proof_not_executed": 1119,
+      "full_executable_proof": 1558
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 95,
-          "full_executable_proof": 1355
+          "deferred_proof_not_executed": 94,
+          "full_executable_proof": 1356
         }
       },
       {
@@ -76360,9 +76360,9 @@
       "rfc": "RFC9000",
       "title": "Server handling of changed handshake message",
       "statement": "A server MAY treat a packet that contains a different cryptographic handshake message as a connection error or discard it.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -76372,15 +76372,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P2-S3-R01.cs"
