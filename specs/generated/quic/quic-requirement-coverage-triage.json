@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T03:04:24.9682821-06:00",
+  "generated_at": "2026-07-06T03:06:55.2197750-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T03:04:24.9648785-06:00",
+    "generated_at": "2026-07-06T03:06:55.2157498-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -59259,7 +59259,7 @@
           "class": "REQ_QUIC_RFC9000_S10P3P1_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_S10P3P1_DeferredFuzzClosure.StatelessResetTailTokenFuzz_UsesTrailingTokenAndEntersDrainingOnlyOnMatch",
           "method": "StatelessResetTailTokenFuzz_UsesTrailingTokenAndEntersDrainingOnlyOnMatch",
-          "line": 13,
+          "line": 16,
           "kinds": [
             "fuzz"
           ],
@@ -59269,7 +59269,10 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9000-S10P3P1-0001",
-            "REQ-QUIC-RFC9000-S10P3P1-0008"
+            "REQ-QUIC-RFC9000-S10P3P1-0008",
+            "RFC9000-S10-3-1-P1-S1-R01",
+            "RFC9000-S10-3-1-P1-S4-R01",
+            "RFC9000-S10-3-1-P5-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -59413,7 +59416,7 @@
           "class": "REQ_QUIC_RFC9000_S10P3P1_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_S10P3P1_DeferredFuzzClosure.StatelessResetTailTokenFuzz_UsesTrailingTokenAndEntersDrainingOnlyOnMatch",
           "method": "StatelessResetTailTokenFuzz_UsesTrailingTokenAndEntersDrainingOnlyOnMatch",
-          "line": 13,
+          "line": 16,
           "kinds": [
             "fuzz"
           ],
@@ -59423,7 +59426,10 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9000-S10P3P1-0001",
-            "REQ-QUIC-RFC9000-S10P3P1-0008"
+            "REQ-QUIC-RFC9000-S10P3P1-0008",
+            "RFC9000-S10-3-1-P1-S1-R01",
+            "RFC9000-S10-3-1-P1-S4-R01",
+            "RFC9000-S10-3-1-P5-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -59618,7 +59624,7 @@
           "class": "REQ_QUIC_RFC9000_S10P3P1_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_S10P3P1_DeferredFuzzClosure.StatelessResetTokenRegistryFuzz_RemembersLiveTokensAndExcludesUnusedOrRetiredTokens",
           "method": "StatelessResetTokenRegistryFuzz_RemembersLiveTokensAndExcludesUnusedOrRetiredTokens",
-          "line": 55,
+          "line": 58,
           "kinds": [
             "fuzz"
           ],
@@ -378200,14 +378206,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -378215,6 +378221,32 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S10-3-1-P1-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_S10P3P1_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_S10P3P1_DeferredFuzzClosure.StatelessResetTailTokenFuzz_UsesTrailingTokenAndEntersDrainingOnlyOnMatch",
+          "method": "StatelessResetTailTokenFuzz_UsesTrailingTokenAndEntersDrainingOnlyOnMatch",
+          "line": 16,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S10P3P1-0001",
+            "REQ-QUIC-RFC9000-S10P3P1-0008",
+            "RFC9000-S10-3-1-P1-S1-R01",
+            "RFC9000-S10-3-1-P1-S4-R01",
+            "RFC9000-S10-3-1-P5-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S10-3-1-P1-S1-R01",
           "source": "requirement_attribute",
@@ -378459,14 +378491,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-1-P1-S4-R01.cs::MatchesAnyStatelessResetToken_UsesTheTrailingSixteenBytes",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 3,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 1,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -378474,6 +378506,32 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S10-3-1-P1-S4-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_S10P3P1_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_S10P3P1_DeferredFuzzClosure.StatelessResetTailTokenFuzz_UsesTrailingTokenAndEntersDrainingOnlyOnMatch",
+          "method": "StatelessResetTailTokenFuzz_UsesTrailingTokenAndEntersDrainingOnlyOnMatch",
+          "line": 16,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S10P3P1-0001",
+            "REQ-QUIC-RFC9000-S10P3P1-0008",
+            "RFC9000-S10-3-1-P1-S1-R01",
+            "RFC9000-S10-3-1-P1-S4-R01",
+            "RFC9000-S10-3-1-P5-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S10-3-1-P1-S4-R01",
           "source": "requirement_attribute",
@@ -379253,14 +379311,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -379268,6 +379326,32 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S10-3-1-P5-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_S10P3P1_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_S10P3P1_DeferredFuzzClosure.StatelessResetTailTokenFuzz_UsesTrailingTokenAndEntersDrainingOnlyOnMatch",
+          "method": "StatelessResetTailTokenFuzz_UsesTrailingTokenAndEntersDrainingOnlyOnMatch",
+          "line": 16,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S10P3P1-0001",
+            "REQ-QUIC-RFC9000-S10P3P1-0008",
+            "RFC9000-S10-3-1-P1-S1-R01",
+            "RFC9000-S10-3-1-P1-S4-R01",
+            "RFC9000-S10-3-1-P5-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S10-3-1-P5-S1-R01",
           "source": "requirement_attribute",

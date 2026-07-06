@@ -8,6 +8,9 @@ public sealed class REQ_QUIC_RFC9000_S10P3P1_DeferredFuzzClosure
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S10P3P1-0001")]
     [Requirement("REQ-QUIC-RFC9000-S10P3P1-0008")]
+    [Requirement("RFC9000-S10-3-1-P1-S1-R01")]
+    [Requirement("RFC9000-S10-3-1-P1-S4-R01")]
+    [Requirement("RFC9000-S10-3-1-P5-S1-R01")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Fuzz")]
     public void StatelessResetTailTokenFuzz_UsesTrailingTokenAndEntersDrainingOnlyOnMatch()
