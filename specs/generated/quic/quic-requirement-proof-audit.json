@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T10:45:54.7775398-06:00",
+    "generated_at": "2026-07-06T10:48:21.2592785-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1121,
-      "full_executable_proof": 1556
+      "deferred_proof_not_executed": 1120,
+      "full_executable_proof": 1557
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 96,
-          "full_executable_proof": 1354
+          "deferred_proof_not_executed": 95,
+          "full_executable_proof": 1355
         }
       },
       {
@@ -76133,9 +76133,9 @@
       "rfc": "RFC9000",
       "title": "Discard subsequent Retry packets",
       "statement": "After the client has received and processed an Initial or Retry packet from the server, it MUST discard any subsequent Retry packets that it receives.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -76146,15 +76146,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-2-P1-S1-R01.cs"
