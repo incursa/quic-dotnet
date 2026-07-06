@@ -89,6 +89,97 @@ public sealed class REQ_QUIC_RFC9000_0604
         Assert.Contains(result.Effects, effect => effect is QuicConnectionArmTimerEffect arm && arm.TimerKind == QuicConnectionTimerKind.CloseLifetime);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_LocalCloseRequested_EmitsConnectionCloseForFatalErrorVariantsWhenAble()
+    {
+        QuicConnectionCloseMetadata[] cases =
+        [
+            new(
+                TransportErrorCode: QuicTransportErrorCode.ProtocolViolation,
+                ApplicationErrorCode: null,
+                TriggeringFrameType: 0x06,
+                ReasonPhrase: null),
+            new(
+                TransportErrorCode: QuicTransportErrorCode.FlowControlError,
+                ApplicationErrorCode: null,
+                TriggeringFrameType: 0x10,
+                ReasonPhrase: "flow"),
+            new(
+                TransportErrorCode: null,
+                ApplicationErrorCode: 42,
+                TriggeringFrameType: null,
+                ReasonPhrase: null),
+            new(
+                TransportErrorCode: null,
+                ApplicationErrorCode: 0x1234,
+                TriggeringFrameType: null,
+                ReasonPhrase: "app"),
+        ];
+
+        for (int index = 0; index < cases.Length; index++)
+        {
+            QuicConnectionRuntime runtime = CreateRuntime();
+            QuicConnectionPathIdentity path = new($"203.0.113.{100 + index}", RemotePort: 443 + index);
+
+            runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 0,
+                    path,
+                    new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+                nowTicks: 0);
+
+            QuicConnectionCloseMetadata closeMetadata = cases[index];
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionLocalCloseRequestedEvent(
+                    ObservedAtTicks: 1,
+                    closeMetadata),
+                nowTicks: 1);
+
+            QuicConnectionSendDatagramEffect send = Assert.IsType<QuicConnectionSendDatagramEffect>(
+                Assert.Single(result.Effects, effect => effect is QuicConnectionSendDatagramEffect));
+
+            Assert.Equal(path, send.PathIdentity);
+            AssertConnectionClosePayload(send.Datagram.Span, closeMetadata);
+            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+            Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
+            Assert.False(runtime.CanSendOrdinaryPackets);
+            Assert.Equal(QuicConnectionCloseOrigin.Local, runtime.TerminalState?.Origin);
+            Assert.Equal(closeMetadata, runtime.TerminalState?.Close);
+        }
+    }
+
+    private static void AssertConnectionClosePayload(
+        ReadOnlySpan<byte> payload,
+        QuicConnectionCloseMetadata closeMetadata)
+    {
+        Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(
+            payload,
+            out QuicConnectionCloseFrame parsed,
+            out int bytesConsumed));
+        Assert.Equal(payload.Length, bytesConsumed);
+
+        if (closeMetadata.ApplicationErrorCode.HasValue)
+        {
+            if (parsed.IsApplicationError)
+            {
+                Assert.Equal(closeMetadata.ApplicationErrorCode.Value, parsed.ErrorCode);
+                Assert.False(parsed.HasTriggeringFrameType);
+            }
+            else
+            {
+                Assert.Equal((ulong)QuicTransportErrorCode.ApplicationError, parsed.ErrorCode);
+            }
+        }
+        else
+        {
+            Assert.False(parsed.IsApplicationError);
+            Assert.Equal((ulong)(closeMetadata.TransportErrorCode ?? QuicTransportErrorCode.NoError), parsed.ErrorCode);
+            Assert.Equal(closeMetadata.TriggeringFrameType ?? 0, parsed.TriggeringFrameType);
+        }
+    }
+
     private static QuicConnectionRuntime CreateRuntime()
     {
         FakeMonotonicClock clock = new(0);

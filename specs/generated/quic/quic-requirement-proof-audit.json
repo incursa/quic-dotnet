@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T07:57:44.8788254-06:00",
+    "generated_at": "2026-07-06T08:02:22.1953910-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1232,
-      "full_executable_proof": 1445
+      "deferred_proof_not_executed": 1231,
+      "full_executable_proof": 1446
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 207,
-          "full_executable_proof": 1243
+          "deferred_proof_not_executed": 206,
+          "full_executable_proof": 1244
         }
       },
       {
@@ -72844,9 +72844,9 @@
       "rfc": "RFC9000",
       "title": "Use CONNECTION_CLOSE for fatal connection errors when able",
       "statement": "An endpoint that wishes to communicate a fatal connection error MUST use a CONNECTION_CLOSE frame if it is able.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -72856,15 +72856,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P2-S1-R01.cs"
