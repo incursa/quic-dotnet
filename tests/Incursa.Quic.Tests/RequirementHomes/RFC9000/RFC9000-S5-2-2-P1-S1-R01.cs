@@ -53,4 +53,31 @@ public sealed class REQ_QUIC_RFC9000_S5P2P2_0001
             QuicVersionNegotiation.Version1MinimumDatagramPayloadSize - 1,
             [QuicVersionNegotiation.Version1]));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ShouldSendVersionNegotiation_RequiresUnsupportedVersionAndSufficientDatagramSize()
+    {
+        foreach ((uint clientSelectedVersion, int datagramPayloadSize, uint[] serverSupportedVersions, bool expected) in new[]
+        {
+            (0x11223344U, QuicVersionNegotiation.Version1MinimumDatagramPayloadSize - 2, new[] { QuicVersionNegotiation.Version1 }, false),
+            (0x11223344U, QuicVersionNegotiation.Version1MinimumDatagramPayloadSize - 1, new[] { QuicVersionNegotiation.Version1 }, false),
+            (0x11223344U, QuicVersionNegotiation.Version1MinimumDatagramPayloadSize, new[] { QuicVersionNegotiation.Version1 }, true),
+            (0x11223344U, QuicVersionNegotiation.Version1MinimumDatagramPayloadSize + 1, new[] { QuicVersionNegotiation.Version1 }, true),
+            (0xAABBCCDDU, 1_456, new[] { QuicVersionNegotiation.Version1 }, true),
+            (QuicVersionNegotiation.Version1, 1_456, new[] { QuicVersionNegotiation.Version1 }, false),
+            (QuicVersionNegotiation.VersionNegotiationVersion, 1_456, new[] { QuicVersionNegotiation.Version1 }, false),
+            (0x11223344U, 1_456, Array.Empty<uint>(), false),
+            (0x11223344U, 1_456, new[] { QuicVersionNegotiation.Version1, 0x11223344U }, false),
+        })
+        {
+            Assert.Equal(
+                expected,
+                QuicVersionNegotiation.ShouldSendVersionNegotiation(
+                    clientSelectedVersion,
+                    datagramPayloadSize,
+                    serverSupportedVersions));
+        }
+    }
 }

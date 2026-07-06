@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T05:10:29.3978676-06:00",
+    "generated_at": "2026-07-06T05:12:48.6240262-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1288,
-      "full_executable_proof": 1389
+      "deferred_proof_not_executed": 1287,
+      "full_executable_proof": 1390
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 260,
-          "full_executable_proof": 1190
+          "deferred_proof_not_executed": 259,
+          "full_executable_proof": 1191
         }
       },
       {
@@ -80347,9 +80347,9 @@
       "rfc": "RFC9000",
       "title": "Send Version Negotiation for large unsupported packets",
       "statement": "If a server receives a packet that indicates an unsupported version and the packet is large enough to initiate a new connection for any supported version, the server SHOULD send a Version Negotiation packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -80359,15 +80359,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
       "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0283.cs",
