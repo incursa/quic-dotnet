@@ -64,6 +64,33 @@ public sealed class REQ_QUIC_RFC9250_0052_ProtocolErrors
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9250-0054")]
+    [Requirement("REQ-QUIC-RFC9250-0055")]
+    [Requirement("REQ-QUIC-RFC9250-0056")]
+    [Requirement("REQ-QUIC-RFC9250-0062")]
+    [Requirement("REQ-QUIC-RFC9250-0063")]
+    [Requirement("RFC9250-S4-3-3-P3-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_MalformedSingleMessageFramesFailWithDoqProtocolError()
+    {
+        DecodeExactlyOneMessageDelegate decode = GetDecodeExactlyOneMessage();
+
+        foreach ((byte[] source, string expectedMessageFragment) in new[]
+        {
+            ([0x00, 0x03, 0x01], "incomplete"),
+            (Concat(DoqMessageCodec.Encode([0x00, 0x00, 0x53]), DoqMessageCodec.Encode([0x00, 0x00, 0x54])), "more than one DNS message"),
+            (Concat(DoqMessageCodec.Encode([0x00, 0x00, 0x55]), [0x56]), "more than one DNS message"),
+        })
+        {
+            DoqException exception = Assert.Throws<DoqException>(() => decode(source));
+
+            Assert.Equal(DoqErrorCode.ProtocolError, exception.ErrorCode);
+            Assert.Contains(expectedMessageFragment, exception.Message, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0054")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void EarlyServerResponseFinIsFatalProtocolError()
@@ -188,6 +215,22 @@ public sealed class REQ_QUIC_RFC9250_0052_ProtocolErrors
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0059")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_EdnsTcpKeepaliveDetectorRejectsOnlyForbiddenOption()
+    {
+        foreach ((byte[] message, bool containsKeepalive) in new[]
+        {
+            (BuildDnsMessageWithoutEdns(), false),
+            (BuildDnsMessageWithTcpKeepaliveEdnsOption(), true),
+        })
+        {
+            Assert.Equal(containsKeepalive, DoqMessageCodec.ContainsTcpKeepaliveEdnsOption(message));
+        }
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0060")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -238,6 +281,38 @@ public sealed class REQ_QUIC_RFC9250_0052_ProtocolErrors
 
         Assert.Contains("OpenOutboundStreamAsync(QuicStreamType.Bidirectional", client, StringComparison.Ordinal);
         Assert.Contains("QueryAsync_UsesOneBidirectionalStreamAndReturnsSameStreamResponse", lifecycleTests, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0052")]
+    [Requirement("REQ-QUIC-RFC9250-0058")]
+    [Requirement("REQ-QUIC-RFC9250-0060")]
+    [Requirement("REQ-QUIC-RFC9250-0061")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_LoopbackOnlyFatalProtocolErrorPathsRemainTraceLinked()
+    {
+        string client = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqClient.cs");
+        string server = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqServer.cs");
+        string fatalTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs");
+        string lifecycleTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs");
+
+        foreach ((string source, string expected) in new[]
+        {
+            (client, "contained a non-zero DNS Message ID"),
+            (server, "contained a non-zero DNS Message ID"),
+            (client, "did not signal STREAM FIN"),
+            (server, "stream.Type != QuicStreamType.Bidirectional"),
+            (client, "StartInboundStreamMonitor"),
+            (fatalTests, "ClientTreatsMissingStreamFinAfterResponseAsFatalProtocolErrorWithConfiguredTimeout"),
+            (fatalTests, "ServerTreatsInboundUnidirectionalStreamAsFatalProtocolErrorAndClosesConnection"),
+            (fatalTests, "ClientMonitorDetectsInboundStreamFromServerAndClosesConnectionWithProtocolError"),
+            (lifecycleTests, "ServerTreatsNonZeroQueryMessageIdAsFatalProtocolError"),
+            (lifecycleTests, "ClientTreatsNonZeroResponseMessageIdAsFatalProtocolError"),
+        })
+        {
+            Assert.Contains(expected, source, StringComparison.Ordinal);
+        }
     }
 
     [Fact]
@@ -298,4 +373,97 @@ public sealed class REQ_QUIC_RFC9250_0052_ProtocolErrors
 
         throw new InvalidOperationException("Unable to locate the repository root for the RFC 9250 DoQ protocol-error tests.");
     }
+
+    private static DecodeExactlyOneMessageDelegate GetDecodeExactlyOneMessage()
+    {
+        System.Reflection.MethodInfo method = typeof(DoqStream).GetMethod(
+            "DecodeExactlyOneMessage",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
+            ?? throw new InvalidOperationException("Unable to locate DoqStream.DecodeExactlyOneMessage.");
+
+        return method.CreateDelegate<DecodeExactlyOneMessageDelegate>();
+    }
+
+    private static byte[] Concat(params byte[][] segments)
+    {
+        int length = segments.Sum(static segment => segment.Length);
+        byte[] result = new byte[length];
+        int offset = 0;
+
+        foreach (byte[] segment in segments)
+        {
+            segment.CopyTo(result.AsSpan(offset));
+            offset += segment.Length;
+        }
+
+        return result;
+    }
+
+    private static byte[] BuildDnsMessageWithTcpKeepaliveEdnsOption()
+    {
+        byte[] message = new byte[44];
+        message[0] = 0x00; message[1] = 0x00;
+        message[2] = 0x01; message[3] = 0x00;
+        message[4] = 0x00; message[5] = 0x01;
+        message[6] = 0x00; message[7] = 0x00;
+        message[8] = 0x00; message[9] = 0x00;
+        message[10] = 0x00; message[11] = 0x01;
+
+        int offset = 12;
+        message[offset] = 0x07; offset++;
+        WriteAscii("example", message, ref offset);
+        message[offset] = 0x03; offset++;
+        WriteAscii("com", message, ref offset);
+        message[offset] = 0x00; offset++;
+
+        message[offset] = 0x00; message[offset + 1] = 0x01;
+        message[offset + 2] = 0x00; message[offset + 3] = 0x01;
+        offset += 4;
+
+        message[offset] = 0x00; offset++;
+
+        message[offset] = 0x00; message[offset + 1] = 0x29;
+        message[offset + 2] = 0x10; message[offset + 3] = 0x00;
+        message[offset + 4] = 0x00; message[offset + 5] = 0x00;
+        message[offset + 6] = 0x00; message[offset + 7] = 0x00;
+        message[offset + 8] = 0x00; message[offset + 9] = 0x04;
+
+        message[offset + 10] = 0x00; message[offset + 11] = 0x0B;
+        message[offset + 12] = 0x00; message[offset + 13] = 0x00;
+
+        return message;
+    }
+
+    private static byte[] BuildDnsMessageWithoutEdns()
+    {
+        byte[] message = new byte[29];
+        message[0] = 0x00; message[1] = 0x00;
+        message[2] = 0x01; message[3] = 0x00;
+        message[4] = 0x00; message[5] = 0x01;
+        message[6] = 0x00; message[7] = 0x00;
+        message[8] = 0x00; message[9] = 0x00;
+        message[10] = 0x00; message[11] = 0x00;
+
+        int offset = 12;
+        message[offset] = 0x07; offset++;
+        WriteAscii("example", message, ref offset);
+        message[offset] = 0x03; offset++;
+        WriteAscii("com", message, ref offset);
+        message[offset] = 0x00; offset++;
+
+        message[offset] = 0x00; message[offset + 1] = 0x01;
+        message[offset + 2] = 0x00; message[offset + 3] = 0x01;
+
+        return message;
+    }
+
+    private static void WriteAscii(string text, byte[] destination, ref int offset)
+    {
+        foreach (char c in text)
+        {
+            destination[offset++] = (byte)c;
+        }
+    }
+
+    private delegate DoqMessage DecodeExactlyOneMessageDelegate(ReadOnlySpan<byte> source);
 }

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T17:48:01.3869941-06:00",
+  "generated_at": "2026-07-06T17:53:06.6789468-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T17:48:01.3832330-06:00",
+    "generated_at": "2026-07-06T17:53:06.6748769-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -275957,14 +275957,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 6,
+        "total": 9,
+        "focused": 7,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -276012,6 +276012,31 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0052"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0052",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
+          "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
+          "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.Fuzz_LoopbackOnlyFatalProtocolErrorPathsRemainTraceLinked",
+          "method": "Fuzz_LoopbackOnlyFatalProtocolErrorPathsRemainTraceLinked",
+          "line": 293,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0052",
+            "REQ-QUIC-RFC9250-0058",
+            "REQ-QUIC-RFC9250-0060",
+            "REQ-QUIC-RFC9250-0061"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -276180,14 +276205,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -276203,7 +276228,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.CompleteServerResponseFinIsAccepted",
           "method": "CompleteServerResponseFinIsAccepted",
-          "line": 81,
+          "line": 108,
           "kinds": [
             "negative"
           ],
@@ -276225,7 +276250,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.CompleteServerResponseFinIsAccepted",
           "method": "CompleteServerResponseFinIsAccepted",
-          "line": 81,
+          "line": 108,
           "kinds": [
             "negative"
           ],
@@ -276247,7 +276272,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.EarlyServerResponseFinIsFatalProtocolError",
           "method": "EarlyServerResponseFinIsFatalProtocolError",
-          "line": 69,
+          "line": 96,
           "kinds": [
             "positive"
           ],
@@ -276269,7 +276294,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.EarlyServerResponseFinIsFatalProtocolError",
           "method": "EarlyServerResponseFinIsFatalProtocolError",
-          "line": 69,
+          "line": 96,
           "kinds": [
             "positive"
           ],
@@ -276279,6 +276304,33 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0054"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0054",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
+          "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
+          "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.Fuzz_MalformedSingleMessageFramesFailWithDoqProtocolError",
+          "method": "Fuzz_MalformedSingleMessageFramesFailWithDoqProtocolError",
+          "line": 74,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0054",
+            "REQ-QUIC-RFC9250-0055",
+            "REQ-QUIC-RFC9250-0056",
+            "REQ-QUIC-RFC9250-0062",
+            "REQ-QUIC-RFC9250-0063",
+            "RFC9250-S4-3-3-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -276363,14 +276415,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 5,
+        "total": 8,
+        "focused": 6,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 3,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -276408,9 +276460,36 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
+          "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.Fuzz_MalformedSingleMessageFramesFailWithDoqProtocolError",
+          "method": "Fuzz_MalformedSingleMessageFramesFailWithDoqProtocolError",
+          "line": 74,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0054",
+            "REQ-QUIC-RFC9250-0055",
+            "REQ-QUIC-RFC9250-0056",
+            "REQ-QUIC-RFC9250-0062",
+            "REQ-QUIC-RFC9250-0063",
+            "RFC9250-S4-3-3-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0055",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
+          "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.MultipleQueriesOnOneStreamAreFatalProtocolError",
           "method": "MultipleQueriesOnOneStreamAreFatalProtocolError",
-          "line": 93,
+          "line": 120,
           "kinds": [
             "positive"
           ],
@@ -276432,7 +276511,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.MultipleQueriesOnOneStreamAreFatalProtocolError",
           "method": "MultipleQueriesOnOneStreamAreFatalProtocolError",
-          "line": 93,
+          "line": 120,
           "kinds": [
             "positive"
           ],
@@ -276454,7 +276533,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.SingleQueryOnOneStreamIsAccepted",
           "method": "SingleQueryOnOneStreamIsAccepted",
-          "line": 106,
+          "line": 133,
           "kinds": [
             "negative"
           ],
@@ -276476,7 +276555,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.SingleQueryOnOneStreamIsAccepted",
           "method": "SingleQueryOnOneStreamIsAccepted",
-          "line": 106,
+          "line": 133,
           "kinds": [
             "negative"
           ],
@@ -276566,14 +276645,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -276589,7 +276668,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.ExtraServerResponseOnOneStreamIsFatalProtocolError",
           "method": "ExtraServerResponseOnOneStreamIsFatalProtocolError",
-          "line": 118,
+          "line": 145,
           "kinds": [
             "positive"
           ],
@@ -276611,7 +276690,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.ExtraServerResponseOnOneStreamIsFatalProtocolError",
           "method": "ExtraServerResponseOnOneStreamIsFatalProtocolError",
-          "line": 118,
+          "line": 145,
           "kinds": [
             "positive"
           ],
@@ -276631,9 +276710,36 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
+          "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.Fuzz_MalformedSingleMessageFramesFailWithDoqProtocolError",
+          "method": "Fuzz_MalformedSingleMessageFramesFailWithDoqProtocolError",
+          "line": 74,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0054",
+            "REQ-QUIC-RFC9250-0055",
+            "REQ-QUIC-RFC9250-0056",
+            "REQ-QUIC-RFC9250-0062",
+            "REQ-QUIC-RFC9250-0063",
+            "RFC9250-S4-3-3-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0056",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
+          "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.SingleServerResponseOnOneStreamIsAccepted",
           "method": "SingleServerResponseOnOneStreamIsAccepted",
-          "line": 131,
+          "line": 158,
           "kinds": [
             "negative"
           ],
@@ -276655,7 +276761,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.SingleServerResponseOnOneStreamIsAccepted",
           "method": "SingleServerResponseOnOneStreamIsAccepted",
-          "line": 131,
+          "line": 158,
           "kinds": [
             "negative"
           ],
@@ -276925,14 +277031,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 3,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -276968,9 +277074,34 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
+          "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.Fuzz_LoopbackOnlyFatalProtocolErrorPathsRemainTraceLinked",
+          "method": "Fuzz_LoopbackOnlyFatalProtocolErrorPathsRemainTraceLinked",
+          "line": 293,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0052",
+            "REQ-QUIC-RFC9250-0058",
+            "REQ-QUIC-RFC9250-0060",
+            "REQ-QUIC-RFC9250-0061"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0058",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
+          "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.MissingStreamFinAfterResponseIsFatalProtocolError",
           "method": "MissingStreamFinAfterResponseIsFatalProtocolError",
-          "line": 143,
+          "line": 170,
           "kinds": [
             "positive"
           ],
@@ -276992,7 +277123,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.MissingStreamFinAfterResponseIsFatalProtocolError",
           "method": "MissingStreamFinAfterResponseIsFatalProtocolError",
-          "line": 143,
+          "line": 170,
           "kinds": [
             "positive"
           ],
@@ -277014,7 +277145,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.ResponseWithStreamFinIsAccepted",
           "method": "ResponseWithStreamFinIsAccepted",
-          "line": 156,
+          "line": 183,
           "kinds": [
             "negative"
           ],
@@ -277036,7 +277167,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.ResponseWithStreamFinIsAccepted",
           "method": "ResponseWithStreamFinIsAccepted",
-          "line": 156,
+          "line": 183,
           "kinds": [
             "negative"
           ],
@@ -277078,14 +277209,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -277147,7 +277278,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.EdnsTcpKeepaliveOptionIsFatalProtocolError",
           "method": "EdnsTcpKeepaliveOptionIsFatalProtocolError",
-          "line": 168,
+          "line": 195,
           "kinds": [
             "positive"
           ],
@@ -277169,7 +277300,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.EdnsTcpKeepaliveOptionIsFatalProtocolError",
           "method": "EdnsTcpKeepaliveOptionIsFatalProtocolError",
-          "line": 168,
+          "line": 195,
           "kinds": [
             "positive"
           ],
@@ -277189,9 +277320,31 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
+          "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.Fuzz_EdnsTcpKeepaliveDetectorRejectsOnlyForbiddenOption",
+          "method": "Fuzz_EdnsTcpKeepaliveDetectorRejectsOnlyForbiddenOption",
+          "line": 221,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0059"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0059",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
+          "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.MessagesWithoutEdnsTcpKeepaliveAreAcceptedByDetector",
           "method": "MessagesWithoutEdnsTcpKeepaliveAreAcceptedByDetector",
-          "line": 182,
+          "line": 209,
           "kinds": [
             "negative"
           ],
@@ -277213,7 +277366,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.MessagesWithoutEdnsTcpKeepaliveAreAcceptedByDetector",
           "method": "MessagesWithoutEdnsTcpKeepaliveAreAcceptedByDetector",
-          "line": 182,
+          "line": 209,
           "kinds": [
             "negative"
           ],
@@ -277255,14 +277408,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 5,
+        "total": 8,
+        "focused": 6,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 3,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -277300,7 +277453,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.ClientInitiatedBidirectionalStreamIsAccepted",
           "method": "ClientInitiatedBidirectionalStreamIsAccepted",
-          "line": 207,
+          "line": 250,
           "kinds": [
             "negative"
           ],
@@ -277322,7 +277475,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.ClientInitiatedBidirectionalStreamIsAccepted",
           "method": "ClientInitiatedBidirectionalStreamIsAccepted",
-          "line": 207,
+          "line": 250,
           "kinds": [
             "negative"
           ],
@@ -277342,9 +277495,34 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
+          "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.Fuzz_LoopbackOnlyFatalProtocolErrorPathsRemainTraceLinked",
+          "method": "Fuzz_LoopbackOnlyFatalProtocolErrorPathsRemainTraceLinked",
+          "line": 293,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0052",
+            "REQ-QUIC-RFC9250-0058",
+            "REQ-QUIC-RFC9250-0060",
+            "REQ-QUIC-RFC9250-0061"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0060",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
+          "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.InboundUnidirectionalStreamIsFatalProtocolError",
           "method": "InboundUnidirectionalStreamIsFatalProtocolError",
-          "line": 194,
+          "line": 237,
           "kinds": [
             "positive"
           ],
@@ -277366,7 +277544,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.InboundUnidirectionalStreamIsFatalProtocolError",
           "method": "InboundUnidirectionalStreamIsFatalProtocolError",
-          "line": 194,
+          "line": 237,
           "kinds": [
             "positive"
           ],
@@ -277460,14 +277638,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 3,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -277505,7 +277683,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.ClientOpenedBidirectionalStreamRemainsNormalPath",
           "method": "ClientOpenedBidirectionalStreamRemainsNormalPath",
-          "line": 234,
+          "line": 277,
           "kinds": [
             "negative"
           ],
@@ -277527,7 +277705,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.ClientOpenedBidirectionalStreamRemainsNormalPath",
           "method": "ClientOpenedBidirectionalStreamRemainsNormalPath",
-          "line": 234,
+          "line": 277,
           "kinds": [
             "negative"
           ],
@@ -277547,9 +277725,34 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
+          "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.Fuzz_LoopbackOnlyFatalProtocolErrorPathsRemainTraceLinked",
+          "method": "Fuzz_LoopbackOnlyFatalProtocolErrorPathsRemainTraceLinked",
+          "line": 293,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0052",
+            "REQ-QUIC-RFC9250-0058",
+            "REQ-QUIC-RFC9250-0060",
+            "REQ-QUIC-RFC9250-0061"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0061",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
+          "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.ServerInitiatedBidirectionalStreamIsFatalProtocolError",
           "method": "ServerInitiatedBidirectionalStreamIsFatalProtocolError",
-          "line": 220,
+          "line": 263,
           "kinds": [
             "positive"
           ],
@@ -277571,7 +277774,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.ServerInitiatedBidirectionalStreamIsFatalProtocolError",
           "method": "ServerInitiatedBidirectionalStreamIsFatalProtocolError",
-          "line": 220,
+          "line": 263,
           "kinds": [
             "positive"
           ],
@@ -277613,14 +277816,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -277636,7 +277839,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.FatalProtocolErrorsCloseConnectionWithProtocolError",
           "method": "FatalProtocolErrorsCloseConnectionWithProtocolError",
-          "line": 248,
+          "line": 323,
           "kinds": [
             "positive"
           ],
@@ -277659,7 +277862,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.FatalProtocolErrorsCloseConnectionWithProtocolError",
           "method": "FatalProtocolErrorsCloseConnectionWithProtocolError",
-          "line": 248,
+          "line": 323,
           "kinds": [
             "positive"
           ],
@@ -277680,9 +277883,36 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
+          "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.Fuzz_MalformedSingleMessageFramesFailWithDoqProtocolError",
+          "method": "Fuzz_MalformedSingleMessageFramesFailWithDoqProtocolError",
+          "line": 74,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0054",
+            "REQ-QUIC-RFC9250-0055",
+            "REQ-QUIC-RFC9250-0056",
+            "REQ-QUIC-RFC9250-0062",
+            "REQ-QUIC-RFC9250-0063",
+            "RFC9250-S4-3-3-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0062",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
+          "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.NonProtocolCloseDoesNotUseProtocolError",
           "method": "NonProtocolCloseDoesNotUseProtocolError",
-          "line": 262,
+          "line": 337,
           "kinds": [
             "negative"
           ],
@@ -277705,7 +277935,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.NonProtocolCloseDoesNotUseProtocolError",
           "method": "NonProtocolCloseDoesNotUseProtocolError",
-          "line": 262,
+          "line": 337,
           "kinds": [
             "negative"
           ],
@@ -277800,14 +278030,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -277823,7 +278053,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.FatalProtocolErrorsCloseConnectionWithProtocolError",
           "method": "FatalProtocolErrorsCloseConnectionWithProtocolError",
-          "line": 248,
+          "line": 323,
           "kinds": [
             "positive"
           ],
@@ -277846,7 +278076,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.FatalProtocolErrorsCloseConnectionWithProtocolError",
           "method": "FatalProtocolErrorsCloseConnectionWithProtocolError",
-          "line": 248,
+          "line": 323,
           "kinds": [
             "positive"
           ],
@@ -277867,9 +278097,36 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
+          "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.Fuzz_MalformedSingleMessageFramesFailWithDoqProtocolError",
+          "method": "Fuzz_MalformedSingleMessageFramesFailWithDoqProtocolError",
+          "line": 74,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0054",
+            "REQ-QUIC-RFC9250-0055",
+            "REQ-QUIC-RFC9250-0056",
+            "REQ-QUIC-RFC9250-0062",
+            "REQ-QUIC-RFC9250-0063",
+            "RFC9250-S4-3-3-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0063",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
+          "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.NonProtocolCloseDoesNotUseProtocolError",
           "method": "NonProtocolCloseDoesNotUseProtocolError",
-          "line": 262,
+          "line": 337,
           "kinds": [
             "negative"
           ],
@@ -277892,7 +278149,7 @@
           "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
           "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.NonProtocolCloseDoesNotUseProtocolError",
           "method": "NonProtocolCloseDoesNotUseProtocolError",
-          "line": 262,
+          "line": 337,
           "kinds": [
             "negative"
           ],
@@ -474803,14 +475060,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -474857,6 +475114,33 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
+            "RFC9250-S4-3-3-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-3-3-P3-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs",
+          "class": "REQ_QUIC_RFC9250_0052_ProtocolErrors",
+          "member": "REQ_QUIC_RFC9250_0052_ProtocolErrors.Fuzz_MalformedSingleMessageFramesFailWithDoqProtocolError",
+          "method": "Fuzz_MalformedSingleMessageFramesFailWithDoqProtocolError",
+          "line": 74,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0054",
+            "REQ-QUIC-RFC9250-0055",
+            "REQ-QUIC-RFC9250-0056",
+            "REQ-QUIC-RFC9250-0062",
+            "REQ-QUIC-RFC9250-0063",
             "RFC9250-S4-3-3-P3-S1-R01"
           ],
           "requirement_tagged": true,
