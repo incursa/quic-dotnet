@@ -53,4 +53,46 @@ public sealed class REQ_QUIC_RFC9000_6321
             [QuicVersionNegotiation.Version1],
             hasSuccessfullyProcessedAnotherPacket: false));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ReservedVersionAdvertisementFuzz_AllowsReservedVersionsInIgnoredVersionFields()
+    {
+        uint[] templates =
+        [
+            0x00000000,
+            0x00112233,
+            0x10203040,
+            0x7fff0001,
+            0xf0e0d0c0,
+        ];
+
+        for (int index = 0; index < templates.Length; index++)
+        {
+            uint reservedVersion = QuicVersionNegotiation.CreateReservedVersion(templates[index]);
+            uint ordinaryUnsupportedVersion = (uint)(0x11223344 + index);
+            byte[] packet = new byte[96];
+
+            Assert.True(QuicVersionNegotiation.IsReservedVersion(reservedVersion));
+            Assert.False(QuicVersionNegotiation.IsReservedVersion(ordinaryUnsupportedVersion));
+            Assert.True(QuicVersionNegotiation.TryFormatVersionNegotiationResponse(
+                QuicVersionNegotiation.Version1,
+                [(byte)(0x10 + index), 0x11],
+                [0x20, (byte)(0x21 + index)],
+                [ordinaryUnsupportedVersion, reservedVersion],
+                packet,
+                out int bytesWritten));
+
+            Assert.True(QuicPacketParser.TryParseVersionNegotiation(
+                packet.AsSpan(0, bytesWritten),
+                out QuicVersionNegotiationPacket parsed));
+            Assert.True(parsed.ContainsSupportedVersion(ordinaryUnsupportedVersion));
+            Assert.True(parsed.ContainsSupportedVersion(reservedVersion));
+            Assert.False(QuicVersionNegotiation.ShouldDiscardVersionNegotiation(
+                parsed,
+                QuicVersionNegotiation.Version1,
+                hasSuccessfullyProcessedAnotherPacket: false));
+        }
+    }
 }
