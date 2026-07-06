@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T09:48:57.8430718-06:00",
+  "generated_at": "2026-07-06T09:52:09.8844130-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T09:48:57.8392774-06:00",
+    "generated_at": "2026-07-06T09:52:09.8809879-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -431555,14 +431555,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P2-S1-R01.cs::PathValidationTimerCanSendAnotherPathChallengeToCoverLoss",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 0,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -431613,6 +431613,29 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S8-2-1-P2-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8P2P1P2-PathChallengeRetry-DeferredFuzzClosure.cs",
+          "class": "RFC9000_S8P2P1P2_PathChallengeRetry_DeferredFuzzClosure",
+          "member": "RFC9000_S8P2P1P2_PathChallengeRetry_DeferredFuzzClosure.PathChallengeRetryFuzz_SendsMultipleChallengesAcrossPacketsButOnePerPacket",
+          "method": "PathChallengeRetryFuzz_SendsMultipleChallengesAcrossPacketsButOnePerPacket",
+          "line": 16,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S8-2-1-P2-S1-R01",
+            "RFC9000-S8-2-1-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -431642,14 +431665,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -431740,6 +431763,29 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
+            "RFC9000-S8-2-1-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S8-2-1-P2-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8P2P1P2-PathChallengeRetry-DeferredFuzzClosure.cs",
+          "class": "RFC9000_S8P2P1P2_PathChallengeRetry_DeferredFuzzClosure",
+          "member": "RFC9000_S8P2P1P2_PathChallengeRetry_DeferredFuzzClosure.PathChallengeRetryFuzz_SendsMultipleChallengesAcrossPacketsButOnePerPacket",
+          "method": "PathChallengeRetryFuzz_SendsMultipleChallengesAcrossPacketsButOnePerPacket",
+          "line": 16,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S8-2-1-P2-S1-R01",
             "RFC9000-S8-2-1-P2-S2-R01"
           ],
           "requirement_tagged": true,
