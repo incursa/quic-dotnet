@@ -25242,7 +25242,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0007.cs::PostRetryZeroRttPacketsProtectConfidentialApplicationPayloadBytes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0007.cs::PostRetryZeroRttPacketsProtectConfidentialApplicationPayloadBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P3-0007.cs::PostRetryZeroRttPacketsFuzz_ProtectVariedConfidentialApplicationPayloadBytes"
         ]
       }
     },
