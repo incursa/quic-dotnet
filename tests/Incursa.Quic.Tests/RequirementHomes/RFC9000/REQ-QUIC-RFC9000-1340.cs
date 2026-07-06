@@ -92,6 +92,37 @@ public sealed class REQ_QUIC_RFC9000_1340
         Assert.Equal(0, runtime.SendRuntime.PendingRetransmissionCount);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ServerHandshakeDonePacketLoss_FuzzQueuesRetransmissionPlansAcrossSendTimes()
+    {
+        for (long observedAtTicks = 1; observedAtTicks <= 3; observedAtTicks++)
+        {
+            QuicConnectionRuntime runtime = CreateRuntime(QuicTlsRole.Server);
+            PrepareHandshakeDoneSendState(runtime);
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionPeerHandshakeTranscriptCompletedEvent(ObservedAtTicks: observedAtTicks),
+                nowTicks: observedAtTicks);
+
+            Assert.True(result.StateChanged);
+            KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedPacket = Assert.Single(
+                runtime.SendRuntime.SentPackets);
+
+            Assert.True(runtime.SendRuntime.TryRegisterLoss(
+                trackedPacket.Key.PacketNumberSpace,
+                trackedPacket.Key.PacketNumber,
+                handshakeConfirmed: true));
+            Assert.Equal(1, runtime.SendRuntime.PendingRetransmissionCount);
+            Assert.True(runtime.SendRuntime.TryDequeueRetransmission(out QuicConnectionRetransmissionPlan retransmission));
+            Assert.Equal(QuicPacketNumberSpace.ApplicationData, retransmission.PacketNumberSpace);
+            Assert.Equal(trackedPacket.Key.PacketNumber, retransmission.PacketNumber);
+            Assert.True(retransmission.PayloadBytes > 0);
+            Assert.Equal(0, runtime.SendRuntime.PendingRetransmissionCount);
+        }
+    }
+
     private static QuicConnectionRuntime CreateRuntime(QuicTlsRole tlsRole)
     {
         QuicConnectionRuntime runtime = new(

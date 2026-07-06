@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T01:47:35.8476936-06:00",
+  "generated_at": "2026-07-06T01:52:00.2566620-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T01:47:35.8442896-06:00",
+    "generated_at": "2026-07-06T01:52:00.2532149-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -47395,14 +47395,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -47504,6 +47504,28 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1328.cs",
           "class": "REQ_QUIC_RFC9000_1328",
+          "member": "REQ_QUIC_RFC9000_1328.RetireConnectionIdFrame_FuzzAcceptsSequenceNumbersThatDifferFromPacketDestinationConnectionId",
+          "method": "RetireConnectionIdFrame_FuzzAcceptsSequenceNumbersThatDifferFromPacketDestinationConnectionId",
+          "line": 87,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-1328"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-1328",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1328.cs",
+          "class": "REQ_QUIC_RFC9000_1328",
           "member": "REQ_QUIC_RFC9000_1328.RetireConnectionIdFrame_RejectsThePacketDestinationConnectionId",
           "method": "RetireConnectionIdFrame_RejectsThePacketDestinationConnectionId",
           "line": 17,
@@ -47573,14 +47595,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -47624,6 +47646,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-1330"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-1330",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1330.cs",
+          "class": "REQ_QUIC_RFC9000_1330",
+          "member": "REQ_QUIC_RFC9000_1330.RetireConnectionIdFrame_FuzzZeroLengthConnectionIdClosesForAnyRetiredSequenceNumber",
+          "method": "RetireConnectionIdFrame_FuzzZeroLengthConnectionIdClosesForAnyRetiredSequenceNumber",
+          "line": 87,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -47749,14 +47793,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -47800,6 +47844,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-1340"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-1340",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1340.cs",
+          "class": "REQ_QUIC_RFC9000_1340",
+          "member": "REQ_QUIC_RFC9000_1340.ServerHandshakeDonePacketLoss_FuzzQueuesRetransmissionPlansAcrossSendTimes",
+          "method": "ServerHandshakeDonePacketLoss_FuzzQueuesRetransmissionPlansAcrossSendTimes",
+          "line": 98,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -47929,14 +47995,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 8,
+        "total": 9,
+        "focused": 9,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 3,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -47980,6 +48046,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-1344"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-1344",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1344.cs",
+          "class": "REQ_QUIC_RFC9000_1344",
+          "member": "REQ_QUIC_RFC9000_1344.TryApplyMaximumFrames_FuzzAcceptsOutdatedFramesWithoutReducingAdvertisedLimits",
+          "method": "TryApplyMaximumFrames_FuzzAcceptsOutdatedFramesWithoutReducingAdvertisedLimits",
+          "line": 171,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [

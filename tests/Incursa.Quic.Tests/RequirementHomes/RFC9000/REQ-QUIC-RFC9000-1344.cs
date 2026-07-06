@@ -164,4 +164,25 @@ public sealed class REQ_QUIC_RFC9000_1344
         Assert.False(state.TryApplyMaxStreamsFrame(equalFrame));
         Assert.Equal(5UL, state.PeerBidirectionalStreamLimit);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryApplyMaximumFrames_FuzzAcceptsOutdatedFramesWithoutReducingAdvertisedLimits()
+    {
+        for (ulong advertisedLimit = 8; advertisedLimit < 12; advertisedLimit++)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                connectionSendLimit: advertisedLimit - 2,
+                peerBidirectionalStreamLimit: advertisedLimit - 2);
+
+            Assert.True(state.TryApplyMaxDataFrame(new QuicMaxDataFrame(advertisedLimit)));
+            Assert.False(state.TryApplyMaxDataFrame(new QuicMaxDataFrame(advertisedLimit - 1)));
+            Assert.Equal(advertisedLimit, state.ConnectionSendLimit);
+
+            Assert.True(state.TryApplyMaxStreamsFrame(new QuicMaxStreamsFrame(true, advertisedLimit)));
+            Assert.False(state.TryApplyMaxStreamsFrame(new QuicMaxStreamsFrame(true, advertisedLimit - 1)));
+            Assert.Equal(advertisedLimit, state.PeerBidirectionalStreamLimit);
+        }
+    }
 }

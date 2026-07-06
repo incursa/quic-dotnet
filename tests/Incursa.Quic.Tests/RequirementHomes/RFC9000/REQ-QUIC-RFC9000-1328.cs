@@ -80,6 +80,32 @@ public sealed class REQ_QUIC_RFC9000_1328
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-1328")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void RetireConnectionIdFrame_FuzzAcceptsSequenceNumbersThatDifferFromPacketDestinationConnectionId()
+    {
+        for (ulong retiredSequenceNumber = 30; retiredSequenceNumber < 34; retiredSequenceNumber++)
+        {
+            ulong routedSequenceNumber = retiredSequenceNumber + 10;
+            using QuicConnectionRuntime runtime = CreateRuntimeWithIssuedConnectionId(retiredSequenceNumber, 0x40);
+            IssueConnectionId(runtime, routedSequenceNumber, 0x50);
+
+            byte[] retirePayload = QuicFrameTestData.BuildRetireConnectionIdFrame(new QuicRetireConnectionIdFrame(retiredSequenceNumber));
+            QuicConnectionTransitionResult retireResult = QuicS19P16RetireConnectionIdTestSupport.TransitionOneRttPacket(
+                runtime,
+                runtime.ActivePath!.Value.Identity,
+                runtime.CurrentPeerDestinationConnectionId.Span,
+                retirePayload,
+                observedAtTicks: (long)retiredSequenceNumber,
+                routedLocallyIssuedConnectionId: routedSequenceNumber);
+
+            Assert.True(retireResult.StateChanged);
+            Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        }
+    }
+
     private static QuicConnectionRuntime CreateRuntimeWithIssuedConnectionId(ulong connectionId, byte statelessResetTokenStart)
     {
         QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport

@@ -80,6 +80,30 @@ public sealed class REQ_QUIC_RFC9000_1330
         Assert.Equal(QuicTransportErrorCode.ProtocolViolation, runtime.TerminalState.Value.Close.TransportErrorCode);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-1330")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void RetireConnectionIdFrame_FuzzZeroLengthConnectionIdClosesForAnyRetiredSequenceNumber()
+    {
+        for (ulong sequenceNumber = 0; sequenceNumber < 4; sequenceNumber++)
+        {
+            using QuicConnectionRuntime runtime = CreateRuntime(ReadOnlySpan<byte>.Empty);
+
+            Assert.True(runtime.CurrentPeerDestinationConnectionId.IsEmpty);
+
+            QuicConnectionTransitionResult result = ProcessPeerRetireConnectionIdFrame(
+                runtime,
+                sequenceNumber,
+                observedAtTicks: (long)(10 + sequenceNumber));
+
+            Assert.True(result.StateChanged);
+            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+            Assert.NotNull(runtime.TerminalState);
+            Assert.Equal(QuicTransportErrorCode.ProtocolViolation, runtime.TerminalState!.Value.Close.TransportErrorCode);
+        }
+    }
+
     private static QuicConnectionRuntime CreateRuntime(ReadOnlySpan<byte> peerInitialSourceConnectionId)
     {
         QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(
