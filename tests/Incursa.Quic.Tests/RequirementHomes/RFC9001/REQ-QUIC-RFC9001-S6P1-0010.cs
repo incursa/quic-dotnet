@@ -118,6 +118,74 @@ public sealed class REQ_QUIC_RFC9001_S6P1_0010
         Assert.False(currentProtectMaterial.Matches(runtimeSecondSuccessorProtectMaterial));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_SuccessorPacketKeysAndIvsMatchIndependentDerivationAcrossRolesAndUpdateEpochs()
+    {
+        (Func<QuicConnectionRuntime> RuntimeFactory, bool UseClientTrafficSecretForWriteSecret, bool InstallFirstUpdate)[] cases =
+        [
+            (() => QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime(), true, false),
+            (() => QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime(), true, true),
+            (() => QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime(), false, false),
+            (() => QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime(), false, true),
+        ];
+
+        foreach ((Func<QuicConnectionRuntime> runtimeFactory, bool useClientTrafficSecretForWriteSecret, bool installFirstUpdate) in cases)
+        {
+            using QuicConnectionRuntime runtime = runtimeFactory();
+            QuicRfc9001KeyPhaseTestSupport.ConfigureKeyPhaseDestinationConnectionId(runtime);
+
+            if (installFirstUpdate)
+            {
+                Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeOneRttKeyUpdate(runtime));
+            }
+
+            Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeApplicationTrafficSecrets(
+                runtime,
+                out byte[] clientApplicationTrafficSecret,
+                out byte[] serverApplicationTrafficSecret));
+
+            ReadOnlySpan<byte> currentWriteTrafficSecret = useClientTrafficSecretForWriteSecret
+                ? clientApplicationTrafficSecret
+                : serverApplicationTrafficSecret;
+            ReadOnlySpan<byte> currentReadTrafficSecret = useClientTrafficSecretForWriteSecret
+                ? serverApplicationTrafficSecret
+                : clientApplicationTrafficSecret;
+
+            QuicTlsPacketProtectionMaterial currentOpenMaterial =
+                runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value;
+            QuicTlsPacketProtectionMaterial currentProtectMaterial =
+                runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value;
+
+            Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
+                runtime,
+                out QuicTlsPacketProtectionMaterial runtimeSuccessorOpenMaterial,
+                out QuicTlsPacketProtectionMaterial runtimeSuccessorProtectMaterial));
+
+            byte[] expectedNextReadSecret =
+                QuicRfc9001KeyPhaseTestSupport.DeriveQuicKeyUpdateTrafficSecret(currentReadTrafficSecret);
+            byte[] expectedNextWriteSecret =
+                QuicRfc9001KeyPhaseTestSupport.DeriveQuicKeyUpdateTrafficSecret(currentWriteTrafficSecret);
+
+            Assert.True(QuicRfc9001KeyPhaseTestSupport.TryCreateOneRttPacketProtectionMaterialFromTrafficSecret(
+                expectedNextReadSecret,
+                currentOpenMaterial.HeaderProtectionKey,
+                out QuicTlsPacketProtectionMaterial expectedSuccessorOpenMaterial));
+            Assert.True(QuicRfc9001KeyPhaseTestSupport.TryCreateOneRttPacketProtectionMaterialFromTrafficSecret(
+                expectedNextWriteSecret,
+                currentProtectMaterial.HeaderProtectionKey,
+                out QuicTlsPacketProtectionMaterial expectedSuccessorProtectMaterial));
+
+            Assert.True(expectedSuccessorOpenMaterial.AeadKey.SequenceEqual(runtimeSuccessorOpenMaterial.AeadKey));
+            Assert.True(expectedSuccessorOpenMaterial.AeadIv.SequenceEqual(runtimeSuccessorOpenMaterial.AeadIv));
+            Assert.True(expectedSuccessorProtectMaterial.AeadKey.SequenceEqual(runtimeSuccessorProtectMaterial.AeadKey));
+            Assert.True(expectedSuccessorProtectMaterial.AeadIv.SequenceEqual(runtimeSuccessorProtectMaterial.AeadIv));
+            Assert.True(expectedSuccessorOpenMaterial.Matches(runtimeSuccessorOpenMaterial));
+            Assert.True(expectedSuccessorProtectMaterial.Matches(runtimeSuccessorProtectMaterial));
+        }
+    }
+
     private static void AssertSuccessorPacketKeysAndIvsMatchIndependentDerivationFromUpdatedSecrets(
         Func<QuicConnectionRuntime> runtimeFactory,
         bool useClientTrafficSecretForWriteSecret)
