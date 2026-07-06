@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T08:05:07.1700512-06:00",
+  "generated_at": "2026-07-06T08:07:32.5334853-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T08:05:07.1667051-06:00",
+    "generated_at": "2026-07-06T08:07:32.5299971-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -383684,14 +383684,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -383699,6 +383699,29 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S11-P3-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-P3-S2-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0661",
+          "member": "REQ_QUIC_RFC9000_0661.Fuzz_ReceiveDatagram_RoutesAssociatedPacketsWhenFrameTransmissionStateExists",
+          "method": "Fuzz_ReceiveDatagram_RoutesAssociatedPacketsWhenFrameTransmissionStateExists",
+          "line": 96,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S11-P3-S2-R01",
+            "RFC9000-S5-2-3-P4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S11-P3-S2-R01",
           "source": "requirement_attribute",
@@ -418688,14 +418711,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -418703,6 +418726,29 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S5-2-3-P4-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-P3-S2-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0661",
+          "member": "REQ_QUIC_RFC9000_0661.Fuzz_ReceiveDatagram_RoutesAssociatedPacketsWhenFrameTransmissionStateExists",
+          "method": "Fuzz_ReceiveDatagram_RoutesAssociatedPacketsWhenFrameTransmissionStateExists",
+          "line": 96,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S11-P3-S2-R01",
+            "RFC9000-S5-2-3-P4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S5-2-3-P4-R01",
           "source": "requirement_attribute",
