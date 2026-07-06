@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T17:12:31.5888748-06:00",
+    "generated_at": "2026-07-06T17:16:09.6755540-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 886,
-      "full_executable_proof": 1791
+      "deferred_proof_not_executed": 879,
+      "full_executable_proof": 1798
     },
     "by_rfc": [
       {
@@ -37,8 +37,7 @@
         "rfc": "RFC9002",
         "total": 226,
         "by_proof_state": {
-          "deferred_proof_not_executed": 7,
-          "full_executable_proof": 219
+          "full_executable_proof": 226
         }
       },
       {
@@ -87995,9 +87994,9 @@
       "rfc": "RFC9002",
       "title": "Delay persistent congestion until at least one RTT sample exists",
       "statement": "Persistent congestion SHOULD NOT start until there is at least one RTT sample.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -88009,18 +88008,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-6-2-P4-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-6-2-P4-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-FinalDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-6-2-P4-R01.cs::TryDetectPersistentCongestion_DelaysDetectionUntilAnRttSampleExists"
@@ -88030,9 +88029,9 @@
       "rfc": "RFC9002",
       "title": "Reset cwnd to the minimum on persistent congestion",
       "statement": "When persistent congestion is declared, the sender's congestion window MUST be reduced to the minimum congestion window.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -88044,18 +88043,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-6-2-P6-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-6-2-P6-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-FinalDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -88069,9 +88068,9 @@
       "rfc": "RFC9002",
       "title": "Pace all in-flight packets",
       "statement": "A sender SHOULD pace sending of all in-flight packets based on input from the congestion controller.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -88080,17 +88079,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-7-P1-S1-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-7-P1-S1-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-FinalDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-7-P1-S1-R01.cs::TryComputePacingIntervalMicros_ComputesThePacingIntervalForInFlightPackets"
@@ -88221,9 +88220,9 @@
       "rfc": "RFC9002",
       "title": "Do not increase cwnd when underutilized",
       "statement": "When bytes in flight is smaller than the congestion window and sending is not pacing limited, the congestion window SHOULD NOT be increased in either slow start or congestion avoidance.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -88233,18 +88232,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-8-P1-S3-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-8-P1-S3-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-FinalDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -88257,9 +88256,9 @@
       "rfc": "RFC9002",
       "title": "Do not call yourself application-limited because of pacing delay",
       "statement": "A sender SHOULD NOT consider itself application limited if it would have fully utilized the congestion window without pacing delay.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -88269,18 +88268,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-8-P2-S2-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-8-P2-S2-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-FinalDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -88293,9 +88292,9 @@
       "rfc": "RFC9002",
       "title": "Allow alternate cwnd-updating mechanisms after underutilization",
       "statement": "A sender MAY implement alternative mechanisms to update its congestion window after periods of underutilization, such as those proposed for TCP in RFC 7661.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "negative",
@@ -88306,17 +88305,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-8-P3-S1-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-8-P3-S1-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-FinalDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -88358,9 +88357,9 @@
       "rfc": "RFC9002",
       "title": "Respect the bytes-in-flight ceiling",
       "statement": "An endpoint MUST NOT send a packet if it would cause bytes_in_flight to be larger than the congestion window, unless the packet is sent on a PTO timer expiration or when entering recovery.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -88370,17 +88369,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-FinalDeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-P7-S1-R01.cs"
       ],
       "spec_test_ref_count": 2,
