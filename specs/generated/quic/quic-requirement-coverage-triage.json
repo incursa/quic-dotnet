@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T14:05:13.8989698-06:00",
+  "generated_at": "2026-07-06T14:11:41.3291355-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T14:05:13.8953872-06:00",
+    "generated_at": "2026-07-06T14:11:41.3254470-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -227449,14 +227449,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0001.cs::TryParseShortHeader_ReportsThePacketLevelHeader",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 2,
+        "total": 4,
+        "focused": 3,
         "broad": 1,
         "by_kind": {
           "positive": 3,
           "negative": 0,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -227549,6 +227549,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S3_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S3_DeferredFuzzClosure.Fuzz_TransmissionsExposePacketLevelHeaders",
+          "method": "Fuzz_TransmissionsExposePacketLevelHeaders",
+          "line": 12,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -227575,14 +227597,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1910.cs::TryParsePaddingFrame_ParsesAndFormatsTheTypeOnlyFrame",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 0,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -227637,6 +227659,28 @@
             "REQ-QUIC-RFC9000-S19P1-0004",
             "REQ-QUIC-RFC9000-S19P1-0005",
             "REQ-QUIC-RFC9000-S19P1-0006",
+            "REQ-QUIC-RFC9002-S3-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S3_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S3_DeferredFuzzClosure.Fuzz_PacketsPermitMultipleFrameTypes",
+          "method": "Fuzz_PacketsPermitMultipleFrameTypes",
+          "line": 21,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
             "REQ-QUIC-RFC9002-S3-0008"
           ],
           "requirement_tagged": true,
@@ -228124,14 +228168,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -228226,6 +228270,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0013",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S3_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S3_DeferredFuzzClosure.Fuzz_CryptoPacketsUseShortAcknowledgmentTimers",
+          "method": "Fuzz_CryptoPacketsUseShortAcknowledgmentTimers",
+          "line": 30,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -228255,14 +228321,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -228357,6 +228423,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0014",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S3_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S3_DeferredFuzzClosure.Fuzz_NonAckPacketsCountTowardCongestionLimits",
+          "method": "Fuzz_NonAckPacketsCountTowardCongestionLimits",
+          "line": 39,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -228514,14 +228602,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0016.cs::RegisterPacketSent_CountsPaddingOnlyPacketsTowardBytesInFlight",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 0,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -228572,6 +228660,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-S3-0016",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_S3_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_S3_DeferredFuzzClosure.Fuzz_PaddingPacketsContributeTowardBytesInFlight",
+          "method": "Fuzz_PaddingPacketsContributeTowardBytesInFlight",
+          "line": 48,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-S3-0016"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
