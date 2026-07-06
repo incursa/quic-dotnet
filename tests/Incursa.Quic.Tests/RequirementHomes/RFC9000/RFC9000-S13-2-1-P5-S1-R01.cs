@@ -443,6 +443,7 @@ public sealed class REQ_QUIC_RFC9000_0763
 
     [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
+    [Requirement("RFC9000-S13-2-P2-R01")]
     [Trait("Category", "Fuzz")]
     public void Fuzz_LongHeaderAckPrefixRoundTripsAcrossInitialAndHandshakeCryptoPayloads()
     {

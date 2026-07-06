@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T01:00:11.2253259-06:00",
+  "generated_at": "2026-07-06T01:03:39.1373115-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T01:00:11.2216720-06:00",
+    "generated_at": "2026-07-06T01:03:39.1339795-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -107549,7 +107549,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
           "method": "RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
-          "line": 905,
+          "line": 906,
           "kinds": [
             "positive"
           ],
@@ -382371,7 +382371,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.BootstrapInitialProbeReplay_DoesNotInventAckFrameWhenNoAckIsPending",
           "method": "BootstrapInitialProbeReplay_DoesNotInventAckFrameWhenNoAckIsPending",
-          "line": 816,
+          "line": 817,
           "kinds": [
             "negative"
           ],
@@ -382393,7 +382393,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.BootstrapInitialProbeReplay_DoesNotInventAckFrameWhenNoAckIsPending",
           "method": "BootstrapInitialProbeReplay_DoesNotInventAckFrameWhenNoAckIsPending",
-          "line": 816,
+          "line": 817,
           "kinds": [
             "negative"
           ],
@@ -382415,7 +382415,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.BootstrapInitialProbeReplay_IncludesPendingInitialAckFrame",
           "method": "BootstrapInitialProbeReplay_IncludesPendingInitialAckFrame",
-          "line": 747,
+          "line": 748,
           "kinds": [
             "positive"
           ],
@@ -382437,7 +382437,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.BootstrapInitialProbeReplay_IncludesPendingInitialAckFrame",
           "method": "BootstrapInitialProbeReplay_IncludesPendingInitialAckFrame",
-          "line": 747,
+          "line": 748,
           "kinds": [
             "positive"
           ],
@@ -382459,7 +382459,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.CryptoRetransmission_DoesNotReplayPriorAckPrefixWhenNoAckIsPending",
           "method": "CryptoRetransmission_DoesNotReplayPriorAckPrefixWhenNoAckIsPending",
-          "line": 617,
+          "line": 618,
           "kinds": [
             "negative"
           ],
@@ -382481,7 +382481,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.CryptoRetransmission_DoesNotReplayPriorAckPrefixWhenNoAckIsPending",
           "method": "CryptoRetransmission_DoesNotReplayPriorAckPrefixWhenNoAckIsPending",
-          "line": 617,
+          "line": 618,
           "kinds": [
             "negative"
           ],
@@ -382503,7 +382503,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.Fuzz_BootstrapInitialReplayAckPrefixRoundTripsWithEmptyTokenAndCrypto",
           "method": "Fuzz_BootstrapInitialReplayAckPrefixRoundTripsWithEmptyTokenAndCrypto",
-          "line": 860,
+          "line": 861,
           "kinds": [
             "fuzz"
           ],
@@ -382525,7 +382525,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.Fuzz_BootstrapInitialReplayAckPrefixRoundTripsWithEmptyTokenAndCrypto",
           "method": "Fuzz_BootstrapInitialReplayAckPrefixRoundTripsWithEmptyTokenAndCrypto",
-          "line": 860,
+          "line": 861,
           "kinds": [
             "fuzz"
           ],
@@ -382547,7 +382547,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.Fuzz_CryptoRetransmissionAckPrefixRoundTripsAcrossInitialAndHandshake",
           "method": "Fuzz_CryptoRetransmissionAckPrefixRoundTripsAcrossInitialAndHandshake",
-          "line": 679,
+          "line": 680,
           "kinds": [
             "fuzz"
           ],
@@ -382569,7 +382569,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.Fuzz_CryptoRetransmissionAckPrefixRoundTripsAcrossInitialAndHandshake",
           "method": "Fuzz_CryptoRetransmissionAckPrefixRoundTripsAcrossInitialAndHandshake",
-          "line": 679,
+          "line": 680,
           "kinds": [
             "fuzz"
           ],
@@ -382591,7 +382591,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.Fuzz_LongHeaderAckPrefixRoundTripsAcrossInitialAndHandshakeCryptoPayloads",
           "method": "Fuzz_LongHeaderAckPrefixRoundTripsAcrossInitialAndHandshakeCryptoPayloads",
-          "line": 447,
+          "line": 448,
           "kinds": [
             "fuzz"
           ],
@@ -382600,10 +382600,11 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9000-S13-2-1-P5-S1-R01"
+            "RFC9000-S13-2-1-P5-S1-R01",
+            "RFC9000-S13-2-P2-R01"
           ],
           "requirement_tagged": true,
-          "class_level_only": true
+          "class_level_only": false
         },
         {
           "requirement_id": "RFC9000-S13-2-1-P5-S1-R01",
@@ -382613,7 +382614,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.Fuzz_LongHeaderAckPrefixRoundTripsAcrossInitialAndHandshakeCryptoPayloads",
           "method": "Fuzz_LongHeaderAckPrefixRoundTripsAcrossInitialAndHandshakeCryptoPayloads",
-          "line": 447,
+          "line": 448,
           "kinds": [
             "fuzz"
           ],
@@ -382622,10 +382623,11 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9000-S13-2-1-P5-S1-R01"
+            "RFC9000-S13-2-1-P5-S1-R01",
+            "RFC9000-S13-2-P2-R01"
           ],
           "requirement_tagged": true,
-          "class_level_only": true
+          "class_level_only": false
         },
         {
           "requirement_id": "RFC9000-S13-2-1-P5-S1-R01",
@@ -382635,7 +382637,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.Fuzz_RetrySelectedInitialReplayAckPrefixRoundTripsWithTokenAndCrypto",
           "method": "Fuzz_RetrySelectedInitialReplayAckPrefixRoundTripsWithTokenAndCrypto",
-          "line": 982,
+          "line": 983,
           "kinds": [
             "fuzz"
           ],
@@ -382657,7 +382659,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.Fuzz_RetrySelectedInitialReplayAckPrefixRoundTripsWithTokenAndCrypto",
           "method": "Fuzz_RetrySelectedInitialReplayAckPrefixRoundTripsWithTokenAndCrypto",
-          "line": 982,
+          "line": 983,
           "kinds": [
             "fuzz"
           ],
@@ -382723,7 +382725,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.HandshakeCryptoRetransmission_IncludesPendingHandshakeAckFrame",
           "method": "HandshakeCryptoRetransmission_IncludesPendingHandshakeAckFrame",
-          "line": 556,
+          "line": 557,
           "kinds": [
             "positive"
           ],
@@ -382745,7 +382747,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.HandshakeCryptoRetransmission_IncludesPendingHandshakeAckFrame",
           "method": "HandshakeCryptoRetransmission_IncludesPendingHandshakeAckFrame",
-          "line": 556,
+          "line": 557,
           "kinds": [
             "positive"
           ],
@@ -382811,7 +382813,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.InitialCryptoRetransmission_IncludesPendingInitialAckFrame",
           "method": "InitialCryptoRetransmission_IncludesPendingInitialAckFrame",
-          "line": 509,
+          "line": 510,
           "kinds": [
             "positive"
           ],
@@ -382833,7 +382835,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.InitialCryptoRetransmission_IncludesPendingInitialAckFrame",
           "method": "InitialCryptoRetransmission_IncludesPendingInitialAckFrame",
-          "line": 509,
+          "line": 510,
           "kinds": [
             "positive"
           ],
@@ -383033,7 +383035,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
           "method": "RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
-          "line": 905,
+          "line": 906,
           "kinds": [
             "positive"
           ],
@@ -383055,7 +383057,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
           "method": "RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
-          "line": 905,
+          "line": 906,
           "kinds": [
             "positive"
           ],
@@ -383077,7 +383079,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.RetrySelectedInitialReplay_DoesNotInventAckFrameWhenNoAckIsPending",
           "method": "RetrySelectedInitialReplay_DoesNotInventAckFrameWhenNoAckIsPending",
-          "line": 962,
+          "line": 963,
           "kinds": [
             "negative"
           ],
@@ -383099,7 +383101,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.RetrySelectedInitialReplay_DoesNotInventAckFrameWhenNoAckIsPending",
           "method": "RetrySelectedInitialReplay_DoesNotInventAckFrameWhenNoAckIsPending",
-          "line": 962,
+          "line": 963,
           "kinds": [
             "negative"
           ],
@@ -383312,7 +383314,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.BootstrapInitialProbeReplay_IncludesPendingInitialAckFrame",
           "method": "BootstrapInitialProbeReplay_IncludesPendingInitialAckFrame",
-          "line": 747,
+          "line": 748,
           "kinds": [
             "positive"
           ],
@@ -383334,7 +383336,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.CryptoRetransmission_DoesNotReplayPriorAckPrefixWhenNoAckIsPending",
           "method": "CryptoRetransmission_DoesNotReplayPriorAckPrefixWhenNoAckIsPending",
-          "line": 617,
+          "line": 618,
           "kinds": [
             "negative"
           ],
@@ -383356,7 +383358,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.Fuzz_BootstrapInitialReplayAckPrefixRoundTripsWithEmptyTokenAndCrypto",
           "method": "Fuzz_BootstrapInitialReplayAckPrefixRoundTripsWithEmptyTokenAndCrypto",
-          "line": 860,
+          "line": 861,
           "kinds": [
             "fuzz"
           ],
@@ -383378,7 +383380,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.Fuzz_CryptoRetransmissionAckPrefixRoundTripsAcrossInitialAndHandshake",
           "method": "Fuzz_CryptoRetransmissionAckPrefixRoundTripsAcrossInitialAndHandshake",
-          "line": 679,
+          "line": 680,
           "kinds": [
             "fuzz"
           ],
@@ -383400,7 +383402,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.Fuzz_LongHeaderAckPrefixRoundTripsAcrossInitialAndHandshakeCryptoPayloads",
           "method": "Fuzz_LongHeaderAckPrefixRoundTripsAcrossInitialAndHandshakeCryptoPayloads",
-          "line": 447,
+          "line": 448,
           "kinds": [
             "fuzz"
           ],
@@ -383409,10 +383411,11 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9000-S13-2-1-P5-S1-R01"
+            "RFC9000-S13-2-1-P5-S1-R01",
+            "RFC9000-S13-2-P2-R01"
           ],
           "requirement_tagged": false,
-          "class_level_only": true
+          "class_level_only": false
         },
         {
           "requirement_id": "RFC9000-S13-2-1-P5-S1-R02",
@@ -383422,7 +383425,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.Fuzz_RetrySelectedInitialReplayAckPrefixRoundTripsWithTokenAndCrypto",
           "method": "Fuzz_RetrySelectedInitialReplayAckPrefixRoundTripsWithTokenAndCrypto",
-          "line": 982,
+          "line": 983,
           "kinds": [
             "fuzz"
           ],
@@ -383466,7 +383469,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.HandshakeCryptoRetransmission_IncludesPendingHandshakeAckFrame",
           "method": "HandshakeCryptoRetransmission_IncludesPendingHandshakeAckFrame",
-          "line": 556,
+          "line": 557,
           "kinds": [
             "positive"
           ],
@@ -383510,7 +383513,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.InitialCryptoRetransmission_IncludesPendingInitialAckFrame",
           "method": "InitialCryptoRetransmission_IncludesPendingInitialAckFrame",
-          "line": 509,
+          "line": 510,
           "kinds": [
             "positive"
           ],
@@ -383532,7 +383535,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
           "method": "RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
-          "line": 905,
+          "line": 906,
           "kinds": [
             "positive"
           ],
@@ -385956,14 +385959,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 8,
+        "total": 9,
+        "focused": 9,
         "broad": 0,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -385971,6 +385974,29 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S13-2-P2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0763",
+          "member": "REQ_QUIC_RFC9000_0763.Fuzz_LongHeaderAckPrefixRoundTripsAcrossInitialAndHandshakeCryptoPayloads",
+          "method": "Fuzz_LongHeaderAckPrefixRoundTripsAcrossInitialAndHandshakeCryptoPayloads",
+          "line": 448,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S13-2-1-P5-S1-R01",
+            "RFC9000-S13-2-P2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S13-2-P2-R01",
           "source": "requirement_attribute",
@@ -395555,7 +395581,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
           "method": "RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
-          "line": 905,
+          "line": 906,
           "kinds": [
             "positive"
           ],
@@ -395786,7 +395812,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
           "method": "RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
-          "line": 905,
+          "line": 906,
           "kinds": [
             "positive"
           ],
@@ -396181,14 +396207,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 7,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -396204,7 +396230,7 @@
           "class": "REQ_QUIC_RFC9000_0763",
           "member": "REQ_QUIC_RFC9000_0763.RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
           "method": "RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
-          "line": 905,
+          "line": 906,
           "kinds": [
             "positive"
           ],
@@ -396349,6 +396375,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S17-2-5-3-P4-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P4-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_1053",
+          "member": "REQ_QUIC_RFC9000_1053.Fuzz_ClientPacketNumbersContinueAcrossRetryWithoutResettingPacketNumberSpaces",
+          "method": "Fuzz_ClientPacketNumbersContinueAcrossRetryWithoutResettingPacketNumberSpaces",
+          "line": 156,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S17-2-5-3-P4-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -428585,14 +428633,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 8,
+        "total": 9,
+        "focused": 9,
         "broad": 0,
         "by_kind": {
           "positive": 6,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -428643,6 +428691,28 @@
           ],
           "requirement_tagged": false,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S9-3-P7-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P7-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S9P3_0005",
+          "member": "REQ_QUIC_RFC9000_S9P3_0005.Fuzz_ServerValidationOfNewClientAddressEmitsANewTokenForValidatedPath",
+          "method": "Fuzz_ServerValidationOfNewClientAddressEmitsANewTokenForValidatedPath",
+          "line": 78,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-3-P7-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         },
         {
           "requirement_id": "RFC9000-S9-3-P7-S1-R01",
@@ -428762,7 +428832,7 @@
           "class": "REQ_QUIC_RFC9000_S9P3_0005",
           "member": "REQ_QUIC_RFC9000_S9P3_0005.ValidationBeforeTheRuntimeIsActiveDefersNewTokenEmissionUntilOneRttSendMaterialExists",
           "method": "ValidationBeforeTheRuntimeIsActiveDefersNewTokenEmissionUntilOneRttSendMaterialExists",
-          "line": 74,
+          "line": 118,
           "kinds": [
             "positive"
           ],

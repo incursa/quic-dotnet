@@ -68,6 +68,50 @@ public sealed class REQ_QUIC_RFC9000_S9P3_0005
             && send.PathIdentity == validatedPath);
     }
 
+    [Theory]
+    [InlineData("203.0.113.12", 443, 20, 30)]
+    [InlineData("198.51.100.88", 8443, 31, 47)]
+    [InlineData("2001:db8:1::88", 9443, 53, 89)]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("RFC9000-S9-3-P7-S1-R01")]
+    public void Fuzz_ServerValidationOfNewClientAddressEmitsANewTokenForValidatedPath(
+        string remoteAddress,
+        int remotePort,
+        long receiveTicks,
+        long validationTicks)
+    {
+        QuicConnectionRuntime runtime = QuicS9P3TokenEmissionTestSupport.CreateServerRuntimeReadyForTokenEmission();
+        QuicConnectionPathIdentity validatedPath = new(remoteAddress, RemotePort: remotePort);
+        byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: receiveTicks,
+                validatedPath,
+                datagram),
+            nowTicks: receiveTicks).StateChanged);
+
+        QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
+            runtime,
+            validatedPath,
+            observedAtTicks: validationTicks);
+
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(validatedPath, runtime.ActivePath!.Value.Identity);
+        Assert.Equal(validatedPath.RemoteAddress, runtime.LastValidatedRemoteAddress);
+        QuicConnectionSendDatagramEffect tokenSendEffect = QuicS13AckPiggybackTestSupport.FindNewTokenSendEffect(
+            runtime,
+            validationResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        Assert.Equal(validatedPath, tokenSendEffect.PathIdentity);
+
+        byte[] payloadBytes = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, tokenSendEffect);
+        ReadOnlySpan<byte> payload = payloadBytes;
+        Assert.True(QuicFrameCodec.TryParseNewTokenFrame(payload, out QuicNewTokenFrame newTokenFrame, out int tokenBytesConsumed));
+        Assert.True(newTokenFrame.Token.Length > 0);
+        Assert.True(QuicS13AckPiggybackTestSupport.SkipPadding(payload[tokenBytesConsumed..]).IsEmpty);
+    }
+
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

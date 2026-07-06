@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T01:00:25.4059604-06:00",
+    "generated_at": "2026-07-06T01:03:47.9933436-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1459,
-      "full_executable_proof": 1218
+      "deferred_proof_not_executed": 1456,
+      "full_executable_proof": 1221
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 406,
-          "full_executable_proof": 1044
+          "deferred_proof_not_executed": 403,
+          "full_executable_proof": 1047
         }
       },
       {
@@ -74451,9 +74451,9 @@
       "rfc": "RFC9000",
       "title": "Include ACK frames when not sent recently",
       "statement": "When sending a packet for any reason, an endpoint SHOULD attempt to include an ACK frame if one has not been sent recently.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -74464,15 +74464,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs",
@@ -76625,9 +76624,9 @@
       "rfc": "RFC9000",
       "title": "Do not reset packet numbers after Retry",
       "statement": "A client MUST NOT reset the packet number for any packet number space after processing a Retry packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -76638,15 +76637,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs",
@@ -83943,9 +83941,9 @@
       "rfc": "RFC9000",
       "title": "After verifying a new client address, the server SHOULD send new address validation tokens (Section 8) to the client",
       "statement": "After verifying a new client address, the server SHOULD send new address validation tokens (Section 8) to the client.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -83954,15 +83952,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 6,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 7,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs",
