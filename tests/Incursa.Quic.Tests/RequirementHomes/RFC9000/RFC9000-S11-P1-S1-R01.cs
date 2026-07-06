@@ -58,4 +58,47 @@ public sealed class REQ_QUIC_RFC9000_S11_0001
         Assert.False(QuicFrameCodec.TryParseConnectionCloseFrame(encoded[..^1], out _, out _));
         Assert.False(QuicFrameCodec.TryParseConnectionCloseFrame([0x1B], out _, out _));
     }
+
+    [Fact]
+    [Requirement("RFC9000-S11-P2-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ConnectionCloseErrorCodeFuzz_PreservesRepresentativeTransportErrorCodes()
+    {
+        QuicTransportErrorCode[] errorCodes =
+        [
+            QuicTransportErrorCode.NoError,
+            QuicTransportErrorCode.InternalError,
+            QuicTransportErrorCode.FlowControlError,
+            QuicTransportErrorCode.FrameEncodingError,
+            QuicTransportErrorCode.ProtocolViolation,
+            QuicTransportErrorCode.ApplicationError,
+            QuicTransportErrorCode.AeadLimitReached,
+            QuicTransportErrorCode.NoViablePath,
+        ];
+        Span<byte> destination = stackalloc byte[32];
+
+        for (int index = 0; index < errorCodes.Length; index++)
+        {
+            QuicConnectionCloseFrame frame = new(
+                errorCodes[index],
+                triggeringFrameType: (ulong)(0x01 + index),
+                [(byte)(0x40 + index)]);
+            byte[] encoded = QuicFrameTestData.BuildConnectionCloseFrame(frame);
+
+            Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(
+                encoded,
+                out QuicConnectionCloseFrame parsed,
+                out int bytesConsumed));
+            Assert.False(parsed.IsApplicationError);
+            Assert.Equal((byte)0x1C, parsed.FrameType);
+            Assert.Equal((ulong)errorCodes[index], parsed.ErrorCode);
+            Assert.Equal((ulong)(0x01 + index), parsed.TriggeringFrameType);
+            Assert.Equal(encoded.Length, bytesConsumed);
+
+            Assert.True(QuicFrameCodec.TryFormatConnectionCloseFrame(parsed, destination, out int bytesWritten));
+            Assert.Equal(encoded.Length, bytesWritten);
+            Assert.True(encoded.AsSpan().SequenceEqual(destination[..bytesWritten]));
+        }
+    }
 }

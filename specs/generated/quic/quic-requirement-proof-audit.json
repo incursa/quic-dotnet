@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T10:23:53.2008789-06:00",
+    "generated_at": "2026-07-06T10:27:14.0991764-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1128,
-      "full_executable_proof": 1549
+      "deferred_proof_not_executed": 1127,
+      "full_executable_proof": 1550
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 103,
-          "full_executable_proof": 1347
+          "deferred_proof_not_executed": 102,
+          "full_executable_proof": 1348
         }
       },
       {
@@ -73120,6 +73120,7 @@
       ],
       "deferred_kinds": [],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -73128,7 +73129,7 @@
       ],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 2,
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-P1-S1-R01.cs"
@@ -73144,9 +73145,9 @@
       "rfc": "RFC9000",
       "title": "The most appropriate error code (Section 20) SHOULD be included in the frame that signals the error",
       "statement": "The most appropriate error code (Section 20) SHOULD be included in the frame that signals the error.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -73156,6 +73157,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -73163,10 +73165,8 @@
         "fuzz"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-P1-S1-R01.cs"
