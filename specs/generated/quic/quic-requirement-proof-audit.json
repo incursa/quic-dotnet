@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T05:53:25.7464758-06:00",
+    "generated_at": "2026-07-06T05:55:53.0991953-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1273,
-      "full_executable_proof": 1404
+      "deferred_proof_not_executed": 1272,
+      "full_executable_proof": 1405
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 248,
-          "full_executable_proof": 1202
+          "deferred_proof_not_executed": 247,
+          "full_executable_proof": 1203
         }
       },
       {
@@ -82575,9 +82575,9 @@
       "rfc": "RFC9000",
       "title": "Make address validation tokens hard to guess",
       "statement": "An address validation token MUST be difficult to guess.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -82587,15 +82587,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-4-P1-S1-R01.cs"

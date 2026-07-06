@@ -43,9 +43,73 @@ public sealed class REQ_QUIC_RFC9000_0407
             protector.ValidateNewToken(guessedToken, "203.0.113.10", DateTimeOffset.FromUnixTimeSeconds(1_800_000_001)));
     }
 
+    [Fact]
+    [Requirement("RFC9000-S8-1-4-P1-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_NewTokensStayUniqueAndRejectGuessedBytePatterns()
+    {
+        QuicAddressValidationTokenProtector protector = CreateProtector();
+        DateTimeOffset issuedAt = DateTimeOffset.FromUnixTimeSeconds(1_800_000_000);
+        string[] remoteAddresses =
+        [
+            "203.0.113.10",
+            "203.0.113.11",
+            "2001:db8::10",
+        ];
+
+        foreach (string remoteAddress in remoteAddresses)
+        {
+            byte[][] issuedTokens =
+            [
+                protector.IssueNewToken(remoteAddress, issuedAt),
+                protector.IssueNewToken(remoteAddress, issuedAt),
+                protector.IssueNewToken(remoteAddress, issuedAt.AddSeconds(1)),
+            ];
+
+            Assert.Equal(
+                issuedTokens.Length,
+                issuedTokens.Select(Convert.ToHexString).Distinct(StringComparer.Ordinal).Count());
+            Assert.All(issuedTokens, token =>
+            {
+                Assert.Equal(QuicAddressValidationTokenProtector.TokenLength, token.Length);
+                Assert.Equal(
+                    QuicAddressValidationTokenValidationResult.Valid,
+                    protector.ValidateNewToken(token, remoteAddress, issuedAt.AddSeconds(2)));
+            });
+        }
+
+        foreach (byte[] guessedToken in CreateGuessedTokens())
+        {
+            Assert.NotEqual(
+                QuicAddressValidationTokenValidationResult.Valid,
+                protector.ValidateNewToken(guessedToken, "203.0.113.10", issuedAt.AddSeconds(1)));
+        }
+    }
+
     private static QuicAddressValidationTokenProtector CreateProtector()
     {
         return new QuicAddressValidationTokenProtector(CreateSecret(), TimeSpan.FromMinutes(5));
+    }
+
+    private static byte[][] CreateGuessedTokens()
+    {
+        byte[] repeatedPattern = new byte[QuicAddressValidationTokenProtector.TokenLength];
+        Array.Fill(repeatedPattern, (byte)0xA5);
+
+        byte[] shortToken = new byte[QuicAddressValidationTokenProtector.TokenLength - 1];
+        Array.Fill(shortToken, (byte)0x5A);
+
+        byte[] longToken = new byte[QuicAddressValidationTokenProtector.TokenLength + 1];
+        Array.Fill(longToken, (byte)0x3C);
+
+        return
+        [
+            new byte[QuicAddressValidationTokenProtector.TokenLength],
+            repeatedPattern,
+            shortToken,
+            longToken,
+        ];
     }
 
     private static byte[] CreateSecret()
