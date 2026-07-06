@@ -32,6 +32,47 @@ public sealed class REQ_QUIC_RFC9000_S8P1P3_0007
             protector.ValidateNewToken(second, "203.0.113.10", issuedAt.AddSeconds(1)));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_NewTokenIssuanceIsUniqueAcrossClientAddressVariants()
+    {
+        QuicAddressValidationTokenProtector protector = CreateProtector();
+        DateTimeOffset issuedAt = DateTimeOffset.FromUnixTimeSeconds(1_800_000_000);
+        string[] clientAddresses =
+        [
+            "203.0.113.10",
+            "203.0.113.11",
+            "198.51.100.20",
+            "2001:db8::20",
+        ];
+
+        List<(string ClientAddress, byte[] Token)> issuedTokens = [];
+        foreach (string clientAddress in clientAddresses)
+        {
+            issuedTokens.Add((clientAddress, protector.IssueNewToken(clientAddress, issuedAt)));
+            issuedTokens.Add((clientAddress, protector.IssueNewToken(clientAddress, issuedAt)));
+        }
+
+        Assert.Equal(
+            issuedTokens.Count,
+            issuedTokens.Select(item => Convert.ToHexString(item.Token)).Distinct(StringComparer.Ordinal).Count());
+
+        foreach ((string clientAddress, byte[] token) in issuedTokens)
+        {
+            Assert.Equal(
+                QuicAddressValidationTokenValidationResult.Valid,
+                protector.ValidateNewToken(token, clientAddress, issuedAt.AddSeconds(1)));
+
+            foreach (string otherAddress in clientAddresses.Where(address => !StringComparer.Ordinal.Equals(address, clientAddress)))
+            {
+                Assert.Equal(
+                    QuicAddressValidationTokenValidationResult.IntegrityFailure,
+                    protector.ValidateNewToken(token, otherAddress, issuedAt.AddSeconds(1)));
+            }
+        }
+    }
+
     private static QuicAddressValidationTokenProtector CreateProtector()
     {
         return new QuicAddressValidationTokenProtector(CreateSecret(), TimeSpan.FromMinutes(5));
