@@ -178,6 +178,44 @@ public sealed class REQ_QUIC_RFC9002_S6_0001
         Assert.Contains(sendRuntime.SentPackets, entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryDiscardPacketNumberSpace_RemovesOnlyTheSelectedLossDetectionSpace()
+    {
+        foreach (QuicPacketNumberSpace discardedSpace in new[]
+        {
+            QuicPacketNumberSpace.Initial,
+            QuicPacketNumberSpace.Handshake,
+            QuicPacketNumberSpace.ApplicationData,
+        })
+        {
+            QuicConnectionSendRuntime sendRuntime = new();
+            TrackSentPacket(sendRuntime, QuicPacketNumberSpace.Initial, packetNumber: 1, QuicTlsEncryptionLevel.Initial);
+            TrackSentPacket(sendRuntime, QuicPacketNumberSpace.Handshake, packetNumber: 2, QuicTlsEncryptionLevel.Handshake);
+            TrackSentPacket(sendRuntime, QuicPacketNumberSpace.ApplicationData, packetNumber: 3, QuicTlsEncryptionLevel.ZeroRtt);
+            TrackSentPacket(sendRuntime, QuicPacketNumberSpace.ApplicationData, packetNumber: 4, QuicTlsEncryptionLevel.OneRtt);
+
+            Assert.True(sendRuntime.TryDiscardPacketNumberSpace(discardedSpace));
+
+            Assert.DoesNotContain(sendRuntime.SentPackets.Keys, key => key.PacketNumberSpace == discardedSpace);
+            foreach (QuicPacketNumberSpace retainedSpace in new[]
+            {
+                QuicPacketNumberSpace.Initial,
+                QuicPacketNumberSpace.Handshake,
+                QuicPacketNumberSpace.ApplicationData,
+            })
+            {
+                if (retainedSpace == discardedSpace)
+                {
+                    continue;
+                }
+
+                Assert.Contains(sendRuntime.SentPackets.Keys, key => key.PacketNumberSpace == retainedSpace);
+            }
+        }
+    }
+
     private delegate bool ProcessHandshakePacketPayloadDelegate(
         QuicConnectionRuntime runtime,
         ReadOnlySpan<byte> payload,
@@ -251,6 +289,25 @@ public sealed class REQ_QUIC_RFC9002_S6_0001
             isAckElicitingPacket: true,
             isProbePacket: false,
             packetProtectionLevel);
+    }
+
+    private static void TrackSentPacket(
+        QuicConnectionSendRuntime sendRuntime,
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong packetNumber,
+        QuicTlsEncryptionLevel packetProtectionLevel)
+    {
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            packetNumberSpace,
+            packetNumber,
+            PayloadBytes: 1_200 + packetNumber,
+            SentAtMicros: packetNumber * 100,
+            AckEliciting: true,
+            CryptoMetadata: packetNumberSpace is QuicPacketNumberSpace.Initial or QuicPacketNumberSpace.Handshake
+                ? new QuicConnectionCryptoSendMetadata(packetProtectionLevel)
+                : null,
+            PacketBytes: new byte[] { (byte)packetNumber },
+            PacketProtectionLevel: packetProtectionLevel));
     }
 
     private static bool TrySelectRecoveryTimer(
