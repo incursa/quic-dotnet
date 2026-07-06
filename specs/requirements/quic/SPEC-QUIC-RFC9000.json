@@ -11106,6 +11106,7 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P1-R01.cs::TryReserveSendCapacity_GeneratesStreamDataBlockedWhenBlockedByStreamFlowControl",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P1-R01.cs::TryReserveSendCapacity_DoesNotGenerateStreamDataBlockedWhenConnectionFlowControlBlocksFirst",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P1-R01.cs::TryReserveSendCapacityFuzz_GeneratesStreamDataBlockedForStreamFlowControlLimits",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0177.cs::WriteAsync_EmitsStreamDataBlockedWhenTheSenderIsFlowControlLimitedAndNothingAckElicitingIsInFlight"
         ],
         "upstream_refs": [

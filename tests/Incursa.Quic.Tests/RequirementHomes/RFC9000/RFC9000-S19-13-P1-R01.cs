@@ -79,4 +79,53 @@ public sealed class REQ_QUIC_RFC9000_1298
         Assert.Equal(default, streamDataBlockedFrame);
         Assert.Equal(default, errorCode);
     }
+
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="RFC9000-S19-13-P1-R01">A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but is unable to do so due to stream-level flow control.</workbench-requirement>
+    /// </workbench-requirements>
+    [Fact]
+    [Requirement("RFC9000-S19-13-P1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryReserveSendCapacityFuzz_GeneratesStreamDataBlockedForStreamFlowControlLimits()
+    {
+        (ulong StreamLimit, int RequestedLength, ulong ExpectedMaximumStreamData)[] cases =
+        [
+            (1, 2, 1),
+            (4, 5, 4),
+            (7, 9, 7),
+            (16, 20, 16),
+        ];
+
+        foreach ((ulong streamLimit, int requestedLength, ulong expectedMaximumStreamData) in cases)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                localBidirectionalSendLimit: streamLimit,
+                connectionSendLimit: 64);
+
+            Assert.True(state.TryOpenLocalStream(
+                bidirectional: true,
+                out QuicStreamId streamId,
+                out QuicStreamsBlockedFrame blockedFrame));
+            Assert.Equal(default, blockedFrame);
+
+            Assert.False(state.TryReserveSendCapacity(
+                streamId.Value,
+                offset: 0,
+                length: requestedLength,
+                fin: false,
+                out QuicDataBlockedFrame dataBlockedFrame,
+                out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+                out QuicTransportErrorCode errorCode));
+
+            Assert.Equal(default, dataBlockedFrame);
+            Assert.Equal(streamId.Value, streamDataBlockedFrame.StreamId);
+            Assert.Equal(expectedMaximumStreamData, streamDataBlockedFrame.MaximumStreamData);
+            Assert.Equal(default, errorCode);
+
+            Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
+            Assert.Equal(QuicStreamSendState.Send, snapshot.SendState);
+            Assert.False(snapshot.HasFinalSize);
+        }
+    }
 }

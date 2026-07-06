@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T11:14:13.2944346-06:00",
+    "generated_at": "2026-07-06T11:18:48.8735083-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1112,
-      "full_executable_proof": 1565
+      "deferred_proof_not_executed": 1111,
+      "full_executable_proof": 1566
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 87,
-          "full_executable_proof": 1363
+          "deferred_proof_not_executed": 86,
+          "full_executable_proof": 1364
         }
       },
       {
@@ -76825,9 +76825,9 @@
       "rfc": "RFC9000",
       "title": "Send STREAM_DATA_BLOCKED when blocked by stream flow control",
       "statement": "A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but is unable to do so due to stream-level flow control.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -76837,6 +76837,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -76844,10 +76845,8 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0177.cs",
