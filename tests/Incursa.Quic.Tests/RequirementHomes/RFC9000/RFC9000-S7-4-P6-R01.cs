@@ -25,4 +25,27 @@ public sealed class REQ_QUIC_RFC9000_0334
             QuicTransportParameterRole.Client,
             out _));
     }
+
+    [Fact]
+    [Requirement("RFC9000-S7-4-P6-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryParseTransportParameters_RejectsInvalidActiveConnectionIdLimitValues()
+    {
+        foreach (ulong invalidValue in new ulong[] { 0, 1 })
+        {
+            foreach (QuicTransportParameterRole role in new[] { QuicTransportParameterRole.Client, QuicTransportParameterRole.Server })
+            {
+                byte[] invalidActiveConnectionIdLimit = QuicTransportParameterTestData.BuildTransportParameterBlock(
+                    QuicTransportParameterTestData.BuildTransportParameterTuple(
+                        0x0E,
+                        QuicVarintTestData.EncodeMinimal(invalidValue)));
+
+                Assert.False(QuicTransportParametersCodec.TryParseTransportParameters(
+                    invalidActiveConnectionIdLimit,
+                    role,
+                    out _));
+            }
+        }
+    }
 }

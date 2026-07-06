@@ -60,4 +60,62 @@ public sealed class REQ_QUIC_RFC9000_0425
         Assert.True(responseRuntime.ActivePath.HasValue);
         Assert.Equal(candidatePath, responseRuntime.ActivePath!.Value.Identity);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S8-2-P6-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_PathValidationFramesRemainValidWhenMixedWithOtherFrames()
+    {
+        for (int variation = 0; variation < 4; variation++)
+        {
+            using QuicConnectionRuntime challengeRuntime =
+                QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+            Assert.True(challengeRuntime.ActivePath.HasValue);
+
+            QuicConnectionPathIdentity activePath = challengeRuntime.ActivePath!.Value.Identity;
+            byte[] challengeData = QuicS8P2PathValidationTestSupport.CreateChallengeData(unchecked((byte)(0x30 + variation)));
+
+            QuicConnectionTransitionResult challengeResult =
+                QuicS8P2PathValidationTestSupport.ReceiveProtectedPathChallenge(
+                    challengeRuntime,
+                    activePath,
+                    challengeData,
+                    packetNumber: unchecked((byte)(0x40 + variation)),
+                    observedAtTicks: 40 + variation,
+                    includePing: true);
+
+            Assert.True(challengeResult.StateChanged);
+            QuicS8P2PathValidationTestSupport.AssertSinglePathResponseDatagram(
+                challengeRuntime,
+                challengeResult,
+                activePath,
+                challengeData);
+
+            using QuicConnectionRuntime responseRuntime =
+                QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+            QuicConnectionPathIdentity candidatePath = new($"203.0.113.{130 + variation}", RemotePort: 443);
+
+            Assert.True(QuicS8P2PathValidationTestSupport.StartCandidatePath(
+                responseRuntime,
+                candidatePath,
+                observedAtTicks: 50 + variation).StateChanged);
+            Assert.True(responseRuntime.CandidatePaths.TryGetValue(
+                candidatePath,
+                out QuicConnectionCandidatePathRecord candidate));
+
+            QuicConnectionTransitionResult responseResult =
+                QuicS8P2PathValidationTestSupport.ReceiveProtectedPathResponse(
+                    responseRuntime,
+                    candidatePath,
+                    candidate.Validation.ChallengePayload.Span,
+                    packetNumber: unchecked((byte)(0x60 + variation)),
+                    observedAtTicks: 60 + variation,
+                    includePing: true);
+
+            Assert.True(responseResult.StateChanged);
+            Assert.True(responseRuntime.ActivePath.HasValue);
+            Assert.Equal(candidatePath, responseRuntime.ActivePath!.Value.Identity);
+        }
+    }
 }

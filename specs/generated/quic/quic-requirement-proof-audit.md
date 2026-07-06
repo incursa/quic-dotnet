@@ -6,15 +6,15 @@ This report is stricter than trace coverage. It only counts focused executable m
 
 | Proof state | Count |
 | --- | ---: |
-| deferred_proof_not_executed | 1059 |
-| full_executable_proof | 1618 |
+| deferred_proof_not_executed | 1055 |
+| full_executable_proof | 1622 |
 
 ## RFC Breakdown
 
 | RFC | Total | full_executable_proof | missing_required_focused_proof | deferred_proof_not_executed | no_focused_executable_proof |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | RFC8999 | 8 | 8 | 0 | 0 | 0 |
-| RFC9000 | 1450 | 1416 | 0 | 34 | 0 |
+| RFC9000 | 1450 | 1420 | 0 | 30 | 0 |
 | RFC9001 | 96 | 72 | 0 | 24 | 0 |
 | RFC9002 | 226 | 57 | 0 | 169 | 0 |
 | RFC9114 | 8 | 0 | 0 | 8 | 0 |
@@ -63,12 +63,8 @@ This report is stricter than trace coverage. It only counts focused executable m
 | `RFC9000-S22-1-3-P4-S1-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `RFC9000-S22-1-4-P4-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `RFC9000-S5-2-2-P2-S4-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
-| `RFC9000-S7-4-2-P1-S2-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
-| `RFC9000-S7-4-P6-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `RFC9000-S8-1-3-P2-S5-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `RFC9000-S8-1-P6-S3-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
-| `RFC9000-S8-2-4-P2-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
-| `RFC9000-S8-2-P6-S1-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `RFC9000-S9-4-P1-S2-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `RFC9000-S9-6-1-P4-S2-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `RFC9000-S9-P5-S1-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
@@ -88,3 +84,7 @@ This report is stricter than trace coverage. It only counts focused executable m
 | `REQ-QUIC-RFC9001-S6P1-0003` | RFC9001 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9001-S6P1-0007` | RFC9001 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9001-S6P1-0008` | RFC9001 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9001-S6P5-0007` | RFC9001 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9001-S8-0001` | RFC9001 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9001-S8-0002` | RFC9001 | deferred_proof_not_executed |  | fuzz |
+| `RFC9001-S6-1-P7-S1-R01` | RFC9001 | deferred_proof_not_executed |  | fuzz |

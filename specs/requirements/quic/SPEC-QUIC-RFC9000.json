@@ -3547,7 +3547,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-P7-R01.cs::TryFormatTransportParameters_UsesEachParameterOnceAndParsesBack",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-P6-R01.cs::TryParseTransportParameters_RejectsAnInvalidActiveConnectionIdLimitValue"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-P6-R01.cs::TryParseTransportParameters_RejectsAnInvalidActiveConnectionIdLimitValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-P6-R01.cs::Fuzz_TryParseTransportParameters_RejectsInvalidActiveConnectionIdLimitValues"
         ],
         "upstream_refs": [
           "RFC 9000 7.4 RFC9000-S7P4-B6-P6-S1",
@@ -3873,7 +3874,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P1-0001.cs::TryParseTransportParameters_IgnoresReservedGreaseParameters",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P1-0001.cs::TryParseTransportParameters_RejectsDuplicateReservedGreaseParameters"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P1-0001.cs::TryParseTransportParameters_RejectsDuplicateReservedGreaseParameters",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P1-0001.cs::Fuzz_TryParseTransportParameters_IgnoresUnknownReservedParametersAcrossGreaseIds"
         ],
         "upstream_refs": [
           "RFC 9000 section 7.4.2 RFC9000-S7P4P2-B1-P1-S2",
@@ -4304,7 +4306,8 @@
           "VER-QUIC-RFC9000-0029"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-P6-S1-R01.cs::PathValidationFramesCanBeProcessedWithOtherFramesInTheSamePacket"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-P6-S1-R01.cs::PathValidationFramesCanBeProcessedWithOtherFramesInTheSamePacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-P6-S1-R01.cs::Fuzz_PathValidationFramesRemainValidWhenMixedWithOtherFrames"
         ],
         "upstream_refs": [
           "RFC9000-S8P2-B6-P6-S1",
@@ -4437,7 +4440,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-4-P2-R01.cs::PathValidationTimerEventuallyAbandonsAnExpiredCandidate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-4-P2-R01.cs::FirstTimerExpiryStillRetriesInsteadOfAbandoningTheCandidate"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-4-P2-R01.cs::FirstTimerExpiryStillRetriesInsteadOfAbandoningTheCandidate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-4-P2-R01.cs::Fuzz_PathValidationTimerRetriesThenAbandonsExpiredCandidates"
         ],
         "upstream_refs": [
           "RFC 9000 8.2.4 RFC9000-S8P2P4-B2-P2-S1",

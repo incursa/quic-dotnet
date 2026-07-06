@@ -96,10 +96,59 @@ public sealed class REQ_QUIC_RFC9000_0454
         Assert.True(retriedCandidate.Validation.ValidationDeadlineTicks.HasValue);
     }
 
-    private static (QuicConnectionRuntime Runtime, QuicConnectionPathIdentity CandidatePath, long DeadlineTicks, ulong TimerGeneration) CreatePendingPathValidation()
+    [Fact]
+    [Requirement("RFC9000-S8-2-4-P2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_PathValidationTimerRetriesThenAbandonsExpiredCandidates()
     {
-        QuicConnectionPathIdentity activePath = new("203.0.113.20", RemotePort: 443);
-        QuicConnectionPathIdentity candidatePath = new("203.0.113.21", RemotePort: 443);
+        for (int variation = 0; variation < 4; variation++)
+        {
+            (QuicConnectionRuntime runtime, QuicConnectionPathIdentity candidatePath, long deadlineTicks, ulong generation) =
+                CreatePendingPathValidation(variation);
+
+            for (ulong expectedChallengeSendCount = 2; expectedChallengeSendCount <= 3; expectedChallengeSendCount++)
+            {
+                QuicConnectionTransitionResult retryResult = runtime.Transition(
+                    new QuicConnectionTimerExpiredEvent(
+                        ObservedAtTicks: deadlineTicks,
+                        QuicConnectionTimerKind.PathValidation,
+                        generation),
+                    nowTicks: deadlineTicks);
+
+                Assert.Contains(retryResult.Effects, effect =>
+                    effect is QuicConnectionSendDatagramEffect send
+                    && send.PathIdentity == candidatePath
+                    && QuicFrameCodec.TryParsePathChallengeFrame(send.Datagram.Span, out _, out _));
+                Assert.True(runtime.CandidatePaths.TryGetValue(candidatePath, out QuicConnectionCandidatePathRecord retriedCandidate));
+                Assert.False(retriedCandidate.Validation.IsAbandoned);
+                Assert.Equal(expectedChallengeSendCount, retriedCandidate.Validation.ChallengeSendCount);
+                Assert.True(retriedCandidate.Validation.ValidationDeadlineTicks.HasValue);
+
+                deadlineTicks = retriedCandidate.Validation.ValidationDeadlineTicks.Value;
+                generation = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.PathValidation);
+            }
+
+            QuicConnectionTransitionResult abandonResult = runtime.Transition(
+                new QuicConnectionTimerExpiredEvent(
+                    ObservedAtTicks: deadlineTicks,
+                    QuicConnectionTimerKind.PathValidation,
+                    generation),
+                nowTicks: deadlineTicks);
+
+            Assert.True(abandonResult.StateChanged);
+            Assert.DoesNotContain(abandonResult.Effects, effect => effect is QuicConnectionSendDatagramEffect);
+            Assert.True(runtime.CandidatePaths.TryGetValue(candidatePath, out QuicConnectionCandidatePathRecord abandonedCandidate));
+            Assert.True(abandonedCandidate.Validation.IsAbandoned);
+            Assert.False(abandonedCandidate.Validation.ValidationDeadlineTicks.HasValue);
+            Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.PathValidation));
+        }
+    }
+
+    private static (QuicConnectionRuntime Runtime, QuicConnectionPathIdentity CandidatePath, long DeadlineTicks, ulong TimerGeneration) CreatePendingPathValidation(int variation = 0)
+    {
+        QuicConnectionPathIdentity activePath = new($"203.0.113.{20 + variation}", RemotePort: 443);
+        QuicConnectionPathIdentity candidatePath = new($"203.0.113.{40 + variation}", RemotePort: 443);
         QuicConnectionRuntime runtime = new(
             QuicConnectionStreamStateTestHelpers.CreateState(),
             tlsRole: QuicTlsRole.Server);
@@ -118,7 +167,7 @@ public sealed class REQ_QUIC_RFC9000_0454
         QuicConnectionTransitionResult startResult = QuicS8P2PathValidationTestSupport.StartCandidatePath(
             runtime,
             candidatePath,
-            observedAtTicks: 20);
+            observedAtTicks: 20 + variation);
 
         Assert.True(startResult.StateChanged);
 

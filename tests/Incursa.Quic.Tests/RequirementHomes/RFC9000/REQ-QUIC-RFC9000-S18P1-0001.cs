@@ -51,4 +51,44 @@ public sealed class REQ_QUIC_RFC9000_S18P1_0001
             QuicTransportParameterRole.Client,
             out _));
     }
+
+    [Fact]
+    /// <workbench-requirements generated="true" source="manual">
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P1-0001">Transport parameters with an identifier of the form 31 * N + 27 for integer values of N MUST be reserved to exercise the requirement that unknown transport parameters be ignored.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S18P1-0002">These transport parameters have no semantics and MAY carry arbitrary values.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S7-4-2-P1-S2-R01">An endpoint MUST ignore transport parameters that it does not support.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("REQ-QUIC-RFC9000-S18P1-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S18P1-0002")]
+    [Requirement("RFC9000-S7-4-2-P1-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryParseTransportParameters_IgnoresUnknownReservedParametersAcrossGreaseIds()
+    {
+        for (ulong n = 0; n < 4; n++)
+        {
+            ulong greaseParameterId = (31 * n) + 27;
+            byte[] greaseTuple = QuicTransportParameterTestData.BuildTransportParameterTuple(
+                greaseParameterId,
+                [
+                    unchecked((byte)(0xA0 + n)),
+                    unchecked((byte)(0xB0 + n)),
+                    unchecked((byte)(0xC0 + n))
+                ]);
+            byte[] maxIdleTimeoutTuple = QuicTransportParameterTestData.BuildTransportParameterTuple(
+                0x01,
+                QuicVarintTestData.EncodeMinimal(30 + n));
+            byte[] block = QuicTransportParameterTestData.BuildTransportParameterBlock(greaseTuple, maxIdleTimeoutTuple);
+
+            Assert.True(QuicTransportParametersCodec.TryParseTransportParameters(
+                block,
+                QuicTransportParameterRole.Client,
+                out QuicTransportParameters parsed));
+
+            Assert.Equal(30 + n, parsed.MaxIdleTimeout);
+            Assert.Null(parsed.OriginalDestinationConnectionId);
+            Assert.Null(parsed.StatelessResetToken);
+            Assert.Null(parsed.PreferredAddress);
+        }
+    }
 }
