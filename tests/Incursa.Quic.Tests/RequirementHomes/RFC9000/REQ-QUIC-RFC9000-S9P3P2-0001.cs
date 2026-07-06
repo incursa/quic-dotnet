@@ -11,19 +11,41 @@ public sealed class REQ_QUIC_RFC9000_S9P3P2_0001
     [Trait("Category", "Positive")]
     public void ValidationFailureKeepsUsingTheLastValidatedPeerAddress()
     {
+        AssertValidationFailureKeepsUsingTheLastValidatedPeerAddress(
+            failedPath: new("203.0.113.21", RemotePort: 443),
+            tickOffset: 20);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("REQ-QUIC-RFC9000-S9P3P2-0001")]
+    public void Fuzz_ValidationFailureKeepsUsingLastValidatedPeerAddressAcrossSampledFailedPaths()
+    {
+        for (int index = 0; index < 4; index++)
+        {
+            AssertValidationFailureKeepsUsingTheLastValidatedPeerAddress(
+                failedPath: new($"203.0.113.{50 + index}", RemotePort: 443 + index),
+                tickOffset: 100 + (index * 20));
+        }
+    }
+
+    private static void AssertValidationFailureKeepsUsingTheLastValidatedPeerAddress(
+        QuicConnectionPathIdentity failedPath,
+        long tickOffset)
+    {
         QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
         Assert.True(runtime.ActivePath.HasValue);
 
         QuicConnectionPathIdentity lastValidatedPath = runtime.ActivePath!.Value.Identity;
-        QuicConnectionPathIdentity failedPath = new("203.0.113.21", RemotePort: 443);
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
 
         Assert.True(runtime.Transition(
             new QuicConnectionPacketReceivedEvent(
-                ObservedAtTicks: 20,
+                ObservedAtTicks: tickOffset,
                 failedPath,
                 datagram),
-            nowTicks: 20).StateChanged);
+            nowTicks: tickOffset).StateChanged);
 
         Assert.True(runtime.CandidatePaths.TryGetValue(failedPath, out QuicConnectionCandidatePathRecord candidatePath));
         Assert.False(candidatePath.Validation.IsValidated);
@@ -31,10 +53,10 @@ public sealed class REQ_QUIC_RFC9000_S9P3P2_0001
 
         QuicConnectionTransitionResult failureResult = runtime.Transition(
             new QuicConnectionPathValidationFailedEvent(
-                ObservedAtTicks: 30,
+                ObservedAtTicks: tickOffset + 10,
                 failedPath,
                 IsAbandoned: true),
-            nowTicks: 30);
+            nowTicks: tickOffset + 10);
 
         Assert.True(failureResult.StateChanged);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
