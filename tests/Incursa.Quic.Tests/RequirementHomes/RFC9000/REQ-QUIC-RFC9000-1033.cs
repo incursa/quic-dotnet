@@ -193,6 +193,90 @@ public sealed class REQ_QUIC_RFC9000_1033
         Assert.Equal(Convert.ToHexString(retryMetadata.RetryToken), listenerHost.RetryBootstrapTokenHex);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Requirement("REQ-QUIC-RFC9000-1033")]
+    [Requirement("REQ-QUIC-RFC9000-1034")]
+    [Trait("Category", "Fuzz")]
+    public async Task Fuzz_ListenerHostCanIssueRetryPacketsForVariedInitialAndZeroRttDatagrams()
+    {
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        TaskCompletionSource<bool> callbackEntered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        await using QuicListenerHost listenerHost = new(
+            listenEndPoint,
+            [SslApplicationProtocol.Http3],
+            (_, _, _) =>
+            {
+                callbackEntered.TrySetResult(true);
+                throw new InvalidOperationException("The retry-issuance fuzz slice must not admit the connection callback.");
+            },
+            listenBacklog: 1,
+            retryBootstrapEnabled: true);
+
+        using Socket clientSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        clientSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+        clientSocket.Connect(listenEndPoint);
+
+        _ = listenerHost.RunAsync();
+        await Task.Yield();
+
+        byte[] initialDestinationConnectionId = QuicS17P2P2TestSupport.InitialDestinationConnectionId;
+        byte[] initialSourceConnectionId = QuicS17P2P2TestSupport.InitialSourceConnectionId;
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            initialDestinationConnectionId,
+            out QuicInitialPacketProtection clientProtection));
+
+        QuicHandshakeFlowCoordinator coordinator = new(initialDestinationConnectionId, initialSourceConnectionId);
+        QuicTlsPacketProtectionMaterial zeroRttMaterial = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.ZeroRtt);
+        List<byte[]> datagrams = [];
+        for (int payloadLength = 16; payloadLength <= 32; payloadLength += 16)
+        {
+            byte[] cryptoPayload = QuicFrameTestData.BuildCryptoFrame(
+                new QuicCryptoFrame(
+                    (ulong)(payloadLength / 2),
+                    QuicS12P3TestSupport.CreateSequentialBytes((byte)(0x60 + payloadLength), payloadLength)));
+            Assert.True(coordinator.TryBuildProtectedInitialPacket(
+                cryptoPayload,
+                cryptoPayloadOffset: (ulong)(payloadLength / 2),
+                clientProtection,
+                out byte[] initialPacket));
+            datagrams.Add(initialPacket);
+        }
+
+        Assert.True(coordinator.TryBuildProtectedZeroRttApplicationPacket(
+            QuicS17P2P3TestSupport.CreatePingPayload(),
+            zeroRttMaterial,
+            out byte[] zeroRttPacket));
+        datagrams.Insert(1, zeroRttPacket);
+
+        byte[]? expectedRetryPacket = null;
+        foreach (byte[] datagram in datagrams)
+        {
+            int bytesSent = clientSocket.Send(datagram);
+            Assert.Equal(datagram.Length, bytesSent);
+
+            byte[] responseBuffer = new byte[256];
+            using CancellationTokenSource receiveTimeout = new(TimeSpan.FromSeconds(5));
+            int bytesReceived = await clientSocket.ReceiveAsync(responseBuffer.AsMemory(), SocketFlags.None, receiveTimeout.Token);
+            Assert.True(QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
+                initialDestinationConnectionId,
+                responseBuffer.AsSpan(0, bytesReceived),
+                out QuicRetryBootstrapMetadata retryMetadata));
+            Assert.NotEmpty(retryMetadata.RetrySourceConnectionId);
+            Assert.NotEmpty(retryMetadata.RetryToken);
+            await WaitForRetryBootstrapIssuedAsync(listenerHost);
+            Assert.Equal(Convert.ToHexString(retryMetadata.RetryToken), listenerHost.RetryBootstrapTokenHex);
+
+            byte[] retryPacket = responseBuffer.AsSpan(0, bytesReceived).ToArray();
+            expectedRetryPacket ??= retryPacket;
+            Assert.Equal(expectedRetryPacket, retryPacket);
+            Assert.False(callbackEntered.Task.IsCompleted);
+        }
+    }
+
     private static async Task WaitForRetryBootstrapIssuedAsync(QuicListenerHost listenerHost)
     {
         DateTime deadline = DateTime.UtcNow + TimeSpan.FromSeconds(5);
