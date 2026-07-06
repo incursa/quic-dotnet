@@ -84,4 +84,34 @@ public sealed class REQ_QUIC_RFC9000_S4P6_0010
         Assert.Equal(4UL, state.PeerBidirectionalStreamLimit);
         Assert.Equal(4UL, state.PeerUnidirectionalStreamLimit);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S4P6-0010")]
+    [Requirement("REQ-QUIC-RFC9000-0034")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryApplyMaxStreamsFrame_FuzzIgnoresSmallerAdvertisedLimits()
+    {
+        foreach (bool bidirectional in new[] { true, false })
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                peerBidirectionalStreamLimit: bidirectional ? 1UL : 4UL,
+                peerUnidirectionalStreamLimit: bidirectional ? 4UL : 1UL);
+            ulong[] advertisedLimits = [2, 4, 3, 8, 7];
+            ulong expectedLimit = bidirectional ? state.PeerBidirectionalStreamLimit : state.PeerUnidirectionalStreamLimit;
+
+            foreach (ulong advertisedLimit in advertisedLimits)
+            {
+                bool applied = state.TryApplyMaxStreamsFrame(new QuicMaxStreamsFrame(bidirectional, advertisedLimit));
+                bool expectedApplied = advertisedLimit > expectedLimit;
+                if (expectedApplied)
+                {
+                    expectedLimit = advertisedLimit;
+                }
+
+                Assert.Equal(expectedApplied, applied);
+                Assert.Equal(expectedLimit, bidirectional ? state.PeerBidirectionalStreamLimit : state.PeerUnidirectionalStreamLimit);
+            }
+        }
+    }
 }

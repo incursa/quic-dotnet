@@ -239,6 +239,46 @@ public sealed class REQ_QUIC_RFC9000_S4P2_0003
         Assert.Equal(0, snapshot.BufferedReadableBytes);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S4P2-0003")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryReadStreamData_FuzzPublishesCreditFramesForConsumedBytes()
+    {
+        int[] readSizes = [1, 2, 3];
+
+        foreach (int readSize in readSizes)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                connectionReceiveLimit: 16,
+                peerBidirectionalReceiveLimit: 8);
+            byte[] payload = Enumerable.Range(0, readSize + 1).Select(static value => (byte)(0x10 + value)).ToArray();
+
+            Assert.True(QuicStreamParser.TryParseStreamFrame(
+                QuicStreamTestData.BuildStreamFrame(0x0E, 1, payload, offset: 0),
+                out QuicStreamFrame frame));
+            Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+
+            byte[] destination = new byte[readSize];
+            Assert.True(state.TryReadStreamData(
+                1,
+                destination,
+                out int bytesWritten,
+                out bool completed,
+                out QuicMaxDataFrame maxDataFrame,
+                out QuicMaxStreamDataFrame maxStreamDataFrame,
+                out errorCode));
+
+            Assert.Equal(default, errorCode);
+            Assert.Equal(readSize, bytesWritten);
+            Assert.False(completed);
+            Assert.Equal((ulong)(16 + readSize), maxDataFrame.MaximumData);
+            Assert.Equal(1UL, maxStreamDataFrame.StreamId);
+            Assert.Equal((ulong)(8 + readSize), maxStreamDataFrame.MaximumStreamData);
+        }
+    }
+
     private static ReadOnlySpan<byte> SkipAckAndPadding(ReadOnlySpan<byte> payload)
     {
         if (QuicFrameCodec.TryParseAckFrame(payload, out _, out int ackBytesConsumed))

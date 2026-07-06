@@ -87,6 +87,40 @@ public sealed class REQ_QUIC_RFC9000_S4_0002
         Assert.Equal(4UL, state.ConnectionAccountedBytesReceived);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryReceiveStreamFrame_FuzzEnforcesStreamAndConnectionReceiveLimits()
+    {
+        (ulong ConnectionLimit, ulong StreamLimit, byte[] FirstData, byte[] SecondData)[] scenarios =
+        [
+            (4, 2, [0x11], [0x22]),
+            (6, 3, [0x11, 0x12], [0x21, 0x22]),
+            (8, 4, [0x11, 0x12, 0x13], [0x21, 0x22, 0x23]),
+        ];
+
+        foreach ((ulong connectionLimit, ulong streamLimit, byte[] firstData, byte[] secondData) in scenarios)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                connectionReceiveLimit: connectionLimit,
+                peerBidirectionalReceiveLimit: streamLimit);
+
+            Assert.True(state.TryReceiveStreamFrame(ParseStreamFrame(1, firstData, offset: 0), out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+            Assert.True(state.TryReceiveStreamFrame(ParseStreamFrame(5, secondData, offset: 0), out errorCode));
+            Assert.Equal(default, errorCode);
+            Assert.Equal((ulong)(firstData.Length + secondData.Length), state.ConnectionAccountedBytesReceived);
+
+            Assert.False(state.TryReceiveStreamFrame(ParseStreamFrame(1, [0x55], streamLimit), out errorCode));
+            Assert.Equal(QuicTransportErrorCode.FlowControlError, errorCode);
+
+            ulong remainingConnectionCredit = connectionLimit - state.ConnectionAccountedBytesReceived;
+            byte[] overConnectionLimitData = new byte[(int)remainingConnectionCredit + 1];
+            Assert.False(state.TryReceiveStreamFrame(ParseStreamFrame(9, overConnectionLimitData, offset: 0), out errorCode));
+            Assert.Equal(QuicTransportErrorCode.FlowControlError, errorCode);
+        }
+    }
+
     private static QuicStreamFrame ParseStreamFrame(ulong streamId, byte[] streamData, ulong offset = 0)
     {
         Assert.True(QuicStreamParser.TryParseStreamFrame(

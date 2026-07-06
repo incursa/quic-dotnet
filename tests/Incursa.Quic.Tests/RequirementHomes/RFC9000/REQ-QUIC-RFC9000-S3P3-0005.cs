@@ -185,4 +185,55 @@ public sealed class REQ_QUIC_RFC9000_S3P3_0005
         Assert.Equal(QuicStreamReceiveState.DataRead, resetSentSnapshot.ReceiveState);
         Assert.Equal(QuicStreamSendState.ResetSent, resetSentSnapshot.SendState);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S3P3-0005")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryReceiveStopSendingFrame_FuzzAllowsStopSendingBeforeResetReception()
+    {
+        (int ReservedLength, ulong ApplicationErrorCode)[] scenarios =
+        [
+            (0, 0x01),
+            (1, 0x55),
+            (4, 0x3FFF),
+        ];
+
+        foreach ((int reservedLength, ulong applicationErrorCode) in scenarios)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                localBidirectionalSendLimit: 8,
+                peerBidirectionalStreamLimit: 8);
+
+            Assert.True(state.TryOpenLocalStream(
+                bidirectional: true,
+                out QuicStreamId streamId,
+                out QuicStreamsBlockedFrame blockedFrame));
+            Assert.Equal(default, blockedFrame);
+
+            if (reservedLength > 0)
+            {
+                Assert.True(state.TryReserveSendCapacity(
+                    streamId.Value,
+                    offset: 0,
+                    length: reservedLength,
+                    fin: true,
+                    out QuicDataBlockedFrame dataBlockedFrame,
+                    out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+                    out QuicTransportErrorCode reserveErrorCode));
+                Assert.Equal(default, dataBlockedFrame);
+                Assert.Equal(default, streamDataBlockedFrame);
+                Assert.Equal(default, reserveErrorCode);
+            }
+
+            Assert.True(state.TryReceiveStopSendingFrame(
+                new QuicStopSendingFrame(streamId.Value, applicationErrorCode),
+                out QuicResetStreamFrame resetStreamFrame,
+                out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+            Assert.Equal(streamId.Value, resetStreamFrame.StreamId);
+            Assert.Equal(applicationErrorCode, resetStreamFrame.ApplicationProtocolErrorCode);
+            Assert.Equal((ulong)reservedLength, resetStreamFrame.FinalSize);
+        }
+    }
 }
