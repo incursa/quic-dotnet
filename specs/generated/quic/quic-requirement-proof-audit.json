@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T06:48:11.9965499-06:00",
+    "generated_at": "2026-07-06T06:50:43.4410563-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1254,
-      "full_executable_proof": 1423
+      "deferred_proof_not_executed": 1253,
+      "full_executable_proof": 1424
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 229,
-          "full_executable_proof": 1221
+          "deferred_proof_not_executed": 228,
+          "full_executable_proof": 1222
         }
       },
       {
@@ -36378,9 +36378,9 @@
       "rfc": "RFC9000",
       "title": "Authenticate connection ID choices through transport parameters",
       "statement": "The choice each endpoint makes about connection IDs during the handshake MUST be authenticated by including all values in transport parameters.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -36389,6 +36389,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [
@@ -36396,10 +36397,8 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0001.cs"
