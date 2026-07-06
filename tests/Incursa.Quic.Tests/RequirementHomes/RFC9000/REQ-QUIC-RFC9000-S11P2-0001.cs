@@ -93,4 +93,58 @@ public sealed class REQ_QUIC_RFC9000_S11P2_0001
         await unaffectedStream.DisposeAsync();
         await targetStream.DisposeAsync();
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S11P2-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task AbortWriteFuzz_EmitsTargetedResetStreamAndLeavesConnectionRecoverable()
+    {
+        foreach (long applicationErrorCode in new long[]
+        {
+            0x00,
+            0x01,
+            0x7F,
+            0x80,
+            0x3FFF,
+            0x4000,
+        })
+        {
+            using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+            List<QuicConnectionEffect> outboundEffects = [];
+
+            runtime.SetLocalApiEventDispatcher(connectionEvent =>
+            {
+                QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+                outboundEffects.AddRange(transition.Effects);
+                return true;
+            });
+
+            QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+            QuicStream targetStream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+            QuicStream unaffectedStream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+            outboundEffects.Clear();
+
+            targetStream.Abort(QuicAbortDirection.Write, applicationErrorCode);
+
+            QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+                outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+            Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+                sendEffect.Datagram.Span,
+                runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength));
+
+            Assert.True(QuicFrameCodec.TryParseResetStreamFrame(
+                openedPacket.AsSpan(payloadOffset, payloadLength),
+                out QuicResetStreamFrame resetStreamFrame,
+                out _));
+            Assert.Equal((ulong)targetStream.Id, resetStreamFrame.StreamId);
+            Assert.Equal((ulong)applicationErrorCode, resetStreamFrame.ApplicationProtocolErrorCode);
+            Assert.Equal(0UL, resetStreamFrame.FinalSize);
+            Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+            Assert.True(unaffectedStream.CanWrite);
+        }
+    }
 }
