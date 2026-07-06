@@ -115,4 +115,50 @@ public sealed class RFC9000_S9_2_P5_S1_R01
             && promote.PathIdentity == migratedPath
             && !promote.RestoreSavedState);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S13-4-P2-S1-R01")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P2-0004")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void MigratingToANewLocalAddressFuzz_RevalidatesEcnForEachNewPath()
+    {
+        foreach ((QuicConnectionPathIdentity ActivePath, QuicConnectionPathIdentity MigratedPath) testCase in new[]
+        {
+            (
+                new QuicConnectionPathIdentity("203.0.113.80", "198.51.100.80", RemotePort: 443, LocalPort: 62000),
+                new QuicConnectionPathIdentity("203.0.113.80", "198.51.100.81", RemotePort: 443, LocalPort: 62001)),
+            (
+                new QuicConnectionPathIdentity("203.0.113.81", "198.51.100.82", RemotePort: 4443, LocalPort: 62002),
+                new QuicConnectionPathIdentity("203.0.113.81", "198.51.100.83", RemotePort: 4443, LocalPort: 62003)),
+        })
+        {
+            QuicConnectionRuntime runtime =
+                QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(testCase.ActivePath);
+            QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(runtime);
+            Assert.False(QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime).EcnValidated);
+
+            Assert.True(runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 20,
+                    testCase.MigratedPath,
+                    new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+                nowTicks: 20).StateChanged);
+
+            QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
+                runtime,
+                testCase.MigratedPath,
+                observedAtTicks: 30);
+            QuicPathMigrationRecoverySnapshot afterValidation =
+                QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
+
+            Assert.True(afterValidation.EcnValidated);
+            Assert.True(runtime.SendRuntime.EcnValidationState.IsEcnEnabled);
+            Assert.Equal(testCase.MigratedPath, runtime.ActivePath!.Value.Identity);
+            Assert.Contains(validationResult.Effects, effect =>
+                effect is QuicConnectionPromoteActivePathEffect promote
+                && promote.PathIdentity == testCase.MigratedPath
+                && !promote.RestoreSavedState);
+        }
+    }
 }
