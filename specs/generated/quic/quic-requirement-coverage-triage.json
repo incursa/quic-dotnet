@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T13:34:58.2549876-06:00",
+  "generated_at": "2026-07-06T13:38:29.8195888-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T13:34:58.2514121-06:00",
+    "generated_at": "2026-07-06T13:38:29.8159858-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -241911,14 +241911,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -242057,6 +242057,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-SAP7-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_SAP7_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_SAP7_DeferredFuzzClosure.Fuzz_TryBuildAckFrame_TracksLargestAcknowledgedPacketPerSpaceAcrossArrivals",
+          "method": "Fuzz_TryBuildAckFrame_TracksLargestAcknowledgedPacketPerSpaceAcrossArrivals",
+          "line": 12,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-SAP7-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -242087,14 +242109,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -242233,6 +242255,29 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-SAP7-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_SAP7_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_SAP7_DeferredFuzzClosure.Fuzz_AckLossAndEcnProcessing_RemovePacketsAndAdvanceCongestionState",
+          "method": "Fuzz_AckLossAndEcnProcessing_RemovePacketsAndAdvanceCongestionState",
+          "line": 37,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-SAP7-0002",
+            "REQ-QUIC-RFC9002-SAP7-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -242263,14 +242308,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -242409,6 +242454,30 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-SAP7-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_SAP7_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_SAP7_DeferredFuzzClosure.Fuzz_TryUpdateFromAck_SeedsAndUpdatesRttOnlyForAcceptedAckElicitingSamples",
+          "method": "Fuzz_TryUpdateFromAck_SeedsAndUpdatesRttOnlyForAcceptedAckElicitingSamples",
+          "line": 92,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-SAP7-0003",
+            "REQ-QUIC-RFC9002-SAP7-0007",
+            "REQ-QUIC-RFC9002-SAP7-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -242439,14 +242508,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -242585,6 +242654,29 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-SAP7-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_SAP7_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_SAP7_DeferredFuzzClosure.Fuzz_AckLossAndEcnProcessing_RemovePacketsAndAdvanceCongestionState",
+          "method": "Fuzz_AckLossAndEcnProcessing_RemovePacketsAndAdvanceCongestionState",
+          "line": 37,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-SAP7-0002",
+            "REQ-QUIC-RFC9002-SAP7-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -242615,14 +242707,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -242761,6 +242853,29 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-SAP7-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_SAP7_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_SAP7_DeferredFuzzClosure.Fuzz_ProbeBackoffAndLossTimerSelection_UseResetBackoffAndRecoveryTimers",
+          "method": "Fuzz_ProbeBackoffAndLossTimerSelection_UseResetBackoffAndRecoveryTimers",
+          "line": 154,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-SAP7-0005",
+            "REQ-QUIC-RFC9002-SAP7-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -242791,14 +242906,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -242937,6 +243052,29 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-SAP7-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_SAP7_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_SAP7_DeferredFuzzClosure.Fuzz_ProbeBackoffAndLossTimerSelection_UseResetBackoffAndRecoveryTimers",
+          "method": "Fuzz_ProbeBackoffAndLossTimerSelection_UseResetBackoffAndRecoveryTimers",
+          "line": 154,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-SAP7-0005",
+            "REQ-QUIC-RFC9002-SAP7-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -242967,14 +243105,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -243113,6 +243251,30 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-SAP7-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_SAP7_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_SAP7_DeferredFuzzClosure.Fuzz_TryUpdateFromAck_SeedsAndUpdatesRttOnlyForAcceptedAckElicitingSamples",
+          "method": "Fuzz_TryUpdateFromAck_SeedsAndUpdatesRttOnlyForAcceptedAckElicitingSamples",
+          "line": 92,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-SAP7-0003",
+            "REQ-QUIC-RFC9002-SAP7-0007",
+            "REQ-QUIC-RFC9002-SAP7-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -243143,14 +243305,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -243291,6 +243453,30 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-SAP7-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP7-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9002_SAP7_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9002_SAP7_DeferredFuzzClosure.Fuzz_TryUpdateFromAck_SeedsAndUpdatesRttOnlyForAcceptedAckElicitingSamples",
+          "method": "Fuzz_TryUpdateFromAck_SeedsAndUpdatesRttOnlyForAcceptedAckElicitingSamples",
+          "line": 92,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-SAP7-0003",
+            "REQ-QUIC-RFC9002-SAP7-0007",
+            "REQ-QUIC-RFC9002-SAP7-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
