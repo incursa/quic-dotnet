@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T03:22:49.2691660-06:00",
+  "generated_at": "2026-07-06T03:26:14.8802647-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T03:22:49.2654594-06:00",
+    "generated_at": "2026-07-06T03:26:14.8760731-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -26167,7 +26167,7 @@
           "class": "REQ_QUIC_RFC9000_PacketNumbersPayloads_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_PacketNumbersPayloads_DeferredFuzzClosure.DuplicatePacketNumberFuzz_MergesDuplicatesWithinEachPacketNumberSpace",
           "method": "DuplicatePacketNumberFuzz_MergesDuplicatesWithinEachPacketNumberSpace",
-          "line": 63,
+          "line": 153,
           "kinds": [
             "fuzz"
           ],
@@ -26320,7 +26320,7 @@
           "class": "REQ_QUIC_RFC9000_PacketNumbersPayloads_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_PacketNumbersPayloads_DeferredFuzzClosure.NonFramePacketFuzz_KeepsVersionNegotiationRetryAndStatelessResetOutsideFrameParsing",
           "method": "NonFramePacketFuzz_KeepsVersionNegotiationRetryAndStatelessResetOutsideFrameParsing",
-          "line": 105,
+          "line": 195,
           "kinds": [
             "fuzz"
           ],
@@ -26426,7 +26426,7 @@
           "class": "REQ_QUIC_RFC9000_PacketNumbersPayloads_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_PacketNumbersPayloads_DeferredFuzzClosure.FramePayloadFuzz_ParsesMultipleFramesAndRejectsEmptyPayloads",
           "method": "FramePayloadFuzz_ParsesMultipleFramesAndRejectsEmptyPayloads",
-          "line": 138,
+          "line": 228,
           "kinds": [
             "fuzz"
           ],
@@ -26626,7 +26626,7 @@
           "class": "REQ_QUIC_RFC9000_PacketNumbersPayloads_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_PacketNumbersPayloads_DeferredFuzzClosure.FramePayloadFuzz_ParsesMultipleFramesAndRejectsEmptyPayloads",
           "method": "FramePayloadFuzz_ParsesMultipleFramesAndRejectsEmptyPayloads",
-          "line": 138,
+          "line": 228,
           "kinds": [
             "fuzz"
           ],
@@ -26826,7 +26826,7 @@
           "class": "REQ_QUIC_RFC9000_PacketNumbersPayloads_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_PacketNumbersPayloads_DeferredFuzzClosure.FramePayloadFuzz_ParsesMultipleFramesAndRejectsEmptyPayloads",
           "method": "FramePayloadFuzz_ParsesMultipleFramesAndRejectsEmptyPayloads",
-          "line": 138,
+          "line": 228,
           "kinds": [
             "fuzz"
           ],
@@ -383625,14 +383625,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 11,
-        "focused": 11,
+        "total": 12,
+        "focused": 12,
         "broad": 0,
         "by_kind": {
           "positive": 6,
           "negative": 2,
           "edge": 3,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -383640,6 +383640,29 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S12-3-P10-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-PacketNumbersPayloads-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_PacketNumbersPayloads_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_PacketNumbersPayloads_DeferredFuzzClosure.PacketNumberSpaceFuzz_StartsAtZeroAndAdvancesIndependentlyInEachSpace",
+          "method": "PacketNumberSpaceFuzz_StartsAtZeroAndAdvancesIndependentlyInEachSpace",
+          "line": 64,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S12-3-P10-S1-R01",
+            "RFC9000-S12-3-P7-S2-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S12-3-P10-S1-R01",
           "source": "requirement_attribute",
@@ -383907,14 +383930,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-3-P7-S2-R02.cs::PacketNumbersStartAtZeroInEachSpace",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 0,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -383922,6 +383945,29 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S12-3-P7-S2-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-PacketNumbersPayloads-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_PacketNumbersPayloads_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_PacketNumbersPayloads_DeferredFuzzClosure.PacketNumberSpaceFuzz_StartsAtZeroAndAdvancesIndependentlyInEachSpace",
+          "method": "PacketNumberSpaceFuzz_StartsAtZeroAndAdvancesIndependentlyInEachSpace",
+          "line": 64,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S12-3-P10-S1-R01",
+            "RFC9000-S12-3-P7-S2-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S12-3-P7-S2-R02",
           "source": "requirement_attribute",
