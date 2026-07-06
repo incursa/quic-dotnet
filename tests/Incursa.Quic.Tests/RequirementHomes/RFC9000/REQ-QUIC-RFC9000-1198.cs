@@ -61,4 +61,27 @@ public sealed class REQ_QUIC_RFC9000_1198
         Assert.True(sender.TryRegisterLoss(QuicPacketNumberSpace.ApplicationData, packetNumber: 9, sentAtMicros: 12_000));
         Assert.False(sender.TryRegisterLoss(QuicPacketNumberSpace.ApplicationData, packetNumber: 10, sentAtMicros: 12_000));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-1198")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ZeroAckRangeLengthAcknowledgesOnlyTheLargestPacketInThatRange()
+    {
+        for (ulong largestAcknowledged = 10; largestAcknowledged < 32; largestAcknowledged++)
+        {
+            ulong firstAckRange = largestAcknowledged % 3;
+            ulong gap = largestAcknowledged % 4;
+            QuicAckFrame parsed = QuicS19P3AckFrameTestSupport.ParseAckFrame(
+                QuicS19P3AckFrameTestSupport.FormatAckFrame(
+                    QuicS19P3AckFrameTestSupport.CreateAckFrameWithAdditionalRange(
+                        largestAcknowledged,
+                        firstAckRange,
+                        gap,
+                        ackRangeLength: 0)));
+
+            Assert.Single(parsed.AdditionalRanges);
+            Assert.Equal(parsed.AdditionalRanges[0].LargestAcknowledged, parsed.AdditionalRanges[0].SmallestAcknowledged);
+        }
+    }
 }

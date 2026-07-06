@@ -66,4 +66,50 @@ public sealed class REQ_QUIC_RFC9000_1177
             ackReceivedAtMicros: 4_000));
         Assert.Equal(0UL, sender.CongestionControlState.BytesInFlightBytes);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-1177")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_AckProcessingCombinesPacketNumberWithItsPacketNumberSpace()
+    {
+        QuicPacketNumberSpace[] packetNumberSpaces =
+        [
+            QuicPacketNumberSpace.Initial,
+            QuicPacketNumberSpace.Handshake,
+            QuicPacketNumberSpace.ApplicationData,
+        ];
+
+        foreach (QuicPacketNumberSpace acknowledgedSpace in packetNumberSpaces)
+        {
+            foreach (ulong packetNumber in new ulong[] { 0, 1, 7, 63, 511 })
+            {
+                QuicSenderFlowController sender = new();
+                foreach (QuicPacketNumberSpace packetNumberSpace in packetNumberSpaces)
+                {
+                    sender.RecordPacketSent(
+                        packetNumberSpace,
+                        packetNumber,
+                        sentBytes: 1_200,
+                        sentAtMicros: 1_000 + packetNumber,
+                        ackEliciting: true);
+                }
+
+                Assert.True(sender.TryProcessAckFrame(
+                    acknowledgedSpace,
+                    QuicS19P3AckFrameTestSupport.CreateSinglePacketAckFrame(packetNumber),
+                    ackReceivedAtMicros: 10_000 + packetNumber));
+
+                foreach (QuicPacketNumberSpace packetNumberSpace in packetNumberSpaces)
+                {
+                    bool lossRegistered = sender.TryRegisterLoss(
+                        packetNumberSpace,
+                        packetNumber,
+                        sentAtMicros: 20_000 + packetNumber);
+
+                    Assert.Equal(packetNumberSpace != acknowledgedSpace, lossRegistered);
+                }
+            }
+        }
+    }
 }

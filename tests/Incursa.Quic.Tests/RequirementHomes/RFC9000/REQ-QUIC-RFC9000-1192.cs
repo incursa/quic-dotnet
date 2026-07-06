@@ -60,4 +60,39 @@ public sealed class REQ_QUIC_RFC9000_1192
         Assert.Equal(8UL, parsed.AdditionalRanges[0].LargestAcknowledged);
         Assert.Equal(8UL, parsed.AdditionalRanges[0].SmallestAcknowledged);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-1192")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_AckRangesDecodeInDescendingPacketNumberOrder()
+    {
+        for (ulong largestAcknowledged = 32; largestAcknowledged < 48; largestAcknowledged++)
+        {
+            ulong firstAckRange = largestAcknowledged % 3;
+            ulong previousSmallest = largestAcknowledged - firstAckRange;
+            QuicAckRange firstAdditionalRange = QuicFrameTestData.BuildAckRange(
+                previousSmallest,
+                gap: largestAcknowledged % 2,
+                ackRangeLength: 1);
+            QuicAckRange secondAdditionalRange = QuicFrameTestData.BuildAckRange(
+                firstAdditionalRange.SmallestAcknowledged,
+                gap: (largestAcknowledged + 1) % 2,
+                ackRangeLength: 0);
+
+            QuicAckFrame parsed = QuicS19P3AckFrameTestSupport.ParseAckFrame(
+                QuicS19P3AckFrameTestSupport.FormatAckFrame(
+                    QuicS19P3AckFrameTestSupport.AckFrameFromRanges(
+                        largestAcknowledged,
+                        firstAckRange,
+                        firstAdditionalRange,
+                        secondAdditionalRange)));
+
+            ulong firstSmallest = parsed.LargestAcknowledged - parsed.FirstAckRange;
+            Assert.True(parsed.AdditionalRanges[0].LargestAcknowledged < firstSmallest);
+            Assert.True(parsed.AdditionalRanges[1].LargestAcknowledged < parsed.AdditionalRanges[0].SmallestAcknowledged);
+            Assert.True(parsed.AdditionalRanges[0].SmallestAcknowledged <= parsed.AdditionalRanges[0].LargestAcknowledged);
+            Assert.True(parsed.AdditionalRanges[1].SmallestAcknowledged <= parsed.AdditionalRanges[1].LargestAcknowledged);
+        }
+    }
 }

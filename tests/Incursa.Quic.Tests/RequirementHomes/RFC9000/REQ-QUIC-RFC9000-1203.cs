@@ -78,4 +78,52 @@ public sealed class REQ_QUIC_RFC9000_1203
         Assert.True(sender.TryRegisterLoss(QuicPacketNumberSpace.ApplicationData, packetNumber: 7, sentAtMicros: 12_000));
         Assert.False(sender.TryRegisterLoss(QuicPacketNumberSpace.ApplicationData, packetNumber: 6, sentAtMicros: 12_000));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-1203")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_AckGapsPreserveUnacknowledgedPacketRuns()
+    {
+        for (ulong gap = 0; gap <= 5; gap++)
+        {
+            ulong largestAcknowledged = 32 + gap;
+            ulong firstAckRange = 0;
+            QuicAckFrame frame = QuicS19P3AckFrameTestSupport.CreateAckFrameWithAdditionalRange(
+                largestAcknowledged,
+                firstAckRange,
+                gap,
+                ackRangeLength: 0);
+            ulong acknowledgedAdditionalPacket = frame.AdditionalRanges[0].LargestAcknowledged;
+
+            QuicSenderFlowController sender = new();
+            QuicS19P3AckFrameTestSupport.RecordSentPackets(
+                sender,
+                QuicPacketNumberSpace.ApplicationData,
+                first: acknowledgedAdditionalPacket,
+                last: largestAcknowledged);
+
+            Assert.True(sender.TryProcessAckFrame(
+                QuicPacketNumberSpace.ApplicationData,
+                frame,
+                ackReceivedAtMicros: 50_000 + gap));
+
+            Assert.False(sender.TryRegisterLoss(
+                QuicPacketNumberSpace.ApplicationData,
+                acknowledgedAdditionalPacket,
+                sentAtMicros: 60_000 + gap));
+            Assert.False(sender.TryRegisterLoss(
+                QuicPacketNumberSpace.ApplicationData,
+                largestAcknowledged,
+                sentAtMicros: 61_000 + gap));
+
+            for (ulong packetNumber = acknowledgedAdditionalPacket + 1; packetNumber < largestAcknowledged; packetNumber++)
+            {
+                Assert.True(sender.TryRegisterLoss(
+                    QuicPacketNumberSpace.ApplicationData,
+                    packetNumber,
+                    sentAtMicros: 62_000 + packetNumber));
+            }
+        }
+    }
 }
