@@ -45,6 +45,14 @@ param(
 
     [int] $CounterRefreshInterval = 1,
 
+    [switch] $CaptureTrace,
+
+    [string] $TraceProfile = "gc-verbose",
+
+    [string] $TraceProviders = "Microsoft-Windows-DotNETRuntime:0x8000:4",
+
+    [int] $TraceBufferMegabytes = 512,
+
     [string] $BaseUrl,
 
     [string] $Output = ".artifacts\runs",
@@ -976,6 +984,16 @@ try {
             "-CaptureCounters",
             "-CounterRefreshInterval",
             ([Math]::Max(1, $CounterRefreshInterval)).ToString([Globalization.CultureInfo]::InvariantCulture))
+    }
+    if ($CaptureTrace) {
+        $benchmarkArgs += @(
+            "-CaptureTrace",
+            "-TraceProfile",
+            $TraceProfile,
+            "-TraceProviders",
+            $TraceProviders,
+            "-TraceBufferMegabytes",
+            ([Math]::Max(64, $TraceBufferMegabytes)).ToString([Globalization.CultureInfo]::InvariantCulture))
     }
 
     if ($PSBoundParameters.ContainsKey("BaseUrl") -and -not [string]::IsNullOrWhiteSpace($BaseUrl)) {
