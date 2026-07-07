@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T18:43:36.3961311-06:00",
+    "generated_at": "2026-07-06T18:51:58.4546888-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 674,
-      "full_executable_proof": 2003
+      "deferred_proof_not_executed": 651,
+      "full_executable_proof": 2026
     },
     "by_rfc": [
       {
@@ -56,8 +56,7 @@
         "rfc": "RFC9220",
         "total": 31,
         "by_proof_state": {
-          "deferred_proof_not_executed": 23,
-          "full_executable_proof": 8
+          "full_executable_proof": 31
         }
       },
       {
@@ -46827,9 +46826,9 @@
       "rfc": "RFC9220",
       "title": "Use RFC8441 semantics for Extended CONNECT pseudo-headers and setting",
       "statement": "The semantics of the pseudo-header fields and setting MUST be identical to those in HTTP/2 as defined in RFC8441.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -46839,18 +46838,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -46863,9 +46862,9 @@
       "rfc": "RFC9220",
       "title": "Set SETTINGS_ENABLE_CONNECT_PROTOCOL to 0x08",
       "statement": "The SETTINGS_ENABLE_CONNECT_PROTOCOL value MUST be 0x08 (decimal 8).",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -46875,18 +46874,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -46900,9 +46899,9 @@
       "rfc": "RFC9220",
       "title": "Represent orderly closures with FIN",
       "statement": "Orderly TCP-level closures MUST be represented as a FIN bit on the stream.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -46912,18 +46911,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -46936,9 +46935,9 @@
       "rfc": "RFC9220",
       "title": "Represent RST exceptions with request-cancelled errors",
       "statement": "RST exceptions MUST be represented with a stream error of type H3_REQUEST_CANCELLED.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -46948,18 +46947,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -46972,9 +46971,9 @@
       "rfc": "RFC9220",
       "title": "Assign SETTINGS_ENABLE_CONNECT_PROTOCOL value 0x08",
       "statement": "The SETTINGS_ENABLE_CONNECT_PROTOCOL setting MUST have value 0x08.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -46984,18 +46983,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -47009,9 +47008,9 @@
       "rfc": "RFC9220",
       "title": "Set the default for SETTINGS_ENABLE_CONNECT_PROTOCOL to 0",
       "statement": "The SETTINGS_ENABLE_CONNECT_PROTOCOL setting MUST have default value 0.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -47021,18 +47020,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -47317,9 +47316,9 @@
       "rfc": "RFC9220",
       "title": "Dispatch accepted WebSocket tunnels to application handlers",
       "statement": "The HTTP/3 server MUST dispatch validated RFC9220 WebSocket Extended CONNECT request streams to an application WebSocket tunnel handler after sending a successful tunnel response without ending the stream.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -47330,6 +47329,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -47337,13 +47337,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -47356,9 +47355,9 @@
       "rfc": "RFC9220",
       "title": "Echo WebSocket close frames on accepted tunnels",
       "statement": "The HTTP/3 server WebSocket tunnel context MUST let application handlers read client WebSocket messages, write unmasked server WebSocket messages, and echo a received close frame before completing the writable side of the stream with FIN.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -47368,19 +47367,19 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -47393,9 +47392,9 @@
       "rfc": "RFC9220",
       "title": "Echo WebSocket ping frames as pong frames",
       "statement": "The HTTP/3 server WebSocket tunnel context MUST let application handlers reply to received ping control messages with unmasked pong control messages carrying the same payload while preserving the tunnel for subsequent messages.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -47405,20 +47404,20 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
-        "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs"
+        "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -47431,9 +47430,9 @@
       "rfc": "RFC9220",
       "title": "Write application-selected WebSocket close frames on accepted tunnels",
       "statement": "The HTTP/3 server WebSocket tunnel context MUST let application handlers write an unmasked close control frame with an application-selected valid close status and optional UTF-8 reason before completing the writable side of the stream with FIN.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -47443,19 +47442,19 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
-        "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs"
+        "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 4,
       "spec_test_refs": [
@@ -47470,9 +47469,9 @@
       "rfc": "RFC9220",
       "title": "Map malformed WebSocket tunnel frames to protocol-error close frames",
       "statement": "The HTTP/3 server WebSocket tunnel context MUST let application handlers opt into reading the next client message such that WebSocket parser `MESSAGE_ERROR` failures write an unmasked close frame with status code 1002 before completing the writable side of the stream with FIN and rethrowing the parser failure.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "negative"
@@ -47481,18 +47480,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
-        "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs"
+        "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -47505,9 +47504,9 @@
       "rfc": "RFC9220",
       "title": "Send server WebSocket ping frames on accepted tunnels",
       "statement": "The HTTP/3 server WebSocket tunnel context MUST let application handlers write an unmasked ping control frame with a caller-supplied payload while preserving the accepted tunnel for a later pong response and subsequent data messages.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -47517,19 +47516,19 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -47542,9 +47541,9 @@
       "rfc": "RFC9220",
       "title": "Map WebSocket handler exceptions to internal-error close frames",
       "statement": "The HTTP/3 server MUST map unexpected application handler exceptions on an accepted RFC 9220 WebSocket tunnel to an unmasked close control frame with status code 1011 before completing the writable side of the stream.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "negative"
@@ -47553,18 +47552,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -47577,9 +47576,9 @@
       "rfc": "RFC9220",
       "title": "Send configured WebSocket keepalive pings on accepted tunnels",
       "statement": "The HTTP/3 server MUST send automatic unmasked WebSocket ping control frames on accepted RFC 9220 tunnels when a positive keepalive interval is configured, without blocking subsequent application tunnel data.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -47588,17 +47587,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -47611,9 +47610,9 @@
       "rfc": "RFC9220",
       "title": "Forward WebSocket binary tunnels through TCP streams",
       "statement": "The HTTP/3 server MUST let application handlers forward accepted RFC 9220 WebSocket tunnel binary messages to a connected TCP stream and return TCP response bytes as unmasked binary WebSocket messages while preserving WebSocket close handling.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -47622,17 +47621,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_TcpForwarder_ForwardsBinaryPayloadThroughTcpEcho"
@@ -47642,9 +47641,9 @@
       "rfc": "RFC9220",
       "title": "Send configured WebSocket keepalive ping payloads",
       "statement": "The HTTP/3 server MUST send the configured WebSocket keepalive payload in automatic unmasked ping control frames on accepted RFC 9220 tunnels while preserving subsequent tunnel data.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -47653,17 +47652,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -47676,9 +47675,9 @@
       "rfc": "RFC9220",
       "title": "Configure WebSocket handler exception close policy",
       "statement": "The HTTP/3 server MUST let application owners configure the WebSocket close status code and reason used for unexpected accepted RFC 9220 tunnel handler exceptions while preserving orderly tunnel write completion.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -47687,18 +47686,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -47711,9 +47710,9 @@
       "rfc": "RFC9220",
       "title": "Map WebSocket handler exceptions to dynamic close policies",
       "statement": "The HTTP/3 server MUST let application owners map unexpected accepted RFC 9220 tunnel handler exceptions to WebSocket close status code and reason policies while preserving static fallback policy and orderly tunnel write completion.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -47722,18 +47721,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -47747,9 +47746,9 @@
       "rfc": "RFC9220",
       "title": "Bound TCP response chunks for WebSocket TCP forwarding",
       "statement": "The HTTP/3 WebSocket TCP forwarder MUST let application handlers configure a positive TCP read buffer size and return TCP response bytes as unmasked binary WebSocket messages no larger than that configured buffer while preserving orderly WebSocket close handling.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -47758,17 +47757,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -47781,9 +47780,9 @@
       "rfc": "RFC9220",
       "title": "Open client-side WebSocket Extended CONNECT tunnels",
       "statement": "The HTTP/3 client WebSocket helper MUST send RFC 9220 Extended CONNECT request headers with `:protocol` `websocket`, require local SETTINGS_ENABLE_CONNECT_PROTOCOL advertisement before opening the tunnel, mask client-to-server WebSocket frames, read unmasked server-to-client WebSocket messages, and expose the successful tunnel response headers without waiting for stream FIN.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -47794,6 +47793,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -47801,13 +47801,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -47820,9 +47819,9 @@
       "rfc": "RFC9220",
       "title": "Carry WebSocket tunnel negotiation headers",
       "statement": "The HTTP/3 WebSocket tunnel helpers MUST let callers send additional non-pseudo request headers on RFC 9220 Extended CONNECT requests and let applications add response headers to accepted WebSocket tunnel responses before WebSocket bytes are exchanged.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -47833,6 +47832,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -47840,13 +47840,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -88287,9 +88286,9 @@
       "rfc": "RFC9220",
       "title": "Respond to unsupported Extended CONNECT protocols",
       "statement": "If a server advertises support for Extended CONNECT but receives an Extended CONNECT request with an unknown or unsupported \":protocol\" value, the server SHOULD respond with a 501 (Not Implemented) status code.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -88299,18 +88298,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -88323,26 +88322,26 @@
       "rfc": "RFC9220",
       "title": "Provide optional problem-details information",
       "statement": "A server MAY provide more information via a \"problem details\" response.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9220/REQ-QUIC-RFC9220-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::UnsupportedProtocolResponse_CanIncludeProblemDetails"
