@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T17:55:57.4783623-06:00",
+  "generated_at": "2026-07-06T18:00:29.4489977-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T17:55:57.4738984-06:00",
+    "generated_at": "2026-07-06T18:00:29.4442732-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -276856,14 +276856,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -276911,6 +276911,31 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0057"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0057",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
+          "class": "DoqFatalProtocolErrorTests",
+          "member": "DoqFatalProtocolErrorTests.Fuzz_LoopbackFatalErrorPoliciesRemainTraceLinked",
+          "method": "Fuzz_LoopbackFatalErrorPoliciesRemainTraceLinked",
+          "line": 606,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0057",
+            "REQ-QUIC-RFC9250-0075",
+            "RFC9250-S4-3-1-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S2-R02"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -277054,7 +277079,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ClientTreatsMissingStreamFinAfterResponseAsFatalProtocolErrorWithConfiguredTimeout",
           "method": "ClientTreatsMissingStreamFinAfterResponseAsFatalProtocolErrorWithConfiguredTimeout",
-          "line": 167,
+          "line": 169,
           "kinds": [
             "negative"
           ],
@@ -277232,7 +277257,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ClientRejectsEdnsTcpKeepaliveInResponseAsFatalProtocolError",
           "method": "ClientRejectsEdnsTcpKeepaliveInResponseAsFatalProtocolError",
-          "line": 204,
+          "line": 206,
           "kinds": [
             "negative"
           ],
@@ -277255,7 +277280,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ContainsTcpKeepaliveEdnsOption_DetectsKeepaliveOption",
           "method": "ContainsTcpKeepaliveEdnsOption_DetectsKeepaliveOption",
-          "line": 310,
+          "line": 312,
           "kinds": [
             "negative"
           ],
@@ -277661,7 +277686,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ClientMonitorDetectsInboundStreamFromServerAndClosesConnectionWithProtocolError",
           "method": "ClientMonitorDetectsInboundStreamFromServerAndClosesConnectionWithProtocolError",
-          "line": 241,
+          "line": 243,
           "kinds": [
             "negative"
           ],
@@ -279428,14 +279453,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -279451,7 +279476,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ConnectionFailureAbandonsInProgressQuery",
           "method": "ConnectionFailureAbandonsInProgressQuery",
-          "line": 513,
+          "line": 557,
           "kinds": [
             "positive"
           ],
@@ -279473,7 +279498,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ConnectionFailureAbandonsInProgressQuery",
           "method": "ConnectionFailureAbandonsInProgressQuery",
-          "line": 513,
+          "line": 557,
           "kinds": [
             "positive"
           ],
@@ -279495,7 +279520,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ConnectionFailureSurfacesClearExceptionOnSubsequentQuery",
           "method": "ConnectionFailureSurfacesClearExceptionOnSubsequentQuery",
-          "line": 473,
+          "line": 517,
           "kinds": [
             "negative"
           ],
@@ -279517,7 +279542,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ConnectionFailureSurfacesClearExceptionOnSubsequentQuery",
           "method": "ConnectionFailureSurfacesClearExceptionOnSubsequentQuery",
-          "line": 473,
+          "line": 517,
           "kinds": [
             "negative"
           ],
@@ -279527,6 +279552,31 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0075"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0075",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
+          "class": "DoqFatalProtocolErrorTests",
+          "member": "DoqFatalProtocolErrorTests.Fuzz_LoopbackFatalErrorPoliciesRemainTraceLinked",
+          "method": "Fuzz_LoopbackFatalErrorPoliciesRemainTraceLinked",
+          "line": 606,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0057",
+            "REQ-QUIC-RFC9250-0075",
+            "RFC9250-S4-3-1-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S2-R02"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -284005,14 +284055,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -284028,7 +284078,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ClientRejectsEdnsTcpKeepaliveInResponseAsFatalProtocolError",
           "method": "ClientRejectsEdnsTcpKeepaliveInResponseAsFatalProtocolError",
-          "line": 204,
+          "line": 206,
           "kinds": [
             "negative"
           ],
@@ -284051,7 +284101,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ClientRejectsEdnsTcpKeepaliveInResponseAsFatalProtocolError",
           "method": "ClientRejectsEdnsTcpKeepaliveInResponseAsFatalProtocolError",
-          "line": 204,
+          "line": 206,
           "kinds": [
             "negative"
           ],
@@ -284074,7 +284124,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ContainsTcpKeepaliveEdnsOption_AllowsMessagesWithoutKeepaliveOption",
           "method": "ContainsTcpKeepaliveEdnsOption_AllowsMessagesWithoutKeepaliveOption",
-          "line": 323,
+          "line": 325,
           "kinds": [
             "positive"
           ],
@@ -284096,7 +284146,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ContainsTcpKeepaliveEdnsOption_AllowsMessagesWithoutKeepaliveOption",
           "method": "ContainsTcpKeepaliveEdnsOption_AllowsMessagesWithoutKeepaliveOption",
-          "line": 323,
+          "line": 325,
           "kinds": [
             "positive"
           ],
@@ -284118,7 +284168,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ContainsTcpKeepaliveEdnsOption_DetectsKeepaliveOption",
           "method": "ContainsTcpKeepaliveEdnsOption_DetectsKeepaliveOption",
-          "line": 310,
+          "line": 312,
           "kinds": [
             "negative"
           ],
@@ -284141,7 +284191,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ContainsTcpKeepaliveEdnsOption_DetectsKeepaliveOption",
           "method": "ContainsTcpKeepaliveEdnsOption_DetectsKeepaliveOption",
-          "line": 310,
+          "line": 312,
           "kinds": [
             "negative"
           ],
@@ -284151,6 +284201,28 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0059",
+            "REQ-QUIC-RFC9250-0103"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0103",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
+          "class": "DoqFatalProtocolErrorTests",
+          "member": "DoqFatalProtocolErrorTests.Fuzz_ContainsTcpKeepaliveEdnsOptionRejectsOnlyForbiddenOption",
+          "method": "Fuzz_ContainsTcpKeepaliveEdnsOptionRejectsOnlyForbiddenOption",
+          "line": 336,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0103"
           ],
           "requirement_tagged": true,
@@ -472709,14 +472781,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs::RegisteredErrorCodePathwayIsDocumentedInDoqErrorCode",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 0,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -472730,9 +472802,32 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
           "class": "DoqFatalProtocolErrorTests",
+          "member": "DoqFatalProtocolErrorTests.Fuzz_NormalizeReceivedErrorCodeDistinguishesRegisteredAndUnexpectedValues",
+          "method": "Fuzz_NormalizeReceivedErrorCodeDistinguishesRegisteredAndUnexpectedValues",
+          "line": 492,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S4-3-1-P1-S2-R01",
+            "RFC9250-S4-3-4-P2-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-3-1-P1-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
+          "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.RegisteredErrorCodePathwayIsDocumentedInDoqErrorCode",
           "method": "RegisteredErrorCodePathwayIsDocumentedInDoqErrorCode",
-          "line": 460,
+          "line": 478,
           "kinds": [
             "positive"
           ],
@@ -472754,7 +472849,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.RegisteredErrorCodePathwayIsDocumentedInDoqErrorCode",
           "method": "RegisteredErrorCodePathwayIsDocumentedInDoqErrorCode",
-          "line": 460,
+          "line": 478,
           "kinds": [
             "positive"
           ],
@@ -473167,14 +473262,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::ServerChecksStopSendingBeforeDispatchingQuery",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 3,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 1,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -473188,9 +473283,34 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
           "class": "DoqFatalProtocolErrorTests",
+          "member": "DoqFatalProtocolErrorTests.Fuzz_LoopbackFatalErrorPoliciesRemainTraceLinked",
+          "method": "Fuzz_LoopbackFatalErrorPoliciesRemainTraceLinked",
+          "line": 606,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0057",
+            "REQ-QUIC-RFC9250-0075",
+            "RFC9250-S4-3-1-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S2-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-3-1-P2-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
+          "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ServerDoesNotDispatchQueryWhenStopSendingReceivedBeforeFin",
           "method": "ServerDoesNotDispatchQueryWhenStopSendingReceivedBeforeFin",
-          "line": 334,
+          "line": 352,
           "kinds": [
             "negative"
           ],
@@ -474951,14 +475071,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -474974,7 +475094,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ClientWithMaxUnsolicitedResets_ClosesConnectionWhenLimitExceeded",
           "method": "ClientWithMaxUnsolicitedResets_ClosesConnectionWhenLimitExceeded",
-          "line": 414,
+          "line": 432,
           "kinds": [
             "negative"
           ],
@@ -474996,7 +475116,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ClientWithMaxUnsolicitedResets_ClosesConnectionWhenLimitExceeded",
           "method": "ClientWithMaxUnsolicitedResets_ClosesConnectionWhenLimitExceeded",
-          "line": 414,
+          "line": 432,
           "kinds": [
             "negative"
           ],
@@ -475018,7 +475138,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ClientWithMaxUnsolicitedResets_ToleratesResetsBelowLimit",
           "method": "ClientWithMaxUnsolicitedResets_ToleratesResetsBelowLimit",
-          "line": 360,
+          "line": 378,
           "kinds": [
             "positive"
           ],
@@ -475040,7 +475160,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.ClientWithMaxUnsolicitedResets_ToleratesResetsBelowLimit",
           "method": "ClientWithMaxUnsolicitedResets_ToleratesResetsBelowLimit",
-          "line": 360,
+          "line": 378,
           "kinds": [
             "positive"
           ],
@@ -475049,6 +475169,31 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
+            "RFC9250-S4-3-2-P2-S2-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-3-2-P2-S2-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
+          "class": "DoqFatalProtocolErrorTests",
+          "member": "DoqFatalProtocolErrorTests.Fuzz_LoopbackFatalErrorPoliciesRemainTraceLinked",
+          "method": "Fuzz_LoopbackFatalErrorPoliciesRemainTraceLinked",
+          "line": 606,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0057",
+            "REQ-QUIC-RFC9250-0075",
+            "RFC9250-S4-3-1-P2-S1-R01",
             "RFC9250-S4-3-2-P2-S2-R02"
           ],
           "requirement_tagged": true,
@@ -475288,14 +475433,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -475309,9 +475454,32 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
           "class": "DoqFatalProtocolErrorTests",
+          "member": "DoqFatalProtocolErrorTests.Fuzz_NormalizeReceivedErrorCodeDistinguishesRegisteredAndUnexpectedValues",
+          "method": "Fuzz_NormalizeReceivedErrorCodeDistinguishesRegisteredAndUnexpectedValues",
+          "line": 492,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S4-3-1-P1-S2-R01",
+            "RFC9250-S4-3-4-P2-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-3-4-P2-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
+          "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.NormalizeReceivedErrorCode_MapsUnknownCodesToUnspecifiedError",
           "method": "NormalizeReceivedErrorCode_MapsUnknownCodesToUnspecifiedError",
-          "line": 282,
+          "line": 284,
           "kinds": [
             "positive"
           ],
@@ -475333,7 +475501,7 @@
           "class": "DoqFatalProtocolErrorTests",
           "member": "DoqFatalProtocolErrorTests.NormalizeReceivedErrorCode_PassesThroughKnownCodes",
           "method": "NormalizeReceivedErrorCode_PassesThroughKnownCodes",
-          "line": 294,
+          "line": 296,
           "kinds": [
             "positive"
           ],

@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T17:56:08.1872490-06:00",
+    "generated_at": "2026-07-06T18:00:40.3692590-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 806,
-      "full_executable_proof": 1871
+      "deferred_proof_not_executed": 799,
+      "full_executable_proof": 1878
     },
     "by_rfc": [
       {
@@ -73,8 +73,8 @@
         "rfc": "RFC9250",
         "total": 141,
         "by_proof_state": {
-          "deferred_proof_not_executed": 59,
-          "full_executable_proof": 82
+          "deferred_proof_not_executed": 52,
+          "full_executable_proof": 89
         }
       },
       {
@@ -49968,9 +49968,9 @@
       "rfc": "RFC9250",
       "title": "Protocol error: receiving STOP_SENDING",
       "statement": "If a client receives a STOP_SENDING request, it MUST treat this as a fatal error.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -49980,15 +49980,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
@@ -50450,9 +50449,9 @@
       "rfc": "RFC9250",
       "title": "Abandon in-progress transactions on connection failure",
       "statement": "If a connection fails, all the in-progress transactions on that connection MUST be abandoned.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -50462,15 +50461,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs"
@@ -51265,9 +51263,9 @@
       "rfc": "RFC9250",
       "title": "Do not send EDNS TCP keepalive on DoQ connections",
       "statement": "Clients and servers MUST not send the edns-tcp-keepalive EDNS(0) Option [RFC7828] in any messages sent on a DoQ connection.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -51277,15 +51275,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs"
@@ -88961,9 +88958,9 @@
       "rfc": "RFC9250",
       "title": "Use registered specific error code",
       "statement": "A DoQ client MAY use a more specific error code registered according to Section 8.4.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -88972,14 +88969,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs"
@@ -89064,9 +89060,9 @@
       "rfc": "RFC9250",
       "title": "Stop processing after STOP_SENDING",
       "statement": "Servers SHOULD NOT continue processing a DNS transaction if they receive a STOP_SENDING.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -89076,15 +89072,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
@@ -89417,9 +89412,9 @@
       "rfc": "RFC9250",
       "title": "Limit unsolicited RESET_STREAM frames before closing",
       "statement": "Clients MAY limit unsolicited QUIC RESET_STREAM frames received on a connection before closing it.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -89428,15 +89423,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs"
@@ -89489,9 +89483,9 @@
       "rfc": "RFC9250",
       "title": "Treat unknown or unexpected error codes as unspecified",
       "statement": "An implementation MUST treat use of an error code in an unexpected context or receipt of an unknown error code as equivalent to DOQ_UNSPECIFIED_ERROR.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -89501,15 +89495,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",

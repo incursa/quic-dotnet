@@ -152,11 +152,13 @@ public sealed class DoqFatalProtocolErrorTests
             // The close can surface after the write-complete wait under suite load.
         }
 
-        QuicException exception = await Assert.ThrowsAsync<QuicException>(() =>
+        Exception exception = await Assert.ThrowsAnyAsync<Exception>(() =>
             client.QueryAsync(CreateDnsQuery(0x41)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
 
-        Assert.Equal(QuicError.ConnectionAborted, exception.QuicError);
-        Assert.Equal((long)DoqErrorCode.ProtocolError, exception.ApplicationErrorCode);
+        QuicException quicException = Assert.IsType<QuicException>(
+            exception is DoqException doqException ? doqException.InnerException : exception);
+        Assert.Equal(QuicError.ConnectionAborted, quicException.QuicError);
+        Assert.Equal((long)DoqErrorCode.ProtocolError, quicException.ApplicationErrorCode);
         Assert.Empty(handler.Queries);
     }
 
@@ -328,6 +330,22 @@ public sealed class DoqFatalProtocolErrorTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0103")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ContainsTcpKeepaliveEdnsOptionRejectsOnlyForbiddenOption()
+    {
+        foreach ((byte[] message, bool containsKeepalive) in new[]
+        {
+            (BuildDnsMessageWithoutEdns(), false),
+            (BuildDnsMessageWithTcpKeepaliveEdnsOption(), true),
+        })
+        {
+            Assert.Equal(containsKeepalive, DoqMessageCodec.ContainsTcpKeepaliveEdnsOption(message));
+        }
+    }
+
+    [Fact]
     [Requirement("RFC9250-S4-3-1-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -467,6 +485,32 @@ public sealed class DoqFatalProtocolErrorTests
     }
 
     [Fact]
+    [Requirement("RFC9250-S4-3-1-P1-S2-R01")]
+    [Requirement("RFC9250-S4-3-4-P2-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_NormalizeReceivedErrorCodeDistinguishesRegisteredAndUnexpectedValues()
+    {
+        foreach ((long receivedCode, DoqErrorCode expectedCode) in new[]
+        {
+            ((long)DoqErrorCode.NoError, DoqErrorCode.NoError),
+            ((long)DoqErrorCode.InternalError, DoqErrorCode.InternalError),
+            ((long)DoqErrorCode.ProtocolError, DoqErrorCode.ProtocolError),
+            ((long)DoqErrorCode.RequestCancelled, DoqErrorCode.RequestCancelled),
+            ((long)DoqErrorCode.ExcessiveLoad, DoqErrorCode.ExcessiveLoad),
+            ((long)DoqErrorCode.UnspecifiedError, DoqErrorCode.UnspecifiedError),
+            ((long)DoqErrorCode.ErrorReserved, DoqErrorCode.ErrorReserved),
+            (-1, DoqErrorCode.UnspecifiedError),
+            (6, DoqErrorCode.UnspecifiedError),
+            (0x100, DoqErrorCode.UnspecifiedError),
+            (0x9999, DoqErrorCode.UnspecifiedError),
+        })
+        {
+            Assert.Equal(expectedCode, DoqErrorCodeExtensions.NormalizeReceivedErrorCode(receivedCode));
+        }
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0075")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -550,6 +594,36 @@ public sealed class DoqFatalProtocolErrorTests
             "The in-progress query must be abandoned rather than left pending. " +
             QuicLoopbackEstablishmentTestSupport.DescribeConnection(client.CurrentConnection));
         Assert.False(exception is TimeoutException, "The in-progress query must fault because of connection failure, not the test timeout.");
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0057")]
+    [Requirement("REQ-QUIC-RFC9250-0075")]
+    [Requirement("RFC9250-S4-3-1-P2-S1-R01")]
+    [Requirement("RFC9250-S4-3-2-P2-S2-R02")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_LoopbackFatalErrorPoliciesRemainTraceLinked()
+    {
+        string fatalTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs");
+        string client = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqClient.cs");
+        string server = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqServer.cs");
+
+        foreach ((string source, string expected) in new[]
+        {
+            (fatalTests, "ClientTreatsPeerStopSendingAsFatalProtocolErrorAndClosesConnection"),
+            (fatalTests, "ServerDoesNotDispatchQueryWhenStopSendingReceivedBeforeFin"),
+            (fatalTests, "ClientWithMaxUnsolicitedResets_ToleratesResetsBelowLimit"),
+            (fatalTests, "ClientWithMaxUnsolicitedResets_ClosesConnectionWhenLimitExceeded"),
+            (fatalTests, "ConnectionFailureSurfacesClearExceptionOnSubsequentQuery"),
+            (fatalTests, "ConnectionFailureAbandonsInProgressQuery"),
+            (client, "MaxUnsolicitedResets"),
+            (client, "SignalConnectionFailure"),
+            (server, "AbortStreamWrite(stream, DoqErrorCode.RequestCancelled)"),
+        })
+        {
+            Assert.Contains(expected, source, StringComparison.Ordinal);
+        }
     }
 
     private static async Task<DoqMessage> ReadSingleDoqMessageUntilFinAsync(
@@ -646,6 +720,37 @@ public sealed class DoqFatalProtocolErrorTests
         {
             destination[offset++] = (byte)c;
         }
+    }
+
+    private static string ReadRepositoryFile(string relativePath)
+    {
+        string repoRoot = FindRepoRoot();
+        string candidate = Path.Combine(repoRoot, relativePath);
+        if (File.Exists(candidate))
+        {
+            return File.ReadAllText(candidate);
+        }
+
+        throw new InvalidOperationException($"Unable to locate '{relativePath}' under '{repoRoot}'.");
+    }
+
+    private static string FindRepoRoot()
+    {
+        DirectoryInfo? current = new(AppContext.BaseDirectory);
+        while (current is not null)
+        {
+            string gitMarker = Path.Combine(current.FullName, ".git");
+            string specMarker = Path.Combine(current.FullName, "specs", "requirements", "quic", "SPEC-QUIC-RFC9250.json");
+            string codeMarker = Path.Combine(current.FullName, "src", "Incursa.Quic.Dns", "DoqClient.cs");
+            if ((Directory.Exists(gitMarker) || File.Exists(gitMarker)) && File.Exists(specMarker) && File.Exists(codeMarker))
+            {
+                return current.FullName;
+            }
+
+            current = current.Parent;
+        }
+
+        throw new InvalidOperationException("Unable to locate the repository root for the RFC 9250 DoQ fatal protocol error tests.");
     }
 
     private sealed class RecordingDoqHandler : IDoqQueryHandler
