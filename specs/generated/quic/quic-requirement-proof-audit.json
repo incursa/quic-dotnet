@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T19:47:42.5010458-06:00",
+    "generated_at": "2026-07-06T19:51:43.4809263-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 406,
-      "full_executable_proof": 2271
+      "deferred_proof_not_executed": 374,
+      "full_executable_proof": 2303
     },
     "by_rfc": [
       {
@@ -134,8 +134,8 @@
         "rfc": "RFC9463",
         "total": 120,
         "by_proof_state": {
-          "deferred_proof_not_executed": 88,
-          "full_executable_proof": 32
+          "deferred_proof_not_executed": 56,
+          "full_executable_proof": 64
         }
       },
       {
@@ -61203,9 +61203,9 @@
       "rfc": "RFC9463",
       "title": "Encrypted DNS option field order",
       "statement": "The Encrypted DNS option MUST use the field order Type, Length, Service Priority, Lifetime, ADN Length, authentication-domain-name, Addr Length, ipv6-address(es), SvcParams Length, and Service Parameters.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61215,18 +61215,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61239,9 +61239,9 @@
       "rfc": "RFC9463",
       "title": "Encrypted DNS option type value",
       "statement": "The Type field MUST be the IANA-assigned 8-bit identifier for the Encrypted DNS option (144).",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61251,18 +61251,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61275,9 +61275,9 @@
       "rfc": "RFC9463",
       "title": "Encrypted DNS option length field encoding",
       "statement": "The Length field MUST be an 8-bit unsigned integer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61287,18 +61287,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61311,9 +61311,9 @@
       "rfc": "RFC9463",
       "title": "Encrypted DNS option length units",
       "statement": "The option length, including the Type and Length fields, MUST be measured in units of 8 octets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61323,18 +61323,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61347,9 +61347,9 @@
       "rfc": "RFC9463",
       "title": "Encrypted DNS service priority field encoding",
       "statement": "The Service Priority field MUST be a 16-bit unsigned integer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61359,18 +61359,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61383,9 +61383,9 @@
       "rfc": "RFC9463",
       "title": "Field interpretation follows RFC 9460",
       "statement": "The field MUST be interpreted following the rules specified in Section 2.4.1 of RFC 9460.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61395,18 +61395,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61419,9 +61419,9 @@
       "rfc": "RFC9463",
       "title": "Lifetime field type",
       "statement": "Lifetime MUST be a 32-bit unsigned integer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61431,6 +61431,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -61438,14 +61439,13 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 4,
       "spec_test_refs": [
@@ -61460,9 +61460,9 @@
       "rfc": "RFC9463",
       "title": "Lifetime validity semantics",
       "statement": "Lifetime MUST represent the maximum time in seconds, relative to the time the packet is received, over which the discovered ADN is valid.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61472,18 +61472,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61496,9 +61496,9 @@
       "rfc": "RFC9463",
       "title": "Default Lifetime recommendation",
       "statement": "The value of Lifetime SHOULD by default be at least 3 * MaxRtrAdvInterval, where MaxRtrAdvInterval is the maximum RA interval as defined in RFC 4861.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -61507,18 +61507,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61531,9 +61531,9 @@
       "rfc": "RFC9463",
       "title": "Infinity encoding",
       "statement": "A value of all one bits (0xffffffff) MUST represent infinity.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61543,6 +61543,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -61550,14 +61551,13 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 4,
       "spec_test_refs": [
@@ -61572,9 +61572,9 @@
       "rfc": "RFC9463",
       "title": "Zero value retires ADN",
       "statement": "A value of zero MUST indicate that this ADN is no longer used.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61584,6 +61584,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -61591,14 +61592,13 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 4,
       "spec_test_refs": [
@@ -61613,9 +61613,9 @@
       "rfc": "RFC9463",
       "title": "ADN Length encoding",
       "statement": "The ADN Length field MUST be a 16-bit unsigned integer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61625,18 +61625,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61649,9 +61649,9 @@
       "rfc": "RFC9463",
       "title": "ADN Length meaning",
       "statement": "The ADN Length field MUST indicate the length of the authentication-domain-name field in octets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61661,18 +61661,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61685,9 +61685,9 @@
       "rfc": "RFC9463",
       "title": "authentication-domain-name contents",
       "statement": "The authentication-domain-name field MUST contain the ADN of the encrypted DNS resolver.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61697,18 +61697,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61721,9 +61721,9 @@
       "rfc": "RFC9463",
       "title": "authentication-domain-name RFC 8415 formatting",
       "statement": "The authentication-domain-name field MUST be formatted as specified in Section 10 of RFC 8415.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61733,18 +61733,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61757,9 +61757,9 @@
       "rfc": "RFC9463",
       "title": "Addr Length encoding",
       "statement": "The Addr Length field MUST be a 16-bit unsigned integer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61769,18 +61769,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61793,9 +61793,9 @@
       "rfc": "RFC9463",
       "title": "Addr Length meaning",
       "statement": "The Addr Length field MUST indicate the length of the enclosed IPv6 addresses in octets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61805,18 +61805,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61829,9 +61829,9 @@
       "rfc": "RFC9463",
       "title": "Addr Length multiple of 16",
       "statement": "When present, the Addr Length field MUST be a multiple of 16.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61841,18 +61841,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61865,9 +61865,9 @@
       "rfc": "RFC9463",
       "title": "ipv6-address(es) contents",
       "statement": "The ipv6-address(es) field MUST contain one or more IPv6 addresses of the encrypted DNS resolver.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61877,18 +61877,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61901,9 +61901,9 @@
       "rfc": "RFC9463",
       "title": "Shared Lifetime value across addresses",
       "statement": "All addresses in the option MUST share the same Lifetime value.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61913,18 +61913,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61937,9 +61937,9 @@
       "rfc": "RFC9463",
       "title": "SvcParams Length field type",
       "statement": "The SvcParams Length field MUST be a 16-bit unsigned integer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61949,18 +61949,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -61973,9 +61973,9 @@
       "rfc": "RFC9463",
       "title": "SvcParams Length field semantics",
       "statement": "The SvcParams Length field MUST indicate the length of the Service Parameters (SvcParams) field in octets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -61985,18 +61985,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -62009,9 +62009,9 @@
       "rfc": "RFC9463",
       "title": "SvcParams encoding follows RFC9460",
       "statement": "The Service Parameters (SvcParams) field MUST be encoded following the rules in Section 2.2 of RFC9460.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62021,18 +62021,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -62045,9 +62045,9 @@
       "rfc": "RFC9463",
       "title": "SvcParams field variable length",
       "statement": "The Service Parameters (SvcParams) field MUST be variable length.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62057,18 +62057,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -62081,9 +62081,9 @@
       "rfc": "RFC9463",
       "title": "Include alpn SvcParam",
       "statement": "The field SHOULD include at least the \"alpn\" SvcParam.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62093,18 +62093,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -62117,9 +62117,9 @@
       "rfc": "RFC9463",
       "title": "Exclude ipv4hint and ipv6hint SvcParams",
       "statement": "The service parameters MUST exclude \"ipv4hint\" or \"ipv6hint\" SvcParams.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62129,6 +62129,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -62136,14 +62137,13 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 4,
       "spec_test_refs": [
@@ -62158,9 +62158,9 @@
       "rfc": "RFC9463",
       "title": "Default port numbers when port parameter absent",
       "statement": "If no port service parameter is included, default port numbers SHOULD be used.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62170,18 +62170,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -62194,9 +62194,9 @@
       "rfc": "RFC9463",
       "title": "Omit fields in ADN-only mode",
       "statement": "When ADN-only mode is used, the Addr Length, ipv6-address(es), and Service Parameters (SvcParams) fields MUST be absent.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62206,18 +62206,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -62230,9 +62230,9 @@
       "rfc": "RFC9463",
       "title": "Pad option to 8-octet boundary",
       "statement": "The option MUST be padded with zeros so that the full enclosed data is a multiple of 8 octets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62242,18 +62242,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -62266,9 +62266,9 @@
       "rfc": "RFC9463",
       "title": "Process received Encrypted DNS options",
       "statement": "The host MUST process received Encrypted DNS options using the RFC 8106 Section 5.3.1 procedure, substituting the Section 6.1 formatting requirements and Section 3.1.8 validation checks for length and field validations.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62278,18 +62278,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -93822,9 +93822,9 @@
       "rfc": "RFC9463",
       "title": "Receive multiple Encrypted DNS options",
       "statement": "The host MUST be prepared to receive multiple Encrypted DNS options in RAs.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -93834,18 +93834,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -93858,9 +93858,9 @@
       "rfc": "RFC9463",
       "title": "Process instances by service priority",
       "statement": "These instances MUST be processed in service-priority order, where a smaller service priority value indicates a higher preference.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -93870,18 +93870,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-NeighborDiscoveryOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
