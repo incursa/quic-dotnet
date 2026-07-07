@@ -109,7 +109,7 @@ $collectArgs = @(
     "collect",
     "--process-id", $ProcessId.ToString([Globalization.CultureInfo]::InvariantCulture),
     "--refresh-interval", ([Math]::Max(1, $RefreshIntervalSeconds)).ToString([Globalization.CultureInfo]::InvariantCulture),
-    "--counters", "System.Runtime",
+    "--counters", "System.Runtime,Incursa.Quic",
     "--format", $Format,
     "--output", $rawPath,
     "--duration", $duration
