@@ -31,7 +31,7 @@ var payloadDirection = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_
 var echoResponses = !string.Equals(payloadDirection, "client-to-server", StringComparison.OrdinalIgnoreCase);
 const int RawQuicConcurrentBidirectionalStreamLimit = 256;
 const int RawQuicReceiveWindowBytes = 16 * 1024 * 1024;
-const int RawQuicEchoBufferBytes = 16 * 1024;
+const int RawQuicEchoBufferBytes = 64 * 1024;
 
 var certificate = GenerateSelfSignedCertificate(certSubject);
 var alpnProtocol = new SslApplicationProtocol(alpn);
