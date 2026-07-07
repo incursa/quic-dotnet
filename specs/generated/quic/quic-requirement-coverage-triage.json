@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T19:00:20.5936339-06:00",
+  "generated_at": "2026-07-06T19:05:50.5977309-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T19:00:20.5892584-06:00",
+    "generated_at": "2026-07-06T19:05:50.5935279-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -372936,14 +372936,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -373038,6 +373038,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0100",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_AddressRequestIsSentOnlyWhenAssignmentIsExpectedAndNeeded",
+          "method": "Fuzz_AddressRequestIsSentOnlyWhenAssignmentIsExpectedAndNeeded",
+          "line": 14,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0100"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -373067,14 +373089,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -373169,6 +373191,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0101",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_AddressAssignCanBeSentWithoutAPrecedingAddressRequest",
+          "method": "Fuzz_AddressAssignCanBeSentWithoutAPrecedingAddressRequest",
+          "line": 32,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0101"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -373198,14 +373242,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -373301,6 +373345,28 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0102",
             "REQ-QUIC-RFC9484-0103"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0102",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_AddressRequestCapsuleEncodingCarriesPayloadLength",
+          "method": "Fuzz_AddressRequestCapsuleEncodingCarriesPayloadLength",
+          "line": 44,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0102"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -373333,14 +373399,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -373435,6 +373501,28 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0102",
+            "REQ-QUIC-RFC9484-0103"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0103",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_AddressRequestCapsuleUsesTypeTwoAndRejectsOtherTypes",
+          "method": "Fuzz_AddressRequestCapsuleUsesTypeTwoAndRejectsOtherTypes",
+          "line": 60,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0103"
           ],
           "requirement_tagged": true,
@@ -373468,14 +373556,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -373573,6 +373661,28 @@
             "REQ-QUIC-RFC9484-0104",
             "REQ-QUIC-RFC9484-0105",
             "REQ-QUIC-RFC9484-0126"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0104",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_AddressRequestParsesRequestedAddressFields",
+          "method": "Fuzz_AddressRequestParsesRequestedAddressFields",
+          "line": 77,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0104"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -373605,14 +373715,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -373713,6 +373823,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0105",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_AddressRequestContainsOneOrMoreRequestedAddressEntries",
+          "method": "Fuzz_AddressRequestContainsOneOrMoreRequestedAddressEntries",
+          "line": 98,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0105"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -373742,14 +373874,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -373873,6 +374005,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0106",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_RequestedAddressIpAddressFieldRoundTripsAddressBytes",
+          "method": "Fuzz_RequestedAddressIpAddressFieldRoundTripsAddressBytes",
+          "line": 114,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0106"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -373902,14 +374056,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -374010,6 +374164,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0107",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_RequestedAddressPrefixLengthFieldRoundTripsAsUnsignedByte",
+          "method": "Fuzz_RequestedAddressPrefixLengthFieldRoundTripsAsUnsignedByte",
+          "line": 133,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0107"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -374039,14 +374215,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -374149,6 +374325,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0108",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_RequestedAddressIpVersionFieldRoundTripsFourOrSix",
+          "method": "Fuzz_RequestedAddressIpVersionFieldRoundTripsFourOrSix",
+          "line": 155,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0108"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -374178,14 +374376,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -374281,6 +374479,28 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0109",
             "REQ-QUIC-RFC9484-0110"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0109",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_RequestedAddressRequestIdFieldAppearsFirst",
+          "method": "Fuzz_RequestedAddressRequestIdFieldAppearsFirst",
+          "line": 174,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0109"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -374313,14 +374533,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -374415,6 +374635,28 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0109",
+            "REQ-QUIC-RFC9484-0110"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0110",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_RequestedAddressRequestIdUsesQuicVariableLengthIntegerEncoding",
+          "method": "Fuzz_RequestedAddressRequestIdUsesQuicVariableLengthIntegerEncoding",
+          "line": 190,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0110"
           ],
           "requirement_tagged": true,
@@ -374448,14 +374690,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -374550,6 +374792,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0111",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_AddressRequestRejectsDuplicateRequestIds",
+          "method": "Fuzz_AddressRequestRejectsDuplicateRequestIds",
+          "line": 206,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0111"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -374579,14 +374843,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -374681,6 +374945,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0112",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_AddressRequestRejectsZeroRequestId",
+          "method": "Fuzz_AddressRequestRejectsZeroRequestId",
+          "line": 228,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0112"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -374710,14 +374996,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -374818,6 +375104,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0115",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_RequestedAddressUsesThirtyTwoBitIpAddressForIpv4",
+          "method": "Fuzz_RequestedAddressUsesThirtyTwoBitIpAddressForIpv4",
+          "line": 241,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0115"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -374847,14 +375155,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -374955,6 +375263,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0116",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_RequestedAddressUsesOneHundredTwentyEightBitIpAddressForIpv6",
+          "method": "Fuzz_RequestedAddressUsesOneHundredTwentyEightBitIpAddressForIpv6",
+          "line": 258,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0116"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -374984,14 +375314,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -375092,6 +375422,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0117",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_IpPrefixLengthIsEncodedAsOneUnsignedByte",
+          "method": "Fuzz_IpPrefixLengthIsEncodedAsOneUnsignedByte",
+          "line": 275,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -375121,14 +375473,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -375227,6 +375579,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0118",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_IpPrefixLengthCannotExceedAddressBitLength",
+          "method": "Fuzz_IpPrefixLengthCannotExceedAddressBitLength",
+          "line": 294,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0118"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -375256,14 +375630,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -375358,6 +375732,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0119",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_RequestedAddressRejectsNonZeroHostBitsBeyondPrefix",
+          "method": "Fuzz_RequestedAddressRejectsNonZeroHostBitsBeyondPrefix",
+          "line": 307,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0119"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -375387,14 +375783,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -375489,6 +375885,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0120",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_MalformedAddressRequestCapsuleFieldsThrowMessageError",
+          "method": "Fuzz_MalformedAddressRequestCapsuleFieldsThrowMessageError",
+          "line": 322,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0120"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -375518,14 +375936,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -375620,6 +376038,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0121",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_AddressRequestResponseRequiresRequestAndAssignableAddress",
+          "method": "Fuzz_AddressRequestResponseRequiresRequestAndAssignableAddress",
+          "line": 346,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0121"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -375649,14 +376089,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -375751,6 +376191,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0122",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_AssignedAddressResponsesMatchTheRequestIdTheyAnswer",
+          "method": "Fuzz_AssignedAddressResponsesMatchTheRequestIdTheyAnswer",
+          "line": 364,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0122"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -375780,14 +376242,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -375882,6 +376344,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0123",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_AssignedAddressResponseUsesAssignedAddressAndPrefixValues",
+          "method": "Fuzz_AssignedAddressResponseUsesAssignedAddressAndPrefixValues",
+          "line": 384,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0123"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -375911,14 +376395,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -376013,6 +376497,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0124",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_UnassignedAddressResponseUsesZeroAddressAndMaximumPrefix",
+          "method": "Fuzz_UnassignedAddressResponseUsesZeroAddressAndMaximumPrefix",
+          "line": 407,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0124"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -376042,14 +376548,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -376144,6 +376650,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0125",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_RejectedAddressesAreKeptOutOfSubsequentAssignments",
+          "method": "Fuzz_RejectedAddressesAreKeptOutOfSubsequentAssignments",
+          "line": 430,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0125"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -376173,14 +376701,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -376275,6 +376803,28 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0104",
             "REQ-QUIC-RFC9484-0105",
+            "REQ-QUIC-RFC9484-0126"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0126",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_EmptyAddressRequestCapsulesAbortTheRequestStream",
+          "method": "Fuzz_EmptyAddressRequestCapsulesAbortTheRequestStream",
+          "line": 442,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0126"
           ],
           "requirement_tagged": true,
@@ -508330,14 +508880,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -508437,6 +508987,28 @@
             "REQ-QUIC-RFC9484-0108",
             "RFC9484-S4-7-2-P6-4-S1-R01",
             "RFC9484-S4-7-2-P6-4-S1-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S4-7-2-P6-4-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_AddressRequestLimitsIpVersionValuesToFourOrSix",
+          "method": "Fuzz_AddressRequestLimitsIpVersionValuesToFourOrSix",
+          "line": 456,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S4-7-2-P6-4-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -508469,14 +509041,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -508575,6 +509147,28 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0108",
             "RFC9484-S4-7-2-P6-4-S1-R01",
+            "RFC9484-S4-7-2-P6-4-S1-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S4-7-2-P6-4-S1-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_AddressRequestFuzzClosure.Fuzz_AddressRequestIpVersionIsEncodedAsOneUnsignedByte",
+          "method": "Fuzz_AddressRequestIpVersionIsEncodedAsOneUnsignedByte",
+          "line": 474,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
             "RFC9484-S4-7-2-P6-4-S1-R02"
           ],
           "requirement_tagged": true,

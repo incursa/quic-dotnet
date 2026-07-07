@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T19:00:35.7656377-06:00",
+    "generated_at": "2026-07-06T19:06:07.8638208-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 599,
-      "full_executable_proof": 2078
+      "deferred_proof_not_executed": 572,
+      "full_executable_proof": 2105
     },
     "by_rfc": [
       {
@@ -148,8 +148,8 @@
         "rfc": "RFC9484",
         "total": 213,
         "by_proof_state": {
-          "deferred_proof_not_executed": 161,
-          "full_executable_proof": 52
+          "deferred_proof_not_executed": 134,
+          "full_executable_proof": 79
         }
       }
     ]
@@ -68426,9 +68426,9 @@
       "rfc": "RFC9484",
       "title": "ADDRESS_REQUEST from an address-assignment expectation",
       "statement": "An endpoint that is expecting an address assignment MUST send an ADDRESS_REQUEST capsule, unless it does not need any address assignment.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -68438,18 +68438,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -68462,9 +68462,9 @@
       "rfc": "RFC9484",
       "title": "Unprompted ADDRESS_ASSIGN capsules",
       "statement": "Endpoints MAY send ADDRESS_ASSIGN capsules unprompted.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -68474,18 +68474,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -68498,9 +68498,9 @@
       "rfc": "RFC9484",
       "title": "ADDRESS_REQUEST capsule length field",
       "statement": "The Length field MUST follow the Type field and be encoded as a variable-length integer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -68510,18 +68510,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -68534,9 +68534,9 @@
       "rfc": "RFC9484",
       "title": "ADDRESS_REQUEST capsule type",
       "statement": "The ADDRESS_REQUEST Capsule Type field MUST be 0x02 and appear first.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -68546,18 +68546,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -68570,9 +68570,9 @@
       "rfc": "RFC9484",
       "title": "ADDRESS_REQUEST requested address field",
       "statement": "The Requested Address field MUST follow the Length field.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -68582,18 +68582,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -68606,9 +68606,9 @@
       "rfc": "RFC9484",
       "title": "ADDRESS_REQUEST capsule contains one or more Requested Addresses",
       "statement": "The ADDRESS_REQUEST capsule MUST contain one or more Requested Address entries.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -68618,18 +68618,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -68642,9 +68642,9 @@
       "rfc": "RFC9484",
       "title": "Requested Address IP Address field",
       "statement": "The IP Address field MUST appear third and be encoded as 32 to 128 bits.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -68654,18 +68654,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -68678,9 +68678,9 @@
       "rfc": "RFC9484",
       "title": "Requested Address IP Prefix Length field",
       "statement": "The IP Prefix Length field MUST appear fourth and be encoded as an unsigned 8-bit integer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -68690,18 +68690,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -68714,9 +68714,9 @@
       "rfc": "RFC9484",
       "title": "Requested Address IP Version field",
       "statement": "The IP Version field MUST appear second and be encoded as an unsigned 8-bit integer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -68726,18 +68726,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -68750,9 +68750,9 @@
       "rfc": "RFC9484",
       "title": "Requested Address request ID field",
       "statement": "The Request ID field MUST appear first and be encoded as a variable-length integer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -68762,18 +68762,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -68786,9 +68786,9 @@
       "rfc": "RFC9484",
       "title": "Encode Request ID as a variable-length integer",
       "statement": "The Request ID field MUST be encoded as a variable-length integer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -68798,18 +68798,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -68822,9 +68822,9 @@
       "rfc": "RFC9484",
       "title": "Request ID reuse prohibition",
       "statement": "Request IDs MUST NOT be reused by an endpoint.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -68834,18 +68834,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -68858,9 +68858,9 @@
       "rfc": "RFC9484",
       "title": "Request ID zero prohibition",
       "statement": "Request IDs MUST NOT be zero.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -68870,18 +68870,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -68894,9 +68894,9 @@
       "rfc": "RFC9484",
       "title": "Use 32-bit IP addresses for IPv4",
       "statement": "If the IP Version field has value 4, the IP Address field SHALL have a length of 32 bits.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -68906,18 +68906,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -68930,9 +68930,9 @@
       "rfc": "RFC9484",
       "title": "Use 128-bit IP addresses for IPv6",
       "statement": "If the IP Version field has value 6, the IP Address field SHALL have a length of 128 bits.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -68942,18 +68942,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -68966,9 +68966,9 @@
       "rfc": "RFC9484",
       "title": "Encode IP Prefix Length as an 8-bit integer",
       "statement": "The IP Prefix Length field MUST be encoded as an unsigned 8-bit integer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -68978,18 +68978,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -69002,9 +69002,9 @@
       "rfc": "RFC9484",
       "title": "Bound prefix length by address length",
       "statement": "The IP Prefix Length field MUST be less than or equal to the length of the IP Address field in bits.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -69014,18 +69014,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -69038,9 +69038,9 @@
       "rfc": "RFC9484",
       "title": "Zero unused address bits beyond the prefix",
       "statement": "If the prefix length is strictly less than the length of the IP address in bits, the lower bits of the IP Address field that are not covered by the prefix length MUST all be set to 0.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -69050,18 +69050,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -69074,9 +69074,9 @@
       "rfc": "RFC9484",
       "title": "Handle malformed capsule fields",
       "statement": "If any of the capsule fields are malformed upon reception, the receiver of the capsule MUST follow the error-handling procedure defined in Section 3.3 of [HTTP-DGRAM].",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -69086,18 +69086,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -69110,9 +69110,9 @@
       "rfc": "RFC9484",
       "title": "Assign addresses and send address assignment",
       "statement": "Upon receiving the ADDRESS_REQUEST capsule, an endpoint SHOULD assign one or more IP addresses to its peer and then respond with an ADDRESS_ASSIGN capsule to inform the peer of the assignment.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -69122,18 +69122,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -69146,9 +69146,9 @@
       "rfc": "RFC9484",
       "title": "Match request IDs in assigned addresses",
       "statement": "For each Requested Address, the receiver of the ADDRESS_REQUEST capsule SHALL respond with an Assigned Address with a matching Request ID.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -69158,18 +69158,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -69182,9 +69182,9 @@
       "rfc": "RFC9484",
       "title": "Set assigned values in assigned address responses",
       "statement": "If the requested address was assigned, the IP Address and IP Prefix Length fields in the Assigned Address response SHALL be set to the assigned values.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -69194,18 +69194,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -69218,9 +69218,9 @@
       "rfc": "RFC9484",
       "title": "Encode unassigned addresses with zero values",
       "statement": "If the requested address was not assigned, the IP address and IP Prefix Length in the Assigned Address response SHALL be set to all-zero and the maximum length (0.0.0.0/32 or ::/128), respectively, to indicate that no address was assigned.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -69230,18 +69230,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -69254,9 +69254,9 @@
       "rfc": "RFC9484",
       "title": "Keep address rejections out of later assignments",
       "statement": "These address rejections SHOULD NOT be included in subsequent ADDRESS_ASSIGN capsules.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -69266,18 +69266,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -69290,9 +69290,9 @@
       "rfc": "RFC9484",
       "title": "Reject empty address request capsules",
       "statement": "If an endpoint receives an ADDRESS_REQUEST capsule that contains zero Requested Addresses, it MUST abort the IP proxying request stream.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -69302,18 +69302,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -94969,9 +94969,9 @@
       "rfc": "RFC9484",
       "title": "Limit IP Version values to 4 or 6",
       "statement": "The IP Version field MUST be either 4 or 6.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -94981,18 +94981,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -95005,9 +95005,9 @@
       "rfc": "RFC9484",
       "title": "Encode ADDRESS_REQUEST IP Version as an unsigned 8-bit integer",
       "statement": "The ADDRESS_REQUEST IP Version field MUST be encoded as an unsigned 8-bit integer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -95017,18 +95017,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-AddressRequestFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
