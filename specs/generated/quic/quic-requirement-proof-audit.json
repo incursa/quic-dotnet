@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T20:02:24.3851361-06:00",
+    "generated_at": "2026-07-06T20:06:15.6107800-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 328,
-      "full_executable_proof": 2349
+      "deferred_proof_not_executed": 318,
+      "full_executable_proof": 2359
     },
     "by_rfc": [
       {
@@ -134,8 +134,7 @@
         "rfc": "RFC9463",
         "total": 120,
         "by_proof_state": {
-          "deferred_proof_not_executed": 10,
-          "full_executable_proof": 110
+          "full_executable_proof": 120
         }
       },
       {
@@ -59393,9 +59392,9 @@
       "rfc": "RFC9463",
       "title": "Prefer encrypted DNS when both resolver types are learned",
       "statement": "If a client learns both Do53 and encrypted DNS resolvers from the same network, and there is no explicit configuration to the contrary, the client SHOULD use the encrypted DNS resolvers for that network.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -59405,18 +59404,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-PolicyPlanningFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -59429,9 +59428,9 @@
       "rfc": "RFC9463",
       "title": "Allow fallback to Do53 when encrypted DNS connection fails",
       "statement": "If the client cannot establish an authenticated and encrypted connection with the encrypted DNS resolver, it MAY fall back to using the Do53 resolver.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -59441,18 +59440,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-PolicyPlanningFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -59465,9 +59464,9 @@
       "rfc": "RFC9463",
       "title": "Establish sessions according to discovered resolver priority",
       "statement": "If the local DNS client supports one of the discovered encrypted DNS protocols identified by ALPN protocol identifiers or another service parameter that indicates another protocol disambiguation mechanism, the DNS client MUST establish an encrypted DNS session following the service priority of the discovered encrypted resolvers.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -59477,18 +59476,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-PolicyPlanningFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -59501,9 +59500,9 @@
       "rfc": "RFC9463",
       "title": "Validate resolver certificates and ADN using PKIX and RFC6125",
       "statement": "The DNS client MUST verify the connection using PKIX validation of the DNS resolver certificate and compare the ADN conveyed in the Encrypted DNS options to the certificate using RFC6125 validation techniques.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -59513,18 +59512,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-PolicyPlanningFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -62600,9 +62599,9 @@
       "rfc": "RFC9463",
       "title": "Require secure DNSSEC for ADN-only SVCB resolution",
       "statement": "When ADN-only encrypted DNS discovery relies on SVCB queries as the active-attack mitigation described by RFC 9463, the local policy MUST accept SVCB-derived resolver parameters only when DNSSEC validation reports a secure result.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62614,19 +62613,19 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs",
-        "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-PolicyPlanningFuzzClosure.cs"
       ],
       "spec_test_ref_count": 4,
       "spec_test_refs": [
@@ -62641,9 +62640,9 @@
       "rfc": "RFC9463",
       "title": "Plan encrypted DNS session attempts deterministically",
       "statement": "Before opening a network connection, the encrypted DNS client planning layer MUST produce deterministic encrypted DNS session attempts from RFC 9461 SVCB endpoint selection, RFC 9463 discovery plans, and RFC 9464 provisioning plans while preserving protocol, address when supplied, port, authentication name, service priority, service-parameter metadata, HTTPS metadata, and cleartext-fallback eligibility.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62655,19 +62654,19 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 6,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 7,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
-        "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-PolicyPlanningFuzzClosure.cs"
       ],
       "spec_test_ref_count": 6,
       "spec_test_refs": [
@@ -62684,9 +62683,9 @@
       "rfc": "RFC9463",
       "title": "Plan host resolver installation without platform mutation",
       "statement": "Before mutating operating-system resolver state, the encrypted DNS client planning layer MUST produce a deterministic host-resolver installation plan from RFC 9461 SVCB endpoint plans, RFC 9463 discovery plans, and RFC 9464 provisioning plans, preserving encrypted session attempts, cleartext fallback resolver candidates, split-tunnel internal domains, installation scope, and policy-blocked states without invoking platform resolver APIs.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62696,19 +62695,19 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 7,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 8,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs",
-        "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-PolicyPlanningFuzzClosure.cs"
       ],
       "spec_test_ref_count": 7,
       "spec_test_refs": [
@@ -62726,9 +62725,9 @@
       "rfc": "RFC9463",
       "title": "Plan router and forwarder advertisements without platform emission",
       "statement": "Before mutating router, DHCP, or Neighbor Discovery state, the encrypted DNS discovery layer MUST produce a deterministic adapter-neutral advertisement plan for router or forwarder publication that selects DHCPv4 OPTION_V4_DNR, DHCPv6 OPTION_V6_DNR, and Neighbor Discovery encrypted DNS payloads from local LAN-facing resolver addresses or ADN-only publication policy while preserving service priority, lifetime, authentication domain name, service-parameter metadata, family-specific applicability, and blocked/no-address statuses without invoking platform advertisement APIs.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62740,19 +62739,19 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 7,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 8,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs",
-        "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-PolicyPlanningFuzzClosure.cs"
       ],
       "spec_test_ref_count": 7,
       "spec_test_refs": [
@@ -93390,9 +93389,9 @@
       "rfc": "RFC9463",
       "title": "Follow RFC8106 conflict rules for RA and DHCP discovery",
       "statement": "If encrypted DNS resolvers are discovered by a host using both RA and DHCP, the rules discussed in Section 5.3.1 of [RFC8106] MUST be followed.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -93402,18 +93401,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-PolicyPlanningFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -93426,9 +93425,9 @@
       "rfc": "RFC9463",
       "title": "Use default trust anchors unless explicit trust anchors are configured",
       "statement": "The DNS client MUST use the default system or application PKI trust anchors unless configured otherwise to use explicit trust anchors.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -93438,18 +93437,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-PolicyPlanningFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
