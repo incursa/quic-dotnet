@@ -154,6 +154,7 @@ internal sealed class QuicPacketProtectionCryptoContext : IDisposable
         }
         catch (CryptographicException)
         {
+            QuicMetrics.RecordAeadOpenFailure(algorithm);
             return false;
         }
     }

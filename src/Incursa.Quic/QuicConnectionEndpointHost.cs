@@ -434,6 +434,8 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
     private void EmitUdpReceiveError(SocketException exception)
     {
+        QuicMetrics.RecordUdpError(QuicTlsRole.Client, "receive", exception.SocketErrorCode);
+
         if (!diagnosticsSink.IsEnabled)
         {
             return;
@@ -446,6 +448,8 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
     private void EmitUdpSendError(SocketException exception)
     {
+        QuicMetrics.RecordUdpError(QuicTlsRole.Client, "send", exception.SocketErrorCode);
+
         if (!diagnosticsSink.IsEnabled)
         {
             return;

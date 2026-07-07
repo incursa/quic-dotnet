@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Diagnostics.Metrics;
+using System.Net.Sockets;
 using Incursa.Quic.Http3;
 
 namespace Incursa.Quic.Tests;
@@ -67,6 +68,8 @@ public class MetricsTests
         QuicMetrics.RecordStreamLimitBlocked(QuicTlsRole.Server, bidirectional: false);
         QuicMetrics.RecordAntiAmplificationBlocked(QuicTlsRole.Server);
         QuicMetrics.RecordProbeTimeout(QuicTlsRole.Client, QuicPacketNumberSpace.Initial);
+        QuicMetrics.RecordAeadOpenFailure(QuicAeadAlgorithm.Aes128Gcm);
+        QuicMetrics.RecordUdpError(QuicTlsRole.Server, "receive", SocketError.ConnectionReset);
         QuicMetrics.RecordRtt(QuicTlsRole.Client, 12_500);
 
         Assert.DoesNotContain(recorder.Measurements, measurement => measurement.HasAnyForbiddenTag());
@@ -79,6 +82,13 @@ public class MetricsTests
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.pto.count"
             && measurement.HasTag("packet_type", "initial"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.aead.open_failures"
+            && measurement.HasTag("algorithm", "aes-128-gcm"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.udp.errors"
+            && measurement.HasTag("direction", "receive")
+            && measurement.HasTag("socket_error", "connection_reset"));
     }
 
     [Fact]

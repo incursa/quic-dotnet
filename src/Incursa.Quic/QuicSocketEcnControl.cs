@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace Incursa.Quic;
 
@@ -18,6 +20,10 @@ internal static class QuicSocketEcnControl
         "packet information, which do not expose IP_TOS or IPV6_TCLASS ancillary ECN bits. Receive-side ECN count " +
         "promotion needs a native or control-message receive path before local interop proof can claim received IP " +
         "packet ECN metadata.";
+    private const int SupportUnknown = 0;
+    private const int SupportAvailable = 1;
+    private const int SupportUnavailable = -1;
+    private static readonly ConditionalWeakTable<Socket, EcnSocketOptionSupport> SocketOptionSupport = new();
 
     internal static QuicReceiveEcnMetadataCapability GetReceiveEcnMetadataCapability()
     {
@@ -47,15 +53,32 @@ internal static class QuicSocketEcnControl
             _ => 0,
         };
 
-        return TrySetSocketOption(socket, SocketOptionLevel.IP, typeOfService)
-            || TrySetSocketOption(socket, SocketOptionLevel.IPv6, typeOfService);
+        EcnSocketOptionSupport support = SocketOptionSupport.GetValue(socket, _ => new EcnSocketOptionSupport());
+        return socket.AddressFamily switch
+        {
+            AddressFamily.InterNetwork => TrySetSocketOption(socket, SocketOptionLevel.IP, typeOfService, support, ipv6: false),
+            AddressFamily.InterNetworkV6 => TrySetSocketOption(socket, SocketOptionLevel.IPv6, typeOfService, support, ipv6: true)
+                || TrySetSocketOption(socket, SocketOptionLevel.IP, typeOfService, support, ipv6: false),
+            _ => false,
+        };
     }
 
-    private static bool TrySetSocketOption(Socket socket, SocketOptionLevel level, int typeOfService)
+    private static bool TrySetSocketOption(
+        Socket socket,
+        SocketOptionLevel level,
+        int typeOfService,
+        EcnSocketOptionSupport support,
+        bool ipv6)
     {
+        if (support.GetState(ipv6) == SupportUnavailable)
+        {
+            return false;
+        }
+
         try
         {
             socket.SetSocketOption(level, SocketOptionName.TypeOfService, typeOfService);
+            support.MarkAvailable(ipv6);
             return true;
         }
         catch (ObjectDisposedException)
@@ -64,19 +87,60 @@ internal static class QuicSocketEcnControl
         }
         catch (PlatformNotSupportedException)
         {
+            support.MarkUnavailable(ipv6);
             return false;
         }
         catch (SocketException)
         {
+            support.MarkUnavailable(ipv6);
             return false;
         }
         catch (NotSupportedException)
         {
+            support.MarkUnavailable(ipv6);
             return false;
         }
         catch (ArgumentException)
         {
+            support.MarkUnavailable(ipv6);
             return false;
+        }
+    }
+
+    private sealed class EcnSocketOptionSupport
+    {
+        private int ip = SupportUnknown;
+        private int ipv6 = SupportUnknown;
+
+        public int GetState(bool ipv6)
+        {
+            return ipv6
+                ? Volatile.Read(ref this.ipv6)
+                : Volatile.Read(ref ip);
+        }
+
+        public void MarkAvailable(bool ipv6)
+        {
+            if (ipv6)
+            {
+                Volatile.Write(ref this.ipv6, SupportAvailable);
+            }
+            else
+            {
+                Volatile.Write(ref ip, SupportAvailable);
+            }
+        }
+
+        public void MarkUnavailable(bool ipv6)
+        {
+            if (ipv6)
+            {
+                Volatile.Write(ref this.ipv6, SupportUnavailable);
+            }
+            else
+            {
+                Volatile.Write(ref ip, SupportUnavailable);
+            }
         }
     }
 }

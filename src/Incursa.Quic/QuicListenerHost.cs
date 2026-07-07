@@ -399,6 +399,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 {
                     // Windows can surface ICMP errors from a prior UDP peer on the shared listener socket.
                     // Treat them as per-datagram noise so one closed peer does not stop unrelated connections.
+                    QuicMetrics.RecordUdpError(QuicTlsRole.Server, "receive", ex.SocketErrorCode);
                     continue;
                 }
 
@@ -718,8 +719,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         {
             return false;
         }
-        catch (SocketException)
+        catch (SocketException ex)
         {
+            QuicMetrics.RecordUdpError(QuicTlsRole.Server, "send", ex.SocketErrorCode);
             return false;
         }
     }
@@ -852,6 +854,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         {
             // A shared UDP listener cannot reliably map these ICMP errors back to a live managed
             // connection. Keep the endpoint alive so unrelated sequential accepts can finish.
+            QuicMetrics.RecordUdpError(QuicTlsRole.Server, "send", ex.SocketErrorCode);
         }
     }
 
@@ -1569,8 +1572,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         {
             return false;
         }
-        catch (SocketException)
+        catch (SocketException ex)
         {
+            QuicMetrics.RecordUdpError(QuicTlsRole.Server, "send", ex.SocketErrorCode);
             return false;
         }
 

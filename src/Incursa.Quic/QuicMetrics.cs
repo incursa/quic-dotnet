@@ -3,6 +3,7 @@
 
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Net.Sockets;
 
 namespace Incursa.Quic;
 
@@ -46,6 +47,8 @@ internal static class QuicMetrics
     private static readonly Counter<long> StreamLimitBlocked = Meter.CreateCounter<long>("incursa.quic.stream_limit.blocked", unit: "events");
     private static readonly Counter<long> AntiAmplificationBlocked = Meter.CreateCounter<long>("incursa.quic.anti_amplification.blocked", unit: "events");
     private static readonly Counter<long> ProbeTimeoutCount = Meter.CreateCounter<long>("incursa.quic.pto.count", unit: "events");
+    private static readonly Counter<long> AeadOpenFailures = Meter.CreateCounter<long>("incursa.quic.aead.open_failures", unit: "events");
+    private static readonly Counter<long> UdpErrors = Meter.CreateCounter<long>("incursa.quic.udp.errors", unit: "events");
     private static readonly Histogram<double> Rtt = Meter.CreateHistogram<double>("incursa.quic.rtt.ms", unit: "ms");
 
     internal static void RecordConnectionStarted(QuicTlsRole role)
@@ -199,6 +202,32 @@ internal static class QuicMetrics
         ProbeTimeoutCount.Add(1, in tags);
     }
 
+    internal static void RecordAeadOpenFailure(QuicAeadAlgorithm algorithm)
+    {
+        if (!AeadOpenFailures.Enabled)
+        {
+            return;
+        }
+
+        TagList tags = default;
+        tags.Add("algorithm", FormatAeadAlgorithm(algorithm));
+        AeadOpenFailures.Add(1, in tags);
+    }
+
+    internal static void RecordUdpError(QuicTlsRole role, string direction, SocketError socketError)
+    {
+        if (!UdpErrors.Enabled)
+        {
+            return;
+        }
+
+        TagList tags = default;
+        tags.Add("role", GetRoleTag(role));
+        tags.Add("direction", NormalizeUdpDirection(direction));
+        tags.Add("socket_error", NormalizeSocketError(socketError));
+        UdpErrors.Add(1, in tags);
+    }
+
     internal static void RecordRtt(QuicTlsRole role, ulong rttMicros)
     {
         if (!Rtt.Enabled)
@@ -251,6 +280,49 @@ internal static class QuicMetrics
             "retry" => "retry",
             "version_negotiation" => "version_negotiation",
             _ => UnknownPacketType,
+        };
+    }
+
+    private static string FormatAeadAlgorithm(QuicAeadAlgorithm algorithm)
+    {
+        return algorithm switch
+        {
+            QuicAeadAlgorithm.Aes128Gcm => "aes-128-gcm",
+            QuicAeadAlgorithm.Aes256Gcm => "aes-256-gcm",
+            QuicAeadAlgorithm.Aes128Ccm => "aes-128-ccm",
+            QuicAeadAlgorithm.Chacha20Poly1305 => "chacha20-poly1305",
+            _ => "unknown",
+        };
+    }
+
+    private static string NormalizeUdpDirection(string direction)
+    {
+        return direction switch
+        {
+            "receive" => "receive",
+            "send" => "send",
+            _ => "unknown",
+        };
+    }
+
+    private static string NormalizeSocketError(SocketError socketError)
+    {
+        return socketError switch
+        {
+            SocketError.ConnectionReset => "connection_reset",
+            SocketError.ConnectionAborted => "connection_aborted",
+            SocketError.ConnectionRefused => "connection_refused",
+            SocketError.TimedOut => "timed_out",
+            SocketError.MessageSize => "message_size",
+            SocketError.NetworkDown => "network_down",
+            SocketError.NetworkUnreachable => "network_unreachable",
+            SocketError.HostUnreachable => "host_unreachable",
+            SocketError.NoBufferSpaceAvailable => "no_buffer_space",
+            SocketError.Interrupted => "interrupted",
+            SocketError.OperationAborted => "operation_aborted",
+            SocketError.WouldBlock => "would_block",
+            SocketError.AccessDenied => "access_denied",
+            _ => "other",
         };
     }
 
