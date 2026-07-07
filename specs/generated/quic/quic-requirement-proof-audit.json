@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T18:05:49.7665522-06:00",
+    "generated_at": "2026-07-06T18:16:57.6136328-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 747,
-      "full_executable_proof": 1930
+      "deferred_proof_not_executed": 723,
+      "full_executable_proof": 1954
     },
     "by_rfc": [
       {
@@ -29,8 +29,7 @@
         "rfc": "RFC9001",
         "total": 96,
         "by_proof_state": {
-          "deferred_proof_not_executed": 24,
-          "full_executable_proof": 72
+          "full_executable_proof": 96
         }
       },
       {
@@ -39185,9 +39184,9 @@
       "rfc": "RFC9001",
       "title": "Send data as QUIC frames",
       "statement": "QUIC applications that want to send data MUST send it as QUIC STREAM frames or other frame types carried in QUIC packets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -39197,18 +39196,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0012.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0012.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -39221,9 +39220,9 @@
       "rfc": "RFC9001",
       "title": "Carry handshake data in CRYPTO frames",
       "statement": "QUIC MUST carry TLS handshake data in CRYPTO frames.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -39232,17 +39231,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0001.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0001.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0001.cs::RuntimeCarriesPeerHandshakeDataThroughCryptoFramesAndRejectsMalformedProgression"
@@ -39252,9 +39251,9 @@
       "rfc": "RFC9001",
       "title": "Define CRYPTO frame boundaries",
       "statement": "Each CRYPTO frame MUST consist of a contiguous block of handshake data identified by an offset and length.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -39266,18 +39265,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0002.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0002.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -39291,9 +39290,9 @@
       "rfc": "RFC9001",
       "title": "Package and encrypt CRYPTO frames",
       "statement": "Those frames MUST be packaged into QUIC packets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -39302,17 +39301,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0003.cs::RuntimeFormatsOutboundHandshakeCryptoBytesIntoProtectedHandshakePackets"
@@ -39322,9 +39321,9 @@
       "rfc": "RFC9001",
       "title": "Package and encrypt CRYPTO frames",
       "statement": "Those frames MUST be encrypted under the current encryption level.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "negative"
@@ -39333,17 +39332,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0004.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0004.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -39356,9 +39355,9 @@
       "rfc": "RFC9001",
       "title": "Deliver handshake data reliably",
       "statement": "Once TLS handshake data has been delivered to QUIC, QUIC MUST deliver it reliably.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -39367,17 +39366,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0005.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0005.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0005.cs::RuntimeOpensHandshakePacketsAndFeedsTheBridgeDriverWithCryptoBytes"
@@ -39387,9 +39386,9 @@
       "rfc": "RFC9001",
       "title": "Associate TLS-produced chunks with current keys",
       "statement": "Each chunk of data that is produced by TLS MUST be associated with the set of keys that TLS is currently using.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -39399,18 +39398,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0006.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0006.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -39423,9 +39422,9 @@
       "rfc": "RFC9001",
       "title": "Retransmit with the same keys",
       "statement": "If QUIC needs to retransmit that data, it MUST use the same keys even if TLS has already updated to newer keys.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -39434,17 +39433,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0007.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0007.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S4-0007.cs::RetransmissionPlansPreserveTheOriginalCryptoMetadata"
@@ -39883,9 +39882,9 @@
       "rfc": "RFC9001",
       "title": "Identify packet protection keys with Key Phase",
       "statement": "The Key Phase bit MUST indicate which packet protection keys are used to protect the packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -39894,6 +39893,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [
@@ -39901,13 +39901,12 @@
         "fuzz"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0002.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0002.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0002.cs::TryParseShortHeader_ReportsTheKeyPhaseBit"
@@ -39917,9 +39916,9 @@
       "rfc": "RFC9001",
       "title": "Initialize Key Phase to zero",
       "statement": "The Key Phase bit MUST initially be set to 0 for the first set of 1-RTT packets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -39931,18 +39930,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0003.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0003.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -39956,9 +39955,9 @@
       "rfc": "RFC9001",
       "title": "Toggle Key Phase on each update",
       "statement": "The Key Phase bit MUST be toggled to signal each subsequent key update.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -39968,18 +39967,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -39993,9 +39992,9 @@
       "rfc": "RFC9001",
       "title": "Initiate key updates with successor write secrets",
       "statement": "An endpoint MUST initiate a key update by updating its packet protection write secret and using that secret to protect new packets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -40004,17 +40003,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0001.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0001.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -40027,9 +40026,9 @@
       "rfc": "RFC9001",
       "title": "Keep header protection stable across key updates",
       "statement": "Key updates MUST NOT update the header protection key.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -40039,18 +40038,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0002.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0002.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -40063,9 +40062,9 @@
       "rfc": "RFC9001",
       "title": "Use updated keys for subsequent packets",
       "statement": "After initiating a key update, an endpoint MUST toggle the Key Phase bit and protect all subsequent packets with the updated key and IV.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -40074,17 +40073,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0003.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0003.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0003.cs::InitiatedKeyUpdateProtectsConsecutivePacketsWithUpdatedKeyIvAndKeyPhase"
@@ -40094,9 +40093,9 @@
       "rfc": "RFC9001",
       "title": "Retain old keys until new-key packet authentication succeeds",
       "statement": "An endpoint MUST retain old keys until it has successfully unprotected a packet sent with the new keys.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -40106,18 +40105,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0007.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0007.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -40131,9 +40130,9 @@
       "rfc": "RFC9001",
       "title": "Retain old keys after new-key packet authentication",
       "statement": "An endpoint SHOULD retain old keys for some time after it successfully unprotects a packet sent with the new keys.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -40144,17 +40143,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0008.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0008.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -40456,9 +40455,9 @@
       "rfc": "RFC9001",
       "title": "Keep repeated key-update epochs wider than the wire Key Phase bit",
       "statement": "While repeated 1-RTT key updates remain active, an endpoint MUST keep its internal key-update epoch identifier wide enough to advance beyond the 32-bit boundary without treating the one-bit packet Key Phase signal as the epoch counter.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -40467,17 +40466,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0007.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0007.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -40640,9 +40639,9 @@
       "rfc": "RFC9001",
       "title": "Carry QUIC transport parameters",
       "statement": "The TLS handshake MUST carry values for QUIC transport parameters.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -40651,6 +40650,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [
@@ -40658,13 +40658,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0001.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0001.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0001.cs::QuicTransportParametersCanBeCarriedThroughTheCodecAndCommitted"
@@ -40674,9 +40673,9 @@
       "rfc": "RFC9001",
       "title": "Authenticate QUIC transport parameters",
       "statement": "The TLS handshake MUST authenticate values for QUIC transport parameters.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -40686,18 +40685,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 4,
       "spec_test_refs": [
@@ -84551,9 +84550,9 @@
       "rfc": "RFC9001",
       "title": "Update receive keys when initiating a key update",
       "statement": "The endpoint that initiates a key update MUST also update the keys it uses for receiving packets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -84562,16 +84561,16 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-1-P7-S1-R01.cs"
       ],
       "spec_test_ref_count": 2,
@@ -85206,9 +85205,9 @@
       "rfc": "RFC9001",
       "title": "Allow key update after handshake confirmation",
       "statement": "Once the handshake is confirmed, an endpoint MAY initiate a key update.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -85218,17 +85217,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P1-S1-R01.cs"
       ],
       "spec_test_ref_count": 1,
@@ -85239,9 +85238,9 @@
       "rfc": "RFC9001",
       "title": "Let Key Phase detect key changes",
       "statement": "The Key Phase bit MUST allow a recipient to detect a change in keying material without needing to receive the first packet that triggered the change.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -85253,17 +85252,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P3-S1-R01.cs"
       ],
       "spec_test_ref_count": 3,
@@ -85278,9 +85277,9 @@
       "rfc": "RFC9001",
       "title": "Update keys when Key Phase changes",
       "statement": "An endpoint that notices a changed Key Phase bit MUST update keys.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -85290,17 +85289,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P3-S2-R01.cs"
       ],
       "spec_test_ref_count": 2,
@@ -85349,9 +85348,9 @@
       "rfc": "RFC9001",
       "title": "Update both endpoints on key update",
       "statement": "Initiating a key update MUST result in both endpoints updating keys.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -85361,17 +85360,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P4-S1-R01.cs"
       ],
       "spec_test_ref_count": 3,
