@@ -1,13 +1,12 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T21:11:26.3871145-06:00",
+    "generated_at": "2026-07-06T21:16:25.3216099-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 26,
-      "full_executable_proof": 2651
+      "full_executable_proof": 2677
     },
     "by_rfc": [
       {
@@ -140,8 +139,7 @@
         "rfc": "RFC9464",
         "total": 77,
         "by_proof_state": {
-          "deferred_proof_not_executed": 26,
-          "full_executable_proof": 51
+          "full_executable_proof": 77
         }
       },
       {
@@ -64613,9 +64611,9 @@
       "rfc": "RFC9464",
       "title": "Handle malformed attributes per RFC7296",
       "statement": "Badly formatted attributes or unacceptable fields MUST be handled as specified in Section 2.21 of [RFC7296].",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -64625,18 +64623,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -64649,9 +64647,9 @@
       "rfc": "RFC9464",
       "title": "Advertise encrypted DNS support in CFG_REQUEST",
       "statement": "The initiator MUST indicate support for encrypted DNS by including ENCDNS_IP* attributes in its CFG_REQUEST payloads.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -64661,18 +64659,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -64685,9 +64683,9 @@
       "rfc": "RFC9464",
       "title": "Provide encrypted DNS configuration in CFG_REPLY",
       "statement": "The responder MUST supply encrypted DNS configuration by including ENCDNS_IP* attributes in its CFG_REPLY payloads.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -64697,18 +64695,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -64721,9 +64719,9 @@
       "rfc": "RFC9464",
       "title": "Include ENCDNS_IP4 or ENCDNS_IP6 in CFG_REQUEST",
       "statement": "If the initiator supports encrypted DNS, it MUST include either or both of the ENCDNS_IP4 and ENCDNS_IP6 attributes in its CFG_REQUEST.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -64733,18 +64731,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -64757,9 +64755,9 @@
       "rfc": "RFC9464",
       "title": "Set Length to 0 when not requesting specific resolvers",
       "statement": "If the initiator does not want to request specific DNS resolvers, it MUST set the Length field to 0 for the attribute.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -64769,18 +64767,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -64793,9 +64791,9 @@
       "rfc": "RFC9464",
       "title": "Allow empty attribute or distinct resolver list",
       "statement": "For a given attribute type, the initiator MAY send either an empty attribute or a list of distinct suggested resolvers.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -64805,18 +64803,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -64829,9 +64827,9 @@
       "rfc": "RFC9464",
       "title": "Allow ENCDNS_DIGEST_INFO hash algorithm list",
       "statement": "The initiator MAY also include the ENCDNS_DIGEST_INFO attribute with a list of hash algorithms supported by the encrypted DNS client.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -64841,18 +64839,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -64865,9 +64863,9 @@
       "rfc": "RFC9464",
       "title": "Require at least one IP address",
       "statement": "The list of IP addresses MUST include at least one IP address.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -64877,18 +64875,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -64901,9 +64899,9 @@
       "rfc": "RFC9464",
       "title": "Allow the responder to ignore suggested values",
       "statement": "The responder MAY ignore suggested values from the initiator, if any.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -64913,18 +64911,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -64937,9 +64935,9 @@
       "rfc": "RFC9464",
       "title": "Return multiple ENCDNS_IP attributes when needed",
       "statement": "Multiple instances of the same ENCDNS_IP* attribute MAY be returned if distinct ADNs or service parameters need to be assigned to the initiator.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -64949,18 +64947,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -64973,9 +64971,9 @@
       "rfc": "RFC9464",
       "title": "Present returned instances by service priority",
       "statement": "These instances MUST be presented to a local DNS client following their service priority, where a smaller service priority value indicates a higher preference.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -64985,18 +64983,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -65009,9 +65007,9 @@
       "rfc": "RFC9464",
       "title": "Optionally return digest info",
       "statement": "The responder MAY return the ENCDNS_DIGEST_INFO attribute to convey a digest of the encrypted DNS certificate and the identifier of the hash algorithm used to generate the digest.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -65021,18 +65019,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -65045,9 +65043,9 @@
       "rfc": "RFC9464",
       "title": "Use encrypted DNS resolvers when offered",
       "statement": "If the initiator receives both ENCDNS_IP* and INTERNAL_IP6_DNS (or INTERNAL_IP4_DNS) attributes, it SHOULD use the encrypted DNS resolvers.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -65057,18 +65055,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -65081,9 +65079,9 @@
       "rfc": "RFC9464",
       "title": "Encrypted DNS session uses conveyed address",
       "statement": "The DNS client MUST establish an encrypted DNS session with the address or addresses conveyed in ENCDNS_IP*.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -65093,18 +65091,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -65117,9 +65115,9 @@
       "rfc": "RFC9464",
       "title": "Resolver certificate authentication uses RFC8310 Section 8 mechanisms",
       "statement": "The DNS client MUST use the mechanisms discussed in Section 8 of RFC 8310 to authenticate the DNS resolver certificate using the ADN conveyed in ENCDNS_IP*.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -65129,18 +65127,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -65153,9 +65151,9 @@
       "rfc": "RFC9464",
       "title": "Create an SPKI hash when digest info is present",
       "statement": "If the CFG_REPLY includes an ENCDNS_DIGEST_INFO attribute, the client MUST create an SPKI hash of the DNS resolver certificate received in the TLS handshake using the negotiated hash algorithm in the ENCDNS_DIGEST_INFO attribute.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -65165,18 +65163,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -65189,9 +65187,9 @@
       "rfc": "RFC9464",
       "title": "Validate the resolver certificate when the digest matches",
       "statement": "If the computed digest for an ADN matches the digest sent in the ENCDNS_DIGEST_INFO attribute, the client MUST consider the encrypted DNS resolver certificate successfully validated.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -65201,18 +65199,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -65225,9 +65223,9 @@
       "rfc": "RFC9464",
       "title": "Treat resolver certificate validation failure as non-recoverable",
       "statement": "If resolver certificate validation fails, the client MUST treat the failure as a non-recoverable error.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -65237,18 +65235,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -65261,9 +65259,9 @@
       "rfc": "RFC9464",
       "title": "Split-tunnel internal DNS resolution",
       "statement": "When the IPsec connection is a split-tunnel configuration and the initiator has negotiated INTERNAL_DNS_DOMAIN as specified in RFC 8598, the DNS client MUST resolve the internal names using the ENCDNS_IP* DNS resolvers.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -65273,18 +65271,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -65297,9 +65295,9 @@
       "rfc": "RFC9464",
       "title": "INTERNAL_DNS_DOMAIN may accompany ENCDNS_IP* without DNS attribute precondition",
       "statement": "If ENCDNS_IP* attributes are supplied, responders MAY include INTERNAL_DNS_DOMAIN even when INTERNAL_IP6_DNS or INTERNAL_IP4_DNS attributes are absent.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -65309,18 +65307,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -65369,9 +65367,9 @@
       "rfc": "RFC9464",
       "title": "Model encrypted DNS Configuration Payload exchange locally",
       "statement": "The encrypted DNS provisioning layer MUST provide a deterministic local Configuration Payload exchange planner that binds CFG_REQUEST support advertisements, CFG_REPLY response selection, and client resolver planning before any live IKEv2 transport or platform resolver integration.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -65383,19 +65381,19 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 5,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 6,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 5,
       "spec_test_refs": [
@@ -93945,9 +93943,9 @@
       "rfc": "RFC9464",
       "title": "Allow discarding requests with too many repeated attributes",
       "statement": "The responder MAY discard the full request if the count of repeated attributes exceeds an implementation-specific threshold.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -93957,18 +93955,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -93981,9 +93979,9 @@
       "rfc": "RFC9464",
       "title": "Ignore duplicate identical attributes after the first",
       "statement": "If the request includes multiple bitwise identical attributes, the responder SHOULD process only the first occurrence and ignore the rest.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -93993,18 +93991,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -94017,9 +94015,9 @@
       "rfc": "RFC9464",
       "title": "Return ENCDNS_IP* attributes when supported and allowed",
       "statement": "For each ENCDNS_IP* attribute from the CFG_REQUEST, if the responder supports the corresponding address family and there are no policy restrictions, the responder MUST send back one or more ENCDNS_IP* attributes in the CFG_REPLY with an appropriate list of IP addresses, service parameters, and an ADN.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -94029,18 +94027,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -94053,9 +94051,9 @@
       "rfc": "RFC9464",
       "title": "Prefer the alpn service parameter",
       "statement": "The service parameters SHOULD include at least the \"alpn\" service parameter.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -94065,18 +94063,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -94125,9 +94123,9 @@
       "rfc": "RFC9464",
       "title": "Disallow ENCDNS_IP* use after NULL authentication unless preconfigured",
       "statement": "If the IKEv2 responder has used the NULL Authentication method to authenticate itself, the initiator MUST NOT use returned ENCDNS_IP* resolvers configuration unless the initiator is preconfigured, e.g., in the operating system or the application.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -94137,18 +94135,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-PolicyExchangeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [

@@ -6,8 +6,7 @@ This report is stricter than trace coverage. It only counts focused executable m
 
 | Proof state | Count |
 | --- | ---: |
-| deferred_proof_not_executed | 26 |
-| full_executable_proof | 2651 |
+| full_executable_proof | 2677 |
 
 ## RFC Breakdown
 
@@ -31,36 +30,9 @@ This report is stricter than trace coverage. It only counts focused executable m
 | RFC9369 | 3 | 3 | 0 | 0 | 0 |
 | RFC9461 | 42 | 42 | 0 | 0 | 0 |
 | RFC9463 | 120 | 120 | 0 | 0 | 0 |
-| RFC9464 | 77 | 51 | 0 | 26 | 0 |
+| RFC9464 | 77 | 77 | 0 | 0 | 0 |
 | RFC9484 | 213 | 213 | 0 | 0 | 0 |
 
 ## First Non-Full-Proof Items
 
-| Requirement | RFC | Proof state | Missing required | Deferred missing |
-| --- | --- | --- | --- | --- |
-| `REQ-QUIC-RFC9464-0050` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0051` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0052` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0053` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0054` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0055` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0056` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0060` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0062` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0063` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0064` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0065` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0066` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0067` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0068` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0069` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0070` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0071` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0072` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0073` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9464-0077` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `RFC9464-S4-P3-2-S1-R01` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `RFC9464-S4-P4-S1-R01` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `RFC9464-S4-P5-S1-R01` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `RFC9464-S4-P5-S3-R01` | RFC9464 | deferred_proof_not_executed |  | fuzz |
-| `RFC9464-S6-P3-R01` | RFC9464 | deferred_proof_not_executed |  | fuzz |
+No non-full-proof items.
