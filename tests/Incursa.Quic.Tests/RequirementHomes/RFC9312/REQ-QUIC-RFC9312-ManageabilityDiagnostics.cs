@@ -221,6 +221,83 @@ public sealed class REQ_QUIC_RFC9312_ManageabilityDiagnostics
         await connection.DisposeAsync();
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9312-S2-0001")]
+    [Requirement("REQ-QUIC-RFC9312-S2-0002")]
+    [Requirement("REQ-QUIC-RFC9312-S3-0001")]
+    [Requirement("REQ-QUIC-RFC9312-S3-0002")]
+    [Requirement("REQ-QUIC-RFC9312-S4-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ManageabilityDiagnosticsExposeOnlySafeMetadataAcrossRepresentativeEvents()
+    {
+        QuicConnectionPathIdentity pathIdentity = CreatePath();
+        byte[][] datagrams =
+        [
+            [0x40, 0x00, 0x00, 0x00],
+            [0xC0, 0x00, 0x00, 0x00, 0x01, 0x08, 0x83, 0x94],
+            Enumerable.Range(0, 32).Select(value => (byte)(0xA0 + value)).ToArray(),
+        ];
+
+        foreach (byte[] datagram in datagrams)
+        {
+            QuicDiagnosticEvent[] events =
+            [
+                QuicDiagnostics.PacketHeaderObserved(
+                    pathIdentity,
+                    datagram,
+                    packetIndex: 0,
+                    packetOffset: 0,
+                    datagramLength: datagram.Length),
+                QuicDiagnostics.CoalescedDatagramReceived(
+                    pathIdentity,
+                    packetCount: 2,
+                    datagramLength: datagram.Length),
+                QuicDiagnostics.ConnectionIdIssued(7),
+                QuicDiagnostics.ConnectionIdRetired(7),
+                QuicDiagnostics.ConnectionIdUsedOnPath(pathIdentity, 7),
+                QuicDiagnostics.PathValidationChallengeSent(pathIdentity, 1),
+                QuicDiagnostics.PathValidationSucceeded(pathIdentity),
+                QuicDiagnostics.PathValidationFailed(pathIdentity),
+                QuicDiagnostics.PathValidationTimedOut(pathIdentity),
+                QuicDiagnostics.PathPromoted(pathIdentity, preserveRecoveryState: true),
+                QuicDiagnostics.IcmpPacketTooBigReceived(
+                    pathIdentity,
+                    maximumDatagramSizeBytes: 1280,
+                    accepted: true),
+                QuicDiagnostics.PmtuUpdated(
+                    pathIdentity,
+                    maximumDatagramSizeBytes: 1280,
+                    isProvisional: false),
+                QuicDiagnostics.UdpReceiveError("ConnectionReset", 10054),
+                QuicDiagnostics.UdpSendError("NetworkUnreachable", 10051),
+                QuicDiagnostics.AntiAmplificationBlocked(
+                    pathIdentity,
+                    attemptedBytes: 1200,
+                    remainingSendBudget: 400),
+                QuicDiagnostics.AcceptedStatelessReset(pathIdentity, connectionId: 4),
+                QuicDiagnostics.SpinBitUpdated(pathIdentity, spinBit: true),
+                QuicDiagnostics.ConnectionCloseStateChanged(
+                    QuicConnectionCloseOrigin.Remote,
+                    QuicConnectionPhase.Draining),
+            ];
+
+            foreach (QuicDiagnosticEvent diagnosticEvent in events)
+            {
+                Assert.True(diagnosticEvent.PacketBytes.IsEmpty);
+            }
+
+            QuicQlogDiagnosticsSink sink = EmitToQlog(events);
+            Assert.True(sink.Trace.Events.Count >= events.Length - 1);
+            QlogEventAssert.ContainsEvent(sink, "quic:packet_header_observed");
+            QlogEventAssert.ContainsEvent(sink, "quic:coalesced_datagram_received");
+            QlogEventAssert.ContainsEvent(sink, "quic:connection_id_issued");
+            QlogEventAssert.ContainsEvent(sink, "quic:path_validation_challenge_sent");
+            QlogEventAssert.ContainsEvent(sink, "quic:icmp_packet_too_big_received");
+            QlogEventAssert.ContainsEvent(sink, QlogQuicKnownValues.ConnectionClosedEventName);
+        }
+    }
+
     private static QuicQlogDiagnosticsSink EmitToQlog(params QuicDiagnosticEvent[] events)
     {
         QuicQlogDiagnosticsSink sink = new(isServer: false);

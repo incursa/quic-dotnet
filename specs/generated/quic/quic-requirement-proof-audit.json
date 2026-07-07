@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T18:24:20.6899620-06:00",
+    "generated_at": "2026-07-06T18:27:16.6214469-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 697,
-      "full_executable_proof": 1980
+      "deferred_proof_not_executed": 692,
+      "full_executable_proof": 1985
     },
     "by_rfc": [
       {
@@ -106,7 +106,7 @@
         "rfc": "RFC9312",
         "total": 5,
         "by_proof_state": {
-          "deferred_proof_not_executed": 5
+          "full_executable_proof": 5
         }
       },
       {
@@ -57640,9 +57640,9 @@
       "rfc": "RFC9312",
       "title": "Expose safe packet header visibility diagnostics",
       "statement": "Transport diagnostics MUST expose safe packet header form and packet-type metadata without logging protected payload bytes.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -57651,14 +57651,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9312/REQ-QUIC-RFC9312-ManageabilityDiagnostics.cs"
@@ -57671,9 +57670,9 @@
       "rfc": "RFC9312",
       "title": "Expose coalesced packet processing diagnostics",
       "statement": "Coalesced UDP datagram processing MUST expose safe packet-count diagnostics.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -57682,14 +57681,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9312/REQ-QUIC-RFC9312-ManageabilityDiagnostics.cs"
@@ -57702,9 +57700,9 @@
       "rfc": "RFC9312",
       "title": "Expose safe connection ID lifecycle diagnostics",
       "statement": "Connection ID issuance, retirement, and first path use MUST be observable without logging raw connection ID bytes or stateless reset tokens.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -57713,14 +57711,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9312/REQ-QUIC-RFC9312-ManageabilityDiagnostics.cs"
@@ -57733,9 +57730,9 @@
       "rfc": "RFC9312",
       "title": "Expose migration and path validation diagnostics",
       "statement": "NAT rebinding, migration, and path validation MUST emit safe diagnostics for challenge, success, failure, timeout, and path promotion state.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -57744,14 +57741,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9312/REQ-QUIC-RFC9312-ManageabilityDiagnostics.cs"
@@ -57767,9 +57763,9 @@
       "rfc": "RFC9312",
       "title": "Expose safe operational failure diagnostics",
       "statement": "PMTU, ICMP Packet Too Big, UDP error, anti-amplification, close, draining, stateless reset, and spin-bit diagnostics MUST expose only production-safe metadata.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -57778,14 +57774,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9312/REQ-QUIC-RFC9312-ManageabilityDiagnostics.cs"
