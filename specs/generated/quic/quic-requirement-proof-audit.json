@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T21:16:25.3216099-06:00",
+    "generated_at": "2026-07-06T21:54:45.8259424-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,

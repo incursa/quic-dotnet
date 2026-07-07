@@ -156,7 +156,7 @@ internal static class DoqStream
         return combined;
     }
 
-    private static DoqMessage DecodeExactlyOneMessage(ReadOnlySpan<byte> source)
+    internal static DoqMessage DecodeExactlyOneMessage(ReadOnlySpan<byte> source)
     {
         DoqMessage message = DoqMessageCodec.Decode(source, out int bytesConsumed);
         if (bytesConsumed != source.Length)

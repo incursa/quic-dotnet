@@ -73,8 +73,6 @@ public sealed class REQ_QUIC_RFC9250_0052_ProtocolErrors
     [Trait("Category", "Fuzz")]
     public void Fuzz_MalformedSingleMessageFramesFailWithDoqProtocolError()
     {
-        DecodeExactlyOneMessageDelegate decode = GetDecodeExactlyOneMessage();
-
         foreach ((byte[] source, string expectedMessageFragment) in new[]
         {
             ([0x00, 0x03, 0x01], "incomplete"),
@@ -82,7 +80,7 @@ public sealed class REQ_QUIC_RFC9250_0052_ProtocolErrors
             (Concat(DoqMessageCodec.Encode([0x00, 0x00, 0x55]), [0x56]), "more than one DNS message"),
         })
         {
-            DoqException exception = Assert.Throws<DoqException>(() => decode(source));
+            DoqException exception = Assert.Throws<DoqException>(() => DoqStream.DecodeExactlyOneMessage(source));
 
             Assert.Equal(DoqErrorCode.ProtocolError, exception.ErrorCode);
             Assert.Contains(expectedMessageFragment, exception.Message, StringComparison.OrdinalIgnoreCase);
@@ -374,16 +372,6 @@ public sealed class REQ_QUIC_RFC9250_0052_ProtocolErrors
         throw new InvalidOperationException("Unable to locate the repository root for the RFC 9250 DoQ protocol-error tests.");
     }
 
-    private static DecodeExactlyOneMessageDelegate GetDecodeExactlyOneMessage()
-    {
-        System.Reflection.MethodInfo method = typeof(DoqStream).GetMethod(
-            "DecodeExactlyOneMessage",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
-            ?? throw new InvalidOperationException("Unable to locate DoqStream.DecodeExactlyOneMessage.");
-
-        return method.CreateDelegate<DecodeExactlyOneMessageDelegate>();
-    }
-
     private static byte[] Concat(params byte[][] segments)
     {
         int length = segments.Sum(static segment => segment.Length);
@@ -465,5 +453,4 @@ public sealed class REQ_QUIC_RFC9250_0052_ProtocolErrors
         }
     }
 
-    private delegate DoqMessage DecodeExactlyOneMessageDelegate(ReadOnlySpan<byte> source);
 }
