@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T18:16:57.6136328-06:00",
+    "generated_at": "2026-07-06T18:20:54.3604559-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 723,
-      "full_executable_proof": 1954
+      "deferred_proof_not_executed": 700,
+      "full_executable_proof": 1977
     },
     "by_rfc": [
       {
@@ -21,8 +21,7 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 23,
-          "full_executable_proof": 1427
+          "full_executable_proof": 1450
         }
       },
       {
@@ -34268,9 +34267,9 @@
       "rfc": "RFC9000",
       "title": "Do not provide replay protection for 0-RTT",
       "statement": "0-RTT MUST NOT provide protection against replay attacks.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -34281,18 +34280,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5-0006.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5-0006.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -36204,9 +36203,9 @@
       "rfc": "RFC9000",
       "title": "Use handshake keys for 0-RTT and 1-RTT protection",
       "statement": "Keying material from the cryptographic handshake MUST be usable for packet protection for both 0-RTT and 1-RTT packets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -36215,19 +36214,19 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0020.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P8-S2-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P8-S2-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 4,
       "spec_test_refs": [
@@ -36242,9 +36241,9 @@
       "rfc": "RFC9000",
       "title": "Authenticate transport parameter exchange",
       "statement": "The cryptographic handshake MUST provide authenticated exchange of transport parameter values for both endpoints.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -36253,18 +36252,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0107.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -76915,9 +76914,9 @@
       "rfc": "RFC9000",
       "title": "Define interaction with prior extensions",
       "statement": "Such extensions SHOULD define their interaction with previously defined extensions modifying the same protocol components.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -76928,18 +76927,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-21-P3-S1-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-21-P3-S1-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -76953,9 +76952,9 @@
       "rfc": "RFC9000",
       "title": "Extension frames are congestion controlled",
       "statement": "Extension frames MUST be congestion controlled.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -76966,18 +76965,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-21-P4-S1-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-21-P4-S1-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -76991,9 +76990,9 @@
       "rfc": "RFC9000",
       "title": "Extension frames trigger ACK generation",
       "statement": "Extension frames MUST cause an ACK frame to be sent.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -77004,18 +77003,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-21-P4-S1-R02.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-21-P4-S1-R02.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -77329,9 +77328,9 @@
       "rfc": "RFC9000",
       "title": "To defend against this style of denial of service, endpoints that share a static key for stat...",
       "statement": "To defend against this style of denial of service, endpoints that share a static key for stateless resets (see Section 10.3.2) MUST be arranged so that packets with a given connection ID always arrive at an instance that has connection state, unless that connection is no longer active.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -77341,18 +77340,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-11-P2-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-11-P2-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-11-P2-R01.cs::RequirementStatement_UsesStaticKeyInstancePlacementForStatelessResetProtection"
@@ -77362,9 +77361,9 @@
       "rfc": "RFC9000",
       "title": "More generally, servers MUST NOT generate a stateless reset if a connection with the correspo...",
       "statement": "More generally, servers MUST NOT generate a stateless reset if a connection with the corresponding connection ID could be active on any endpoint using the same static key.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -77376,18 +77375,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-11-P3-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-11-P3-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-11-P3-R01.cs::RequirementStatement_PreventsStatelessResetWhenAnySharedKeyEndpointCouldStillOwnTheConnection"
@@ -77397,9 +77396,9 @@
       "rfc": "RFC9000",
       "title": "Servers SHOULD provide mitigations for this attack by limiting the usage and lifetime of addr...",
       "statement": "Servers SHOULD provide mitigations for this attack by limiting the usage and lifetime of address validation tokens; see Section 8.1.3.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -77409,19 +77408,19 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0012.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-3-P3-S2-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-3-P3-S2-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -77501,26 +77500,26 @@
       "rfc": "RFC9000",
       "title": "Optionally prevent connection attempts or migration to a loopback address",
       "statement": "Endpoints MAY prevent connection attempts or migration to a loopback address.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-5-6-P2-S1-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-5-6-P2-S1-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-5-6-P2-S1-R01.cs::ConnectAsync_AllowsLoopbackConnectionAttemptsFromTheClientRole"
@@ -77530,9 +77529,9 @@
       "rfc": "RFC9000",
       "title": "Do not allow loopback connections or migration after prior non-loopback exposure",
       "statement": "Endpoints SHOULD NOT allow connections or migration to a loopback address if the same service was previously available at a different interface or if the address was provided by a service at a non-loopback address.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -77544,18 +77543,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-5-6-P2-S2-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-5-6-P2-S2-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -77569,9 +77568,9 @@
       "rfc": "RFC9000",
       "title": "Do not refuse an address without network-specific safety knowledge",
       "statement": "Endpoints SHOULD NOT refuse to use an address unless they have specific knowledge about the network indicating that sending datagrams to unvalidated addresses in a given range is not safe.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -77583,18 +77582,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-5-6-P3-S3-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-5-6-P3-S3-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -77673,9 +77672,9 @@
       "rfc": "RFC9000",
       "title": "Retire problematic connection IDs before use",
       "statement": "Endpoints MAY retire connection IDs containing patterns known to be problematic without using them.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
@@ -77683,18 +77682,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-5-6-P5-S4-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-5-6-P5-S4-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -77742,9 +77741,9 @@
       "rfc": "RFC9000",
       "title": "Define forgery countermeasures for server migration extensions",
       "statement": "Any future extension that allows server migration MUST also define countermeasures for forgery attacks.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -77755,18 +77754,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-5-P8-S2-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-5-P8-S2-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -77780,9 +77779,9 @@
       "rfc": "RFC9000",
       "title": "QUIC deployments SHOULD provide mitigations for the Slowloris attacks, such as increasing the...",
       "statement": "QUIC deployments SHOULD provide mitigations for the Slowloris attacks, such as increasing the maximum number of clients the server will allow, limiting the number of connections a single IP address is allowed to make, imposing restrictions on the minimum transfer speed a connection is allowed to have, and restricting the length of time an endpoint is allowed to stay connected.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -77794,18 +77793,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-6-P2-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-6-P2-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -77819,9 +77818,9 @@
       "rfc": "RFC9000",
       "title": "Provide stream fragmentation mitigations",
       "statement": "QUIC deployments SHOULD provide mitigations for stream fragmentation attacks.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -77831,18 +77830,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-7-P4-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-7-P4-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -77975,9 +77974,9 @@
       "rfc": "RFC9000",
       "title": "Allow contiguous ranges for multi-codepoint requests",
       "statement": "Requests for multiple codepoints MAY use a contiguous range.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -77987,18 +77986,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-2-P1-S1-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-2-P1-S1-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -78038,9 +78037,9 @@
       "rfc": "RFC9000",
       "title": "Allow requested codepoint values in registration applications",
       "statement": "Applications to register codepoints in QUIC registries MAY include a requested codepoint as part of the registration.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -78050,18 +78049,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-2-P4-S1-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-2-P4-S1-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -78101,9 +78100,9 @@
       "rfc": "RFC9000",
       "title": "Review codepoint removal requests",
       "statement": "A request to remove a codepoint MUST be reviewed by the designated experts.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -78113,18 +78112,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-3-P2-S1-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-3-P2-S1-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -78137,9 +78136,9 @@
       "rfc": "RFC9000",
       "title": "Determine whether codepoints remain in use",
       "statement": "The experts MUST attempt to determine whether the codepoint is still in use.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -78149,18 +78148,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-3-P2-S2-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-3-P2-S2-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -78173,9 +78172,9 @@
       "rfc": "RFC9000",
       "title": "Do not reclaim codepoints when use is identified",
       "statement": "If any use of the codepoints is identified by this search or a request to update the registration is made, the codepoint MUST NOT be reclaimed.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -78185,18 +78184,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-3-P3-S1-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-3-P3-S1-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -78209,9 +78208,9 @@
       "rfc": "RFC9000",
       "title": "Allow removal when no use is identified",
       "statement": "If no use of the codepoint was identified and no request was made to update the registration, the codepoint MAY be removed from the registry.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -78221,18 +78220,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-3-P4-S1-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-3-P4-S1-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -78272,9 +78271,9 @@
       "rfc": "RFC9000",
       "title": "Make Standards Track registrations permanent",
       "statement": "All registrations made by Standards Track publications MUST be permanent.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -78284,18 +78283,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-4-P4-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-4-P4-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-TailDeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
