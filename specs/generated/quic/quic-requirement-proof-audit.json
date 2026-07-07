@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T20:22:03.6951092-06:00",
+    "generated_at": "2026-07-06T20:27:53.8277549-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 239,
-      "full_executable_proof": 2438
+      "deferred_proof_not_executed": 227,
+      "full_executable_proof": 2450
     },
     "by_rfc": [
       {
@@ -91,8 +91,8 @@
         "rfc": "RFC9298",
         "total": 116,
         "by_proof_state": {
-          "deferred_proof_not_executed": 37,
-          "full_executable_proof": 79
+          "deferred_proof_not_executed": 25,
+          "full_executable_proof": 91
         }
       },
       {
@@ -55104,9 +55104,9 @@
       "rfc": "RFC9298",
       "title": "Use the Capsule Protocol for UDP tunnels",
       "statement": "UDP tunnels MUST use the Capsule Protocol.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -55116,6 +55116,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -55123,13 +55124,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RequestPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -55142,9 +55142,9 @@
       "rfc": "RFC9298",
       "title": "Initiate a UDP tunnel with the connect-udp token",
       "statement": "A client MUST issue a request containing the `connect-udp` upgrade token to initiate a UDP tunnel associated with a single HTTP stream.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -55154,6 +55154,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -55161,13 +55162,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RequestPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -55558,9 +55558,9 @@
       "rfc": "RFC9298",
       "title": "Requests carry no message content",
       "statement": "UDP proxying requests MUST NOT carry any message content.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -55570,6 +55570,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -55577,13 +55578,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RequestPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -55596,9 +55596,9 @@
       "rfc": "RFC9298",
       "title": "Successful responses carry no message content",
       "statement": "Successful UDP proxying responses MUST NOT carry any message content.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -55608,6 +55608,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -55615,13 +55616,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RequestPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -56379,9 +56379,9 @@
       "rfc": "RFC9298",
       "title": "Set :method to CONNECT",
       "statement": "The :method pseudo-header field MUST be \"CONNECT\".",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56391,6 +56391,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56398,13 +56399,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RequestPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -56417,9 +56417,9 @@
       "rfc": "RFC9298",
       "title": "Set :protocol to connect-udp",
       "statement": "The :protocol pseudo-header field MUST be \"connect-udp\".",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56429,6 +56429,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56436,13 +56437,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RequestPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -56455,9 +56455,9 @@
       "rfc": "RFC9298",
       "title": "Set :authority to the UDP proxy authority",
       "statement": "The :authority pseudo-header field MUST contain the authority of the UDP proxy.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56467,6 +56467,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56474,13 +56475,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RequestPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -56493,9 +56493,9 @@
       "rfc": "RFC9298",
       "title": "Require non-empty :path and :scheme",
       "statement": "The :path and :scheme pseudo-header fields MUST NOT be empty.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56505,6 +56505,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56512,13 +56513,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RequestPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -56531,9 +56531,9 @@
       "rfc": "RFC9298",
       "title": "Populate :path and :scheme from the URI Template",
       "statement": "Their values MUST contain the scheme and path from the URI Template after URI Template expansion completes.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56543,6 +56543,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56550,13 +56551,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RequestPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -56569,9 +56569,9 @@
       "rfc": "RFC9298",
       "title": "Response status code in 2xx range",
       "statement": "The HTTP status code on the response MUST be in the 2xx (Successful) range.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56581,6 +56581,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56588,13 +56589,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RequestPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -56607,9 +56607,9 @@
       "rfc": "RFC9298",
       "title": "Meet Capsule Protocol response requirements",
       "statement": "The response MUST meet the requirements of HTTP responses that start the Capsule Protocol; see Section 3.2 of [HTTP-DGRAM].",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56619,6 +56619,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56626,13 +56627,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RequestPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -56646,9 +56646,9 @@
       "rfc": "RFC9298",
       "title": "Abort failed proxying attempts",
       "statement": "If any of these requirements are not met, the client MUST treat this proxying attempt as failed and abort the request.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56658,6 +56658,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56665,13 +56666,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RequestPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
