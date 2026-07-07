@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T20:10:57.6723345-06:00",
+    "generated_at": "2026-07-06T20:14:45.8279532-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 290,
-      "full_executable_proof": 2387
+      "deferred_proof_not_executed": 268,
+      "full_executable_proof": 2409
     },
     "by_rfc": [
       {
@@ -91,8 +91,8 @@
         "rfc": "RFC9298",
         "total": 116,
         "by_proof_state": {
-          "deferred_proof_not_executed": 88,
-          "full_executable_proof": 28
+          "deferred_proof_not_executed": 66,
+          "full_executable_proof": 50
         }
       },
       {
@@ -56685,9 +56685,9 @@
       "rfc": "RFC9298",
       "title": "Allow any allocation order for Context IDs",
       "statement": "Context IDs MAY be allocated in any order.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56697,6 +56697,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56704,13 +56705,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_AllowsAnyAllocationOrder tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_DoesNotRequireMonotonicAllocationOrder"
@@ -56720,9 +56720,9 @@
       "rfc": "RFC9298",
       "title": "Allow allocated Context IDs to be used by any client or UDP proxy",
       "statement": "Once a Context ID has been allocated, any client or UDP proxy MAY use it regardless of which endpoint initially allocated it.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56732,6 +56732,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56739,13 +56740,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_AllocatedContextIdsAreUsableByEitherEndpoint tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_UnknownNonZeroContextIdsAreNotUsable"
@@ -56755,9 +56755,9 @@
       "rfc": "RFC9298",
       "title": "Context ID follows Quarter Stream ID in QUIC DATAGRAM frames",
       "statement": "When HTTP Datagrams are encoded using QUIC DATAGRAM frames, the Context ID field MUST directly follow the Quarter Stream ID field.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56767,6 +56767,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56774,13 +56775,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPayload_ContextIdFollowsQuarterStreamIdInHttp3Datagram tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPayload_RejectsHttp3DatagramWithoutContextIdAfterQuarterStreamId"
@@ -56790,9 +56790,9 @@
       "rfc": "RFC9298",
       "title": "UDP Proxying HTTP Datagram Payload layout",
       "statement": "The UDP Proxying HTTP Datagram Payload MUST contain a Context ID field followed by a UDP Proxying Payload field.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56802,6 +56802,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56809,13 +56810,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPayload_StartsWithContextIdBeforePayload tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPayload_RejectsMissingContextId"
@@ -56825,9 +56825,9 @@
       "rfc": "RFC9298",
       "title": "Prohibit oversized HTTP Datagrams",
       "statement": "Endpoints MUST NOT send HTTP Datagrams with a UDP Proxying Payload longer than 65527 bytes when Context ID is zero.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56837,6 +56837,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56844,13 +56845,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::UdpPayload_AllowsMaximumLegalPayloadLength tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::UdpPayload_RejectsOversizedContextIdZeroPayloadsWithDatagramError"
@@ -56860,9 +56860,9 @@
       "rfc": "RFC9298",
       "title": "Abort streams for oversized received datagrams",
       "statement": "An endpoint that receives an HTTP Datagram with Context ID zero and a UDP Proxying Payload longer than 65527 bytes MUST abort the corresponding stream.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56872,6 +56872,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56879,13 +56880,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::UdpPayload_AllowsMaximumLegalPayloadLength tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::UdpPayload_RejectsOversizedContextIdZeroPayloadsWithDatagramError"
@@ -56895,9 +56895,9 @@
       "rfc": "RFC9298",
       "title": "Discard oversized datagrams when MTU is known",
       "statement": "A UDP proxy that knows its outgoing UDP packet length is limited by the underlying link MTU MUST discard incoming HTTP Datagrams with Context ID zero and a UDP Proxying Payload longer than that limit.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56907,6 +56907,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56914,13 +56915,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPolicy_DiscardsPayloadsLargerThanKnownOutgoingLimit tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPolicy_ForwardsPayloadsWithinKnownOutgoingLimit"
@@ -56930,9 +56930,9 @@
       "rfc": "RFC9298",
       "title": "Discard DATAGRAM capsules for discarded datagrams",
       "statement": "If the discarded HTTP Datagram was transported by a DATAGRAM capsule, the receiver SHOULD discard the capsule without buffering its contents.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56942,6 +56942,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56949,13 +56950,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPolicy_DiscardsDatagramCapsuleWhenCarriedDatagramIsDiscarded tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPolicy_DoesNotApplyCapsuleDiscardPolicyToNonCapsuleTransport"
@@ -91674,9 +91674,9 @@
       "rfc": "RFC9298",
       "title": "Start HTTP Datagrams with Context ID",
       "statement": "All HTTP Datagrams associated with UDP Proxying request streams MUST start with a Context ID field.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -91686,6 +91686,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -91693,13 +91694,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPayload_StartsWithContextIdBeforePayload tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPayload_RejectsMissingContextId"
@@ -91709,9 +91709,9 @@
       "rfc": "RFC9298",
       "title": "Use 62-bit Context IDs",
       "statement": "Context IDs MUST be 62-bit integers in the range 0 to 2^62-1.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -91721,6 +91721,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -91728,13 +91729,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_AllowsLargestSixtyTwoBitValue tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_RejectsValuesBeyondSixtyTwoBits"
@@ -91744,9 +91744,9 @@
       "rfc": "RFC9298",
       "title": "Encode Context IDs as varints",
       "statement": "Context IDs MUST be encoded as variable-length integers; see Section 16 of [QUIC].",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -91756,6 +91756,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -91763,13 +91764,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_IsEncodedAsVariableLengthInteger tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_RejectsTruncatedVariableLengthInteger"
@@ -91779,9 +91779,9 @@
       "rfc": "RFC9298",
       "title": "Dynamically allocate non-zero Context IDs",
       "statement": "Non-zero Context ID values MUST be dynamically allocated.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -91791,6 +91791,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -91798,13 +91799,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_AllocatesDynamicNonZeroContextIds tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_RejectsDynamicAllocationOfContextIdZero"
@@ -91814,9 +91814,9 @@
       "rfc": "RFC9298",
       "title": "Reserve Context ID 0 for UDP payloads",
       "statement": "The Context ID value of 0 MUST be reserved for UDP payloads.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -91826,6 +91826,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -91833,13 +91834,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_AllocatesDynamicNonZeroContextIds tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_RejectsDynamicAllocationOfContextIdZero"
@@ -91849,9 +91849,9 @@
       "rfc": "RFC9298",
       "title": "Allocate even-numbered Context IDs on the client",
       "statement": "Non-zero even-numbered Context IDs MUST be client-allocated.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -91861,6 +91861,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -91868,13 +91869,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ClientAllocatesEvenContextIds tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ClientRejectsOddContextIds"
@@ -91884,9 +91884,9 @@
       "rfc": "RFC9298",
       "title": "Allocate odd-numbered Context IDs on the proxy",
       "statement": "Odd-numbered Context IDs MUST be proxy-allocated.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -91896,6 +91896,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -91903,13 +91904,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ProxyAllocatesOddContextIds tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ProxyRejectsEvenContextIds"
@@ -91919,9 +91919,9 @@
       "rfc": "RFC9298",
       "title": "Do not re-allocate Context IDs in a namespace",
       "statement": "Context IDs MUST NOT be re-allocated within a given HTTP namespace.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -91931,6 +91931,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -91938,13 +91939,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_AllowsDistinctContextIds tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_RejectsReallocationInsideOneRequestNamespace"
@@ -91954,9 +91954,9 @@
       "rfc": "RFC9298",
       "title": "Scope Context IDs per HTTP request",
       "statement": "The Context ID namespace MUST be tied to a given HTTP request.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -91966,6 +91966,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -91973,13 +91974,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ScopesContextIdsPerRequestNamespace tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_RejectsReallocationInsideOneRequestNamespace"
@@ -91989,9 +91989,9 @@
       "rfc": "RFC9298",
       "title": "Permit future Context ID registration mechanisms",
       "statement": "Future extensions MAY use HTTP header fields or capsules to register Context IDs.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92001,6 +92001,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -92008,13 +92009,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPolicy_AllowsFutureHeaderOrCapsuleRegistrationMechanisms tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPolicy_DoesNotTreatAbsentExtensionSignalAsRegistrationMechanism"
@@ -92024,9 +92024,9 @@
       "rfc": "RFC9298",
       "title": "Unknown Context ID handling",
       "statement": "If an HTTP/3 Datagram carrying an unknown Context ID is received, the receiver SHALL either drop it silently or buffer it temporarily for about a round trip while awaiting registration of the corresponding Context ID.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92036,6 +92036,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -92043,13 +92044,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPolicy_UnknownContextIdCanBeBufferedTemporarily tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPolicy_UnknownContextIdDropsSilentlyWhenBufferUnavailable"
@@ -92059,9 +92059,9 @@
       "rfc": "RFC9298",
       "title": "UDP packets use Context ID zero",
       "statement": "UDP packets MUST be encoded using HTTP Datagrams with Context ID zero.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92071,6 +92071,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -92078,13 +92079,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::UdpPayload_UsesContextIdZeroAndCarriesUnmodifiedPayload tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::UdpPayload_NonZeroContextIdIsNotReservedForUdpPackets"
@@ -92094,9 +92094,9 @@
       "rfc": "RFC9298",
       "title": "Context ID zero carries unmodified UDP payload",
       "statement": "When Context ID is zero, the UDP Proxying Payload field MUST contain the unmodified payload of a UDP packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92106,6 +92106,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -92113,13 +92114,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::UdpPayload_UsesContextIdZeroAndCarriesUnmodifiedPayload tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::UdpPayload_NonZeroContextIdIsNotReservedForUdpPackets"
@@ -92129,9 +92129,9 @@
       "rfc": "RFC9298",
       "title": "UDP Proxying Payload may be empty",
       "statement": "The UDP Proxying Payload field MAY be empty.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92141,6 +92141,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -92148,13 +92149,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPayload_AllowsEmptyUdpProxyingPayload tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPayload_RejectsNullPayload"
