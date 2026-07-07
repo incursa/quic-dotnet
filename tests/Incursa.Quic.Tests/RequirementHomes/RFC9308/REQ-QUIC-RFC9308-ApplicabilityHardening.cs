@@ -243,8 +243,306 @@ public sealed class REQ_QUIC_RFC9308_ApplicabilityHardening
         Assert.DoesNotContain(result.Effects, static effect => effect is QuicConnectionPromoteActivePathEffect);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9308-S3P1-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_PublicApplicationZeroRttProfileRemainsUnavailableAcrossPublicOptions()
+    {
+        Type[] optionTypes =
+        [
+            typeof(QuicClientConnectionOptions),
+            typeof(QuicServerConnectionOptions),
+            typeof(Http3ClientOptions),
+            typeof(Http3ServerOptions),
+        ];
+
+        foreach (Type optionType in optionTypes)
+        {
+            string[] publicMemberNames =
+            [
+                .. optionType.GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(static property => property.Name),
+                .. optionType.GetFields(BindingFlags.Instance | BindingFlags.Public).Select(static field => field.Name),
+                .. optionType.GetMethods(BindingFlags.Instance | BindingFlags.Public).Select(static method => method.Name),
+            ];
+
+            Assert.DoesNotContain(publicMemberNames, static name => name.Contains("ZeroRtt", StringComparison.OrdinalIgnoreCase));
+            Assert.DoesNotContain(publicMemberNames, static name => name.Contains("EarlyData", StringComparison.OrdinalIgnoreCase));
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9308-S3P2-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_GuidanceKeepsKeepAliveSeparateFromResumptionAndZeroRtt()
+    {
+        string guidance = ReadGuidance();
+
+        foreach (string phrase in new[]
+        {
+            "Keep-Alive Versus Resumption",
+            "not TLS session resumption",
+            "do not authorize 0-RTT application data",
+        })
+        {
+            Assert.Contains(phrase, guidance, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9308-S4P1-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ApplicationStreamMappingPreservesRolesAndMessageBoundaries()
+    {
+        foreach ((ulong StreamId, Http3EndpointRole Role, Http3StreamKind ExpectedKind) streamCase in new[]
+        {
+            (0UL, Http3EndpointRole.Server, Http3StreamKind.Request),
+            (4UL, Http3EndpointRole.Server, Http3StreamKind.Request),
+            (2UL, Http3EndpointRole.Server, Http3StreamKind.Control),
+            (6UL, Http3EndpointRole.Server, Http3StreamKind.QPackEncoder),
+            (10UL, Http3EndpointRole.Server, Http3StreamKind.QPackDecoder),
+        })
+        {
+            Http3StreamDispatcher dispatcher = new(streamCase.Role);
+            Http3StreamInfo info;
+            if ((streamCase.StreamId & 0x02UL) == 0)
+            {
+                info = dispatcher.RegisterBidirectionalStream(streamCase.StreamId);
+            }
+            else
+            {
+                dispatcher.RegisterUnidirectionalStream(streamCase.StreamId);
+                ulong streamType = streamCase.ExpectedKind switch
+                {
+                    Http3StreamKind.Control => (ulong)Http3StreamType.Control,
+                    Http3StreamKind.QPackEncoder => (ulong)Http3StreamType.QPackEncoder,
+                    Http3StreamKind.QPackDecoder => (ulong)Http3StreamType.QPackDecoder,
+                    _ => throw new InvalidOperationException("Unexpected unidirectional stream kind."),
+                };
+                info = dispatcher.ReceiveUnidirectionalStreamTypeBytes(streamCase.StreamId, EncodeVarint(streamType));
+            }
+
+            Assert.Equal(streamCase.ExpectedKind, info.Kind);
+        }
+
+        Http3RequestMessageValidator validator = new();
+        validator.ReceiveHeaders(
+        [
+            new QPackFieldLine(":method", "POST"),
+            new QPackFieldLine(":scheme", "https"),
+            new QPackFieldLine(":authority", "example.com"),
+            new QPackFieldLine(":path", "/upload"),
+            new QPackFieldLine("content-length", "4"),
+        ]);
+        validator.ReceiveData(2);
+        validator.ReceiveData(2);
+        validator.Complete();
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9308-S4P4-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_FlowControlBlockedSendPreservesStreamStateAndEmitsDiagnostics()
+    {
+        foreach ((ulong ConnectionLimit, ulong StreamLimit, ulong AttemptedLength) flowCase in new[]
+        {
+            (4UL, 16UL, 8UL),
+            (8UL, 4UL, 12UL),
+            (32UL, 16UL, 24UL),
+        })
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                connectionSendLimit: flowCase.ConnectionLimit,
+                peerBidirectionalStreamLimit: 1,
+                localBidirectionalSendLimit: flowCase.StreamLimit);
+            Assert.True(state.TryOpenLocalStream(
+                bidirectional: true,
+                out QuicStreamId streamId,
+                out QuicStreamsBlockedFrame openBlockedFrame));
+            Assert.Equal(default, openBlockedFrame);
+
+            Assert.False(state.TryReserveSendCapacity(
+                streamId.Value,
+                offset: 0,
+                length: checked((int)flowCase.AttemptedLength),
+                fin: false,
+                out QuicDataBlockedFrame dataBlockedFrame,
+                out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+                out QuicTransportErrorCode errorCode));
+
+            Assert.Equal(default, errorCode);
+            Assert.True(dataBlockedFrame.MaximumData != 0 || streamDataBlockedFrame.MaximumStreamData != 0);
+            Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
+            Assert.Equal(0UL, snapshot.UniqueBytesSent);
+
+            QuicDiagnosticEvent diagnosticEvent = !streamDataBlockedFrame.Equals(default(QuicStreamDataBlockedFrame))
+                ? QuicDiagnostics.FlowControlBlocked(streamDataBlockedFrame)
+                : QuicDiagnostics.FlowControlBlocked(new QuicStreamDataBlockedFrame(streamId.Value, dataBlockedFrame.MaximumData));
+            QuicQlogDiagnosticsSink sink = new(isServer: false);
+            sink.Emit(diagnosticEvent);
+            QlogEventAssert.ContainsEvent(sink, "quic:flow_control_blocked");
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9308-S4P5-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_StreamLimitBlockedOpenPreservesStateAndEmitsDiagnostics()
+    {
+        foreach ((bool Bidirectional, ulong Limit) streamCase in new[]
+        {
+            (true, 0UL),
+            (false, 0UL),
+        })
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                peerBidirectionalStreamLimit: streamCase.Bidirectional ? streamCase.Limit : 1,
+                peerUnidirectionalStreamLimit: streamCase.Bidirectional ? 1 : streamCase.Limit);
+
+            Assert.False(state.TryOpenLocalStream(
+                streamCase.Bidirectional,
+                out QuicStreamId blockedStreamId,
+                out QuicStreamsBlockedFrame blockedFrame));
+
+            Assert.Equal(default, blockedStreamId);
+            Assert.Equal(streamCase.Bidirectional, blockedFrame.IsBidirectional);
+            Assert.Equal(streamCase.Limit, blockedFrame.MaximumStreams);
+            Assert.False(state.TryGetStreamSnapshot(0, out _));
+
+            QuicQlogDiagnosticsSink sink = new(isServer: false);
+            sink.Emit(QuicDiagnostics.StreamLimitBlocked(blockedFrame));
+            QlogEventAssert.ContainsEvent(sink, "quic:stream_limit_blocked");
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9308-S6-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task Fuzz_ApplicationCloseCodesStaySeparateFromTransportErrors()
+    {
+        foreach (ulong applicationErrorCode in new[] { 0UL, 1UL, 0x9308UL, 0xFFFF_FFFFUL })
+        {
+            QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+            QuicConnection connection = new(runtime, new TestQuicConnectionOptions());
+
+            await connection.CloseAsync(checked((long)applicationErrorCode));
+
+            Assert.True(runtime.TerminalState.HasValue);
+            Assert.Equal(applicationErrorCode, runtime.TerminalState.Value.Close.ApplicationErrorCode);
+            Assert.Null(runtime.TerminalState.Value.Close.TransportErrorCode);
+
+            await connection.DisposeAsync();
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9308-S9-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_MigrationCandidatesRemainUnpromotedUntilPathValidationSucceeds()
+    {
+        foreach (int portDelta in new[] { 1, 7, 31 })
+        {
+            QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+            Assert.True(runtime.ActivePath.HasValue);
+            QuicConnectionPathIdentity activePath = runtime.ActivePath.Value.Identity;
+            QuicConnectionPathIdentity reboundPath = activePath with
+            {
+                RemotePort = activePath.RemotePort + portDelta,
+            };
+
+            QuicConnectionTransitionResult candidateResult = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 10,
+                    reboundPath,
+                    new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+                nowTicks: 10);
+
+            Assert.True(candidateResult.StateChanged);
+            Assert.Equal(activePath, runtime.ActivePath.Value.Identity);
+            Assert.True(runtime.CandidatePaths.ContainsKey(reboundPath));
+            Assert.DoesNotContain(candidateResult.Effects, static effect => effect is QuicConnectionPromoteActivePathEffect);
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9308-S11-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_GuidanceKeepsConnectionIdPrivacyBoundaryLimited()
+    {
+        string guidance = ReadGuidance();
+
+        foreach (string phrase in new[]
+        {
+            "CID privacy/linkability",
+            "no broader timing-linkability guarantee",
+        })
+        {
+            Assert.Contains(phrase, guidance, StringComparison.OrdinalIgnoreCase);
+        }
+
+        Assert.DoesNotContain("eliminates timing linkability", guidance, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9308-S13-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_GuidanceKeepsVersionMechanismsSeparateFromRolloutPolicy()
+    {
+        string guidance = ReadGuidance();
+
+        foreach (string phrase in new[]
+        {
+            "Version negotiation",
+            "Deploying a new version",
+            "operator rollout plan",
+        })
+        {
+            Assert.Contains(phrase, guidance, StringComparison.Ordinal);
+        }
+
+        Assert.True(QuicVersionNegotiation.IsReservedVersion(0x0A0A0A0A));
+        Assert.False(QuicVersionNegotiation.IsReservedVersion(QuicVersionNegotiation.Version1));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9308-S15-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_GuidanceKeepsQuicDatagramSeparateFromHttpDatagramsAndMasque()
+    {
+        string guidance = ReadGuidance();
+
+        foreach (string phrase in new[]
+        {
+            "RFC 9221 transport floor",
+            "HTTP Datagrams",
+            "CONNECT-UDP",
+            "MASQUE",
+        })
+        {
+            Assert.Contains(phrase, guidance, StringComparison.Ordinal);
+        }
+
+        Assert.DoesNotContain("RFC 9221 implements MASQUE", guidance, StringComparison.OrdinalIgnoreCase);
+    }
+
     private sealed class TestQuicConnectionOptions : QuicConnectionOptions
     {
+    }
+
+    private static byte[] EncodeVarint(ulong value)
+    {
+        Span<byte> buffer = stackalloc byte[Http3VariableLengthInteger.MaxEncodedLength];
+        Assert.True(Http3VariableLengthInteger.TryFormat(value, buffer, out int bytesWritten));
+        return buffer[..bytesWritten].ToArray();
     }
 
     private static string ReadGuidance()

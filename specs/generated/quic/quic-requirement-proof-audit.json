@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T18:37:55.1324674-06:00",
+    "generated_at": "2026-07-06T18:43:36.3961311-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 684,
-      "full_executable_proof": 1993
+      "deferred_proof_not_executed": 674,
+      "full_executable_proof": 2003
     },
     "by_rfc": [
       {
@@ -99,7 +99,7 @@
         "rfc": "RFC9308",
         "total": 10,
         "by_proof_state": {
-          "deferred_proof_not_executed": 10
+          "full_executable_proof": 10
         }
       },
       {
@@ -57322,9 +57322,9 @@
       "rfc": "RFC9308",
       "title": "Document connection ID privacy boundary",
       "statement": "Application-facing documentation MUST describe the supported connection-ID privacy boundary without claiming broader timing-linkability mitigation.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -57333,14 +57333,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9308/REQ-QUIC-RFC9308-ApplicabilityHardening.cs"
@@ -57353,9 +57352,9 @@
       "rfc": "RFC9308",
       "title": "Document version deployment boundary",
       "statement": "Application-facing documentation MUST distinguish implemented version-negotiation mechanisms from operator rollout policy for new QUIC versions.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -57364,14 +57363,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9308/REQ-QUIC-RFC9308-ApplicabilityHardening.cs"
@@ -57384,9 +57382,9 @@
       "rfc": "RFC9308",
       "title": "Document DATAGRAM applicability boundary",
       "statement": "Application-facing documentation MUST distinguish the RFC 9221 QUIC DATAGRAM transport floor from HTTP Datagrams, CONNECT-UDP, and MASQUE behavior.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -57395,14 +57393,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9308/REQ-QUIC-RFC9308-ApplicabilityHardening.cs"
@@ -57415,9 +57412,9 @@
       "rfc": "RFC9308",
       "title": "Keep public application 0-RTT profile gated",
       "statement": "Public application 0-RTT MUST remain unavailable until an application profile defines replay-safe early-data semantics.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "negative"
@@ -57426,14 +57423,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9308/REQ-QUIC-RFC9308-ApplicabilityHardening.cs"
@@ -57446,9 +57442,9 @@
       "rfc": "RFC9308",
       "title": "Separate keep-alive from resumption",
       "statement": "Application-facing documentation MUST distinguish connection keep-alive behavior from TLS session resumption and 0-RTT application data.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -57457,14 +57453,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9308/REQ-QUIC-RFC9308-ApplicabilityHardening.cs"
@@ -57477,9 +57472,9 @@
       "rfc": "RFC9308",
       "title": "Document application stream mapping",
       "statement": "Application protocols MUST explicitly map QUIC streams to their protocol roles and message boundaries.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -57488,14 +57483,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9308/REQ-QUIC-RFC9308-ApplicabilityHardening.cs"
@@ -57508,9 +57502,9 @@
       "rfc": "RFC9308",
       "title": "Expose flow-control blocked backpressure",
       "statement": "Application send paths that become flow-control blocked MUST preserve stream state and expose blocked-credit diagnostics.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -57519,14 +57513,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9308/REQ-QUIC-RFC9308-ApplicabilityHardening.cs"
@@ -57542,9 +57535,9 @@
       "rfc": "RFC9308",
       "title": "Expose stream-limit blocked backpressure",
       "statement": "Application stream-open paths that become stream-limit blocked MUST preserve stream state and expose blocked-stream diagnostics.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -57553,14 +57546,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9308/REQ-QUIC-RFC9308-ApplicabilityHardening.cs"
@@ -57576,9 +57568,9 @@
       "rfc": "RFC9308",
       "title": "Keep application close codes separate",
       "statement": "Application close error codes MUST remain distinct from QUIC transport error codes.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -57587,14 +57579,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9308/REQ-QUIC-RFC9308-ApplicabilityHardening.cs"
@@ -57607,9 +57598,9 @@
       "rfc": "RFC9308",
       "title": "Validate migration candidates before promotion",
       "statement": "NAT rebinding and migration candidates MUST remain unpromoted until path validation succeeds.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -57618,14 +57609,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9308/REQ-QUIC-RFC9308-ApplicabilityHardening.cs"
