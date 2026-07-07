@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T20:58:33.4271510-06:00",
+    "generated_at": "2026-07-06T21:03:48.7097823-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 67,
-      "full_executable_proof": 2610
+      "deferred_proof_not_executed": 50,
+      "full_executable_proof": 2627
     },
     "by_rfc": [
       {
@@ -126,8 +126,8 @@
         "rfc": "RFC9461",
         "total": 42,
         "by_proof_state": {
-          "deferred_proof_not_executed": 41,
-          "full_executable_proof": 1
+          "deferred_proof_not_executed": 24,
+          "full_executable_proof": 18
         }
       },
       {
@@ -58093,9 +58093,9 @@
       "rfc": "RFC9461",
       "title": "Treat records as incompatible when ALPN is absent",
       "statement": "If the \"alpn\" SvcParamKey is absent, the client MUST treat the SVCB record as \"incompatible\" unless some other recognized SvcParam indicates a supported protocol.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58105,18 +58105,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-SelectionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -58129,9 +58129,9 @@
       "rfc": "RFC9461",
       "title": "Require dohpath when HTTP versions are present",
       "statement": "If the protocol set contains any HTTP versions (e.g., \"h2\", \"h3\"), the \"dohpath\" key MUST be present.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58141,18 +58141,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-SelectionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -58165,9 +58165,9 @@
       "rfc": "RFC9461",
       "title": "HTTPS record keys apply to the resulting HTTP connection",
       "statement": "All SvcParamKeys specified for use with the HTTPS record MUST be permissible and apply to the resulting HTTP connection.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58177,18 +58177,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-SelectionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -58201,9 +58201,9 @@
       "rfc": "RFC9461",
       "title": "Separate protocols with different default ports when no port is specified",
       "statement": "If the protocol set contains protocols with different default ports and no \"port\" key is specified, a client MUST contact the protocols separately on their respective default ports.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58213,18 +58213,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-SelectionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -58237,9 +58237,9 @@
       "rfc": "RFC9461",
       "title": "Use default ports when omitted",
       "statement": "If omitted, the client SHALL use the default port number for each transport protocol (853 for DoT and DoQ, 443 for DoH).",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58249,6 +58249,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -58256,14 +58257,13 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
-        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-SelectionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 4,
       "spec_test_refs": [
@@ -58278,9 +58278,9 @@
       "rfc": "RFC9461",
       "title": "Ignore records containing unsupported port keys",
       "statement": "A client that does not respect the \"port\" key MUST ignore any SVCB record that contains this key.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58290,18 +58290,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-SelectionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -58606,9 +58606,9 @@
       "rfc": "RFC9461",
       "title": "Override HTTPS RR for DoH",
       "statement": "The mapping MUST override the HTTPS RR for DoH.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58618,18 +58618,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-SelectionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -58642,9 +58642,9 @@
       "rfc": "RFC9461",
       "title": "Require alpn or equivalent",
       "statement": "The mapping MUST require `alpn` or an equivalent key.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58654,18 +58654,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-SelectionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -58717,9 +58717,9 @@
       "rfc": "RFC9461",
       "title": "Support HTTPS SvcParamKeys",
       "statement": "The mapping MUST support all HTTPS RR SvcParamKeys.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58729,18 +58729,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-SelectionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -58753,9 +58753,9 @@
       "rfc": "RFC9461",
       "title": "Use a per-transport default port",
       "statement": "The default port MUST be per-transport.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58765,6 +58765,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -58772,14 +58773,13 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
-        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-SelectionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 4,
       "spec_test_refs": [
@@ -92831,9 +92831,9 @@
       "rfc": "RFC9461",
       "title": "Define dohpath as a single-valued UTF-8 relative URI template",
       "statement": "The single-valued `dohpath` SvcParamKey MUST have a value that is a relative URI Template encoded in UTF-8.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92843,18 +92843,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-SelectionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -92867,9 +92867,9 @@
       "rfc": "RFC9461",
       "title": "Require dohpath when ALPN indicates HTTP",
       "statement": "If the `alpn` SvcParam indicates HTTP support, `dohpath` MUST be present.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92879,18 +92879,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-SelectionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -92903,9 +92903,9 @@
       "rfc": "RFC9461",
       "title": "Require a dns variable in the URI Template",
       "statement": "The URI Template MUST contain a `dns` variable.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92915,18 +92915,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-SelectionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -92939,9 +92939,9 @@
       "rfc": "RFC9461",
       "title": "Require valid :path expansion",
       "statement": "The URI Template MUST expand to a valid and functional `:path` value.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92951,18 +92951,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-SelectionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -92975,9 +92975,9 @@
       "rfc": "RFC9461",
       "title": "Send DoH requests to the HTTPS origin from the SVCB record",
       "statement": "When using this SVCB record, the client MUST send DoH requests to the HTTPS origin identified by the `https` scheme, the authentication name, and the port from the `port` SvcParam if present.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92987,18 +92987,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-SelectionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -93011,9 +93011,9 @@
       "rfc": "RFC9461",
       "title": "Direct HTTP requests to the dohpath expansion resource",
       "statement": "HTTP requests MUST be directed to the resource produced by expanding the `dohpath` URI Template.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -93023,18 +93023,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-SelectionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -93083,9 +93083,9 @@
       "rfc": "RFC9461",
       "title": "Use the SVCB SvcParams and address records for HTTPS connections",
       "statement": "The SvcParams and address records associated with this SVCB record SHOULD be used for the HTTPS connection.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -93095,18 +93095,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-SelectionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
