@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T20:51:47.3377982-06:00",
+    "generated_at": "2026-07-06T20:55:17.6440142-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 113,
-      "full_executable_proof": 2564
+      "deferred_proof_not_executed": 89,
+      "full_executable_proof": 2588
     },
     "by_rfc": [
       {
@@ -84,8 +84,8 @@
         "rfc": "RFC9297",
         "total": 84,
         "by_proof_state": {
-          "deferred_proof_not_executed": 46,
-          "full_executable_proof": 38
+          "deferred_proof_not_executed": 22,
+          "full_executable_proof": 62
         }
       },
       {
@@ -53265,9 +53265,9 @@
       "rfc": "RFC9297",
       "title": "Capsule protocol response status precondition",
       "statement": "The Capsule Protocol MUST NOT be in use unless the response includes a 2xx (Successful) or 101 (Switching Protocols) status code.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -53277,6 +53277,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -53284,13 +53285,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -53303,9 +53303,9 @@
       "rfc": "RFC9297",
       "title": "No HTTP content with Capsule Protocol",
       "statement": "When the Capsule Protocol is in use, the associated HTTP request and response MUST NOT carry HTTP content.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -53315,6 +53315,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -53322,13 +53323,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -53342,9 +53342,9 @@
       "rfc": "RFC9297",
       "title": "Restrict Capsule Protocol to CONNECT in HTTP/2 and HTTP/3",
       "statement": "In HTTP/2 and HTTP/3, the Capsule Protocol MUST only be used with the CONNECT method.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -53354,6 +53354,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -53361,13 +53362,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -53380,9 +53380,9 @@
       "rfc": "RFC9297",
       "title": "Prohibit Content-Length with Capsule Protocol",
       "statement": "The Capsule Protocol MUST NOT be used with messages that contain Content-Length header fields.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -53392,6 +53392,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -53399,13 +53400,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -53418,9 +53418,9 @@
       "rfc": "RFC9297",
       "title": "Prohibit Content-Type with Capsule Protocol",
       "statement": "The Capsule Protocol MUST NOT be used with messages that contain Content-Type header fields.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -53430,6 +53430,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -53437,13 +53438,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -53456,9 +53456,9 @@
       "rfc": "RFC9297",
       "title": "Prohibit Transfer-Encoding with Capsule Protocol",
       "statement": "The Capsule Protocol MUST NOT be used with messages that contain Transfer-Encoding header fields.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -53468,6 +53468,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -53475,13 +53476,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -53494,9 +53494,9 @@
       "rfc": "RFC9297",
       "title": "Prohibit 204 responses with Capsule Protocol",
       "statement": "HTTP status code 204 (No Content) MUST NOT be sent on responses that use the Capsule Protocol.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -53506,6 +53506,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -53513,13 +53514,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -53532,9 +53532,9 @@
       "rfc": "RFC9297",
       "title": "Prohibit 205 responses with Capsule Protocol",
       "statement": "HTTP status code 205 (Reset Content) MUST NOT be sent on responses that use the Capsule Protocol.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -53544,6 +53544,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -53551,13 +53552,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -53570,9 +53570,9 @@
       "rfc": "RFC9297",
       "title": "Prohibit 206 responses with Capsule Protocol",
       "statement": "HTTP status code 206 (Partial Content) MUST NOT be sent on responses that use the Capsule Protocol.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -53582,6 +53582,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -53589,13 +53590,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -53608,9 +53608,9 @@
       "rfc": "RFC9297",
       "title": "Treat violations as malformed",
       "statement": "A receiver that observes a violation of these requirements MUST treat the HTTP message as malformed.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -53620,6 +53620,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -53627,13 +53628,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 5,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 6,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 4,
       "spec_test_refs": [
@@ -53686,9 +53686,9 @@
       "rfc": "RFC9297",
       "title": "Classify Capsule-Protocol as an Item Structured Field",
       "statement": "The Capsule-Protocol header field MUST be an Item Structured Field.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -53698,6 +53698,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -53705,13 +53706,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -53724,9 +53724,9 @@
       "rfc": "RFC9297",
       "title": "Require Capsule-Protocol values to be Boolean",
       "statement": "The Capsule-Protocol header field value MUST be a Boolean.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -53736,6 +53736,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -53743,13 +53744,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -53762,9 +53762,9 @@
       "rfc": "RFC9297",
       "title": "Signal Capsule Protocol use with a true header value",
       "statement": "Endpoints MUST indicate that the Capsule Protocol is in use on a data stream by sending a Capsule-Protocol header field with a true value.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -53774,6 +53774,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -53781,13 +53782,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs::CapsuleProtocolHeader_ParsesTrueBooleanAndIgnoresUnknownParameters"
@@ -53797,9 +53797,9 @@
       "rfc": "RFC9297",
       "title": "Treat false Capsule-Protocol as absent",
       "statement": "A Capsule-Protocol header field with a false value MUST have the same semantics as when the header is not present.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -53809,6 +53809,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -53816,13 +53817,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs::CapsuleProtocolHeader_TreatsFalseOrNonBooleanValuesAsAbsent"
@@ -54347,9 +54347,9 @@
       "rfc": "RFC9297",
       "title": "Register Capsule-Protocol as the HTTP field name",
       "statement": "The HTTP field name registry entry MUST list Capsule-Protocol as the field name.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -54359,6 +54359,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -54366,13 +54367,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -54385,9 +54385,9 @@
       "rfc": "RFC9297",
       "title": "Reserve 0x29N+0x17 Capsule Types",
       "statement": "Capsule Types with a value of the form 0x29 * N + 0x17 MUST be reserved.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -54397,6 +54397,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -54404,13 +54405,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -90895,9 +90895,9 @@
       "rfc": "RFC9297",
       "title": "Treat non-Boolean Capsule-Protocol values as absent",
       "statement": "Recipients MUST handle any other Capsule-Protocol value type as if the field were not present.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -90907,6 +90907,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -90914,13 +90915,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs::CapsuleProtocolHeader_TreatsFalseOrNonBooleanValuesAsAbsent"
@@ -90930,9 +90930,9 @@
       "rfc": "RFC9297",
       "title": "Ignore unknown Capsule-Protocol parameters",
       "statement": "Receivers MUST ignore unknown parameters.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -90942,6 +90942,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -90949,13 +90950,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs::CapsuleProtocolHeader_ParsesTrueBooleanAndIgnoresUnknownParameters"
@@ -90965,28 +90965,28 @@
       "rfc": "RFC9297",
       "title": "Allow intermediaries to process unknown upgrade tokens",
       "statement": "Intermediaries MAY use the Capsule-Protocol header field to allow processing of HTTP Datagrams for unknown HTTP upgrade tokens.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs::CapsuleProtocolHeader_AllowsIntermediaryProcessingAndRecommendedEmission"
@@ -90996,9 +90996,9 @@
       "rfc": "RFC9297",
       "title": "Prohibit Capsule-Protocol on disallowed HTTP responses",
       "statement": "The Capsule-Protocol header field MUST NOT be used on HTTP responses with a status code that is both different from 101 (Switching Protocols) and outside the 2xx (Successful) range.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -91008,6 +91008,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -91015,13 +91016,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -91034,28 +91034,28 @@
       "rfc": "RFC9297",
       "title": "Recommend sending Capsule-Protocol with Capsule Protocol",
       "statement": "When using the Capsule Protocol, HTTP endpoints SHOULD send the Capsule-Protocol header field to simplify intermediary processing.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs::CapsuleProtocolHeader_AllowsIntermediaryProcessingAndRecommendedEmission"
@@ -91215,9 +91215,9 @@
       "rfc": "RFC9297",
       "title": "Require a Capsule Type field in each registration",
       "statement": "All registrations in this registry MUST include a \"Capsule Type\" field that contains a short name or label for the Capsule Type.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -91227,6 +91227,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -91234,13 +91235,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -91253,9 +91253,9 @@
       "rfc": "RFC9297",
       "title": "IANA assignment is prohibited",
       "statement": "These values MUST NOT be assigned by IANA.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -91265,6 +91265,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -91272,13 +91273,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -91291,9 +91291,9 @@
       "rfc": "RFC9297",
       "title": "Listing as assigned values is prohibited",
       "statement": "These values MUST NOT appear in the listing of assigned values.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -91303,6 +91303,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -91310,13 +91311,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-CapsuleProtocolFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
