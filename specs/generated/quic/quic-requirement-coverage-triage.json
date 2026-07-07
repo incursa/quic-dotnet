@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T20:27:35.3019070-06:00",
+  "generated_at": "2026-07-06T20:31:51.2614393-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T20:27:35.2979561-06:00",
+    "generated_at": "2026-07-06T20:31:51.2575720-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -317048,14 +317048,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -317150,6 +317150,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0044",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-SocketLifecycleFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure.Fuzz_ProxyKeepsSocketOpenWhileRequestStreamIsOpen",
+          "method": "Fuzz_ProxyKeepsSocketOpenWhileRequestStreamIsOpen",
+          "line": 58,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0044"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -317179,14 +317201,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -317281,6 +317303,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0045",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-SocketLifecycleFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure.Fuzz_UnusableSocketClosesRequestStream",
+          "method": "Fuzz_UnusableSocketClosesRequestStream",
+          "line": 81,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0045"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -317310,14 +317354,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -317412,6 +317456,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0046",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-SocketLifecycleFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure.Fuzz_ProxyMayCloseSocketAfterInactivity",
+          "method": "Fuzz_ProxyMayCloseSocketAfterInactivity",
+          "line": 92,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0046"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -317441,14 +317507,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -317543,6 +317609,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0047",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-SocketLifecycleFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure.Fuzz_ClosingSocketClosesRequestStream",
+          "method": "Fuzz_ClosingSocketClosesRequestStream",
+          "line": 102,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -317572,14 +317660,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -317667,6 +317755,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0048"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0048",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-SocketLifecycleFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure.Fuzz_InactivityTimeoutIsNotLowerThanTwoMinutes",
+          "method": "Fuzz_InactivityTimeoutIsNotLowerThanTwoMinutes",
+          "line": 113,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -317834,14 +317944,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -317936,6 +318046,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0050",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-SocketLifecycleFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure.Fuzz_ProxyDoesNotIntroduceIpFragmentation",
+          "method": "Fuzz_ProxyDoesNotIntroduceIpFragmentation",
+          "line": 140,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0050"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -317965,14 +318097,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -318067,6 +318199,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0051",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-SocketLifecycleFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure.Fuzz_ProxySilentlyDropsOversizedHttpDatagrams",
+          "method": "Fuzz_ProxySilentlyDropsOversizedHttpDatagrams",
+          "line": 157,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0051"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -318096,14 +318250,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -318191,6 +318345,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0052"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0052",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-SocketLifecycleFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure.Fuzz_Ipv4DontFragmentBitIsSetWhenPossible",
+          "method": "Fuzz_Ipv4DontFragmentBitIsSetWhenPossible",
+          "line": 174,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -499705,14 +499881,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -499807,6 +499983,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S3-1-P4-S1-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-SocketLifecycleFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure.Fuzz_NonConnectedSocketValidatesPacketSourceAddress",
+          "method": "Fuzz_NonConnectedSocketValidatesPacketSourceAddress",
+          "line": 14,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-1-P4-S1-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -499836,14 +500034,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -499938,6 +500136,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S3-1-P4-S1-R03",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-SocketLifecycleFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure.Fuzz_NonConnectedSocketValidatesPacketSourcePort",
+          "method": "Fuzz_NonConnectedSocketValidatesPacketSourcePort",
+          "line": 28,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-1-P4-S1-R03"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -499967,14 +500187,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -500062,6 +500282,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-1-P4-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S3-1-P4-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-SocketLifecycleFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_SocketLifecycleFuzzClosure.Fuzz_NonMatchingPacketsAreDiscardedByUdpProxy",
+          "method": "Fuzz_NonMatchingPacketsAreDiscardedByUdpProxy",
+          "line": 44,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
