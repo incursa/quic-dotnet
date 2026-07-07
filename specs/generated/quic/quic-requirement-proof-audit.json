@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T19:59:22.5427689-06:00",
+    "generated_at": "2026-07-06T20:02:24.3851361-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 337,
-      "full_executable_proof": 2340
+      "deferred_proof_not_executed": 328,
+      "full_executable_proof": 2349
     },
     "by_rfc": [
       {
@@ -134,8 +134,8 @@
         "rfc": "RFC9463",
         "total": 120,
         "by_proof_state": {
-          "deferred_proof_not_executed": 19,
-          "full_executable_proof": 101
+          "deferred_proof_not_executed": 10,
+          "full_executable_proof": 110
         }
       },
       {
@@ -59131,9 +59131,9 @@
       "rfc": "RFC9463",
       "title": "At least one valid IP address",
       "statement": "The Encrypted DNS option MUST include at least one valid IP address.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -59143,6 +59143,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -59150,13 +59151,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-SharedOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -59169,9 +59169,9 @@
       "rfc": "RFC9463",
       "title": "No hint parameters in service parameters",
       "statement": "The service parameters MUST exclude \"ipv4hint\" and \"ipv6hint\" parameters.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -59181,6 +59181,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -59188,13 +59189,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-SharedOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -59207,9 +59207,9 @@
       "rfc": "RFC9463",
       "title": "Discard invalid Encrypted DNS option",
       "statement": "If any validation check fails, the receiver MUST discard the received Encrypted DNS option.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -59219,6 +59219,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -59226,13 +59227,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-SharedOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 4,
       "spec_test_refs": [
@@ -62302,9 +62302,9 @@
       "rfc": "RFC9463",
       "title": "Discard host loopback encrypted DNS addresses",
       "statement": "The host MUST silently discard host loopback addresses conveyed in the Encrypted DNS options.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62314,6 +62314,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -62321,13 +62322,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-SharedOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -62340,9 +62340,9 @@
       "rfc": "RFC9463",
       "title": "Discard multicast encrypted DNS addresses",
       "statement": "The host MUST silently discard multicast addresses conveyed in the Encrypted DNS options.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62352,6 +62352,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -62359,13 +62360,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-SharedOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -62414,9 +62414,9 @@
       "rfc": "RFC9463",
       "title": "Assign DHCPv6 option code 144 to OPTION_V6_DNR",
       "statement": "The DHCPv6 option code for OPTION_V6_DNR MUST be 144.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62426,6 +62426,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -62433,13 +62434,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-SharedOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -62488,9 +62488,9 @@
       "rfc": "RFC9463",
       "title": "Assign DHCPv4 tag 162 to OPTION_V4_DNR",
       "statement": "The DHCPv4 option tag for OPTION_V4_DNR MUST be 162.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62500,6 +62500,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -62507,13 +62508,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-SharedOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -62562,9 +62562,9 @@
       "rfc": "RFC9463",
       "title": "Assign ND type 144 to the Encrypted DNS option",
       "statement": "The Neighbor Discovery Encrypted DNS option type MUST be 144.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62574,6 +62574,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -62581,13 +62582,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-SharedOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -93316,9 +93316,9 @@
       "rfc": "RFC9463",
       "title": "Encrypted DNS options include an ADN",
       "statement": "Encrypted DNS options MUST always include an ADN.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -93328,6 +93328,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -93335,13 +93336,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-SharedOptionFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
