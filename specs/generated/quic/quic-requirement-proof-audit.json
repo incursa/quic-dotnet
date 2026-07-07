@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T19:20:57.9048766-06:00",
+    "generated_at": "2026-07-06T19:24:50.8181740-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 510,
-      "full_executable_proof": 2167
+      "deferred_proof_not_executed": 492,
+      "full_executable_proof": 2185
     },
     "by_rfc": [
       {
@@ -148,8 +148,8 @@
         "rfc": "RFC9484",
         "total": 213,
         "by_proof_state": {
-          "deferred_proof_not_executed": 72,
-          "full_executable_proof": 141
+          "deferred_proof_not_executed": 54,
+          "full_executable_proof": 159
         }
       }
     ]
@@ -69859,9 +69859,9 @@
       "rfc": "RFC9484",
       "title": "Start HTTP Datagrams with a Context ID field",
       "statement": "HTTP Datagrams associated with IP proxying request streams MUST start with a Context ID field.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -69871,18 +69871,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -69895,27 +69895,27 @@
       "rfc": "RFC9484",
       "title": "Allow any Context ID allocation order",
       "statement": "Context IDs MAY be allocated in any order.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -69928,27 +69928,27 @@
       "rfc": "RFC9484",
       "title": "Allow either endpoint to use an allocated Context ID",
       "statement": "Once a Context ID has been allocated, it MAY be used by either the client or the IP proxy, regardless of which endpoint initially allocated it.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -69961,9 +69961,9 @@
       "rfc": "RFC9484",
       "title": "Place Context ID after Quarter Stream ID",
       "statement": "When HTTP Datagrams are encoded using QUIC DATAGRAM frames, the Context ID field MUST directly follow the Quarter Stream ID field at the start of the QUIC DATAGRAM frame payload.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -69973,18 +69973,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -69997,9 +69997,9 @@
       "rfc": "RFC9484",
       "title": "Define the IP Proxying HTTP Datagram Payload layout",
       "statement": "The IP Proxying HTTP Datagram Payload MUST consist of a Context ID field followed by a Payload field.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70009,18 +70009,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70033,9 +70033,9 @@
       "rfc": "RFC9484",
       "title": "Encode Context ID as a variable-length integer",
       "statement": "The Context ID field MUST be a variable-length integer that contains the value of the Context ID.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70045,18 +70045,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70069,9 +70069,9 @@
       "rfc": "RFC9484",
       "title": "Handle unknown Context ID datagrams by dropping or buffering",
       "statement": "If an HTTP/3 datagram carries an unknown Context ID, the receiver SHALL either drop that datagram silently or buffer it temporarily, on the order of a round trip, while awaiting registration of the corresponding Context ID.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70081,18 +70081,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70105,9 +70105,9 @@
       "rfc": "RFC9484",
       "title": "Make Payload semantics depend on Context ID",
       "statement": "The semantics of the Payload field MUST depend on the value of the Context ID field.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70117,18 +70117,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70141,9 +70141,9 @@
       "rfc": "RFC9484",
       "title": "Allow an empty Payload field",
       "statement": "The Payload field MAY be empty.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70153,18 +70153,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70177,9 +70177,9 @@
       "rfc": "RFC9484",
       "title": "Encode IP packets with Context ID zero",
       "statement": "IP packets MUST be encoded using HTTP Datagrams with the Context ID set to zero.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70189,18 +70189,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70213,9 +70213,9 @@
       "rfc": "RFC9484",
       "title": "Carry a full IP packet when Context ID is zero",
       "statement": "When the Context ID is set to zero, the Payload field MUST contain a full IP packet from the IP Version field until the last byte of the IP payload.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70225,18 +70225,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 4,
       "spec_test_refs": [
@@ -95437,9 +95437,9 @@
       "rfc": "RFC9484",
       "title": "Limit Context ID size to 62 bits",
       "statement": "Context IDs MUST be 62-bit integers (0 to 2^62-1).",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -95449,18 +95449,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -95473,9 +95473,9 @@
       "rfc": "RFC9484",
       "title": "Encode Context IDs as variable-length integers",
       "statement": "Context IDs MUST be encoded as variable-length integers.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -95485,18 +95485,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -95509,9 +95509,9 @@
       "rfc": "RFC9484",
       "title": "Allocate non-zero Context IDs dynamically",
       "statement": "Non-zero Context ID values MUST be dynamically allocated.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -95521,18 +95521,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -95545,9 +95545,9 @@
       "rfc": "RFC9484",
       "title": "Reserve Context ID 0 for IP payloads",
       "statement": "The Context ID value of 0 MUST be reserved for IP payloads.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -95557,18 +95557,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -95581,9 +95581,9 @@
       "rfc": "RFC9484",
       "title": "Disallow Context ID reallocation within a request",
       "statement": "Context IDs MUST NOT be re-allocated within a given HTTP request.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -95593,18 +95593,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -95617,27 +95617,27 @@
       "rfc": "RFC9484",
       "title": "Permit future extensions to register Context IDs",
       "statement": "Future extensions MAY use HTTP header fields or capsules to register Context IDs.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -95650,9 +95650,9 @@
       "rfc": "RFC9484",
       "title": "Allow optimistic proxied IP packet sending",
       "statement": "When using HTTP/2 or HTTP/3, a client MAY optimistically start sending proxied IP packets before receiving the response to its IP proxying request.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -95662,18 +95662,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-DatagramFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
