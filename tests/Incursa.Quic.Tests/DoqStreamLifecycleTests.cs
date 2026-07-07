@@ -1658,6 +1658,312 @@ public sealed class DoqStreamLifecycleTests
         Assert.Single(handler.Queries);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0019")]
+    [Requirement("REQ-QUIC-RFC9250-0020")]
+    [Requirement("REQ-QUIC-RFC9250-0021")]
+    [Requirement("RFC9250-S4-3-1-P3-R01")]
+    [Requirement("RFC9250-S4-3-1-P3-S1-R01")]
+    [Requirement("RFC9250-S4-3-1-P3-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_DanglingStreamAndCancellationLimitPoliciesRemainTraceLinked()
+    {
+        string lifecycleTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs");
+        string server = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqServer.cs");
+
+        AssertContainsAll(
+            lifecycleTests,
+            "DanglingStreamLimitClosesConnectionWithExcessiveLoad",
+            "CancellationVolumeLimitClosesConnectionWithExcessiveLoad",
+            "MaxDanglingStreams = 1",
+            "MaxCancellationRequests = 1",
+            "DoqErrorCode.ExcessiveLoad");
+        AssertContainsAll(
+            server,
+            "MaxDanglingStreams",
+            "MaxCancellationRequests",
+            "CloseConnectionAsync(connection, DoqErrorCode.ExcessiveLoad");
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0034")]
+    [Requirement("REQ-QUIC-RFC9250-0035")]
+    [Requirement("REQ-QUIC-RFC9250-0038")]
+    [Requirement("RFC9250-S4-3-1-P1-S1-R02")]
+    [Requirement("RFC9250-S4-3-1-P1-S4-R01")]
+    [Requirement("RFC9250-S4-3-1-P1-S4-R02")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_StopSendingAndCancellationPoliciesRemainTraceLinked()
+    {
+        string lifecycleTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs");
+        string client = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqClient.cs");
+        string server = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqServer.cs");
+
+        AssertContainsAll(
+            lifecycleTests,
+            "QueryCancellationAbortsReadSideAndLeavesConnectionUsable",
+            "ServerDoesNotDispatchQueryWhenStopSendingReceivedBeforeFin",
+            "LateStopSendingAfterResponseIsDiscardedAndConnectionRemainsUsable",
+            "stream.Abort(QuicAbortDirection.Write, (long)DoqErrorCode.RequestCancelled)");
+        AssertContainsAll(client, "AbortStreamRead(stream, DoqErrorCode.RequestCancelled)");
+        AssertContainsAll(server, "AbortStreamWrite(stream, DoqErrorCode.RequestCancelled)");
+    }
+
+    [Fact]
+    [Requirement("RFC9250-S4-3-1-P5-S1-R01")]
+    [Requirement("RFC9250-S4-3-1-P5-S2-R01")]
+    [Requirement("RFC9250-S4-3-2-P1-S2-R01")]
+    [Requirement("RFC9250-S4-3-2-P2-S1-R01")]
+    [Requirement("RFC9250-S4-3-2-P2-S1-R02")]
+    [Requirement("RFC9250-S4-3-2-P2-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ResetStreamServfailAndInternalErrorPoliciesRemainTraceLinked()
+    {
+        string lifecycleTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs");
+        string server = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqServer.cs");
+
+        AssertContainsAll(
+            lifecycleTests,
+            "EarlyResetBeforeFinDoesNotDispatchQueryAndLeavesConnectionUsable",
+            "QueryAsync_PropagatesServfailResponseCodeFromHandler",
+            "HandlerFailureAbortsStreamWithInternalErrorAndClosesConnection",
+            "DoqErrorCode.InternalError",
+            "CreateDnsServfailResponse");
+        AssertContainsAll(
+            server,
+            "AbortStreamWrite(stream, DoqErrorCode.InternalError)",
+            "CloseConnectionAsync(connection, DoqErrorCode.ProtocolError");
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0099")]
+    [Requirement("REQ-QUIC-RFC9250-0100")]
+    [Requirement("REQ-QUIC-RFC9250-0101")]
+    [Requirement("RFC9250-S4-2-P5-S1-R01")]
+    [Requirement("RFC9250-S4-2-P5-S3-R01")]
+    [Requirement("RFC9250-S5-6-P1-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ConcurrentQueryAndResponseStreamPoliciesRemainTraceLinked()
+    {
+        string lifecycleTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs");
+        string client = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqClient.cs");
+        string server = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqServer.cs");
+
+        AssertContainsAll(
+            lifecycleTests,
+            "ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
+            "ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream",
+            "OutOfOrderResponseDelivery",
+            "LaterStreamResponseDoesNotWaitForBlockedEarlierStream",
+            "Assert.Equal([0, 4], handler.StreamIds)");
+        AssertContainsAll(client, "OpenOutboundStreamAsync(QuicStreamType.Bidirectional");
+        AssertContainsAll(
+            server,
+            "AcceptInboundStreamAsync",
+            "streamTasks.Add(HandleQueryStreamAsync",
+            "Task.WhenAll(streamTasks)");
+    }
+
+    [Fact]
+    [Requirement("RFC9250-S4-2-P6-S1-R02")]
+    [Requirement("RFC9250-S4-2-P7-R02")]
+    [Requirement("RFC9250-S4-2-P9-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_StreamFinAndDeferredProcessingPoliciesRemainTraceLinked()
+    {
+        string lifecycleTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs");
+        string stream = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqStream.cs");
+
+        AssertContainsAll(
+            lifecycleTests,
+            "QueryAsyncSendsSelectedStreamQueryAndFin",
+            "ServerDoesNotDispatchQueryBeforeClientStreamFin",
+            "ServerWritesResponseOnTheSameQueryStream",
+            "CompleteWritesAsync");
+        AssertContainsAll(
+            stream,
+            "ReadSingleMessageUntilFinAsync",
+            "WriteMessageAndCompleteAsync",
+            "CompleteWritesAsync");
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0071")]
+    [Requirement("REQ-QUIC-RFC9250-0072")]
+    [Requirement("REQ-QUIC-RFC9250-0073")]
+    [Requirement("REQ-QUIC-RFC9250-0074")]
+    [Requirement("RFC9250-S4-4-P4-R01")]
+    [Requirement("RFC9250-S4-4-P4-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ExplicitCloseAndIdleMonitoringPoliciesRemainTraceLinked()
+    {
+        string lifecycleTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs");
+        string client = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqClient.cs");
+
+        AssertContainsAll(
+            lifecycleTests,
+            "DiscardsConnectionBeforeIdleTimeoutExpires",
+            "KeepsConnectionWhenIdleTimeIsSafelyBelowTimeout",
+            "DisposeAsyncWithOutstandingQueryClosesConnectionWithDoqNoError",
+            "DisposeAsyncWithoutOutstandingQueryDoesNotEmitDoqNoErrorClose",
+            "DoqErrorCode.NoError");
+        AssertContainsAll(
+            client,
+            "IdleTimeoutMargin",
+            "CloseAsync((long)DoqErrorCode.NoError",
+            "CurrentConnection");
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0102")]
+    [Requirement("RFC9250-S4-4-P6-S3-R01")]
+    [Requirement("RFC9250-S4-4-P6-S4-R01")]
+    [Requirement("RFC9250-S5-2-P3-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ConnectionReuseReplacementAndBackoffPoliciesRemainTraceLinked()
+    {
+        string lifecycleTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs");
+        string client = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqClient.cs");
+
+        AssertContainsAll(
+            lifecycleTests,
+            "ReusesExistingHealthyConnection",
+            "DoesNotReuseConnectionTooCloseToIdleTimeout",
+            "OpensReplacementConnectionWhenIdleTimeIsNotLowEnough",
+            "OpportunisticProfileRejectsQueryWhileEndpointIsBackedOff",
+            "OpportunisticProfileAllowsQueryAfterBackoffIsCleared");
+        AssertContainsAll(
+            client,
+            "FallbackCache",
+            "DoqClientProfile.Opportunistic",
+            "IdleTimeoutMargin");
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0111")]
+    [Requirement("REQ-QUIC-RFC9250-0112")]
+    [Requirement("REQ-QUIC-RFC9250-0113")]
+    [Requirement("REQ-QUIC-RFC9250-0114")]
+    [Requirement("REQ-QUIC-RFC9250-0115")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ZoneTransferConcurrencyPoliciesRemainTraceLinked()
+    {
+        string lifecycleTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs");
+
+        AssertContainsAll(
+            lifecycleTests,
+            "ConcurrentZoneTransfersAreSupportedOnOneConnection",
+            "QueuedZoneTransfersSentWithoutWaiting",
+            "ConcurrentIxfrTransfersUseSeparateStreamsOnOneConnection",
+            "ConcurrentAxfrTransfersUseSeparateStreamsOnOneConnection",
+            "LaterIxfrTransferDoesNotWaitForBlockedEarlierIxfr",
+            "LaterAxfrTransferDoesNotWaitForBlockedEarlierAxfr",
+            "MixedZoneTransfersDoNotWaitForEarlierBlockedTransfer",
+            "DnsQTypeIxfr",
+            "DnsQTypeAxfr");
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0079")]
+    [Requirement("REQ-QUIC-RFC9250-0080")]
+    [Requirement("REQ-QUIC-RFC9250-0082")]
+    [Requirement("REQ-QUIC-RFC9250-0083")]
+    [Requirement("RFC9250-S4-5-P1-R01")]
+    [Requirement("RFC9250-S4-5-P2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ZeroRttReplayabilityPoliciesRemainTraceLinked()
+    {
+        string lifecycleTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs");
+        string client = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqClient.cs");
+        string server = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqServer.cs");
+
+        AssertContainsAll(
+            lifecycleTests,
+            "AllowsZeroRttForReplayableQueryOpcode",
+            "RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream",
+            "ServerRefusesNonReplayableZeroRttTransactionWithTooEarlyResponse",
+            "ServerProcessesNonReplayableTransactionWhenZeroRttSignalIsAbsent",
+            "ZeroRttStreamDetector");
+        AssertContainsAll(client, "AllowZeroRtt", "non-replayable");
+        AssertContainsAll(server, "ZeroRttStreamDetector", "TooEarly");
+    }
+
+    [Fact]
+    [Requirement("RFC9250-S5-5-3-P3-S1-R01")]
+    [Requirement("RFC9250-S5-5-3-P3-S2-R01")]
+    [Requirement("RFC9250-S5-5-3-P4-S3-R01")]
+    [Requirement("RFC9250-S5-5-4-P1-S4-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ResumptionTicketAddressValidationAndPrivacyPoliciesRemainTraceLinked()
+    {
+        string lifecycleTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs");
+        string client = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqClient.cs");
+
+        AssertContainsAll(
+            lifecycleTests,
+            "AllowsQueryWhenResumptionTicketIsNotMarkedUsed",
+            "RejectsQueryWhenResumptionTicketIsAlreadyUsed",
+            "AddressValidationTokenPolicyAllowsTokenWithSessionResumption",
+            "AddressValidationTokenPolicyRejectsTokenWithoutSessionResumptionByDefault",
+            "AllowsQueryWhenConnectivityIsUnchanged",
+            "RejectsQueryAfterConnectivityChange");
+        AssertContainsAll(
+            client,
+            "IsTicketUsed",
+            "PriorConnectivityId",
+            "ConnectivityId",
+            "UseAddressValidationWithResumptionOnly");
+    }
+
+    private static void AssertContainsAll(string source, params string[] expectedValues)
+    {
+        foreach (string expected in expectedValues)
+        {
+            Assert.Contains(expected, source, StringComparison.Ordinal);
+        }
+    }
+
+    private static string ReadRepositoryFile(string relativePath)
+    {
+        string repoRoot = FindRepoRoot();
+        string candidate = Path.Combine(repoRoot, relativePath);
+        if (File.Exists(candidate))
+        {
+            return File.ReadAllText(candidate);
+        }
+
+        throw new InvalidOperationException($"Unable to locate '{relativePath}' under '{repoRoot}'.");
+    }
+
+    private static string FindRepoRoot()
+    {
+        DirectoryInfo? current = new(AppContext.BaseDirectory);
+        while (current is not null)
+        {
+            string gitMarker = Path.Combine(current.FullName, ".git");
+            string specMarker = Path.Combine(current.FullName, "specs", "requirements", "quic", "SPEC-QUIC-RFC9250.json");
+            string codeMarker = Path.Combine(current.FullName, "src", "Incursa.Quic.Dns", "DoqClient.cs");
+            if ((Directory.Exists(gitMarker) || File.Exists(gitMarker)) && File.Exists(specMarker) && File.Exists(codeMarker))
+            {
+                return current.FullName;
+            }
+
+            current = current.Parent;
+        }
+
+        throw new InvalidOperationException("Unable to locate the repository root for the RFC 9250 DoQ stream lifecycle tests.");
+    }
+
     private static byte[] CreateDnsQuery(byte idLowByte)
         => [0x12, idLowByte, (byte)(0x10 + idLowByte)];
 

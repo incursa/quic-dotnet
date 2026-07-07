@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T18:00:29.4489977-06:00",
+  "generated_at": "2026-07-06T18:05:39.1849055-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T18:00:29.4442732-06:00",
+    "generated_at": "2026-07-06T18:05:39.1802388-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -272168,14 +272168,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DanglingStreamLimitClosesConnectionWithExcessiveLoad",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 2,
+        "total": 5,
+        "focused": 3,
         "broad": 2,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -272228,6 +272228,33 @@
             "REQ-QUIC-RFC9250-0019",
             "REQ-QUIC-RFC9250-0020",
             "REQ-QUIC-RFC9250-0021",
+            "RFC9250-S4-3-1-P3-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0019",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_DanglingStreamAndCancellationLimitPoliciesRemainTraceLinked",
+          "method": "Fuzz_DanglingStreamAndCancellationLimitPoliciesRemainTraceLinked",
+          "line": 1670,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0019",
+            "REQ-QUIC-RFC9250-0020",
+            "REQ-QUIC-RFC9250-0021",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
             "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
@@ -272334,14 +272361,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DanglingStreamLimitClosesConnectionWithExcessiveLoad",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 2,
+        "total": 5,
+        "focused": 3,
         "broad": 2,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -272394,6 +272421,33 @@
             "REQ-QUIC-RFC9250-0019",
             "REQ-QUIC-RFC9250-0020",
             "REQ-QUIC-RFC9250-0021",
+            "RFC9250-S4-3-1-P3-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0020",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_DanglingStreamAndCancellationLimitPoliciesRemainTraceLinked",
+          "method": "Fuzz_DanglingStreamAndCancellationLimitPoliciesRemainTraceLinked",
+          "line": 1670,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0019",
+            "REQ-QUIC-RFC9250-0020",
+            "REQ-QUIC-RFC9250-0021",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
             "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
@@ -272500,14 +272554,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DanglingStreamLimitClosesConnectionWithExcessiveLoad",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 2,
+        "total": 5,
+        "focused": 3,
         "broad": 2,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -272560,6 +272614,33 @@
             "REQ-QUIC-RFC9250-0019",
             "REQ-QUIC-RFC9250-0020",
             "REQ-QUIC-RFC9250-0021",
+            "RFC9250-S4-3-1-P3-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0021",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_DanglingStreamAndCancellationLimitPoliciesRemainTraceLinked",
+          "method": "Fuzz_DanglingStreamAndCancellationLimitPoliciesRemainTraceLinked",
+          "line": 1670,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0019",
+            "REQ-QUIC-RFC9250-0020",
+            "REQ-QUIC-RFC9250-0021",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
             "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
@@ -275378,14 +275459,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::ClientCancellationUsesStopSendingWithRequestCancelled",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 1,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -275393,6 +275474,33 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0034",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_StopSendingAndCancellationPoliciesRemainTraceLinked",
+          "method": "Fuzz_StopSendingAndCancellationPoliciesRemainTraceLinked",
+          "line": 1698,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0034",
+            "REQ-QUIC-RFC9250-0035",
+            "REQ-QUIC-RFC9250-0038",
+            "RFC9250-S4-3-1-P1-S1-R02",
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P1-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9250-0034",
           "source": "requirement_attribute",
@@ -275570,14 +275678,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::ClientCancellationUsesStopSendingWithRequestCancelled",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 1,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -275585,6 +275693,33 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0035",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_StopSendingAndCancellationPoliciesRemainTraceLinked",
+          "method": "Fuzz_StopSendingAndCancellationPoliciesRemainTraceLinked",
+          "line": 1698,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0034",
+            "REQ-QUIC-RFC9250-0035",
+            "REQ-QUIC-RFC9250-0038",
+            "RFC9250-S4-3-1-P1-S1-R02",
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P1-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9250-0035",
           "source": "requirement_attribute",
@@ -275762,14 +275897,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::ClientCancellationUsesStopSendingWithRequestCancelled",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 1,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -275777,6 +275912,33 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0038",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_StopSendingAndCancellationPoliciesRemainTraceLinked",
+          "method": "Fuzz_StopSendingAndCancellationPoliciesRemainTraceLinked",
+          "line": 1698,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0034",
+            "REQ-QUIC-RFC9250-0035",
+            "REQ-QUIC-RFC9250-0038",
+            "RFC9250-S4-3-1-P1-S1-R02",
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P1-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9250-0038",
           "source": "requirement_attribute",
@@ -278643,14 +278805,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -278698,6 +278860,33 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0071"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0071",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ExplicitCloseAndIdleMonitoringPoliciesRemainTraceLinked",
+          "method": "Fuzz_ExplicitCloseAndIdleMonitoringPoliciesRemainTraceLinked",
+          "line": 1804,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0071",
+            "REQ-QUIC-RFC9250-0072",
+            "REQ-QUIC-RFC9250-0073",
+            "REQ-QUIC-RFC9250-0074",
+            "RFC9250-S4-4-P4-R01",
+            "RFC9250-S4-4-P4-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -278777,14 +278966,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 10,
-        "focused": 10,
+        "total": 11,
+        "focused": 11,
         "broad": 0,
         "by_kind": {
           "positive": 6,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -278882,6 +279071,33 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0072",
             "REQ-QUIC-RFC9250-0073"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0072",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ExplicitCloseAndIdleMonitoringPoliciesRemainTraceLinked",
+          "method": "Fuzz_ExplicitCloseAndIdleMonitoringPoliciesRemainTraceLinked",
+          "line": 1804,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0071",
+            "REQ-QUIC-RFC9250-0072",
+            "REQ-QUIC-RFC9250-0073",
+            "REQ-QUIC-RFC9250-0074",
+            "RFC9250-S4-4-P4-R01",
+            "RFC9250-S4-4-P4-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -279049,14 +279265,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 10,
-        "focused": 10,
+        "total": 11,
+        "focused": 11,
         "broad": 0,
         "by_kind": {
           "positive": 6,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -279154,6 +279370,33 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0072",
             "REQ-QUIC-RFC9250-0073"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0073",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ExplicitCloseAndIdleMonitoringPoliciesRemainTraceLinked",
+          "method": "Fuzz_ExplicitCloseAndIdleMonitoringPoliciesRemainTraceLinked",
+          "line": 1804,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0071",
+            "REQ-QUIC-RFC9250-0072",
+            "REQ-QUIC-RFC9250-0073",
+            "REQ-QUIC-RFC9250-0074",
+            "RFC9250-S4-4-P4-R01",
+            "RFC9250-S4-4-P4-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -279318,14 +279561,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -279421,6 +279664,33 @@
             "REQ-QUIC-RFC9250-0072",
             "REQ-QUIC-RFC9250-0073",
             "REQ-QUIC-RFC9250-0074"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0074",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ExplicitCloseAndIdleMonitoringPoliciesRemainTraceLinked",
+          "method": "Fuzz_ExplicitCloseAndIdleMonitoringPoliciesRemainTraceLinked",
+          "line": 1804,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0071",
+            "REQ-QUIC-RFC9250-0072",
+            "REQ-QUIC-RFC9250-0073",
+            "REQ-QUIC-RFC9250-0074",
+            "RFC9250-S4-4-P4-R01",
+            "RFC9250-S4-4-P4-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -279609,14 +279879,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -279665,6 +279935,33 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0079",
+            "RFC9250-S4-5-P2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0079",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ZeroRttReplayabilityPoliciesRemainTraceLinked",
+          "method": "Fuzz_ZeroRttReplayabilityPoliciesRemainTraceLinked",
+          "line": 1883,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0079",
+            "REQ-QUIC-RFC9250-0080",
+            "REQ-QUIC-RFC9250-0082",
+            "REQ-QUIC-RFC9250-0083",
+            "RFC9250-S4-5-P1-R01",
             "RFC9250-S4-5-P2-R01"
           ],
           "requirement_tagged": true,
@@ -279748,14 +280045,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 9,
-        "focused": 9,
+        "total": 10,
+        "focused": 10,
         "broad": 0,
         "by_kind": {
           "positive": 4,
           "negative": 5,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -279763,6 +280060,33 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0080",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ZeroRttReplayabilityPoliciesRemainTraceLinked",
+          "method": "Fuzz_ZeroRttReplayabilityPoliciesRemainTraceLinked",
+          "line": 1883,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0079",
+            "REQ-QUIC-RFC9250-0080",
+            "REQ-QUIC-RFC9250-0082",
+            "REQ-QUIC-RFC9250-0083",
+            "RFC9250-S4-5-P1-R01",
+            "RFC9250-S4-5-P2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9250-0080",
           "source": "spec_xref",
@@ -280151,14 +280475,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 10,
-        "focused": 10,
+        "total": 11,
+        "focused": 11,
         "broad": 0,
         "by_kind": {
           "positive": 6,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -280166,6 +280490,33 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0082",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ZeroRttReplayabilityPoliciesRemainTraceLinked",
+          "method": "Fuzz_ZeroRttReplayabilityPoliciesRemainTraceLinked",
+          "line": 1883,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0079",
+            "REQ-QUIC-RFC9250-0080",
+            "REQ-QUIC-RFC9250-0082",
+            "REQ-QUIC-RFC9250-0083",
+            "RFC9250-S4-5-P1-R01",
+            "RFC9250-S4-5-P2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9250-0082",
           "source": "requirement_attribute",
@@ -280419,14 +280770,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 9,
-        "focused": 9,
+        "total": 10,
+        "focused": 10,
         "broad": 0,
         "by_kind": {
           "positive": 6,
           "negative": 3,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -280434,6 +280785,33 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0083",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ZeroRttReplayabilityPoliciesRemainTraceLinked",
+          "method": "Fuzz_ZeroRttReplayabilityPoliciesRemainTraceLinked",
+          "line": 1883,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0079",
+            "REQ-QUIC-RFC9250-0080",
+            "REQ-QUIC-RFC9250-0082",
+            "REQ-QUIC-RFC9250-0083",
+            "RFC9250-S4-5-P1-R01",
+            "RFC9250-S4-5-P2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9250-0083",
           "source": "spec_xref",
@@ -283234,14 +283612,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -283353,6 +283731,33 @@
             "REQ-QUIC-RFC9250-0101",
             "RFC9250-S4-2-P5-S1-R01",
             "RFC9250-S4-2-P5-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0099",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ConcurrentQueryAndResponseStreamPoliciesRemainTraceLinked",
+          "method": "Fuzz_ConcurrentQueryAndResponseStreamPoliciesRemainTraceLinked",
+          "line": 1750,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0099",
+            "REQ-QUIC-RFC9250-0100",
+            "REQ-QUIC-RFC9250-0101",
+            "RFC9250-S4-2-P5-S1-R01",
+            "RFC9250-S4-2-P5-S3-R01",
+            "RFC9250-S5-6-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -283459,14 +283864,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -283578,6 +283983,33 @@
             "REQ-QUIC-RFC9250-0101",
             "RFC9250-S4-2-P5-S1-R01",
             "RFC9250-S4-2-P5-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0100",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ConcurrentQueryAndResponseStreamPoliciesRemainTraceLinked",
+          "method": "Fuzz_ConcurrentQueryAndResponseStreamPoliciesRemainTraceLinked",
+          "line": 1750,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0099",
+            "REQ-QUIC-RFC9250-0100",
+            "REQ-QUIC-RFC9250-0101",
+            "RFC9250-S4-2-P5-S1-R01",
+            "RFC9250-S4-2-P5-S3-R01",
+            "RFC9250-S5-6-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -283684,14 +284116,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -283811,6 +284243,33 @@
           "requirement_id": "REQ-QUIC-RFC9250-0101",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ConcurrentQueryAndResponseStreamPoliciesRemainTraceLinked",
+          "method": "Fuzz_ConcurrentQueryAndResponseStreamPoliciesRemainTraceLinked",
+          "line": 1750,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0099",
+            "REQ-QUIC-RFC9250-0100",
+            "REQ-QUIC-RFC9250-0101",
+            "RFC9250-S4-2-P5-S1-R01",
+            "RFC9250-S4-2-P5-S3-R01",
+            "RFC9250-S5-6-P1-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0101",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0002.cs",
           "class": "REQ_QUIC_RFC9250_0002",
           "member": "REQ_QUIC_RFC9250_0002.DoqStreamLifecycleCodeAndTestsAreTraceLinked",
@@ -283909,14 +284368,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -283972,6 +284431,31 @@
             "RFC9250-S4-4-P4-S1-R01",
             "RFC9250-S4-4-P6-S3-R01",
             "RFC9250-S4-4-P6-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0102",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ConnectionReuseReplacementAndBackoffPoliciesRemainTraceLinked",
+          "method": "Fuzz_ConnectionReuseReplacementAndBackoffPoliciesRemainTraceLinked",
+          "line": 1830,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0102",
+            "RFC9250-S4-4-P6-S3-R01",
+            "RFC9250-S4-4-P6-S4-R01",
+            "RFC9250-S5-2-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -284256,14 +284740,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -284329,6 +284813,32 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0111",
+            "REQ-QUIC-RFC9250-0112",
+            "REQ-QUIC-RFC9250-0113",
+            "REQ-QUIC-RFC9250-0114",
+            "REQ-QUIC-RFC9250-0115"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0111",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ZoneTransferConcurrencyPoliciesRemainTraceLinked",
+          "method": "Fuzz_ZoneTransferConcurrencyPoliciesRemainTraceLinked",
+          "line": 1857,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -284413,14 +284923,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -284486,6 +284996,32 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0111",
+            "REQ-QUIC-RFC9250-0112",
+            "REQ-QUIC-RFC9250-0113",
+            "REQ-QUIC-RFC9250-0114",
+            "REQ-QUIC-RFC9250-0115"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0112",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ZoneTransferConcurrencyPoliciesRemainTraceLinked",
+          "method": "Fuzz_ZoneTransferConcurrencyPoliciesRemainTraceLinked",
+          "line": 1857,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -284570,14 +285106,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -284625,6 +285161,32 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0111",
+            "REQ-QUIC-RFC9250-0112",
+            "REQ-QUIC-RFC9250-0113",
+            "REQ-QUIC-RFC9250-0114",
+            "REQ-QUIC-RFC9250-0115"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0113",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ZoneTransferConcurrencyPoliciesRemainTraceLinked",
+          "method": "Fuzz_ZoneTransferConcurrencyPoliciesRemainTraceLinked",
+          "line": 1857,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -284713,14 +285275,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -284742,6 +285304,32 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0111",
+            "REQ-QUIC-RFC9250-0112",
+            "REQ-QUIC-RFC9250-0113",
+            "REQ-QUIC-RFC9250-0114",
+            "REQ-QUIC-RFC9250-0115"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0114",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ZoneTransferConcurrencyPoliciesRemainTraceLinked",
+          "method": "Fuzz_ZoneTransferConcurrencyPoliciesRemainTraceLinked",
+          "line": 1857,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -284876,14 +285464,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -284905,6 +285493,32 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0111",
+            "REQ-QUIC-RFC9250-0112",
+            "REQ-QUIC-RFC9250-0113",
+            "REQ-QUIC-RFC9250-0114",
+            "REQ-QUIC-RFC9250-0115"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0115",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ZoneTransferConcurrencyPoliciesRemainTraceLinked",
+          "method": "Fuzz_ZoneTransferConcurrencyPoliciesRemainTraceLinked",
+          "line": 1857,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -470962,14 +471576,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -471081,6 +471695,33 @@
             "REQ-QUIC-RFC9250-0101",
             "RFC9250-S4-2-P5-S1-R01",
             "RFC9250-S4-2-P5-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-2-P5-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ConcurrentQueryAndResponseStreamPoliciesRemainTraceLinked",
+          "method": "Fuzz_ConcurrentQueryAndResponseStreamPoliciesRemainTraceLinked",
+          "line": 1750,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0099",
+            "REQ-QUIC-RFC9250-0100",
+            "REQ-QUIC-RFC9250-0101",
+            "RFC9250-S4-2-P5-S1-R01",
+            "RFC9250-S4-2-P5-S3-R01",
+            "RFC9250-S5-6-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -471187,14 +471828,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -471306,6 +471947,33 @@
             "REQ-QUIC-RFC9250-0101",
             "RFC9250-S4-2-P5-S1-R01",
             "RFC9250-S4-2-P5-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-2-P5-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ConcurrentQueryAndResponseStreamPoliciesRemainTraceLinked",
+          "method": "Fuzz_ConcurrentQueryAndResponseStreamPoliciesRemainTraceLinked",
+          "line": 1750,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0099",
+            "REQ-QUIC-RFC9250-0100",
+            "REQ-QUIC-RFC9250-0101",
+            "RFC9250-S4-2-P5-S1-R01",
+            "RFC9250-S4-2-P5-S3-R01",
+            "RFC9250-S5-6-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -471678,14 +472346,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 3,
+        "total": 8,
+        "focused": 4,
         "broad": 4,
         "by_kind": {
           "positive": 5,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -471693,6 +472361,30 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9250-S4-2-P6-S1-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_StreamFinAndDeferredProcessingPoliciesRemainTraceLinked",
+          "method": "Fuzz_StreamFinAndDeferredProcessingPoliciesRemainTraceLinked",
+          "line": 1777,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S4-2-P6-S1-R02",
+            "RFC9250-S4-2-P7-R02",
+            "RFC9250-S4-2-P9-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9250-S4-2-P6-S1-R02",
           "source": "requirement_attribute",
@@ -472190,14 +472882,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 2,
+        "total": 6,
+        "focused": 3,
         "broad": 3,
         "by_kind": {
           "positive": 4,
           "negative": 1,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -472205,6 +472897,30 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9250-S4-2-P7-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_StreamFinAndDeferredProcessingPoliciesRemainTraceLinked",
+          "method": "Fuzz_StreamFinAndDeferredProcessingPoliciesRemainTraceLinked",
+          "line": 1777,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S4-2-P6-S1-R02",
+            "RFC9250-S4-2-P7-R02",
+            "RFC9250-S4-2-P9-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9250-S4-2-P7-R02",
           "source": "requirement_attribute",
@@ -472383,14 +473099,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -472398,6 +473114,30 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9250-S4-2-P9-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_StreamFinAndDeferredProcessingPoliciesRemainTraceLinked",
+          "method": "Fuzz_StreamFinAndDeferredProcessingPoliciesRemainTraceLinked",
+          "line": 1777,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S4-2-P6-S1-R02",
+            "RFC9250-S4-2-P7-R02",
+            "RFC9250-S4-2-P9-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9250-S4-2-P9-R01",
           "source": "requirement_attribute",
@@ -472589,14 +473329,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::ClientCancellationUsesStopSendingWithRequestCancelled",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 1,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -472604,6 +473344,33 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9250-S4-3-1-P1-S1-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_StopSendingAndCancellationPoliciesRemainTraceLinked",
+          "method": "Fuzz_StopSendingAndCancellationPoliciesRemainTraceLinked",
+          "line": 1698,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0034",
+            "REQ-QUIC-RFC9250-0035",
+            "REQ-QUIC-RFC9250-0038",
+            "RFC9250-S4-3-1-P1-S1-R02",
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P1-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9250-S4-3-1-P1-S1-R02",
           "source": "requirement_attribute",
@@ -472888,14 +473655,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::CanceledQueryResultIsAbandonedBeforeLaterQueriesContinue",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 1,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -472923,6 +473690,33 @@
             "RFC9250-S4-3-1-P1-S4-R01",
             "RFC9250-S4-3-1-P5-S1-R01",
             "RFC9250-S4-3-1-P5-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-3-1-P1-S4-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_StopSendingAndCancellationPoliciesRemainTraceLinked",
+          "method": "Fuzz_StopSendingAndCancellationPoliciesRemainTraceLinked",
+          "line": 1698,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0034",
+            "REQ-QUIC-RFC9250-0035",
+            "REQ-QUIC-RFC9250-0038",
+            "RFC9250-S4-3-1-P1-S1-R02",
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P1-S4-R02"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -473074,14 +473868,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::CanceledQueryResultIsAbandonedBeforeLaterQueriesContinue",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 1,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -473089,6 +473883,33 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9250-S4-3-1-P1-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_StopSendingAndCancellationPoliciesRemainTraceLinked",
+          "method": "Fuzz_StopSendingAndCancellationPoliciesRemainTraceLinked",
+          "line": 1698,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0034",
+            "REQ-QUIC-RFC9250-0035",
+            "REQ-QUIC-RFC9250-0038",
+            "RFC9250-S4-3-1-P1-S1-R02",
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P1-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9250-S4-3-1-P1-S4-R02",
           "source": "requirement_attribute",
@@ -473393,14 +474214,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::CancellationLimitClosesWithExcessiveLoad",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 1,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -473427,6 +474248,33 @@
           "associated_requirement_ids": [
             "RFC9250-S4-3-1-P3-R01",
             "RFC9250-S4-3-1-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-3-1-P3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_DanglingStreamAndCancellationLimitPoliciesRemainTraceLinked",
+          "method": "Fuzz_DanglingStreamAndCancellationLimitPoliciesRemainTraceLinked",
+          "line": 1670,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0019",
+            "REQ-QUIC-RFC9250-0020",
+            "REQ-QUIC-RFC9250-0021",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -473580,14 +474428,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::CancellationLimitClosesWithExcessiveLoad",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 1,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -473614,6 +474462,33 @@
           "associated_requirement_ids": [
             "RFC9250-S4-3-1-P3-R01",
             "RFC9250-S4-3-1-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-3-1-P3-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_DanglingStreamAndCancellationLimitPoliciesRemainTraceLinked",
+          "method": "Fuzz_DanglingStreamAndCancellationLimitPoliciesRemainTraceLinked",
+          "line": 1670,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0019",
+            "REQ-QUIC-RFC9250-0020",
+            "REQ-QUIC-RFC9250-0021",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -473767,14 +474642,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::CancellationLimitClosesWithExcessiveLoad",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 1,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -473802,6 +474677,33 @@
             "REQ-QUIC-RFC9250-0019",
             "REQ-QUIC-RFC9250-0020",
             "REQ-QUIC-RFC9250-0021",
+            "RFC9250-S4-3-1-P3-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-3-1-P3-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_DanglingStreamAndCancellationLimitPoliciesRemainTraceLinked",
+          "method": "Fuzz_DanglingStreamAndCancellationLimitPoliciesRemainTraceLinked",
+          "line": 1670,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0019",
+            "REQ-QUIC-RFC9250-0020",
+            "REQ-QUIC-RFC9250-0021",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
             "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
@@ -473956,14 +474858,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::EarlyResetAbandonsTransactionAndResetsServerWrites",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 1,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -473991,6 +474893,33 @@
             "RFC9250-S4-3-1-P1-S4-R01",
             "RFC9250-S4-3-1-P5-S1-R01",
             "RFC9250-S4-3-1-P5-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-3-1-P5-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ResetStreamServfailAndInternalErrorPoliciesRemainTraceLinked",
+          "method": "Fuzz_ResetStreamServfailAndInternalErrorPoliciesRemainTraceLinked",
+          "line": 1723,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P1-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -474142,14 +475071,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::EarlyResetAbandonsTransactionAndResetsServerWrites",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 1,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -474177,6 +475106,33 @@
             "RFC9250-S4-3-1-P1-S4-R01",
             "RFC9250-S4-3-1-P5-S1-R01",
             "RFC9250-S4-3-1-P5-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-3-1-P5-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ResetStreamServfailAndInternalErrorPoliciesRemainTraceLinked",
+          "method": "Fuzz_ResetStreamServfailAndInternalErrorPoliciesRemainTraceLinked",
+          "line": 1723,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P1-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -474332,14 +475288,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 6,
           "negative": 0,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -474347,6 +475303,33 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9250-S4-3-2-P1-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ResetStreamServfailAndInternalErrorPoliciesRemainTraceLinked",
+          "method": "Fuzz_ResetStreamServfailAndInternalErrorPoliciesRemainTraceLinked",
+          "line": 1723,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P1-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9250-S4-3-2-P1-S2-R01",
           "source": "requirement_attribute",
@@ -474504,14 +475487,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::InternalErrorAbortsStreamWithInternalErrorAndAbandonsTransaction",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 1,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -474519,6 +475502,33 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9250-S4-3-2-P2-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ResetStreamServfailAndInternalErrorPoliciesRemainTraceLinked",
+          "method": "Fuzz_ResetStreamServfailAndInternalErrorPoliciesRemainTraceLinked",
+          "line": 1723,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P1-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9250-S4-3-2-P2-S1-R01",
           "source": "requirement_attribute",
@@ -474692,14 +475702,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::InternalErrorAbortsStreamWithInternalErrorAndAbandonsTransaction",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 1,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -474707,6 +475717,33 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9250-S4-3-2-P2-S1-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ResetStreamServfailAndInternalErrorPoliciesRemainTraceLinked",
+          "method": "Fuzz_ResetStreamServfailAndInternalErrorPoliciesRemainTraceLinked",
+          "line": 1723,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P1-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9250-S4-3-2-P2-S1-R02",
           "source": "requirement_attribute",
@@ -474880,14 +475917,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::InternalErrorAbortsStreamWithInternalErrorAndAbandonsTransaction",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 1,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -474895,6 +475932,33 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9250-S4-3-2-P2-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ResetStreamServfailAndInternalErrorPoliciesRemainTraceLinked",
+          "method": "Fuzz_ResetStreamServfailAndInternalErrorPoliciesRemainTraceLinked",
+          "line": 1723,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P1-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9250-S4-3-2-P2-S2-R01",
           "source": "requirement_attribute",
@@ -475631,14 +476695,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -475694,6 +476758,33 @@
             "RFC9250-S4-4-P4-S1-R01",
             "RFC9250-S4-4-P6-S3-R01",
             "RFC9250-S4-4-P6-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-4-P4-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ExplicitCloseAndIdleMonitoringPoliciesRemainTraceLinked",
+          "method": "Fuzz_ExplicitCloseAndIdleMonitoringPoliciesRemainTraceLinked",
+          "line": 1804,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0071",
+            "REQ-QUIC-RFC9250-0072",
+            "REQ-QUIC-RFC9250-0073",
+            "REQ-QUIC-RFC9250-0074",
+            "RFC9250-S4-4-P4-R01",
+            "RFC9250-S4-4-P4-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -475776,14 +476867,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -475839,6 +476930,33 @@
             "RFC9250-S4-4-P4-S1-R01",
             "RFC9250-S4-4-P6-S3-R01",
             "RFC9250-S4-4-P6-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-4-P4-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ExplicitCloseAndIdleMonitoringPoliciesRemainTraceLinked",
+          "method": "Fuzz_ExplicitCloseAndIdleMonitoringPoliciesRemainTraceLinked",
+          "line": 1804,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0071",
+            "REQ-QUIC-RFC9250-0072",
+            "REQ-QUIC-RFC9250-0073",
+            "REQ-QUIC-RFC9250-0074",
+            "RFC9250-S4-4-P4-R01",
+            "RFC9250-S4-4-P4-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -475921,14 +477039,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -475984,6 +477102,31 @@
             "RFC9250-S4-4-P4-S1-R01",
             "RFC9250-S4-4-P6-S3-R01",
             "RFC9250-S4-4-P6-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-4-P6-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ConnectionReuseReplacementAndBackoffPoliciesRemainTraceLinked",
+          "method": "Fuzz_ConnectionReuseReplacementAndBackoffPoliciesRemainTraceLinked",
+          "line": 1830,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0102",
+            "RFC9250-S4-4-P6-S3-R01",
+            "RFC9250-S4-4-P6-S4-R01",
+            "RFC9250-S5-2-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -476066,14 +477209,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -476129,6 +477272,31 @@
             "RFC9250-S4-4-P4-S1-R01",
             "RFC9250-S4-4-P6-S3-R01",
             "RFC9250-S4-4-P6-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-4-P6-S4-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ConnectionReuseReplacementAndBackoffPoliciesRemainTraceLinked",
+          "method": "Fuzz_ConnectionReuseReplacementAndBackoffPoliciesRemainTraceLinked",
+          "line": 1830,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0102",
+            "RFC9250-S4-4-P6-S3-R01",
+            "RFC9250-S4-4-P6-S4-R01",
+            "RFC9250-S5-2-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -476208,14 +477376,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 8,
+        "total": 9,
+        "focused": 9,
         "broad": 0,
         "by_kind": {
           "positive": 5,
           "negative": 3,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -476244,6 +477412,33 @@
             "RFC9250-S4-5-P2-R01"
           ],
           "requirement_tagged": false,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-5-P1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ZeroRttReplayabilityPoliciesRemainTraceLinked",
+          "method": "Fuzz_ZeroRttReplayabilityPoliciesRemainTraceLinked",
+          "line": 1883,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0079",
+            "REQ-QUIC-RFC9250-0080",
+            "REQ-QUIC-RFC9250-0082",
+            "REQ-QUIC-RFC9250-0083",
+            "RFC9250-S4-5-P1-R01",
+            "RFC9250-S4-5-P2-R01"
+          ],
+          "requirement_tagged": true,
           "class_level_only": false
         },
         {
@@ -476429,14 +477624,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -476485,6 +477680,33 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0079",
+            "RFC9250-S4-5-P2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-5-P2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ZeroRttReplayabilityPoliciesRemainTraceLinked",
+          "method": "Fuzz_ZeroRttReplayabilityPoliciesRemainTraceLinked",
+          "line": 1883,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0079",
+            "REQ-QUIC-RFC9250-0080",
+            "REQ-QUIC-RFC9250-0082",
+            "REQ-QUIC-RFC9250-0083",
+            "RFC9250-S4-5-P1-R01",
             "RFC9250-S4-5-P2-R01"
           ],
           "requirement_tagged": true,
@@ -477309,14 +478531,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 8,
+        "total": 9,
+        "focused": 9,
         "broad": 0,
         "by_kind": {
           "positive": 6,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -477324,6 +478546,31 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9250-S5-2-P3-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ConnectionReuseReplacementAndBackoffPoliciesRemainTraceLinked",
+          "method": "Fuzz_ConnectionReuseReplacementAndBackoffPoliciesRemainTraceLinked",
+          "line": 1830,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0102",
+            "RFC9250-S4-4-P6-S3-R01",
+            "RFC9250-S4-4-P6-S4-R01",
+            "RFC9250-S5-2-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9250-S5-2-P3-S1-R01",
           "source": "requirement_attribute",
@@ -477530,14 +478777,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -477585,6 +478832,31 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "RFC9250-S5-5-3-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S5-5-3-P3-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ResumptionTicketAddressValidationAndPrivacyPoliciesRemainTraceLinked",
+          "method": "Fuzz_ResumptionTicketAddressValidationAndPrivacyPoliciesRemainTraceLinked",
+          "line": 1907,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S5-5-3-P3-S1-R01",
+            "RFC9250-S5-5-3-P3-S2-R01",
+            "RFC9250-S5-5-3-P4-S3-R01",
+            "RFC9250-S5-5-4-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -477661,14 +478933,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -477717,6 +478989,31 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "RFC9250-S5-5-3-P3-S2-R01",
+            "RFC9250-S5-5-4-P1-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S5-5-3-P3-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ResumptionTicketAddressValidationAndPrivacyPoliciesRemainTraceLinked",
+          "method": "Fuzz_ResumptionTicketAddressValidationAndPrivacyPoliciesRemainTraceLinked",
+          "line": 1907,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S5-5-3-P3-S1-R01",
+            "RFC9250-S5-5-3-P3-S2-R01",
+            "RFC9250-S5-5-3-P4-S3-R01",
             "RFC9250-S5-5-4-P1-S4-R01"
           ],
           "requirement_tagged": true,
@@ -477798,14 +479095,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 8,
+        "total": 9,
+        "focused": 9,
         "broad": 0,
         "by_kind": {
           "positive": 6,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -477897,6 +479194,31 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "RFC9250-S5-5-3-P4-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S5-5-3-P4-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ResumptionTicketAddressValidationAndPrivacyPoliciesRemainTraceLinked",
+          "method": "Fuzz_ResumptionTicketAddressValidationAndPrivacyPoliciesRemainTraceLinked",
+          "line": 1907,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S5-5-3-P3-S1-R01",
+            "RFC9250-S5-5-3-P3-S2-R01",
+            "RFC9250-S5-5-3-P4-S3-R01",
+            "RFC9250-S5-5-4-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -478382,14 +479704,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 8,
+        "total": 9,
+        "focused": 9,
         "broad": 0,
         "by_kind": {
           "positive": 6,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -478438,6 +479760,31 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "RFC9250-S5-5-3-P3-S2-R01",
+            "RFC9250-S5-5-4-P1-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S5-5-4-P1-S4-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ResumptionTicketAddressValidationAndPrivacyPoliciesRemainTraceLinked",
+          "method": "Fuzz_ResumptionTicketAddressValidationAndPrivacyPoliciesRemainTraceLinked",
+          "line": 1907,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S5-5-3-P3-S1-R01",
+            "RFC9250-S5-5-3-P3-S2-R01",
+            "RFC9250-S5-5-3-P4-S3-R01",
             "RFC9250-S5-5-4-P1-S4-R01"
           ],
           "requirement_tagged": true,
@@ -478605,14 +479952,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -478620,6 +479967,33 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9250-S5-6-P1-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+          "class": "DoqStreamLifecycleTests",
+          "member": "DoqStreamLifecycleTests.Fuzz_ConcurrentQueryAndResponseStreamPoliciesRemainTraceLinked",
+          "method": "Fuzz_ConcurrentQueryAndResponseStreamPoliciesRemainTraceLinked",
+          "line": 1750,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0099",
+            "REQ-QUIC-RFC9250-0100",
+            "REQ-QUIC-RFC9250-0101",
+            "RFC9250-S4-2-P5-S1-R01",
+            "RFC9250-S4-2-P5-S3-R01",
+            "RFC9250-S5-6-P1-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9250-S5-6-P1-S2-R01",
           "source": "requirement_attribute",
