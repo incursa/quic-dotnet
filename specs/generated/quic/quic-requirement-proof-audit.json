@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T21:07:33.2425705-06:00",
+    "generated_at": "2026-07-06T21:11:26.3871145-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 36,
-      "full_executable_proof": 2641
+      "deferred_proof_not_executed": 26,
+      "full_executable_proof": 2651
     },
     "by_rfc": [
       {
@@ -126,8 +126,7 @@
         "rfc": "RFC9461",
         "total": 42,
         "by_proof_state": {
-          "deferred_proof_not_executed": 10,
-          "full_executable_proof": 32
+          "full_executable_proof": 42
         }
       },
       {
@@ -57938,9 +57937,9 @@
       "rfc": "RFC9461",
       "title": "DNS service SVCB name formation",
       "statement": "SVCB record names (QNAMEs) for DNS services MUST be formed using Port Prefix Naming with the scheme \"dns\".",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -57951,6 +57950,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -57958,13 +57958,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-DefaultsFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -57978,9 +57977,9 @@
       "rfc": "RFC9461",
       "title": "Authentication name format",
       "statement": "The authentication name MUST be a DNS hostname or a literal IP address.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -57990,6 +57989,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -57997,13 +57997,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-DefaultsFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -58016,9 +58015,9 @@
       "rfc": "RFC9461",
       "title": "Default DNS port for unencrypted UDP/TCP",
       "statement": "When connecting to the service using unencrypted DNS over UDP or TCP, clients MUST use port 53.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58028,6 +58027,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -58035,13 +58035,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-DefaultsFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -58054,9 +58053,9 @@
       "rfc": "RFC9461",
       "title": "Non-default port prefix naming",
       "statement": "When the binding authority specifies a non-default port number, Port Prefix Naming MUST place the port number in an additional prefix on the name.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58066,6 +58065,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -58073,13 +58073,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-DefaultsFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -58422,9 +58421,9 @@
       "rfc": "RFC9461",
       "title": "Register the _dns node name",
       "statement": "IANA MUST register `_dns` as the node name for SVCB.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58434,6 +58433,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -58441,13 +58441,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-DefaultsFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -58568,9 +58567,9 @@
       "rfc": "RFC9461",
       "title": "Map the scheme to dns",
       "statement": "The mapped scheme MUST be `dns`.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58580,6 +58579,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -58587,13 +58587,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-DefaultsFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -58678,9 +58677,9 @@
       "rfc": "RFC9461",
       "title": "Set the name prefix by port",
       "statement": "The name prefix MUST be `_dns` for port 53 and `_$PORT._dns` otherwise.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58690,6 +58689,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -58697,13 +58697,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs"
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-DefaultsFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -58832,9 +58831,9 @@
       "rfc": "RFC9461",
       "title": "Resolve AliasMode DNS SVCB chains to ServiceMode records",
       "statement": "The DNS service binding resolver MUST parse AliasMode SVCB RDATA as priority zero plus an uncompressed TargetName with no SvcParams, follow AliasMode owner-to-target chains to ServiceMode SVCB records, and report loops, missing targets, malformed AliasMode RDATA, compressed target names, non-zero priorities, and AliasMode records carrying SvcParams without performing DNS message parsing, Additional-section address processing, DNSSEC validation, operator publication, host resolver installation, or encrypted DNS session establishment.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58846,15 +58845,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0040.cs"
@@ -58871,9 +58869,9 @@
       "rfc": "RFC9461",
       "title": "Parse DNS service binding responses and Additional addresses",
       "statement": "The DNS service binding response parser MUST parse DNS response headers, questions, answer records, authority records, and Additional records; decode SVCB answer records into AliasMode and ServiceMode records; extract Internet-class Additional-section A and AAAA address records; skip unsupported record types and non-Internet address records; and reject truncated messages, cyclic or invalid compressed names, malformed SVCB RDATA, malformed A or AAAA RDATA, and trailing bytes without performing DNSSEC validation, operator publication, host resolver installation, or encrypted DNS session establishment.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58885,15 +58883,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0041.cs"
@@ -58910,9 +58907,9 @@
       "rfc": "RFC9461",
       "title": "Generate deterministic DNS service binding publication records",
       "statement": "The DNS service binding publication planner MUST generate deterministic presentation-format SVCB records from validated DNS service binding values, include an equivalent HTTPS record when operator guidance recommends one and the service binding advertises HTTP protocols, avoid AliasMode in fast-resolution publication plans, preserve RFC 9461 `alpn`, `port`, `dohpath`, and HTTPS service-parameter values, and reject invalid TargetName and TTL inputs without performing live DNS provider publication, DNSSEC signing, host resolver installation, or encrypted DNS session establishment.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58924,15 +58921,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",

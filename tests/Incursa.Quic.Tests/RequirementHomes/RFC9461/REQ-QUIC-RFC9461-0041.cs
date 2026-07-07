@@ -104,6 +104,39 @@ public sealed class REQ_QUIC_RFC9461_0041
         Assert.Empty(parsed.AdditionalAddresses);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9461-0041")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ResponseParserDecodesSvcbAndInternetAdditionalAddressesOnly()
+    {
+        byte[] message = CreateDnsResponse(
+            questionName: "_853._dns.resolver.example.",
+            answers:
+            [
+                CreateResourceRecord("pointer:12", DnsServiceBindingRecord.SvcbResourceRecordType, CreateAliasModeRData("svc.example.")),
+                CreateResourceRecord("svc.example.", DnsServiceBindingRecord.SvcbResourceRecordType, CreateServiceModeRData(
+                    "target.example.",
+                    [CreateSvcParam(1, [3, (byte)'d', (byte)'o', (byte)'q'])])),
+                CreateResourceRecord("svc.example.", 16, Encoding.ASCII.GetBytes("ignored")),
+            ],
+            authorities: [CreateResourceRecord("resolver.example.", 2, EncodeDomainName("ns.example."))],
+            additionals:
+            [
+                CreateResourceRecord("svc.example.", 1, [192, 0, 2, 53]),
+                CreateResourceRecord("svc.example.", 28, [0x20, 0x01, 0x0D, 0xB8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x35]),
+                CreateResourceRecord("svc.example.", 1, [198, 51, 100, 53], dnsClass: 255),
+            ]);
+
+        DnsServiceBindingResponseMessage parsed = DnsServiceBindingResponseMessage.Parse("resolver.example", message);
+
+        Assert.Single(parsed.Questions);
+        Assert.Single(parsed.AliasRecords);
+        Assert.Single(parsed.ServiceRecords);
+        Assert.Equal([IPAddress.Parse("192.0.2.53"), IPAddress.Parse("2001:db8::35")], parsed.AdditionalAddresses.Select(static address => address.Address));
+        Assert.ThrowsAny<ArgumentException>(() => DnsServiceBindingResponseMessage.Parse("resolver.example", [0x00, 0x01, 0x81]));
+    }
+
     public static IEnumerable<object[]> MalformedMessages()
     {
         yield return Row([0x00, 0x01, 0x81]);

@@ -93,4 +93,44 @@ public sealed class REQ_QUIC_RFC9461_0042
         Assert.False(plan.IncludesEquivalentHttpsRecord);
         Assert.Equal("_853._dns.resolver.example. 300 IN SVCB 1 target.example. alpn=\"doq\" port=853", publication.ToPresentationString());
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9461-0042")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_PublicationPlanPreservesSvcbValuesAndEquivalentHttpsPolicy()
+    {
+        DnsServiceBindingRecord record = DnsServiceBindingRecord.Create(
+            "Resolver.Example",
+            alpnProtocols: ["h3"],
+            dohPathTemplate: "/dns-query{?dns}",
+            port: 8443,
+            httpsServiceParameters: new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["ech"] = "config",
+            });
+
+        DnsServiceBindingPublicationPlan httpPlan = DnsServiceBindingPublicationPlan.Create(
+            DnsServiceTransport.DnsOverHttps,
+            record,
+            "Target.Example",
+            DnsServiceBindingOperatorGuidance.Create(resolutionSpeedHighPriority: true),
+            ttlSeconds: 600);
+        DnsServiceBindingPublicationPlan doqPlan = DnsServiceBindingPublicationPlan.Create(
+            DnsServiceTransport.DnsOverQuic,
+            DnsServiceBindingRecord.Create("resolver.example", alpnProtocols: ["doq"], port: 853),
+            "target.example.",
+            DnsServiceBindingOperatorGuidance.Create(resolutionSpeedHighPriority: false));
+
+        Assert.True(httpPlan.AvoidsAliasMode);
+        Assert.True(httpPlan.IncludesEquivalentHttpsRecord);
+        Assert.Equal(["SVCB", "HTTPS"], httpPlan.Records.Select(static record => record.ResourceRecordTypeName).ToArray());
+        Assert.All(httpPlan.Records, static record => Assert.Contains("dohpath=\"/dns-query{?dns}\"", record.ToPresentationString(), StringComparison.Ordinal));
+        Assert.False(doqPlan.IncludesEquivalentHttpsRecord);
+        Assert.ThrowsAny<ArgumentException>(() => DnsServiceBindingPublicationPlan.Create(
+            DnsServiceTransport.DnsOverQuic,
+            record,
+            "target..example",
+            ttlSeconds: 300));
+    }
 }

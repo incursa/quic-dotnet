@@ -79,6 +79,38 @@ public sealed class REQ_QUIC_RFC9461_0040
             DnsServiceBindingAliasRecord.ParseAliasModeRData("_853._dns.resolver.example.", rdata));
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9461-0040")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_AliasModeRDataAndChainResolutionStayBoundedToServiceModeRecords()
+    {
+        DnsServiceBindingAliasRecord alias = DnsServiceBindingAliasRecord.ParseAliasModeRData(
+            "_853._dns.resolver.example.",
+            CreateAliasModeRData("svc.example."));
+        DnsServiceBindingNamedRecord serviceRecord = DnsServiceBindingNamedRecord.Create(
+            "svc.example.",
+            ParseServiceModeRecord("resolver.example", "target.example.", ["doq"]));
+
+        DnsServiceBindingAliasResolution resolution = DnsServiceBindingAliasResolver.Resolve(
+            "_853._dns.resolver.example.",
+            [alias],
+            [serviceRecord]);
+
+        Assert.True(resolution.Succeeded);
+        Assert.Equal("svc.example.", resolution.ResolvedName);
+        Assert.Same(serviceRecord, Assert.Single(resolution.ServiceRecords));
+        Assert.Equal(DnsServiceBindingAliasResolutionStatus.AliasLoop, DnsServiceBindingAliasResolver.Resolve(
+            "_853._dns.resolver.example.",
+            [
+                DnsServiceBindingAliasRecord.Create("_853._dns.resolver.example.", "loop.example."),
+                DnsServiceBindingAliasRecord.Create("loop.example.", "_853._dns.resolver.example."),
+            ],
+            []).Status);
+        Assert.ThrowsAny<ArgumentException>(() =>
+            DnsServiceBindingAliasRecord.ParseAliasModeRData("_853._dns.resolver.example.", CreateServiceModeRData("target.example.", [])));
+    }
+
     public static IEnumerable<object[]> MalformedAliasModeRData()
     {
         yield return Row([]);
