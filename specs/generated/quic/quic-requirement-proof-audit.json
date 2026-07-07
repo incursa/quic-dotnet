@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T20:35:57.6834377-06:00",
+    "generated_at": "2026-07-06T20:39:35.0951420-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 210,
-      "full_executable_proof": 2467
+      "deferred_proof_not_executed": 202,
+      "full_executable_proof": 2475
     },
     "by_rfc": [
       {
@@ -91,8 +91,7 @@
         "rfc": "RFC9298",
         "total": 116,
         "by_proof_state": {
-          "deferred_proof_not_executed": 8,
-          "full_executable_proof": 108
+          "full_executable_proof": 116
         }
       },
       {
@@ -54458,9 +54457,9 @@
       "rfc": "RFC9298",
       "title": "Interpret stream as connection without multiplexing",
       "statement": "When the HTTP version in use does not support multiplexing streams, a reference to \"stream\" in this document MUST represent the entire connection.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -54470,18 +54469,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RemainderFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -55068,9 +55067,9 @@
       "rfc": "RFC9298",
       "title": "Use HTTP Datagrams in the Section 5 format",
       "statement": "UDP tunnels MUST use HTTP Datagrams in the format defined in Section 5.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -55080,18 +55079,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RemainderFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -55522,9 +55521,9 @@
       "rfc": "RFC9298",
       "title": "Convert HTTP Datagrams and UDP packets after a successful request",
       "statement": "If the request is successful, the UDP proxy MUST convert received HTTP Datagrams into UDP packets and UDP packets into HTTP Datagrams until the tunnel is closed.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -55534,18 +55533,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RemainderFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -56965,9 +56964,9 @@
       "rfc": "RFC9298",
       "title": "Handle early HTTP Datagrams by drop or temporary buffering",
       "statement": "If a UDP proxy receives an HTTP Datagram before the corresponding request, it SHALL either drop it silently or buffer it temporarily for about one round trip while awaiting the request.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56977,6 +56976,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56984,13 +56984,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpEarlyDatagramPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpEarlyDatagramPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RemainderFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpEarlyDatagramPolicyTests.cs::EarlyDatagramPolicy_DropsOrBuffersBeforeRequest tests/Incursa.Quic.Tests/Http3ConnectUdpEarlyDatagramPolicyTests.cs::EarlyDatagramPolicy_ProcessesDatagramWhenRequestIsKnown"
@@ -57000,9 +56999,9 @@
       "rfc": "RFC9298",
       "title": "Apply buffering limits to buffered datagrams",
       "statement": "Receivers that buffer datagrams SHOULD apply buffering limits to reduce the risk of resource exhaustion.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -57012,6 +57011,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -57019,13 +57019,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpEarlyDatagramPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpEarlyDatagramPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RemainderFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpEarlyDatagramPolicyTests.cs::EarlyDatagramPolicy_AppliesBufferingLimitsWhenBuffering tests/Incursa.Quic.Tests/Http3ConnectUdpEarlyDatagramPolicyTests.cs::EarlyDatagramPolicy_DoesNotApplyBufferingLimitsWhenDropping"
@@ -57035,9 +57034,9 @@
       "rfc": "RFC9298",
       "title": "Allow optimistic datagram sending before response",
       "statement": "A client MAY send UDP packets in HTTP Datagrams before receiving the response to its UDP proxying request.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -57047,6 +57046,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -57054,13 +57054,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpEarlyDatagramPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpEarlyDatagramPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RemainderFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpEarlyDatagramPolicyTests.cs::EarlyDatagramPolicy_AllowsClientOptimisticDatagramsBeforeResponse tests/Incursa.Quic.Tests/Http3ConnectUdpEarlyDatagramPolicyTests.cs::EarlyDatagramPolicy_DoesNotForbidClientOptimisticDatagramsBeforeResponse"
@@ -57245,9 +57244,9 @@
       "rfc": "RFC9298",
       "title": "Disallow UDP proxying to vulnerable targets",
       "statement": "UDP proxies MUST disallow UDP proxying requests to vulnerable targets, such as the proxy's own addresses and localhost, link-local, multicast, and broadcast addresses.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -57257,6 +57256,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -57264,13 +57264,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RemainderFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -57284,9 +57283,9 @@
       "rfc": "RFC9298",
       "title": "Use destination_ip_prohibited when rejecting disallowed requests",
       "statement": "UDP proxies MAY use the destination_ip_prohibited Proxy Error Type from Section 2.3.5 of PROXY-STATUS when rejecting such requests.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -57296,6 +57295,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -57303,13 +57303,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-RemainderFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
