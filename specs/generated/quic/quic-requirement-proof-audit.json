@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T20:18:11.9447158-06:00",
+    "generated_at": "2026-07-06T20:22:03.6951092-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 251,
-      "full_executable_proof": 2426
+      "deferred_proof_not_executed": 239,
+      "full_executable_proof": 2438
     },
     "by_rfc": [
       {
@@ -91,8 +91,8 @@
         "rfc": "RFC9298",
         "total": 116,
         "by_proof_state": {
-          "deferred_proof_not_executed": 49,
-          "full_executable_proof": 67
+          "deferred_proof_not_executed": 37,
+          "full_executable_proof": 79
         }
       },
       {
@@ -55994,9 +55994,9 @@
       "rfc": "RFC9298",
       "title": "Use GET method",
       "statement": "The method SHALL be \"GET\".",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56006,6 +56006,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56013,13 +56014,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-Http11UpgradeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_UsesGetMethod tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_RejectsNonGetMethod"
@@ -56029,9 +56029,9 @@
       "rfc": "RFC9298",
       "title": "Include a single Host header field",
       "statement": "The request MUST include a single Host header field containing the origin of the UDP proxy.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56041,6 +56041,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56048,13 +56049,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-Http11UpgradeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_IncludesSingleHostHeader tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_RejectsMissingOrDuplicateHostHeaders"
@@ -56064,9 +56064,9 @@
       "rfc": "RFC9298",
       "title": "Include Connection header field value Upgrade",
       "statement": "The request MUST include a Connection header field with value \"Upgrade\", compared case-insensitively.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56076,6 +56076,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56083,13 +56084,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-Http11UpgradeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_IncludesConnectionUpgradeToken tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_RejectsMissingConnectionUpgradeToken"
@@ -56099,9 +56099,9 @@
       "rfc": "RFC9298",
       "title": "Include Upgrade header field value connect-udp",
       "statement": "The request MUST include an Upgrade header field with value \"connect-udp\".",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56111,6 +56111,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56118,13 +56119,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-Http11UpgradeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_IncludesConnectUdpUpgradeHeader tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_RejectsMissingConnectUdpUpgradeHeader"
@@ -56134,9 +56134,9 @@
       "rfc": "RFC9298",
       "title": "Respond with an error to malformed requests",
       "statement": "The recipient of such a malformed request MUST respond with an error.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56146,6 +56146,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56153,13 +56154,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-Http11UpgradeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_MalformedRequestsUseBadRequestRecommendation tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_MalformedRequestsDoNotUseSuccessfulStatus"
@@ -56169,9 +56169,9 @@
       "rfc": "RFC9298",
       "title": "Use 400 Bad Request for malformed requests",
       "statement": "The recipient of such a malformed request SHOULD use the 400 (Bad Request) status code.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56181,6 +56181,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56188,13 +56189,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-Http11UpgradeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_MalformedRequestsUseBadRequestRecommendation tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_MalformedRequestsDoNotUseSuccessfulStatus"
@@ -56204,9 +56204,9 @@
       "rfc": "RFC9298",
       "title": "Respond with 101 Switching Protocols",
       "statement": "The HTTP status code on the response MUST be 101 (Switching Protocols).",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56216,6 +56216,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56223,13 +56224,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-Http11UpgradeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_UsesSwitchingProtocolsStatus tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsNonSwitchingProtocolsStatus"
@@ -56239,9 +56239,9 @@
       "rfc": "RFC9298",
       "title": "Include single Upgrade header field value connect-udp in response",
       "statement": "The response MUST include a single Upgrade header field with value \"connect-udp\".",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56251,6 +56251,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56258,13 +56259,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-Http11UpgradeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_IncludesSingleConnectUdpUpgradeHeader tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsDuplicateConnectUdpUpgradeHeaders"
@@ -56274,9 +56274,9 @@
       "rfc": "RFC9298",
       "title": "Meet Capsule Protocol response requirements",
       "statement": "The response SHALL meet the requirements of HTTP responses that start the Capsule Protocol.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56286,6 +56286,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56293,13 +56294,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-Http11UpgradeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_MeetsCapsuleNoContentRequirements tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsMessageContent"
@@ -56309,9 +56309,9 @@
       "rfc": "RFC9298",
       "title": "Abort failed proxying attempts",
       "statement": "If any of these requirements are not met, the client MUST treat this proxying attempt as failed and abort the connection.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56321,6 +56321,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56328,13 +56329,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-Http11UpgradeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_AllowsProceedWhenRequirementsAreMet tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_FailsProxyingAttemptWhenRequirementsAreMissing"
@@ -56344,9 +56344,9 @@
       "rfc": "RFC9298",
       "title": "Send HTTP Setting",
       "statement": "Servers MUST send an HTTP Setting as specified in [EXT-CONNECT2] and [EXT-CONNECT3].",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -56356,6 +56356,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -56363,13 +56364,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-Http11UpgradeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradePolicy_RequiresServerHttpSetting tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradePolicy_DoesNotAllowOmittingServerHttpSetting"
@@ -91639,9 +91639,9 @@
       "rfc": "RFC9298",
       "title": "Include Connection header field value Upgrade in response",
       "statement": "The response SHALL include a Connection header field with value \"Upgrade\".",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -91651,6 +91651,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -91658,13 +91659,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-Http11UpgradeFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_IncludesConnectionUpgradeToken tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsMissingConnectionUpgradeToken"
