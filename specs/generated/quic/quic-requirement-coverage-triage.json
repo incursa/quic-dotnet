@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T18:26:55.9769756-06:00",
+  "generated_at": "2026-07-06T18:37:37.7350592-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T18:26:55.9726679-06:00",
+    "generated_at": "2026-07-06T18:37:37.7307338-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -253064,14 +253064,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 6,
+        "total": 9,
+        "focused": 7,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 2
         },
@@ -253118,6 +253118,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S4-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-S4-0001.cs",
+          "class": "REQ_QUIC_RFC9114_S4_0001",
+          "member": "REQ_QUIC_RFC9114_S4_0001.Fuzz_LowLevelMalformedSequencesReturnDeterministicErrorCodesOrIgnoreOutcomes",
+          "method": "Fuzz_LowLevelMalformedSequencesReturnDeterministicErrorCodesOrIgnoreOutcomes",
+          "line": 103,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         },
         {
           "requirement_id": "REQ-QUIC-RFC9114-S4-0001",
@@ -253297,14 +253319,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 40,
-        "focused": 34,
+        "total": 45,
+        "focused": 39,
         "broad": 6,
         "by_kind": {
           "positive": 16,
           "negative": 14,
           "edge": 10,
-          "fuzz": 0,
+          "fuzz": 5,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -254066,6 +254088,141 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
           "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3FrameCodecRoundTripsFragmentsAndRejectsMalformedBoundaries",
+          "method": "Fuzz_Http3FrameCodecRoundTripsFragmentsAndRejectsMalformedBoundaries",
+          "line": 226,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S4-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3HeaderAndMessageValidatorsRejectMalformedRequestResponseSequences",
+          "method": "Fuzz_Http3HeaderAndMessageValidatorsRejectMalformedRequestResponseSequences",
+          "line": 372,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S4-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3SettingsExchangeAcceptsKnownUnknownAndRejectsForbiddenShapes",
+          "method": "Fuzz_Http3SettingsExchangeAcceptsKnownUnknownAndRejectsForbiddenShapes",
+          "line": 324,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S4-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3StreamDispatcherClassifiesControlQpackRequestAndUnknownStreams",
+          "method": "Fuzz_Http3StreamDispatcherClassifiesControlQpackRequestAndUnknownStreams",
+          "line": 281,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S4-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_MinimalHttp3RequestResponseSurfacesPreserveRouteAndBodyAccounting",
+          "method": "Fuzz_MinimalHttp3RequestResponseSurfacesPreserveRouteAndBodyAccounting",
+          "line": 426,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S4-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
           "member": "REQ_QUIC_RFC9114_0002.Http3CoreFloorIsTraceLinkedAcrossCanonicalArtifacts",
           "method": "Http3CoreFloorIsTraceLinkedAcrossCanonicalArtifacts",
           "line": 17,
@@ -254273,14 +254430,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 59,
-        "focused": 53,
+        "total": 64,
+        "focused": 58,
         "broad": 6,
         "by_kind": {
           "positive": 22,
           "negative": 27,
           "edge": 10,
-          "fuzz": 0,
+          "fuzz": 5,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -255464,6 +255621,141 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
           "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3FrameCodecRoundTripsFragmentsAndRejectsMalformedBoundaries",
+          "method": "Fuzz_Http3FrameCodecRoundTripsFragmentsAndRejectsMalformedBoundaries",
+          "line": 226,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S6-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3HeaderAndMessageValidatorsRejectMalformedRequestResponseSequences",
+          "method": "Fuzz_Http3HeaderAndMessageValidatorsRejectMalformedRequestResponseSequences",
+          "line": 372,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S6-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3SettingsExchangeAcceptsKnownUnknownAndRejectsForbiddenShapes",
+          "method": "Fuzz_Http3SettingsExchangeAcceptsKnownUnknownAndRejectsForbiddenShapes",
+          "line": 324,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S6-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3StreamDispatcherClassifiesControlQpackRequestAndUnknownStreams",
+          "method": "Fuzz_Http3StreamDispatcherClassifiesControlQpackRequestAndUnknownStreams",
+          "line": 281,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S6-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_MinimalHttp3RequestResponseSurfacesPreserveRouteAndBodyAccounting",
+          "method": "Fuzz_MinimalHttp3RequestResponseSurfacesPreserveRouteAndBodyAccounting",
+          "line": 426,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S6-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
           "member": "REQ_QUIC_RFC9114_0002.Http3CoreFloorIsTraceLinkedAcrossCanonicalArtifacts",
           "method": "Http3CoreFloorIsTraceLinkedAcrossCanonicalArtifacts",
           "line": 17,
@@ -255660,14 +255952,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 34,
-        "focused": 28,
+        "total": 39,
+        "focused": 33,
         "broad": 6,
         "by_kind": {
           "positive": 18,
           "negative": 12,
           "edge": 4,
-          "fuzz": 0,
+          "fuzz": 5,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -256301,6 +256593,141 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
           "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3FrameCodecRoundTripsFragmentsAndRejectsMalformedBoundaries",
+          "method": "Fuzz_Http3FrameCodecRoundTripsFragmentsAndRejectsMalformedBoundaries",
+          "line": 226,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S7-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3HeaderAndMessageValidatorsRejectMalformedRequestResponseSequences",
+          "method": "Fuzz_Http3HeaderAndMessageValidatorsRejectMalformedRequestResponseSequences",
+          "line": 372,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S7-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3SettingsExchangeAcceptsKnownUnknownAndRejectsForbiddenShapes",
+          "method": "Fuzz_Http3SettingsExchangeAcceptsKnownUnknownAndRejectsForbiddenShapes",
+          "line": 324,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S7-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3StreamDispatcherClassifiesControlQpackRequestAndUnknownStreams",
+          "method": "Fuzz_Http3StreamDispatcherClassifiesControlQpackRequestAndUnknownStreams",
+          "line": 281,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S7-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_MinimalHttp3RequestResponseSurfacesPreserveRouteAndBodyAccounting",
+          "method": "Fuzz_MinimalHttp3RequestResponseSurfacesPreserveRouteAndBodyAccounting",
+          "line": 426,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S7-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
           "member": "REQ_QUIC_RFC9114_0002.Http3CoreFloorIsTraceLinkedAcrossCanonicalArtifacts",
           "method": "Http3CoreFloorIsTraceLinkedAcrossCanonicalArtifacts",
           "line": 17,
@@ -256499,14 +256926,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 39,
-        "focused": 33,
+        "total": 44,
+        "focused": 38,
         "broad": 6,
         "by_kind": {
           "positive": 12,
           "negative": 15,
           "edge": 12,
-          "fuzz": 0,
+          "fuzz": 5,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -257247,6 +257674,141 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
           "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3FrameCodecRoundTripsFragmentsAndRejectsMalformedBoundaries",
+          "method": "Fuzz_Http3FrameCodecRoundTripsFragmentsAndRejectsMalformedBoundaries",
+          "line": 226,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S8-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3HeaderAndMessageValidatorsRejectMalformedRequestResponseSequences",
+          "method": "Fuzz_Http3HeaderAndMessageValidatorsRejectMalformedRequestResponseSequences",
+          "line": 372,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S8-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3SettingsExchangeAcceptsKnownUnknownAndRejectsForbiddenShapes",
+          "method": "Fuzz_Http3SettingsExchangeAcceptsKnownUnknownAndRejectsForbiddenShapes",
+          "line": 324,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S8-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3StreamDispatcherClassifiesControlQpackRequestAndUnknownStreams",
+          "method": "Fuzz_Http3StreamDispatcherClassifiesControlQpackRequestAndUnknownStreams",
+          "line": 281,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S8-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_MinimalHttp3RequestResponseSurfacesPreserveRouteAndBodyAccounting",
+          "method": "Fuzz_MinimalHttp3RequestResponseSurfacesPreserveRouteAndBodyAccounting",
+          "line": 426,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S8-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
           "member": "REQ_QUIC_RFC9114_0002.Http3CoreFloorIsTraceLinkedAcrossCanonicalArtifacts",
           "method": "Http3CoreFloorIsTraceLinkedAcrossCanonicalArtifacts",
           "line": 17,
@@ -257438,14 +258000,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 23,
-        "focused": 17,
+        "total": 28,
+        "focused": 22,
         "broad": 6,
         "by_kind": {
           "positive": 13,
           "negative": 4,
           "edge": 6,
-          "fuzz": 0,
+          "fuzz": 5,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -257833,6 +258395,141 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
           "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3FrameCodecRoundTripsFragmentsAndRejectsMalformedBoundaries",
+          "method": "Fuzz_Http3FrameCodecRoundTripsFragmentsAndRejectsMalformedBoundaries",
+          "line": 226,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S9-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3HeaderAndMessageValidatorsRejectMalformedRequestResponseSequences",
+          "method": "Fuzz_Http3HeaderAndMessageValidatorsRejectMalformedRequestResponseSequences",
+          "line": 372,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S9-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3SettingsExchangeAcceptsKnownUnknownAndRejectsForbiddenShapes",
+          "method": "Fuzz_Http3SettingsExchangeAcceptsKnownUnknownAndRejectsForbiddenShapes",
+          "line": 324,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S9-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3StreamDispatcherClassifiesControlQpackRequestAndUnknownStreams",
+          "method": "Fuzz_Http3StreamDispatcherClassifiesControlQpackRequestAndUnknownStreams",
+          "line": 281,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S9-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_MinimalHttp3RequestResponseSurfacesPreserveRouteAndBodyAccounting",
+          "method": "Fuzz_MinimalHttp3RequestResponseSurfacesPreserveRouteAndBodyAccounting",
+          "line": 426,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S9-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
           "member": "REQ_QUIC_RFC9114_0002.Http3CoreFloorIsTraceLinkedAcrossCanonicalArtifacts",
           "method": "Http3CoreFloorIsTraceLinkedAcrossCanonicalArtifacts",
           "line": 17,
@@ -258022,14 +258719,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 18,
-        "focused": 11,
+        "total": 23,
+        "focused": 16,
         "broad": 7,
         "by_kind": {
           "positive": 12,
           "negative": 4,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 5,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -258288,6 +258985,141 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
           "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3FrameCodecRoundTripsFragmentsAndRejectsMalformedBoundaries",
+          "method": "Fuzz_Http3FrameCodecRoundTripsFragmentsAndRejectsMalformedBoundaries",
+          "line": 226,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S9-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3HeaderAndMessageValidatorsRejectMalformedRequestResponseSequences",
+          "method": "Fuzz_Http3HeaderAndMessageValidatorsRejectMalformedRequestResponseSequences",
+          "line": 372,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S9-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3SettingsExchangeAcceptsKnownUnknownAndRejectsForbiddenShapes",
+          "method": "Fuzz_Http3SettingsExchangeAcceptsKnownUnknownAndRejectsForbiddenShapes",
+          "line": 324,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S9-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_Http3StreamDispatcherClassifiesControlQpackRequestAndUnknownStreams",
+          "method": "Fuzz_Http3StreamDispatcherClassifiesControlQpackRequestAndUnknownStreams",
+          "line": 281,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S9-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
+          "member": "REQ_QUIC_RFC9114_0002.Fuzz_MinimalHttp3RequestResponseSurfacesPreserveRouteAndBodyAccounting",
+          "method": "Fuzz_MinimalHttp3RequestResponseSurfacesPreserveRouteAndBodyAccounting",
+          "line": 426,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002",
+            "REQ-QUIC-RFC9114-S6-0001",
+            "REQ-QUIC-RFC9114-S7-0001",
+            "REQ-QUIC-RFC9114-S8-0001",
+            "REQ-QUIC-RFC9114-S9-0001",
+            "REQ-QUIC-RFC9114-S9-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S9-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+          "class": "REQ_QUIC_RFC9114_0002",
           "member": "REQ_QUIC_RFC9114_0002.Http3CoreFloorIsTraceLinkedAcrossCanonicalArtifacts",
           "method": "Http3CoreFloorIsTraceLinkedAcrossCanonicalArtifacts",
           "line": 17,
@@ -258500,14 +259332,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -258627,6 +259459,28 @@
             "REQ-QUIC-RFC9114-S9-0001"
           ],
           "requirement_tagged": false,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S9-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-S9-0003.cs",
+          "class": "REQ_QUIC_RFC9114_S9_0003",
+          "member": "REQ_QUIC_RFC9114_S9_0003.Fuzz_DynamicQpackStateFeedsHttp3HeadersFramesDeterministically",
+          "method": "Fuzz_DynamicQpackStateFeedsHttp3HeadersFramesDeterministically",
+          "line": 12,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S9-0003"
+          ],
+          "requirement_tagged": true,
           "class_level_only": false
         }
       ]

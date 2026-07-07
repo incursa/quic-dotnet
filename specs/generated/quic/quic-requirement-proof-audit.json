@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T18:27:16.6214469-06:00",
+    "generated_at": "2026-07-06T18:37:55.1324674-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 692,
-      "full_executable_proof": 1985
+      "deferred_proof_not_executed": 684,
+      "full_executable_proof": 1993
     },
     "by_rfc": [
       {
@@ -42,7 +42,7 @@
         "rfc": "RFC9114",
         "total": 8,
         "by_proof_state": {
-          "deferred_proof_not_executed": 8
+          "full_executable_proof": 8
         }
       },
       {
@@ -46262,9 +46262,9 @@
       "rfc": "RFC9114",
       "title": "Reject or ignore low-level malformed HTTP/3 sequences according to RFC 9114",
       "statement": "The HTTP/3 layer MUST provide deterministic low-level protocol checks for malformed sequences normal clients do not generate, with each covered case recording the expected RFC 9114 error code or no-error ignore behavior and automated pass/fail evidence.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -46276,6 +46276,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -46283,10 +46284,8 @@
         "unspecified"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-S4-0001.cs"
@@ -46304,9 +46303,9 @@
       "rfc": "RFC9114",
       "title": "Parse and write HTTP/3 frames deterministically",
       "statement": "The HTTP/3 layer MUST parse and write DATA, HEADERS, SETTINGS, GOAWAY, CANCEL_PUSH, MAX_PUSH_ID, and PUSH_PROMISE frames with exact payload-length handling across partial buffers, preserving unknown and reserved frame types according to RFC 9114 when they are permitted on the stream.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -46318,6 +46317,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -46325,14 +46325,13 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 18,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 23,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs",
-        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs"
       ],
       "spec_test_ref_count": 16,
       "spec_test_refs": [
@@ -46359,9 +46358,9 @@
       "rfc": "RFC9114",
       "title": "Map HTTP/3 stream types and enforce control-stream rules",
       "statement": "The HTTP/3 layer MUST classify client-initiated bidirectional streams as requests, reject server-initiated bidirectional streams unless an extension is enabled, parse unidirectional stream types, enforce exactly one control stream per endpoint, require SETTINGS first on the control stream, and reject frames that are invalid for a stream kind.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -46373,6 +46372,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -46380,15 +46380,14 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 28,
-      "focused_file_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 33,
+      "focused_file_count": 4,
       "focused_files": [
         "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs",
         "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
-        "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs"
+        "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs"
       ],
       "spec_test_ref_count": 25,
       "spec_test_refs": [
@@ -46424,9 +46423,9 @@
       "rfc": "RFC9114",
       "title": "Handle SETTINGS exchange deterministically",
       "statement": "The HTTP/3 layer MUST send initial SETTINGS when transport is ready, parse peer SETTINGS, honor SETTINGS_MAX_FIELD_SECTION_SIZE, SETTINGS_QPACK_MAX_TABLE_CAPACITY, and SETTINGS_QPACK_BLOCKED_STREAMS, ignore allowed unknown settings, and reject duplicate or forbidden reserved HTTP/2 settings.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -46438,6 +46437,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -46445,15 +46445,14 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 14,
-      "focused_file_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 19,
+      "focused_file_count": 4,
       "focused_files": [
         "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs",
         "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs",
-        "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs"
+        "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs"
       ],
       "spec_test_ref_count": 14,
       "spec_test_refs": [
@@ -46478,9 +46477,9 @@
       "rfc": "RFC9114",
       "title": "Validate HTTP/3 request, response, and trailer headers",
       "statement": "The HTTP/3 layer MUST validate pseudo-header presence and order, reject unknown pseudo-headers, reject uppercase and connection-specific field names, enforce content-length against received DATA, and enforce request, response, and trailer message sequencing including informational responses and final responses.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -46492,6 +46491,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -46499,14 +46499,13 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 17,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 22,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs",
-        "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs"
+        "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs"
       ],
       "spec_test_ref_count": 16,
       "spec_test_refs": [
@@ -46533,9 +46532,9 @@
       "rfc": "RFC9114",
       "title": "Support the minimal HTTP/3 client/server request-response floor",
       "statement": "The HTTP/3 client and server MUST establish the h3 ALPN connection, open the required control and QPACK streams, encode request headers with QPACK, decode response headers, consume DATA frames, and complete clean request-response exchanges for static routes.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -46547,6 +46546,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -46554,14 +46554,13 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 9,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 14,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs",
-        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs"
       ],
       "spec_test_ref_count": 9,
       "spec_test_refs": [
@@ -46581,9 +46580,9 @@
       "rfc": "RFC9114",
       "title": "Complete large HTTP/3 bodies without premature EOF",
       "statement": "The HTTP/3 client and server MUST preserve exact DATA payload accounting and transport stream completion for large response and upload bodies, including 64KB and 1MB payloads, so a response or request body is not reported complete until the declared Content-Length is satisfied and the underlying HTTP/3 stream completion semantics remain correct.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -46595,6 +46594,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -46602,10 +46602,8 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 7,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 12,
       "focused_file_count": 4,
       "focused_files": [
         "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs",
@@ -46629,9 +46627,9 @@
       "rfc": "RFC9114",
       "title": "Consume dynamic QPACK state across HTTP/3 streams",
       "statement": "The HTTP/3 client and server MUST route peer QPACK encoder-stream instructions into connection-level header decoding so dynamic request and response HEADERS frames can block, unblock, and fail deterministically without treating the QPACK streams as opaque diagnostics-only bytes.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -46643,19 +46641,19 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs",
-        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-S9-0003.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [

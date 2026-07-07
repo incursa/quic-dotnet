@@ -219,6 +219,297 @@ public sealed class REQ_QUIC_RFC9114_0002
         Assert.Contains("stream FIN", verification, StringComparison.Ordinal);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_Http3FrameCodecRoundTripsFragmentsAndRejectsMalformedBoundaries()
+    {
+        foreach (int payloadLength in new[] { 0, 1, 63, 64, 1024, 16_383 })
+        {
+            byte[] payload = Enumerable.Range(0, payloadLength).Select(static value => (byte)(value % 251)).ToArray();
+            byte[] encoded = Http3FrameWriter.WriteData(payload);
+
+            Http3DataFrame frame = Assert.IsType<Http3DataFrame>(ReadSingleFrameFragmented(encoded, Math.Max(1, payloadLength % 7)));
+
+            Assert.Equal(payload, frame.Data.ToArray());
+            Assert.Equal(Http3FrameWriter.GetFrameLength((ulong)Http3FrameType.Data, payloadLength), encoded.Length);
+        }
+
+        Http3Frame[] frames = new Http3FrameReader().Read(
+        [
+            .. Http3FrameWriter.WriteHeaders(QPackEncoder.EncodeFieldSection(CommonRequestHeaders())),
+            .. Http3FrameWriter.WriteSettings(
+            [
+                new Http3Setting((ulong)Http3SettingIdentifier.QPackMaxTableCapacity, 128),
+                new Http3Setting((ulong)Http3SettingIdentifier.QPackBlockedStreams, 2),
+            ]),
+            .. Http3FrameWriter.WriteGoAway(0),
+            .. Http3FrameWriter.WriteCancelPush(1),
+            .. Http3FrameWriter.WriteMaxPushId(1),
+            .. Http3FrameWriter.WritePushPromise(1, [0x00, 0x00, 0xC1]),
+            .. Http3FrameWriter.WriteFrame(0x21, [0xAA]),
+            .. Http3FrameWriter.WriteFrame(0x41, [0xBB]),
+        ]);
+
+        Assert.Collection(
+            frames,
+            frame => Assert.IsType<Http3HeadersFrame>(frame),
+            frame => Assert.IsType<Http3SettingsFrame>(frame),
+            frame => Assert.IsType<Http3GoAwayFrame>(frame),
+            frame => Assert.IsType<Http3CancelPushFrame>(frame),
+            frame => Assert.IsType<Http3MaxPushIdFrame>(frame),
+            frame => Assert.IsType<Http3PushPromiseFrame>(frame),
+            frame => Assert.True(Assert.IsType<Http3UnknownFrame>(frame).IsReserved),
+            frame => Assert.False(Assert.IsType<Http3UnknownFrame>(frame).IsReserved));
+
+        foreach (byte[] malformed in new[] { Convert.FromHexString("40"), Convert.FromHexString("00030102"), Convert.FromHexString("03020102") })
+        {
+            Assert.Throws<Http3Exception>(() =>
+            {
+                Http3FrameReader reader = new();
+                _ = reader.Read(malformed);
+                _ = reader.Complete();
+            });
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_Http3StreamDispatcherClassifiesControlQpackRequestAndUnknownStreams()
+    {
+        Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server, enableServerPush: true);
+
+        Assert.Equal(Http3StreamKind.Request, dispatcher.RegisterBidirectionalStream(0).Kind);
+        Assert.Equal(Http3ErrorCode.StreamCreationError, Assert.Throws<Http3Exception>(
+            () => new Http3StreamDispatcher(Http3EndpointRole.Client).RegisterBidirectionalStream(1)).ErrorCode);
+
+        foreach ((ulong StreamId, ulong StreamType, Http3StreamKind Kind) streamCase in new[]
+        {
+            (2UL, (ulong)Http3StreamType.Control, Http3StreamKind.Control),
+            (6UL, (ulong)Http3StreamType.QPackEncoder, Http3StreamKind.QPackEncoder),
+            (10UL, (ulong)Http3StreamType.QPackDecoder, Http3StreamKind.QPackDecoder),
+            (14UL, 0x21UL, Http3StreamKind.Reserved),
+            (18UL, 0x41UL, Http3StreamKind.Unknown),
+        })
+        {
+            dispatcher.RegisterUnidirectionalStream(streamCase.StreamId);
+            byte[] streamType = EncodeVarint(streamCase.StreamType);
+            Http3StreamInfo info = streamType.Length > 1
+                ? dispatcher.ReceiveUnidirectionalStreamTypeBytes(streamCase.StreamId, streamType[..1])
+                : dispatcher.ReceiveUnidirectionalStreamTypeBytes(streamCase.StreamId, streamType);
+            if (streamType.Length > 1)
+            {
+                Assert.Null(info.StreamType);
+                info = dispatcher.ReceiveUnidirectionalStreamTypeBytes(streamCase.StreamId, streamType[1..]);
+            }
+
+            Assert.Equal(streamCase.Kind, info.Kind);
+        }
+
+        dispatcher.ReceiveFrame(2, ReadFrame(Http3FrameWriter.WriteSettings([])));
+        dispatcher.ReceiveFrame(2, ReadFrame(Http3FrameWriter.WriteGoAway(0)));
+        Assert.Equal(Http3ErrorCode.FrameUnexpected, Assert.Throws<Http3Exception>(
+            () => dispatcher.ReceiveFrame(6, ReadFrame(Http3FrameWriter.WriteData([0x01])))).ErrorCode);
+        Assert.Equal(Http3ErrorCode.FrameUnexpected, Assert.Throws<Http3Exception>(
+            () => dispatcher.ReceiveFrame(14, ReadFrame(Http3FrameWriter.WriteData([0x01])))).ErrorCode);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S7-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_Http3SettingsExchangeAcceptsKnownUnknownAndRejectsForbiddenShapes()
+    {
+        foreach (Http3Settings settings in new[]
+        {
+            new Http3Settings(),
+            new Http3Settings(qpackMaxTableCapacity: 128, qpackBlockedStreams: 2),
+            new Http3Settings(maxFieldSectionSize: 65_536),
+        })
+        {
+            Http3SettingsExchange exchange = new(settings);
+
+            Assert.True(exchange.TryWriteInitialSettings(out byte[] initialControlBytes));
+            Assert.Equal((byte)Http3StreamType.Control, initialControlBytes[0]);
+            Assert.False(exchange.TryWriteInitialSettings(out byte[] repeatedBytes));
+            Assert.Empty(repeatedBytes);
+
+            Http3SettingsFrame frame = Assert.IsType<Http3SettingsFrame>(ReadFrame(initialControlBytes[1..]));
+            Http3SettingsExchange peer = new(new Http3Settings());
+            peer.ReceivePeerSettings(frame);
+            Assert.NotNull(peer.PeerSettings);
+            Assert.Equal(settings.QPackMaxTableCapacity, peer.PeerSettings.QPackMaxTableCapacity);
+            Assert.Equal(settings.QPackBlockedStreams, peer.PeerSettings.QPackBlockedStreams);
+            Assert.Equal(settings.MaxFieldSectionSize, peer.PeerSettings.MaxFieldSectionSize);
+            Assert.Equal(Http3ErrorCode.FrameUnexpected, Assert.Throws<Http3Exception>(() => peer.ReceivePeerSettings(frame)).ErrorCode);
+        }
+
+        Http3SettingsFrame unknownAndKnown = Assert.IsType<Http3SettingsFrame>(
+            ReadFrame(Http3FrameWriter.WriteFrame(
+                (ulong)Http3FrameType.Settings,
+                [.. EncodeVarint(0x41), 0x00, .. EncodeVarint((ulong)Http3SettingIdentifier.MaxFieldSectionSize), .. EncodeVarint(100)])));
+        Assert.Equal(100UL, unknownAndKnown.Values.MaxFieldSectionSize);
+        Assert.Equal(2, unknownAndKnown.Settings.Count);
+
+        foreach (byte[] invalidSettingsPayload in new[]
+        {
+            new byte[] { 0x06, 0x01, 0x06, 0x02 },
+            new byte[] { 0x02, 0x00 },
+            new byte[] { 0x04, 0x01 },
+        })
+        {
+            Assert.Throws<Http3Exception>(() => ReadFrame(Http3FrameWriter.WriteFrame((ulong)Http3FrameType.Settings, invalidSettingsPayload)));
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_Http3HeaderAndMessageValidatorsRejectMalformedRequestResponseSequences()
+    {
+        QPackFieldLine[][] validRequests =
+        [
+            CommonRequestHeaders(),
+            [
+                new QPackFieldLine(":method", "CONNECT"),
+                new QPackFieldLine(":authority", "example.com:443"),
+            ],
+        ];
+
+        foreach (QPackFieldLine[] requestHeaders in validRequests)
+        {
+            byte[] encoded = QPackEncoder.EncodeFieldSection(requestHeaders);
+            QPackFieldLine[] decoded = QPackDecoder.DecodeFieldSection(encoded);
+            Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(decoded, validateContentLength: false);
+
+            Assert.Equal(requestHeaders, decoded);
+            Assert.False(string.IsNullOrWhiteSpace(result.Method));
+        }
+
+        foreach (QPackFieldLine[] malformed in new[]
+        {
+            Without(CommonRequestHeaders(), ":method"),
+            [new QPackFieldLine("accept", "*/*"), .. CommonRequestHeaders()],
+            [.. CommonRequestHeaders(), new QPackFieldLine(":protocol", "webtransport")],
+            [.. CommonRequestHeaders(), new QPackFieldLine("Connection", "close")],
+            [.. CommonRequestHeaders(), new QPackFieldLine("content-length", "5"), new QPackFieldLine("content-length", "6")],
+        })
+        {
+            Assert.Equal(Http3ErrorCode.MessageError, Assert.Throws<Http3Exception>(
+                () => Http3HeaderValidator.ValidateRequestHeaders(malformed)).ErrorCode);
+        }
+
+        Http3RequestMessageValidator request = new();
+        Assert.Equal(Http3ErrorCode.FrameUnexpected, Assert.Throws<Http3Exception>(() => request.ReceiveData(1)).ErrorCode);
+        request.ReceiveHeaders([.. CommonRequestHeaders(), new QPackFieldLine("content-length", "3")]);
+        request.ReceiveData(3);
+        request.ReceiveHeaders([new QPackFieldLine("etag", "\"abc\"")], trailersSupported: true);
+        request.Complete();
+
+        Http3ResponseSequenceValidator response = new();
+        Assert.False(response.ReceiveHeaders([new QPackFieldLine(":status", "103")]));
+        Assert.True(response.ReceiveHeaders([new QPackFieldLine(":status", "200"), new QPackFieldLine("content-length", "5")]));
+        response.ReceiveData(5);
+        response.ReceiveHeaders([new QPackFieldLine("etag", "\"abc\"")], trailersSupported: true);
+        response.Complete();
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S9-0001")]
+    [Requirement("REQ-QUIC-RFC9114-S9-0002")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task Fuzz_MinimalHttp3RequestResponseSurfacesPreserveRouteAndBodyAccounting()
+    {
+        foreach (int bodyLength in new[] { 0, 1, 65_536, 1_048_576 })
+        {
+            byte[] body = Enumerable.Range(0, bodyLength).Select(static value => (byte)(value % 251)).ToArray();
+            Http3ServerResponse serverResponse = new(
+                200,
+                body,
+                [
+                    new QPackFieldLine("content-type", "application/octet-stream"),
+                    new QPackFieldLine("content-length", bodyLength.ToString()),
+                ]);
+            IReadOnlyList<QPackFieldLine> responseHeaders = Http3Server.BuildResponseHeaders(serverResponse);
+            byte[] encodedHeaders = Http3Server.EncodeResponseFieldSection(responseHeaders);
+            byte[] responsePayload = [.. Http3FrameWriter.WriteHeaders(encodedHeaders), .. Http3FrameWriter.WriteData(body)];
+            Http3Frame[] responseFrames = new Http3FrameReader().Read(responsePayload);
+            Http3ResponseSequenceValidator responseValidator = new();
+
+            foreach (Http3Frame frame in responseFrames)
+            {
+                switch (frame)
+                {
+                    case Http3HeadersFrame headersFrame:
+                        Assert.True(responseValidator.ReceiveHeaders(QPackDecoder.DecodeFieldSection(headersFrame.EncodedFieldSection)));
+                        break;
+                    case Http3DataFrame dataFrame:
+                        responseValidator.ReceiveData(checked((ulong)dataFrame.Data.Length));
+                        Assert.Equal(body, dataFrame.Data.ToArray());
+                        break;
+                }
+            }
+
+            responseValidator.Complete();
+            Assert.Equal(200, responseValidator.FinalStatusCode);
+        }
+
+        Http3InMemoryRouteHandler handler = new Http3InMemoryRouteHandler()
+            .MapGetText("/hello", "hello");
+        Http3Request request = new("GET", "https", "localhost", "/hello", CommonRequestHeaders());
+
+        Http3ServerResponse routedResponse = await handler.HandleAsync(request);
+
+        Assert.Equal(200, routedResponse.StatusCode);
+        Assert.Equal("hello", System.Text.Encoding.UTF8.GetString(routedResponse.Body.Span));
+    }
+
+    private static Http3Frame ReadSingleFrameFragmented(byte[] encoded, int chunkSize)
+    {
+        Http3FrameReader reader = new();
+        List<Http3Frame> frames = [];
+        for (int offset = 0; offset < encoded.Length; offset += chunkSize)
+        {
+            frames.AddRange(reader.Read(encoded.AsSpan(offset, Math.Min(chunkSize, encoded.Length - offset))));
+        }
+
+        Assert.Empty(reader.Complete());
+        return Assert.Single(frames);
+    }
+
+    private static Http3Frame ReadFrame(byte[] encoded)
+    {
+        return Assert.Single(new Http3FrameReader().Read(encoded));
+    }
+
+    private static byte[] EncodeVarint(ulong value)
+    {
+        Span<byte> buffer = stackalloc byte[Http3VariableLengthInteger.MaxEncodedLength];
+        Assert.True(Http3VariableLengthInteger.TryFormat(value, buffer, out int bytesWritten));
+        return buffer[..bytesWritten].ToArray();
+    }
+
+    private static QPackFieldLine[] CommonRequestHeaders()
+    {
+        return
+        [
+            new QPackFieldLine(":method", "GET"),
+            new QPackFieldLine(":scheme", "https"),
+            new QPackFieldLine(":authority", "localhost"),
+            new QPackFieldLine(":path", "/hello"),
+        ];
+    }
+
+    private static QPackFieldLine[] Without(QPackFieldLine[] headers, string name)
+    {
+        return [.. headers.Where(header => header.Name != name)];
+    }
+
     private static string ReadRepositoryFile(string relativePath)
     {
         string repoRoot = FindRepoRoot();

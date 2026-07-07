@@ -96,6 +96,110 @@ public sealed class REQ_QUIC_RFC9114_S4_0001
         Assert.Contains("custom tests cover the same expected outcomes", docs, StringComparison.Ordinal);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_LowLevelMalformedSequencesReturnDeterministicErrorCodesOrIgnoreOutcomes()
+    {
+        foreach ((string Name, Action Exercise, Http3ErrorCode? ErrorCode) malformedCase in new (string, Action, Http3ErrorCode?)[]
+        {
+            ("DATA before HEADERS", () => new Http3RequestMessageValidator().ReceiveData(1), Http3ErrorCode.FrameUnexpected),
+            ("Two SETTINGS frames", () =>
+            {
+                Http3StreamDispatcher dispatcher = CreateClientControlStreamDispatcher();
+                dispatcher.ReceiveFrame(2, ReadFrame(Http3FrameWriter.WriteSettings([])));
+                dispatcher.ReceiveFrame(2, ReadFrame(Http3FrameWriter.WriteSettings([])));
+            }, Http3ErrorCode.FrameUnexpected),
+            ("SETTINGS on request stream", () =>
+            {
+                Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
+                dispatcher.RegisterBidirectionalStream(0);
+                dispatcher.ReceiveFrame(0, ReadFrame(Http3FrameWriter.WriteSettings([])));
+            }, Http3ErrorCode.FrameUnexpected),
+            ("HEADERS on control stream", () =>
+            {
+                Http3StreamDispatcher dispatcher = CreateClientControlStreamDispatcher();
+                dispatcher.ReceiveFrame(2, ReadFrame(Http3FrameWriter.WriteHeaders([0x00])));
+            }, Http3ErrorCode.FrameUnexpected),
+            ("Invalid frame length", () => ReadFrame(Convert.FromHexString("03020102")), Http3ErrorCode.FrameError),
+            ("Malformed pseudo-header order", () => Http3HeaderValidator.ValidateRequestHeaders(
+            [
+                new QPackFieldLine(":method", "GET"),
+                new QPackFieldLine("accept", "*/*"),
+                new QPackFieldLine(":scheme", "https"),
+                new QPackFieldLine(":authority", "example.com"),
+                new QPackFieldLine(":path", "/"),
+            ]), Http3ErrorCode.MessageError),
+            ("Uppercase header field name", () => Http3HeaderValidator.ValidateRequestHeaders(
+            [
+                new QPackFieldLine(":method", "GET"),
+                new QPackFieldLine(":scheme", "https"),
+                new QPackFieldLine(":authority", "example.com"),
+                new QPackFieldLine(":path", "/"),
+                new QPackFieldLine("Host", "example.com"),
+            ]), Http3ErrorCode.MessageError),
+            ("Invalid content-length", () => Http3HeaderValidator.ValidateResponseHeaders(
+            [
+                new QPackFieldLine(":status", "200"),
+                new QPackFieldLine("content-length", "5"),
+            ], receivedDataLength: 4), Http3ErrorCode.MessageError),
+            ("Server-initiated bidirectional stream", () => new Http3StreamDispatcher(Http3EndpointRole.Client).RegisterBidirectionalStream(1), Http3ErrorCode.StreamCreationError),
+            ("Duplicate control streams", () =>
+            {
+                Http3StreamDispatcher dispatcher = CreateClientControlStreamDispatcher();
+                dispatcher.RegisterUnidirectionalStream(6);
+                dispatcher.ReceiveUnidirectionalStreamTypeBytes(6, [(byte)Http3StreamType.Control]);
+            }, Http3ErrorCode.StreamCreationError),
+            ("Client-sent PUSH_PROMISE", () =>
+            {
+                Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
+                dispatcher.RegisterBidirectionalStream(0);
+                dispatcher.ReceiveFrame(0, ReadFrame(Http3FrameWriter.WritePushPromise(0, [0x00])));
+            }, Http3ErrorCode.FrameUnexpected),
+            ("Unadvertised PUSH_PROMISE", () =>
+            {
+                Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Client);
+                dispatcher.RegisterBidirectionalStream(0);
+                dispatcher.ReceiveFrame(0, ReadFrame(Http3FrameWriter.WritePushPromise(0, [0x00])));
+            }, Http3ErrorCode.IdError),
+            ("Unknown frame type", () => AssertUnknownFrame(0x41, isReserved: false), null),
+            ("Reserved frame type", () => AssertUnknownFrame(0x21, isReserved: true), null),
+        })
+        {
+            if (malformedCase.ErrorCode is null)
+            {
+                malformedCase.Exercise();
+                continue;
+            }
+
+            Http3Exception exception = Assert.Throws<Http3Exception>(malformedCase.Exercise);
+            Assert.Equal(malformedCase.ErrorCode.Value, exception.ErrorCode);
+            Assert.Contains(malformedCase.Name, RequiredCases);
+        }
+    }
+
+    private static Http3StreamDispatcher CreateClientControlStreamDispatcher()
+    {
+        Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
+        dispatcher.RegisterUnidirectionalStream(2);
+        dispatcher.ReceiveUnidirectionalStreamTypeBytes(2, [(byte)Http3StreamType.Control]);
+        return dispatcher;
+    }
+
+    private static void AssertUnknownFrame(ulong frameType, bool isReserved)
+    {
+        Http3UnknownFrame frame = Assert.IsType<Http3UnknownFrame>(ReadFrame(Http3FrameWriter.WriteFrame(frameType, [0xAA])));
+
+        Assert.Equal(frameType, frame.Type);
+        Assert.Equal(isReserved, frame.IsReserved);
+    }
+
+    private static Http3Frame ReadFrame(byte[] encoded)
+    {
+        return Assert.Single(new Http3FrameReader().Read(encoded));
+    }
+
     private static string ReadRepositoryFile(string relativePath)
     {
         string repoRoot = FindRepoRoot();
