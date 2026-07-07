@@ -94,6 +94,125 @@ public sealed class REQ_QUIC_RFC9204_0001
         Assert.Contains("encoder/decoder instruction-stream parsing", spec, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S2-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_QpackPrimitiveEncodingRejectsMalformedBoundariesDeterministically()
+    {
+        ulong[] values = [0UL, 1UL, 30UL, 31UL, 32UL, 127UL, 128UL, 255UL, 16_383UL, QPackInteger.MaxValue];
+        foreach (ulong value in values)
+        {
+            byte[] encoded = QPackInteger.Encode(value, prefixBitCount: 5);
+
+            ulong decoded = QPackInteger.Decode(encoded, prefixBitCount: 5, out int bytesConsumed);
+
+            Assert.Equal(value, decoded);
+            Assert.Equal(encoded.Length, bytesConsumed);
+        }
+
+        foreach (byte[] malformed in new[]
+        {
+            Convert.FromHexString("1F"),
+            Convert.FromHexString("1F80808080808080808080"),
+            Convert.FromHexString("FFFFFFFFFFFFFFFFFFFFFF7F"),
+        })
+        {
+            QPackException exception = Assert.Throws<QPackException>(
+                () => QPackInteger.Decode(malformed, prefixBitCount: 5, out _));
+
+            Assert.Equal(QPackErrorCode.DecompressionFailed, exception.ErrorCode);
+        }
+
+        Assert.Equal("www.example.com", QPackStringLiteral.Read(
+            Convert.FromHexString("8CF1E3C2E5F23A6BA0AB90F4FF"),
+            prefixBitCount: 8,
+            out int stringBytesConsumed));
+        Assert.Equal(13, stringBytesConsumed);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S5-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_QpackFieldSectionsRoundTripRepresentativeStaticLiteralAndDuplicateLines()
+    {
+        QPackFieldLine[][] fieldSections =
+        [
+            [
+                new QPackFieldLine(":method", "GET"),
+                new QPackFieldLine(":scheme", "https"),
+                new QPackFieldLine(":authority", "example.com"),
+                new QPackFieldLine(":path", "/index.html"),
+            ],
+            [
+                new QPackFieldLine(":status", "200"),
+                new QPackFieldLine("content-type", "text/plain"),
+                new QPackFieldLine("content-length", "5"),
+            ],
+            [
+                new QPackFieldLine("set-cookie", "a=1"),
+                new QPackFieldLine("set-cookie", "b=2"),
+                new QPackFieldLine("custom-key", "custom-value"),
+            ],
+        ];
+
+        foreach (QPackFieldLine[] fields in fieldSections)
+        {
+            byte[] first = QPackEncoder.EncodeFieldSection(fields);
+            byte[] second = QPackEncoder.EncodeFieldSection(fields);
+
+            Assert.Equal(first, second);
+            Assert.Equal(fields, QPackDecoder.DecodeFieldSection(first));
+        }
+
+        QPackException exception = Assert.Throws<QPackException>(
+            () => QPackDecoder.DecodeFieldSection(Convert.FromHexString("000027036375")));
+        Assert.Equal(QPackErrorCode.DecompressionFailed, exception.ErrorCode);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_QpackDynamicTableAndInstructionStreamsSynchronizeBlockedSections()
+    {
+        foreach (int capacity in new[] { 106, 220 })
+        {
+            QPackEncoder encoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
+            QPackDecoder decoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
+
+            Assert.True(encoder.TrySetDynamicTableCapacity(capacity, out byte[] capacityInstruction));
+            Assert.Empty(decoder.DecodeEncoderStream(capacityInstruction));
+            Assert.Equal(capacity, decoder.DynamicTable.Capacity);
+
+            Assert.True(encoder.TryInsert(new QPackFieldLine(":authority", "www.example.com"), out byte[] authorityInstruction));
+            Assert.Empty(decoder.DecodeEncoderStream(authorityInstruction));
+            Assert.True(decoder.DynamicTable.TryGetByAbsoluteIndex(0, out QPackDynamicTableEntry authority));
+            Assert.Equal(new QPackFieldLine(":authority", "www.example.com"), authority.FieldLine);
+
+            QPackFieldSectionEncodeResult encoded = encoder.EncodeFieldSection(
+                4,
+                [
+                    new QPackFieldLine(":authority", "www.example.com"),
+                ]);
+            QPackFieldSectionDecodeResult decoded = decoder.DecodeFieldSection(4, encoded.EncodedFieldSection);
+
+            Assert.False(decoded.IsBlocked);
+            Assert.Equal(encoded.RequiredInsertCount, decoded.RequiredInsertCount);
+            Assert.Equal([new QPackFieldLine(":authority", "www.example.com")], decoded.FieldLines);
+
+            encoder.DecodeDecoderStream(Convert.FromHexString("84"));
+            Assert.Equal(1UL, encoder.KnownReceivedCount);
+        }
+
+        QPackDecoder boundedDecoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
+        boundedDecoder.DecodeFieldSection(4, Convert.FromHexString("03811011"));
+        QPackException blockedLimit = Assert.Throws<QPackException>(
+            () => boundedDecoder.DecodeFieldSection(8, Convert.FromHexString("03811011")));
+        Assert.Equal(QPackErrorCode.DecompressionFailed, blockedLimit.ErrorCode);
+    }
+
     private static string ReadRepositoryFile(string relativePath)
     {
         string repoRoot = FindRepoRoot();

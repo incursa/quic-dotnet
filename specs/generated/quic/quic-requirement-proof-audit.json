@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T18:20:54.3604559-06:00",
+    "generated_at": "2026-07-06T18:24:20.6899620-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 700,
-      "full_executable_proof": 1977
+      "deferred_proof_not_executed": 697,
+      "full_executable_proof": 1980
     },
     "by_rfc": [
       {
@@ -49,7 +49,7 @@
         "rfc": "RFC9204",
         "total": 3,
         "by_proof_state": {
-          "deferred_proof_not_executed": 3
+          "full_executable_proof": 3
         }
       },
       {
@@ -46669,9 +46669,9 @@
       "rfc": "RFC9204",
       "title": "Encode and decode QPACK primitives deterministically",
       "statement": "The QPACK module MUST deterministically encode and decode prefixed integers, string literals, and the RFC 9204 static table, rejecting malformed primitive encodings with the appropriate QPACK error.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -46683,6 +46683,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive",
         "unspecified"
@@ -46691,14 +46692,13 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 9,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 12,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/Http3QPackErrorHandlingMatrixTests.cs",
-        "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs"
+        "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs"
       ],
       "spec_test_ref_count": 8,
       "spec_test_refs": [
@@ -46717,9 +46717,9 @@
       "rfc": "RFC9204",
       "title": "Encode and decode QPACK field sections with static and literal names",
       "statement": "The QPACK module MUST encode and decode field sections using static table indexed fields, literal field lines with literal names, and literal field lines with static table name references, while preserving field order and duplicate field lines and producing deterministic output for the same input.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -46731,6 +46731,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -46738,14 +46739,13 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 10,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 13,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
-        "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs"
+        "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs"
       ],
       "spec_test_ref_count": 9,
       "spec_test_refs": [
@@ -46765,9 +46765,9 @@
       "rfc": "RFC9204",
       "title": "Maintain QPACK dynamic table state and instruction synchronization",
       "statement": "The QPACK module MUST track dynamic table capacity, entry size, insertion, eviction, duplicate entries, absolute index, relative index, post-base index, base, insert count handling, required insert count handling, blocked stream tracking, and the configured maximum blocked streams limit while synchronizing encoder-stream and decoder-stream state so blocked field sections can unblock when missing entries arrive.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -46779,6 +46779,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -46786,15 +46787,14 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 33,
-      "focused_file_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 36,
+      "focused_file_count": 4,
       "focused_files": [
         "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
         "tests/Incursa.Quic.Tests/QPackInstructionStreamTests.cs",
-        "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs"
+        "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs"
       ],
       "spec_test_ref_count": 24,
       "spec_test_refs": [

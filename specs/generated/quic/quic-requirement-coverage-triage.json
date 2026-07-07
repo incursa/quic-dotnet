@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T18:20:38.3774756-06:00",
+  "generated_at": "2026-07-06T18:24:03.8153023-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T18:20:38.3735583-06:00",
+    "generated_at": "2026-07-06T18:24:03.8113204-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -258663,14 +258663,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 19,
-        "focused": 16,
+        "total": 22,
+        "focused": 19,
         "broad": 3,
         "by_kind": {
           "positive": 7,
           "negative": 7,
           "edge": 4,
-          "fuzz": 0,
+          "fuzz": 3,
           "benchmark": 0,
           "unspecified": 1
         },
@@ -259032,6 +259032,78 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs",
           "class": "REQ_QUIC_RFC9204_0001",
+          "member": "REQ_QUIC_RFC9204_0001.Fuzz_QpackDynamicTableAndInstructionStreamsSynchronizeBlockedSections",
+          "method": "Fuzz_QpackDynamicTableAndInstructionStreamsSynchronizeBlockedSections",
+          "line": 178,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9204-S2-0001",
+            "REQ-QUIC-RFC9204-S5-0001",
+            "REQ-QUIC-RFC9204-S6-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9204-S2-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs",
+          "class": "REQ_QUIC_RFC9204_0001",
+          "member": "REQ_QUIC_RFC9204_0001.Fuzz_QpackFieldSectionsRoundTripRepresentativeStaticLiteralAndDuplicateLines",
+          "method": "Fuzz_QpackFieldSectionsRoundTripRepresentativeStaticLiteralAndDuplicateLines",
+          "line": 138,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9204-S2-0001",
+            "REQ-QUIC-RFC9204-S5-0001",
+            "REQ-QUIC-RFC9204-S6-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9204-S2-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs",
+          "class": "REQ_QUIC_RFC9204_0001",
+          "member": "REQ_QUIC_RFC9204_0001.Fuzz_QpackPrimitiveEncodingRejectsMalformedBoundariesDeterministically",
+          "method": "Fuzz_QpackPrimitiveEncodingRejectsMalformedBoundariesDeterministically",
+          "line": 101,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9204-S2-0001",
+            "REQ-QUIC-RFC9204-S5-0001",
+            "REQ-QUIC-RFC9204-S6-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9204-S2-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs",
+          "class": "REQ_QUIC_RFC9204_0001",
           "member": "REQ_QUIC_RFC9204_0001.QpackCoreTestsAreTraceLinked",
           "method": "QpackCoreTestsAreTraceLinked",
           "line": 14,
@@ -259133,14 +259205,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 22,
-        "focused": 19,
+        "total": 25,
+        "focused": 22,
         "broad": 3,
         "by_kind": {
           "positive": 15,
           "negative": 3,
           "edge": 4,
-          "fuzz": 0,
+          "fuzz": 3,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -259572,6 +259644,78 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs",
           "class": "REQ_QUIC_RFC9204_0001",
+          "member": "REQ_QUIC_RFC9204_0001.Fuzz_QpackDynamicTableAndInstructionStreamsSynchronizeBlockedSections",
+          "method": "Fuzz_QpackDynamicTableAndInstructionStreamsSynchronizeBlockedSections",
+          "line": 178,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9204-S2-0001",
+            "REQ-QUIC-RFC9204-S5-0001",
+            "REQ-QUIC-RFC9204-S6-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9204-S5-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs",
+          "class": "REQ_QUIC_RFC9204_0001",
+          "member": "REQ_QUIC_RFC9204_0001.Fuzz_QpackFieldSectionsRoundTripRepresentativeStaticLiteralAndDuplicateLines",
+          "method": "Fuzz_QpackFieldSectionsRoundTripRepresentativeStaticLiteralAndDuplicateLines",
+          "line": 138,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9204-S2-0001",
+            "REQ-QUIC-RFC9204-S5-0001",
+            "REQ-QUIC-RFC9204-S6-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9204-S5-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs",
+          "class": "REQ_QUIC_RFC9204_0001",
+          "member": "REQ_QUIC_RFC9204_0001.Fuzz_QpackPrimitiveEncodingRejectsMalformedBoundariesDeterministically",
+          "method": "Fuzz_QpackPrimitiveEncodingRejectsMalformedBoundariesDeterministically",
+          "line": 101,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9204-S2-0001",
+            "REQ-QUIC-RFC9204-S5-0001",
+            "REQ-QUIC-RFC9204-S6-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9204-S5-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs",
+          "class": "REQ_QUIC_RFC9204_0001",
           "member": "REQ_QUIC_RFC9204_0001.QpackCoreTestsAreTraceLinked",
           "method": "QpackCoreTestsAreTraceLinked",
           "line": 14,
@@ -259688,14 +259832,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 60,
-        "focused": 57,
+        "total": 63,
+        "focused": 60,
         "broad": 3,
         "by_kind": {
           "positive": 27,
           "negative": 17,
           "edge": 16,
-          "fuzz": 0,
+          "fuzz": 3,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -260952,6 +261096,78 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
+            "REQ-QUIC-RFC9204-S6-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9204-S6-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs",
+          "class": "REQ_QUIC_RFC9204_0001",
+          "member": "REQ_QUIC_RFC9204_0001.Fuzz_QpackDynamicTableAndInstructionStreamsSynchronizeBlockedSections",
+          "method": "Fuzz_QpackDynamicTableAndInstructionStreamsSynchronizeBlockedSections",
+          "line": 178,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9204-S2-0001",
+            "REQ-QUIC-RFC9204-S5-0001",
+            "REQ-QUIC-RFC9204-S6-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9204-S6-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs",
+          "class": "REQ_QUIC_RFC9204_0001",
+          "member": "REQ_QUIC_RFC9204_0001.Fuzz_QpackFieldSectionsRoundTripRepresentativeStaticLiteralAndDuplicateLines",
+          "method": "Fuzz_QpackFieldSectionsRoundTripRepresentativeStaticLiteralAndDuplicateLines",
+          "line": 138,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9204-S2-0001",
+            "REQ-QUIC-RFC9204-S5-0001",
+            "REQ-QUIC-RFC9204-S6-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9204-S6-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs",
+          "class": "REQ_QUIC_RFC9204_0001",
+          "member": "REQ_QUIC_RFC9204_0001.Fuzz_QpackPrimitiveEncodingRejectsMalformedBoundariesDeterministically",
+          "method": "Fuzz_QpackPrimitiveEncodingRejectsMalformedBoundariesDeterministically",
+          "line": 101,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9204-S2-0001",
+            "REQ-QUIC-RFC9204-S5-0001",
             "REQ-QUIC-RFC9204-S6-0001"
           ],
           "requirement_tagged": true,

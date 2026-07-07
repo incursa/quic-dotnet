@@ -6,8 +6,8 @@ This report is stricter than trace coverage. It only counts focused executable m
 
 | Proof state | Count |
 | --- | ---: |
-| deferred_proof_not_executed | 700 |
-| full_executable_proof | 1977 |
+| deferred_proof_not_executed | 697 |
+| full_executable_proof | 1980 |
 
 ## RFC Breakdown
 
@@ -18,7 +18,7 @@ This report is stricter than trace coverage. It only counts focused executable m
 | RFC9001 | 96 | 96 | 0 | 0 | 0 |
 | RFC9002 | 226 | 226 | 0 | 0 | 0 |
 | RFC9114 | 8 | 0 | 0 | 8 | 0 |
-| RFC9204 | 3 | 0 | 0 | 3 | 0 |
+| RFC9204 | 3 | 3 | 0 | 0 | 0 |
 | RFC9220 | 31 | 8 | 0 | 23 | 0 |
 | RFC9221 | 33 | 33 | 0 | 0 | 0 |
 | RFC9250 | 141 | 141 | 0 | 0 | 0 |
@@ -46,9 +46,6 @@ This report is stricter than trace coverage. It only counts focused executable m
 | `REQ-QUIC-RFC9114-S9-0001` | RFC9114 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9114-S9-0002` | RFC9114 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9114-S9-0003` | RFC9114 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9204-S2-0001` | RFC9204 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9204-S5-0001` | RFC9204 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9204-S6-0001` | RFC9204 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9220-0001` | RFC9220 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9220-0002` | RFC9220 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9220-0005` | RFC9220 | deferred_proof_not_executed |  | fuzz |
@@ -88,3 +85,6 @@ This report is stricter than trace coverage. It only counts focused executable m
 | `REQ-QUIC-RFC9297-0027` | RFC9297 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9297-0028` | RFC9297 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9297-0029` | RFC9297 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9297-0031` | RFC9297 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9297-0032` | RFC9297 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9297-0033` | RFC9297 | deferred_proof_not_executed |  | fuzz |
