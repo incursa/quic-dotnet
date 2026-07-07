@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T20:39:17.7173472-06:00",
+  "generated_at": "2026-07-06T20:47:08.7478548-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T20:39:17.7127657-06:00",
+    "generated_at": "2026-07-06T20:47:08.7436859-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -354032,14 +354032,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
+        "total": 6,
+        "focused": 5,
+        "broad": 1,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -354147,6 +354147,57 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0001_IpAttributeFieldOrder",
+          "method": "Fuzz_0001_IpAttributeFieldOrder",
+          "line": 346,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesEncodeLengthAddressAndAdnFieldsInOrder",
+          "method": "Fuzz_IpAttributesEncodeLengthAddressAndAdnFieldsInOrder",
+          "line": 55,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0001",
+            "REQ-QUIC-RFC9464-0004",
+            "REQ-QUIC-RFC9464-0005",
+            "REQ-QUIC-RFC9464-0008",
+            "REQ-QUIC-RFC9464-0009",
+            "REQ-QUIC-RFC9464-0013",
+            "REQ-QUIC-RFC9464-0014",
+            "REQ-QUIC-RFC9464-0015"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -354176,14 +354227,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -354320,6 +354371,33 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_ReservedBitsAreIgnoredOnReceiptAndClearedOnSend",
+          "method": "Fuzz_ReservedBitsAreIgnoredOnReceiptAndClearedOnSend",
+          "line": 21,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0002",
+            "REQ-QUIC-RFC9464-0003",
+            "REQ-QUIC-RFC9464-0023",
+            "REQ-QUIC-RFC9464-0024",
+            "REQ-QUIC-RFC9464-0035",
+            "REQ-QUIC-RFC9464-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -354349,14 +354427,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -354470,6 +354548,33 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_ReservedBitsAreIgnoredOnReceiptAndClearedOnSend",
+          "method": "Fuzz_ReservedBitsAreIgnoredOnReceiptAndClearedOnSend",
+          "line": 21,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0002",
+            "REQ-QUIC-RFC9464-0003",
+            "REQ-QUIC-RFC9464-0023",
+            "REQ-QUIC-RFC9464-0024",
+            "REQ-QUIC-RFC9464-0035",
+            "REQ-QUIC-RFC9464-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -354500,14 +354605,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
-        "broad": 0,
+        "total": 8,
+        "focused": 7,
+        "broad": 1,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -354669,6 +354774,57 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0004_IpAttributeLengthFieldIsTwoOctets",
+          "method": "Fuzz_0004_IpAttributeLengthFieldIsTwoOctets",
+          "line": 361,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesEncodeLengthAddressAndAdnFieldsInOrder",
+          "method": "Fuzz_IpAttributesEncodeLengthAddressAndAdnFieldsInOrder",
+          "line": 55,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0001",
+            "REQ-QUIC-RFC9464-0004",
+            "REQ-QUIC-RFC9464-0005",
+            "REQ-QUIC-RFC9464-0008",
+            "REQ-QUIC-RFC9464-0009",
+            "REQ-QUIC-RFC9464-0013",
+            "REQ-QUIC-RFC9464-0014",
+            "REQ-QUIC-RFC9464-0015"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -354700,14 +354856,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 8,
-        "broad": 0,
+        "total": 10,
+        "focused": 9,
+        "broad": 1,
         "by_kind": {
           "positive": 6,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -354919,6 +355075,57 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0005_IpAttributeLengthIsEnclosedDataLength",
+          "method": "Fuzz_0005_IpAttributeLengthIsEnclosedDataLength",
+          "line": 371,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesEncodeLengthAddressAndAdnFieldsInOrder",
+          "method": "Fuzz_IpAttributesEncodeLengthAddressAndAdnFieldsInOrder",
+          "line": 55,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0001",
+            "REQ-QUIC-RFC9464-0004",
+            "REQ-QUIC-RFC9464-0005",
+            "REQ-QUIC-RFC9464-0008",
+            "REQ-QUIC-RFC9464-0009",
+            "REQ-QUIC-RFC9464-0013",
+            "REQ-QUIC-RFC9464-0014",
+            "REQ-QUIC-RFC9464-0015"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -354948,14 +355155,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -355056,6 +355263,31 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9464-0006",
             "REQ-QUIC-RFC9464-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesValidateZeroLengthAliasModeAndAddressCountRules",
+          "method": "Fuzz_IpAttributesValidateZeroLengthAliasModeAndAddressCountRules",
+          "line": 104,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0006",
+            "REQ-QUIC-RFC9464-0007",
+            "REQ-QUIC-RFC9464-0011",
+            "REQ-QUIC-RFC9464-0012"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -355088,14 +355320,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -355199,6 +355431,31 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesValidateZeroLengthAliasModeAndAddressCountRules",
+          "method": "Fuzz_IpAttributesValidateZeroLengthAliasModeAndAddressCountRules",
+          "line": 104,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0006",
+            "REQ-QUIC-RFC9464-0007",
+            "REQ-QUIC-RFC9464-0011",
+            "REQ-QUIC-RFC9464-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -355228,14 +355485,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
+        "total": 6,
+        "focused": 5,
+        "broad": 1,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -355343,6 +355600,57 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0008_Ip4AttributeLengthFormula",
+          "method": "Fuzz_0008_Ip4AttributeLengthFormula",
+          "line": 382,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesEncodeLengthAddressAndAdnFieldsInOrder",
+          "method": "Fuzz_IpAttributesEncodeLengthAddressAndAdnFieldsInOrder",
+          "line": 55,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0001",
+            "REQ-QUIC-RFC9464-0004",
+            "REQ-QUIC-RFC9464-0005",
+            "REQ-QUIC-RFC9464-0008",
+            "REQ-QUIC-RFC9464-0009",
+            "REQ-QUIC-RFC9464-0013",
+            "REQ-QUIC-RFC9464-0014",
+            "REQ-QUIC-RFC9464-0015"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -355372,14 +355680,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
+        "total": 6,
+        "focused": 5,
+        "broad": 1,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -355487,6 +355795,57 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0009_Ip6AttributeLengthFormula",
+          "method": "Fuzz_0009_Ip6AttributeLengthFormula",
+          "line": 393,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0009"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesEncodeLengthAddressAndAdnFieldsInOrder",
+          "method": "Fuzz_IpAttributesEncodeLengthAddressAndAdnFieldsInOrder",
+          "line": 55,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0001",
+            "REQ-QUIC-RFC9464-0004",
+            "REQ-QUIC-RFC9464-0005",
+            "REQ-QUIC-RFC9464-0008",
+            "REQ-QUIC-RFC9464-0009",
+            "REQ-QUIC-RFC9464-0013",
+            "REQ-QUIC-RFC9464-0014",
+            "REQ-QUIC-RFC9464-0015"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -355517,14 +355876,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -355678,6 +356037,33 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesValidateSvcbPriorityAdnAndSvcParams",
+          "method": "Fuzz_IpAttributesValidateSvcbPriorityAdnAndSvcParams",
+          "line": 143,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0010",
+            "REQ-QUIC-RFC9464-0016",
+            "REQ-QUIC-RFC9464-0017",
+            "REQ-QUIC-RFC9464-0018",
+            "REQ-QUIC-RFC9464-0019",
+            "REQ-QUIC-RFC9464-0020"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -355707,14 +356093,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -355816,6 +356202,31 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesValidateZeroLengthAliasModeAndAddressCountRules",
+          "method": "Fuzz_IpAttributesValidateZeroLengthAliasModeAndAddressCountRules",
+          "line": 104,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0006",
+            "REQ-QUIC-RFC9464-0007",
+            "REQ-QUIC-RFC9464-0011",
+            "REQ-QUIC-RFC9464-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -355845,14 +356256,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -355954,6 +356365,31 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0012",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesValidateZeroLengthAliasModeAndAddressCountRules",
+          "method": "Fuzz_IpAttributesValidateZeroLengthAliasModeAndAddressCountRules",
+          "line": 104,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0006",
+            "REQ-QUIC-RFC9464-0007",
+            "REQ-QUIC-RFC9464-0011",
+            "REQ-QUIC-RFC9464-0012"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -355984,14 +356420,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
-        "broad": 0,
+        "total": 8,
+        "focused": 7,
+        "broad": 1,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -356151,6 +356587,57 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0013",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0013_IpAttributeAdnLengthIsOneOctet",
+          "method": "Fuzz_0013_IpAttributeAdnLengthIsOneOctet",
+          "line": 404,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0013"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0013",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesEncodeLengthAddressAndAdnFieldsInOrder",
+          "method": "Fuzz_IpAttributesEncodeLengthAddressAndAdnFieldsInOrder",
+          "line": 55,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0001",
+            "REQ-QUIC-RFC9464-0004",
+            "REQ-QUIC-RFC9464-0005",
+            "REQ-QUIC-RFC9464-0008",
+            "REQ-QUIC-RFC9464-0009",
+            "REQ-QUIC-RFC9464-0013",
+            "REQ-QUIC-RFC9464-0014",
+            "REQ-QUIC-RFC9464-0015"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -356180,14 +356667,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
+        "total": 6,
+        "focused": 5,
+        "broad": 1,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -356297,6 +356784,57 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0014",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0014_Ip4AttributeContainsFourOctetAddresses",
+          "method": "Fuzz_0014_Ip4AttributeContainsFourOctetAddresses",
+          "line": 416,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0014",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesEncodeLengthAddressAndAdnFieldsInOrder",
+          "method": "Fuzz_IpAttributesEncodeLengthAddressAndAdnFieldsInOrder",
+          "line": 55,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0001",
+            "REQ-QUIC-RFC9464-0004",
+            "REQ-QUIC-RFC9464-0005",
+            "REQ-QUIC-RFC9464-0008",
+            "REQ-QUIC-RFC9464-0009",
+            "REQ-QUIC-RFC9464-0013",
+            "REQ-QUIC-RFC9464-0014",
+            "REQ-QUIC-RFC9464-0015"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -356326,14 +356864,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
+        "total": 6,
+        "focused": 5,
+        "broad": 1,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -356443,6 +356981,57 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0015",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0015_Ip6AttributeContainsSixteenOctetAddresses",
+          "method": "Fuzz_0015_Ip6AttributeContainsSixteenOctetAddresses",
+          "line": 427,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0015"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0015",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesEncodeLengthAddressAndAdnFieldsInOrder",
+          "method": "Fuzz_IpAttributesEncodeLengthAddressAndAdnFieldsInOrder",
+          "line": 55,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0001",
+            "REQ-QUIC-RFC9464-0004",
+            "REQ-QUIC-RFC9464-0005",
+            "REQ-QUIC-RFC9464-0008",
+            "REQ-QUIC-RFC9464-0009",
+            "REQ-QUIC-RFC9464-0013",
+            "REQ-QUIC-RFC9464-0014",
+            "REQ-QUIC-RFC9464-0015"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -356472,14 +357061,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -356580,6 +357169,33 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9464-0016",
             "REQ-QUIC-RFC9464-0017"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0016",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesValidateSvcbPriorityAdnAndSvcParams",
+          "method": "Fuzz_IpAttributesValidateSvcbPriorityAdnAndSvcParams",
+          "line": 143,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0010",
+            "REQ-QUIC-RFC9464-0016",
+            "REQ-QUIC-RFC9464-0017",
+            "REQ-QUIC-RFC9464-0018",
+            "REQ-QUIC-RFC9464-0019",
+            "REQ-QUIC-RFC9464-0020"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -356612,14 +357228,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -356723,6 +357339,33 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0017",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesValidateSvcbPriorityAdnAndSvcParams",
+          "method": "Fuzz_IpAttributesValidateSvcbPriorityAdnAndSvcParams",
+          "line": 143,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0010",
+            "REQ-QUIC-RFC9464-0016",
+            "REQ-QUIC-RFC9464-0017",
+            "REQ-QUIC-RFC9464-0018",
+            "REQ-QUIC-RFC9464-0019",
+            "REQ-QUIC-RFC9464-0020"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -356752,14 +357395,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -356867,6 +357510,33 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0018",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesValidateSvcbPriorityAdnAndSvcParams",
+          "method": "Fuzz_IpAttributesValidateSvcbPriorityAdnAndSvcParams",
+          "line": 143,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0010",
+            "REQ-QUIC-RFC9464-0016",
+            "REQ-QUIC-RFC9464-0017",
+            "REQ-QUIC-RFC9464-0018",
+            "REQ-QUIC-RFC9464-0019",
+            "REQ-QUIC-RFC9464-0020"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -356897,14 +357567,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -357052,6 +357722,33 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0019",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesValidateSvcbPriorityAdnAndSvcParams",
+          "method": "Fuzz_IpAttributesValidateSvcbPriorityAdnAndSvcParams",
+          "line": 143,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0010",
+            "REQ-QUIC-RFC9464-0016",
+            "REQ-QUIC-RFC9464-0017",
+            "REQ-QUIC-RFC9464-0018",
+            "REQ-QUIC-RFC9464-0019",
+            "REQ-QUIC-RFC9464-0020"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -357081,14 +357778,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -357190,6 +357887,33 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0020",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_IpAttributesValidateSvcbPriorityAdnAndSvcParams",
+          "method": "Fuzz_IpAttributesValidateSvcbPriorityAdnAndSvcParams",
+          "line": 143,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0010",
+            "REQ-QUIC-RFC9464-0016",
+            "REQ-QUIC-RFC9464-0017",
+            "REQ-QUIC-RFC9464-0018",
+            "REQ-QUIC-RFC9464-0019",
+            "REQ-QUIC-RFC9464-0020"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -357219,14 +357943,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
+        "total": 6,
+        "focused": 5,
+        "broad": 1,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -357334,6 +358058,62 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0021",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0021_DigestInfoReplyContainsFieldsInOrder",
+          "method": "Fuzz_0021_DigestInfoReplyContainsFieldsInOrder",
+          "line": 438,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0021",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "method": "Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "line": 241,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0021",
+            "REQ-QUIC-RFC9464-0034",
+            "REQ-QUIC-RFC9464-0037",
+            "REQ-QUIC-RFC9464-0038",
+            "REQ-QUIC-RFC9464-0039",
+            "REQ-QUIC-RFC9464-0040",
+            "REQ-QUIC-RFC9464-0041",
+            "REQ-QUIC-RFC9464-0042",
+            "REQ-QUIC-RFC9464-0043",
+            "REQ-QUIC-RFC9464-0044",
+            "REQ-QUIC-RFC9464-0045",
+            "REQ-QUIC-RFC9464-0046",
+            "REQ-QUIC-RFC9464-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -357363,14 +358143,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
+        "total": 6,
+        "focused": 5,
+        "broad": 1,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -357474,6 +358254,59 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0022",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0022_DigestInfoRequestContainsHashListFieldsInOrder",
+          "method": "Fuzz_0022_DigestInfoRequestContainsHashListFieldsInOrder",
+          "line": 453,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0022"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0022",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "method": "Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "line": 200,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0022",
+            "REQ-QUIC-RFC9464-0025",
+            "REQ-QUIC-RFC9464-0026",
+            "REQ-QUIC-RFC9464-0027",
+            "REQ-QUIC-RFC9464-0028",
+            "REQ-QUIC-RFC9464-0029",
+            "REQ-QUIC-RFC9464-0030",
+            "REQ-QUIC-RFC9464-0031",
+            "REQ-QUIC-RFC9464-0032",
+            "REQ-QUIC-RFC9464-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -357503,14 +358336,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -357624,6 +358457,33 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0023",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_ReservedBitsAreIgnoredOnReceiptAndClearedOnSend",
+          "method": "Fuzz_ReservedBitsAreIgnoredOnReceiptAndClearedOnSend",
+          "line": 21,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0002",
+            "REQ-QUIC-RFC9464-0003",
+            "REQ-QUIC-RFC9464-0023",
+            "REQ-QUIC-RFC9464-0024",
+            "REQ-QUIC-RFC9464-0035",
+            "REQ-QUIC-RFC9464-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -357653,14 +358513,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -357774,6 +358634,33 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0024",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_ReservedBitsAreIgnoredOnReceiptAndClearedOnSend",
+          "method": "Fuzz_ReservedBitsAreIgnoredOnReceiptAndClearedOnSend",
+          "line": 21,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0002",
+            "REQ-QUIC-RFC9464-0003",
+            "REQ-QUIC-RFC9464-0023",
+            "REQ-QUIC-RFC9464-0024",
+            "REQ-QUIC-RFC9464-0035",
+            "REQ-QUIC-RFC9464-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -357803,14 +358690,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 4,
-        "broad": 1,
+        "total": 7,
+        "focused": 5,
+        "broad": 2,
         "by_kind": {
           "positive": 2,
           "negative": 3,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -357938,6 +358825,59 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0025",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0025_DigestInfoRequestAttributeTypeIsTwentyNine",
+          "method": "Fuzz_0025_DigestInfoRequestAttributeTypeIsTwentyNine",
+          "line": 462,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0025"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0025",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "method": "Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "line": 200,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0022",
+            "REQ-QUIC-RFC9464-0025",
+            "REQ-QUIC-RFC9464-0026",
+            "REQ-QUIC-RFC9464-0027",
+            "REQ-QUIC-RFC9464-0028",
+            "REQ-QUIC-RFC9464-0029",
+            "REQ-QUIC-RFC9464-0030",
+            "REQ-QUIC-RFC9464-0031",
+            "REQ-QUIC-RFC9464-0032",
+            "REQ-QUIC-RFC9464-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -357967,14 +358907,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 4,
-        "broad": 1,
+        "total": 7,
+        "focused": 5,
+        "broad": 2,
         "by_kind": {
           "positive": 2,
           "negative": 3,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -358102,6 +359042,59 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0026",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0026_DigestInfoLengthIsTwoOctetUnsignedValue",
+          "method": "Fuzz_0026_DigestInfoLengthIsTwoOctetUnsignedValue",
+          "line": 471,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0026"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0026",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "method": "Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "line": 200,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0022",
+            "REQ-QUIC-RFC9464-0025",
+            "REQ-QUIC-RFC9464-0026",
+            "REQ-QUIC-RFC9464-0027",
+            "REQ-QUIC-RFC9464-0028",
+            "REQ-QUIC-RFC9464-0029",
+            "REQ-QUIC-RFC9464-0030",
+            "REQ-QUIC-RFC9464-0031",
+            "REQ-QUIC-RFC9464-0032",
+            "REQ-QUIC-RFC9464-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -358131,14 +359124,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 4,
-        "broad": 1,
+        "total": 7,
+        "focused": 5,
+        "broad": 2,
         "by_kind": {
           "positive": 2,
           "negative": 3,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -358268,6 +359261,59 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0027",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0027_DigestInfoRequestLengthFormula",
+          "method": "Fuzz_0027_DigestInfoRequestLengthFormula",
+          "line": 480,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0027"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0027",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "method": "Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "line": 200,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0022",
+            "REQ-QUIC-RFC9464-0025",
+            "REQ-QUIC-RFC9464-0026",
+            "REQ-QUIC-RFC9464-0027",
+            "REQ-QUIC-RFC9464-0028",
+            "REQ-QUIC-RFC9464-0029",
+            "REQ-QUIC-RFC9464-0030",
+            "REQ-QUIC-RFC9464-0031",
+            "REQ-QUIC-RFC9464-0032",
+            "REQ-QUIC-RFC9464-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -358297,14 +359343,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 4,
-        "broad": 1,
+        "total": 7,
+        "focused": 5,
+        "broad": 2,
         "by_kind": {
           "positive": 2,
           "negative": 3,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -358432,6 +359478,59 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0028",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0028_DigestInfoHashAlgorithmCountMatchesList",
+          "method": "Fuzz_0028_DigestInfoHashAlgorithmCountMatchesList",
+          "line": 489,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0028"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0028",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "method": "Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "line": 200,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0022",
+            "REQ-QUIC-RFC9464-0025",
+            "REQ-QUIC-RFC9464-0026",
+            "REQ-QUIC-RFC9464-0027",
+            "REQ-QUIC-RFC9464-0028",
+            "REQ-QUIC-RFC9464-0029",
+            "REQ-QUIC-RFC9464-0030",
+            "REQ-QUIC-RFC9464-0031",
+            "REQ-QUIC-RFC9464-0032",
+            "REQ-QUIC-RFC9464-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -358461,14 +359560,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 4,
-        "broad": 1,
+        "total": 7,
+        "focused": 5,
+        "broad": 2,
         "by_kind": {
           "positive": 2,
           "negative": 3,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -358598,6 +359697,59 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0029",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0029_DigestInfoHashAlgorithmCountDerivesFromLength",
+          "method": "Fuzz_0029_DigestInfoHashAlgorithmCountDerivesFromLength",
+          "line": 498,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0029"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0029",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "method": "Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "line": 200,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0022",
+            "REQ-QUIC-RFC9464-0025",
+            "REQ-QUIC-RFC9464-0026",
+            "REQ-QUIC-RFC9464-0027",
+            "REQ-QUIC-RFC9464-0028",
+            "REQ-QUIC-RFC9464-0029",
+            "REQ-QUIC-RFC9464-0030",
+            "REQ-QUIC-RFC9464-0031",
+            "REQ-QUIC-RFC9464-0032",
+            "REQ-QUIC-RFC9464-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -358627,14 +359779,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
+        "total": 6,
+        "focused": 5,
+        "broad": 1,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -358734,6 +359886,59 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0030",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0030_DigestInfoRequestAdnLengthIsZero",
+          "method": "Fuzz_0030_DigestInfoRequestAdnLengthIsZero",
+          "line": 509,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0030"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0030",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "method": "Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "line": 200,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0022",
+            "REQ-QUIC-RFC9464-0025",
+            "REQ-QUIC-RFC9464-0026",
+            "REQ-QUIC-RFC9464-0027",
+            "REQ-QUIC-RFC9464-0028",
+            "REQ-QUIC-RFC9464-0029",
+            "REQ-QUIC-RFC9464-0030",
+            "REQ-QUIC-RFC9464-0031",
+            "REQ-QUIC-RFC9464-0032",
+            "REQ-QUIC-RFC9464-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -358763,14 +359968,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 4,
-        "broad": 1,
+        "total": 7,
+        "focused": 5,
+        "broad": 2,
         "by_kind": {
           "positive": 2,
           "negative": 3,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -358898,6 +360103,59 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0031",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0031_DigestInfoRequestContainsSupportedHashIdentifiers",
+          "method": "Fuzz_0031_DigestInfoRequestContainsSupportedHashIdentifiers",
+          "line": 518,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0031"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0031",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "method": "Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "line": 200,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0022",
+            "REQ-QUIC-RFC9464-0025",
+            "REQ-QUIC-RFC9464-0026",
+            "REQ-QUIC-RFC9464-0027",
+            "REQ-QUIC-RFC9464-0028",
+            "REQ-QUIC-RFC9464-0029",
+            "REQ-QUIC-RFC9464-0030",
+            "REQ-QUIC-RFC9464-0031",
+            "REQ-QUIC-RFC9464-0032",
+            "REQ-QUIC-RFC9464-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -358927,14 +360185,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
+        "total": 6,
+        "focused": 5,
+        "broad": 1,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -359034,6 +360292,59 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0032",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0032_DigestInfoHashIdentifiersComeFromRegistry",
+          "method": "Fuzz_0032_DigestInfoHashIdentifiersComeFromRegistry",
+          "line": 527,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0032",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "method": "Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "line": 200,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0022",
+            "REQ-QUIC-RFC9464-0025",
+            "REQ-QUIC-RFC9464-0026",
+            "REQ-QUIC-RFC9464-0027",
+            "REQ-QUIC-RFC9464-0028",
+            "REQ-QUIC-RFC9464-0029",
+            "REQ-QUIC-RFC9464-0030",
+            "REQ-QUIC-RFC9464-0031",
+            "REQ-QUIC-RFC9464-0032",
+            "REQ-QUIC-RFC9464-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -359063,14 +360374,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 4,
-        "broad": 1,
+        "total": 7,
+        "focused": 5,
+        "broad": 2,
         "by_kind": {
           "positive": 2,
           "negative": 3,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -359198,6 +360509,59 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0033",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0033_DigestInfoHashIdentifiersHaveNoPadding",
+          "method": "Fuzz_0033_DigestInfoHashIdentifiersHaveNoPadding",
+          "line": 538,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0033",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "method": "Fuzz_DigestInfoRequestEncodesHashAlgorithmListWithoutPadding",
+          "line": 200,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0022",
+            "REQ-QUIC-RFC9464-0025",
+            "REQ-QUIC-RFC9464-0026",
+            "REQ-QUIC-RFC9464-0027",
+            "REQ-QUIC-RFC9464-0028",
+            "REQ-QUIC-RFC9464-0029",
+            "REQ-QUIC-RFC9464-0030",
+            "REQ-QUIC-RFC9464-0031",
+            "REQ-QUIC-RFC9464-0032",
+            "REQ-QUIC-RFC9464-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -359227,14 +360591,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
+        "total": 6,
+        "focused": 5,
+        "broad": 1,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -359342,6 +360706,62 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0034",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0034_DigestInfoReplyUsesTableLayout",
+          "method": "Fuzz_0034_DigestInfoReplyUsesTableLayout",
+          "line": 547,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0034"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0034",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "method": "Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "line": 241,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0021",
+            "REQ-QUIC-RFC9464-0034",
+            "REQ-QUIC-RFC9464-0037",
+            "REQ-QUIC-RFC9464-0038",
+            "REQ-QUIC-RFC9464-0039",
+            "REQ-QUIC-RFC9464-0040",
+            "REQ-QUIC-RFC9464-0041",
+            "REQ-QUIC-RFC9464-0042",
+            "REQ-QUIC-RFC9464-0043",
+            "REQ-QUIC-RFC9464-0044",
+            "REQ-QUIC-RFC9464-0045",
+            "REQ-QUIC-RFC9464-0046",
+            "REQ-QUIC-RFC9464-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -359371,14 +360791,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -359492,6 +360912,33 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0035",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_ReservedBitsAreIgnoredOnReceiptAndClearedOnSend",
+          "method": "Fuzz_ReservedBitsAreIgnoredOnReceiptAndClearedOnSend",
+          "line": 21,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0002",
+            "REQ-QUIC-RFC9464-0003",
+            "REQ-QUIC-RFC9464-0023",
+            "REQ-QUIC-RFC9464-0024",
+            "REQ-QUIC-RFC9464-0035",
+            "REQ-QUIC-RFC9464-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -359521,14 +360968,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -359642,6 +361089,33 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0036",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_ReservedBitsAreIgnoredOnReceiptAndClearedOnSend",
+          "method": "Fuzz_ReservedBitsAreIgnoredOnReceiptAndClearedOnSend",
+          "line": 21,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0002",
+            "REQ-QUIC-RFC9464-0003",
+            "REQ-QUIC-RFC9464-0023",
+            "REQ-QUIC-RFC9464-0024",
+            "REQ-QUIC-RFC9464-0035",
+            "REQ-QUIC-RFC9464-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -359671,14 +361145,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
+        "total": 6,
+        "focused": 5,
+        "broad": 1,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -359782,6 +361256,62 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0037",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0037_DigestInfoReplyAttributeTypeIsTwentyNine",
+          "method": "Fuzz_0037_DigestInfoReplyAttributeTypeIsTwentyNine",
+          "line": 556,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0037"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0037",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "method": "Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "line": 241,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0021",
+            "REQ-QUIC-RFC9464-0034",
+            "REQ-QUIC-RFC9464-0037",
+            "REQ-QUIC-RFC9464-0038",
+            "REQ-QUIC-RFC9464-0039",
+            "REQ-QUIC-RFC9464-0040",
+            "REQ-QUIC-RFC9464-0041",
+            "REQ-QUIC-RFC9464-0042",
+            "REQ-QUIC-RFC9464-0043",
+            "REQ-QUIC-RFC9464-0044",
+            "REQ-QUIC-RFC9464-0045",
+            "REQ-QUIC-RFC9464-0046",
+            "REQ-QUIC-RFC9464-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -359811,14 +361341,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
+        "total": 6,
+        "focused": 5,
+        "broad": 1,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -359926,6 +361456,62 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0038",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0038_DigestInfoReplyLengthIsDataLength",
+          "method": "Fuzz_0038_DigestInfoReplyLengthIsDataLength",
+          "line": 565,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0038",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "method": "Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "line": 241,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0021",
+            "REQ-QUIC-RFC9464-0034",
+            "REQ-QUIC-RFC9464-0037",
+            "REQ-QUIC-RFC9464-0038",
+            "REQ-QUIC-RFC9464-0039",
+            "REQ-QUIC-RFC9464-0040",
+            "REQ-QUIC-RFC9464-0041",
+            "REQ-QUIC-RFC9464-0042",
+            "REQ-QUIC-RFC9464-0043",
+            "REQ-QUIC-RFC9464-0044",
+            "REQ-QUIC-RFC9464-0045",
+            "REQ-QUIC-RFC9464-0046",
+            "REQ-QUIC-RFC9464-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -359956,14 +361542,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
-        "broad": 0,
+        "total": 7,
+        "focused": 6,
+        "broad": 1,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -360087,6 +361673,62 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0039",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0039_DigestInfoReplyUsesOneHashAlgorithm",
+          "method": "Fuzz_0039_DigestInfoReplyUsesOneHashAlgorithm",
+          "line": 576,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0039"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0039",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "method": "Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "line": 241,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0021",
+            "REQ-QUIC-RFC9464-0034",
+            "REQ-QUIC-RFC9464-0037",
+            "REQ-QUIC-RFC9464-0038",
+            "REQ-QUIC-RFC9464-0039",
+            "REQ-QUIC-RFC9464-0040",
+            "REQ-QUIC-RFC9464-0041",
+            "REQ-QUIC-RFC9464-0042",
+            "REQ-QUIC-RFC9464-0043",
+            "REQ-QUIC-RFC9464-0044",
+            "REQ-QUIC-RFC9464-0045",
+            "REQ-QUIC-RFC9464-0046",
+            "REQ-QUIC-RFC9464-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -360117,14 +361759,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
-        "broad": 0,
+        "total": 7,
+        "focused": 6,
+        "broad": 1,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -360248,6 +361890,62 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0040",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0040_DigestInfoReplyAdnLengthMatchesNameBytes",
+          "method": "Fuzz_0040_DigestInfoReplyAdnLengthMatchesNameBytes",
+          "line": 585,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0040"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0040",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "method": "Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "line": 241,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0021",
+            "REQ-QUIC-RFC9464-0034",
+            "REQ-QUIC-RFC9464-0037",
+            "REQ-QUIC-RFC9464-0038",
+            "REQ-QUIC-RFC9464-0039",
+            "REQ-QUIC-RFC9464-0040",
+            "REQ-QUIC-RFC9464-0041",
+            "REQ-QUIC-RFC9464-0042",
+            "REQ-QUIC-RFC9464-0043",
+            "REQ-QUIC-RFC9464-0044",
+            "REQ-QUIC-RFC9464-0045",
+            "REQ-QUIC-RFC9464-0046",
+            "REQ-QUIC-RFC9464-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -360278,14 +361976,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
-        "broad": 0,
+        "total": 7,
+        "focused": 6,
+        "broad": 1,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -360409,6 +362107,62 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0041",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0041_ZeroAdnLengthAppliesToProvisioningAttributeAdn",
+          "method": "Fuzz_0041_ZeroAdnLengthAppliesToProvisioningAttributeAdn",
+          "line": 596,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0041"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0041",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "method": "Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "line": 241,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0021",
+            "REQ-QUIC-RFC9464-0034",
+            "REQ-QUIC-RFC9464-0037",
+            "REQ-QUIC-RFC9464-0038",
+            "REQ-QUIC-RFC9464-0039",
+            "REQ-QUIC-RFC9464-0040",
+            "REQ-QUIC-RFC9464-0041",
+            "REQ-QUIC-RFC9464-0042",
+            "REQ-QUIC-RFC9464-0043",
+            "REQ-QUIC-RFC9464-0044",
+            "REQ-QUIC-RFC9464-0045",
+            "REQ-QUIC-RFC9464-0046",
+            "REQ-QUIC-RFC9464-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -360439,14 +362193,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
-        "broad": 0,
+        "total": 7,
+        "focused": 6,
+        "broad": 1,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -360572,6 +362326,62 @@
           ],
           "requirement_tagged": false,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0042",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0042_DigestInfoAdnIsFullyQualifiedDomainName",
+          "method": "Fuzz_0042_DigestInfoAdnIsFullyQualifiedDomainName",
+          "line": 605,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0042"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0042",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "method": "Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "line": 241,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0021",
+            "REQ-QUIC-RFC9464-0034",
+            "REQ-QUIC-RFC9464-0037",
+            "REQ-QUIC-RFC9464-0038",
+            "REQ-QUIC-RFC9464-0039",
+            "REQ-QUIC-RFC9464-0040",
+            "REQ-QUIC-RFC9464-0041",
+            "REQ-QUIC-RFC9464-0042",
+            "REQ-QUIC-RFC9464-0043",
+            "REQ-QUIC-RFC9464-0044",
+            "REQ-QUIC-RFC9464-0045",
+            "REQ-QUIC-RFC9464-0046",
+            "REQ-QUIC-RFC9464-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -360602,14 +362412,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
-        "broad": 0,
+        "total": 7,
+        "focused": 6,
+        "broad": 1,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -360735,6 +362545,62 @@
           ],
           "requirement_tagged": false,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0043",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0043_DigestInfoAdnDoesNotContainTerminators",
+          "method": "Fuzz_0043_DigestInfoAdnDoesNotContainTerminators",
+          "line": 614,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0043"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0043",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "method": "Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "line": 241,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0021",
+            "REQ-QUIC-RFC9464-0034",
+            "REQ-QUIC-RFC9464-0037",
+            "REQ-QUIC-RFC9464-0038",
+            "REQ-QUIC-RFC9464-0039",
+            "REQ-QUIC-RFC9464-0040",
+            "REQ-QUIC-RFC9464-0041",
+            "REQ-QUIC-RFC9464-0042",
+            "REQ-QUIC-RFC9464-0043",
+            "REQ-QUIC-RFC9464-0044",
+            "REQ-QUIC-RFC9464-0045",
+            "REQ-QUIC-RFC9464-0046",
+            "REQ-QUIC-RFC9464-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -360764,14 +362630,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
+        "total": 6,
+        "focused": 5,
+        "broad": 1,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -360871,6 +362737,62 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0044",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0044_DigestInfoAdnRequiresMultipleNames",
+          "method": "Fuzz_0044_DigestInfoAdnRequiresMultipleNames",
+          "line": 626,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0044"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0044",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "method": "Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "line": 241,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0021",
+            "REQ-QUIC-RFC9464-0034",
+            "REQ-QUIC-RFC9464-0037",
+            "REQ-QUIC-RFC9464-0038",
+            "REQ-QUIC-RFC9464-0039",
+            "REQ-QUIC-RFC9464-0040",
+            "REQ-QUIC-RFC9464-0041",
+            "REQ-QUIC-RFC9464-0042",
+            "REQ-QUIC-RFC9464-0043",
+            "REQ-QUIC-RFC9464-0044",
+            "REQ-QUIC-RFC9464-0045",
+            "REQ-QUIC-RFC9464-0046",
+            "REQ-QUIC-RFC9464-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -360901,14 +362823,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
-        "broad": 0,
+        "total": 7,
+        "focused": 6,
+        "broad": 1,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -361034,6 +362956,62 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0045",
+            "REQ-QUIC-RFC9464-0046",
+            "REQ-QUIC-RFC9464-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0045",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0045_DigestInfoReplyPreservesSelectedHashIdentifier",
+          "method": "Fuzz_0045_DigestInfoReplyPreservesSelectedHashIdentifier",
+          "line": 641,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0045"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0045",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "method": "Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "line": 241,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0021",
+            "REQ-QUIC-RFC9464-0034",
+            "REQ-QUIC-RFC9464-0037",
+            "REQ-QUIC-RFC9464-0038",
+            "REQ-QUIC-RFC9464-0039",
+            "REQ-QUIC-RFC9464-0040",
+            "REQ-QUIC-RFC9464-0041",
+            "REQ-QUIC-RFC9464-0042",
+            "REQ-QUIC-RFC9464-0043",
+            "REQ-QUIC-RFC9464-0044",
             "REQ-QUIC-RFC9464-0045",
             "REQ-QUIC-RFC9464-0046",
             "REQ-QUIC-RFC9464-0047"
@@ -361070,14 +363048,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
-        "broad": 0,
+        "total": 7,
+        "focused": 6,
+        "broad": 1,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -361203,6 +363181,62 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0045",
+            "REQ-QUIC-RFC9464-0046",
+            "REQ-QUIC-RFC9464-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0046",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0046_DigestInfoReplyCarriesCertificateDigest",
+          "method": "Fuzz_0046_DigestInfoReplyCarriesCertificateDigest",
+          "line": 650,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0046"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0046",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "method": "Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "line": 241,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0021",
+            "REQ-QUIC-RFC9464-0034",
+            "REQ-QUIC-RFC9464-0037",
+            "REQ-QUIC-RFC9464-0038",
+            "REQ-QUIC-RFC9464-0039",
+            "REQ-QUIC-RFC9464-0040",
+            "REQ-QUIC-RFC9464-0041",
+            "REQ-QUIC-RFC9464-0042",
+            "REQ-QUIC-RFC9464-0043",
+            "REQ-QUIC-RFC9464-0044",
             "REQ-QUIC-RFC9464-0045",
             "REQ-QUIC-RFC9464-0046",
             "REQ-QUIC-RFC9464-0047"
@@ -361239,14 +363273,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
-        "broad": 0,
+        "total": 7,
+        "focused": 6,
+        "broad": 1,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -361378,6 +363412,62 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0047",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_0047_DigestInfoReplyDigestLengthFormula",
+          "method": "Fuzz_0047_DigestInfoReplyDigestLengthFormula",
+          "line": 659,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0047",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "method": "Fuzz_DigestInfoReplyAndSetEncodeSelectedHashDigestAndOptionalAdn",
+          "line": 241,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0021",
+            "REQ-QUIC-RFC9464-0034",
+            "REQ-QUIC-RFC9464-0037",
+            "REQ-QUIC-RFC9464-0038",
+            "REQ-QUIC-RFC9464-0039",
+            "REQ-QUIC-RFC9464-0040",
+            "REQ-QUIC-RFC9464-0041",
+            "REQ-QUIC-RFC9464-0042",
+            "REQ-QUIC-RFC9464-0043",
+            "REQ-QUIC-RFC9464-0044",
+            "REQ-QUIC-RFC9464-0045",
+            "REQ-QUIC-RFC9464-0046",
+            "REQ-QUIC-RFC9464-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -361407,14 +363497,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -361510,6 +363600,29 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0048",
+            "REQ-QUIC-RFC9464-0049"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0048",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoAckMayCarryOnlyZeroLengthData",
+          "method": "Fuzz_DigestInfoAckMayCarryOnlyZeroLengthData",
+          "line": 306,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -361547,14 +363660,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -361650,6 +363763,29 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0048",
+            "REQ-QUIC-RFC9464-0049"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0049",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_DigestInfoAckMayCarryOnlyZeroLengthData",
+          "method": "Fuzz_DigestInfoAckMayCarryOnlyZeroLengthData",
+          "line": 306,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -364527,14 +366663,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -364630,6 +366766,29 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0074",
+            "RFC9464-S5-P2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0074",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_Sha2256SubjectPublicKeyInfoDigestUsesMandatoryHash",
+          "method": "Fuzz_Sha2256SubjectPublicKeyInfoDigestUsesMandatoryHash",
+          "line": 323,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -512539,14 +514698,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -512637,6 +514796,29 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0074",
+            "RFC9464-S5-P2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9464-S5-P2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9464/REQ-QUIC-RFC9464-AttributeFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9464_AttributeFuzzClosure",
+          "member": "REQ_QUIC_RFC9464_AttributeFuzzClosure.Fuzz_Sha2256SubjectPublicKeyInfoDigestUsesMandatoryHash",
+          "method": "Fuzz_Sha2256SubjectPublicKeyInfoDigestUsesMandatoryHash",
+          "line": 323,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
