@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T20:55:01.5810519-06:00",
+  "generated_at": "2026-07-06T20:58:15.9493260-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T20:55:01.5768873-06:00",
+    "generated_at": "2026-07-06T20:58:15.9451224-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -298776,14 +298776,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -298877,6 +298877,28 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9297-0014",
             "REQ-QUIC-RFC9297-0015"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9297-0014",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_0014_SendSideMustBeOpenToSendDatagrams",
+          "method": "Fuzz_0014_SendSideMustBeOpenToSendDatagrams",
+          "line": 56,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9297-0014"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -298995,14 +299017,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -299095,6 +299117,28 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9297-0014",
+            "REQ-QUIC-RFC9297-0015"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9297-0015",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_0015_ReceiveSideClosedDatagramsAreSilentlyDropped",
+          "method": "Fuzz_0015_ReceiveSideClosedDatagramsAreSilentlyDropped",
+          "line": 66,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
             "REQ-QUIC-RFC9297-0015"
           ],
           "requirement_tagged": true,
@@ -299214,14 +299258,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -299309,6 +299353,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9297-0016"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9297-0016",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_0016_UncreatedCreatableStreamsAreDroppedOrBuffered",
+          "method": "Fuzz_0016_UncreatedCreatableStreamsAreDroppedOrBuffered",
+          "line": 78,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -299655,14 +299721,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -299750,6 +299816,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9297-0026"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9297-0026",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_0026_Http1CapsuleProtocolStartsOnlyOnLastRequest",
+          "method": "Fuzz_0026_Http1CapsuleProtocolStartsOnlyOnLastRequest",
+          "line": 88,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -299872,14 +299960,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -299967,6 +300055,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9297-0027"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9297-0027",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_0027_DataStreamsUseUnderlyingFlowControl",
+          "method": "Fuzz_0027_DataStreamsUseUnderlyingFlowControl",
+          "line": 98,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -304608,14 +304718,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -304711,6 +304821,28 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9297-0046",
             "REQ-QUIC-RFC9297-0074"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9297-0046",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_0046_ImplementationsAvoidFullCapsuleValueBuffering",
+          "method": "Fuzz_0046_ImplementationsAvoidFullCapsuleValueBuffering",
+          "line": 109,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9297-0046"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -306984,14 +307116,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -307087,6 +307219,28 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9297-0066",
             "REQ-QUIC-RFC9297-0067"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9297-0066",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_0066_DatagramCapsulesUseHttpDatagramSemantics",
+          "method": "Fuzz_0066_DatagramCapsulesUseHttpDatagramSemantics",
+          "line": 138,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9297-0066"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -307205,14 +307359,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -307307,6 +307461,28 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9297-0066",
+            "REQ-QUIC-RFC9297-0067"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9297-0067",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_0067_DatagramCapsulesInheritHttpDatagramRestrictions",
+          "method": "Fuzz_0067_DatagramCapsulesInheritHttpDatagramRestrictions",
+          "line": 150,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
             "REQ-QUIC-RFC9297-0067"
           ],
           "requirement_tagged": true,
@@ -307426,14 +307602,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -307523,6 +307699,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9297-0070"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9297-0070",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_0070_IntermediaryAvoidsCapsuleConversionWhenFramesSupported",
+          "method": "Fuzz_0070_IntermediaryAvoidsCapsuleConversionWhenFramesSupported",
+          "line": 184,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -307645,14 +307843,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -307750,6 +307948,28 @@
             "REQ-QUIC-RFC9297-0072",
             "REQ-QUIC-RFC9297-0073",
             "RFC9297-S3-5-P6-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9297-0072",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_0072_ParsingDatagramCapsulesAccountsForExtensionLimits",
+          "method": "Fuzz_0072_ParsingDatagramCapsulesAccountsForExtensionLimits",
+          "line": 206,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9297-0072"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -307868,14 +308088,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -307973,6 +308193,28 @@
             "REQ-QUIC-RFC9297-0072",
             "REQ-QUIC-RFC9297-0073",
             "RFC9297-S3-5-P6-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9297-0073",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_0073_KnownUnusableDatagramCapsulesAreDiscardedBeforeBuffering",
+          "method": "Fuzz_0073_KnownUnusableDatagramCapsulesAreDiscardedBeforeBuffering",
+          "line": 216,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9297-0073"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -308091,14 +308333,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -308193,6 +308435,28 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9297-0046",
+            "REQ-QUIC-RFC9297-0074"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9297-0074",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_0074_ImplementationsAvoidFullDatagramCapsuleAccumulation",
+          "method": "Fuzz_0074_ImplementationsAvoidFullDatagramCapsuleAccumulation",
+          "line": 228,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
             "REQ-QUIC-RFC9297-0074"
           ],
           "requirement_tagged": true,
@@ -308312,14 +308576,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -308407,6 +308671,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9297-0075"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9297-0075",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_0075_NewHttpDatagramExtensionsUseCapsuleProtocol",
+          "method": "Fuzz_0075_NewHttpDatagramExtensionsUseCapsuleProtocol",
+          "line": 237,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -496745,14 +497031,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -496852,6 +497138,28 @@
           "associated_requirement_ids": [
             "RFC9297-S2-P5-R01",
             "RFC9297-S2-P6-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9297-S2-P5-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_S2P5_DatagramsAreSentOnlyForSupportingRequests",
+          "method": "Fuzz_S2P5_DatagramsAreSentOnlyForSupportingRequests",
+          "line": 12,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9297-S2-P5-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -496970,14 +497278,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -497077,6 +497385,28 @@
           "associated_requirement_ids": [
             "RFC9297-S2-P6-R01",
             "RFC9297-S2-P6-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9297-S2-P6-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_S2P6_UnsupportedReceivedDatagramTerminatesRequest",
+          "method": "Fuzz_S2P6_UnsupportedReceivedDatagramTerminatesRequest",
+          "line": 22,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9297-S2-P6-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -497195,14 +497525,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -497301,6 +497631,28 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "RFC9297-S2-P6-R01",
+            "RFC9297-S2-P6-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9297-S2-P6-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_S2P6_Http3UnsupportedReceiveUsesH3DatagramError",
+          "method": "Fuzz_S2P6_Http3UnsupportedReceiveUsesH3DatagramError",
+          "line": 33,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
             "RFC9297-S2-P6-S1-R01"
           ],
           "requirement_tagged": true,
@@ -497420,14 +497772,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -497526,6 +497878,28 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "RFC9297-S2-P5-R01",
+            "RFC9297-S2-P6-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9297-S2-P6-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_S2P6_ExtensionsCanOverrideDatagramRequirements",
+          "method": "Fuzz_S2P6_ExtensionsCanOverrideDatagramRequirements",
+          "line": 42,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
             "RFC9297-S2-P6-S2-R01"
           ],
           "requirement_tagged": true,
@@ -498543,14 +498917,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -498646,6 +499020,28 @@
           "associated_requirement_ids": [
             "RFC9297-S3-3-P2-R01",
             "RFC9297-S3-3-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9297-S3-3-P2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_S3P3P2_CapsulePayloadContainsExactlyDescribedFields",
+          "method": "Fuzz_S3P3P2_CapsulePayloadContainsExactlyDescribedFields",
+          "line": 118,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9297-S3-3-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -499071,14 +499467,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -499173,6 +499569,28 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "RFC9297-S3-3-P2-R01",
+            "RFC9297-S3-3-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9297-S3-3-P2-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_S3P3P2_RedundantLengthEncodingsAreSelfConsistent",
+          "method": "Fuzz_S3P3P2_RedundantLengthEncodingsAreSelfConsistent",
+          "line": 128,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
             "RFC9297-S3-3-P2-S2-R01"
           ],
           "requirement_tagged": true,
@@ -501004,14 +501422,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -501108,6 +501526,28 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9297-0072",
             "REQ-QUIC-RFC9297-0073",
+            "RFC9297-S3-5-P6-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9297-S3-5-P6-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_S3P5P6_OversizedDatagramsAreDroppedInsteadOfConverted",
+          "method": "Fuzz_S3P5P6_OversizedDatagramsAreDroppedInsteadOfConverted",
+          "line": 195,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
             "RFC9297-S3-5-P6-S1-R01"
           ],
           "requirement_tagged": true,
@@ -501227,14 +501667,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -501330,6 +501770,28 @@
           "associated_requirement_ids": [
             "RFC9297-S3-5-P6-S2-R01",
             "RFC9297-S3-5-P6-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9297-S3-5-P6-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_S3P5P6_IntermediaryMayReencodeBetweenFramesAndCapsules",
+          "method": "Fuzz_S3P5P6_IntermediaryMayReencodeBetweenFramesAndCapsules",
+          "line": 159,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9297-S3-5-P6-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -501448,14 +501910,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -501550,6 +502012,28 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "RFC9297-S3-5-P6-S2-R01",
+            "RFC9297-S3-5-P6-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9297-S3-5-P6-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure",
+          "member": "REQ_QUIC_RFC9297_LifecycleIntermediaryFuzzClosure.Fuzz_S3P5P6_ReencodingRequiresCapsuleProtocolIdentification",
+          "method": "Fuzz_S3P5P6_ReencodingRequiresCapsuleProtocolIdentification",
+          "line": 173,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
             "RFC9297-S3-5-P6-S3-R01"
           ],
           "requirement_tagged": true,

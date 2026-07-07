@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T20:55:17.6440142-06:00",
+    "generated_at": "2026-07-06T20:58:33.4271510-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 89,
-      "full_executable_proof": 2588
+      "deferred_proof_not_executed": 67,
+      "full_executable_proof": 2610
     },
     "by_rfc": [
       {
@@ -84,8 +84,7 @@
         "rfc": "RFC9297",
         "total": 84,
         "by_proof_state": {
-          "deferred_proof_not_executed": 22,
-          "full_executable_proof": 62
+          "full_executable_proof": 84
         }
       },
       {
@@ -52828,9 +52827,9 @@
       "rfc": "RFC9297",
       "title": "Require an open send side before sending HTTP/3 Datagrams",
       "statement": "HTTP/3 Datagrams MUST NOT be sent unless the corresponding stream's send side is open.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -52840,6 +52839,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -52847,13 +52847,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -52866,9 +52865,9 @@
       "rfc": "RFC9297",
       "title": "Silently drop datagrams after stream close",
       "statement": "A receiver MUST silently drop any datagram received after the corresponding stream's receive side is closed.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -52878,6 +52877,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -52885,13 +52885,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -52904,9 +52903,9 @@
       "rfc": "RFC9297",
       "title": "Handle datagrams for uncreated streams",
       "statement": "If an HTTP/3 Datagram maps to a stream that has not yet been created, the receiver SHALL either silently drop the datagram or buffer it temporarily for about one round trip while awaiting creation of the corresponding stream.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -52916,6 +52915,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -52923,13 +52923,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -52973,9 +52972,9 @@
       "rfc": "RFC9297",
       "title": "Capsule Protocol start on HTTP/1.x connections",
       "statement": "On an HTTP/1.x connection, only the last HTTP request on that connection MAY start the Capsule Protocol.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -52985,6 +52984,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -52992,13 +52992,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -53011,9 +53010,9 @@
       "rfc": "RFC9297",
       "title": "Data streams obey underlying flow control",
       "statement": "Data streams MUST be subject to the flow control mechanisms of the underlying layers.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -53023,6 +53022,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -53030,13 +53030,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -53648,9 +53647,9 @@
       "rfc": "RFC9297",
       "title": "Avoid flow-control exhaustion deadlocks",
       "statement": "Implementations SHOULD avoid buffering the full Capsule Value before handling it.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -53660,6 +53659,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -53667,13 +53667,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -53976,9 +53975,9 @@
       "rfc": "RFC9297",
       "title": "DATAGRAM Capsule semantics match QUIC DATAGRAM frames",
       "statement": "HTTP Datagrams sent using the DATAGRAM Capsule MUST have the same semantics as those sent in QUIC DATAGRAM frames.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -53988,6 +53987,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -53995,13 +53995,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -54014,9 +54013,9 @@
       "rfc": "RFC9297",
       "title": "DATAGRAM Capsule inherits Section 2.1 restrictions",
       "statement": "The restrictions from Section 2.1 on when it is allowed to send an HTTP Datagram and how to process HTTP Datagrams MUST also apply to HTTP Datagrams sent and received using the DATAGRAM Capsule.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -54026,6 +54025,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -54033,13 +54033,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -54052,9 +54051,9 @@
       "rfc": "RFC9297",
       "title": "Avoid converting to DATAGRAM Capsule when DATAGRAM frames are supported",
       "statement": "If an intermediary receives an HTTP Datagram in a QUIC DATAGRAM frame and is forwarding it on a connection that supports QUIC DATAGRAM frames, the intermediary SHOULD not convert that HTTP Datagram to a DATAGRAM Capsule.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -54064,6 +54063,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -54071,13 +54071,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -54090,9 +54089,9 @@
       "rfc": "RFC9297",
       "title": "Take extension limits into account when parsing DATAGRAM Capsules",
       "statement": "Implementations SHOULD take extension limits into account when parsing DATAGRAM Capsules.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -54102,6 +54101,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -54109,13 +54109,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -54128,9 +54127,9 @@
       "rfc": "RFC9297",
       "title": "Discard unusable DATAGRAM Capsules without buffering",
       "statement": "If an incoming DATAGRAM Capsule has a length known to be unusable, the implementation SHOULD discard it without buffering its contents into memory.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -54140,6 +54139,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -54147,13 +54147,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -54166,9 +54165,9 @@
       "rfc": "RFC9297",
       "title": "Avoid accumulating entire Capsules before re-encoding",
       "statement": "Implementations SHOULD avoid accumulating the entire Capsule in the stream before re-encoding DATAGRAM Capsules into QUIC DATAGRAM frames.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -54178,6 +54177,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -54185,13 +54185,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -54204,9 +54203,9 @@
       "rfc": "RFC9297",
       "title": "Use the Capsule Protocol for new HTTP extensions that use HTTP Datagrams",
       "statement": "New HTTP extensions that wish to use HTTP Datagrams SHOULD use the Capsule Protocol.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -54216,6 +54215,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -54223,13 +54223,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -90487,9 +90486,9 @@
       "rfc": "RFC9297",
       "title": "Associate HTTP Datagrams only with supporting requests",
       "statement": "HTTP Datagrams MUST only be sent with an association to an HTTP request that explicitly supports them.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -90499,6 +90498,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -90506,13 +90506,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -90525,9 +90524,9 @@
       "rfc": "RFC9297",
       "title": "Terminate requests that receive unsupported HTTP Datagrams",
       "statement": "If an HTTP Datagram is received and it is associated with a request that has no known semantics for HTTP Datagrams, the receiver MUST terminate the request.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -90537,6 +90536,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -90544,13 +90544,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -90563,9 +90562,9 @@
       "rfc": "RFC9297",
       "title": "Abort HTTP/3 request streams on unsupported HTTP Datagrams",
       "statement": "If HTTP/3 is in use, the request stream MUST be aborted with H3_DATAGRAM_ERROR (0x33).",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -90575,6 +90574,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -90582,13 +90582,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -90601,9 +90600,9 @@
       "rfc": "RFC9297",
       "title": "Allow HTTP extensions to override HTTP Datagram requirements",
       "statement": "HTTP extensions MAY override the HTTP Datagram requirements by defining a negotiation mechanism and semantics for HTTP Datagrams.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -90613,6 +90612,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -90620,13 +90620,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -90747,9 +90746,9 @@
       "rfc": "RFC9297",
       "title": "Require exactly the fields defined for each Capsule payload",
       "statement": "Each Capsule's payload MUST contain exactly the fields identified in its description.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -90759,6 +90758,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -90766,13 +90766,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -90821,9 +90820,9 @@
       "rfc": "RFC9297",
       "title": "Verify redundant Capsule length encodings are self-consistent",
       "statement": "Redundant length encodings MUST be verified to be self-consistent.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -90833,6 +90832,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -90840,13 +90840,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -91101,9 +91100,9 @@
       "rfc": "RFC9297",
       "title": "Drop oversized HTTP Datagrams instead of converting them",
       "statement": "If the HTTP Datagram is too large to fit in a DATAGRAM frame, the intermediary SHOULD drop the HTTP Datagram instead of converting it to a DATAGRAM Capsule.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -91113,6 +91112,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -91120,13 +91120,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -91139,9 +91138,9 @@
       "rfc": "RFC9297",
       "title": "Intermediary may re-encode DATAGRAM Capsules",
       "statement": "An intermediary MAY send a DATAGRAM Capsule to forward an HTTP Datagram that was received in a QUIC DATAGRAM frame and vice versa.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -91151,6 +91150,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -91158,13 +91158,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -91177,9 +91176,9 @@
       "rfc": "RFC9297",
       "title": "Intermediaries require Capsule Protocol identification before re-encoding",
       "statement": "Intermediaries MUST not perform this re-encoding unless they have identified the use of the Capsule Protocol on the corresponding request stream.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -91189,6 +91188,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -91196,13 +91196,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-LifecycleIntermediaryFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
