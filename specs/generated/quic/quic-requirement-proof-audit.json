@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T20:14:45.8279532-06:00",
+    "generated_at": "2026-07-06T20:18:11.9447158-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 268,
-      "full_executable_proof": 2409
+      "deferred_proof_not_executed": 251,
+      "full_executable_proof": 2426
     },
     "by_rfc": [
       {
@@ -91,8 +91,8 @@
         "rfc": "RFC9298",
         "total": 116,
         "by_proof_state": {
-          "deferred_proof_not_executed": 66,
-          "full_executable_proof": 50
+          "deferred_proof_not_executed": 49,
+          "full_executable_proof": 67
         }
       },
       {
@@ -57070,9 +57070,9 @@
       "rfc": "RFC9298",
       "title": "Drop UDP payload in this scenario",
       "statement": "The UDP proxy SHOULD drop the UDP payload.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -57082,6 +57082,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -57089,13 +57090,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DropsOversizedUdpPayloads tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotDropPayloadsThatFitQuicDatagram"
@@ -57105,9 +57105,9 @@
       "rfc": "RFC9298",
       "title": "Send ICMP Packet Too Big to target in this scenario",
       "statement": "The UDP proxy SHOULD send an ICMP Packet Too Big message to the target.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -57117,6 +57117,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -57124,13 +57125,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_SendsIcmpPacketTooBigForOversizedTargetPayload tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotSendIcmpPacketTooBigForFittingTargetPayload"
@@ -57140,9 +57140,9 @@
       "rfc": "RFC9298",
       "title": "No inner IP header in UDP proxying tunnels",
       "statement": "UDP proxying tunnels MUST NOT include an inner IP header.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -57152,6 +57152,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -57159,13 +57160,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_TunnelDoesNotIncludeInnerIpHeader tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsInnerIpHeaderPresence"
@@ -57175,9 +57175,9 @@
       "rfc": "RFC9298",
       "title": "Clients cannot control ECN codepoints on proxied UDP packets",
       "statement": "The UDP proxy MUST retain control of the ECN codepoints on UDP packets it sends to the target.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -57187,6 +57187,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -57194,13 +57195,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_ProxyRetainsControlOfOutboundUdpEcnCodepoints tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsClientControlOfOutboundUdpEcnCodepoints"
@@ -57210,9 +57210,9 @@
       "rfc": "RFC9298",
       "title": "UDP proxies cannot communicate per-packet markings to clients",
       "statement": "UDP proxies MUST NOT communicate per-packet markings from the target to the UDP proxy.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -57222,6 +57222,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -57229,13 +57230,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotCommunicatePerPacketTargetMarkingsToClient tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsPerPacketTargetMarkingCommunication"
@@ -92164,9 +92164,9 @@
       "rfc": "RFC9298",
       "title": "Transmit UDP payloads in QUIC DATAGRAM frames",
       "statement": "When using HTTP/3 with the QUIC Datagram extension, UDP payloads MUST be transmitted in QUIC DATAGRAM frames.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92176,6 +92176,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -92183,13 +92184,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_UsesQuicDatagramFramesWhenAvailable tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotUseQuicDatagramFramesWhenUnavailable"
@@ -92199,9 +92199,9 @@
       "rfc": "RFC9298",
       "title": "Limit QUIC DATAGRAM payload size",
       "statement": "QUIC DATAGRAM frames MUST carry UDP payloads only up to a length determined by the QUIC connection configuration and the Path MTU (PMTU).",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92211,6 +92211,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -92218,13 +92219,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_AllowsPayloadsWithinQuicDatagramLimit tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsPayloadsBeyondQuicDatagramLimit"
@@ -92234,9 +92234,9 @@
       "rfc": "RFC9298",
       "title": "Do not capsule oversized UDP payloads",
       "statement": "If a UDP proxy is using QUIC DATAGRAM frames and it receives a UDP payload from the target that will not fit inside a QUIC DATAGRAM frame, the UDP proxy SHOULD NOT send the UDP payload in a DATAGRAM capsule.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92246,6 +92246,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -92253,13 +92254,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotCapsuleOversizedPayloadWhenQuicDatagramInUse tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsCapsuleFallbackForOversizedQuicDatagramPayload"
@@ -92269,9 +92269,9 @@
       "rfc": "RFC9298",
       "title": "Ignore ECN bits received from target",
       "statement": "A UDP proxy MUST ignore ECN bits in the IP header of UDP packets received from the target.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92281,6 +92281,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -92288,13 +92289,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_IgnoresTargetEcnBits tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotPreserveTargetEcnBits"
@@ -92304,9 +92304,9 @@
       "rfc": "RFC9298",
       "title": "Set ECN bits to Not-ECT on outbound UDP packets",
       "statement": "A UDP proxy MUST set the ECN bits to Not-ECT on UDP packets it sends to the target.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92316,6 +92316,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -92323,13 +92324,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_SetsOutboundUdpEcnToNotEct tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotExposeAlternateOutboundUdpEcnCodepoint"
@@ -92339,9 +92339,9 @@
       "rfc": "RFC9298",
       "title": "Avoid increasing UDP burstiness",
       "statement": "UDP proxies SHOULD avoid increasing burstiness of UDP traffic.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92351,6 +92351,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -92358,13 +92359,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_AvoidsIncreasingUdpBurstiness tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotPermitIncreasedBurstiness"
@@ -92374,9 +92374,9 @@
       "rfc": "RFC9298",
       "title": "Do not queue packets to increase batching",
       "statement": "UDP proxies SHOULD NOT queue packets to increase batching.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92386,6 +92386,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -92393,13 +92394,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotQueuePacketsOnlyToIncreaseBatching tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsBatchingOnlyQueuePermission"
@@ -92409,9 +92409,9 @@
       "rfc": "RFC9298",
       "title": "Do not disable congestion control without certainty",
       "statement": "The underlying HTTP connection MUST NOT disable congestion control unless it has an out-of-band way of knowing with absolute certainty that the inner traffic is congestion-controlled.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92421,6 +92421,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -92428,13 +92429,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DisablesCongestionControlOnlyWithCertainty tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotDisableCongestionControlWithoutCertainty"
@@ -92444,9 +92444,9 @@
       "rfc": "RFC9298",
       "title": "Do not signal ECN support when congestion control is disabled",
       "statement": "If a client or UDP proxy with a connection containing a UDP Proxying request stream disables congestion control, it MUST NOT signal Explicit Congestion Notification (ECN) support on that connection.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92456,6 +92456,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -92463,13 +92464,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotSignalEcnWhenCongestionControlDisabled tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsEcnSupportSignalWhenCongestionControlDisabled"
@@ -92479,9 +92479,9 @@
       "rfc": "RFC9298",
       "title": "Mark IP headers Not-ECT when congestion control is disabled",
       "statement": "If a client or UDP proxy with a connection containing a UDP Proxying request stream disables congestion control, it MUST mark all IP headers with the Not-ECT codepoint.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92491,6 +92491,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -92498,13 +92499,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_MarksIpHeadersNotEctWhenCongestionControlDisabled tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotUseEctWhenCongestionControlDisabled"
@@ -92514,9 +92514,9 @@
       "rfc": "RFC9298",
       "title": "Allow ECN feedback reporting when permitted",
       "statement": "It MAY continue to report ECN feedback via QUIC ACK_ECN frames or the TCP ECE bit, as the peer may not have disabled congestion control.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92526,6 +92526,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -92533,13 +92534,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_ReportsEcnFeedbackWhenPeerMayStillUseCongestionControl tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotReportEcnFeedbackWhenNotPermitted"
@@ -92549,9 +92549,9 @@
       "rfc": "RFC9298",
       "title": "Prefer HTTP/3 for UDP proxying",
       "statement": "UDP proxying SHOULD be performed over HTTP/3 to allow leveraging the QUIC DATAGRAM frame.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -92561,6 +92561,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -92568,13 +92569,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_PrefersHttp3ForUdpProxying tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotPreferNonHttp3UdpProxying"

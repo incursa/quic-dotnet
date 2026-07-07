@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T20:14:30.3376421-06:00",
+  "generated_at": "2026-07-06T20:17:51.5292929-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T20:14:30.3324842-06:00",
+    "generated_at": "2026-07-06T20:17:51.5256592-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -323931,14 +323931,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DropsOversizedUdpPayloads tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotDropPayloadsThatFitQuicDatagram",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -324004,6 +324004,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0109"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0109",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure.Fuzz_ProxyDropsOversizedUdpPayload",
+          "method": "Fuzz_ProxyDropsOversizedUdpPayload",
+          "line": 108,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -324113,14 +324135,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_SendsIcmpPacketTooBigForOversizedTargetPayload tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotSendIcmpPacketTooBigForFittingTargetPayload",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -324186,6 +324208,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0110"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0110",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure.Fuzz_ProxySendsIcmpPacketTooBigForOversizedTargetPayload",
+          "method": "Fuzz_ProxySendsIcmpPacketTooBigForOversizedTargetPayload",
+          "line": 118,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -324295,14 +324339,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_TunnelDoesNotIncludeInnerIpHeader tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsInnerIpHeaderPresence",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -324368,6 +324412,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0111"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0111",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure.Fuzz_UdpProxyingTunnelDoesNotIncludeInnerIpHeader",
+          "method": "Fuzz_UdpProxyingTunnelDoesNotIncludeInnerIpHeader",
+          "line": 128,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -324477,14 +324543,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_ProxyRetainsControlOfOutboundUdpEcnCodepoints tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsClientControlOfOutboundUdpEcnCodepoints",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -324550,6 +324616,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0112"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0112",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure.Fuzz_ProxyRetainsControlOfOutboundUdpEcnCodepoints",
+          "method": "Fuzz_ProxyRetainsControlOfOutboundUdpEcnCodepoints",
+          "line": 137,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -324659,14 +324747,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotCommunicatePerPacketTargetMarkingsToClient tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsPerPacketTargetMarkingCommunication",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -324732,6 +324820,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0113"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0113",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure.Fuzz_ProxyDoesNotCommunicatePerPacketTargetMarkings",
+          "method": "Fuzz_ProxyDoesNotCommunicatePerPacketTargetMarkings",
+          "line": 147,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -502797,14 +502907,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_UsesQuicDatagramFramesWhenAvailable tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotUseQuicDatagramFramesWhenUnavailable",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -502870,6 +502980,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S6-1-P1-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S6-1-P1-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure.Fuzz_Http3WithQuicDatagramTransmitsUdpPayloadsInQuicDatagramFrames",
+          "method": "Fuzz_Http3WithQuicDatagramTransmitsUdpPayloadsInQuicDatagramFrames",
+          "line": 77,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -502979,14 +503111,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_AllowsPayloadsWithinQuicDatagramLimit tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsPayloadsBeyondQuicDatagramLimit",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -503052,6 +503184,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S6-1-P1-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S6-1-P1-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure.Fuzz_QuicDatagramFramesCarryPayloadsWithinConnectionAndPathLimit",
+          "method": "Fuzz_QuicDatagramFramesCarryPayloadsWithinConnectionAndPathLimit",
+          "line": 88,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -503161,14 +503315,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotCapsuleOversizedPayloadWhenQuicDatagramInUse tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsCapsuleFallbackForOversizedQuicDatagramPayload",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -503234,6 +503388,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S6-1-P1-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S6-1-P1-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure.Fuzz_OversizedQuicDatagramPayloadIsNotSentAsDatagramCapsuleFallback",
+          "method": "Fuzz_OversizedQuicDatagramPayloadIsNotSentAsDatagramCapsuleFallback",
+          "line": 99,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -503343,14 +503519,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_IgnoresTargetEcnBits tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotPreserveTargetEcnBits",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -503416,6 +503592,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S6-2-P3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S6-2-P3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure.Fuzz_ProxyIgnoresEcnBitsFromTargetPackets",
+          "method": "Fuzz_ProxyIgnoresEcnBitsFromTargetPackets",
+          "line": 156,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -503525,14 +503723,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_SetsOutboundUdpEcnToNotEct tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotExposeAlternateOutboundUdpEcnCodepoint",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -503598,6 +503796,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S6-2-P3-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S6-2-P3-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure.Fuzz_ProxySetsTargetBoundUdpPacketsToNotEct",
+          "method": "Fuzz_ProxySetsTargetBoundUdpPacketsToNotEct",
+          "line": 165,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -503707,14 +503927,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_AvoidsIncreasingUdpBurstiness tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotPermitIncreasedBurstiness",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -503780,6 +504000,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S6-P1-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S6-P1-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure.Fuzz_UdpProxyAvoidsIncreasingBurstiness",
+          "method": "Fuzz_UdpProxyAvoidsIncreasingBurstiness",
+          "line": 12,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -503889,14 +504131,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotQueuePacketsOnlyToIncreaseBatching tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsBatchingOnlyQueuePermission",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -503962,6 +504204,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S6-P1-S2-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S6-P1-S2-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure.Fuzz_UdpProxyDoesNotQueueOnlyToIncreaseBatching",
+          "method": "Fuzz_UdpProxyDoesNotQueueOnlyToIncreaseBatching",
+          "line": 21,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -504071,14 +504335,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DisablesCongestionControlOnlyWithCertainty tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotDisableCongestionControlWithoutCertainty",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -504144,6 +504408,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S6-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S6-P2-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure.Fuzz_CongestionControlDisablesOnlyWithOutOfBandCertainty",
+          "method": "Fuzz_CongestionControlDisablesOnlyWithOutOfBandCertainty",
+          "line": 30,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -504253,14 +504539,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotSignalEcnWhenCongestionControlDisabled tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsEcnSupportSignalWhenCongestionControlDisabled",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -504326,6 +504612,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S6-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S6-P3-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure.Fuzz_CongestionControlDisabledDoesNotSignalEcnSupport",
+          "method": "Fuzz_CongestionControlDisabledDoesNotSignalEcnSupport",
+          "line": 40,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -504435,14 +504743,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_MarksIpHeadersNotEctWhenCongestionControlDisabled tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotUseEctWhenCongestionControlDisabled",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -504508,6 +504816,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S6-P3-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S6-P3-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure.Fuzz_CongestionControlDisabledMarksIpHeadersNotEct",
+          "method": "Fuzz_CongestionControlDisabledMarksIpHeadersNotEct",
+          "line": 49,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -504617,14 +504947,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_ReportsEcnFeedbackWhenPeerMayStillUseCongestionControl tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotReportEcnFeedbackWhenNotPermitted",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -504690,6 +505020,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S6-P3-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S6-P3-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure.Fuzz_EcnFeedbackContinuesOnlyWhenPeerMayUseCongestionControl",
+          "method": "Fuzz_EcnFeedbackContinuesOnlyWhenPeerMayUseCongestionControl",
+          "line": 58,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -504799,14 +505151,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_PrefersHttp3ForUdpProxying tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotPreferNonHttp3UdpProxying",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -504872,6 +505224,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S6-P4-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S6-P4-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-ForwardingPolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9298_ForwardingPolicyFuzzClosure.Fuzz_UdpProxyingPrefersHttp3ForQuicDatagramSupport",
+          "method": "Fuzz_UdpProxyingPrefersHttp3ForQuicDatagramSupport",
+          "line": 68,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
