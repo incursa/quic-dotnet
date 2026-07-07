@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T19:24:50.8181740-06:00",
+    "generated_at": "2026-07-06T19:28:21.4900344-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 492,
-      "full_executable_proof": 2185
+      "deferred_proof_not_executed": 474,
+      "full_executable_proof": 2203
     },
     "by_rfc": [
       {
@@ -148,8 +148,8 @@
         "rfc": "RFC9484",
         "total": 213,
         "by_proof_state": {
-          "deferred_proof_not_executed": 54,
-          "full_executable_proof": 159
+          "deferred_proof_not_executed": 36,
+          "full_executable_proof": 177
         }
       }
     ]
@@ -70251,9 +70251,9 @@
       "rfc": "RFC9484",
       "title": "Process received IP packets from HTTP Datagrams",
       "statement": "An endpoint that receives an HTTP Datagram containing an IP packet MUST parse the IP header, perform local policy checks, consult its routing table to select an outbound interface, and then send the packet on that interface or pass it to a local application.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70263,18 +70263,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70287,27 +70287,27 @@
       "rfc": "RFC9484",
       "title": "Allow additional filtering policies",
       "statement": "IP proxying endpoints MAY implement additional filtering policies on the IP packets they forward.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70320,9 +70320,9 @@
       "rfc": "RFC9484",
       "title": "Treat failed checks as forwarding errors",
       "statement": "A received IP packet that fails any correctness or policy checks MUST be treated as a forwarding error, not a protocol violation, for IP proxying.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70332,18 +70332,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70356,9 +70356,9 @@
       "rfc": "RFC9484",
       "title": "Check routes before sending IP packets over HTTP Datagrams",
       "statement": "When an endpoint receives an IP packet, it MUST check whether it matches routes mapped for an IP tunnel and perform the same forwarding checks as above before transmitting it over HTTP Datagrams.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70368,18 +70368,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70392,9 +70392,9 @@
       "rfc": "RFC9484",
       "title": "Decrement Hop Count on encapsulation",
       "statement": "When IP proxying endpoints forward IP packets between different links, they MUST decrement the IP Hop Count (or TTL) upon encapsulation.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70404,18 +70404,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70428,9 +70428,9 @@
       "rfc": "RFC9484",
       "title": "Do not decrement Hop Count on decapsulation",
       "statement": "When IP proxying endpoints forward IP packets between different links, they MUST not decrement the IP Hop Count (or TTL) upon decapsulation.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70440,18 +70440,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70464,9 +70464,9 @@
       "rfc": "RFC9484",
       "title": "Decrement Hop Count before transmission",
       "statement": "The Hop Count of an IP packet MUST be decremented right before the packet is transmitted in an HTTP Datagram.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70476,18 +70476,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70500,9 +70500,9 @@
       "rfc": "RFC9484",
       "title": "Exclude self-generated packets from hop-count decrement",
       "statement": "The IP Hop Count (or TTL) decrement upon encapsulation MUST not apply to IP packets generated by the IP proxying endpoint itself.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70512,18 +70512,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70536,9 +70536,9 @@
       "rfc": "RFC9484",
       "title": "Abort request stream when QUIC MTU is too low",
       "statement": "If an endpoint is using QUIC DATAGRAM frames to convey IPv6 packets and it detects that the QUIC MTU is too low to allow sending 1280 bytes, it MUST abort the IP proxying request stream.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70548,18 +70548,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70572,9 +70572,9 @@
       "rfc": "RFC9484",
       "title": "Send Destination Unreachable for invalid source addresses",
       "statement": "For invalid source addresses, an endpoint SHOULD send Destination Unreachable with ICMPv6 code 5.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70584,18 +70584,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70608,9 +70608,9 @@
       "rfc": "RFC9484",
       "title": "Send Destination Unreachable for unroutable destination addresses",
       "statement": "For unroutable destination addresses, an endpoint SHOULD send Destination Unreachable with ICMPv6 code 0 or 1.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70620,18 +70620,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70644,9 +70644,9 @@
       "rfc": "RFC9484",
       "title": "Send Packet Too Big for MTU-exceeding packets",
       "statement": "For packets that cannot fit within the outgoing-link MTU, an endpoint MUST send Packet Too Big.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70656,18 +70656,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70680,9 +70680,9 @@
       "rfc": "RFC9484",
       "title": "Process proxied ICMP packets when ROUTE_ADVERTISEMENT is absent",
       "statement": "If an endpoint does not send ROUTE_ADVERTISEMENT capsules, it SHOULD process proxied ICMP packets from its peer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70692,18 +70692,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -70716,9 +70716,9 @@
       "rfc": "RFC9484",
       "title": "Decrement hop count or TTL when encapsulating forwarded packets",
       "statement": "IP proxying endpoints MUST decrement the IP Hop Count (or TTL) when encapsulating forwarded packets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -70728,18 +70728,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -95686,9 +95686,9 @@
       "rfc": "RFC9484",
       "title": "Use ICMP to signal forwarding errors",
       "statement": "IP proxying endpoints SHOULD signal forwarding errors to their peer by generating ICMP packets and sending them using HTTP Datagrams.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -95698,18 +95698,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -95722,9 +95722,9 @@
       "rfc": "RFC9484",
       "title": "Do not forward link-local traffic beyond the received interface",
       "statement": "IP proxying endpoints MUST not forward any link-local traffic beyond the IP proxying interface on which it was received.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -95734,18 +95734,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -95758,9 +95758,9 @@
       "rfc": "RFC9484",
       "title": "Ensure IPv6 tunnel MTU of at least 1280 bytes",
       "statement": "IP proxying endpoints that operate as routers and support IPv6 MUST ensure the IP tunnel link MTU is at least 1280 bytes.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -95770,18 +95770,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -95794,9 +95794,9 @@
       "rfc": "RFC9484",
       "title": "Use ICMPv6 echo requests to verify link MTU",
       "statement": "Unless endpoints have an out-of-band guarantee that the previous techniques are sufficient, IP proxying endpoints MUST use ICMPv6 echo requests with 1232 bytes of data to determine the link MTU and tear down the tunnel if no response is received.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -95806,18 +95806,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+        "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-ForwardingPolicyFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
