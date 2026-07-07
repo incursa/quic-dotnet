@@ -41,6 +41,10 @@ param(
 
     [int] $StreamsPerConnection,
 
+    [switch] $CaptureCounters,
+
+    [int] $CounterRefreshInterval = 1,
+
     [string] $BaseUrl,
 
     [string] $Output = ".artifacts\runs",
@@ -965,6 +969,13 @@ try {
 
     if ($PSBoundParameters.ContainsKey("StreamsPerConnection")) {
         $benchmarkArgs += @("-StreamsPerConnection", $StreamsPerConnection.ToString([Globalization.CultureInfo]::InvariantCulture))
+    }
+
+    if ($CaptureCounters) {
+        $benchmarkArgs += @(
+            "-CaptureCounters",
+            "-CounterRefreshInterval",
+            ([Math]::Max(1, $CounterRefreshInterval)).ToString([Globalization.CultureInfo]::InvariantCulture))
     }
 
     if ($PSBoundParameters.ContainsKey("BaseUrl") -and -not [string]::IsNullOrWhiteSpace($BaseUrl)) {

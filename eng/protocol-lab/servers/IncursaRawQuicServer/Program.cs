@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Collections.Concurrent;
+using System.Buffers;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
@@ -30,6 +31,7 @@ var payloadDirection = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_
 var echoResponses = !string.Equals(payloadDirection, "client-to-server", StringComparison.OrdinalIgnoreCase);
 const int RawQuicConcurrentBidirectionalStreamLimit = 256;
 const int RawQuicReceiveWindowBytes = 16 * 1024 * 1024;
+const int RawQuicEchoBufferBytes = 16 * 1024;
 
 var certificate = GenerateSelfSignedCertificate(certSubject);
 var alpnProtocol = new SslApplicationProtocol(alpn);
@@ -184,37 +186,43 @@ static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int 
             Console.Error.WriteLine($"IncursaRawQuicServer handling stream #{streamIndex} on connection #{connectionIndex}");
         }
 
-        var buffer = new byte[65536];
-
-        while (true)
+        var buffer = ArrayPool<byte>.Shared.Rent(RawQuicEchoBufferBytes);
+        try
         {
-            var bytesRead = await stream.ReadAsync(buffer.AsMemory(), cancellationToken);
-            if (bytesRead <= 0)
+            while (true)
             {
-                reachedEof = true;
-                if (debugLogging)
+                var bytesRead = await stream.ReadAsync(buffer.AsMemory(0, RawQuicEchoBufferBytes), cancellationToken);
+                if (bytesRead <= 0)
                 {
-                    Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} reached EOF after read loop");
+                    reachedEof = true;
+                    if (debugLogging)
+                    {
+                        Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} reached EOF after read loop");
+                    }
+                    break;
                 }
-                break;
-            }
-
-            if (debugLogging)
-            {
-                Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} read {bytesRead} byte(s)");
-            }
-
-            bytesReadTotal += bytesRead;
-            if (echoResponses && stream.CanWrite)
-            {
-                await stream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
-                bytesEchoedTotal += bytesRead;
 
                 if (debugLogging)
                 {
-                    Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} echoed {bytesRead} byte(s)");
+                    Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} read {bytesRead} byte(s)");
+                }
+
+                bytesReadTotal += bytesRead;
+                if (echoResponses && stream.CanWrite)
+                {
+                    await stream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
+                    bytesEchoedTotal += bytesRead;
+
+                    if (debugLogging)
+                    {
+                        Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} echoed {bytesRead} byte(s)");
+                    }
                 }
             }
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(buffer);
         }
 
         if (stream.CanWrite)

@@ -20,6 +20,10 @@ param(
 
     [string] $Scenario,
 
+    [switch] $CaptureCounters,
+
+    [int] $CounterRefreshInterval = 1,
+
     [switch] $SkipProtocolLab,
 
     [switch] $SkipBenchmarks,
@@ -368,6 +372,13 @@ if ($shouldRunProtocolLab) {
 
     if ($NoRestore) {
         $protocolLabArgs += "-NoRestore"
+    }
+
+    if ($CaptureCounters) {
+        $protocolLabArgs += @(
+            "-CaptureCounters",
+            "-CounterRefreshInterval",
+            ([Math]::Max(1, $CounterRefreshInterval)).ToString([Globalization.CultureInfo]::InvariantCulture))
     }
 
     $protocolLabProcessArgs = @(
