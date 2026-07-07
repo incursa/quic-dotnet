@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T19:55:51.4931926-06:00",
+    "generated_at": "2026-07-06T19:59:22.5427689-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 350,
-      "full_executable_proof": 2327
+      "deferred_proof_not_executed": 337,
+      "full_executable_proof": 2340
     },
     "by_rfc": [
       {
@@ -134,8 +134,8 @@
         "rfc": "RFC9463",
         "total": 120,
         "by_proof_state": {
-          "deferred_proof_not_executed": 32,
-          "full_executable_proof": 88
+          "deferred_proof_not_executed": 19,
+          "full_executable_proof": 101
         }
       },
       {
@@ -58951,9 +58951,9 @@
       "rfc": "RFC9463",
       "title": "Preference-ordered multiple IP addresses",
       "statement": "If multiple IP addresses are returned in an Encrypted DNS option, they MUST be returned ordered by preference.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58963,18 +58963,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-GenericInformationFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -58987,9 +58987,9 @@
       "rfc": "RFC9463",
       "title": "Encode service parameters with the RFC9460 wire format",
       "statement": "These parameters MUST be encoded following the same rules for encoding SvcParams using the wire format specified in Section 2.2 of [RFC9460].",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -58999,18 +58999,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-GenericInformationFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -59023,9 +59023,9 @@
       "rfc": "RFC9463",
       "title": "Prefer ADN-only provisioning mode",
       "statement": "ADN-only provisioning mode SHOULD be used.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -59035,18 +59035,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-GenericInformationFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -59059,9 +59059,9 @@
       "rfc": "RFC9463",
       "title": "ADN presence and encoding",
       "statement": "The ADN MUST be present and encoded as specified in Section 10 of RFC 8415.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -59071,18 +59071,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-GenericInformationFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -59095,9 +59095,9 @@
       "rfc": "RFC9463",
       "title": "Service parameter encoding rules",
       "statement": "The service parameters MUST be encoded according to Section 2.2 of RFC 9460.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -59107,18 +59107,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-GenericInformationFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -59247,9 +59247,9 @@
       "rfc": "RFC9463",
       "title": "Service priority when implicit ordering is absent",
       "statement": "When multiple encrypted DNS instances are used and implicit ordering is not relied on, the DNR information SHOULD include a service priority.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -59259,18 +59259,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-GenericInformationFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -59283,9 +59283,9 @@
       "rfc": "RFC9463",
       "title": "Mandatory ADN parameter",
       "statement": "The ADN parameter MUST be present in the DNR information.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -59295,18 +59295,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-GenericInformationFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -59319,9 +59319,9 @@
       "rfc": "RFC9463",
       "title": "Resolver IP address list",
       "statement": "The DNR information SHOULD include IP addresses used to locate the encrypted DNS resolver.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -59331,18 +59331,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-GenericInformationFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -59355,9 +59355,9 @@
       "rfc": "RFC9463",
       "title": "Service parameter set",
       "statement": "The DNR information SHOULD include a set of service parameters.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -59367,18 +59367,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-GenericInformationFuzzClosure.cs"
       ],
       "spec_test_ref_count": 4,
       "spec_test_refs": [
@@ -62378,9 +62378,9 @@
       "rfc": "RFC9463",
       "title": "Allow OPTION_V6_DNR in the client ORO",
       "statement": "The OPTION_V6_DNR option MUST be requestable in the client ORO.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62390,18 +62390,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-GenericInformationFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -62452,9 +62452,9 @@
       "rfc": "RFC9463",
       "title": "Do not mark OPTION_V6_DNR as singleton",
       "statement": "The OPTION_V6_DNR option MUST NOT be a singleton option.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62464,18 +62464,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-GenericInformationFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -62526,9 +62526,9 @@
       "rfc": "RFC9463",
       "title": "Set OPTION_V4_DNR data length to N",
       "statement": "The OPTION_V4_DNR option data length MUST be N.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -62538,18 +62538,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-GenericInformationFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -93354,9 +93354,9 @@
       "rfc": "RFC9463",
       "title": "Router or forwarder single LAN-facing address",
       "statement": "A router embedding a recursive server or a forwarder MUST include one IP address pointing to one of its LAN-facing interfaces.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -93366,18 +93366,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-GenericInformationFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
