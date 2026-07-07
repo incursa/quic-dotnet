@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T19:31:55.2024210-06:00",
+  "generated_at": "2026-07-06T19:35:11.1158072-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T19:31:55.1991116-06:00",
+    "generated_at": "2026-07-06T19:35:11.1111267-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -365620,14 +365620,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -365722,6 +365722,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0042",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-Http11UpgradePolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure.Fuzz_Http11UpgradeMethodIsGet",
+          "method": "Fuzz_Http11UpgradeMethodIsGet",
+          "line": 14,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0042"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -365751,14 +365773,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -365853,6 +365875,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0043",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-Http11UpgradePolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure.Fuzz_Http11UpgradeRequestIncludesSingleHostHeader",
+          "method": "Fuzz_Http11UpgradeRequestIncludesSingleHostHeader",
+          "line": 28,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0043"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -365882,14 +365926,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -365984,6 +366028,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0044",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-Http11UpgradePolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure.Fuzz_Http11UpgradeRequestIncludesCaseInsensitiveConnectionUpgrade",
+          "method": "Fuzz_Http11UpgradeRequestIncludesCaseInsensitiveConnectionUpgrade",
+          "line": 41,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0044"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -366013,14 +366079,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -366115,6 +366181,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0045",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-Http11UpgradePolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure.Fuzz_Http11UpgradeRequestIncludesConnectIpUpgradeHeader",
+          "method": "Fuzz_Http11UpgradeRequestIncludesConnectIpUpgradeHeader",
+          "line": 55,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0045"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -366144,14 +366232,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -366246,6 +366334,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0046",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-Http11UpgradePolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure.Fuzz_MalformedHttp11UpgradeRequestProducesValidationError",
+          "method": "Fuzz_MalformedHttp11UpgradeRequestProducesValidationError",
+          "line": 67,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0046"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -366275,14 +366385,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -366377,6 +366487,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0047",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-Http11UpgradePolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure.Fuzz_MalformedHttp11UpgradeRequestRecommendsBadRequestStatus",
+          "method": "Fuzz_MalformedHttp11UpgradeRequestRecommendsBadRequestStatus",
+          "line": 85,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -366406,14 +366538,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -366508,6 +366640,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0048",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-Http11UpgradePolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure.Fuzz_Http11UpgradeResponseStatusIsSwitchingProtocols",
+          "method": "Fuzz_Http11UpgradeResponseStatusIsSwitchingProtocols",
+          "line": 96,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0048"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -366537,14 +366691,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -366639,6 +366793,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0049",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-Http11UpgradePolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure.Fuzz_Http11UpgradeResponseIncludesCaseInsensitiveConnectionUpgrade",
+          "method": "Fuzz_Http11UpgradeResponseIncludesCaseInsensitiveConnectionUpgrade",
+          "line": 110,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0049"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -366668,14 +366844,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -366770,6 +366946,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0050",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-Http11UpgradePolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure.Fuzz_Http11UpgradeResponseIncludesSingleConnectIpUpgradeHeader",
+          "method": "Fuzz_Http11UpgradeResponseIncludesSingleConnectIpUpgradeHeader",
+          "line": 124,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0050"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -366799,14 +366997,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -366901,6 +367099,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0051",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-Http11UpgradePolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure.Fuzz_Http11UpgradeResponseStartsCapsuleProtocolWithoutContent",
+          "method": "Fuzz_Http11UpgradeResponseStartsCapsuleProtocolWithoutContent",
+          "line": 136,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0051"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -366930,14 +367150,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -367025,6 +367245,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0052"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0052",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-Http11UpgradePolicyFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_Http11UpgradePolicyFuzzClosure.Fuzz_FailedHttp11ProxyingAttemptClosesConnection",
+          "method": "Fuzz_FailedHttp11ProxyingAttemptClosesConnection",
+          "line": 148,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
