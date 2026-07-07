@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T19:35:11.1158072-06:00",
+  "generated_at": "2026-07-06T19:39:25.9125201-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T19:35:11.1111267-06:00",
+    "generated_at": "2026-07-06T19:39:25.9084206-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -364812,14 +364812,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -364914,6 +364914,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0032",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-TunnelSetupFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure.Fuzz_InvalidDecodedTunnelVariablesAreMalformed",
+          "method": "Fuzz_InvalidDecodedTunnelVariablesAreMalformed",
+          "line": 29,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -364943,14 +364965,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -365045,6 +365067,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0037",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-TunnelSetupFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure.Fuzz_TunnelLifetimeIsTiedToRequestStream",
+          "method": "Fuzz_TunnelLifetimeIsTiedToRequestStream",
+          "line": 105,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0037"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -365074,14 +365118,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -365176,6 +365220,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0038",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-TunnelSetupFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure.Fuzz_AssignmentsRemainWhileRequestStreamIsOpen",
+          "method": "Fuzz_AssignmentsRemainWhileRequestStreamIsOpen",
+          "line": 115,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -365205,14 +365271,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -365307,6 +365373,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0039",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-TunnelSetupFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure.Fuzz_TunnelMayTearDownAfterInactivity",
+          "method": "Fuzz_TunnelMayTearDownAfterInactivity",
+          "line": 126,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0039"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -365336,14 +365424,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -365431,6 +365519,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0040"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0040",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-TunnelSetupFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure.Fuzz_InactivityTeardownClosesRequestStream",
+          "method": "Fuzz_InactivityTeardownClosesRequestStream",
+          "line": 136,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -509951,14 +510061,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -510053,6 +510163,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S4-1-P3-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-TunnelSetupFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure.Fuzz_DnsTargetsRequireResolutionBeforeHttpResponse",
+          "method": "Fuzz_DnsTargetsRequireResolutionBeforeHttpResponse",
+          "line": 60,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S4-1-P3-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -510082,14 +510214,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -510184,6 +510316,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S4-1-P3-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-TunnelSetupFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure.Fuzz_IpProxyExtractsDecodedTargetAndIpprotoVariables",
+          "method": "Fuzz_IpProxyExtractsDecodedTargetAndIpprotoVariables",
+          "line": 14,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S4-1-P3-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -510213,14 +510367,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -510315,6 +510469,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S4-1-P3-S3-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-TunnelSetupFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure.Fuzz_TunnelSetupErrorsCanIncludeProxyStatusDetails",
+          "method": "Fuzz_TunnelSetupErrorsCanIncludeProxyStatusDetails",
+          "line": 88,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S4-1-P3-S3-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -510344,14 +510520,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -510446,6 +510622,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S4-1-P4-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-TunnelSetupFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure.Fuzz_DecodedTunnelVariablesAreValidatedAgainstScopeRules",
+          "method": "Fuzz_DecodedTunnelVariablesAreValidatedAgainstScopeRules",
+          "line": 44,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S4-1-P4-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -510475,14 +510673,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -510570,6 +510768,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S4-1-P4-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S4-1-P4-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9484/REQ-QUIC-RFC9484-TunnelSetupFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure",
+          "member": "REQ_QUIC_RFC9484_TunnelSetupFuzzClosure.Fuzz_TunnelSetupErrorsRejectTheRequest",
+          "method": "Fuzz_TunnelSetupErrorsRejectTheRequest",
+          "line": 76,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
