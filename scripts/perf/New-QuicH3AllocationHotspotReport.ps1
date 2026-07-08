@@ -234,7 +234,7 @@ function Expand-ProfilePackRoots {
             continue
         }
 
-        $parts = $root -split ';'
+        $parts = $root -split '[;,]'
         foreach ($part in $parts) {
             if ([string]::IsNullOrWhiteSpace($part)) {
                 continue

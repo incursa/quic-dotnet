@@ -180,7 +180,7 @@ bytes/request, and GC deltas.
 ```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\New-QuicH3AllocationHotspotReport.ps1 `
   -OutputRoot .\.artifacts\perf-hotspots `
-  -ProfilePackRoot ".\.artifacts\perf\incursa-h3-profile-pack\codex-h3-1kb-quic-profile-20260708a;.\.artifacts\perf\incursa-h3-profile-pack\codex-h3-64kb-quic-profile-20260708a"
+  -ProfilePackRoot ".\.artifacts\perf\incursa-h3-profile-pack\codex-h3-1kb-quic-profile-20260708a,.\.artifacts\perf\incursa-h3-profile-pack\codex-h3-64kb-quic-profile-20260708a"
 ```
 
 Output is written under:
