@@ -1341,7 +1341,8 @@ internal sealed partial class QuicConnectionRuntime
             includeAckFrame: true,
             streamId: streamId,
             streamIds: streamIds,
-            plaintextPayloadOwner: plaintextPayloadOwner);
+            plaintextPayloadOwner: plaintextPayloadOwner,
+            enforcePathMaximumDatagramSize: true);
     }
 
     private bool TryFlushPendingApplicationSendsAfterRecoveryProgress(

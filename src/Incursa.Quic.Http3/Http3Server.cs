@@ -22,7 +22,7 @@ public sealed class Http3Server : IAsyncDisposable
     // ResponseWriteChunkSize only caps each QUIC write call. Keeping them
     // separate preserves frame boundaries and keeps the final-frame path able
     // to use WriteFinalAsync on the last chunk.
-    private const int ResponseWriteChunkSize = 1024;
+    private const int ResponseWriteChunkSize = 4 * 1024;
     private const int ResponseDataFrameChunkSize = 16 * 1024;
     private const int FieldSectionRequiredInsertCountPrefixBits = 8;
     private const int FieldSectionBasePrefixBits = 7;
@@ -669,6 +669,7 @@ public sealed class Http3Server : IAsyncDisposable
                     : await handler.HandleAsync(request, cancellationToken).ConfigureAwait(false);
                 if (!await WriteResponseAsync(stream, response, cancellationToken).ConfigureAwait(false))
                 {
+                    TryAbortResponseWrite(stream, Http3ErrorCode.RequestIncomplete);
                     return;
                 }
 
@@ -754,6 +755,18 @@ public sealed class Http3Server : IAsyncDisposable
 
         tunnelHandler = webSocketHandler;
         return true;
+    }
+
+    private static void TryAbortResponseWrite(QuicStream stream, Http3ErrorCode errorCode)
+    {
+        try
+        {
+            stream.Abort(QuicAbortDirection.Write, (long)errorCode);
+        }
+        catch (Exception exception) when (exception is QuicException or ObjectDisposedException or InvalidOperationException)
+        {
+            SuppressExpectedException(exception);
+        }
     }
 
     private async ValueTask<Http3Request> ReadRequestAsync(
