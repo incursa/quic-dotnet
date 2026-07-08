@@ -170,11 +170,13 @@ public sealed class Http3FrameLayerTests
 
         IReadOnlyList<QPackFieldLine> headers = Http3Server.BuildResponseHeaders(response);
         byte[] encodedFieldSection = Http3Server.EncodeResponseFieldSection(headers);
+        byte[] directEncodedFieldSection = Http3Server.EncodeResponseFieldSection(response);
         byte[] headersFrame = Http3FrameWriter.WriteHeaders(encodedFieldSection);
         byte[] dataFrame = Http3FrameWriter.WriteData(body);
         byte[] responseFrames = [.. headersFrame, .. dataFrame];
 
         Assert.Equal(expectedFieldSectionHex, Convert.ToHexString(encodedFieldSection));
+        Assert.Equal(encodedFieldSection, directEncodedFieldSection);
         Assert.Equal(Http3FrameWriter.WriteHeaders(Convert.FromHexString(expectedFieldSectionHex)), headersFrame);
         Assert.Equal(Http3FrameWriter.WriteData(body), dataFrame);
         Assert.Equal([.. Http3FrameWriter.WriteHeaders(encodedFieldSection), .. Http3FrameWriter.WriteData(body)], responseFrames);
@@ -219,6 +221,7 @@ public sealed class Http3FrameLayerTests
 
         IReadOnlyList<QPackFieldLine> headers = Http3Server.BuildResponseHeaders(response);
         byte[] encodedFieldSection = Http3Server.EncodeResponseFieldSection(headers);
+        byte[] directEncodedFieldSection = Http3Server.EncodeResponseFieldSection(response);
 
         Assert.Equal(
             [
@@ -228,6 +231,7 @@ public sealed class Http3FrameLayerTests
                 new QPackFieldLine("cache-control", "no-store"),
             ],
             headers);
+        Assert.Equal(encodedFieldSection, directEncodedFieldSection);
         Assert.Equal(headers, QPackDecoder.DecodeFieldSection(encodedFieldSection));
         Assert.Single(headers, header => header.Name == ":status");
     }
@@ -242,7 +246,9 @@ public sealed class Http3FrameLayerTests
 
         IReadOnlyList<QPackFieldLine> headers = Http3Server.BuildResponseHeaders(response);
         byte[] encodedFieldSection = Http3Server.EncodeResponseFieldSection(headers);
+        byte[] directEncodedFieldSection = Http3Server.EncodeResponseFieldSection(response);
 
+        Assert.Equal(encodedFieldSection, directEncodedFieldSection);
         Assert.Equal(headers, QPackDecoder.DecodeFieldSection(encodedFieldSection));
     }
 

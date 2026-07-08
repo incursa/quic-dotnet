@@ -38,6 +38,10 @@ public sealed class Http3Server : IAsyncDisposable
     private const int QPackIntegerMaxPrefixBitCount = 8;
     private const ulong QPackIntegerMaxValue = 0x3FFF_FFFF_FFFF_FFFFUL;
     private const byte QPackIntegerContinuationThreshold = 0x80;
+    private const int MinimumResponseStatusCode = 100;
+    private const int MaximumResponseStatusCode = 999;
+
+    private static readonly string[] ResponseStatusCodeStrings = CreateResponseStatusCodeStrings();
     private const byte QPackIntegerContinuationValueMask = 0x7F;
     private const byte QPackIntegerContinuationFlag = 0x80;
     private const int QPackIntegerContinuationShift = 7;
@@ -1095,7 +1099,7 @@ public sealed class Http3Server : IAsyncDisposable
         Http3ServerResponse response,
         CancellationToken cancellationToken)
     {
-        byte[] encodedFieldSection = EncodeResponseFieldSection(BuildResponseHeaders(response));
+        byte[] encodedFieldSection = EncodeResponseFieldSection(response);
         int headersFrameLength = Http3FrameWriter.GetFrameLength((ulong)Http3FrameType.Headers, encodedFieldSection.Length);
         if (response.StreamingBody is not null)
         {
@@ -1146,7 +1150,7 @@ public sealed class Http3Server : IAsyncDisposable
         Http3ServerResponse response,
         CancellationToken cancellationToken)
     {
-        byte[] encodedFieldSection = EncodeResponseFieldSection(BuildResponseHeaders(response));
+        byte[] encodedFieldSection = EncodeResponseFieldSection(response);
         byte[] headersFrame = Http3FrameWriter.WriteHeaders(encodedFieldSection);
         if (!await WriteFrameBytesAsync(stream, headersFrame, cancellationToken).ConfigureAwait(false))
         {
@@ -1406,7 +1410,7 @@ public sealed class Http3Server : IAsyncDisposable
         }
 
         QPackFieldLine[] headers = new QPackFieldLine[headerCount];
-        headers[0] = new QPackFieldLine(":status", response.StatusCode.ToString());
+        headers[0] = new QPackFieldLine(":status", GetResponseStatusCodeString(response.StatusCode));
 
         int index = 1;
         foreach (QPackFieldLine header in response.Headers)
@@ -1422,6 +1426,42 @@ public sealed class Http3Server : IAsyncDisposable
         return headers;
     }
 
+    internal static byte[] EncodeResponseFieldSection(Http3ServerResponse response)
+    {
+        string statusCode = GetResponseStatusCodeString(response.StatusCode);
+        QPackFieldLine statusHeader = new(":status", statusCode);
+        int length = GetIntegerEncodedLength(0, FieldSectionRequiredInsertCountPrefixBits)
+            + GetIntegerEncodedLength(0, FieldSectionBasePrefixBits)
+            + GetResponseHeaderLength(statusHeader);
+        foreach (QPackFieldLine header in response.Headers)
+        {
+            if (header.Name == ":status")
+            {
+                continue;
+            }
+
+            length = checked(length + GetResponseHeaderLength(header));
+        }
+
+        byte[] encoded = new byte[length];
+        int offset = 0;
+        WriteInteger(encoded, ref offset, 0, FieldSectionRequiredInsertCountPrefixBits);
+        WriteInteger(encoded, ref offset, 0, FieldSectionBasePrefixBits);
+        WriteResponseHeader(encoded, ref offset, statusHeader);
+
+        foreach (QPackFieldLine header in response.Headers)
+        {
+            if (header.Name == ":status")
+            {
+                continue;
+            }
+
+            WriteResponseHeader(encoded, ref offset, header);
+        }
+
+        return encoded;
+    }
+
     internal static byte[] EncodeResponseFieldSection(IReadOnlyList<QPackFieldLine> headers)
     {
         byte[] encoded = new byte[GetResponseFieldSectionLength(headers)];
@@ -1435,6 +1475,27 @@ public sealed class Http3Server : IAsyncDisposable
         }
 
         return encoded;
+    }
+
+    private static string[] CreateResponseStatusCodeStrings()
+    {
+        string[] statusCodes = new string[MaximumResponseStatusCode - MinimumResponseStatusCode + 1];
+        for (int statusCode = MinimumResponseStatusCode; statusCode <= MaximumResponseStatusCode; statusCode++)
+        {
+            statusCodes[statusCode - MinimumResponseStatusCode] = statusCode.ToString();
+        }
+
+        return statusCodes;
+    }
+
+    private static string GetResponseStatusCodeString(int statusCode)
+    {
+        if (statusCode is >= MinimumResponseStatusCode and <= MaximumResponseStatusCode)
+        {
+            return ResponseStatusCodeStrings[statusCode - MinimumResponseStatusCode];
+        }
+
+        return statusCode.ToString();
     }
 
     private static int GetResponseFieldSectionLength(IReadOnlyList<QPackFieldLine> headers)
