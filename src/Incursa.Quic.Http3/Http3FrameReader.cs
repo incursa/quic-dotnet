@@ -42,7 +42,8 @@ public sealed class Http3FrameReader
         }
 
         int index = 0;
-        List<Http3Frame> frames = [];
+        Http3Frame? firstFrame = null;
+        List<Http3Frame>? additionalFrames = null;
 
         while (index < readable.Length)
         {
@@ -77,7 +78,15 @@ public sealed class Http3FrameReader
 
             byte[] payload = readable.Slice(index, (int)payloadLength).ToArray();
             index += (int)payloadLength;
-            frames.Add(ParseFrame(frameType, payload));
+            Http3Frame frame = ParseFrame(frameType, payload);
+            if (firstFrame is null)
+            {
+                firstFrame = frame;
+            }
+            else
+            {
+                (additionalFrames ??= []).Add(frame);
+            }
         }
 
         if (index == readable.Length)
@@ -98,7 +107,20 @@ public sealed class Http3FrameReader
             throw new Http3Exception(Http3ErrorCode.FrameError, "The HTTP/3 stream ended with a truncated frame.");
         }
 
-        return [.. frames];
+        if (firstFrame is null)
+        {
+            return [];
+        }
+
+        if (additionalFrames is null)
+        {
+            return [firstFrame];
+        }
+
+        Http3Frame[] frames = new Http3Frame[additionalFrames.Count + 1];
+        frames[0] = firstFrame;
+        additionalFrames.CopyTo(frames, 1);
+        return frames;
     }
 
     /// <summary>
