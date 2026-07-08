@@ -96,6 +96,7 @@ internal static class Program
                 Normalize(exception.ExceptionMessage, string.Empty),
                 attributionFrame);
 
+            var category = ClassifyExceptionGroup(exception.ExceptionType, firstProjectFrame, frames);
             if (!groups.TryGetValue(key, out var group))
             {
                 group = new ExceptionTraceGroup
@@ -105,6 +106,9 @@ internal static class Program
                     StackTopFrame = stackTopFrame,
                     AttributionFrame = key.AttributionFrame,
                     FirstProjectFrame = firstProjectFrame,
+                    Category = category.Name,
+                    IsActionable = category.IsActionable,
+                    ActionabilityReason = category.Reason,
                     SampleFrames = frames,
                     SampleEvents = [],
                 };
@@ -138,9 +142,22 @@ internal static class Program
             .Take(commandOptions.Top)
             .ToArray();
 
+        var projectAttributedExceptions = groups.Values
+            .Where(group => string.Equals(group.Category, ExceptionCategoryNames.ProjectAttributed, StringComparison.Ordinal))
+            .Sum(group => group.Count);
+        var runtimeOnlyCancellationExceptions = groups.Values
+            .Where(group => string.Equals(group.Category, ExceptionCategoryNames.RuntimeOnlyCancellation, StringComparison.Ordinal))
+            .Sum(group => group.Count);
+        var runtimeOnlyExceptions = groups.Values
+            .Where(group => string.Equals(group.Category, ExceptionCategoryNames.RuntimeOnly, StringComparison.Ordinal))
+            .Sum(group => group.Count);
+        var externalAttributedExceptions = groups.Values
+            .Where(group => string.Equals(group.Category, ExceptionCategoryNames.ExternalAttributed, StringComparison.Ordinal))
+            .Sum(group => group.Count);
+
         return new ExceptionTraceSummary
         {
-            SchemaVersion = "incursa.quic.exception-attribution.v1",
+            SchemaVersion = "incursa.quic.exception-attribution.v2",
             GeneratedAtUtc = DateTimeOffset.UtcNow,
             TracePath = tracePath,
             TraceSha256 = ComputeSha256(tracePath),
@@ -151,6 +168,11 @@ internal static class Program
             TotalExceptions = totalExceptions,
             TotalGroups = groups.Count,
             IncludedGroups = orderedGroups.Length,
+            ActionableExceptions = projectAttributedExceptions + externalAttributedExceptions,
+            ProjectAttributedExceptions = projectAttributedExceptions,
+            RuntimeOnlyCancellationExceptions = runtimeOnlyCancellationExceptions,
+            RuntimeOnlyExceptions = runtimeOnlyExceptions,
+            ExternalAttributedExceptions = externalAttributedExceptions,
             ProjectFramePrefixes = commandOptions.ProjectFramePrefixes,
             ConversionLog = conversionLog.ToString(),
             Groups = orderedGroups,
@@ -224,6 +246,48 @@ internal static class Program
         return null;
     }
 
+    private static ExceptionGroupClassification ClassifyExceptionGroup(
+        string? exceptionType,
+        string? firstProjectFrame,
+        IReadOnlyList<string> frames)
+    {
+        if (!string.IsNullOrWhiteSpace(firstProjectFrame))
+        {
+            return new ExceptionGroupClassification(
+                ExceptionCategoryNames.ProjectAttributed,
+                IsActionable: true,
+                "A project frame was present in the captured stack.");
+        }
+
+        var firstNonRuntimeFrame = FindFirstNonRuntimeFrame(frames);
+        if (!string.IsNullOrWhiteSpace(firstNonRuntimeFrame))
+        {
+            return new ExceptionGroupClassification(
+                ExceptionCategoryNames.ExternalAttributed,
+                IsActionable: true,
+                "The captured stack has a non-runtime frame but no configured project frame.");
+        }
+
+        if (IsCancellationException(exceptionType))
+        {
+            return new ExceptionGroupClassification(
+                ExceptionCategoryNames.RuntimeOnlyCancellation,
+                IsActionable: false,
+                "The captured stack contains only runtime frames for a cancellation exception.");
+        }
+
+        return new ExceptionGroupClassification(
+            ExceptionCategoryNames.RuntimeOnly,
+            IsActionable: false,
+            "The captured stack contains only runtime frames.");
+    }
+
+    private static bool IsCancellationException(string? exceptionType)
+    {
+        return string.Equals(exceptionType, "System.OperationCanceledException", StringComparison.Ordinal) ||
+            string.Equals(exceptionType, "System.Threading.Tasks.TaskCanceledException", StringComparison.Ordinal);
+    }
+
     private static string RenderMarkdown(ExceptionTraceSummary summary)
     {
         var builder = new StringBuilder();
@@ -237,16 +301,25 @@ internal static class Program
         builder.AppendLine(CultureInfo.InvariantCulture, $"- Has call stacks: `{summary.HasCallStacks}`");
         builder.AppendLine(CultureInfo.InvariantCulture, $"- Total exceptions: `{summary.TotalExceptions}`");
         builder.AppendLine(CultureInfo.InvariantCulture, $"- Total groups: `{summary.TotalGroups}`");
+        builder.AppendLine(CultureInfo.InvariantCulture, $"- Actionable exceptions: `{summary.ActionableExceptions}`");
+        builder.AppendLine(CultureInfo.InvariantCulture, $"- Project-attributed exceptions: `{summary.ProjectAttributedExceptions}`");
+        builder.AppendLine(CultureInfo.InvariantCulture, $"- Runtime-only cancellation exceptions: `{summary.RuntimeOnlyCancellationExceptions}`");
+        builder.AppendLine(CultureInfo.InvariantCulture, $"- Runtime-only exceptions: `{summary.RuntimeOnlyExceptions}`");
+        builder.AppendLine(CultureInfo.InvariantCulture, $"- External-attributed exceptions: `{summary.ExternalAttributedExceptions}`");
         builder.AppendLine();
         builder.AppendLine("## Groups");
         builder.AppendLine();
-        builder.AppendLine("| Count | Exception type | Message | Attribution frame | Stack top frame | First project frame |");
-        builder.AppendLine("| ---: | --- | --- | --- | --- | --- |");
+        builder.AppendLine("| Count | Category | Actionable | Exception type | Message | Attribution frame | Stack top frame | First project frame |");
+        builder.AppendLine("| ---: | --- | --- | --- | --- | --- | --- | --- |");
 
         foreach (var group in summary.Groups)
         {
             builder.Append("| ");
             builder.Append(group.Count.ToString(CultureInfo.InvariantCulture));
+            builder.Append(" | ");
+            builder.Append(EscapeMarkdownCell(group.Category));
+            builder.Append(" | ");
+            builder.Append(group.IsActionable ? "yes" : "no");
             builder.Append(" | ");
             builder.Append(EscapeMarkdownCell(group.ExceptionType));
             builder.Append(" | ");
@@ -410,6 +483,16 @@ internal sealed class ExceptionTraceSummary
 
     public int IncludedGroups { get; set; }
 
+    public int ActionableExceptions { get; set; }
+
+    public int ProjectAttributedExceptions { get; set; }
+
+    public int RuntimeOnlyCancellationExceptions { get; set; }
+
+    public int RuntimeOnlyExceptions { get; set; }
+
+    public int ExternalAttributedExceptions { get; set; }
+
     public IReadOnlyList<string> ProjectFramePrefixes { get; set; } = [];
 
     public string ConversionLog { get; set; } = string.Empty;
@@ -430,6 +513,12 @@ internal sealed class ExceptionTraceGroup
     public string AttributionFrame { get; set; } = string.Empty;
 
     public string? FirstProjectFrame { get; set; }
+
+    public string Category { get; set; } = string.Empty;
+
+    public bool IsActionable { get; set; }
+
+    public string ActionabilityReason { get; set; } = string.Empty;
 
     public IReadOnlyList<string> SampleFrames { get; set; } = [];
 
@@ -453,3 +542,19 @@ internal readonly record struct ExceptionGroupKey(
     string ExceptionType,
     string ExceptionMessage,
     string AttributionFrame);
+
+internal readonly record struct ExceptionGroupClassification(
+    string Name,
+    bool IsActionable,
+    string Reason);
+
+internal static class ExceptionCategoryNames
+{
+    public const string ProjectAttributed = "project-attributed";
+
+    public const string RuntimeOnlyCancellation = "runtime-only-cancellation";
+
+    public const string RuntimeOnly = "runtime-only";
+
+    public const string ExternalAttributed = "external-attributed";
+}

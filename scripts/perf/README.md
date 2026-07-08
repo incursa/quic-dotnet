@@ -74,14 +74,17 @@ exception-attribution-command.txt
 trace.etlx
 ```
 
-The JSON schema is `incursa.quic.exception-attribution.v1`. `stackTopFrame`
+The JSON schema is `incursa.quic.exception-attribution.v2`. `stackTopFrame`
 preserves the raw managed top frame from the trace, which is often runtime
 exception dispatch. `attributionFrame` is the deterministic action frame used
 for grouping: the first configured project frame, or the first non-runtime frame
 when no project frame is present. By default project frames start with
-`Incursa.`. Runtime cancellation groups with no Incursa frame are still reported
-so cancellation noise is visible, but Incursa terminal-flow cleanup should focus
-first on rows where `firstProjectFrame` is populated.
+`Incursa.`. Each group also includes `category`, `isActionable`, and
+`actionabilityReason`. Runtime cancellation groups with no project or
+non-runtime frame are classified as `runtime-only-cancellation`; they still
+count toward total first-chance exceptions, but they do not count toward
+`actionableExceptions`. Incursa terminal-flow cleanup should focus first on
+rows where `category` is `project-attributed` or `external-attributed`.
 
 ## QUIC Local Performance Lanes
 
