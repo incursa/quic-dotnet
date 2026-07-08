@@ -26,7 +26,6 @@ public static class Http3ExtendedConnect
     /// </summary>
     public static bool IsExtendedConnect(Http3HeaderValidationResult request)
     {
-        ArgumentNullException.ThrowIfNull(request);
         return request.Method == "CONNECT" && request.Protocol is not null;
     }
 

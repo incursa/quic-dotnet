@@ -6,7 +6,7 @@ namespace Incursa.Quic.Http3;
 /// <summary>
 /// Contains validated HTTP/3 control data.
 /// </summary>
-public sealed class Http3HeaderValidationResult
+public readonly struct Http3HeaderValidationResult
 {
     internal Http3HeaderValidationResult(
         string? method,
