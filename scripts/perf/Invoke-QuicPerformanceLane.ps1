@@ -358,6 +358,132 @@ function Format-MetricRange {
     return "$median (best $best, worst $worst)"
 }
 
+function Get-ObjectPropertyValue {
+    param(
+        [AllowNull()]
+        [object] $Object,
+
+        [Parameter(Mandatory = $true)]
+        [string] $Name
+    )
+
+    if ($null -eq $Object) {
+        return $null
+    }
+
+    $property = $Object.PSObject.Properties[$Name]
+    if ($null -eq $property) {
+        return $null
+    }
+
+    return $property.Value
+}
+
+function ConvertTo-MetricSummary {
+    param(
+        [AllowNull()]
+        [object] $Metric,
+
+        [AllowNull()]
+        [object] $RelativeRange
+    )
+
+    if ($null -eq $Metric) {
+        return $null
+    }
+
+    return [ordered]@{
+        median = Get-ObjectPropertyValue -Object $Metric -Name "median"
+        best = Get-ObjectPropertyValue -Object $Metric -Name "best"
+        worst = Get-ObjectPropertyValue -Object $Metric -Name "worst"
+        relativeRange = $RelativeRange
+    }
+}
+
+function Get-AggregateFailureCategories {
+    param($Aggregate)
+
+    $categories = New-Object System.Collections.Generic.List[string]
+    $validation = $Aggregate.validation
+
+    if ([int]$validation.failed -gt 0) {
+        $categories.Add("validation-failure") | Out-Null
+    }
+
+    if ([int]$validation.infrastructureFailure -gt 0) {
+        $categories.Add("infrastructure-failure") | Out-Null
+    }
+
+    foreach ($status in @($Aggregate.benchmarkExecutionStatuses.PSObject.Properties)) {
+        if ([string]::Equals($status.Name, "failed", [StringComparison]::OrdinalIgnoreCase) -and [int]$status.Value -gt 0) {
+            $categories.Add("benchmark-failure") | Out-Null
+        }
+    }
+
+    if ([int]$Aggregate.errorCount -gt 0) {
+        $categories.Add("runner-error") | Out-Null
+    }
+
+    if ([int]$Aggregate.missingRepetitions -gt 0) {
+        $categories.Add("missing-repetitions") | Out-Null
+    }
+
+    $publishabilityGate = Get-ObjectPropertyValue -Object $Aggregate -Name "publishabilityGate"
+    if ($publishabilityGate) {
+        foreach ($blocker in @($publishabilityGate.blockers)) {
+            if ([string]$blocker -like "*variance*") {
+                $categories.Add("performance-instability") | Out-Null
+            }
+        }
+    }
+
+    if ($Aggregate.failureReasons -and $Aggregate.failureReasons.Count -gt 0) {
+        $categories.Add("reported-failure-reason") | Out-Null
+    }
+
+    if ($categories.Count -eq 0) {
+        return @("none")
+    }
+
+    return @($categories | Select-Object -Unique)
+}
+
+function ConvertTo-AggregateCellSummary {
+    param($Aggregate)
+
+    $publishabilityGate = Get-ObjectPropertyValue -Object $Aggregate -Name "publishabilityGate"
+    $evidence = Get-ObjectPropertyValue -Object $Aggregate -Name "evidence"
+
+    return [ordered]@{
+        implementationId = $Aggregate.implementationId
+        scenarioId = $Aggregate.scenarioId
+        protocol = $Aggregate.protocol
+        loadTool = $Aggregate.loadTool
+        loadToolMode = $Aggregate.loadToolMode
+        connections = $Aggregate.connections
+        streamsPerConnection = $Aggregate.streamsPerConnection
+        durationSeconds = $Aggregate.durationSeconds
+        warmupSeconds = $Aggregate.warmupSeconds
+        requestedRepetitions = $Aggregate.requestedRepetitions
+        observedRepetitions = $Aggregate.observedRepetitions
+        missingRepetitions = $Aggregate.missingRepetitions
+        validation = $Aggregate.validation
+        benchmarkExecutionStatuses = $Aggregate.benchmarkExecutionStatuses
+        evidenceClass = if ($evidence) { $evidence.evidenceClass } else { $null }
+        comparabilityStatus = if ($evidence) { $evidence.comparabilityStatus } else { $null }
+        failureCategories = Get-AggregateFailureCategories -Aggregate $Aggregate
+        failureReasons = @($Aggregate.failureReasons)
+        requestsPerSecond = ConvertTo-MetricSummary -Metric $Aggregate.requestsPerSecond -RelativeRange $Aggregate.requestsPerSecondRelativeRange
+        throughputBytesPerSecond = ConvertTo-MetricSummary -Metric $Aggregate.throughputBytesPerSecond -RelativeRange $Aggregate.throughputBytesPerSecondRelativeRange
+        latencyP50Ms = ConvertTo-MetricSummary -Metric $Aggregate.latencyP50Ms -RelativeRange $Aggregate.latencyP50MsRelativeRange
+        latencyP95Ms = ConvertTo-MetricSummary -Metric $Aggregate.latencyP95Ms -RelativeRange $Aggregate.latencyP95MsRelativeRange
+        latencyP99Ms = ConvertTo-MetricSummary -Metric $Aggregate.latencyP99Ms -RelativeRange $Aggregate.latencyP99MsRelativeRange
+        latencyMeanMs = ConvertTo-MetricSummary -Metric $Aggregate.latencyMeanMs -RelativeRange $Aggregate.latencyMeanMsRelativeRange
+        relativeRange = $Aggregate.relativeRange
+        publishabilityGate = $publishabilityGate
+    }
+}
+
 function Add-ProtocolLabAggregateSummary {
     param(
         [System.Collections.Generic.List[string]] $Lines,
@@ -381,6 +507,7 @@ function Add-ProtocolLabAggregateSummary {
         Add-SummaryLine $Lines "  - Throughput bytes/sec: ``$(Format-MetricRange $aggregate.throughputBytesPerSecond)``"
         Add-SummaryLine $Lines "  - Latency p95 ms: ``$(Format-MetricRange $aggregate.latencyP95Ms)``"
         Add-SummaryLine $Lines "  - Relative range: ``$(Format-Number $aggregate.relativeRange)``"
+        Add-SummaryLine $Lines "  - Failure categories: ``$((Get-AggregateFailureCategories -Aggregate $aggregate) -join ', ')``"
 
         if ($aggregate.publishabilityGate) {
             Add-SummaryLine $Lines "  - Publishability gate: ``$($aggregate.publishabilityGate.status)`` blockers ``$($aggregate.publishabilityGate.blockers -join ', ')``"
@@ -642,6 +769,118 @@ if ($shouldRunProtocolLab) {
     }
 }
 
+$protocolLabRunSummaries = New-Object System.Collections.Generic.List[object]
+if ($shouldRunProtocolLab) {
+    foreach ($record in $protocolLabRunRecords) {
+        $aggregateCells = @()
+        $aggregateTotals = $null
+        $aggregateClaimLevel = $null
+        $aggregatePublishabilityPolicy = $null
+
+        if (Test-Path -LiteralPath $record.AggregatePath -PathType Leaf) {
+            $aggregateDocument = Get-Content -LiteralPath $record.AggregatePath -Raw | ConvertFrom-Json
+            $aggregateTotals = $aggregateDocument.totals
+            $aggregateClaimLevel = Get-ObjectPropertyValue -Object $aggregateDocument -Name "claimLevel"
+            $aggregatePublishabilityPolicy = Get-ObjectPropertyValue -Object $aggregateDocument -Name "publishabilityPolicy"
+            foreach ($aggregate in @($aggregateDocument.aggregates)) {
+                $aggregateCells += ConvertTo-AggregateCellSummary -Aggregate $aggregate
+            }
+        }
+
+        $protocolLabRunSummaries.Add([ordered]@{
+            jobId = $record.Job.Id
+            jobName = $record.Job.Name
+            suite = $record.Job.Suite
+            implementation = $record.Job.Implementation
+            scenario = $record.Job.Scenario
+            connections = $record.Job.Connections
+            streamsPerConnection = $record.Job.StreamsPerConnection
+            runId = $record.RunId
+            runRoot = $record.RunRoot
+            aggregatePath = $record.AggregatePath
+            summaryPath = $record.SummaryPath
+            aggregatePresent = [bool](Test-Path -LiteralPath $record.AggregatePath -PathType Leaf)
+            totals = $aggregateTotals
+            claimLevel = $aggregateClaimLevel
+            publishabilityPolicy = $aggregatePublishabilityPolicy
+            cells = @($aggregateCells)
+        }) | Out-Null
+    }
+}
+
+$laneFailureCategories = New-Object System.Collections.Generic.List[string]
+if ($failureMessage) {
+    $laneFailureCategories.Add("lane-command-failure") | Out-Null
+}
+
+if ($protocolLabHealthReasons.Count -gt 0) {
+    $laneFailureCategories.Add("protocol-lab-diagnostic-failure") | Out-Null
+}
+
+foreach ($runSummary in $protocolLabRunSummaries) {
+    if (-not $DryRun -and -not $runSummary.aggregatePresent) {
+        $laneFailureCategories.Add("missing-aggregate") | Out-Null
+    }
+
+    foreach ($cell in @($runSummary.cells)) {
+        foreach ($category in @($cell.failureCategories)) {
+            if ($category -ne "none") {
+                $laneFailureCategories.Add($category) | Out-Null
+            }
+        }
+    }
+}
+
+if ($laneFailureCategories.Count -eq 0) {
+    $laneFailureCategories.Add("none") | Out-Null
+}
+
+$uniqueLaneFailureCategories = @($laneFailureCategories.ToArray() | Select-Object -Unique)
+$evidenceQuality = if ($Lane -eq "Confidence") { "confidence-local" } else { "diagnostic-smoke" }
+$benchmarkFilters = @($surfaceConfig.BenchmarkFilters)
+$protocolLabSkipped = [bool](-not $shouldRunProtocolLab)
+$protocolLabHealthReasonArray = @($protocolLabHealthReasons.ToArray())
+$protocolLabRunSummaryArray = @($protocolLabRunSummaries.ToArray())
+$commandsArray = @($commands.ToArray())
+$laneSummaryDocument = [ordered]@{
+    schemaVersion = "incursa.quic.performance-lane-summary.v1"
+    generatedAtUtc = ([DateTime]::UtcNow).ToString("O", [Globalization.CultureInfo]::InvariantCulture)
+    lane = $Lane
+    surface = $Surface
+    runIdPrefix = $RunIdPrefix
+    gitCommit = $gitCommit
+    gitState = $gitState
+    dryRun = [bool]$DryRun
+    status = $laneStatus
+    failureMessage = $failureMessage
+    failureCategories = $uniqueLaneFailureCategories
+    reportOnlyConfidence = [bool]($Lane -eq "Confidence")
+    evidenceQuality = $evidenceQuality
+    laneShape = [ordered]@{
+        benchmarkJob = $benchmarkJob
+        durationSeconds = $durationSeconds
+        warmupSeconds = $warmupSeconds
+        repetitions = $repetitions
+        failOnProtocolLabError = [bool]$effectiveFailOnProtocolLabError
+    }
+    benchmarkDotNet = [ordered]@{
+        skipped = [bool]$SkipBenchmarks
+        artifactsRoot = $bdnRoot
+        filters = $benchmarkFilters
+    }
+    protocolLab = [ordered]@{
+        skipped = $protocolLabSkipped
+        contractRoot = $resolvedProtocolLabRoot
+        executionRoot = $resolvedProtocolLabExecutionRoot
+        healthReasons = $protocolLabHealthReasonArray
+        runs = $protocolLabRunSummaryArray
+    }
+    commands = $commandsArray
+}
+
+$laneSummaryJsonPath = Join-Path $runRoot "lane-summary.json"
+$laneSummaryDocument | ConvertTo-Json -Depth 20 | Set-Content -Path $laneSummaryJsonPath
+
 $summary = New-Object System.Collections.Generic.List[string]
 Add-SummaryLine $summary "# QUIC Performance Lane Summary"
 Add-SummaryLine $summary ""
@@ -652,8 +891,10 @@ Add-SummaryLine $summary "- Git commit: ``$gitCommit``"
 Add-SummaryLine $summary "- Git state: ``$gitState``"
 Add-SummaryLine $summary "- Dry run: ``$DryRun``"
 Add-SummaryLine $summary "- Status: ``$laneStatus``"
+Add-SummaryLine $summary "- Failure categories: ``$((@($laneSummaryDocument.failureCategories)) -join ', ')``"
 Add-SummaryLine $summary "- Report-only confidence: ``$($Lane -eq "Confidence")``"
 Add-SummaryLine $summary "- Evidence quality: ``$(if ($Lane -eq "Confidence") { "confidence-local" } else { "diagnostic-smoke" })``"
+Add-SummaryLine $summary "- Machine summary: ``$laneSummaryJsonPath``"
 Add-SummaryLine $summary ""
 
 if ($failureMessage) {

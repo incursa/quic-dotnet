@@ -154,7 +154,16 @@ The wrapper writes a report under:
 
 ```text
 .artifacts/perf-lanes/{runIdPrefix}/summary.md
+.artifacts/perf-lanes/{runIdPrefix}/lane-summary.json
 ```
+
+`lane-summary.json` uses schema
+`incursa.quic.performance-lane-summary.v1` and preserves the lane identity,
+git state, effective load shape, selected commands, ProtocolLab run roots,
+validation/benchmark health, failure categories, evidence quality, metric
+median/best/worst values, relative ranges, and publishability gate blockers.
+Use the JSON file when comparing repeated local confidence runs or feeding
+results into a later dashboard; use `summary.md` for human review.
 
 ## ProtocolLab Baseline Reports
 
