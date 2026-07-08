@@ -1917,6 +1917,27 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    public void DiagnosticsEnabled_LifecycleFastPathAvoidsGeneralDiagnosticEventEmission()
+    {
+        FastPathLifecycleDiagnosticsSink diagnostics = new(enabled: true);
+
+        Http3Server.EmitRequestStartedDiagnostic(diagnostics, "server", 4, "GET", "/plaintext");
+        Http3Server.EmitResponseStartedDiagnostic(diagnostics, "server", 4, 200);
+        Http3Server.EmitResponseCompletedDiagnostic(diagnostics, "server", 4, 200, 13);
+        Http3Server.EmitRequestCompletedDiagnostic(diagnostics, "server", 4, "GET", "/plaintext", 200, 13);
+
+        Assert.Equal(0, diagnostics.EmitCalls);
+        Assert.Equal(4, diagnostics.IsEnabledCalls);
+        Assert.Equal(1, diagnostics.RequestStartedCalls);
+        Assert.Equal(1, diagnostics.ResponseStartedCalls);
+        Assert.Equal(1, diagnostics.ResponseCompletedCalls);
+        Assert.Equal(1, diagnostics.RequestCompletedCalls);
+        Assert.Equal("/plaintext", diagnostics.LastPath);
+        Assert.Equal(200, diagnostics.LastStatusCode);
+        Assert.Equal(13, diagnostics.LastPayloadLength);
+    }
+
+    [Fact]
     public async Task DiagnosticsEnabled_SimpleRequestLifecyclePayloadsAndOrderingStayStable()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -2540,6 +2561,82 @@ public sealed class Http3MinimalServerTests
             {
                 events.Add(diagnosticEvent);
             }
+        }
+    }
+
+    private sealed class FastPathLifecycleDiagnosticsSink(bool enabled) : IHttp3LifecycleDiagnosticsSink
+    {
+        private int emitCalls;
+        private int isEnabledCalls;
+
+        public bool IsEnabled
+        {
+            get
+            {
+                Interlocked.Increment(ref isEnabledCalls);
+                return enabled;
+            }
+        }
+
+        internal int EmitCalls => Volatile.Read(ref emitCalls);
+
+        internal int IsEnabledCalls => Volatile.Read(ref isEnabledCalls);
+
+        internal int RequestStartedCalls { get; private set; }
+
+        internal int ResponseStartedCalls { get; private set; }
+
+        internal int ResponseCompletedCalls { get; private set; }
+
+        internal int RequestCompletedCalls { get; private set; }
+
+        internal string? LastPath { get; private set; }
+
+        internal int LastStatusCode { get; private set; }
+
+        internal int LastPayloadLength { get; private set; }
+
+        public void Emit(Http3DiagnosticEvent diagnosticEvent)
+        {
+            _ = diagnosticEvent;
+            Interlocked.Increment(ref emitCalls);
+        }
+
+        public void EmitRequestStarted(string role, long streamId, string method, string path)
+        {
+            _ = role;
+            _ = streamId;
+            _ = method;
+            RequestStartedCalls++;
+            LastPath = path;
+        }
+
+        public void EmitResponseStarted(string role, long streamId, int statusCode)
+        {
+            _ = role;
+            _ = streamId;
+            ResponseStartedCalls++;
+            LastStatusCode = statusCode;
+        }
+
+        public void EmitResponseCompleted(string role, long streamId, int statusCode, int payloadLength)
+        {
+            _ = role;
+            _ = streamId;
+            ResponseCompletedCalls++;
+            LastStatusCode = statusCode;
+            LastPayloadLength = payloadLength;
+        }
+
+        public void EmitRequestCompleted(string role, long streamId, string method, string path, int statusCode, int payloadLength)
+        {
+            _ = role;
+            _ = streamId;
+            _ = method;
+            RequestCompletedCalls++;
+            LastPath = path;
+            LastStatusCode = statusCode;
+            LastPayloadLength = payloadLength;
         }
     }
 

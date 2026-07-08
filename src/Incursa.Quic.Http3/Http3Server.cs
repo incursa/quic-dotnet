@@ -1637,6 +1637,12 @@ public sealed class Http3Server : IAsyncDisposable
             return;
         }
 
+        if (sink is IHttp3LifecycleDiagnosticsSink lifecycleSink)
+        {
+            lifecycleSink.EmitRequestStarted(role, streamId, method, path);
+            return;
+        }
+
         sink!.Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.RequestStarted)
         {
             Role = role,
@@ -1654,6 +1660,12 @@ public sealed class Http3Server : IAsyncDisposable
     {
         if (!IsDiagnosticEnabled(sink))
         {
+            return;
+        }
+
+        if (sink is IHttp3LifecycleDiagnosticsSink lifecycleSink)
+        {
+            lifecycleSink.EmitResponseStarted(role, streamId, statusCode);
             return;
         }
 
@@ -1677,6 +1689,12 @@ public sealed class Http3Server : IAsyncDisposable
             return;
         }
 
+        if (sink is IHttp3LifecycleDiagnosticsSink lifecycleSink)
+        {
+            lifecycleSink.EmitResponseCompleted(role, streamId, statusCode, payloadLength);
+            return;
+        }
+
         sink!.Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.ResponseCompleted)
         {
             Role = role,
@@ -1697,6 +1715,12 @@ public sealed class Http3Server : IAsyncDisposable
     {
         if (!IsDiagnosticEnabled(sink))
         {
+            return;
+        }
+
+        if (sink is IHttp3LifecycleDiagnosticsSink lifecycleSink)
+        {
+            lifecycleSink.EmitRequestCompleted(role, streamId, method, path, statusCode, payloadLength);
             return;
         }
 
