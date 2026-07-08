@@ -13,6 +13,7 @@ public sealed class Http3ServerResponse
     private const int MinimumStatusCode = 100;
     private const int MaximumStatusCode = 999;
     private byte[]? cachedHeadersFrame;
+    private byte[]? cachedSingleDataFrame;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Http3ServerResponse" /> class.
@@ -187,4 +188,9 @@ public sealed class Http3ServerResponse
 
     internal byte[] CacheHeadersFrame(byte[] headersFrame) =>
         Interlocked.CompareExchange(ref cachedHeadersFrame, headersFrame, null) ?? headersFrame;
+
+    internal byte[]? GetCachedSingleDataFrame() => Volatile.Read(ref cachedSingleDataFrame);
+
+    internal byte[] CacheSingleDataFrame(byte[] dataFrame) =>
+        Interlocked.CompareExchange(ref cachedSingleDataFrame, dataFrame, null) ?? dataFrame;
 }

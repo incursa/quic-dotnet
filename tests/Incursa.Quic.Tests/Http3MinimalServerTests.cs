@@ -34,6 +34,10 @@ public sealed class Http3MinimalServerTests
         Assert.True(MemoryMarshal.TryGetArray(response.Body, out ArraySegment<byte> segment));
         Assert.Same(body, segment.Array);
         Assert.True(response.CacheEncodedHeaders);
+
+        byte[] dataFrame = [0x00, 0x02, 0x01, 0x02];
+        Assert.Same(dataFrame, response.CacheSingleDataFrame(dataFrame));
+        Assert.Same(dataFrame, response.GetCachedSingleDataFrame());
     }
 
     [Fact]

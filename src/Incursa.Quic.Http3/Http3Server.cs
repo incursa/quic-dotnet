@@ -1138,7 +1138,7 @@ public sealed class Http3Server : IAsyncDisposable
         else
         {
             if (!await WriteFrameBytesAsync(stream, headersFrame.FrameBytes, cancellationToken).ConfigureAwait(false)
-                || !await WriteFixedResponseDataFramesAsync(stream, response.Body, response.DataFramePayloadSize, cancellationToken).ConfigureAwait(false))
+                || !await WriteFixedResponseDataFramesAsync(stream, response, cancellationToken).ConfigureAwait(false))
             {
                 return false;
             }
@@ -1204,11 +1204,23 @@ public sealed class Http3Server : IAsyncDisposable
 
     private static async ValueTask<bool> WriteFixedResponseDataFramesAsync(
         QuicStream stream,
-        ReadOnlyMemory<byte> body,
-        int? dataFramePayloadSize,
+        Http3ServerResponse response,
         CancellationToken cancellationToken)
     {
+        ReadOnlyMemory<byte> body = response.Body;
+        int? dataFramePayloadSize = response.DataFramePayloadSize;
         int framePayloadSize = dataFramePayloadSize ?? ResponseDataFrameChunkSize;
+        if (CanCacheSingleResponseDataFrame(response, framePayloadSize))
+        {
+            byte[]? cachedFrame = response.GetCachedSingleDataFrame();
+            if (cachedFrame is null)
+            {
+                cachedFrame = response.CacheSingleDataFrame(Http3FrameWriter.WriteData(body.Span));
+            }
+
+            return await WriteFinalFrameBytesAsync(stream, cachedFrame, cancellationToken).ConfigureAwait(false);
+        }
+
         int offset = 0;
         while (offset < body.Length)
         {
@@ -1225,6 +1237,14 @@ public sealed class Http3Server : IAsyncDisposable
         }
 
         return true;
+    }
+
+    private static bool CanCacheSingleResponseDataFrame(Http3ServerResponse response, int framePayloadSize)
+    {
+        return response.CacheEncodedHeaders
+            && response.StreamingBody is null
+            && response.Body.Length <= framePayloadSize
+            && response.Body.Length <= ResponseWriteChunkSize;
     }
 
     private void EmitResponseDataFrames(
