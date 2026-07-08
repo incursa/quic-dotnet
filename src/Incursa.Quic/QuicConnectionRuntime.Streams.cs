@@ -280,6 +280,8 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref QuicConnectionEffectAccumulator effects)
     {
+        KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource>[]? pendingRequests = null;
+        int pendingRequestCount = 0;
         lock (pendingStreamActionRequestsGate)
         {
             if (pendingStreamActionRequests.Count == 0)
@@ -287,52 +289,85 @@ internal sealed partial class QuicConnectionRuntime
                 return false;
             }
 
-            bool stateChanged = false;
-            KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource>[] pendingRequests =
-                pendingStreamActionRequests.ToArray();
-            Array.Sort(pendingRequests, static (left, right) => left.Key.CompareTo(right.Key));
-
-            foreach (KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource> pendingRequest in pendingRequests)
+            pendingRequestCount = pendingStreamActionRequests.Count;
+            pendingRequests = ArrayPool<KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource>>.Shared.Rent(pendingRequestCount);
+            int snapshotIndex = 0;
+            foreach (KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource> pendingRequest in pendingStreamActionRequests)
             {
-                QuicConnectionRuntime.StreamActionRequestCompletionSource completion = pendingRequest.Value;
-                if (completion.ActionKind is not (QuicConnectionStreamActionKind.Write or QuicConnectionStreamActionKind.Finish))
-                {
-                    continue;
-                }
-
-                if (completion.ActionKind == QuicConnectionStreamActionKind.Write
-                    && !completion.HasOwnedStreamData)
-                {
-                    continue;
-                }
-
-                if (completion.ActionKind == QuicConnectionStreamActionKind.Finish
-                    && completion.StreamDataLength > 0
-                    && !completion.HasOwnedStreamData)
-                {
-                    continue;
-                }
-
-                if (!pendingStreamActionRequests.TryGetValue(pendingRequest.Key, out QuicConnectionRuntime.StreamActionRequestCompletionSource? currentCompletion)
-                    || !ReferenceEquals(currentCompletion, completion))
-                {
-                    continue;
-                }
-
-                if (HandleWriteStreamAction(
-                        nowTicks,
-                        pendingRequest.Key,
-                        completion.StreamId,
-                        completion.GetOwnedStreamDataMemory(),
-                        completion.ActionKind == QuicConnectionStreamActionKind.Finish,
-                        ref effects))
-                {
-                    stateChanged = true;
-                }
+                pendingRequests[snapshotIndex++] = pendingRequest;
             }
 
-            return stateChanged;
+            Array.Sort(
+                pendingRequests,
+                0,
+                pendingRequestCount,
+                PendingStreamActionRequestComparer.Instance);
+
+            bool stateChanged = false;
+            try
+            {
+                for (int index = 0; index < pendingRequestCount; index++)
+                {
+                    KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource> pendingRequest = pendingRequests[index];
+                    QuicConnectionRuntime.StreamActionRequestCompletionSource completion = pendingRequest.Value;
+                    if (completion.ActionKind is not (QuicConnectionStreamActionKind.Write or QuicConnectionStreamActionKind.Finish))
+                    {
+                        continue;
+                    }
+
+                    if (completion.ActionKind == QuicConnectionStreamActionKind.Write
+                        && !completion.HasOwnedStreamData)
+                    {
+                        continue;
+                    }
+
+                    if (completion.ActionKind == QuicConnectionStreamActionKind.Finish
+                        && completion.StreamDataLength > 0
+                        && !completion.HasOwnedStreamData)
+                    {
+                        continue;
+                    }
+
+                    if (!pendingStreamActionRequests.TryGetValue(pendingRequest.Key, out QuicConnectionRuntime.StreamActionRequestCompletionSource? currentCompletion)
+                        || !ReferenceEquals(currentCompletion, completion))
+                    {
+                        continue;
+                    }
+
+                    if (HandleWriteStreamAction(
+                            nowTicks,
+                            pendingRequest.Key,
+                            completion.StreamId,
+                            completion.GetOwnedStreamDataMemory(),
+                            completion.ActionKind == QuicConnectionStreamActionKind.Finish,
+                            ref effects))
+                    {
+                        stateChanged = true;
+                    }
+                }
+
+                return stateChanged;
+            }
+            finally
+            {
+                if (pendingRequests is not null)
+                {
+                    ArrayPool<KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource>>.Shared.Return(
+                        pendingRequests,
+                        clearArray: true);
+                }
+            }
         }
+    }
+
+    private sealed class PendingStreamActionRequestComparer : IComparer<KeyValuePair<long, StreamActionRequestCompletionSource>>
+    {
+        internal static readonly PendingStreamActionRequestComparer Instance = new();
+
+        public int Compare(
+            KeyValuePair<long, StreamActionRequestCompletionSource> left,
+            KeyValuePair<long, StreamActionRequestCompletionSource> right)
+            => left.Key.CompareTo(right.Key);
     }
 
     private bool TryProcessPendingStreamOpenRequest(
