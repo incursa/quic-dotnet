@@ -81,6 +81,44 @@ public sealed class Http3StreamDispatcher
     public Http3StreamInfo ReceiveUnidirectionalStreamTypeBytes(ulong streamId, ReadOnlySpan<byte> bytes, bool endOfStream = false)
     {
         StreamState state = GetExisting(streamId);
+        if (state.Info.StreamType.HasValue)
+        {
+            return state.Info;
+        }
+
+        if (!TryReceiveUnidirectionalStreamTypeBytes(
+            streamId,
+            bytes,
+            out Http3StreamInfo info,
+            out int bytesConsumed,
+            endOfStream))
+        {
+            return info;
+        }
+
+        if (bytesConsumed != bytes.Length)
+        {
+            throw new Http3Exception(
+                Http3ErrorCode.StreamCreationError,
+                "HTTP/3 stream type parsing must be completed before processing stream payload bytes.");
+        }
+
+        return info;
+    }
+
+    /// <summary>
+    /// Feeds bytes from the beginning of a unidirectional stream and reports the bytes consumed by the stream type.
+    /// </summary>
+    public bool TryReceiveUnidirectionalStreamTypeBytes(
+        ulong streamId,
+        ReadOnlySpan<byte> bytes,
+        out Http3StreamInfo info,
+        out int bytesConsumed,
+        bool endOfStream = false)
+    {
+        StreamState state = GetExisting(streamId);
+        info = state.Info;
+        bytesConsumed = 0;
         if (state.Info.Direction != Http3StreamDirection.Unidirectional)
         {
             throw new Http3Exception(Http3ErrorCode.StreamCreationError, "Bidirectional streams do not carry an HTTP/3 unidirectional stream type.");
@@ -88,25 +126,19 @@ public sealed class Http3StreamDispatcher
 
         if (state.Info.StreamType.HasValue)
         {
-            return state.Info;
+            return true;
         }
 
+        int pendingLength = state.PendingStreamTypeBytes.Length;
         state.PendingStreamTypeBytes = Append(state.PendingStreamTypeBytes, bytes);
-        if (!Http3VariableLengthInteger.TryParse(state.PendingStreamTypeBytes, out ulong streamType, out int bytesConsumed))
+        if (!Http3VariableLengthInteger.TryParse(state.PendingStreamTypeBytes, out ulong streamType, out int parsedBytesConsumed))
         {
             if (endOfStream)
             {
                 throw new Http3Exception(Http3ErrorCode.StreamCreationError, "The HTTP/3 unidirectional stream ended before its stream type.");
             }
 
-            return state.Info;
-        }
-
-        if (bytesConsumed != state.PendingStreamTypeBytes.Length)
-        {
-            throw new Http3Exception(
-                Http3ErrorCode.StreamCreationError,
-                "HTTP/3 stream type parsing must be completed before processing stream payload bytes.");
+            return false;
         }
 
         Http3StreamKind kind = MapStreamKind(streamType);
@@ -128,7 +160,9 @@ public sealed class Http3StreamDispatcher
             kind,
             streamType);
         state.PendingStreamTypeBytes = [];
-        return state.Info;
+        info = state.Info;
+        bytesConsumed = Math.Max(0, parsedBytesConsumed - pendingLength);
+        return true;
     }
 
     /// <summary>

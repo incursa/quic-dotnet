@@ -370,7 +370,6 @@ public sealed class Http3Server : IAsyncDisposable
         await using (stream.ConfigureAwait(false))
         {
             byte[] buffer = new byte[readBufferSize];
-            byte[] pendingStreamType = [];
             Http3StreamKind streamKind = Http3StreamKind.Unknown;
             try
             {
@@ -386,34 +385,38 @@ public sealed class Http3Server : IAsyncDisposable
                     {
                         lock (dispatcherGate)
                         {
-                            dispatcher.ReceiveUnidirectionalStreamTypeBytes(
+                            dispatcher.TryReceiveUnidirectionalStreamTypeBytes(
                                 checked((ulong)stream.Id),
-                                pendingStreamType,
+                                ReadOnlySpan<byte>.Empty,
+                                out _,
+                                out _,
                                 endOfStream: true);
                         }
 
                         return;
                     }
 
-                    pendingStreamType = Append(pendingStreamType, buffer.AsSpan(0, bytesRead));
-                    if (!Http3VariableLengthInteger.TryParse(pendingStreamType, out _, out int bytesConsumed))
-                    {
-                        continue;
-                    }
-
-                    byte[] streamTypeBytes = pendingStreamType.AsSpan(0, bytesConsumed).ToArray();
-                    byte[] initialPayload = pendingStreamType.AsSpan(bytesConsumed).ToArray();
                     Http3StreamInfo streamInfo;
+                    int bytesConsumed;
+                    bool streamTypeKnown;
                     lock (dispatcherGate)
                     {
-                        streamInfo = dispatcher.ReceiveUnidirectionalStreamTypeBytes(
+                        streamTypeKnown = dispatcher.TryReceiveUnidirectionalStreamTypeBytes(
                             checked((ulong)stream.Id),
-                            streamTypeBytes);
+                            buffer.AsSpan(0, bytesRead),
+                            out streamInfo,
+                            out bytesConsumed);
+                    }
+
+                    if (!streamTypeKnown)
+                    {
+                        continue;
                     }
 
                     streamKind = streamInfo.Kind;
                     EmitStreamOpenedDiagnostic(diagnosticsSink, "server", stream.Id, streamKind);
 
+                    byte[] initialPayload = buffer.AsSpan(bytesConsumed, bytesRead - bytesConsumed).ToArray();
                     await ObservePeerUnidirectionalPayloadAsync(
                         stream,
                         dispatcher,
@@ -1854,19 +1857,6 @@ public sealed class Http3Server : IAsyncDisposable
         return length + 1;
     }
 
-    private static byte[] Append(byte[] pending, ReadOnlySpan<byte> source)
-    {
-        if (source.IsEmpty)
-        {
-            return pending;
-        }
-
-        byte[] combined = new byte[pending.Length + source.Length];
-        pending.CopyTo(combined, 0);
-        source.CopyTo(combined.AsSpan(pending.Length));
-        return combined;
-    }
-
     private static int FindStaticFieldLineIndex(QPackFieldLine fieldLine)
     {
         return StaticFieldLineIndexes.TryGetValue(fieldLine, out int index)
@@ -2119,6 +2109,19 @@ public sealed class Http3Server : IAsyncDisposable
                     completion.TrySetResult(result.FieldLines);
                 }
             }
+        }
+
+        private static byte[] Append(byte[] pending, ReadOnlySpan<byte> source)
+        {
+            if (source.IsEmpty)
+            {
+                return pending;
+            }
+
+            byte[] combined = new byte[pending.Length + source.Length];
+            pending.CopyTo(combined, 0);
+            source.CopyTo(combined.AsSpan(pending.Length));
+            return combined;
         }
     }
 

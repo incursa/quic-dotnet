@@ -68,6 +68,27 @@ public sealed class Http3StreamDispatcherTests
         Assert.Equal(Http3StreamInitiator.Client, info.Initiator);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void RegisterUnidirectionalStream_TryReceiveReportsStreamTypeBytesConsumedBeforePayload()
+    {
+        Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
+        dispatcher.RegisterUnidirectionalStream(2);
+
+        bool known = dispatcher.TryReceiveUnidirectionalStreamTypeBytes(
+            2,
+            [(byte)Http3StreamType.Control, 0x04, 0x00],
+            out Http3StreamInfo info,
+            out int bytesConsumed);
+
+        Assert.True(known);
+        Assert.Equal(1, bytesConsumed);
+        Assert.Equal(Http3StreamKind.Control, info.Kind);
+        Assert.Equal((ulong)Http3StreamType.Control, info.StreamType);
+    }
+
     [Theory]
     [Requirement("REQ-QUIC-RFC9114-S6-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
