@@ -94,6 +94,16 @@ public sealed class QuicConnection : IAsyncDisposable
         return runtime.AcceptInboundStreamAsync(cancellationToken);
     }
 
+    internal ValueTask<QuicStream?> TryAcceptInboundStreamAsync(CancellationToken cancellationToken = default)
+    {
+        if (Volatile.Read(ref disposed) != 0)
+        {
+            return ValueTask.FromResult<QuicStream?>(null);
+        }
+
+        return runtime.TryAcceptInboundStreamAsync(cancellationToken);
+    }
+
     /// <summary>
     /// Opens a new outbound stream on the supported active connection path.
     /// </summary>

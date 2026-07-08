@@ -192,7 +192,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
     }
 
-    private sealed class StreamActionRequestCompletionSource : IValueTaskSource
+    private sealed class StreamActionRequestCompletionSource : IValueTaskSource<bool>
     {
         private readonly QuicConnectionRuntime owner;
         private ManualResetValueTaskSourceCore<bool> source;
@@ -208,7 +208,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             };
         }
 
-        internal ValueTask Task => new(this, source.Version);
+        internal ValueTask<bool> Task => new(this, source.Version);
 
         internal void Prepare()
         {
@@ -216,6 +216,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             ActionKind = default;
             StreamId = default;
             StreamDataLength = 0;
+            SuppressTerminalException = false;
             completed = 0;
             source.Reset();
         }
@@ -225,6 +226,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         internal ulong StreamId { get; private set; }
 
         internal int StreamDataLength { get; private set; }
+
+        internal bool SuppressTerminalException { get; set; }
 
         internal void ConfigureWrite(
             QuicConnectionStreamActionKind actionKind,
@@ -295,6 +298,22 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             source.SetException(exception);
         }
 
+        internal void TrySetTerminalException(Exception exception)
+        {
+            if (Interlocked.Exchange(ref completed, 1) != 0)
+            {
+                return;
+            }
+
+            if (SuppressTerminalException)
+            {
+                source.SetResult(false);
+                return;
+            }
+
+            source.SetException(exception);
+        }
+
         internal void TrySetCanceled(CancellationToken cancellationToken)
         {
             if (Interlocked.Exchange(ref completed, 1) != 0)
@@ -305,11 +324,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             source.SetException(new OperationCanceledException(cancellationToken));
         }
 
-        void IValueTaskSource.GetResult(short token)
+        bool IValueTaskSource<bool>.GetResult(short token)
         {
             try
             {
-                _ = source.GetResult(token);
+                return source.GetResult(token);
             }
             finally
             {
@@ -317,12 +336,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             }
         }
 
-        ValueTaskSourceStatus IValueTaskSource.GetStatus(short token)
+        ValueTaskSourceStatus IValueTaskSource<bool>.GetStatus(short token)
         {
             return source.GetStatus(token);
         }
 
-        void IValueTaskSource.OnCompleted(
+        void IValueTaskSource<bool>.OnCompleted(
             Action<object?> continuation,
             object? state,
             short token,
@@ -756,6 +775,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     internal bool IsInboxConsumerRunning => Volatile.Read(ref consumerStarted) != 0;
 
     internal bool IsDisposed => Volatile.Read(ref disposed) != 0;
+
+    internal bool HasTerminalStreamOperation => IsDisposed || terminalState is not null;
 
     internal bool HasProcessingTask => processingTask is not null;
 
@@ -1228,6 +1249,46 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
     }
 
+    internal async ValueTask<QuicStream?> TryAcceptInboundStreamAsync(CancellationToken cancellationToken = default)
+    {
+        if (IsDisposed || terminalState is not null)
+        {
+            return null;
+        }
+
+        if (phase != QuicConnectionPhase.Active)
+        {
+            throw new InvalidOperationException(
+                $"The connection is not established. Phase={phase} TerminalState={(terminalState.HasValue ? terminalState.Value.ToString() : "null")}");
+        }
+
+        try
+        {
+            ulong streamId = await inboundStreamIds.Reader.ReadAsync(cancellationToken).ConfigureAwait(false);
+            if (ApplicationReceiveDebugEnabled)
+            {
+                await Console.Error.WriteLineAsync($"app-rx accept-inbound-stream role={tlsState.Role} stream={streamId}.").ConfigureAwait(false);
+            }
+
+            return terminalState is not null
+                ? null
+                : new QuicStream(streamRegistry.Bookkeeping, streamId, this);
+        }
+        catch (ChannelClosedException) when (inboundStreamQueueCompletionException is not null)
+        {
+            if (IsExpectedTerminalException(inboundStreamQueueCompletionException))
+            {
+                return null;
+            }
+
+            throw inboundStreamQueueCompletionException;
+        }
+        catch (ChannelClosedException) when (terminalState is not null || IsDisposed)
+        {
+            return null;
+        }
+    }
+
     internal async ValueTask<QuicStream> OpenOutboundStreamAsync(
         QuicStreamType streamType,
         CancellationToken cancellationToken = default)
@@ -1313,24 +1374,42 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         ulong streamId,
         ReadOnlyMemory<byte> buffer,
         CancellationToken cancellationToken = default)
-        => new(WriteStreamAsyncCore(streamId, buffer, finishWrites: false, cancellationToken));
+        => new(WriteStreamAsyncCore(streamId, buffer, finishWrites: false, suppressTerminalException: false, cancellationToken));
+
+    internal ValueTask<bool> TryWriteStreamAsync(
+        ulong streamId,
+        ReadOnlyMemory<byte> buffer,
+        CancellationToken cancellationToken = default)
+        => new(WriteStreamAsyncCore(streamId, buffer, finishWrites: false, suppressTerminalException: true, cancellationToken));
 
     internal ValueTask WriteFinalStreamAsync(
         ulong streamId,
         ReadOnlyMemory<byte> buffer,
         CancellationToken cancellationToken = default)
-        => new(WriteStreamAsyncCore(streamId, buffer, finishWrites: true, cancellationToken));
+        => new(WriteStreamAsyncCore(streamId, buffer, finishWrites: true, suppressTerminalException: false, cancellationToken));
 
-    private async Task WriteStreamAsyncCore(
+    internal ValueTask<bool> TryWriteFinalStreamAsync(
+        ulong streamId,
+        ReadOnlyMemory<byte> buffer,
+        CancellationToken cancellationToken = default)
+        => new(WriteStreamAsyncCore(streamId, buffer, finishWrites: true, suppressTerminalException: true, cancellationToken));
+
+    private async Task<bool> WriteStreamAsyncCore(
         ulong streamId,
         ReadOnlyMemory<byte> buffer,
         bool finishWrites,
+        bool suppressTerminalException,
         CancellationToken cancellationToken)
     {
         ThrowIfDisposed();
 
         if (terminalState is not null)
         {
+            if (suppressTerminalException)
+            {
+                return false;
+            }
+
             throw CreateTerminalException(terminalState.Value);
         }
 
@@ -1338,7 +1417,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         if (buffer.IsEmpty && !finishWrites)
         {
-            return;
+            return true;
         }
 
         if (buffer.Length > MaximumStreamWriteChunkBytes)
@@ -1347,11 +1426,15 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             {
                 int chunkLength = Math.Min(buffer.Length, MaximumStreamWriteChunkBytes);
                 bool finishChunk = finishWrites && chunkLength == buffer.Length;
-                await WriteStreamAsyncCore(streamId, buffer[..chunkLength], finishChunk, cancellationToken).ConfigureAwait(false);
+                if (!await WriteStreamAsyncCore(streamId, buffer[..chunkLength], finishChunk, suppressTerminalException, cancellationToken).ConfigureAwait(false))
+                {
+                    return false;
+                }
+
                 buffer = buffer[chunkLength..];
             }
 
-            return;
+            return true;
         }
 
         LogApplicationSend(
@@ -1363,9 +1446,15 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             finishWrites ? QuicConnectionStreamActionKind.Finish : QuicConnectionStreamActionKind.Write,
             streamId,
             buffer.Length);
+        completion.SuppressTerminalException = suppressTerminalException;
         if (!TryAddPendingStreamActionRequest(requestId, completion))
         {
             ReturnStreamActionRequestCompletionSource(completion);
+            if (suppressTerminalException && (IsDisposed || terminalState is not null))
+            {
+                return false;
+            }
+
             throw new InvalidOperationException("The connection runtime could not queue the stream write request.");
         }
 
@@ -1391,12 +1480,17 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         {
             TryRemovePendingStreamActionRequest(requestId, out _);
             ReturnStreamActionRequestCompletionSource(completion);
+            if (suppressTerminalException && (IsDisposed || terminalState is not null))
+            {
+                return false;
+            }
+
             throw IsDisposed
                 ? new ObjectDisposedException(nameof(QuicConnectionRuntime))
                 : new InvalidOperationException("The connection runtime could not queue the stream write request.");
         }
 
-        await completion.Task.ConfigureAwait(false);
+        return await completion.Task.ConfigureAwait(false);
     }
 
     internal async ValueTask SendDatagramAsync(
@@ -1507,11 +1601,35 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     internal async ValueTask CompleteStreamWritesAsync(
         ulong streamId,
         CancellationToken cancellationToken = default)
+        => await CompleteStreamWritesAsyncCore(streamId, suppressTerminalException: false, cancellationToken).ConfigureAwait(false);
+
+    internal ValueTask<bool> TryCompleteStreamWritesAsync(
+        ulong streamId,
+        CancellationToken cancellationToken = default)
+        => new(CompleteStreamWritesAsyncCore(streamId, suppressTerminalException: true, cancellationToken));
+
+    private async Task<bool> CompleteStreamWritesAsyncCore(
+        ulong streamId,
+        bool suppressTerminalException,
+        CancellationToken cancellationToken)
     {
-        ThrowIfDisposed();
+        if (IsDisposed)
+        {
+            if (suppressTerminalException)
+            {
+                return false;
+            }
+
+            throw new ObjectDisposedException(nameof(QuicConnectionRuntime));
+        }
 
         if (terminalState is not null)
         {
+            if (suppressTerminalException)
+            {
+                return false;
+            }
+
             throw CreateTerminalException(terminalState.Value);
         }
 
@@ -1523,9 +1641,15 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             QuicConnectionStreamActionKind.Finish,
             streamId,
             streamDataLength: 0);
+        completion.SuppressTerminalException = suppressTerminalException;
         if (!TryAddPendingStreamActionRequest(requestId, completion))
         {
             ReturnStreamActionRequestCompletionSource(completion);
+            if (suppressTerminalException && (IsDisposed || terminalState is not null))
+            {
+                return false;
+            }
+
             throw new InvalidOperationException("The connection runtime could not queue the stream finish request.");
         }
 
@@ -1550,12 +1674,17 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         {
             TryRemovePendingStreamActionRequest(requestId, out _);
             ReturnStreamActionRequestCompletionSource(completion);
+            if (suppressTerminalException && (IsDisposed || terminalState is not null))
+            {
+                return false;
+            }
+
             throw IsDisposed
                 ? new ObjectDisposedException(nameof(QuicConnectionRuntime))
                 : new InvalidOperationException("The connection runtime could not queue the stream finish request.");
         }
 
-        await completion.Task.ConfigureAwait(false);
+        return await completion.Task.ConfigureAwait(false);
     }
 
     internal async ValueTask AbortStreamWritesAsync(

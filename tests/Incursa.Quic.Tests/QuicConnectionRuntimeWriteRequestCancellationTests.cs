@@ -38,6 +38,70 @@ public sealed class QuicConnectionRuntimeWriteRequestCancellationTests
         await Assert.ThrowsAsync<OperationCanceledException>(() => writeTask);
     }
 
+    [Fact]
+    public async Task WriteStreamAsync_PublicWriteStillThrowsWhenPendingWriteIsCompletedByRuntimeDisposal()
+    {
+        QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
+
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryPeekLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+
+        TaskCompletionSource writePosted = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            if (connectionEvent is QuicConnectionStreamActionEvent
+                {
+                    ActionKind: QuicConnectionStreamActionKind.Write,
+                })
+            {
+                writePosted.TrySetResult();
+            }
+
+            return true;
+        });
+
+        Task writeTask = runtime.WriteStreamAsync(streamId.Value, new byte[] { 0x31, 0x32 }).AsTask();
+
+        await writePosted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        await runtime.DisposeAsync();
+
+        await Assert.ThrowsAsync<ObjectDisposedException>(() => writeTask);
+    }
+
+    [Fact]
+    public async Task TryWriteStreamAsync_ReturnsFalseWhenPendingWriteIsCompletedByRuntimeDisposal()
+    {
+        QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
+
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryPeekLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+
+        TaskCompletionSource writePosted = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            if (connectionEvent is QuicConnectionStreamActionEvent
+                {
+                    ActionKind: QuicConnectionStreamActionKind.Write,
+                })
+            {
+                writePosted.TrySetResult();
+            }
+
+            return true;
+        });
+
+        Task<bool> writeTask = runtime.TryWriteStreamAsync(streamId.Value, new byte[] { 0x41, 0x42 }).AsTask();
+
+        await writePosted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        await runtime.DisposeAsync();
+
+        Assert.False(await writeTask);
+    }
+
     private static QuicConnectionRuntime CreateRuntimeWithActivePath()
     {
         QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();

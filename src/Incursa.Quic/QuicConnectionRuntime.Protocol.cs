@@ -4229,6 +4229,22 @@ internal sealed partial class QuicConnectionRuntime
             terminalState.Close.ReasonPhrase ?? "The connection terminated.");
     }
 
+    private static bool IsExpectedTerminalException(Exception exception)
+    {
+        if (exception is ObjectDisposedException)
+        {
+            return true;
+        }
+
+        return exception is QuicException
+        {
+            QuicError: QuicError.ConnectionAborted
+                or QuicError.ConnectionIdle
+                or QuicError.ConnectionTimeout
+                or QuicError.OperationAborted,
+        };
+    }
+
     private static Exception CreateLocalOperationAbortedException(string message)
     {
         return new QuicException(

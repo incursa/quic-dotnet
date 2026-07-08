@@ -5299,7 +5299,7 @@ internal sealed partial class QuicConnectionRuntime
         {
             for (int index = 0; index < pendingRequestCount; index++)
             {
-                pendingRequests[index].Value.TrySetException(completionException);
+                pendingRequests[index].Value.TrySetTerminalException(completionException);
             }
         }
         finally

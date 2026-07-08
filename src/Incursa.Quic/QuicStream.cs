@@ -226,6 +226,21 @@ public sealed class QuicStream : Stream
         return ReadCoreAsync(buffer, cancellationToken);
     }
 
+    internal ValueTask<int> TryReadTerminalAsync(Memory<byte> buffer, CancellationToken cancellationToken)
+    {
+        if (TryCompleteReadSynchronously(buffer, cancellationToken, out int bytesRead, suppressTerminalException: true))
+        {
+            return ValueTask.FromResult(bytesRead);
+        }
+
+        return ReadCoreAsync(buffer, cancellationToken, suppressTerminalException: true);
+    }
+
+    internal bool HasExpectedTerminalRead =>
+        Volatile.Read(ref disposed) != 0
+        || readTerminalException is Exception readException && IsExpectedTerminalException(readException)
+        || runtime is { HasTerminalStreamOperation: true };
+
     public override void Write(byte[] buffer, int offset, int count)
     {
         ArgumentNullException.ThrowIfNull(buffer);
@@ -266,6 +281,16 @@ public sealed class QuicStream : Stream
     internal async ValueTask WriteFinalAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
     {
         await WriteFinalCoreAsync(buffer, cancellationToken).ConfigureAwait(false);
+    }
+
+    internal ValueTask<bool> TryWriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
+    {
+        return TryWriteCoreAsync(buffer, finishWrites: false, cancellationToken);
+    }
+
+    internal ValueTask<bool> TryWriteFinalAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
+    {
+        return TryWriteCoreAsync(buffer, finishWrites: true, cancellationToken);
     }
 
     public override long Seek(long offset, SeekOrigin origin)
@@ -450,13 +475,15 @@ public sealed class QuicStream : Stream
 
                 try
                 {
-                    if (runtime.GetStreamOperationException() is null
+                    if (!runtime.HasTerminalStreamOperation
                         && bookkeeping.TryGetStreamSnapshot(streamId, out QuicConnectionStreamSnapshot snapshot)
                         && snapshot.SendState is QuicStreamSendState.Ready or QuicStreamSendState.Send)
                     {
-                        await runtime.CompleteStreamWritesAsync(streamId).ConfigureAwait(false);
-                        WritesClosedTcs.TrySetResult(null);
-                        runtime.TryQueueStreamCapacityRelease(streamId);
+                        if (await runtime.TryCompleteStreamWritesAsync(streamId).ConfigureAwait(false))
+                        {
+                            WritesClosedTcs.TrySetResult(null);
+                            runtime.TryQueueStreamCapacityRelease(streamId);
+                        }
                     }
                 }
                 catch
@@ -485,11 +512,14 @@ public sealed class QuicStream : Stream
         }
     }
 
-    private async ValueTask<int> ReadCoreAsync(Memory<byte> buffer, CancellationToken cancellationToken)
+    private async ValueTask<int> ReadCoreAsync(
+        Memory<byte> buffer,
+        CancellationToken cancellationToken,
+        bool suppressTerminalException = false)
     {
         while (true)
         {
-            if (TryCompleteReadSynchronously(buffer, cancellationToken, out int bytesWritten))
+            if (TryCompleteReadSynchronously(buffer, cancellationToken, out int bytesWritten, suppressTerminalException))
             {
                 return bytesWritten;
             }
@@ -498,10 +528,22 @@ public sealed class QuicStream : Stream
         }
     }
 
-    private bool TryCompleteReadSynchronously(Memory<byte> buffer, CancellationToken cancellationToken, out int bytesRead)
+    private bool TryCompleteReadSynchronously(
+        Memory<byte> buffer,
+        CancellationToken cancellationToken,
+        out int bytesRead,
+        bool suppressTerminalException = false)
     {
         bytesRead = 0;
-        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+        if (Volatile.Read(ref disposed) != 0)
+        {
+            if (suppressTerminalException)
+            {
+                return true;
+            }
+
+            throw new ObjectDisposedException(GetType().FullName);
+        }
 
         if (!canRead)
         {
@@ -512,7 +554,17 @@ public sealed class QuicStream : Stream
 
         if (readTerminalException is Exception readException)
         {
+            if (suppressTerminalException && IsExpectedTerminalException(readException))
+            {
+                return true;
+            }
+
             throw readException;
+        }
+
+        if (suppressTerminalException && runtime is { HasTerminalStreamOperation: true })
+        {
+            return true;
         }
 
         Exception? runtimeException = runtime?.GetStreamOperationException();
@@ -574,6 +626,22 @@ public sealed class QuicStream : Stream
         }
 
         return false;
+    }
+
+    private static bool IsExpectedTerminalException(Exception exception)
+    {
+        if (exception is ObjectDisposedException)
+        {
+            return true;
+        }
+
+        return exception is QuicException
+        {
+            QuicError: QuicError.ConnectionAborted
+                or QuicError.ConnectionIdle
+                or QuicError.ConnectionTimeout
+                or QuicError.OperationAborted,
+        };
     }
 
     private async Task WriteCoreAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
@@ -674,6 +742,71 @@ public sealed class QuicStream : Stream
             await runtime.WriteFinalStreamAsync(streamId, buffer, cancellationToken).ConfigureAwait(false);
             WritesClosedTcs.TrySetResult(null);
             runtime.TryQueueStreamCapacityRelease(streamId);
+        }
+        finally
+        {
+            WriteGate.Release();
+        }
+    }
+
+    private async ValueTask<bool> TryWriteCoreAsync(
+        ReadOnlyMemory<byte> buffer,
+        bool finishWrites,
+        CancellationToken cancellationToken)
+    {
+        if (Volatile.Read(ref disposed) != 0)
+        {
+            return false;
+        }
+
+        if (!canWrite)
+        {
+            throw new InvalidOperationException("This stream does not have a writable side.");
+        }
+
+        if (runtime is null)
+        {
+            throw new NotSupportedException("Writing requires the supported connection runtime path.");
+        }
+
+        if (writeTerminalException is not null || runtime.HasTerminalStreamOperation)
+        {
+            return false;
+        }
+
+        if (buffer.IsEmpty && !finishWrites)
+        {
+            return true;
+        }
+
+        await WriteGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            if (Volatile.Read(ref disposed) != 0)
+            {
+                return false;
+            }
+
+            if (writeTerminalException is not null || runtime.HasTerminalStreamOperation)
+            {
+                return false;
+            }
+
+            bool completed = finishWrites
+                ? await runtime.TryWriteFinalStreamAsync(streamId, buffer, cancellationToken).ConfigureAwait(false)
+                : await runtime.TryWriteStreamAsync(streamId, buffer, cancellationToken).ConfigureAwait(false);
+            if (!completed)
+            {
+                return false;
+            }
+
+            if (finishWrites)
+            {
+                WritesClosedTcs.TrySetResult(null);
+                runtime.TryQueueStreamCapacityRelease(streamId);
+            }
+
+            return true;
         }
         finally
         {
