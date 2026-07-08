@@ -221,6 +221,7 @@ function Format-CommandLine {
         [string] $FileName,
 
         [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
         [string[]] $Arguments
     )
 
@@ -237,7 +238,7 @@ function Format-CommandLine {
 }
 
 function Format-PowerShellArgument {
-    param([Parameter(Mandatory = $true)][string] $Value)
+    param([AllowEmptyString()][string] $Value)
 
     if ($Value -match '^-[A-Za-z][A-Za-z0-9-]*$') {
         return $Value
@@ -252,6 +253,7 @@ function Format-PowerShellScriptInvocation {
         [string] $ScriptPath,
 
         [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
         [string[]] $Arguments
     )
 
@@ -353,6 +355,7 @@ function Invoke-LoggedPowerShellScript {
         [string] $ScriptPath,
 
         [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
         [string[]] $Arguments,
 
         [string] $WorkingDirectory
@@ -395,6 +398,7 @@ function Invoke-LoggedPowerShellScriptForExitCode {
         [string] $ScriptPath,
 
         [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
         [string[]] $Arguments,
 
         [string] $WorkingDirectory

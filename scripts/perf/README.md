@@ -7,14 +7,18 @@ This folder contains local performance and ProtocolLab integration helpers for
 
 Use `Invoke-QuicExceptionAttribution.ps1` when you need a repeatable
 ProtocolLab-backed answer to "where are first-chance exceptions coming from?"
-The wrapper runs one source-backed HTTP/3 ProtocolLab scenario with EventPipe
-`Exception+Stack` capture, then writes JSON and Markdown exception groups by
-exception type, message, attribution frame, raw stack top frame, and first
-Incursa frame.
+The wrapper runs one source-backed ProtocolLab scenario with EventPipe
+exception capture, then writes JSON and Markdown exception groups by exception
+type, message, attribution frame, raw stack top frame, and first Incursa frame.
+It supports HTTP/3 and raw QUIC scenarios through the same ProtocolLab local
+benchmark path, and writes run-level metadata including git commit, source mode,
+scenario, and load shape.
 
 ```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicExceptionAttribution.ps1 `
-  -ProtocolLabRoot C:\shared\src\incursa\protocol-lab-internal `
+  -Protocol h3 `
+  -ProtocolLabRoot C:\shared\src\incursa\protocol-lab `
+  -ProtocolLabExecutionRoot C:\shared\src\incursa\protocol-lab-internal `
   -Scenario http3.payload.bytes.64kb `
   -DurationSeconds 5 `
   -WarmupSeconds 1 `
@@ -22,10 +26,35 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicExceptio
   -StreamsPerConnection 10
 ```
 
+Raw QUIC example:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicExceptionAttribution.ps1 `
+  -Protocol quic `
+  -ProtocolLabRoot C:\shared\src\incursa\protocol-lab `
+  -ProtocolLabExecutionRoot C:\shared\src\incursa\protocol-lab-internal `
+  -Scenario quic.transport.stream-throughput.1mb `
+  -DurationSeconds 5 `
+  -WarmupSeconds 1 `
+  -Connections 1 `
+  -StreamsPerConnection 1
+```
+
 The wrapper writes under:
 
 ```text
 .artifacts/perf/exception-attribution/{runId}/
+```
+
+The run root includes:
+
+```text
+exception-attribution-run.json
+exception-attribution-run.md
+protocol-lab-command.txt
+exception-attribution/exception-attribution.json
+exception-attribution/exception-attribution.md
+protocol-lab-runs/**/trace.nettrace
 ```
 
 To analyze an existing `.nettrace` without rerunning ProtocolLab:
