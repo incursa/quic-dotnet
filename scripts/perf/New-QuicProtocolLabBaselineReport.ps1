@@ -10,6 +10,8 @@ param(
 
     [string] $RunId = "quic-baseline-$((Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssZ'))",
 
+    [string[]] $ImplementationId = @(),
+
     [string[]] $ScenarioId = @(
         "http3.payload.bytes.1kb",
         "http3.payload.bytes.64kb",
@@ -152,6 +154,23 @@ function Get-StringArray {
     return @($Value | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | ForEach-Object { [string]$_ })
 }
 
+function Expand-StringList {
+    param([string[]] $Value)
+
+    foreach ($item in @($Value)) {
+        if ([string]::IsNullOrWhiteSpace($item)) {
+            continue
+        }
+
+        foreach ($part in $item -split ",") {
+            $trimmed = $part.Trim()
+            if (-not [string]::IsNullOrWhiteSpace($trimmed)) {
+                $trimmed
+            }
+        }
+    }
+}
+
 function Get-RunDirectories {
     param(
         [string[]] $RequestedRunRoots,
@@ -194,9 +213,16 @@ $markdownPath = Join-Path $reportRoot "baseline-report.md"
 New-Item -ItemType Directory -Force -Path $reportRoot | Out-Null
 
 $scenarioSet = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
-foreach ($id in @($ScenarioId)) {
+foreach ($id in @(Expand-StringList $ScenarioId)) {
     if (-not [string]::IsNullOrWhiteSpace($id)) {
         [void]$scenarioSet.Add($id)
+    }
+}
+
+$implementationSet = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+foreach ($id in @(Expand-StringList $ImplementationId)) {
+    if (-not [string]::IsNullOrWhiteSpace($id)) {
+        [void]$implementationSet.Add($id)
     }
 }
 
@@ -216,6 +242,11 @@ foreach ($runDirectory in $runDirectories) {
             continue
         }
 
+        $implementation = [string](Get-OptionalPropertyValue $aggregate "implementationId")
+        if ($implementationSet.Count -gt 0 -and -not $implementationSet.Contains($implementation)) {
+            continue
+        }
+
         $primaryMetric = Get-PrimaryMetricName -Scenario $scenario
         $validation = Get-OptionalPropertyValue $aggregate "validation"
         $evidence = Get-OptionalPropertyValue $aggregate "evidence"
@@ -224,7 +255,7 @@ foreach ($runDirectory in $runDirectories) {
             generatedAt = $generatedAt.ToUniversalTime().ToString("O")
             runRoot = $runDirectory.FullName
             aggregatePath = $aggregatePath
-            implementationId = [string](Get-OptionalPropertyValue $aggregate "implementationId")
+            implementationId = $implementation
             implementationName = [string](Get-OptionalPropertyValue $aggregate "implementationName")
             scenarioId = $scenario
             scenarioName = [string](Get-OptionalPropertyValue $aggregate "scenarioName")
@@ -301,7 +332,8 @@ foreach ($group in $groupedRows) {
     }) | Out-Null
 }
 
-$reportScenarioIds = @($ScenarioId | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object -Unique)
+$reportScenarioIds = @(Expand-StringList $ScenarioId | Sort-Object -Unique)
+$reportImplementationIds = @(Expand-StringList $ImplementationId | Sort-Object -Unique)
 $reportGroups = @($groups.ToArray())
 $reportRows = @($rows.ToArray())
 $reportRunDirectories = @($runDirectories)
@@ -314,6 +346,7 @@ $report = [ordered]@{
     runsRoot = $resolvedRunsRoot
     outputRoot = $reportRoot
     scenarioIds = $reportScenarioIds
+    implementationIds = $reportImplementationIds
     sourceRunCount = $reportRunDirectories.Count
     rowCount = $reportRows.Count
     groups = $reportGroups
@@ -331,6 +364,9 @@ $lines.Add("- Generated: ``$($report.generatedAt)``")
 $lines.Add("- ProtocolLab execution root: ``$resolvedProtocolLabExecutionRoot``")
 $lines.Add("- Runs scanned: ``$($runDirectories.Count)``")
 $lines.Add("- Matching rows: ``$($rows.Count)``")
+if ($reportImplementationIds.Count -gt 0) {
+    $lines.Add("- Implementation filter: ``$($reportImplementationIds -join ', ')``")
+}
 $lines.Add("- JSON: ``$jsonPath``")
 $lines.Add("")
 $lines.Add("This is a local evidence rollup. It does not upgrade local ProtocolLab evidence into publishable benchmark evidence.")

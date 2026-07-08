@@ -140,6 +140,13 @@ rate, repetition count, and publishability blockers.
 pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\New-QuicProtocolLabBaselineReport.ps1
 ```
 
+Create an Incursa-focused report from the shared local run store:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\New-QuicProtocolLabBaselineReport.ps1 `
+  -ImplementationId incursa-http3,incursa-raw-quic-adapter-v1
+```
+
 To limit the report to specific run roots:
 
 ```powershell
