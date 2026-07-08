@@ -15,11 +15,10 @@ namespace Incursa.Quic;
 /// </remarks>
 internal sealed class QuicConnectionRuntimeDeadlineScheduler
 {
-    private const int InitialTimerHeapCapacity = 256;
     private const int StaleTimerHeapCompactionThreshold = 256;
     private const int StaleTimerHeapCompactionFactor = 4;
 
-    private PriorityQueue<QuicConnectionRuntimeScheduledTimerEntry, QuicConnectionTimerPriority> timerHeap = new();
+    private readonly PriorityQueue<QuicConnectionRuntimeScheduledTimerEntry, QuicConnectionTimerPriority> timerHeap = new();
     private readonly Dictionary<QuicConnectionRuntimeScheduledTimerKey, QuicConnectionRuntimeScheduledTimerRegistration> registrations = [];
 
     /// <summary>
@@ -229,10 +228,7 @@ internal sealed class QuicConnectionRuntimeDeadlineScheduler
             return false;
         }
 
-        PriorityQueue<QuicConnectionRuntimeScheduledTimerEntry, QuicConnectionTimerPriority> compactedHeap =
-            activeRegistrationCount == 0
-                ? new()
-                : new(Math.Max(InitialTimerHeapCapacity, activeRegistrationCount));
+        timerHeap.Clear();
 
         foreach (KeyValuePair<QuicConnectionRuntimeScheduledTimerKey, QuicConnectionRuntimeScheduledTimerRegistration> registrationEntry in registrations)
         {
@@ -246,10 +242,8 @@ internal sealed class QuicConnectionRuntimeDeadlineScheduler
                 registration.Generation,
                 registration.Priority);
 
-            compactedHeap.Enqueue(entry, registration.Priority);
+            timerHeap.Enqueue(entry, registration.Priority);
         }
-
-        timerHeap = compactedHeap;
         return true;
     }
 
