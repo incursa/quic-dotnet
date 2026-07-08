@@ -56,6 +56,10 @@ function Add-TopLines([System.Collections.Generic.List[string]] $Lines, [string]
     $Lines.Add("``````")
 }
 
+function Test-ObjectProperty($Object, [string] $Name) {
+    return $null -ne $Object -and $Object.PSObject.Properties.Name -contains $Name
+}
+
 $resolvedRoot = (Resolve-Path -LiteralPath $ProfilePackRoot).Path
 $profilePath = Join-Path $resolvedRoot "profile-pack.json"
 if (-not (Test-Path -LiteralPath $profilePath)) {
@@ -124,7 +128,7 @@ if ($cpuPass) {
     $lines.Add("")
     $lines.Add("- trace root: ``$($cpuPass.ArtifactRoot)``")
     $lines.Add("- raw trace: ``$(Join-Path $cpuPass.ArtifactRoot "trace.nettrace")``")
-    if ($profile.speedscope -and $profile.speedscope.Output) {
+    if ((Test-ObjectProperty $profile "speedscope") -and (Test-ObjectProperty $profile.speedscope "Output") -and $profile.speedscope.Output) {
         $lines.Add("- Speedscope: ``$($profile.speedscope.Output)``")
     }
     else {
@@ -162,10 +166,10 @@ if ($profile.perfview) {
     $lines.Add("## PerfView")
     $lines.Add("")
     $lines.Add("- status: ``$($profile.perfview.Status)``")
-    if ($profile.perfview.Output) {
+    if ((Test-ObjectProperty $profile.perfview "Output") -and $profile.perfview.Output) {
         $lines.Add("- output: ``$($profile.perfview.Output)``")
     }
-    elseif ($profile.perfview.Instructions) {
+    elseif ((Test-ObjectProperty $profile.perfview "Instructions") -and $profile.perfview.Instructions) {
         $lines.Add("- instructions: ``$($profile.perfview.Instructions)``")
     }
 }

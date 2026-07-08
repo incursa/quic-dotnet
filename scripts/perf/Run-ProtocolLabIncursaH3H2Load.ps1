@@ -37,6 +37,22 @@ function Format-CommandLine([string] $FileName, [string[]] $Arguments) {
     "$FileName $($escaped -join ' ')"
 }
 
+function Get-ContentWithRetry([string] $Path) {
+    for ($attempt = 1; $attempt -le 10; $attempt++) {
+        try {
+            return Get-Content -Path $Path -ErrorAction Stop
+        }
+        catch {
+            if ($attempt -eq 10) {
+                Write-Warning "Could not read '$Path' after process exit: $($_.Exception.Message)"
+                return @()
+            }
+
+            Start-Sleep -Milliseconds (100 * $attempt)
+        }
+    }
+}
+
 if (-not (Test-Path -LiteralPath $ProtocolLabRoot)) {
     throw "ProtocolLab root was not found: $ProtocolLabRoot"
 }
@@ -124,17 +140,25 @@ try {
 
         $protocolLabStdout = Join-Path $runRoot "protocol-lab.stdout.txt"
         $protocolLabStderr = Join-Path $runRoot "protocol-lab.stderr.txt"
-        $process = Start-Process `
-            -FilePath "dotnet" `
-            -ArgumentList $args `
-            -WorkingDirectory $ProtocolLabRoot `
-            -RedirectStandardOutput $protocolLabStdout `
-            -RedirectStandardError $protocolLabStderr `
-            -WindowStyle Hidden `
-            -PassThru
+        $startInfo = [System.Diagnostics.ProcessStartInfo]::new("dotnet")
+        $startInfo.WorkingDirectory = $ProtocolLabRoot
+        $startInfo.RedirectStandardOutput = $true
+        $startInfo.RedirectStandardError = $true
+        $startInfo.UseShellExecute = $false
+        foreach ($argument in $args) {
+            $startInfo.ArgumentList.Add($argument)
+        }
+
+        $process = [System.Diagnostics.Process]::Start($startInfo)
+        if (-not $process) {
+            throw "Failed to start ProtocolLab run process."
+        }
+
+        $protocolLabStdoutTask = $process.StandardOutput.ReadToEndAsync()
+        $protocolLabStderrTask = $process.StandardError.ReadToEndAsync()
 
         $scenarioDirectoryName = $Scenarios[0]
-        $diagnosticTargetPath = Join-Path $runRoot "implementations/incursa-http3/$scenarioDirectoryName/h3/c$Connections-s$StreamsPerConnection-r1/diagnostic-target.json"
+        $diagnosticTargetPath = Join-Path $runRoot "implementations/incursa-http3/$scenarioDirectoryName/h3/local-process/clean/no-load-profile/c$Connections-s$StreamsPerConnection-r1/diagnostic-target.json"
         $deadline = [DateTimeOffset]::UtcNow.AddSeconds(45)
         $diagnosticTarget = $null
         while ([DateTimeOffset]::UtcNow -lt $deadline) {
@@ -206,8 +230,10 @@ try {
 
         $process.WaitForExit()
         $exitCode = $process.ExitCode
-        Get-Content -Path $protocolLabStdout -ErrorAction SilentlyContinue
-        Get-Content -Path $protocolLabStderr -ErrorAction SilentlyContinue
+        Set-Content -Path $protocolLabStdout -Value $protocolLabStdoutTask.GetAwaiter().GetResult()
+        Set-Content -Path $protocolLabStderr -Value $protocolLabStderrTask.GetAwaiter().GetResult()
+        Get-ContentWithRetry $protocolLabStdout
+        Get-ContentWithRetry $protocolLabStderr
     }
 
     [ordered]@{
