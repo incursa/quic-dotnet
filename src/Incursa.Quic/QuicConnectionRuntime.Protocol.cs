@@ -2477,6 +2477,7 @@ internal sealed partial class QuicConnectionRuntime
             packetNumberSpace,
             ackFrame,
             ackReceivedAtMicros,
+            pacingLimited: applicationSendQueue.Count > 0,
             pathValidated: HasValidatedPath);
 
         foreach (ulong packetNumber in acknowledgedPacketNumbers)

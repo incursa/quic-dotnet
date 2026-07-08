@@ -663,6 +663,7 @@ public sealed class REQ_QUIC_RFC9000_S13_0002
 
         ulong acknowledgedFillerPacketNumber = FillCongestionWindowWithTrackedPackets(runtime);
         Assert.False(runtime.SendRuntime.FlowController.CongestionControlState.CanSend(1));
+        ulong congestionWindowBeforeAck = runtime.SendRuntime.FlowController.CongestionControlState.CongestionWindowBytes;
 
         byte[] firstPayload = Enumerable.Repeat((byte)0xD1, 1024).ToArray();
         byte[] secondPayload = Enumerable.Repeat((byte)0xD2, 1024).ToArray();
@@ -680,15 +681,21 @@ public sealed class REQ_QUIC_RFC9000_S13_0002
             packetNumber: 1,
             largestAcknowledged: acknowledgedFillerPacketNumber);
 
-        QuicConnectionSendDatagramEffect queuedSendEffect = Assert.Single(
-            ackResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        QuicConnectionSendDatagramEffect[] queuedSendEffects = ackResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        Assert.Equal(2, queuedSendEffects.Length);
+        QuicConnectionSendDatagramEffect queuedSendEffect = queuedSendEffects[0];
         byte[] openedPayload = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, queuedSendEffect);
         ReadOnlySpan<byte> remainingPayload = SkipPadding(openedPayload);
         Assert.True(QuicStreamParser.TryParseStreamFrame(remainingPayload, out QuicStreamFrame frame));
         Assert.Equal((ulong)stream.Id, frame.StreamId.Value);
         Assert.Equal(0UL, frame.Offset);
         Assert.False(frame.StreamData.IsEmpty);
+        Assert.All(queuedSendEffects, effect =>
+            Assert.True((ulong)effect.Datagram.Length <= runtime.ActivePath!.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes));
         Assert.NotNull(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay));
+        Assert.True(runtime.SendRuntime.FlowController.CongestionControlState.CongestionWindowBytes > congestionWindowBeforeAck);
     }
 
     [Fact]
@@ -712,6 +719,7 @@ public sealed class REQ_QUIC_RFC9000_S13_0002
         KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> openPacket =
             QuicS13AckPiggybackTestSupport.FindTrackedPacket(runtime, openSendEffect.Datagram);
         outboundEffects.Clear();
+        ulong congestionWindowBeforeAck = runtime.SendRuntime.FlowController.CongestionControlState.CongestionWindowBytes;
 
         QuicConnectionTransitionResult ackResult = QuicS13AckPiggybackTestSupport.ReceiveOneRttAckOnly(
             runtime,
@@ -721,6 +729,7 @@ public sealed class REQ_QUIC_RFC9000_S13_0002
 
         Assert.Empty(ackResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
         Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay));
+        Assert.Equal(congestionWindowBeforeAck, runtime.SendRuntime.FlowController.CongestionControlState.CongestionWindowBytes);
     }
 
     private static ulong FillCongestionWindowWithTrackedPackets(QuicConnectionRuntime runtime)
