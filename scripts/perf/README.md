@@ -125,6 +125,38 @@ The wrapper writes a report under:
 .artifacts/perf-lanes/{runIdPrefix}/summary.md
 ```
 
+## ProtocolLab Baseline Reports
+
+Use `New-QuicProtocolLabBaselineReport.ps1` to roll up existing
+`aggregate-results.json` files for the core QUIC performance scenarios. The
+report picks the current, previous, and best known rows per scenario and
+implementation, then records validation, benchmark status, evidence quality,
+throughput or request rate, latency, allocation rate, GC counts, exception
+rate, repetition count, and publishability blockers.
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\New-QuicProtocolLabBaselineReport.ps1
+```
+
+To limit the report to specific run roots:
+
+```powershell
+$runRoots = @(
+  "C:\shared\src\incursa\protocol-lab-internal\.artifacts\runs\codex-core-lane-smoke-20260708d-h3-h3-local-v1",
+  "C:\shared\src\incursa\protocol-lab-internal\.artifacts\runs\codex-core-lane-smoke-20260708d-raw-quic-quic-transport-v1-comparison"
+)
+
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\New-QuicProtocolLabBaselineReport.ps1 `
+  -ProtocolLabRunRoot $runRoots
+```
+
+Output is written under:
+
+```text
+.artifacts/perf-baselines/{runId}/baseline-report.md
+.artifacts/perf-baselines/{runId}/baseline-report.json
+```
+
 ## ProtocolLab Readiness Evidence
 
 Use `New-QuicProtocolLabReadinessEvidence.ps1` before handing the repo to a
