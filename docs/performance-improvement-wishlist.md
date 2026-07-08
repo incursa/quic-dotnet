@@ -2,6 +2,12 @@
 
 This is a pragmatic backlog for improving Incursa.Quic performance evidence, runtime efficiency, and benchmark trustworthiness. Each item includes the finish line so we can tell when it is actually done.
 
+## Progress Notes
+
+- 2026-07-08: `152fda3c` removed disabled application-send diagnostic string allocations on the stream write hot path. Source-backed ProtocolLab profile pack `codex-h3-1kb-post-log-handler-20260708a` showed `http3.payload.bytes.1kb` request rate +2.24%, p95 -0.92%, allocation rate -29.97%, and bytes/request -31.51% versus `codex-h3-1kb-post-data-frame-20260708a`.
+- 2026-07-08: `7c083271` added a queued inbound stream accept fast path. Source-backed ProtocolLab profile pack `codex-h3-1kb-post-accept-fastpath-20260708a` showed request rate +11.28%, p95 -18.03%, and bytes/request -1.17% versus `codex-h3-1kb-post-log-handler-20260708a`; allocation rate rose +9.98% while total throughput increased.
+- 2026-07-08: exception attribution run `codex-exception-attribution-post-accept-fastpath-20260708a` for `http3.payload.bytes.64kb` passed ProtocolLab validation and benchmark with 22,992 EventPipe events, zero lost events, and zero first-chance exceptions.
+
 ## 1. Finish Expected Terminal Exception Cleanup
 
 The HTTP/3 terminal-flow cleanup reduced local exception pressure materially, but traces still show terminal `Incursa.Quic.QuicException: The connection terminated` as the dominant remaining first-chance exception source.
@@ -194,4 +200,3 @@ Done when:
 4. Attack HTTP/3 allocation hot spots.
 5. Add raw QUIC and public API stream-transfer baselines.
 6. Move repeatable evidence onto package-backed lab/controller runs.
-
