@@ -17,6 +17,7 @@ param(
     [switch] $CollectGcDump = $false,
     [switch] $CollectPerfView = $false,
     [string] $PerfViewPath,
+    [string] $IncursaQuicSourceRoot,
     [switch] $KeepServerRunning = $false
 )
 
@@ -244,6 +245,10 @@ function Invoke-WrapperPass(
             "-TraceArtifactRoot", $passRoot,
             "-TraceDurationSeconds", ([Math]::Max(5, $DurationSeconds + $WarmupSeconds + 3)).ToString([Globalization.CultureInfo]::InvariantCulture)
         )
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($IncursaQuicSourceRoot)) {
+        $arguments += @("-IncursaQuicSourceRoot", $IncursaQuicSourceRoot)
     }
 
     $result = Invoke-LoggedProcess `
@@ -534,6 +539,7 @@ $profile = [ordered]@{
     streamsPerConnection = $StreamsPerConnection
     targetConfiguration = $TargetConfiguration
     disableLoadToolQlog = [bool]$DisableLoadToolQlog
+    incursaQuicSourceRoot = $IncursaQuicSourceRoot
     keepServerRunning = [bool]$KeepServerRunning
     toolRestore = $toolRestore
     toolVersions = $toolVersions
