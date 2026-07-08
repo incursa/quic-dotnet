@@ -35,6 +35,19 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    public void ServerResponseCreateFromImmutableBodyAndHeaders_BorrowsBodyAndHeaders()
+    {
+        byte[] body = [0x01, 0x02, 0x03];
+        QPackFieldLine[] headers = [new("content-type", "application/octet-stream")];
+
+        Http3ServerResponse response = Http3ServerResponse.CreateFromImmutableBodyAndHeaders(200, body, headers);
+
+        Assert.True(MemoryMarshal.TryGetArray(response.Body, out ArraySegment<byte> segment));
+        Assert.Same(body, segment.Array);
+        Assert.Same(headers, response.Headers);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9114-S9-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

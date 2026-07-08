@@ -44,7 +44,8 @@ public sealed class Http3ServerResponse
         bool sendGoAwayAfterResponse,
         bool closeConnectionAfterResponse,
         IAsyncEnumerable<ReadOnlyMemory<byte>>? streamingBody,
-        bool copyBody)
+        bool copyBody,
+        bool copyHeaders = true)
     {
         if (statusCode < MinimumStatusCode || statusCode > MaximumStatusCode)
         {
@@ -58,7 +59,19 @@ public sealed class Http3ServerResponse
 
         StatusCode = statusCode;
         Body = copyBody ? body.ToArray() : body;
-        Headers = headers?.ToArray() ?? [];
+        if (headers is null)
+        {
+            Headers = [];
+        }
+        else if (!copyHeaders && headers is IReadOnlyList<QPackFieldLine> list)
+        {
+            Headers = list;
+        }
+        else
+        {
+            Headers = headers.ToArray();
+        }
+
         DataFramePayloadSize = dataFramePayloadSize;
         SendGoAwayAfterResponse = sendGoAwayAfterResponse;
         CloseConnectionAfterResponse = closeConnectionAfterResponse;
@@ -103,6 +116,29 @@ public sealed class Http3ServerResponse
             closeConnectionAfterResponse,
             streamingBody: null,
             copyBody: false);
+    }
+
+    /// <summary>
+    /// Creates a response over caller-owned immutable body and header collections without copying them.
+    /// </summary>
+    public static Http3ServerResponse CreateFromImmutableBodyAndHeaders(
+        int statusCode,
+        ReadOnlyMemory<byte> body,
+        IReadOnlyList<QPackFieldLine>? headers = null,
+        int? dataFramePayloadSize = null,
+        bool sendGoAwayAfterResponse = false,
+        bool closeConnectionAfterResponse = false)
+    {
+        return new Http3ServerResponse(
+            statusCode,
+            body,
+            headers,
+            dataFramePayloadSize,
+            sendGoAwayAfterResponse,
+            closeConnectionAfterResponse,
+            streamingBody: null,
+            copyBody: false,
+            copyHeaders: false);
     }
 
     /// <summary>
