@@ -1938,6 +1938,27 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    public void DiagnosticsEnabled_KindFilterSuppressesUnwantedEventKinds()
+    {
+        FilteredLifecycleDiagnosticsSink diagnostics = new(
+            enabled: true,
+            Http3DiagnosticKind.RequestStarted,
+            Http3DiagnosticKind.RequestCompleted);
+
+        Http3Server.EmitFrameDiagnostic(diagnostics, Http3DiagnosticKind.FrameSent, "server", 4, Http3FrameType.Data, 13);
+        Http3Server.EmitRequestStartedDiagnostic(diagnostics, "server", 4, "GET", "/plaintext");
+        Http3Server.EmitResponseCompletedDiagnostic(diagnostics, "server", 4, 200, 13);
+        Http3Server.EmitRequestCompletedDiagnostic(diagnostics, "server", 4, "GET", "/plaintext", 200, 13);
+
+        Assert.Equal(0, diagnostics.EmitCalls);
+        Assert.Equal(4, diagnostics.IsEnabledCalls);
+        Assert.Equal(4, diagnostics.KindEnabledCalls);
+        Assert.Equal(1, diagnostics.RequestStartedCalls);
+        Assert.Equal(0, diagnostics.ResponseCompletedCalls);
+        Assert.Equal(1, diagnostics.RequestCompletedCalls);
+    }
+
+    [Fact]
     public async Task DiagnosticsEnabled_SimpleRequestLifecyclePayloadsAndOrderingStayStable()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -2637,6 +2658,90 @@ public sealed class Http3MinimalServerTests
             LastPath = path;
             LastStatusCode = statusCode;
             LastPayloadLength = payloadLength;
+        }
+    }
+
+    private sealed class FilteredLifecycleDiagnosticsSink : IHttp3LifecycleDiagnosticsSink, IHttp3DiagnosticKindFilter
+    {
+        private readonly HashSet<Http3DiagnosticKind> enabledKinds;
+        private readonly bool enabled;
+        private int emitCalls;
+        private int isEnabledCalls;
+        private int kindEnabledCalls;
+
+        internal FilteredLifecycleDiagnosticsSink(bool enabled, params Http3DiagnosticKind[] enabledKinds)
+        {
+            this.enabled = enabled;
+            this.enabledKinds = [.. enabledKinds];
+        }
+
+        public bool IsEnabled
+        {
+            get
+            {
+                Interlocked.Increment(ref isEnabledCalls);
+                return enabled;
+            }
+        }
+
+        internal int EmitCalls => Volatile.Read(ref emitCalls);
+
+        internal int IsEnabledCalls => Volatile.Read(ref isEnabledCalls);
+
+        internal int KindEnabledCalls => Volatile.Read(ref kindEnabledCalls);
+
+        internal int RequestStartedCalls { get; private set; }
+
+        internal int ResponseCompletedCalls { get; private set; }
+
+        internal int RequestCompletedCalls { get; private set; }
+
+        public bool IsEnabledFor(Http3DiagnosticKind kind)
+        {
+            Interlocked.Increment(ref kindEnabledCalls);
+            return enabledKinds.Contains(kind);
+        }
+
+        public void Emit(Http3DiagnosticEvent diagnosticEvent)
+        {
+            _ = diagnosticEvent;
+            Interlocked.Increment(ref emitCalls);
+        }
+
+        public void EmitRequestStarted(string role, long streamId, string method, string path)
+        {
+            _ = role;
+            _ = streamId;
+            _ = method;
+            _ = path;
+            RequestStartedCalls++;
+        }
+
+        public void EmitResponseStarted(string role, long streamId, int statusCode)
+        {
+            _ = role;
+            _ = streamId;
+            _ = statusCode;
+        }
+
+        public void EmitResponseCompleted(string role, long streamId, int statusCode, int payloadLength)
+        {
+            _ = role;
+            _ = streamId;
+            _ = statusCode;
+            _ = payloadLength;
+            ResponseCompletedCalls++;
+        }
+
+        public void EmitRequestCompleted(string role, long streamId, string method, string path, int statusCode, int payloadLength)
+        {
+            _ = role;
+            _ = streamId;
+            _ = method;
+            _ = path;
+            _ = statusCode;
+            _ = payloadLength;
+            RequestCompletedCalls++;
         }
     }
 

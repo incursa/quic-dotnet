@@ -160,7 +160,7 @@ public sealed class Http3Server : IAsyncDisposable
             }
             catch (QuicException ex)
             {
-                if (IsDiagnosticEnabled(diagnosticsSink))
+                if (IsDiagnosticEnabled(diagnosticsSink, Http3DiagnosticKind.Error))
                 {
                     diagnosticsSink!.Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.Error)
                     {
@@ -228,7 +228,7 @@ public sealed class Http3Server : IAsyncDisposable
         {
             try
             {
-                if (IsDiagnosticEnabled(diagnosticsSink))
+                if (IsDiagnosticEnabled(diagnosticsSink, Http3DiagnosticKind.ConnectionStarted))
                 {
                     diagnosticsSink!.Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.ConnectionStarted)
                     {
@@ -259,7 +259,7 @@ public sealed class Http3Server : IAsyncDisposable
             }
             finally
             {
-                if (IsDiagnosticEnabled(diagnosticsSink))
+                if (IsDiagnosticEnabled(diagnosticsSink, Http3DiagnosticKind.ConnectionClosed))
                 {
                     diagnosticsSink!.Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.ConnectionClosed)
                     {
@@ -284,7 +284,7 @@ public sealed class Http3Server : IAsyncDisposable
         await controlStream.WriteAsync(initialControlStream, 0, initialControlStream.Length, cancellationToken).ConfigureAwait(false);
         EmitStreamOpenedDiagnostic(diagnosticsSink, "server", controlStream.Id, Http3StreamKind.Control);
         EmitFrame(Http3DiagnosticKind.FrameSent, controlStream.Id, Http3FrameType.Settings, initialControlStream.Length);
-        if (IsDiagnosticEnabled(diagnosticsSink))
+        if (IsDiagnosticEnabled(diagnosticsSink, Http3DiagnosticKind.SettingsSent))
         {
             diagnosticsSink!.Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.SettingsSent)
             {
@@ -296,7 +296,7 @@ public sealed class Http3Server : IAsyncDisposable
         QuicStream qpackEncoderStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional, cancellationToken).ConfigureAwait(false);
         await WriteStreamTypeAsync(qpackEncoderStream, Http3StreamType.QPackEncoder, cancellationToken).ConfigureAwait(false);
         EmitStreamOpenedDiagnostic(diagnosticsSink, "server", qpackEncoderStream.Id, Http3StreamKind.QPackEncoder);
-        if (IsDiagnosticEnabled(diagnosticsSink))
+        if (IsDiagnosticEnabled(diagnosticsSink, Http3DiagnosticKind.QPackInstructionSent))
         {
             diagnosticsSink!.Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.QPackInstructionSent)
             {
@@ -310,7 +310,7 @@ public sealed class Http3Server : IAsyncDisposable
         QuicStream qpackDecoderStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional, cancellationToken).ConfigureAwait(false);
         await WriteStreamTypeAsync(qpackDecoderStream, Http3StreamType.QPackDecoder, cancellationToken).ConfigureAwait(false);
         EmitStreamOpenedDiagnostic(diagnosticsSink, "server", qpackDecoderStream.Id, Http3StreamKind.QPackDecoder);
-        if (IsDiagnosticEnabled(diagnosticsSink))
+        if (IsDiagnosticEnabled(diagnosticsSink, Http3DiagnosticKind.QPackInstructionSent))
         {
             diagnosticsSink!.Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.QPackInstructionSent)
             {
@@ -952,7 +952,7 @@ public sealed class Http3Server : IAsyncDisposable
                     qpackState.SetPeerSettings(settingsFrame.Values);
                 }
 
-                if (IsDiagnosticEnabled(diagnosticsSink))
+                if (IsDiagnosticEnabled(diagnosticsSink, Http3DiagnosticKind.SettingsReceived))
                 {
                     diagnosticsSink!.Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.SettingsReceived)
                     {
@@ -1589,7 +1589,7 @@ public sealed class Http3Server : IAsyncDisposable
         long streamId,
         Http3StreamKind streamKind)
     {
-        if (!IsDiagnosticEnabled(sink))
+        if (!IsDiagnosticEnabled(sink, Http3DiagnosticKind.StreamOpened))
         {
             return;
         }
@@ -1610,7 +1610,7 @@ public sealed class Http3Server : IAsyncDisposable
         Http3FrameType frameType,
         int payloadLength)
     {
-        if (!IsDiagnosticEnabled(sink))
+        if (!IsDiagnosticEnabled(sink, kind))
         {
             return;
         }
@@ -1632,7 +1632,7 @@ public sealed class Http3Server : IAsyncDisposable
         string method,
         string path)
     {
-        if (!IsDiagnosticEnabled(sink))
+        if (!IsDiagnosticEnabled(sink, Http3DiagnosticKind.RequestStarted))
         {
             return;
         }
@@ -1658,7 +1658,7 @@ public sealed class Http3Server : IAsyncDisposable
         long streamId,
         int statusCode)
     {
-        if (!IsDiagnosticEnabled(sink))
+        if (!IsDiagnosticEnabled(sink, Http3DiagnosticKind.ResponseStarted))
         {
             return;
         }
@@ -1684,7 +1684,7 @@ public sealed class Http3Server : IAsyncDisposable
         int statusCode,
         int payloadLength)
     {
-        if (!IsDiagnosticEnabled(sink))
+        if (!IsDiagnosticEnabled(sink, Http3DiagnosticKind.ResponseCompleted))
         {
             return;
         }
@@ -1713,7 +1713,7 @@ public sealed class Http3Server : IAsyncDisposable
         int statusCode,
         int payloadLength)
     {
-        if (!IsDiagnosticEnabled(sink))
+        if (!IsDiagnosticEnabled(sink, Http3DiagnosticKind.RequestCompleted))
         {
             return;
         }
@@ -1741,7 +1741,7 @@ public sealed class Http3Server : IAsyncDisposable
         long streamId,
         Http3StreamKind streamKind)
     {
-        if (!IsDiagnosticEnabled(sink))
+        if (!IsDiagnosticEnabled(sink, Http3DiagnosticKind.StreamClosed))
         {
             return;
         }
@@ -1754,9 +1754,14 @@ public sealed class Http3Server : IAsyncDisposable
         });
     }
 
-    private static bool IsDiagnosticEnabled(IHttp3DiagnosticsSink? sink)
+    private static bool IsDiagnosticEnabled(IHttp3DiagnosticsSink? sink, Http3DiagnosticKind kind)
     {
-        return sink?.IsEnabled == true;
+        if (sink?.IsEnabled != true)
+        {
+            return false;
+        }
+
+        return sink is not IHttp3DiagnosticKindFilter filter || filter.IsEnabledFor(kind);
     }
 
     private static void WriteLiteralWithStaticNameReference(byte[] destination, ref int offset, int staticNameIndex, string value)
@@ -2124,7 +2129,7 @@ public sealed class Http3Server : IAsyncDisposable
 
     private void EmitFrame(Http3DiagnosticKind kind, long streamId, Http3Frame frame)
     {
-        if (!IsDiagnosticEnabled(diagnosticsSink))
+        if (!IsDiagnosticEnabled(diagnosticsSink, kind))
         {
             return;
         }
@@ -2141,7 +2146,7 @@ public sealed class Http3Server : IAsyncDisposable
 
     private void EmitQPackBytesReceived(long streamId, Http3StreamKind streamKind, int payloadLength)
     {
-        if (payloadLength == 0 || !IsDiagnosticEnabled(diagnosticsSink))
+        if (payloadLength == 0 || !IsDiagnosticEnabled(diagnosticsSink, Http3DiagnosticKind.QPackInstructionReceived))
         {
             return;
         }
@@ -2158,7 +2163,7 @@ public sealed class Http3Server : IAsyncDisposable
 
     private void EmitError(Exception exception)
     {
-        if (!IsDiagnosticEnabled(diagnosticsSink))
+        if (!IsDiagnosticEnabled(diagnosticsSink, Http3DiagnosticKind.Error))
         {
             return;
         }
