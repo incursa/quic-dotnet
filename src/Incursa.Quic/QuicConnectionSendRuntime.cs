@@ -53,6 +53,7 @@ internal readonly record struct QuicConnectionRetransmissionPlan(
 /// </summary>
 internal sealed class QuicConnectionSendRuntime
 {
+    private static readonly bool ReceiveEcnMetadataSupported = QuicSocketEcnControl.GetReceiveEcnMetadataCapability().IsSupported;
     private readonly Dictionary<QuicConnectionSentPacketKey, QuicConnectionSentPacket> sentPackets = [];
     private readonly QuicRetransmissionQueue retransmissionQueue = new();
     private readonly QuicSenderFlowController flowController;
@@ -72,7 +73,7 @@ internal sealed class QuicConnectionSendRuntime
 
     internal QuicEcnValidationState EcnValidationState => ecnValidationState;
 
-    internal QuicEcnMarking CurrentEcnMarking => ecnValidationState.IsEcnEnabled
+    internal QuicEcnMarking CurrentEcnMarking => ReceiveEcnMetadataSupported && ecnValidationState.IsEcnEnabled
         ? QuicEcnMarking.Ect0
         : QuicEcnMarking.NotEct;
 

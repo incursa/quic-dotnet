@@ -23,6 +23,7 @@ internal static class QuicSocketEcnControl
     private const int SupportUnknown = 0;
     private const int SupportAvailable = 1;
     private const int SupportUnavailable = -1;
+    private static readonly EcnSocketOptionSupport GlobalSocketOptionSupport = new();
     private static readonly ConditionalWeakTable<Socket, EcnSocketOptionSupport> SocketOptionSupport = new();
 
     internal static QuicReceiveEcnMetadataCapability GetReceiveEcnMetadataCapability()
@@ -45,15 +46,19 @@ internal static class QuicSocketEcnControl
     {
         ArgumentNullException.ThrowIfNull(socket);
 
+        EcnSocketOptionSupport support = SocketOptionSupport.GetValue(socket, _ => new EcnSocketOptionSupport());
+        if (ecnMarking == QuicEcnMarking.NotEct)
+        {
+            return TryClearEcnMarkingIfPreviouslyEnabled(socket, support);
+        }
+
         int typeOfService = ecnMarking switch
         {
-            QuicEcnMarking.NotEct => 0,
             QuicEcnMarking.Ect0 => 0x02,
             QuicEcnMarking.Ect1 => 0x01,
             _ => 0,
         };
 
-        EcnSocketOptionSupport support = SocketOptionSupport.GetValue(socket, _ => new EcnSocketOptionSupport());
         return socket.AddressFamily switch
         {
             AddressFamily.InterNetwork => TrySetSocketOption(socket, SocketOptionLevel.IP, typeOfService, support, ipv6: false),
@@ -63,6 +68,41 @@ internal static class QuicSocketEcnControl
         };
     }
 
+    private static bool TryClearEcnMarkingIfPreviouslyEnabled(Socket socket, EcnSocketOptionSupport support)
+    {
+        return socket.AddressFamily switch
+        {
+            AddressFamily.InterNetwork => support.GetState(ipv6: false) != SupportAvailable ||
+                TrySetSocketOption(socket, SocketOptionLevel.IP, typeOfService: 0, support, ipv6: false),
+            AddressFamily.InterNetworkV6 => ClearKnownSupportedIpv6Options(socket, support),
+            _ => false,
+        };
+    }
+
+    private static bool ClearKnownSupportedIpv6Options(Socket socket, EcnSocketOptionSupport support)
+    {
+        bool clearIpv6 = support.GetState(ipv6: true) == SupportAvailable;
+        bool clearIp = support.GetState(ipv6: false) == SupportAvailable;
+
+        if (!clearIpv6 && !clearIp)
+        {
+            return true;
+        }
+
+        bool cleared = false;
+        if (clearIpv6)
+        {
+            cleared |= TrySetSocketOption(socket, SocketOptionLevel.IPv6, typeOfService: 0, support, ipv6: true);
+        }
+
+        if (clearIp)
+        {
+            cleared |= TrySetSocketOption(socket, SocketOptionLevel.IP, typeOfService: 0, support, ipv6: false);
+        }
+
+        return cleared;
+    }
+
     private static bool TrySetSocketOption(
         Socket socket,
         SocketOptionLevel level,
@@ -70,7 +110,8 @@ internal static class QuicSocketEcnControl
         EcnSocketOptionSupport support,
         bool ipv6)
     {
-        if (support.GetState(ipv6) == SupportUnavailable)
+        if (GlobalSocketOptionSupport.GetState(ipv6) == SupportUnavailable ||
+            support.GetState(ipv6) == SupportUnavailable)
         {
             return false;
         }
@@ -87,6 +128,13 @@ internal static class QuicSocketEcnControl
         }
         catch (PlatformNotSupportedException)
         {
+            GlobalSocketOptionSupport.MarkUnavailable(ipv6);
+            support.MarkUnavailable(ipv6);
+            return false;
+        }
+        catch (SocketException ex) when (IsSocketOptionUnsupported(ex))
+        {
+            GlobalSocketOptionSupport.MarkUnavailable(ipv6);
             support.MarkUnavailable(ipv6);
             return false;
         }
@@ -97,14 +145,34 @@ internal static class QuicSocketEcnControl
         }
         catch (NotSupportedException)
         {
+            GlobalSocketOptionSupport.MarkUnavailable(ipv6);
             support.MarkUnavailable(ipv6);
             return false;
         }
         catch (ArgumentException)
         {
+            GlobalSocketOptionSupport.MarkUnavailable(ipv6);
             support.MarkUnavailable(ipv6);
             return false;
         }
+    }
+
+    private static bool IsSocketOptionUnsupported(SocketException exception)
+    {
+        return exception.SocketErrorCode is SocketError.InvalidArgument
+            or SocketError.ProtocolOption
+            or SocketError.OperationNotSupported
+            or SocketError.AddressFamilyNotSupported;
+    }
+
+    internal static void ResetGlobalSocketOptionSupportForTest()
+    {
+        GlobalSocketOptionSupport.Reset();
+    }
+
+    internal static void MarkGlobalSocketOptionUnavailableForTest(bool ipv6)
+    {
+        GlobalSocketOptionSupport.MarkUnavailable(ipv6);
     }
 
     private sealed class EcnSocketOptionSupport
@@ -141,6 +209,12 @@ internal static class QuicSocketEcnControl
             {
                 Volatile.Write(ref ip, SupportUnavailable);
             }
+        }
+
+        public void Reset()
+        {
+            Volatile.Write(ref ip, SupportUnknown);
+            Volatile.Write(ref ipv6, SupportUnknown);
         }
     }
 }

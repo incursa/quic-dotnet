@@ -33,4 +33,75 @@ public sealed class QuicSocketEcnControlTests
         Assert.False(QuicSocketEcnControl.TryGetReceivedEcnCounts(receiveResult, out QuicEcnCounts ecnCounts));
         Assert.Equal(default, ecnCounts);
     }
+
+    [Fact]
+    [Trait("Category", "Guardrail")]
+    public void SendRuntime_UsesNotEctWhenReceiveEcnMetadataIsUnavailable()
+    {
+        Assert.False(QuicSocketEcnControl.GetReceiveEcnMetadataCapability().IsSupported);
+
+        QuicConnectionSendRuntime runtime = new();
+
+        Assert.True(runtime.EcnValidationState.IsEcnEnabled);
+        Assert.Equal(QuicEcnMarking.NotEct, runtime.CurrentEcnMarking);
+    }
+
+    [Fact]
+    [Trait("Category", "Guardrail")]
+    public void TrySetEcnMarkingIfPossible_SkipsIpv4SocketOptionWhenGloballyUnavailable()
+    {
+        QuicSocketEcnControl.ResetGlobalSocketOptionSupportForTest();
+
+        try
+        {
+            QuicSocketEcnControl.MarkGlobalSocketOptionUnavailableForTest(ipv6: false);
+
+            using Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+            Assert.False(QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, QuicEcnMarking.Ect0));
+        }
+        finally
+        {
+            QuicSocketEcnControl.ResetGlobalSocketOptionSupportForTest();
+        }
+    }
+
+    [Fact]
+    [Trait("Category", "Guardrail")]
+    public void TrySetEcnMarkingIfPossible_TreatsFreshNotEctSocketAsAlreadyClear()
+    {
+        QuicSocketEcnControl.ResetGlobalSocketOptionSupportForTest();
+
+        try
+        {
+            using Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+            Assert.True(QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, QuicEcnMarking.NotEct));
+        }
+        finally
+        {
+            QuicSocketEcnControl.ResetGlobalSocketOptionSupportForTest();
+        }
+    }
+
+    [Fact]
+    [Trait("Category", "Guardrail")]
+    public void TrySetEcnMarkingIfPossible_SkipsIpv6AndFallbackIpOptionsWhenGloballyUnavailable()
+    {
+        QuicSocketEcnControl.ResetGlobalSocketOptionSupportForTest();
+
+        try
+        {
+            QuicSocketEcnControl.MarkGlobalSocketOptionUnavailableForTest(ipv6: true);
+            QuicSocketEcnControl.MarkGlobalSocketOptionUnavailableForTest(ipv6: false);
+
+            using Socket socket = new(AddressFamily.InterNetworkV6, SocketType.Dgram, ProtocolType.Udp);
+
+            Assert.False(QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, QuicEcnMarking.Ect1));
+        }
+        finally
+        {
+            QuicSocketEcnControl.ResetGlobalSocketOptionSupportForTest();
+        }
+    }
 }
