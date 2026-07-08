@@ -473,6 +473,27 @@ public sealed class Http3HeaderValidationTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ResponseSequence_OwnedHeaders_AvoidsDefensiveCopy()
+    {
+        Http3ResponseSequenceValidator publicValidator = new();
+        QPackFieldLine[] publicHeaders = CommonResponseHeaders();
+
+        Assert.True(publicValidator.ReceiveHeaders(publicHeaders));
+
+        Assert.NotSame(publicHeaders, publicValidator.FinalResponseHeaders);
+
+        Http3ResponseSequenceValidator ownedValidator = new();
+        QPackFieldLine[] ownedHeaders = CommonResponseHeaders();
+
+        Assert.True(ownedValidator.ReceiveOwnedHeaders(ownedHeaders));
+
+        Assert.Same(ownedHeaders, ownedValidator.FinalResponseHeaders);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ResponseSequence_DataBeforeFinalResponse_IsFrameUnexpected()

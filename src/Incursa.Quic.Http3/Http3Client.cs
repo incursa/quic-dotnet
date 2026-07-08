@@ -867,7 +867,7 @@ public sealed class Http3Client : IAsyncDisposable
                         checked((ulong)streamId),
                         headersFrame.EncodedFieldSection,
                         cancellationToken).ConfigureAwait(false);
-                validator.ReceiveHeaders(fieldSection);
+                validator.ReceiveOwnedHeaders(fieldSection);
                 break;
             case Http3DataFrame dataFrame:
                 validator.ReceiveData(checked((ulong)dataFrame.Data.Length));
@@ -992,7 +992,7 @@ public sealed class Http3Client : IAsyncDisposable
                         checked((ulong)streamId),
                         headersFrame.EncodedFieldSection,
                         cancellationToken).ConfigureAwait(false);
-                validator.ReceiveHeaders(fieldSection);
+                validator.ReceiveOwnedHeaders(fieldSection);
                 break;
             case Http3DataFrame dataFrame:
                 validator.ReceiveData(checked((ulong)dataFrame.Data.Length));

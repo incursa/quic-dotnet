@@ -16,7 +16,7 @@ public sealed class Http3ResponseSequenceValidator
     private bool finalResponseSeen;
     private bool trailersSeen;
     private ulong finalResponseDataLength;
-    private QPackFieldLine[]? finalResponseHeaders;
+    private IReadOnlyList<QPackFieldLine>? finalResponseHeaders;
 
     /// <summary>
     /// Gets the final response headers after they have been received.
@@ -39,6 +39,20 @@ public sealed class Http3ResponseSequenceValidator
     public bool ReceiveHeaders(IReadOnlyList<QPackFieldLine> headers, bool trailersSupported = false)
     {
         ArgumentNullException.ThrowIfNull(headers);
+        return ReceiveHeadersCore(headers, ownedHeaders: null, trailersSupported);
+    }
+
+    internal bool ReceiveOwnedHeaders(IReadOnlyList<QPackFieldLine> headers, bool trailersSupported = false)
+    {
+        ArgumentNullException.ThrowIfNull(headers);
+        return ReceiveHeadersCore(headers, headers, trailersSupported);
+    }
+
+    private bool ReceiveHeadersCore(
+        IReadOnlyList<QPackFieldLine> headers,
+        IReadOnlyList<QPackFieldLine>? ownedHeaders,
+        bool trailersSupported)
+    {
         if (trailersSeen)
         {
             throw new Http3Exception(Http3ErrorCode.FrameUnexpected, "HTTP/3 HEADERS cannot follow trailers.");
@@ -57,7 +71,7 @@ public sealed class Http3ResponseSequenceValidator
 
             finalResponseSeen = true;
             FinalStatusCode = statusCode;
-            finalResponseHeaders = headers.ToArray();
+            finalResponseHeaders = ownedHeaders ?? headers.ToArray();
             return true;
         }
 
