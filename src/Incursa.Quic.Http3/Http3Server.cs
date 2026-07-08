@@ -1084,13 +1084,9 @@ public sealed class Http3Server : IAsyncDisposable
         }
         else
         {
-            await WriteBufferedResponseFramesAsync(
-                stream,
-                encodedFieldSection,
-                headersFrameLength,
-                response.Body,
-                response.DataFramePayloadSize,
-                cancellationToken).ConfigureAwait(false);
+            byte[] headersFrame = Http3FrameWriter.WriteHeaders(encodedFieldSection);
+            await WriteFrameBytesAsync(stream, headersFrame, cancellationToken).ConfigureAwait(false);
+            await WriteFixedResponseDataFramesAsync(stream, response.Body, response.DataFramePayloadSize, cancellationToken).ConfigureAwait(false);
         }
 
         EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Headers, headersFrameLength);
@@ -1118,35 +1114,23 @@ public sealed class Http3Server : IAsyncDisposable
         EmitResponseStartedDiagnostic(diagnosticsSink, "server", stream.Id, response.StatusCode);
     }
 
-    private static async ValueTask WriteBufferedResponseFramesAsync(
+    private static async ValueTask WriteFixedResponseDataFramesAsync(
         QuicStream stream,
-        byte[] encodedFieldSection,
-        int headersFrameLength,
         ReadOnlyMemory<byte> body,
         int? dataFramePayloadSize,
         CancellationToken cancellationToken)
     {
         int framePayloadSize = dataFramePayloadSize ?? ResponseDataFrameChunkSize;
-        int bufferedLength = headersFrameLength;
-        for (int sizingOffset = 0; sizingOffset < body.Length;)
-        {
-            int count = Math.Min(framePayloadSize, body.Length - sizingOffset);
-            bufferedLength = checked(bufferedLength + Http3FrameWriter.GetFrameLength((ulong)Http3FrameType.Data, count));
-            sizingOffset += count;
-        }
-
-        ArrayBufferWriter<byte> writer = new(bufferedLength);
-        Http3FrameWriter.WriteHeaders(writer, encodedFieldSection);
-
         int offset = 0;
         while (offset < body.Length)
         {
             int count = Math.Min(framePayloadSize, body.Length - offset);
-            Http3FrameWriter.WriteData(writer, body.Span.Slice(offset, count));
+            bool isFinalFrame = offset + count == body.Length;
+            byte[] dataFrameHeader = WriteFrameHeader((ulong)Http3FrameType.Data, count);
+            await WriteFrameBytesAsync(stream, dataFrameHeader, cancellationToken).ConfigureAwait(false);
+            await WritePayloadBytesAsync(stream, body.Slice(offset, count), isFinalFrame, cancellationToken).ConfigureAwait(false);
             offset += count;
         }
-
-        await WriteFinalFrameBytesAsync(stream, writer.WrittenMemory, cancellationToken).ConfigureAwait(false);
     }
 
     private void EmitResponseDataFrames(
@@ -1247,6 +1231,30 @@ public sealed class Http3Server : IAsyncDisposable
         {
             int count = Math.Min(ResponseWriteChunkSize, frameBytes.Length - offset);
             await stream.WriteAsync(frameBytes, offset, count, cancellationToken).ConfigureAwait(false);
+            offset += count;
+        }
+    }
+
+    private static async ValueTask WritePayloadBytesAsync(
+        QuicStream stream,
+        ReadOnlyMemory<byte> payload,
+        bool finalFrame,
+        CancellationToken cancellationToken)
+    {
+        int offset = 0;
+        while (offset < payload.Length)
+        {
+            int count = Math.Min(ResponseWriteChunkSize, payload.Length - offset);
+            ReadOnlyMemory<byte> chunk = payload.Slice(offset, count);
+            if (finalFrame && offset + count == payload.Length)
+            {
+                await stream.WriteFinalAsync(chunk, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                await stream.WriteAsync(chunk, cancellationToken).ConfigureAwait(false);
+            }
+
             offset += count;
         }
     }
@@ -1723,6 +1731,37 @@ public sealed class Http3Server : IAsyncDisposable
     {
         byte[] encoded = EncodeVariableLengthInteger(checked((ulong)streamType));
         await stream.WriteAsync(encoded, 0, encoded.Length, cancellationToken).ConfigureAwait(false);
+    }
+
+    private static byte[] WriteFrameHeader(ulong frameType, int payloadLength)
+    {
+        if (payloadLength < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(payloadLength));
+        }
+
+        byte[] encoded = new byte[
+            Http3VariableLengthInteger.GetEncodedLength(frameType)
+            + Http3VariableLengthInteger.GetEncodedLength(checked((ulong)payloadLength))];
+        int offset = 0;
+        if (!Http3VariableLengthInteger.TryFormat(frameType, encoded.AsSpan(offset), out int typeBytesWritten))
+        {
+            throw new ArgumentOutOfRangeException(nameof(frameType));
+        }
+
+        offset += typeBytesWritten;
+        if (!Http3VariableLengthInteger.TryFormat(checked((ulong)payloadLength), encoded.AsSpan(offset), out int lengthBytesWritten))
+        {
+            throw new ArgumentOutOfRangeException(nameof(payloadLength));
+        }
+
+        offset += lengthBytesWritten;
+        if (offset != encoded.Length)
+        {
+            throw new InvalidOperationException("HTTP/3 frame header encoding length did not match the computed length.");
+        }
+
+        return encoded;
     }
 
     private static byte[] EncodeVariableLengthInteger(ulong value)

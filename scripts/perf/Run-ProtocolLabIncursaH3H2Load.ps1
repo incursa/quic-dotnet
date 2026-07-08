@@ -18,7 +18,8 @@ param(
     [string] $TraceArtifactRoot,
     [int] $TraceDurationSeconds = 0,
     [int] $ReceiveBufferRingSize = 0,
-    [string] $ReceiveBufferDiagnosticsPath
+    [string] $ReceiveBufferDiagnosticsPath,
+    [string] $IncursaQuicSourceRoot
 )
 
 Set-StrictMode -Version Latest
@@ -65,6 +66,11 @@ if ([string]::IsNullOrWhiteSpace($Output)) {
     $Output = Join-Path $ProtocolLabRoot ".artifacts/runs"
 }
 
+$resolvedIncursaQuicSourceRoot = $null
+if (-not [string]::IsNullOrWhiteSpace($IncursaQuicSourceRoot)) {
+    $resolvedIncursaQuicSourceRoot = (Resolve-Path -LiteralPath $IncursaQuicSourceRoot).Path
+}
+
 if ($TraceMode -ne "none" -and $Scenarios.Count -ne 1) {
     throw "Trace capture requires exactly one scenario per wrapper invocation so one diagnostic target can be resolved."
 }
@@ -106,8 +112,10 @@ Set-Content -Path (Join-Path $runRoot "protocol-lab-command.txt") -Value (Format
 
 $receiveBufferRingSizeVariable = "INCURSA_QUIC_RECEIVE_BUFFER_RING_SIZE"
 $receiveBufferDiagnosticsVariable = "INCURSA_QUIC_RECEIVE_BUFFER_DIAGNOSTICS_PATH"
+$incursaQuicSourceRootVariable = "PROTOCOL_LAB_INCURSA_QUIC_SOURCE_ROOT"
 $previousReceiveBufferRingSize = [Environment]::GetEnvironmentVariable($receiveBufferRingSizeVariable)
 $previousReceiveBufferDiagnosticsPath = [Environment]::GetEnvironmentVariable($receiveBufferDiagnosticsVariable)
+$previousIncursaQuicSourceRoot = [Environment]::GetEnvironmentVariable($incursaQuicSourceRootVariable)
 if ([string]::IsNullOrWhiteSpace($ReceiveBufferDiagnosticsPath)) {
     $ReceiveBufferDiagnosticsPath = Join-Path $runRoot "incursa-quic-receive-buffer-pool-snapshots.jsonl"
 }
@@ -117,8 +125,35 @@ if ($ReceiveBufferRingSize -gt 0) {
 }
 
 [Environment]::SetEnvironmentVariable($receiveBufferDiagnosticsVariable, $ReceiveBufferDiagnosticsPath)
+if ($resolvedIncursaQuicSourceRoot) {
+    [Environment]::SetEnvironmentVariable($incursaQuicSourceRootVariable, $resolvedIncursaQuicSourceRoot)
+}
+
 $exitCode = 1
 try {
+    if ($resolvedIncursaQuicSourceRoot) {
+        $adapterProject = Join-Path $ProtocolLabRoot "src/Incursa.ProtocolLab.Adapters.IncursaHttp3/Incursa.ProtocolLab.Adapters.IncursaHttp3.csproj"
+        $buildArgs = @(
+            "build",
+            $adapterProject,
+            "--configuration",
+            $TargetConfiguration,
+            "-p:IncursaQuicSourceRoot=$resolvedIncursaQuicSourceRoot"
+        )
+
+        Set-Content -Path (Join-Path $runRoot "protocol-lab-adapter-build-command.txt") -Value (Format-CommandLine "dotnet" $buildArgs)
+        Push-Location $ProtocolLabRoot
+        try {
+            & dotnet @buildArgs
+            if ($LASTEXITCODE -ne 0) {
+                throw "ProtocolLab Incursa HTTP/3 adapter source-mode build failed with exit code $LASTEXITCODE."
+            }
+        }
+        finally {
+            Pop-Location
+        }
+    }
+
     if ($TraceMode -eq "none") {
         Push-Location $ProtocolLabRoot
         try {
@@ -225,6 +260,7 @@ try {
             traceArtifactRoot = $TraceArtifactRoot
             receiveBufferRingSize = if ($ReceiveBufferRingSize -gt 0) { $ReceiveBufferRingSize } else { $null }
             receiveBufferDiagnosticsPath = $ReceiveBufferDiagnosticsPath
+            incursaQuicSourceRoot = $resolvedIncursaQuicSourceRoot
             command = Get-Content -Path (Join-Path $runRoot "protocol-lab-command.txt") -Raw
         } | ConvertTo-Json -Depth 4 | Set-Content -Path (Join-Path $runRoot "protocol-lab-wrapper-summary.json")
 
@@ -248,12 +284,14 @@ try {
         traceArtifactRoot = $TraceArtifactRoot
         receiveBufferRingSize = if ($ReceiveBufferRingSize -gt 0) { $ReceiveBufferRingSize } else { $null }
         receiveBufferDiagnosticsPath = $ReceiveBufferDiagnosticsPath
+        incursaQuicSourceRoot = $resolvedIncursaQuicSourceRoot
         command = Get-Content -Path (Join-Path $runRoot "protocol-lab-command.txt") -Raw
     } | ConvertTo-Json -Depth 4 | Set-Content -Path (Join-Path $runRoot "protocol-lab-wrapper-summary.json")
 }
 finally {
     [Environment]::SetEnvironmentVariable($receiveBufferRingSizeVariable, $previousReceiveBufferRingSize)
     [Environment]::SetEnvironmentVariable($receiveBufferDiagnosticsVariable, $previousReceiveBufferDiagnosticsPath)
+    [Environment]::SetEnvironmentVariable($incursaQuicSourceRootVariable, $previousIncursaQuicSourceRoot)
 }
 
 exit $exitCode

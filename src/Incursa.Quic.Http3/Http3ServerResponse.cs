@@ -24,6 +24,27 @@ public sealed class Http3ServerResponse
         bool sendGoAwayAfterResponse = false,
         bool closeConnectionAfterResponse = false,
         IAsyncEnumerable<ReadOnlyMemory<byte>>? streamingBody = null)
+        : this(
+            statusCode,
+            body,
+            headers,
+            dataFramePayloadSize,
+            sendGoAwayAfterResponse,
+            closeConnectionAfterResponse,
+            streamingBody,
+            copyBody: true)
+    {
+    }
+
+    private Http3ServerResponse(
+        int statusCode,
+        ReadOnlyMemory<byte> body,
+        IEnumerable<QPackFieldLine>? headers,
+        int? dataFramePayloadSize,
+        bool sendGoAwayAfterResponse,
+        bool closeConnectionAfterResponse,
+        IAsyncEnumerable<ReadOnlyMemory<byte>>? streamingBody,
+        bool copyBody)
     {
         if (statusCode < MinimumStatusCode || statusCode > MaximumStatusCode)
         {
@@ -36,7 +57,7 @@ public sealed class Http3ServerResponse
         }
 
         StatusCode = statusCode;
-        Body = body.ToArray();
+        Body = copyBody ? body.ToArray() : body;
         Headers = headers?.ToArray() ?? [];
         DataFramePayloadSize = dataFramePayloadSize;
         SendGoAwayAfterResponse = sendGoAwayAfterResponse;
@@ -60,6 +81,28 @@ public sealed class Http3ServerResponse
             headers,
             dataFramePayloadSize,
             streamingBody: body);
+    }
+
+    /// <summary>
+    /// Creates a response over caller-owned immutable body memory without copying it.
+    /// </summary>
+    public static Http3ServerResponse CreateFromImmutableBody(
+        int statusCode,
+        ReadOnlyMemory<byte> body,
+        IEnumerable<QPackFieldLine>? headers = null,
+        int? dataFramePayloadSize = null,
+        bool sendGoAwayAfterResponse = false,
+        bool closeConnectionAfterResponse = false)
+    {
+        return new Http3ServerResponse(
+            statusCode,
+            body,
+            headers,
+            dataFramePayloadSize,
+            sendGoAwayAfterResponse,
+            closeConnectionAfterResponse,
+            streamingBody: null,
+            copyBody: false);
     }
 
     /// <summary>

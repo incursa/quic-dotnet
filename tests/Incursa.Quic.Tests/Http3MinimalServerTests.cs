@@ -4,6 +4,7 @@
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Incursa.Quic.Tests;
@@ -11,6 +12,28 @@ namespace Incursa.Quic.Tests;
 [Collection(Http3LoopbackTestCollection.Name)]
 public sealed class Http3MinimalServerTests
 {
+    [Fact]
+    public void ServerResponseConstructor_DefensivelyCopiesBody()
+    {
+        byte[] body = [0x01, 0x02, 0x03];
+
+        Http3ServerResponse response = new(200, body);
+        body[0] = 0xFF;
+
+        Assert.Equal([0x01, 0x02, 0x03], response.Body.ToArray());
+    }
+
+    [Fact]
+    public void ServerResponseCreateFromImmutableBody_BorrowsBodyMemory()
+    {
+        byte[] body = [0x01, 0x02, 0x03];
+
+        Http3ServerResponse response = Http3ServerResponse.CreateFromImmutableBody(200, body);
+
+        Assert.True(MemoryMarshal.TryGetArray(response.Body, out ArraySegment<byte> segment));
+        Assert.Same(body, segment.Array);
+    }
+
     [Fact]
     [Requirement("REQ-QUIC-RFC9114-S9-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
