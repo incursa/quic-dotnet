@@ -242,7 +242,7 @@ internal enum QuicCryptoBufferResult
         int destinationIndex = 0;
         int currentIndex = 0;
         int remainingBufferedBytes = bufferedBytes;
-        List<Entry>? retainedEntries = consume ? new List<Entry>(entries.Count) : null;
+        List<Entry>? retainedEntries = null;
 
         while (currentIndex < entries.Count && destinationIndex < destination.Length)
         {
@@ -250,11 +250,12 @@ internal enum QuicCryptoBufferResult
 
             if (entry.Offset > expectedOffset)
             {
-                if (consume)
+                if (consume && destinationIndex > 0)
                 {
+                    retainedEntries = new List<Entry>(entries.Count - currentIndex);
                     for (int i = currentIndex; i < entries.Count; i++)
                     {
-                        retainedEntries!.Add(entries[i]);
+                        retainedEntries.Add(entries[i]);
                     }
 
                     currentIndex = entries.Count;
@@ -299,7 +300,10 @@ internal enum QuicCryptoBufferResult
                 continue;
             }
 
-            retainedEntries!.Add(new Entry(entry.Offset + (ulong)bytesToCopy, entry.Data[bytesToCopy..]));
+            retainedEntries = new List<Entry>(entries.Count - currentIndex + 1)
+            {
+                new(entry.Offset + (ulong)bytesToCopy, entry.Data[bytesToCopy..]),
+            };
             currentIndex++;
 
             for (int i = currentIndex; i < entries.Count; i++)
@@ -318,16 +322,28 @@ internal enum QuicCryptoBufferResult
 
         if (consume)
         {
-            if (currentIndex < entries.Count)
+            if (retainedEntries is not null)
             {
-                for (int i = currentIndex; i < entries.Count; i++)
+                if (currentIndex < entries.Count)
                 {
-                    retainedEntries!.Add(entries[i]);
+                    for (int i = currentIndex; i < entries.Count; i++)
+                    {
+                        retainedEntries.Add(entries[i]);
+                    }
                 }
+
+                entries.Clear();
+                entries.AddRange(retainedEntries);
+            }
+            else if (currentIndex >= entries.Count)
+            {
+                entries.Clear();
+            }
+            else
+            {
+                entries.RemoveRange(0, currentIndex);
             }
 
-            entries.Clear();
-            entries.AddRange(retainedEntries!);
             bufferedBytes = remainingBufferedBytes;
             nextReadOffset = expectedOffset;
         }
