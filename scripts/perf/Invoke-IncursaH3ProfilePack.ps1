@@ -240,10 +240,11 @@ function Invoke-WrapperPass(
     }
 
     if ($TraceMode -ne "none") {
+        $traceDurationSeconds = [Math]::Max(1, $DurationSeconds + $WarmupSeconds - 1)
         $arguments += @(
             "-TraceMode", $TraceMode,
             "-TraceArtifactRoot", $passRoot,
-            "-TraceDurationSeconds", ([Math]::Max(5, $DurationSeconds + $WarmupSeconds + 3)).ToString([Globalization.CultureInfo]::InvariantCulture)
+            "-TraceDurationSeconds", $traceDurationSeconds.ToString([Globalization.CultureInfo]::InvariantCulture)
         )
     }
 

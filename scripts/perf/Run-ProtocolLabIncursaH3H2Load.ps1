@@ -216,19 +216,21 @@ try {
             Start-Sleep -Milliseconds 250
         }
 
+        $traceExitCode = 0
         if (-not $diagnosticTarget -or -not $diagnosticTarget.resolvedProcessId) {
             $message = @(
                 "ProtocolLab diagnostic target was not resolved before trace startup.",
                 "Expected diagnostic target: $diagnosticTargetPath"
             )
             Set-Content -Path (Join-Path $TraceArtifactRoot "trace-start-blocker.txt") -Value $message
+            $traceExitCode = 2
         }
         else {
             $traceSeconds = if ($TraceDurationSeconds -gt 0) {
                 $TraceDurationSeconds
             }
             else {
-                [Math]::Max(5, $DurationSeconds + $WarmupSeconds + 5)
+                [Math]::Max(1, $DurationSeconds + $WarmupSeconds - 1)
             }
 
             $traceScript = Join-Path $PSScriptRoot "Collect-IncursaH3Trace.ps1"
@@ -266,6 +268,10 @@ try {
 
         $process.WaitForExit()
         $exitCode = $process.ExitCode
+        if ($exitCode -eq 0 -and $traceExitCode -ne 0) {
+            $exitCode = $traceExitCode
+        }
+
         Set-Content -Path $protocolLabStdout -Value $protocolLabStdoutTask.GetAwaiter().GetResult()
         Set-Content -Path $protocolLabStderr -Value $protocolLabStderrTask.GetAwaiter().GetResult()
         Get-ContentWithRetry $protocolLabStdout
