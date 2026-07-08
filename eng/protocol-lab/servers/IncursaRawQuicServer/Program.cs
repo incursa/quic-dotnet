@@ -123,7 +123,12 @@ static async Task HandleConnectionAsync(QuicConnection connection, int connectio
         var streamIndex = 0;
         while (!cancellationToken.IsCancellationRequested)
         {
-            var stream = await connection.AcceptInboundStreamAsync(cancellationToken);
+            var stream = await connection.TryAcceptInboundStreamAsync(cancellationToken);
+            if (stream is null)
+            {
+                break;
+            }
+
             var acceptedStreamIndex = Interlocked.Increment(ref streamIndex);
             if (debugLogging)
             {
@@ -191,7 +196,7 @@ static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int 
         {
             while (true)
             {
-                var bytesRead = await stream.ReadAsync(buffer.AsMemory(0, RawQuicEchoBufferBytes), cancellationToken);
+                var bytesRead = await stream.TryReadTerminalAsync(buffer.AsMemory(0, RawQuicEchoBufferBytes), cancellationToken);
                 if (bytesRead <= 0)
                 {
                     reachedEof = true;

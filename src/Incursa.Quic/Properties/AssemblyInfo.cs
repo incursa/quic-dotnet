@@ -12,3 +12,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Incursa.Quic.InteropHarness")]
 [assembly: InternalsVisibleTo("Incursa.Quic.Qlog")]
 [assembly: InternalsVisibleTo("Incursa.Quic.Fuzz")]
+[assembly: InternalsVisibleTo("IncursaRawQuicServer")]

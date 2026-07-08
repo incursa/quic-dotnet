@@ -214,6 +214,10 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.DoesNotContain("Incursa.Quic.Qlog", source);
         Assert.DoesNotContain("QuicQlogCapture", source);
         Assert.DoesNotContain("PROTOCOL_LAB_INCURSA_RAW_QUIC_QLOG_PATH", source);
+        Assert.Contains("TryAcceptInboundStreamAsync", source);
+        Assert.Contains("TryReadTerminalAsync", source);
+        Assert.DoesNotContain("connection.AcceptInboundStreamAsync", source);
+        Assert.DoesNotContain("stream.ReadAsync(buffer.AsMemory", source);
     }
 
     [Fact]
