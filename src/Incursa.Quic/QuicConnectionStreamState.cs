@@ -1365,6 +1365,20 @@ internal sealed class QuicConnectionStreamState
         ulong endOffset = offset + (ulong)data.Length;
         int dataIndex = 0;
         int currentIndex = 0;
+        if (state.BufferedSegments.Count == 0)
+        {
+            state.BufferedSegments.Add(CreateBufferedSegment(currentOffset, data, dataIndex, data.Length));
+            state.BufferedReadableBytes += data.Length;
+            return;
+        }
+
+        if (state.BufferedSegments[^1].End <= currentOffset)
+        {
+            state.BufferedSegments.Add(CreateBufferedSegment(currentOffset, data, dataIndex, data.Length));
+            state.BufferedReadableBytes += data.Length;
+            return;
+        }
+
         List<BufferedSegment> updated = state.BufferedSegmentScratch ??= new List<BufferedSegment>(state.BufferedSegments.Count + 2);
         updated.Clear();
         int expectedUpdatedCount = state.BufferedSegments.Count + 2;
