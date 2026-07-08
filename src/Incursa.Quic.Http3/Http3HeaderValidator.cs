@@ -41,7 +41,8 @@ public static class Http3HeaderValidator
         string? path = null;
         string? protocol = null;
         string? host = null;
-        List<ulong> contentLengths = [];
+        bool hasContentLength = false;
+        ulong expectedContentLength = 0;
 
         for (int index = 0; index < headers.Count; index++)
         {
@@ -67,7 +68,12 @@ public static class Http3HeaderValidator
                     host = SetOnce(host, header.Name, header.Value);
                     break;
                 case "content-length":
-                    contentLengths.Add(ParseContentLength(header.Value));
+                    ulong contentLength = ParseContentLength(header.Value);
+                    if (validateContentLength)
+                    {
+                        AccumulateContentLength(ref hasContentLength, ref expectedContentLength, contentLength);
+                    }
+
                     break;
                 case "te" when header.Value != "trailers":
                     throw MessageError("HTTP/3 request TE field values are limited to 'trailers'.");
@@ -140,7 +146,7 @@ public static class Http3HeaderValidator
 
         if (validateContentLength)
         {
-            ValidateContentLength(contentLengths, receivedDataLength);
+            ValidateContentLength(hasContentLength, expectedContentLength, receivedDataLength);
         }
 
         return new Http3HeaderValidationResult(method, scheme, authority ?? host, path, statusCode: null, protocol);
@@ -158,7 +164,8 @@ public static class Http3HeaderValidator
         ValidateCommonFields(headers, Http3MessageType.Response, trailers: false);
 
         int? statusCode = null;
-        List<ulong> contentLengths = [];
+        bool hasContentLength = false;
+        ulong expectedContentLength = 0;
         for (int index = 0; index < headers.Count; index++)
         {
             QPackFieldLine header = headers[index];
@@ -173,7 +180,12 @@ public static class Http3HeaderValidator
                     statusCode = ParseStatus(header.Value);
                     break;
                 case "content-length":
-                    contentLengths.Add(ParseContentLength(header.Value));
+                    ulong contentLength = ParseContentLength(header.Value);
+                    if (validateContentLength)
+                    {
+                        AccumulateContentLength(ref hasContentLength, ref expectedContentLength, contentLength);
+                    }
+
                     break;
                 case "te":
                     throw MessageError("HTTP/3 responses must not contain TE.");
@@ -187,7 +199,7 @@ public static class Http3HeaderValidator
 
         if (validateContentLength)
         {
-            ValidateContentLength(contentLengths, receivedDataLength);
+            ValidateContentLength(hasContentLength, expectedContentLength, receivedDataLength);
         }
 
         return new Http3HeaderValidationResult(null, null, null, null, statusCode);
@@ -326,30 +338,32 @@ public static class Http3HeaderValidator
         return length;
     }
 
-    private static void ValidateContentLength(IReadOnlyList<ulong> contentLengths, ulong receivedDataLength)
+    private static void AccumulateContentLength(ref bool hasContentLength, ref ulong expectedContentLength, ulong contentLength)
     {
-        if (contentLengths.Count == 0)
+        if (!hasContentLength)
+        {
+            hasContentLength = true;
+            expectedContentLength = contentLength;
+            return;
+        }
+
+        if (contentLength != expectedContentLength)
+        {
+            throw MessageError("HTTP/3 duplicate Content-Length values must match.");
+        }
+    }
+
+    private static void ValidateContentLength(bool hasContentLength, ulong expectedContentLength, ulong receivedDataLength)
+    {
+        if (!hasContentLength || expectedContentLength == receivedDataLength)
         {
             return;
         }
 
-        ulong expected = contentLengths[0];
-        for (int index = 0; index < contentLengths.Count; index++)
-        {
-            ulong contentLength = contentLengths[index];
-            if (contentLength != expected)
-            {
-                throw MessageError("HTTP/3 duplicate Content-Length values must match.");
-            }
-        }
-
-        if (expected != receivedDataLength)
-        {
-            throw MessageError(
-                string.Create(
-                    CultureInfo.InvariantCulture,
-                    $"HTTP/3 Content-Length does not match received DATA length. Expected {expected}, received {receivedDataLength}."));
-        }
+        throw MessageError(
+            string.Create(
+                CultureInfo.InvariantCulture,
+                $"HTTP/3 Content-Length does not match received DATA length. Expected {expectedContentLength}, received {receivedDataLength}."));
     }
 
     private static Http3Exception MessageError(string message)
