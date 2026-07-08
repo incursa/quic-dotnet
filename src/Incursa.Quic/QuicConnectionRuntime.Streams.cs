@@ -1622,7 +1622,10 @@ internal sealed partial class QuicConnectionRuntime
         if (pendingFlowControlConnectionCreditFrame is { } connectionCredit
             && pendingFlowControlStreamCreditFrames.Count > 0)
         {
-            KeyValuePair<ulong, QuicMaxStreamDataFrame> streamCredit = pendingFlowControlStreamCreditFrames.First();
+            Dictionary<ulong, QuicMaxStreamDataFrame>.Enumerator streamCreditEnumerator =
+                pendingFlowControlStreamCreditFrames.GetEnumerator();
+            _ = streamCreditEnumerator.MoveNext();
+            KeyValuePair<ulong, QuicMaxStreamDataFrame> streamCredit = streamCreditEnumerator.Current;
             if (!TrySendFlowControlCreditUpdate(
                     connectionCredit,
                     streamCredit.Value,
