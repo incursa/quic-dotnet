@@ -128,7 +128,9 @@ with `-Http3Scenario` and `-RawQuicScenario` when a narrower or heavier
 ProtocolLab slice is needed. Override `-Http3Connections`,
 `-Http3StreamsPerConnection`, `-RawQuicConnections`, and
 `-RawQuicStreamsPerConnection` when the same scenario needs a different load
-shape. This surface continues through all selected ProtocolLab jobs by default and reports
+shape. Use `-SkipHttp3ProtocolLab` or `-SkipRawQuicProtocolLab` to isolate one
+side of the `CoreProtocolLab` surface when only HTTP/3 or raw QUIC evidence is
+wanted. This surface continues through all selected ProtocolLab jobs by default and reports
 `completed-with-diagnostic-failures` if any aggregate contains validation,
 benchmark, or runner errors. Add `-FailOnProtocolLabError` when fail-fast
 behavior is required.
@@ -162,6 +164,7 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicPerforma
   -Http3Scenario http3.payload.bytes.1kb `
   -Http3Connections 32 `
   -Http3StreamsPerConnection 1 `
+  -SkipRawQuicProtocolLab `
   -CaptureCounters
 ```
 

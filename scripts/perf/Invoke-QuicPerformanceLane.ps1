@@ -36,6 +36,10 @@ param(
 
     [int] $CounterRefreshInterval = 1,
 
+    [switch] $SkipHttp3ProtocolLab,
+
+    [switch] $SkipRawQuicProtocolLab,
+
     [switch] $SkipProtocolLab,
 
     [switch] $FailOnProtocolLabError,
@@ -619,6 +623,13 @@ $surfaceConfig = Get-SurfaceConfiguration `
     -RequestedRawQuicConnections $RawQuicConnections `
     -RequestedRawQuicStreamsPerConnection $RawQuicStreamsPerConnection
 $protocolLabJobs = @(Get-ProtocolLabJobs -SurfaceConfiguration $surfaceConfig)
+if ($SkipHttp3ProtocolLab) {
+    $protocolLabJobs = @($protocolLabJobs | Where-Object { $_.Id -ne "h3" })
+}
+
+if ($SkipRawQuicProtocolLab) {
+    $protocolLabJobs = @($protocolLabJobs | Where-Object { $_.Id -ne "raw-quic" })
+}
 $benchmarkJob = if ($Lane -eq "Smoke") { "Dry" } else { "Short" }
 $durationSeconds = if ($Lane -eq "Smoke") { 1 } else { 15 }
 $warmupSeconds = if ($Lane -eq "Smoke") { 1 } else { 5 }
@@ -904,6 +915,8 @@ $laneSummaryDocument = [ordered]@{
     }
     protocolLab = [ordered]@{
         skipped = $protocolLabSkipped
+        skipHttp3 = [bool]$SkipHttp3ProtocolLab
+        skipRawQuic = [bool]$SkipRawQuicProtocolLab
         contractRoot = $resolvedProtocolLabRoot
         executionRoot = $resolvedProtocolLabExecutionRoot
         healthReasons = $protocolLabHealthReasonArray
@@ -992,9 +1005,11 @@ else {
     Add-SummaryLine $summary "- Execution root: ``$resolvedProtocolLabExecutionRoot``"
     Add-SummaryLine $summary "- Duration seconds: ``$durationSeconds``"
     Add-SummaryLine $summary "- Warmup seconds: ``$warmupSeconds``"
-    Add-SummaryLine $summary "- Repetitions: ``$repetitions``"
-    Add-SummaryLine $summary "- NoRestore requested: ``$NoRestore``"
-    Add-SummaryLine $summary "- Fail on ProtocolLab error: ``$effectiveFailOnProtocolLabError``"
+Add-SummaryLine $summary "- Repetitions: ``$repetitions``"
+Add-SummaryLine $summary "- NoRestore requested: ``$NoRestore``"
+Add-SummaryLine $summary "- Fail on ProtocolLab error: ``$effectiveFailOnProtocolLabError``"
+Add-SummaryLine $summary "- Skip HTTP/3 ProtocolLab job: ``$SkipHttp3ProtocolLab``"
+Add-SummaryLine $summary "- Skip raw QUIC ProtocolLab job: ``$SkipRawQuicProtocolLab``"
     Add-SummaryLine $summary ""
 
     foreach ($record in $protocolLabRunRecords) {
