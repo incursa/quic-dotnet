@@ -3,6 +3,7 @@
 
 using System.Buffers;
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 
 namespace Incursa.Quic;
 
@@ -15,13 +16,76 @@ internal sealed partial class QuicConnectionRuntime
             "1",
             StringComparison.Ordinal);
 
-    private static void LogApplicationSend(string message)
+    private static void LogApplicationSend(ref ApplicationSendLogInterpolatedStringHandler message)
     {
-        if (ApplicationSendDebugEnabled)
+        if (message.Enabled)
         {
-            Console.Error.WriteLine(message);
+            Console.Error.WriteLine(message.GetFormattedText());
         }
     }
+
+#pragma warning disable S1144 // The C# compiler calls these members for LogApplicationSend interpolated strings.
+    [InterpolatedStringHandler]
+    private ref struct ApplicationSendLogInterpolatedStringHandler
+    {
+        private DefaultInterpolatedStringHandler builder;
+
+        public ApplicationSendLogInterpolatedStringHandler(int literalLength, int formattedCount, out bool shouldAppend)
+        {
+            Enabled = ApplicationSendDebugEnabled;
+            shouldAppend = Enabled;
+            builder = Enabled
+                ? new DefaultInterpolatedStringHandler(literalLength, formattedCount)
+                : default;
+        }
+
+        public bool Enabled { get; }
+
+        public void AppendLiteral(string value)
+        {
+            if (Enabled)
+            {
+                builder.AppendLiteral(value);
+            }
+        }
+
+        public void AppendFormatted<T>(T value)
+        {
+            if (Enabled)
+            {
+                builder.AppendFormatted(value);
+            }
+        }
+
+        public void AppendFormatted<T>(T value, string? format)
+        {
+            if (Enabled)
+            {
+                builder.AppendFormatted(value, format);
+            }
+        }
+
+        public void AppendFormatted<T>(T value, int alignment)
+        {
+            if (Enabled)
+            {
+                builder.AppendFormatted(value, alignment);
+            }
+        }
+
+        public void AppendFormatted<T>(T value, int alignment, string? format)
+        {
+            if (Enabled)
+            {
+                builder.AppendFormatted(value, alignment, format);
+            }
+        }
+
+        public string GetFormattedText()
+            => Enabled ? builder.ToStringAndClear() : string.Empty;
+    }
+#pragma warning restore S1144
+
     private const string StreamWriteSendBlockedMessage = "The connection cannot send the stream write packet.";
     private const string QueuedStreamWriteSendBlockedMessage = "The connection cannot send the queued stream write packet.";
     private const string DatagramSendBlockedMessage = "The connection cannot send the DATAGRAM packet.";
@@ -446,11 +510,15 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             ulong writeOffset = snapshot.UniqueBytesSent;
-            LogApplicationSend(
-                $"app-tx role={tlsState.Role} stream={streamId} offset={writeOffset} length={streamData.Length} fin={finishWrites} " +
-                $"queue={applicationSendQueue.Count} retrans={sendRuntime.PendingRetransmissionCount} " +
-                $"ackInFlight={sendRuntime.HasAckElicitingPacketsInFlight} validated={(activePath?.AmplificationState.IsAddressValidated ?? false)} " +
-                $"oneRtt={tlsState.OneRttProtectPacketProtectionMaterial.HasValue} handshakeConfirmed={HandshakeConfirmed}.");
+            if (ApplicationSendDebugEnabled)
+            {
+                Console.Error.WriteLine(
+                    $"app-tx role={tlsState.Role} stream={streamId} offset={writeOffset} length={streamData.Length} fin={finishWrites} " +
+                    $"queue={applicationSendQueue.Count} retrans={sendRuntime.PendingRetransmissionCount} " +
+                    $"ackInFlight={sendRuntime.HasAckElicitingPacketsInFlight} validated={(activePath?.AmplificationState.IsAddressValidated ?? false)} " +
+                    $"oneRtt={tlsState.OneRttProtectPacketProtectionMaterial.HasValue} handshakeConfirmed={HandshakeConfirmed}.");
+            }
+
             if (!streamRegistry.Bookkeeping.TryReserveSendCapacity(
                 streamId,
                 writeOffset,
