@@ -87,6 +87,34 @@ function Format-Number {
     return ([double]$Value).ToString($Format, [Globalization.CultureInfo]::InvariantCulture)
 }
 
+function Get-DeltaPercent {
+    param($Current, $Baseline)
+
+    if ($null -eq $Current -or $null -eq $Baseline -or [double]$Baseline -eq 0) {
+        return $null
+    }
+
+    return (([double]$Current - [double]$Baseline) / [Math]::Abs([double]$Baseline)) * 100.0
+}
+
+function Format-DeltaPercent {
+    param($Current, $Baseline)
+
+    $delta = Get-DeltaPercent -Current $Current -Baseline $Baseline
+    return Format-PercentValue -Value $delta
+}
+
+function Format-PercentValue {
+    param($Value)
+
+    $delta = $Value
+    if ($null -eq $delta) {
+        return "n/a"
+    }
+
+    return $delta.ToString("+0.##;-0.##;0", [Globalization.CultureInfo]::InvariantCulture) + "%"
+}
+
 function Get-Pass {
     param($Profile, [string] $Name)
 
@@ -227,10 +255,24 @@ function Add-TopNSection {
         [string] $SourcePath
     )
 
+    $topItems = @(
+        foreach ($item in @($Items)) {
+            if ($item -is [Array]) {
+                foreach ($nestedItem in $item) {
+                    if (Test-Property $nestedItem "function") {
+                        $nestedItem
+                    }
+                }
+            }
+            elseif (Test-Property $item "function") {
+                $item
+            }
+        }
+    )
     $Lines.Add("")
     $Lines.Add("### $Title")
     $Lines.Add("")
-    if ($Items.Count -eq 0) {
+    if ($topItems.Count -eq 0) {
         $Lines.Add("No parsed TopN rows were found.")
         if (-not [string]::IsNullOrWhiteSpace($SourcePath)) {
             $Lines.Add("")
@@ -243,10 +285,38 @@ function Add-TopNSection {
     $Lines.Add("")
     $Lines.Add("| rank | function | inclusive | exclusive |")
     $Lines.Add("| ---: | --- | ---: | ---: |")
-    foreach ($item in $Items) {
+    foreach ($item in $topItems) {
         $function = ([string]$item.function).Replace("|", "\|")
         $Lines.Add("| $($item.rank) | ``$function`` | $($item.inclusive) | $($item.exclusive) |")
     }
+}
+
+function New-AdjacentComparisons {
+    param([object[]] $Rows)
+
+    $comparisons = [System.Collections.Generic.List[object]]::new()
+    for ($index = 1; $index -lt $Rows.Count; $index++) {
+        $baseline = $Rows[$index - 1]
+        $current = $Rows[$index]
+        if ($baseline.scenarioId -ne $current.scenarioId) {
+            continue
+        }
+
+        $comparisons.Add([pscustomobject]@{
+            scenarioId = $current.scenarioId
+            baselineRunId = $baseline.runId
+            currentRunId = $current.runId
+            requestsPerSecondDeltaPercent = Get-DeltaPercent -Current $current.requestsPerSecond -Baseline $baseline.requestsPerSecond
+            latencyP95MsDeltaPercent = Get-DeltaPercent -Current $current.latencyP95Ms -Baseline $baseline.latencyP95Ms
+            allocationRateDeltaPercent = Get-DeltaPercent -Current $current.allocationRateBytesPerSecond -Baseline $baseline.allocationRateBytesPerSecond
+            bytesPerRequestDeltaPercent = Get-DeltaPercent -Current $current.bytesPerRequest -Baseline $baseline.bytesPerRequest
+            gen0CollectionsDeltaChange = if ($null -ne $current.gen0CollectionsDelta -and $null -ne $baseline.gen0CollectionsDelta) { [double]$current.gen0CollectionsDelta - [double]$baseline.gen0CollectionsDelta } else { $null }
+            gen1CollectionsDeltaChange = if ($null -ne $current.gen1CollectionsDelta -and $null -ne $baseline.gen1CollectionsDelta) { [double]$current.gen1CollectionsDelta - [double]$baseline.gen1CollectionsDelta } else { $null }
+            gen2CollectionsDeltaChange = if ($null -ne $current.gen2CollectionsDelta -and $null -ne $baseline.gen2CollectionsDelta) { [double]$current.gen2CollectionsDelta - [double]$baseline.gen2CollectionsDelta } else { $null }
+        })
+    }
+
+    return @($comparisons)
 }
 
 $repoRoot = Get-RepoRoot
@@ -259,6 +329,8 @@ $rows = @($expandedProfilePackRoots | ForEach-Object { Get-ProfileRow -Root $_ }
 if ($rows.Count -eq 0) {
     throw "No profile packs were supplied."
 }
+
+$comparisons = @(New-AdjacentComparisons -Rows $rows)
 
 $manifest = [pscustomobject]@{
     schemaVersion = "incursa.quic.h3-allocation-hotspots.v1"
@@ -273,6 +345,7 @@ $manifest = [pscustomobject]@{
         "Use preserved .nettrace files in PerfView or Visual Studio before making buffer ownership changes."
     )
     profiles = $rows
+    adjacentComparisons = $comparisons
 }
 
 $jsonPath = Join-Path $runRoot "allocation-hotspots.json"
@@ -297,6 +370,22 @@ $lines.Add("| run | scenario | shape | req/s | p95 | alloc rate | B/request | GC
 $lines.Add("| --- | --- | --- | ---: | ---: | ---: | ---: | --- | ---: |")
 foreach ($row in $rows) {
     $lines.Add("| ``$($row.runId)`` | ``$($row.scenarioId)`` | $($row.shape) | $(Format-Number $row.requestsPerSecond) | $(Format-Number $row.latencyP95Ms) ms | $(Format-Number $row.allocationRateBytesPerSecond) B/s | $(Format-Number $row.bytesPerRequest) B | $(Format-Number $row.gen0CollectionsDelta)/$(Format-Number $row.gen1CollectionsDelta)/$(Format-Number $row.gen2CollectionsDelta) | $(Format-Number $row.cpuMeanPercent)% / $(Format-Number $row.cpuMaxPercent)% |")
+}
+
+if ($comparisons.Count -gt 0) {
+    $lines.Add("")
+    $lines.Add("## Adjacent Same-Scenario Deltas")
+    $lines.Add("")
+    $lines.Add("Adjacent deltas compare each profile with the previous profile only when both rows use the same scenario. Negative allocation and latency deltas are improvements; positive request-rate deltas are improvements.")
+    $lines.Add("")
+    $lines.Add("| scenario | baseline | current | req/s | p95 | alloc rate | B/request | GC delta gen0/gen1/gen2 |")
+    $lines.Add("| --- | --- | --- | ---: | ---: | ---: | ---: | ---: |")
+    foreach ($comparison in $comparisons) {
+        $gen0 = if ($null -eq $comparison.gen0CollectionsDeltaChange) { "n/a" } else { Format-Number $comparison.gen0CollectionsDeltaChange }
+        $gen1 = if ($null -eq $comparison.gen1CollectionsDeltaChange) { "n/a" } else { Format-Number $comparison.gen1CollectionsDeltaChange }
+        $gen2 = if ($null -eq $comparison.gen2CollectionsDeltaChange) { "n/a" } else { Format-Number $comparison.gen2CollectionsDeltaChange }
+        $lines.Add("| ``$($comparison.scenarioId)`` | ``$($comparison.baselineRunId)`` | ``$($comparison.currentRunId)`` | $(Format-PercentValue $comparison.requestsPerSecondDeltaPercent) | $(Format-PercentValue $comparison.latencyP95MsDeltaPercent) | $(Format-PercentValue $comparison.allocationRateDeltaPercent) | $(Format-PercentValue $comparison.bytesPerRequestDeltaPercent) | $gen0/$gen1/$gen2 |")
+    }
 }
 
 foreach ($row in $rows) {

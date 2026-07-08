@@ -163,7 +163,10 @@ Use `New-QuicH3AllocationHotspotReport.ps1` to roll up one or more existing
 Incursa H3 profile packs into a single allocation investigation report. The
 report preserves the counter metrics plus parsed `dotnet-trace report topN`
 CPU/GC method highlights, while explicitly treating them as investigation
-evidence rather than safe proof for pooling or buffer ownership changes.
+evidence rather than safe proof for pooling or buffer ownership changes. When
+adjacent supplied profile packs use the same scenario, the report also emits a
+before/after delta table for request rate, p95 latency, allocation rate,
+bytes/request, and GC deltas.
 
 ```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\New-QuicH3AllocationHotspotReport.ps1 `
