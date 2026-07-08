@@ -31,6 +31,10 @@ internal sealed class QuicPacketProtectionCryptoContext : IDisposable
     private readonly AesCcm? aeadCcm;
     private readonly ChaCha20Poly1305? aeadChaCha20Poly1305;
     private readonly Aes? headerProtectionAes;
+    private readonly ICryptoTransform? headerProtectionAesEncryptor;
+    private readonly object? headerProtectionAesLock;
+    private readonly byte[]? headerProtectionSampleBuffer;
+    private readonly byte[]? headerProtectionMaskBuffer;
     private readonly byte[] headerProtectionKey;
     private bool disposed;
 
@@ -48,11 +52,19 @@ internal sealed class QuicPacketProtectionCryptoContext : IDisposable
             case QuicAeadAlgorithm.Aes256Gcm:
                 aeadGcm = new AesGcm(aeadKey, AuthenticationTagLength);
                 headerProtectionAes = CreateAesHeaderProtectionContext(headerProtectionKey);
+                headerProtectionAesEncryptor = headerProtectionAes.CreateEncryptor();
+                headerProtectionAesLock = new object();
+                headerProtectionSampleBuffer = new byte[QuicInitialPacketProtection.HeaderProtectionSampleLength];
+                headerProtectionMaskBuffer = new byte[QuicInitialPacketProtection.HeaderProtectionSampleLength];
                 break;
 
             case QuicAeadAlgorithm.Aes128Ccm:
                 aeadCcm = new AesCcm(aeadKey);
                 headerProtectionAes = CreateAesHeaderProtectionContext(headerProtectionKey);
+                headerProtectionAesEncryptor = headerProtectionAes.CreateEncryptor();
+                headerProtectionAesLock = new object();
+                headerProtectionSampleBuffer = new byte[QuicInitialPacketProtection.HeaderProtectionSampleLength];
+                headerProtectionMaskBuffer = new byte[QuicInitialPacketProtection.HeaderProtectionSampleLength];
                 break;
 
             case QuicAeadAlgorithm.Chacha20Poly1305:
@@ -177,11 +189,7 @@ internal sealed class QuicPacketProtectionCryptoContext : IDisposable
                 case QuicAeadAlgorithm.Aes128Gcm:
                 case QuicAeadAlgorithm.Aes256Gcm:
                 case QuicAeadAlgorithm.Aes128Ccm:
-                    return headerProtectionAes!.EncryptEcb(
-                        sample[..QuicInitialPacketProtection.HeaderProtectionSampleLength],
-                        destination[..QuicInitialPacketProtection.HeaderProtectionSampleLength],
-                        PaddingMode.None)
-                        == QuicInitialPacketProtection.HeaderProtectionSampleLength;
+                    return TryGenerateAesHeaderProtectionMask(sample, destination);
 
                 case QuicAeadAlgorithm.Chacha20Poly1305:
                     return TryGenerateChaCha20HeaderProtectionMask(sample, destination);
@@ -203,6 +211,29 @@ internal sealed class QuicPacketProtectionCryptoContext : IDisposable
         headerProtectionAes.Mode = CipherMode.ECB;
         headerProtectionAes.Padding = PaddingMode.None;
         return headerProtectionAes;
+    }
+
+    private bool TryGenerateAesHeaderProtectionMask(ReadOnlySpan<byte> sample, Span<byte> destination)
+    {
+        lock (headerProtectionAesLock!)
+        {
+            Span<byte> sampleBuffer = headerProtectionSampleBuffer!;
+            Span<byte> maskBuffer = headerProtectionMaskBuffer!;
+            sample[..QuicInitialPacketProtection.HeaderProtectionSampleLength].CopyTo(sampleBuffer);
+            int bytesWritten = headerProtectionAesEncryptor!.TransformBlock(
+                headerProtectionSampleBuffer!,
+                0,
+                QuicInitialPacketProtection.HeaderProtectionSampleLength,
+                headerProtectionMaskBuffer!,
+                0);
+            if (bytesWritten != QuicInitialPacketProtection.HeaderProtectionSampleLength)
+            {
+                return false;
+            }
+
+            maskBuffer[..QuicInitialPacketProtection.HeaderProtectionSampleLength].CopyTo(destination);
+            return true;
+        }
     }
 
     private bool TryGenerateChaCha20HeaderProtectionMask(ReadOnlySpan<byte> sample, Span<byte> destination)
@@ -308,7 +339,18 @@ internal sealed class QuicPacketProtectionCryptoContext : IDisposable
         aeadGcm?.Dispose();
         aeadCcm?.Dispose();
         aeadChaCha20Poly1305?.Dispose();
+        headerProtectionAesEncryptor?.Dispose();
         headerProtectionAes?.Dispose();
+        if (headerProtectionSampleBuffer is not null)
+        {
+            CryptographicOperations.ZeroMemory(headerProtectionSampleBuffer);
+        }
+
+        if (headerProtectionMaskBuffer is not null)
+        {
+            CryptographicOperations.ZeroMemory(headerProtectionMaskBuffer);
+        }
+
         CryptographicOperations.ZeroMemory(headerProtectionKey);
     }
 }
