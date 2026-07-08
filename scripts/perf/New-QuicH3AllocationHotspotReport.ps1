@@ -273,11 +273,30 @@ function Add-TopNSection {
     $Lines.Add("### $Title")
     $Lines.Add("")
     if ($topItems.Count -eq 0) {
-        $Lines.Add("No parsed TopN rows were found.")
         if (-not [string]::IsNullOrWhiteSpace($SourcePath)) {
+            $firstLine = if (Test-Path -LiteralPath $SourcePath -PathType Leaf) {
+                Get-Content -Path $SourcePath -ErrorAction SilentlyContinue |
+                    Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+                    Select-Object -First 1
+            }
+            else {
+                $null
+            }
+
+            if (-not [string]::IsNullOrWhiteSpace($firstLine) -and $firstLine.StartsWith("[ERROR]", [StringComparison]::Ordinal)) {
+                $Lines.Add("TopN report failed: ``$firstLine``")
+            }
+            else {
+                $Lines.Add("No parsed TopN rows were found.")
+            }
+
             $Lines.Add("")
             $Lines.Add("- source: ``$SourcePath``")
         }
+        else {
+            $Lines.Add("No parsed TopN rows were found.")
+        }
+
         return
     }
 
