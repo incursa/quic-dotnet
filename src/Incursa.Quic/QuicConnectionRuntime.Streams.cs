@@ -5310,7 +5310,7 @@ internal sealed partial class QuicConnectionRuntime
             // Drain queued stream identifiers so pending accepts observe terminal completion.
         }
 
-        inboundStreamIds.Writer.TryComplete(completionException);
+        inboundStreamIds.Writer.TryComplete();
     }
 
     private void CompleteInboundDatagramQueue(Exception completionException)
@@ -5327,7 +5327,7 @@ internal sealed partial class QuicConnectionRuntime
             // Drain queued DATAGRAM payloads so pending receives observe terminal completion.
         }
 
-        inboundDatagrams.Writer.TryComplete(completionException);
+        inboundDatagrams.Writer.TryComplete();
     }
 
     private void CompletePendingStreamOpenRequests(Exception completionException)
