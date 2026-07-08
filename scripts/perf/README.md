@@ -204,6 +204,30 @@ Output is written under:
 .artifacts/perf-baselines/{runId}/baseline-report.json
 ```
 
+## ProtocolLab Performance Triage
+
+Use `Compare-QuicProtocolLabRuns.ps1` when you need one closeout command for
+"what changed?" between two retained ProtocolLab runs. The script accepts either
+run IDs resolvable under the ProtocolLab run store or direct run-root paths that
+contain `aggregate-results.json`, then emits markdown and JSON comparing
+validation, benchmark health, throughput/request rate, latency, allocation, GC,
+exceptions, CPU, warnings, repetition count, qlog/counter presence, and evidence
+quality changes.
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Compare-QuicProtocolLabRuns.ps1 `
+  -BaselineRun C:\path\to\baseline-run-root `
+  -CurrentRun C:\path\to\current-run-root `
+  -RunId codex-h3-before-after-triage
+```
+
+Output is written under:
+
+```text
+.artifacts/perf-triage/{runId}/performance-triage.md
+.artifacts/perf-triage/{runId}/performance-triage.json
+```
+
 ## H3 Allocation Hotspot Reports
 
 Use `New-QuicH3AllocationHotspotReport.ps1` to roll up one or more existing
