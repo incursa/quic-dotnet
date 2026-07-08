@@ -84,13 +84,13 @@ public sealed class QPackDecoder
     public static QPackFieldLine[] DecodeFieldSection(ReadOnlySpan<byte> encodedFieldSection)
     {
         QPackDecoder decoder = new(0, 0);
-        QPackFieldSectionDecodeResult result = decoder.DecodeFieldSection(0, encodedFieldSection.ToArray());
-        if (result.IsBlocked)
+        FieldSectionPrefix prefix = decoder.DecodeFieldSectionPrefix(encodedFieldSection);
+        if (prefix.RequiredInsertCount > decoder.dynamicTable.InsertCount)
         {
-            throw new QPackException(QPackErrorCode.DecompressionFailed, "The QPACK field section is blocked.");
+            throw new QPackException(QPackErrorCode.DecompressionFailed, "The QPACK blocked stream limit was exceeded.");
         }
 
-        return result.FieldLines;
+        return decoder.DecodeAvailableFieldSection(encodedFieldSection, prefix);
     }
 
     /// <summary>
