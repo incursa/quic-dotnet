@@ -1,12 +1,15 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Buffers;
+
 namespace Incursa.Quic;
 
 // TLS/bootstrap handling, packet ingress, and transport-parameter commits.
 internal sealed partial class QuicConnectionRuntime
 {
     private const int BitsPerByte = 8;
+    private const int InitialNewlyAcknowledgedAckElicitingPacketNumberCapacity = 32;
     private const ulong MaximumStreamLimit = 1UL << 60;
     private static readonly bool ApplicationReceiveDebugEnabled =
         string.Equals(
@@ -2444,34 +2447,9 @@ internal sealed partial class QuicConnectionRuntime
         ArgumentNullException.ThrowIfNull(ackFrame);
 
         ulong ackReceivedAtMicros = GetElapsedMicros(nowTicks);
-        HashSet<ulong> acknowledgedPacketNumbers = [];
-        List<ulong> newlyAcknowledgedAckElicitingPacketNumbers = [];
+        ulong[]? rentedNewlyAcknowledgedAckElicitingPacketNumbers = null;
+        int newlyAcknowledgedAckElicitingPacketNumberCount = 0;
         bool acknowledgedCurrentOneRttKeyPhasePacket = false;
-
-        foreach (ulong packetNumber in QuicConnectionAckHelpers.EnumerateAcknowledgedPacketNumbers(ackFrame))
-        {
-            if (!acknowledgedPacketNumbers.Add(packetNumber))
-            {
-                continue;
-            }
-
-            if (sendRuntime.SentPackets.TryGetValue(
-                    new QuicConnectionSentPacketKey(packetNumberSpace, packetNumber),
-                    out QuicConnectionSentPacket sentPacket))
-            {
-                if (packetNumberSpace == QuicPacketNumberSpace.ApplicationData
-                    && tlsState.KeyUpdateInstalled
-                    && sentPacket.OneRttKeyPhase == tlsState.CurrentOneRttKeyPhase)
-                {
-                    acknowledgedCurrentOneRttKeyPhasePacket = true;
-                }
-
-                if (sentPacket.AckEliciting)
-                {
-                    newlyAcknowledgedAckElicitingPacketNumbers.Add(packetNumber);
-                }
-            }
-        }
 
         bool stateChanged = sendRuntime.FlowController.TryProcessAckFrame(
             packetNumberSpace,
@@ -2480,46 +2458,124 @@ internal sealed partial class QuicConnectionRuntime
             pacingLimited: applicationSendQueue.Count > 0,
             pathValidated: HasValidatedPath);
 
-        foreach (ulong packetNumber in acknowledgedPacketNumbers)
+        try
         {
-            stateChanged |= sendRuntime.TryAcknowledgePacket(
+            if (ackFrame.LargestAcknowledged >= ackFrame.FirstAckRange)
+            {
+                ulong largestAcknowledged = ackFrame.LargestAcknowledged;
+                ulong smallestAcknowledged = largestAcknowledged - ackFrame.FirstAckRange;
+                ProcessAcknowledgedPacketRange(smallestAcknowledged, largestAcknowledged);
+            }
+
+            for (int rangeIndex = 0; rangeIndex < ackFrame.AdditionalRangeCount; rangeIndex++)
+            {
+                QuicAckRange range = ackFrame.GetAdditionalRange(rangeIndex);
+                ProcessAcknowledgedPacketRange(range.SmallestAcknowledged, range.LargestAcknowledged);
+            }
+
+            bool rttSampleUpdated = recoveryController.RecordAcknowledgment(
                 packetNumberSpace,
-                packetNumber,
-                handshakeConfirmed: HandshakeConfirmed);
-        }
+                ackFrame.LargestAcknowledged,
+                ackReceivedAtMicros,
+                rentedNewlyAcknowledgedAckElicitingPacketNumbers is null
+                    ? ReadOnlySpan<ulong>.Empty
+                    : rentedNewlyAcknowledgedAckElicitingPacketNumbers.AsSpan(0, newlyAcknowledgedAckElicitingPacketNumberCount),
+                ackDelayMicros: ackFrame.AckDelay,
+                handshakeConfirmed: HandshakeConfirmed,
+                peerMaxAckDelayMicros: tlsState.PeerTransportParameters?.MaxAckDelay ?? 0);
+            stateChanged |= rttSampleUpdated;
+            if (rttSampleUpdated)
+            {
+                QuicRttEstimator rttEstimator = recoveryController.GetRttEstimator(packetNumberSpace);
+                QuicMetrics.RecordRtt(tlsState.Role, rttEstimator.LatestRttMicros);
+            }
 
-        bool rttSampleUpdated = recoveryController.RecordAcknowledgment(
-            packetNumberSpace,
-            ackFrame.LargestAcknowledged,
-            ackReceivedAtMicros,
-            newlyAcknowledgedAckElicitingPacketNumbers.ToArray(),
-            ackDelayMicros: ackFrame.AckDelay,
-            handshakeConfirmed: HandshakeConfirmed,
-            peerMaxAckDelayMicros: tlsState.PeerTransportParameters?.MaxAckDelay ?? 0);
-        stateChanged |= rttSampleUpdated;
-        if (rttSampleUpdated)
+            stateChanged |= TryRegisterDetectedLosses(nowTicks);
+            if (acknowledgedCurrentOneRttKeyPhasePacket && TryRecordConfirmedCurrentOneRttKeyPhase(nowTicks))
+            {
+                stateChanged = true;
+            }
+
+            if (TryFlushPendingRetransmissions(
+                    packetNumberSpace,
+                    nowTicks,
+                    probePacket: false,
+                    ref effects))
+            {
+                stateChanged = true;
+                AppendLifecycleTimerEffects(ref effects);
+            }
+
+            return stateChanged;
+        }
+        finally
         {
-            QuicRttEstimator rttEstimator = recoveryController.GetRttEstimator(packetNumberSpace);
-            QuicMetrics.RecordRtt(tlsState.Role, rttEstimator.LatestRttMicros);
+            if (rentedNewlyAcknowledgedAckElicitingPacketNumbers is not null)
+            {
+                ArrayPool<ulong>.Shared.Return(rentedNewlyAcknowledgedAckElicitingPacketNumbers);
+            }
         }
 
-        stateChanged |= TryRegisterDetectedLosses(nowTicks);
-        if (acknowledgedCurrentOneRttKeyPhasePacket && TryRecordConfirmedCurrentOneRttKeyPhase(nowTicks))
+        void ProcessAcknowledgedPacketRange(ulong smallestAcknowledged, ulong largestAcknowledged)
         {
-            stateChanged = true;
-        }
+            for (ulong packetNumber = smallestAcknowledged; ; packetNumber++)
+            {
+                if (sendRuntime.SentPackets.TryGetValue(
+                        new QuicConnectionSentPacketKey(packetNumberSpace, packetNumber),
+                        out QuicConnectionSentPacket sentPacket))
+                {
+                    if (packetNumberSpace == QuicPacketNumberSpace.ApplicationData
+                        && tlsState.KeyUpdateInstalled
+                        && sentPacket.OneRttKeyPhase == tlsState.CurrentOneRttKeyPhase)
+                    {
+                        acknowledgedCurrentOneRttKeyPhasePacket = true;
+                    }
 
-        if (TryFlushPendingRetransmissions(
-                packetNumberSpace,
-                nowTicks,
-                probePacket: false,
-                ref effects))
+                    if (sentPacket.AckEliciting)
+                    {
+                        AddNewlyAcknowledgedAckElicitingPacketNumber(
+                            packetNumber,
+                            ref rentedNewlyAcknowledgedAckElicitingPacketNumbers,
+                            ref newlyAcknowledgedAckElicitingPacketNumberCount);
+                    }
+                }
+
+                stateChanged |= sendRuntime.TryAcknowledgePacket(
+                    packetNumberSpace,
+                    packetNumber,
+                    handshakeConfirmed: HandshakeConfirmed);
+
+                if (packetNumber == largestAcknowledged)
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+    private static void AddNewlyAcknowledgedAckElicitingPacketNumber(
+        ulong packetNumber,
+        ref ulong[]? rentedBuffer,
+        ref int count)
+    {
+        if (rentedBuffer is not null && count < rentedBuffer.Length)
         {
-            stateChanged = true;
-            AppendLifecycleTimerEffects(ref effects);
+            rentedBuffer[count++] = packetNumber;
+            return;
         }
 
-        return stateChanged;
+        int newLength = rentedBuffer is null
+            ? InitialNewlyAcknowledgedAckElicitingPacketNumberCapacity
+            : checked(rentedBuffer.Length * 2);
+        ulong[] newBuffer = ArrayPool<ulong>.Shared.Rent(newLength);
+        if (rentedBuffer is not null)
+        {
+            rentedBuffer.AsSpan(0, count).CopyTo(newBuffer);
+            ArrayPool<ulong>.Shared.Return(rentedBuffer);
+        }
+
+        rentedBuffer = newBuffer;
+        rentedBuffer[count++] = packetNumber;
     }
 
     private bool TryRecordConfirmedCurrentOneRttKeyPhase(long nowTicks)
