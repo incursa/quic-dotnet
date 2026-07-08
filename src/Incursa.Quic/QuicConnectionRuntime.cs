@@ -1279,7 +1279,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 $"The connection is not established. Phase={phase} TerminalState={(terminalState.HasValue ? terminalState.Value.ToString() : "null")}");
         }
 
-        cancellationToken.ThrowIfCancellationRequested();
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return new ValueTask<QuicStream?>((QuicStream?)null);
+        }
 
         if (!ApplicationReceiveDebugEnabled && inboundStreamIds.Reader.TryRead(out ulong streamId))
         {
@@ -1296,7 +1299,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     {
         try
         {
-            while (await inboundStreamIds.Reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
+            while (await WaitForInboundStreamAsync(cancellationToken).ConfigureAwait(false))
             {
                 if (!inboundStreamIds.Reader.TryRead(out ulong streamId))
                 {
@@ -1315,6 +1318,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
             return null;
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
         catch (ChannelClosedException) when (inboundStreamQueueCompletionException is not null)
         {
             if (IsExpectedTerminalException(inboundStreamQueueCompletionException))
@@ -1328,6 +1335,38 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         {
             return null;
         }
+    }
+
+    private ValueTask<bool> WaitForInboundStreamAsync(CancellationToken cancellationToken)
+    {
+        ValueTask<bool> wait = inboundStreamIds.Reader.WaitToReadAsync();
+        if (!cancellationToken.CanBeCanceled || wait.IsCompleted)
+        {
+            return wait;
+        }
+
+        return WaitForInboundStreamOrCancellationAsync(wait.AsTask(), cancellationToken);
+    }
+
+    private static async ValueTask<bool> WaitForInboundStreamOrCancellationAsync(
+        Task<bool> waitTask,
+        CancellationToken cancellationToken)
+    {
+        TaskCompletionSource<bool> cancellationSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using CancellationTokenRegistration registration = cancellationToken.UnsafeRegister(static state =>
+        {
+            TaskCompletionSource<bool> source = (TaskCompletionSource<bool>)state!;
+            source.TrySetResult(false);
+        }, cancellationSource);
+
+        Task<bool> cancellationTask = cancellationSource.Task;
+        Task completedTask = await Task.WhenAny(waitTask, cancellationTask).ConfigureAwait(false);
+        if (completedTask != waitTask)
+        {
+            return false;
+        }
+
+        return await waitTask.ConfigureAwait(false);
     }
 
     internal async ValueTask<QuicStream> OpenOutboundStreamAsync(
@@ -1967,10 +2006,17 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         CancellationToken cancellationToken)
     {
         ChannelReader<QuicConnectionEvent> reader = inbox.Reader;
+        CancellationTokenRegistration cancellationRegistration = cancellationToken.CanBeCanceled
+            ? cancellationToken.UnsafeRegister(static state =>
+            {
+                ChannelWriter<QuicConnectionEvent> writer = (ChannelWriter<QuicConnectionEvent>)state!;
+                writer.TryComplete();
+            }, inbox.Writer)
+            : default;
 
         try
         {
-            while (await reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
+            while (await reader.WaitToReadAsync().ConfigureAwait(false))
             {
                 while (reader.TryRead(out QuicConnectionEvent? connectionEvent))
                 {
@@ -1994,12 +2040,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 }
             }
         }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-        {
-            // The owner requested a stop; queued owned packet buffers are released below.
-        }
         finally
         {
+            await cancellationRegistration.DisposeAsync().ConfigureAwait(false);
             while (reader.TryRead(out QuicConnectionEvent? connectionEvent))
             {
                 ReleaseConnectionEventResources(connectionEvent);
