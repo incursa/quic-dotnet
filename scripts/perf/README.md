@@ -157,6 +157,27 @@ Output is written under:
 .artifacts/perf-baselines/{runId}/baseline-report.json
 ```
 
+## H3 Allocation Hotspot Reports
+
+Use `New-QuicH3AllocationHotspotReport.ps1` to roll up one or more existing
+Incursa H3 profile packs into a single allocation investigation report. The
+report preserves the counter metrics plus parsed `dotnet-trace report topN`
+CPU/GC method highlights, while explicitly treating them as investigation
+evidence rather than safe proof for pooling or buffer ownership changes.
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\New-QuicH3AllocationHotspotReport.ps1 `
+  -OutputRoot .\.artifacts\perf-hotspots `
+  -ProfilePackRoot ".\.artifacts\perf\incursa-h3-profile-pack\codex-h3-1kb-quic-profile-20260708a;.\.artifacts\perf\incursa-h3-profile-pack\codex-h3-64kb-quic-profile-20260708a"
+```
+
+Output is written under:
+
+```text
+.artifacts/perf-hotspots/{runId}/allocation-hotspots.md
+.artifacts/perf-hotspots/{runId}/allocation-hotspots.json
+```
+
 ## ProtocolLab Readiness Evidence
 
 Use `New-QuicProtocolLabReadinessEvidence.ps1` before handing the repo to a
