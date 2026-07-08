@@ -1653,19 +1653,41 @@ internal sealed partial class QuicConnectionRuntime
             stateChanged = true;
         }
 
-        foreach (KeyValuePair<ulong, QuicMaxStreamDataFrame> streamCredit in pendingFlowControlStreamCreditFrames.ToArray())
+        KeyValuePair<ulong, QuicMaxStreamDataFrame>[]? streamCredits = null;
+        int streamCreditCount = pendingFlowControlStreamCreditFrames.Count;
+        if (streamCreditCount > 0)
         {
-            if (!TrySendFlowControlCreditUpdate(
-                    streamCredit.Value,
-                    "The connection runtime could not protect the MAX_STREAM_DATA packet.",
-                    "The connection cannot send the MAX_STREAM_DATA packet.",
-                    ref effects))
+            streamCredits = ArrayPool<KeyValuePair<ulong, QuicMaxStreamDataFrame>>.Shared.Rent(streamCreditCount);
+            int index = 0;
+            foreach (KeyValuePair<ulong, QuicMaxStreamDataFrame> streamCredit in pendingFlowControlStreamCreditFrames)
             {
-                break;
+                streamCredits[index++] = streamCredit;
             }
 
-            pendingFlowControlStreamCreditFrames.Remove(streamCredit.Key);
-            stateChanged = true;
+            try
+            {
+                for (index = 0; index < streamCreditCount; index++)
+                {
+                    KeyValuePair<ulong, QuicMaxStreamDataFrame> streamCredit = streamCredits[index];
+                    if (!TrySendFlowControlCreditUpdate(
+                            streamCredit.Value,
+                            "The connection runtime could not protect the MAX_STREAM_DATA packet.",
+                            "The connection cannot send the MAX_STREAM_DATA packet.",
+                            ref effects))
+                    {
+                        break;
+                    }
+
+                    pendingFlowControlStreamCreditFrames.Remove(streamCredit.Key);
+                    stateChanged = true;
+                }
+            }
+            finally
+            {
+                ArrayPool<KeyValuePair<ulong, QuicMaxStreamDataFrame>>.Shared.Return(
+                    streamCredits,
+                    clearArray: true);
+            }
         }
 
         return stateChanged;
