@@ -37,6 +37,7 @@ internal enum QuicCryptoBufferResult
     // SEE: QuicHandshakeFlowCoordinator
     private const int MinimumCapacity = 4096;
     private readonly List<Entry> entries = new(8);
+    private readonly List<Entry> insertScratch = new(8);
     private int bufferedBytes;
     private ulong nextReadOffset;
     private bool discardFutureFrames;
@@ -121,6 +122,7 @@ internal enum QuicCryptoBufferResult
     {
         discardFutureFrames = true;
         entries.Clear();
+        insertScratch.Clear();
         bufferedBytes = 0;
     }
 
@@ -138,6 +140,7 @@ internal enum QuicCryptoBufferResult
     internal void Reset()
     {
         entries.Clear();
+        insertScratch.Clear();
         bufferedBytes = 0;
         nextReadOffset = 0;
         discardFutureFrames = false;
@@ -354,7 +357,14 @@ internal enum QuicCryptoBufferResult
 
     private bool TryInsertFrameData(ulong offset, byte[] data, out int newBufferedBytes)
     {
-        List<Entry> updated = new(entries.Count + 2);
+        List<Entry> updated = insertScratch;
+        updated.Clear();
+        int expectedUpdatedCapacity = entries.Count + 2;
+        if (updated.Capacity < expectedUpdatedCapacity)
+        {
+            updated.Capacity = expectedUpdatedCapacity;
+        }
+
         int currentIndex = 0;
         ulong currentOffset = offset;
         ulong endOffset = offset + (ulong)data.Length;
@@ -416,11 +426,13 @@ internal enum QuicCryptoBufferResult
 
         if (newBufferedBytes > Capacity)
         {
+            updated.Clear();
             return false;
         }
 
         entries.Clear();
         entries.AddRange(updated);
+        updated.Clear();
         return true;
     }
 
