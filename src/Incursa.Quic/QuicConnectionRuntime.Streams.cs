@@ -495,9 +495,18 @@ internal sealed partial class QuicConnectionRuntime
                 return false;
             }
 
-            if (snapshot.SendState is QuicStreamSendState.DataSent or QuicStreamSendState.ResetSent)
+            if (snapshot.SendState is QuicStreamSendState.DataSent
+                or QuicStreamSendState.DataRecvd
+                or QuicStreamSendState.ResetSent
+                or QuicStreamSendState.ResetRecvd)
             {
                 pendingStreamActionRequests.Remove(requestId);
+                if (finishWrites)
+                {
+                    completion.TrySetResult();
+                    return false;
+                }
+
                 completion.TrySetException(new InvalidOperationException("The writable side is already completed."));
                 return false;
             }
