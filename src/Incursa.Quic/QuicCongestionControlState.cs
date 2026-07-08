@@ -864,15 +864,17 @@ internal sealed class QuicSenderFlowController
 
         if (TryGetSentPackets(packetNumberSpace, out SortedList<ulong, SentPacketState>? sentPackets))
         {
-            List<ulong>? acknowledgedSentPacketNumbers = null;
-            foreach (KeyValuePair<ulong, SentPacketState> sentPacketEntry in sentPackets)
+            int index = 0;
+            while (index < sentPackets.Count)
             {
-                if (!AckFrameAcknowledgesPacketNumber(ackFrame, sentPacketEntry.Key))
+                ulong sentPacketNumber = sentPackets.Keys[index];
+                if (!AckFrameAcknowledgesPacketNumber(ackFrame, sentPacketNumber))
                 {
+                    index++;
                     continue;
                 }
 
-                SentPacketState sentPacket = sentPacketEntry.Value;
+                SentPacketState sentPacket = sentPackets.Values[index];
                 updated = CongestionControlState.TryRegisterAcknowledgedPacket(
                     sentPacket.SentBytes,
                     sentPacket.SentAtMicros,
@@ -881,16 +883,8 @@ internal sealed class QuicSenderFlowController
                     flowControlLimited: flowControlLimited,
                     pacingLimited: pacingLimited) || updated;
 
-                (acknowledgedSentPacketNumbers ??= []).Add(sentPacketEntry.Key);
                 largestAcknowledgedPacketSentAtMicros = Math.Max(largestAcknowledgedPacketSentAtMicros, sentPacket.SentAtMicros);
-            }
-
-            if (acknowledgedSentPacketNumbers is not null)
-            {
-                foreach (ulong packetNumber in acknowledgedSentPacketNumbers)
-                {
-                    sentPackets.Remove(packetNumber);
-                }
+                sentPackets.RemoveAt(index);
             }
         }
 
