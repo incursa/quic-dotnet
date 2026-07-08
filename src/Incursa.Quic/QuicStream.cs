@@ -570,6 +570,11 @@ public sealed class QuicStream : Stream
         Exception? runtimeException = runtime?.GetStreamOperationException();
         if (runtimeException is not null)
         {
+            if (suppressTerminalException && IsExpectedTerminalException(runtimeException))
+            {
+                return true;
+            }
+
             throw runtimeException;
         }
 
