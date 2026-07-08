@@ -273,6 +273,29 @@ Output is written under:
 .artifacts/perf-hotspots/{runId}/allocation-hotspots.json
 ```
 
+For stack-attributed allocation evidence, run the trace-analysis tool against a
+GC allocation trace captured by `Invoke-IncursaH3ProfilePack.ps1`:
+
+```powershell
+dotnet run --project .\eng\tools\Incursa.Quic.TraceAnalysis -c Release -- `
+  --trace .\.artifacts\perf\incursa-h3-profile-pack\{profileRun}\gc-trace\trace.nettrace `
+  --analysis allocations `
+  --output .\.artifacts\perf-analysis\{analysisRun} `
+  --top 30 `
+  --max-frames 48
+```
+
+Output is written under:
+
+```text
+.artifacts/perf-analysis/{analysisRun}/allocation-attribution.md
+.artifacts/perf-analysis/{analysisRun}/allocation-attribution.json
+```
+
+Allocation tick bytes are sampled/estimated EventPipe evidence. Use these
+reports to choose focused code-review targets, not as exact total allocation
+accounting.
+
 ## ProtocolLab Readiness Evidence
 
 Use `New-QuicProtocolLabReadinessEvidence.ps1` before handing the repo to a
