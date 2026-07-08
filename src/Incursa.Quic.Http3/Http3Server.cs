@@ -416,7 +416,7 @@ public sealed class Http3Server : IAsyncDisposable
                     streamKind = streamInfo.Kind;
                     EmitStreamOpenedDiagnostic(diagnosticsSink, "server", stream.Id, streamKind);
 
-                    byte[] initialPayload = buffer.AsSpan(bytesConsumed, bytesRead - bytesConsumed).ToArray();
+                    ReadOnlyMemory<byte> initialPayload = buffer.AsMemory(bytesConsumed, bytesRead - bytesConsumed);
                     await ObservePeerUnidirectionalPayloadAsync(
                         stream,
                         dispatcher,
@@ -460,7 +460,7 @@ public sealed class Http3Server : IAsyncDisposable
         object dispatcherGate,
         ConnectionQPackState qpackState,
         Http3StreamKind streamKind,
-        byte[] initialPayload,
+        ReadOnlyMemory<byte> initialPayload,
         byte[] buffer,
         CancellationToken cancellationToken)
     {
@@ -496,12 +496,12 @@ public sealed class Http3Server : IAsyncDisposable
         Http3StreamDispatcher dispatcher,
         object dispatcherGate,
         ConnectionQPackState qpackState,
-        byte[] initialPayload,
+        ReadOnlyMemory<byte> initialPayload,
         byte[] buffer,
         CancellationToken cancellationToken)
     {
         Http3FrameReader frameReader = new();
-        ProcessPeerControlBytes(frameReader, initialPayload, stream.Id, dispatcher, dispatcherGate, qpackState);
+        ProcessPeerControlBytes(frameReader, initialPayload.Span, stream.Id, dispatcher, dispatcherGate, qpackState);
 
         while (true)
         {
@@ -524,7 +524,7 @@ public sealed class Http3Server : IAsyncDisposable
     private async ValueTask DrainPeerQPackStreamAsync(
         QuicStream stream,
         Http3StreamKind streamKind,
-        byte[] initialPayload,
+        ReadOnlyMemory<byte> initialPayload,
         byte[] buffer,
         ConnectionQPackState qpackState,
         CancellationToken cancellationToken)
@@ -532,11 +532,11 @@ public sealed class Http3Server : IAsyncDisposable
         EmitQPackBytesReceived(stream.Id, streamKind, initialPayload.Length);
         if (streamKind == Http3StreamKind.QPackEncoder)
         {
-            qpackState.ProcessPeerEncoderStreamBytes(initialPayload);
+            qpackState.ProcessPeerEncoderStreamBytes(initialPayload.Span);
         }
         else
         {
-            qpackState.ProcessPeerDecoderStreamBytes(initialPayload);
+            qpackState.ProcessPeerDecoderStreamBytes(initialPayload.Span);
         }
 
         while (true)
