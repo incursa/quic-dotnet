@@ -21,6 +21,7 @@ public sealed class Http3MinimalServerTests
         body[0] = 0xFF;
 
         Assert.Equal([0x01, 0x02, 0x03], response.Body.ToArray());
+        Assert.False(response.CacheEncodedHeaders);
     }
 
     [Fact]
@@ -32,6 +33,7 @@ public sealed class Http3MinimalServerTests
 
         Assert.True(MemoryMarshal.TryGetArray(response.Body, out ArraySegment<byte> segment));
         Assert.Same(body, segment.Array);
+        Assert.True(response.CacheEncodedHeaders);
     }
 
     [Fact]
@@ -45,6 +47,7 @@ public sealed class Http3MinimalServerTests
         Assert.True(MemoryMarshal.TryGetArray(response.Body, out ArraySegment<byte> segment));
         Assert.Same(body, segment.Array);
         Assert.Same(headers, response.Headers);
+        Assert.True(response.CacheEncodedHeaders);
     }
 
     [Fact]

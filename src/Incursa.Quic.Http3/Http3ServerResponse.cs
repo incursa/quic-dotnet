@@ -12,6 +12,7 @@ public sealed class Http3ServerResponse
 {
     private const int MinimumStatusCode = 100;
     private const int MaximumStatusCode = 999;
+    private byte[]? cachedHeadersFrame;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Http3ServerResponse" /> class.
@@ -45,7 +46,8 @@ public sealed class Http3ServerResponse
         bool closeConnectionAfterResponse,
         IAsyncEnumerable<ReadOnlyMemory<byte>>? streamingBody,
         bool copyBody,
-        bool copyHeaders = true)
+        bool copyHeaders = true,
+        bool cacheEncodedHeaders = false)
     {
         if (statusCode < MinimumStatusCode || statusCode > MaximumStatusCode)
         {
@@ -76,6 +78,7 @@ public sealed class Http3ServerResponse
         SendGoAwayAfterResponse = sendGoAwayAfterResponse;
         CloseConnectionAfterResponse = closeConnectionAfterResponse;
         StreamingBody = streamingBody;
+        CacheEncodedHeaders = cacheEncodedHeaders;
     }
 
     /// <summary>
@@ -115,7 +118,8 @@ public sealed class Http3ServerResponse
             sendGoAwayAfterResponse,
             closeConnectionAfterResponse,
             streamingBody: null,
-            copyBody: false);
+            copyBody: false,
+            cacheEncodedHeaders: true);
     }
 
     /// <summary>
@@ -138,7 +142,8 @@ public sealed class Http3ServerResponse
             closeConnectionAfterResponse,
             streamingBody: null,
             copyBody: false,
-            copyHeaders: false);
+            copyHeaders: false,
+            cacheEncodedHeaders: true);
     }
 
     /// <summary>
@@ -175,4 +180,11 @@ public sealed class Http3ServerResponse
     /// Gets whether the minimal server should close the QUIC connection after this response.
     /// </summary>
     public bool CloseConnectionAfterResponse { get; }
+
+    internal bool CacheEncodedHeaders { get; }
+
+    internal byte[]? GetCachedHeadersFrame() => Volatile.Read(ref cachedHeadersFrame);
+
+    internal byte[] CacheHeadersFrame(byte[] headersFrame) =>
+        Interlocked.CompareExchange(ref cachedHeadersFrame, headersFrame, null) ?? headersFrame;
 }

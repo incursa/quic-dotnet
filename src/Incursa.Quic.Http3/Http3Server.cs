@@ -1120,35 +1120,31 @@ public sealed class Http3Server : IAsyncDisposable
         Http3ServerResponse response,
         CancellationToken cancellationToken)
     {
-        byte[] encodedFieldSection = EncodeResponseFieldSection(response);
-        int headersFrameLength = Http3FrameWriter.GetFrameLength((ulong)Http3FrameType.Headers, encodedFieldSection.Length);
+        ResponseHeadersFrame headersFrame = GetResponseHeadersFrame(response);
         if (response.StreamingBody is not null)
         {
-            byte[] headersFrame = Http3FrameWriter.WriteHeaders(encodedFieldSection);
-            if (!await WriteFrameBytesAsync(stream, headersFrame, cancellationToken).ConfigureAwait(false))
+            if (!await WriteFrameBytesAsync(stream, headersFrame.FrameBytes, cancellationToken).ConfigureAwait(false))
             {
                 return false;
             }
         }
         else if (response.Body.IsEmpty)
         {
-            byte[] headersFrame = Http3FrameWriter.WriteHeaders(encodedFieldSection);
-            if (!await WriteFinalFrameBytesAsync(stream, headersFrame, cancellationToken).ConfigureAwait(false))
+            if (!await WriteFinalFrameBytesAsync(stream, headersFrame.FrameBytes, cancellationToken).ConfigureAwait(false))
             {
                 return false;
             }
         }
         else
         {
-            byte[] headersFrame = Http3FrameWriter.WriteHeaders(encodedFieldSection);
-            if (!await WriteFrameBytesAsync(stream, headersFrame, cancellationToken).ConfigureAwait(false)
+            if (!await WriteFrameBytesAsync(stream, headersFrame.FrameBytes, cancellationToken).ConfigureAwait(false)
                 || !await WriteFixedResponseDataFramesAsync(stream, response.Body, response.DataFramePayloadSize, cancellationToken).ConfigureAwait(false))
             {
                 return false;
             }
         }
 
-        EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Headers, headersFrameLength);
+        EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Headers, headersFrame.FrameLength);
         EmitResponseStartedDiagnostic(diagnosticsSink, "server", stream.Id, response.StatusCode);
 
         if (response.StreamingBody is not null)
@@ -1171,16 +1167,39 @@ public sealed class Http3Server : IAsyncDisposable
         Http3ServerResponse response,
         CancellationToken cancellationToken)
     {
-        byte[] encodedFieldSection = EncodeResponseFieldSection(response);
-        byte[] headersFrame = Http3FrameWriter.WriteHeaders(encodedFieldSection);
-        if (!await WriteFrameBytesAsync(stream, headersFrame, cancellationToken).ConfigureAwait(false))
+        ResponseHeadersFrame headersFrame = GetResponseHeadersFrame(response);
+        if (!await WriteFrameBytesAsync(stream, headersFrame.FrameBytes, cancellationToken).ConfigureAwait(false))
         {
             return false;
         }
 
-        EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Headers, headersFrame.Length);
+        EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Headers, headersFrame.FrameLength);
         EmitResponseStartedDiagnostic(diagnosticsSink, "server", stream.Id, response.StatusCode);
         return true;
+    }
+
+    private ResponseHeadersFrame GetResponseHeadersFrame(Http3ServerResponse response)
+    {
+        if (response.CacheEncodedHeaders)
+        {
+            byte[]? cachedFrame = response.GetCachedHeadersFrame();
+            if (cachedFrame is null)
+            {
+                ResponseHeadersFrame frame = CreateResponseHeadersFrame(response);
+                cachedFrame = response.CacheHeadersFrame(frame.FrameBytes);
+            }
+
+            return new ResponseHeadersFrame(cachedFrame, cachedFrame.Length);
+        }
+
+        return CreateResponseHeadersFrame(response);
+    }
+
+    private static ResponseHeadersFrame CreateResponseHeadersFrame(Http3ServerResponse response)
+    {
+        byte[] encodedFieldSection = EncodeResponseFieldSection(response);
+        byte[] frameBytes = Http3FrameWriter.WriteHeaders(encodedFieldSection);
+        return new ResponseHeadersFrame(frameBytes, frameBytes.Length);
     }
 
     private static async ValueTask<bool> WriteFixedResponseDataFramesAsync(
@@ -2181,4 +2200,5 @@ public sealed class Http3Server : IAsyncDisposable
         });
     }
 
+    private readonly record struct ResponseHeadersFrame(byte[] FrameBytes, int FrameLength);
 }
