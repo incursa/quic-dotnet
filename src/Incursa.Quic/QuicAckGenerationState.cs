@@ -186,23 +186,27 @@ internal sealed class QuicAckGenerationState
         ackElicitingPacketCount = 0;
 
         bool found = false;
-        foreach (KeyValuePair<ulong, PacketReceipt> entry in state.Receipts)
+        IList<ulong> packetNumbers = state.Receipts.Keys;
+        IList<PacketReceipt> receipts = state.Receipts.Values;
+        for (int index = 0; index < state.Receipts.Count; index++)
         {
-            if (!entry.Value.AckEliciting
+            ulong packetNumber = packetNumbers[index];
+            PacketReceipt receipt = receipts[index];
+            if (!receipt.AckEliciting
                 || (state.LastAckFrameTriggerPacketNumber.HasValue
-                    && entry.Key <= state.LastAckFrameTriggerPacketNumber.Value))
+                    && packetNumber <= state.LastAckFrameTriggerPacketNumber.Value))
             {
                 continue;
             }
 
             if (!found)
             {
-                earliestAckElicitingReceivedAtMicros = entry.Value.ReceivedAtMicros;
+                earliestAckElicitingReceivedAtMicros = receipt.ReceivedAtMicros;
                 found = true;
             }
 
             ackElicitingPacketCount++;
-            largestAckElicitingPacketNumber = entry.Key;
+            largestAckElicitingPacketNumber = packetNumber;
         }
 
         return found;
@@ -256,11 +260,12 @@ internal sealed class QuicAckGenerationState
             }
 
             QuicEcnCounts? ecnCounts = null;
-            foreach (KeyValuePair<ulong, PacketReceipt> entry in state.Receipts)
+            IList<PacketReceipt> receipts = state.Receipts.Values;
+            for (int index = 0; index < receipts.Count; index++)
             {
-                if (entry.Value.EcnCounts.HasValue)
+                if (receipts[index].EcnCounts.HasValue)
                 {
-                    ecnCounts = entry.Value.EcnCounts;
+                    ecnCounts = receipts[index].EcnCounts;
                 }
             }
 
@@ -579,16 +584,19 @@ internal sealed class QuicAckGenerationState
         ackElicitingPacketCount = 0;
 
         bool found = false;
-        foreach (KeyValuePair<ulong, PacketReceipt> entry in state.Receipts)
+        IList<ulong> packetNumbers = state.Receipts.Keys;
+        IList<PacketReceipt> receipts = state.Receipts.Values;
+        for (int index = 0; index < state.Receipts.Count; index++)
         {
-            if (!entry.Value.AckEliciting)
+            PacketReceipt receipt = receipts[index];
+            if (!receipt.AckEliciting)
             {
                 continue;
             }
 
             ackElicitingPacketCount++;
-            largestAckElicitingPacketNumber = entry.Key;
-            largestAckElicitingReceivedAtMicros = entry.Value.ReceivedAtMicros;
+            largestAckElicitingPacketNumber = packetNumbers[index];
+            largestAckElicitingReceivedAtMicros = receipt.ReceivedAtMicros;
             found = true;
         }
 
