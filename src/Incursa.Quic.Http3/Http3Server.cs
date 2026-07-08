@@ -42,6 +42,11 @@ public sealed class Http3Server : IAsyncDisposable
     private const int MaximumResponseStatusCode = 999;
 
     private static readonly string[] ResponseStatusCodeStrings = CreateResponseStatusCodeStrings();
+    private static readonly byte[] EmptyDataFrame = Http3FrameWriter.WriteData(ReadOnlySpan<byte>.Empty);
+    private static readonly byte[] ResponseWriteChunkDataFrameHeader =
+        WriteFrameHeader((ulong)Http3FrameType.Data, ResponseWriteChunkSize);
+    private static readonly byte[] ResponseDataFrameChunkDataFrameHeader =
+        WriteFrameHeader((ulong)Http3FrameType.Data, ResponseDataFrameChunkSize);
     private const byte QPackIntegerContinuationValueMask = 0x7F;
     private const byte QPackIntegerContinuationFlag = 0x80;
     private const int QPackIntegerContinuationShift = 7;
@@ -1174,7 +1179,7 @@ public sealed class Http3Server : IAsyncDisposable
         {
             int count = Math.Min(framePayloadSize, body.Length - offset);
             bool isFinalFrame = offset + count == body.Length;
-            byte[] dataFrameHeader = WriteFrameHeader((ulong)Http3FrameType.Data, count);
+            byte[] dataFrameHeader = GetDataFrameHeader(count);
             if (!await WriteFrameBytesAsync(stream, dataFrameHeader, cancellationToken).ConfigureAwait(false)
                 || !await WritePayloadBytesAsync(stream, body.Slice(offset, count), isFinalFrame, cancellationToken).ConfigureAwait(false))
             {
@@ -1211,8 +1216,7 @@ public sealed class Http3Server : IAsyncDisposable
         await using IAsyncEnumerator<ReadOnlyMemory<byte>> enumerator = body.GetAsyncEnumerator(cancellationToken);
         if (!await enumerator.MoveNextAsync().ConfigureAwait(false))
         {
-            byte[] emptyFrame = Http3FrameWriter.WriteData(ReadOnlySpan<byte>.Empty);
-            if (!await WriteFinalFrameBytesAsync(stream, emptyFrame, cancellationToken).ConfigureAwait(false))
+            if (!await WriteFinalFrameBytesAsync(stream, EmptyDataFrame, cancellationToken).ConfigureAwait(false))
             {
                 return false;
             }
@@ -1255,8 +1259,7 @@ public sealed class Http3Server : IAsyncDisposable
         {
             if (finalFrame)
             {
-                byte[] emptyFrame = Http3FrameWriter.WriteData(ReadOnlySpan<byte>.Empty);
-                if (!await WriteFinalFrameBytesAsync(stream, emptyFrame, cancellationToken).ConfigureAwait(false))
+                if (!await WriteFinalFrameBytesAsync(stream, EmptyDataFrame, cancellationToken).ConfigureAwait(false))
                 {
                     return false;
                 }
@@ -1272,20 +1275,12 @@ public sealed class Http3Server : IAsyncDisposable
         while (offset < body.Length)
         {
             int count = Math.Min(framePayloadSize, body.Length - offset);
-            byte[] dataFrame = Http3FrameWriter.WriteData(body.Span.Slice(offset, count));
-            if (finalFrame && offset + count == body.Length)
+            bool isFinalFrame = finalFrame && offset + count == body.Length;
+            byte[] dataFrameHeader = GetDataFrameHeader(count);
+            if (!await WriteFrameBytesAsync(stream, dataFrameHeader, cancellationToken).ConfigureAwait(false)
+                || !await WritePayloadBytesAsync(stream, body.Slice(offset, count), isFinalFrame, cancellationToken).ConfigureAwait(false))
             {
-                if (!await WriteFinalFrameBytesAsync(stream, dataFrame, cancellationToken).ConfigureAwait(false))
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (!await WriteFrameBytesAsync(stream, dataFrame, cancellationToken).ConfigureAwait(false))
-                {
-                    return false;
-                }
+                return false;
             }
 
             EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Data, count);
@@ -1920,6 +1915,16 @@ public sealed class Http3Server : IAsyncDisposable
         }
 
         return encoded;
+    }
+
+    private static byte[] GetDataFrameHeader(int payloadLength)
+    {
+        return payloadLength switch
+        {
+            ResponseWriteChunkSize => ResponseWriteChunkDataFrameHeader,
+            ResponseDataFrameChunkSize => ResponseDataFrameChunkDataFrameHeader,
+            _ => WriteFrameHeader((ulong)Http3FrameType.Data, payloadLength),
+        };
     }
 
     private static byte[] EncodeVariableLengthInteger(ulong value)
