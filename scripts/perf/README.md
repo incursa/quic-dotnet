@@ -91,10 +91,12 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicPerforma
   -SkipBenchmarks
 ```
 
-The `CoreProtocolLab` surface runs the default HTTP/3 scenario
-`http3.payload.bytes.64kb` and the default raw QUIC scenario
-`quic.transport.multiplex.100x64kb`. Override them with `-Http3Scenario` and
-`-RawQuicScenario` when a narrower ProtocolLab slice is needed. This surface
+The `CoreProtocolLab` surface runs the default raw QUIC scenario
+`quic.transport.multiplex.100x64kb`. For HTTP/3, `Smoke` defaults to
+`http3.core.status` so the lane stays a fast protocol-validation check; other
+lanes default to `http3.payload.bytes.64kb` for payload pressure. Override them
+with `-Http3Scenario` and `-RawQuicScenario` when a narrower or heavier
+ProtocolLab slice is needed. This surface
 continues through all selected ProtocolLab jobs by default and reports
 `completed-with-diagnostic-failures` if any aggregate contains validation,
 benchmark, or runner errors. Add `-FailOnProtocolLabError` when fail-fast

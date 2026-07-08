@@ -448,7 +448,15 @@ $resolvedArtifactsRoot = Resolve-FullPath -Path $ArtifactsRoot -BasePath $repoRo
 $runRoot = Join-Path $resolvedArtifactsRoot $RunIdPrefix
 $bdnRoot = Join-Path $runRoot "bdn"
 $summaryPath = Join-Path $runRoot "summary.md"
-$surfaceConfig = Get-SurfaceConfiguration -RequestedSurface $Surface -RequestedScenario $Scenario -RequestedHttp3Scenario $Http3Scenario -RequestedRawQuicScenario $RawQuicScenario
+$effectiveHttp3Scenario = if ($Surface -eq "CoreProtocolLab" -and
+    $Lane -eq "Smoke" -and
+    -not $PSBoundParameters.ContainsKey("Http3Scenario")) {
+    "http3.core.status"
+}
+else {
+    $Http3Scenario
+}
+$surfaceConfig = Get-SurfaceConfiguration -RequestedSurface $Surface -RequestedScenario $Scenario -RequestedHttp3Scenario $effectiveHttp3Scenario -RequestedRawQuicScenario $RawQuicScenario
 $protocolLabJobs = @(Get-ProtocolLabJobs -SurfaceConfiguration $surfaceConfig)
 $benchmarkJob = if ($Lane -eq "Smoke") { "Dry" } else { "Short" }
 $durationSeconds = if ($Lane -eq "Smoke") { 1 } else { 15 }
