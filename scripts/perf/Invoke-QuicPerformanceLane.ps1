@@ -24,6 +24,14 @@ param(
 
     [string] $RawQuicScenario = "quic.transport.multiplex.100x64kb",
 
+    [int] $Http3Connections = 0,
+
+    [int] $Http3StreamsPerConnection = 0,
+
+    [int] $RawQuicConnections = 0,
+
+    [int] $RawQuicStreamsPerConnection = 0,
+
     [switch] $CaptureCounters,
 
     [int] $CounterRefreshInterval = 1,
@@ -157,7 +165,15 @@ function Get-SurfaceConfiguration {
 
         [string] $RequestedHttp3Scenario,
 
-        [string] $RequestedRawQuicScenario
+        [string] $RequestedRawQuicScenario,
+
+        [int] $RequestedHttp3Connections,
+
+        [int] $RequestedHttp3StreamsPerConnection,
+
+        [int] $RequestedRawQuicConnections,
+
+        [int] $RequestedRawQuicStreamsPerConnection
     )
 
     $sendFilters = @(
@@ -166,6 +182,16 @@ function Get-SurfaceConfiguration {
         "*QuicApplicationSendBatchPayloadBenchmarks*",
         "*QuicStreamParsingBenchmarks*"
     )
+
+    function Select-PositiveOrDefault {
+        param([int] $Requested, [int] $Default)
+
+        if ($Requested -gt 0) {
+            return $Requested
+        }
+
+        return $Default
+    }
 
     switch ($RequestedSurface) {
         "CoreProtocolLab" {
@@ -180,8 +206,8 @@ function Get-SurfaceConfiguration {
                         Suite = "h3-local-v1"
                         Implementation = "incursa-http3"
                         Scenario = if ([string]::IsNullOrWhiteSpace($RequestedHttp3Scenario)) { "http3.payload.bytes.64kb" } else { $RequestedHttp3Scenario }
-                        Connections = 16
-                        StreamsPerConnection = 10
+                        Connections = Select-PositiveOrDefault $RequestedHttp3Connections 16
+                        StreamsPerConnection = Select-PositiveOrDefault $RequestedHttp3StreamsPerConnection 10
                     },
                     [pscustomobject]@{
                         Id = "raw-quic"
@@ -189,8 +215,8 @@ function Get-SurfaceConfiguration {
                         Suite = "quic-transport-v1-comparison"
                         Implementation = "incursa-raw-quic-adapter-v1"
                         Scenario = if ([string]::IsNullOrWhiteSpace($RequestedRawQuicScenario)) { "quic.transport.multiplex.100x64kb" } else { $RequestedRawQuicScenario }
-                        Connections = 1
-                        StreamsPerConnection = 1
+                        Connections = Select-PositiveOrDefault $RequestedRawQuicConnections 1
+                        StreamsPerConnection = Select-PositiveOrDefault $RequestedRawQuicStreamsPerConnection 1
                     }
                 )
             }
@@ -201,8 +227,8 @@ function Get-SurfaceConfiguration {
                 BenchmarkFilters = $sendFilters
                 ProtocolLabEnabled = $true
                 ProtocolLabScenario = if ([string]::IsNullOrWhiteSpace($RequestedScenario)) { "quic.transport.multiplex.100x64kb" } else { $RequestedScenario }
-                Connections = 1
-                StreamsPerConnection = 1
+                Connections = Select-PositiveOrDefault $RequestedRawQuicConnections 1
+                StreamsPerConnection = Select-PositiveOrDefault $RequestedRawQuicStreamsPerConnection 1
                 ProtocolLabJobs = @()
             }
         }
@@ -212,8 +238,8 @@ function Get-SurfaceConfiguration {
                 BenchmarkFilters = $sendFilters + @("*QuicConnectionStreamStateBenchmarks*")
                 ProtocolLabEnabled = $true
                 ProtocolLabScenario = if ([string]::IsNullOrWhiteSpace($RequestedScenario)) { "quic.transport.duplex-streams" } else { $RequestedScenario }
-                Connections = 1
-                StreamsPerConnection = 16
+                Connections = Select-PositiveOrDefault $RequestedRawQuicConnections 1
+                StreamsPerConnection = Select-PositiveOrDefault $RequestedRawQuicStreamsPerConnection 16
                 ProtocolLabJobs = @()
             }
         }
@@ -230,8 +256,8 @@ function Get-SurfaceConfiguration {
                 )
                 ProtocolLabEnabled = -not [string]::IsNullOrWhiteSpace($RequestedScenario)
                 ProtocolLabScenario = $RequestedScenario
-                Connections = 1
-                StreamsPerConnection = 1
+                Connections = Select-PositiveOrDefault $RequestedRawQuicConnections 1
+                StreamsPerConnection = Select-PositiveOrDefault $RequestedRawQuicStreamsPerConnection 1
                 ProtocolLabJobs = @()
             }
         }
@@ -583,7 +609,15 @@ $effectiveHttp3Scenario = if ($Surface -eq "CoreProtocolLab" -and
 else {
     $Http3Scenario
 }
-$surfaceConfig = Get-SurfaceConfiguration -RequestedSurface $Surface -RequestedScenario $Scenario -RequestedHttp3Scenario $effectiveHttp3Scenario -RequestedRawQuicScenario $RawQuicScenario
+$surfaceConfig = Get-SurfaceConfiguration `
+    -RequestedSurface $Surface `
+    -RequestedScenario $Scenario `
+    -RequestedHttp3Scenario $effectiveHttp3Scenario `
+    -RequestedRawQuicScenario $RawQuicScenario `
+    -RequestedHttp3Connections $Http3Connections `
+    -RequestedHttp3StreamsPerConnection $Http3StreamsPerConnection `
+    -RequestedRawQuicConnections $RawQuicConnections `
+    -RequestedRawQuicStreamsPerConnection $RawQuicStreamsPerConnection
 $protocolLabJobs = @(Get-ProtocolLabJobs -SurfaceConfiguration $surfaceConfig)
 $benchmarkJob = if ($Lane -eq "Smoke") { "Dry" } else { "Short" }
 $durationSeconds = if ($Lane -eq "Smoke") { 1 } else { 15 }

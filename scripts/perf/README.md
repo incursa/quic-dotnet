@@ -125,8 +125,10 @@ The `CoreProtocolLab` surface runs the default raw QUIC scenario
 `http3.core.status` so the lane stays a fast protocol-validation check; other
 lanes default to `http3.payload.bytes.64kb` for payload pressure. Override them
 with `-Http3Scenario` and `-RawQuicScenario` when a narrower or heavier
-ProtocolLab slice is needed. This surface
-continues through all selected ProtocolLab jobs by default and reports
+ProtocolLab slice is needed. Override `-Http3Connections`,
+`-Http3StreamsPerConnection`, `-RawQuicConnections`, and
+`-RawQuicStreamsPerConnection` when the same scenario needs a different load
+shape. This surface continues through all selected ProtocolLab jobs by default and reports
 `completed-with-diagnostic-failures` if any aggregate contains validation,
 benchmark, or runner errors. Add `-FailOnProtocolLabError` when fail-fast
 behavior is required.
@@ -148,6 +150,19 @@ Example confidence run:
 pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicPerformanceLane.ps1 `
   -Lane Confidence `
   -Surface RawQuicMultiplex
+```
+
+Example high-concurrency HTTP/3 small-payload confidence run:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicPerformanceLane.ps1 `
+  -Lane Confidence `
+  -Surface CoreProtocolLab `
+  -SkipBenchmarks `
+  -Http3Scenario http3.payload.bytes.1kb `
+  -Http3Connections 32 `
+  -Http3StreamsPerConnection 1 `
+  -CaptureCounters
 ```
 
 The wrapper writes a report under:
