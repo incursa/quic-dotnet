@@ -297,11 +297,7 @@ internal sealed partial class QuicConnectionRuntime
                 pendingRequests[snapshotIndex++] = pendingRequest;
             }
 
-            Array.Sort(
-                pendingRequests,
-                0,
-                pendingRequestCount,
-                PendingStreamActionRequestComparer.Instance);
+            SortPendingStreamActionRequests(pendingRequests, pendingRequestCount);
 
             bool stateChanged = false;
             try
@@ -360,14 +356,22 @@ internal sealed partial class QuicConnectionRuntime
         }
     }
 
-    private sealed class PendingStreamActionRequestComparer : IComparer<KeyValuePair<long, StreamActionRequestCompletionSource>>
+    private static void SortPendingStreamActionRequests(
+        KeyValuePair<long, StreamActionRequestCompletionSource>[] pendingRequests,
+        int pendingRequestCount)
     {
-        internal static readonly PendingStreamActionRequestComparer Instance = new();
+        for (int index = 1; index < pendingRequestCount; index++)
+        {
+            KeyValuePair<long, StreamActionRequestCompletionSource> item = pendingRequests[index];
+            int insertIndex = index - 1;
+            while (insertIndex >= 0 && pendingRequests[insertIndex].Key > item.Key)
+            {
+                pendingRequests[insertIndex + 1] = pendingRequests[insertIndex];
+                insertIndex--;
+            }
 
-        public int Compare(
-            KeyValuePair<long, StreamActionRequestCompletionSource> left,
-            KeyValuePair<long, StreamActionRequestCompletionSource> right)
-            => left.Key.CompareTo(right.Key);
+            pendingRequests[insertIndex + 1] = item;
+        }
     }
 
     private bool TryProcessPendingStreamOpenRequest(
