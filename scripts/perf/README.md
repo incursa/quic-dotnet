@@ -82,6 +82,24 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicPerforma
   -Surface RawQuicMultiplex
 ```
 
+Example core ProtocolLab smoke run for both HTTP/3 and raw QUIC:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicPerformanceLane.ps1 `
+  -Lane Smoke `
+  -Surface CoreProtocolLab `
+  -SkipBenchmarks
+```
+
+The `CoreProtocolLab` surface runs the default HTTP/3 scenario
+`http3.payload.bytes.64kb` and the default raw QUIC scenario
+`quic.transport.multiplex.100x64kb`. Override them with `-Http3Scenario` and
+`-RawQuicScenario` when a narrower ProtocolLab slice is needed. This surface
+continues through all selected ProtocolLab jobs by default and reports
+`completed-with-diagnostic-failures` if any aggregate contains validation,
+benchmark, or runner errors. Add `-FailOnProtocolLabError` when fail-fast
+behavior is required.
+
 After the first restore/build, add `-NoRestore` and `-NoBuild` for faster
 BenchmarkDotNet iteration:
 
@@ -190,6 +208,10 @@ template for the operator.
 
 Supported surfaces:
 
+- `CoreProtocolLab`: source-reference ProtocolLab HTTP/3
+  `http3.payload.bytes.64kb` and raw QUIC
+  `quic.transport.multiplex.100x64kb` in one report. It does not run
+  BenchmarkDotNet filters unless another surface is selected.
 - `RawQuicMultiplex`: ProtocolLab `quic.transport.multiplex.100x64kb` plus
   send/scheduler/parsing BDN suites.
 - `RawQuicDuplex`: ProtocolLab `quic.transport.duplex-streams` plus the same

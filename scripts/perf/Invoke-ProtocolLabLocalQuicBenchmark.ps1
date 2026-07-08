@@ -116,6 +116,8 @@ param(
 
     [switch] $FailOnError,
 
+    [switch] $AllowBenchmarkFailure,
+
     [switch] $DryRun,
 
     [string] $DotNetPath = "dotnet",
@@ -1023,7 +1025,7 @@ try {
     $benchmarkExitCode = Invoke-LoggedPowerShellScriptForExitCode -PowerShellDisplayName $PowerShellPath -ScriptPath $benchmarkScript -Arguments $benchmarkArgs -WorkingDirectory $resolvedProtocolLabExecutionRoot
     if ($benchmarkExitCode -ne 0) {
         Write-Warning "ProtocolLab benchmark command exited with code $benchmarkExitCode."
-        if (-not $UploadAfterRun) {
+        if (-not $UploadAfterRun -and -not $AllowBenchmarkFailure) {
             throw "Command failed with exit code $benchmarkExitCode."
         }
     }
