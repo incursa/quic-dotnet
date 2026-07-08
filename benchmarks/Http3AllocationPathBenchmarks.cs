@@ -518,6 +518,34 @@ public class Http3AllocationPathBenchmarks
     }
 
     /// <summary>
+    /// Measures response sequence validation when callers use the public defensive-copy path.
+    /// </summary>
+    [Benchmark]
+    public int ResponseSequence_ReceivePlaintextHeadersPublic()
+    {
+        Http3ResponseSequenceValidator validator = new();
+        validator.ReceiveHeaders(plaintextResponseHeaders);
+        validator.ReceiveData(checked((ulong)PlaintextBody.Length));
+        validator.Complete();
+        IReadOnlyList<QPackFieldLine> headers = validator.FinalResponseHeaders ?? throw new InvalidOperationException("No response headers were received.");
+        return validator.FinalStatusCode.GetValueOrDefault() ^ CountHeaderCharactersList(headers);
+    }
+
+    /// <summary>
+    /// Measures response sequence validation when decoded QPACK headers are already owned.
+    /// </summary>
+    [Benchmark]
+    public int ResponseSequence_ReceivePlaintextHeadersOwned()
+    {
+        Http3ResponseSequenceValidator validator = new();
+        validator.ReceiveOwnedHeaders(plaintextResponseHeaders);
+        validator.ReceiveData(checked((ulong)PlaintextBody.Length));
+        validator.Complete();
+        IReadOnlyList<QPackFieldLine> headers = validator.FinalResponseHeaders ?? throw new InvalidOperationException("No response headers were received.");
+        return validator.FinalStatusCode.GetValueOrDefault() ^ CountHeaderCharactersList(headers);
+    }
+
+    /// <summary>
     /// Measures server response header field-line construction for a tiny plaintext response.
     /// </summary>
     [Benchmark]
