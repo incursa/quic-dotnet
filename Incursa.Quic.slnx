@@ -13,6 +13,9 @@
   <Folder Name="/fuzz/">
     <Project Path="fuzz/Incursa.Quic.Fuzz.csproj" />
   </Folder>
+  <Folder Name="/eng/tools/">
+    <Project Path="eng/tools/Incursa.Quic.TraceAnalysis/Incursa.Quic.TraceAnalysis.csproj" />
+  </Folder>
   <Folder Name="/samples/">
     <Project Path="samples/Incursa.Http3.Samples.ObjectStore/Incursa.Http3.Samples.ObjectStore.csproj" />
     <Project Path="samples/Incursa.Http3.Samples.TechEmpower/Incursa.Http3.Samples.TechEmpower.csproj" />

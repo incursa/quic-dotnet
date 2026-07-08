@@ -3,6 +3,57 @@
 This folder contains local performance and ProtocolLab integration helpers for
 `quic-dotnet` development.
 
+## Exception Attribution
+
+Use `Invoke-QuicExceptionAttribution.ps1` when you need a repeatable
+ProtocolLab-backed answer to "where are first-chance exceptions coming from?"
+The wrapper runs one source-backed HTTP/3 ProtocolLab scenario with EventPipe
+`Exception+Stack` capture, then writes JSON and Markdown exception groups by
+exception type, message, attribution frame, raw stack top frame, and first
+Incursa frame.
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicExceptionAttribution.ps1 `
+  -ProtocolLabRoot C:\shared\src\incursa\protocol-lab-internal `
+  -Scenario http3.payload.bytes.64kb `
+  -DurationSeconds 5 `
+  -WarmupSeconds 1 `
+  -Connections 16 `
+  -StreamsPerConnection 10
+```
+
+The wrapper writes under:
+
+```text
+.artifacts/perf/exception-attribution/{runId}/
+```
+
+To analyze an existing `.nettrace` without rerunning ProtocolLab:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Analyze-QuicExceptionTrace.ps1 `
+  -TracePath C:\path\to\trace.nettrace `
+  -OutputRoot .\.artifacts\perf\exception-attribution\manual-review
+```
+
+The analyzer emits:
+
+```text
+exception-attribution.json
+exception-attribution.md
+exception-attribution-command.txt
+trace.etlx
+```
+
+The JSON schema is `incursa.quic.exception-attribution.v1`. `stackTopFrame`
+preserves the raw managed top frame from the trace, which is often runtime
+exception dispatch. `attributionFrame` is the deterministic action frame used
+for grouping: the first configured project frame, or the first non-runtime frame
+when no project frame is present. By default project frames start with
+`Incursa.`. Runtime cancellation groups with no Incursa frame are still reported
+so cancellation noise is visible, but Incursa terminal-flow cleanup should focus
+first on rows where `firstProjectFrame` is populated.
+
 ## QUIC Local Performance Lanes
 
 Use `Invoke-QuicPerformanceLane.ps1` when you want one repeatable local command

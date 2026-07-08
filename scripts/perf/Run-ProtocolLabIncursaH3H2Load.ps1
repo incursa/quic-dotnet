@@ -13,7 +13,7 @@ param(
     [switch] $CaptureCounters,
     [int] $CounterRefreshIntervalSeconds = 1,
     [string] $Output,
-    [ValidateSet("none", "cpu", "gc-allocation")]
+    [ValidateSet("none", "cpu", "gc-allocation", "exception")]
     [string] $TraceMode = "none",
     [string] $TraceArtifactRoot,
     [int] $TraceDurationSeconds = 0,

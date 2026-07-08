@@ -3,7 +3,7 @@ param(
     [Parameter(Mandatory = $true)]
     [int] $ProcessId,
     [int] $DurationSeconds = 15,
-    [ValidateSet("cpu", "gc-allocation")]
+    [ValidateSet("cpu", "gc-allocation", "exception")]
     [string] $Mode = "cpu",
     [string] $ArtifactRoot,
     [string] $TraceTool = "dotnet-trace",
@@ -181,7 +181,13 @@ if (-not $command) {
 $profileInfo = Get-TraceProfiles $command $workingDirectory
 Set-Content -Path (Join-Path $ArtifactRoot "dotnet-trace-list-profiles.stdout.txt") -Value $profileInfo.Stdout
 Set-Content -Path (Join-Path $ArtifactRoot "dotnet-trace-list-profiles.stderr.txt") -Value $profileInfo.Stderr
-$profile = Select-TraceProfile $Mode $profileInfo.Profiles
+$profile = if ($Mode -eq "exception") {
+    "Exception+Stack"
+}
+else {
+    Select-TraceProfile $Mode $profileInfo.Profiles
+}
+
 if ([string]::IsNullOrWhiteSpace($profile)) {
     $message = @(
         "No dotnet-trace profile suitable for mode '$Mode' was found.",
@@ -215,10 +221,19 @@ $duration = [TimeSpan]::FromSeconds([Math]::Max(1, $DurationSeconds)).ToString("
 $args = @($command.PrefixArguments) + @(
     "collect",
     "--process-id", $ProcessId.ToString([Globalization.CultureInfo]::InvariantCulture),
-    "--profile", $profile,
     "--duration", $duration,
     "--output", $tracePath
 )
+
+if ($Mode -eq "exception") {
+    $args += @(
+        "--clrevents", "Exception+Stack",
+        "--clreventlevel", "4"
+    )
+}
+else {
+    $args += @("--profile", $profile)
+}
 Set-Content -Path (Join-Path $ArtifactRoot "dotnet-trace-command.txt") -Value (Format-CommandLine $command.FileName $args)
 
 $process = Start-Process `
