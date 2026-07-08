@@ -1205,7 +1205,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         streamObservers.TryRemoveIfEmpty(streamId, observers);
     }
 
-    internal async ValueTask<QuicStream> AcceptInboundStreamAsync(CancellationToken cancellationToken = default)
+    internal ValueTask<QuicStream> AcceptInboundStreamAsync(CancellationToken cancellationToken = default)
     {
         ThrowIfDisposed();
 
@@ -1220,6 +1220,23 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 $"The connection is not established. Phase={phase} TerminalState={(terminalState.HasValue ? terminalState.Value.ToString() : "null")}");
         }
 
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (!ApplicationReceiveDebugEnabled && inboundStreamIds.Reader.TryRead(out ulong streamId))
+        {
+            if (terminalState is QuicConnectionTerminalState completedTerminalState)
+            {
+                throw CreateTerminalException(completedTerminalState);
+            }
+
+            return new ValueTask<QuicStream>(new QuicStream(streamRegistry.Bookkeeping, streamId, this));
+        }
+
+        return AcceptInboundStreamSlowAsync(cancellationToken);
+    }
+
+    private async ValueTask<QuicStream> AcceptInboundStreamSlowAsync(CancellationToken cancellationToken)
+    {
         try
         {
             ulong streamId = await inboundStreamIds.Reader.ReadAsync(cancellationToken).ConfigureAwait(false);
@@ -1249,11 +1266,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
     }
 
-    internal async ValueTask<QuicStream?> TryAcceptInboundStreamAsync(CancellationToken cancellationToken = default)
+    internal ValueTask<QuicStream?> TryAcceptInboundStreamAsync(CancellationToken cancellationToken = default)
     {
         if (IsDisposed || terminalState is not null)
         {
-            return null;
+            return new ValueTask<QuicStream?>((QuicStream?)null);
         }
 
         if (phase != QuicConnectionPhase.Active)
@@ -1262,6 +1279,21 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 $"The connection is not established. Phase={phase} TerminalState={(terminalState.HasValue ? terminalState.Value.ToString() : "null")}");
         }
 
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (!ApplicationReceiveDebugEnabled && inboundStreamIds.Reader.TryRead(out ulong streamId))
+        {
+            return new ValueTask<QuicStream?>(
+                terminalState is not null
+                    ? null
+                    : new QuicStream(streamRegistry.Bookkeeping, streamId, this));
+        }
+
+        return TryAcceptInboundStreamSlowAsync(cancellationToken);
+    }
+
+    private async ValueTask<QuicStream?> TryAcceptInboundStreamSlowAsync(CancellationToken cancellationToken)
+    {
         try
         {
             while (await inboundStreamIds.Reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
