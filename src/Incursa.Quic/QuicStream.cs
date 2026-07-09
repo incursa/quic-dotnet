@@ -706,7 +706,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
         };
     }
 
-    private async ValueTask WriteCoreAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
+    private ValueTask WriteCoreAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
 
@@ -733,15 +733,36 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
 
         if (buffer.IsEmpty)
         {
-            return;
+            return ValueTask.CompletedTask;
         }
 
-        await WaitForWriteGateAsync(cancellationToken).ConfigureAwait(false);
+        ValueTask gateWait = WaitForWriteGateAsync(cancellationToken);
+        if (!gateWait.IsCompletedSuccessfully)
+        {
+            return WriteCoreAfterGateWaitAsync(gateWait, buffer, cancellationToken);
+        }
+
+        gateWait.GetAwaiter().GetResult();
+        return WriteCoreAfterGate(buffer, cancellationToken);
+    }
+
+    private async ValueTask WriteCoreAfterGateWaitAsync(
+        ValueTask gateWait,
+        ReadOnlyMemory<byte> buffer,
+        CancellationToken cancellationToken)
+    {
+        await gateWait.ConfigureAwait(false);
+        await WriteCoreAfterGate(buffer, cancellationToken).ConfigureAwait(false);
+    }
+
+    private ValueTask WriteCoreAfterGate(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
+    {
         try
         {
             ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
 
-            runtimeException = runtime.GetStreamOperationException();
+            QuicConnectionRuntime currentRuntime = runtime!;
+            Exception? runtimeException = currentRuntime.GetStreamOperationException();
             if (runtimeException is not null)
             {
                 throw runtimeException;
@@ -752,7 +773,28 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
                 throw completedWriteException;
             }
 
-            await runtime.WriteStreamAsync(streamId, buffer, cancellationToken).ConfigureAwait(false);
+            ValueTask writeTask = currentRuntime.WriteStreamAsync(streamId, buffer, cancellationToken);
+            if (!writeTask.IsCompletedSuccessfully)
+            {
+                return WriteCoreAfterRuntimeWriteAsync(writeTask);
+            }
+
+            writeTask.GetAwaiter().GetResult();
+            ReleaseWriteGate();
+            return ValueTask.CompletedTask;
+        }
+        catch
+        {
+            ReleaseWriteGate();
+            throw;
+        }
+    }
+
+    private async ValueTask WriteCoreAfterRuntimeWriteAsync(ValueTask writeTask)
+    {
+        try
+        {
+            await writeTask.ConfigureAwait(false);
         }
         finally
         {

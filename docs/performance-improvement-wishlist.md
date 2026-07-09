@@ -4,6 +4,8 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-09: public `QuicStream.WriteAsync(ReadOnlyMemory<byte>, CancellationToken)` now routes through a non-async `WriteCoreAsync` wrapper and only allocates an async continuation when the write gate or runtime write actually waits. `Incursa.Quic` Release build passed, focused write/read/open lifecycle tests passed 131/134 with three existing skips, and 400-iteration Incursa-only public stream profile `codex-profile-stream-writecore-wrapper-20260709a.json` measured pass-2 allocation at 9,241 B/op versus 9,361 B/op after the stream-open completion-source cleanup. Treat this as a small public stream allocation cleanup; elapsed time remained local/noisy and did not improve in this sample.
+
 - 2026-07-09: public outbound stream opens now return the pooled stream-open completion source as a `ValueTask<QuicStream>` directly instead of forcing `QuicConnectionRuntime.OpenOutboundStreamAsync` through an async wrapper that awaited a stream ID and then constructed the public facade. The pooled source now owns cancellation registration disposal and materializes the `QuicStream` in `GetResult`, preserving blocked-open, cancellation, and terminal-state behavior. `Incursa.Quic` Release build passed, focused stream/open lifecycle tests passed 86/86, focused HTTP/3 public stream tests passed 74/75 with the existing 1 MB body skip, and 400-iteration Incursa-only public stream profile `codex-profile-stream-open-completion-direct-20260709a.json` measured pass-2 allocation at 9,361 B/op versus 12,545 B/op in the immediately preceding scratch-reuse profile. Treat this as local diagnostic allocation evidence for the public stream facade, not a publishable throughput claim.
 
 - 2026-07-09: `Http3Server.WriteResponseAsync` now uses a non-async wrapper for common complete fixed-response and headers-only response writes, preserving the existing async path only for streaming or multi-write responses. `Incursa.Quic.Http3` Release build passed, the focused HTTP/3/QPACK/RFC 9114/RFC 9204 test filter passed 1160/1161 with the known 1 MB body skip, and source-backed H3 proof `codex-h3-1kb-response-fastpath-wrapper-current-h3-local-v1` passed ProtocolLab validation and benchmark for `http3.payload.bytes.1kb` with zero failed/timeout requests. GC trace analysis `codex-h3-1kb-response-write-wrapper-fastpath-allocations-20260709a` sampled five runtime-only allocation groups, zero project-attributed/actionable groups, and no `Http3Server.WriteResponseAsync` allocation row. Treat this as targeted allocation-stack cleanup; the proof remains diagnostic and non-publishable because it is a single local run.
@@ -342,7 +344,7 @@ expanded smoke proof `codex-public-api-stream-expanded-smoke-20260709a`
 documents current Incursa latency/allocation gaps, and the lane now includes the
 steady-state suite for follow-up runtime work. The current public stream profile
 has narrowed the Incursa managed allocation gap from 17,135 B/op at initial
-diagnosis to 9,361 B/op in the latest 400-iteration Incursa-only local run.
+diagnosis to 9,241 B/op in the latest 400-iteration Incursa-only local run.
 
 Existing public comparison work is mostly connection establishment. We need public stream transfer workloads that compare real user-facing APIs.
 
