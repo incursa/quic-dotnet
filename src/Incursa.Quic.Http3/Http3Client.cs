@@ -438,10 +438,10 @@ public sealed class Http3Client : IAsyncDisposable
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            QuicStream stream;
+            QuicStream? stream;
             try
             {
-                stream = await connection.AcceptInboundStreamAsync(cancellationToken).ConfigureAwait(false);
+                stream = await connection.TryAcceptInboundStreamAsync(cancellationToken).ConfigureAwait(false);
             }
             catch (OperationCanceledException exception) when (cancellationToken.IsCancellationRequested)
             {
@@ -456,6 +456,11 @@ public sealed class Http3Client : IAsyncDisposable
             catch (QuicException exception)
             {
                 SuppressExpectedException(exception);
+                break;
+            }
+
+            if (stream is null)
+            {
                 break;
             }
 
@@ -505,7 +510,7 @@ public sealed class Http3Client : IAsyncDisposable
 
                 while (true)
                 {
-                    int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+                    int bytesRead = await stream.TryReadTerminalAsync(buffer.AsMemory(0, buffer.Length), cancellationToken).ConfigureAwait(false);
                     if (bytesRead == 0)
                     {
                         lock (peerStreamDispatcherGate)
@@ -623,7 +628,7 @@ public sealed class Http3Client : IAsyncDisposable
 
         while (true)
         {
-            int bytesRead = await stream.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken).ConfigureAwait(false);
+            int bytesRead = await stream.TryReadTerminalAsync(buffer.AsMemory(0, buffer.Length), cancellationToken).ConfigureAwait(false);
             if (bytesRead == 0)
             {
                 ProcessPeerControlFrames(frameReader.Complete(), stream.Id);
@@ -649,7 +654,7 @@ public sealed class Http3Client : IAsyncDisposable
 
         while (true)
         {
-            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+            int bytesRead = await stream.TryReadTerminalAsync(buffer.AsMemory(0, buffer.Length), cancellationToken).ConfigureAwait(false);
             if (bytesRead == 0)
             {
                 return;
@@ -670,7 +675,7 @@ public sealed class Http3Client : IAsyncDisposable
     {
         while (true)
         {
-            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+            int bytesRead = await stream.TryReadTerminalAsync(buffer.AsMemory(0, buffer.Length), cancellationToken).ConfigureAwait(false);
             if (bytesRead == 0)
             {
                 return;

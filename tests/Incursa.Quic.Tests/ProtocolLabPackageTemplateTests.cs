@@ -221,6 +221,28 @@ public sealed class ProtocolLabPackageTemplateTests
     }
 
     [Fact]
+    public void Http3_client_peer_stream_observer_uses_terminal_safe_internal_paths()
+    {
+        var repoRoot = FindRepoRoot();
+        var source = File.ReadAllText(Path.Combine(repoRoot, "src", "Incursa.Quic.Http3", "Http3Client.cs"));
+        var observerStart = source.IndexOf(
+            "private async Task ObservePeerUnidirectionalStreamsAsync",
+            StringComparison.Ordinal);
+        var observerEnd = source.IndexOf(
+            "private async Task RejectPeerBidirectionalStreamAsync",
+            StringComparison.Ordinal);
+
+        Assert.True(observerStart >= 0);
+        Assert.True(observerEnd > observerStart);
+
+        var observerSource = source[observerStart..observerEnd];
+        Assert.Contains("TryAcceptInboundStreamAsync", observerSource);
+        Assert.DoesNotContain("connection.AcceptInboundStreamAsync", observerSource);
+        Assert.DoesNotContain("ReadAsync", observerSource);
+        Assert.Contains("TryReadTerminalAsync", source);
+    }
+
+    [Fact]
     public void Run_helper_submits_raw_quic_component_package_references()
     {
         var repoRoot = FindRepoRoot();
