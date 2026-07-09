@@ -36,6 +36,7 @@ internal enum QuicCryptoBufferResult
     // that arrive before transcript advancement, so it avoids repeated early growth on the hot path.
     // SEE: QuicHandshakeFlowCoordinator
     private const int MinimumCapacity = 4096;
+    private const int ScratchCapacityGrowthFactor = 2;
     private readonly List<Entry> entries = new(8);
     private readonly List<Entry> insertScratch = new(8);
     private int bufferedBytes;
@@ -363,7 +364,7 @@ internal enum QuicCryptoBufferResult
         int expectedUpdatedCapacity = entries.Count + 2;
         if (updated.Capacity < expectedUpdatedCapacity)
         {
-            updated.Capacity = expectedUpdatedCapacity;
+            updated.Capacity = Math.Max(expectedUpdatedCapacity, updated.Capacity * ScratchCapacityGrowthFactor);
         }
 
         int currentIndex = 0;
