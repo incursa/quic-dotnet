@@ -4,6 +4,8 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-09: raw QUIC upload-only stream throughput now avoids artificial STOP_SENDING churn in the ProtocolLab raw load tool. `quic-go-raw-load` now reads the response side to EOF for `client-to-server` bidirectional streams and verifies zero response bytes instead of immediately canceling reads, and `IncursaRawQuicServer` now gracefully completes the write side for non-echo upload-only streams while only retaining completed echo streams for tail retransmission. Go package proof `go test ./cmd/quic-go-raw-load` passed. Source-backed c1/s4 `quic.transport.stream-throughput.1mb` single-repetition proof `codex-raw-stream-c1s4-clean-fin-summary-20260709a` passed validation and benchmark with 504/504 successful requests, 0 failed/timeouts, 33.53 req/s, 35.16 MB/s, and p95 145.02 ms. Counter-captured single-repetition proof `codex-raw-stream-c1s4-clean-fin-counter-summary-20260709a` also passed with 476/476 successful requests, 0 failed/timeouts, 31.62 req/s, 33.16 MB/s, and p95 154.88 ms. The repeated 9-repetition local c1/s4 counter run `codex-raw-stream-c1s4-clean-fin-confidence-20260709a` still had intermittent final-batch timeout/deadline failures on the shared host, so it was preserved as a ProtocolLab negative-result record rather than treated as a runtime optimization candidate.
+
 - 2026-07-09: observer-only stream drains now treat peer stream abort as an expected terminal state. `QuicStream.TryReadTerminalAsync` suppresses `QuicError.StreamAborted` the same way it already suppresses expected connection/disposal terminal states, so HTTP/3 peer-stream observer cleanup can end quietly when a peer resets a stream. Focused lifecycle tests prove public reads still preserve stream-abort exceptions while terminal observer drains return end-of-stream, and disposal releases a pending read without hanging. Focused stream/runtime/HTTP/3 guard tests passed 56/56. Source-backed exception-attribution smoke `codex-h3-terminal-stream-abort-suppression-20260709a` passed validation and benchmark for `http3.payload.bytes.64kb` at c4-s4 and reported 0 exceptions / 0 groups.
 
 - 2026-07-09: current 1KB HTTP/3 allocation scout `codex-h3-1kb-current-allocation-scout-20260709a` passed source-backed ProtocolLab counters and GC trace for `http3.payload.bytes.1kb` at c4-s4 for 3 seconds plus 1 second warmup. The diagnostic counter row measured 3,967.33 req/s, p95 6.29 ms, allocation rate 6,212,944 B/s, 1,566.03 B/request, and zero failed/timeout requests. Allocation attribution over the GC trace found 5 sampled allocation ticks across 4 groups, 549,424 estimated bytes, 0 project-attributed bytes, and 0 actionable bytes; all sampled groups were runtime/EventPipe metadata rows. Together with the current 64KB scout, the latest short traces do not justify another HTTP/3 allocation code change without a new actionable Incursa-attributed group.
@@ -304,17 +306,20 @@ Status: partially closed for local smoke-lane coverage. `RawQuicStreamThroughput
 `RawQuicMultiplex`, and `RawQuicDuplex` now expose distinct source-reference
 raw QUIC ProtocolLab surfaces. The stream-throughput lane has successful
 single-repetition smoke proof with optional counter capture for throughput,
-allocation, GC, exception-rate, CPU, and validation fields. Repeated local
-confidence proof now validates 9/9 runs and captures all counters, but it still
-reports `performance-instability`. Package-backed rack-lab smoke proof now
-validates the same stream-throughput scenario through admitted implementation,
-test-executor, and scenario-pack packages, and repeated package-backed proof now
-validates 3/3 repetitions. Package-backed multiplex and duplex repeats also
-validate and benchmark 3/3 with zero failed or timeout requests. The
-package-backed repeats are still variance-blocked and lack runtime counters, so
-they are regression evidence only. A c1/s4 diagnostic shape is more stable for
-throughput than c1/s1, but latency variance remains too high for publishable
-claims.
+allocation, GC, exception-rate, CPU, and validation fields. Upload-only
+bidirectional stream measurement now uses clean FIN/EOF semantics rather than
+client-side STOP_SENDING cancellation, and current c1/s4 single-repetition
+source-backed runs pass with and without counter capture. Repeated local c1/s4
+counter confidence remains unstable on the shared host, with intermittent
+final-batch timeouts recorded as negative-result evidence. Package-backed
+rack-lab smoke proof validates the same stream-throughput scenario through
+admitted implementation, test-executor, and scenario-pack packages, and repeated
+package-backed proof validates 3/3 repetitions. Package-backed multiplex and
+duplex repeats also validate and benchmark 3/3 with zero failed or timeout
+requests. The package-backed repeats are still variance-blocked and lack runtime
+counters, so they are regression evidence only. A c1/s4 diagnostic shape is more
+stable for single-run throughput than c1/s1, but repeated local confidence and
+latency variance remain too noisy for publishable claims.
 
 Done when:
 
