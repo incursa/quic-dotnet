@@ -10,7 +10,7 @@ namespace Incursa.Quic;
 /// Maintains a normalized, non-overlapping set of half-open byte ranges and tracks the total
 /// amount of unique coverage across all stored ranges.
 /// </summary>
-internal sealed class QuicByteRangeSet
+internal struct QuicByteRangeSet
 {
     // The common empty/single-range cases stay inline; multi-range state uses the same normalized list shape.
     private List<Range>? ranges;

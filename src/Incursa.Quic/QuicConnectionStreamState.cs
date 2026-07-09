@@ -1518,8 +1518,8 @@ internal sealed class QuicConnectionStreamState
         public bool LocalStopSendingFrameSent { get; set; }
         public bool PeerCapacityReleaseReported { get; set; }
         public bool PeerAcceptQueued { get; set; }
-        public QuicByteRangeSet SentRanges { get; } = new();
-        public QuicByteRangeSet ReceivedRanges { get; } = new();
+        public QuicByteRangeSet SentRanges = new();
+        public QuicByteRangeSet ReceivedRanges = new();
         public List<BufferedSegment> BufferedSegments { get; } = [];
         public List<BufferedSegment>? BufferedSegmentScratch { get; set; }
         public bool ReceivedZeroRttData { get; set; }
