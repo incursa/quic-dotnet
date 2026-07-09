@@ -1,6 +1,9 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
 namespace Incursa.Quic.Http3;
 
 /// <summary>
@@ -82,7 +85,7 @@ public sealed class Http3StreamDispatcher
     /// </summary>
     public Http3StreamInfo ReceiveUnidirectionalStreamTypeBytes(ulong streamId, ReadOnlySpan<byte> bytes, bool endOfStream = false)
     {
-        StreamState state = GetExisting(streamId);
+        ref StreamState state = ref GetExisting(streamId);
         if (state.Info.StreamType.HasValue)
         {
             return state.Info;
@@ -118,7 +121,7 @@ public sealed class Http3StreamDispatcher
         out int bytesConsumed,
         bool endOfStream = false)
     {
-        StreamState state = GetExisting(streamId);
+        ref StreamState state = ref GetExisting(streamId);
         info = state.Info;
         bytesConsumed = 0;
         if (state.Info.Direction != Http3StreamDirection.Unidirectional)
@@ -173,7 +176,7 @@ public sealed class Http3StreamDispatcher
     public void ReceiveFrame(ulong streamId, Http3Frame frame)
     {
         ArgumentNullException.ThrowIfNull(frame);
-        StreamState state = GetExisting(streamId);
+        ref StreamState state = ref GetExisting(streamId);
         if (state.Info.Direction == Http3StreamDirection.Unidirectional && !state.Info.StreamType.HasValue)
         {
             throw new Http3Exception(Http3ErrorCode.StreamCreationError, "The HTTP/3 unidirectional stream type is not known.");
@@ -207,7 +210,8 @@ public sealed class Http3StreamDispatcher
     /// </summary>
     public Http3StreamInfo GetStreamInfo(ulong streamId)
     {
-        return GetExisting(streamId).Info;
+        ref StreamState state = ref GetExisting(streamId);
+        return state.Info;
     }
 
     /// <summary>
@@ -215,7 +219,7 @@ public sealed class Http3StreamDispatcher
     /// </summary>
     internal bool TryCompleteRequestStream(ulong streamId)
     {
-        if (!streams.TryGetValue(streamId, out StreamState? state)
+        if (!streams.TryGetValue(streamId, out StreamState state)
             || state.Info.Direction != Http3StreamDirection.Bidirectional
             || state.Info.Kind != Http3StreamKind.Request)
         {
@@ -232,7 +236,7 @@ public sealed class Http3StreamDispatcher
     {
         settings = null;
         if (!controlStreamsByInitiator.TryGetValue(initiator, out ulong streamId)
-            || !streams.TryGetValue(streamId, out StreamState? state)
+            || !streams.TryGetValue(streamId, out StreamState state)
             || state.ControlState?.PeerSettings is null)
         {
             return false;
@@ -346,26 +350,29 @@ public sealed class Http3StreamDispatcher
         controlStreamsByInitiator.Add(initiator, streamId);
     }
 
-    private StreamState GetExisting(ulong streamId)
+    private ref StreamState GetExisting(ulong streamId)
     {
-        if (!streams.TryGetValue(streamId, out StreamState? state))
+        ref StreamState state = ref CollectionsMarshal.GetValueRefOrNullRef(streams, streamId);
+        if (Unsafe.IsNullRef(ref state))
         {
             throw new Http3Exception(Http3ErrorCode.StreamCreationError, "The HTTP/3 stream has not been registered.");
         }
 
-        return state;
+        return ref state;
     }
 
-    private sealed class StreamState
+    private struct StreamState
     {
         internal StreamState(Http3StreamInfo info)
         {
             Info = info;
+            PendingStreamTypeBytes = [];
+            ControlState = null;
         }
 
         internal Http3StreamInfo Info { get; set; }
 
-        internal byte[] PendingStreamTypeBytes { get; set; } = [];
+        internal byte[] PendingStreamTypeBytes { get; set; }
 
         internal Http3ControlStreamState? ControlState { get; set; }
     }
