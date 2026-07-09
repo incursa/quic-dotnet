@@ -17,21 +17,66 @@ public class QuicDeadlineSchedulerBenchmarks
     [Benchmark]
     public int RepeatedRecoveryTimerRearms()
     {
-        FixedMonotonicClock clock = new(0);
-        using QuicConnectionRuntime runtime = new(CreateState(), clock);
+        using QuicConnectionRuntime runtime = CreateRuntime();
         QuicConnectionRuntimeDeadlineScheduler scheduler = new();
         QuicConnectionHandle handle = new(1);
 
-        for (int index = 0; index < 384; index++)
+        ApplyRecoveryRearms(runtime, scheduler, handle, count: 384);
+
+        return scheduler.RegistrationCount ^ scheduler.ScheduledEntryCount;
+    }
+
+    /// <summary>
+    /// Measures stale-entry pruning when a shard asks how long to wait for the latest re-armed timer.
+    /// </summary>
+    [Benchmark]
+    public long GetNextWaitAfterRecoveryTimerRearms()
+    {
+        using QuicConnectionRuntime runtime = CreateRuntime();
+        QuicConnectionRuntimeDeadlineScheduler scheduler = new();
+        QuicConnectionHandle handle = new(2);
+
+        ApplyRecoveryRearms(runtime, scheduler, handle, count: 384);
+
+        return scheduler.TryGetNextWait(1_000, out TimeSpan wait)
+            ? wait.Ticks ^ scheduler.ScheduledEntryCount
+            : 0;
+    }
+
+    /// <summary>
+    /// Measures dequeuing the newest recovery timer after earlier re-arm heap entries became stale.
+    /// </summary>
+    [Benchmark]
+    public long DequeueLatestRecoveryTimerAfterRearms()
+    {
+        using QuicConnectionRuntime runtime = CreateRuntime();
+        QuicConnectionRuntimeDeadlineScheduler scheduler = new();
+        QuicConnectionHandle handle = new(3);
+
+        ApplyRecoveryRearms(runtime, scheduler, handle, count: 384);
+
+        return scheduler.TryDequeueDueEntry(1_383, out QuicConnectionRuntimeScheduledTimerEntry entry)
+            ? entry.DueTicks ^ scheduler.RegistrationCount ^ scheduler.ScheduledEntryCount
+            : 0;
+    }
+
+    private static void ApplyRecoveryRearms(
+        QuicConnectionRuntime runtime,
+        QuicConnectionRuntimeDeadlineScheduler scheduler,
+        QuicConnectionHandle handle,
+        int count)
+    {
+        for (int index = 0; index < count; index++)
         {
             foreach (QuicConnectionEffect effect in runtime.SetTimerDeadline(QuicConnectionTimerKind.Recovery, 1_000 + index))
             {
                 scheduler.Apply(handle, runtime, effect);
             }
         }
-
-        return scheduler.RegistrationCount ^ scheduler.ScheduledEntryCount;
     }
+
+    private static QuicConnectionRuntime CreateRuntime()
+        => new(CreateState(), new FixedMonotonicClock(0));
 
     private static QuicConnectionStreamState CreateState()
     {

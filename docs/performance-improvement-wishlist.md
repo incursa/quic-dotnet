@@ -321,12 +321,21 @@ Done when:
 
 ## 13. Profile Scheduler, Timers, And Send Queue Hot Paths
 
+Status: partially closed for timer/send microbenchmark coverage. 2026-07-09
+added stale-entry wait/dequeue coverage to `QuicDeadlineSchedulerBenchmarks`
+and wired the deadline scheduler suite into the `RawQuicSendCore` lane beside
+send-priority, queue-sorting, batch-payload, distinct-stream-id, and congestion
+control. Smoke proof `codex-sendcore-deadline-scheduler-smoke-20260709a`
+passed locally and produced the expected `QuicDeadlineSchedulerBenchmarks`
+slice with re-arm, wait, and dequeue rows. Treat this as repeatable local
+diagnostic coverage only; it does not claim an end-to-end runtime improvement.
+
 If throughput stalls under concurrency, likely culprits include send queue ordering, timer processing, ACK/loss effects, and packet assembly.
 
 Done when:
 
 - CPU traces identify top runtime hot paths under raw QUIC and HTTP/3 concurrency.
-- Send queue and timer hot paths have BenchmarkDotNet microbenchmarks tied to real ProtocolLab scenarios.
+- Send queue and timer hot paths have BenchmarkDotNet microbenchmarks tied to real ProtocolLab scenarios. `RawQuicSendCore` now covers send queue and deadline scheduler companion suites, and can be paired with a caller-supplied raw QUIC ProtocolLab scenario.
 - Changes show improvement in both microbenchmarks and at least one end-to-end scenario.
 - No protocol scheduling semantics are weakened to gain speed.
 

@@ -266,6 +266,7 @@ function Get-SurfaceConfiguration {
                     "*QuicApplicationSendQueueSortingBenchmarks*",
                     "*QuicApplicationSendBatchPayloadBenchmarks*",
                     "*QuicApplicationSendDistinctStreamIdBenchmarks*",
+                    "*QuicDeadlineSchedulerBenchmarks*",
                     "*QuicCongestionControlBenchmarks*",
                     "*QuicCongestionControlDiscardBenchmarks*"
                 )
