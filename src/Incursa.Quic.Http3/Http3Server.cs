@@ -2320,19 +2320,47 @@ public sealed class Http3Server : IAsyncDisposable
             peerSettings.TrySetResult(settings);
         }
 
-        public async ValueTask<IReadOnlyList<QPackFieldLine>> DecodeRequestHeadersAsync(
+        public ValueTask<IReadOnlyList<QPackFieldLine>> DecodeRequestHeadersAsync(
             ulong streamId,
             ReadOnlyMemory<byte> encodedFieldSection,
             CancellationToken cancellationToken)
         {
-            Http3Settings settings = await peerSettings.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+            Task<Http3Settings> settingsTask = peerSettings.Task;
+            if (settingsTask.IsCompletedSuccessfully)
+            {
+                return DecodeRequestHeadersWithSettings(
+                    streamId,
+                    encodedFieldSection,
+                    settingsTask.Result,
+                    cancellationToken);
+            }
+
+            return DecodeRequestHeadersAfterSettingsAsync(streamId, encodedFieldSection, settingsTask, cancellationToken);
+        }
+
+        private async ValueTask<IReadOnlyList<QPackFieldLine>> DecodeRequestHeadersAfterSettingsAsync(
+            ulong streamId,
+            ReadOnlyMemory<byte> encodedFieldSection,
+            Task<Http3Settings> settingsTask,
+            CancellationToken cancellationToken)
+        {
+            Http3Settings settings = await settingsTask.WaitAsync(cancellationToken).ConfigureAwait(false);
+            return await DecodeRequestHeadersWithSettings(streamId, encodedFieldSection, settings, cancellationToken).ConfigureAwait(false);
+        }
+
+        private ValueTask<IReadOnlyList<QPackFieldLine>> DecodeRequestHeadersWithSettings(
+            ulong streamId,
+            ReadOnlyMemory<byte> encodedFieldSection,
+            Http3Settings settings,
+            CancellationToken cancellationToken)
+        {
             TaskCompletionSource<QPackFieldLine[]>? blockedCompletion = null;
             lock (gate)
             {
                 EnsureDecoder(settings);
                 if (decodedRequestHeaderCache.TryGet(encodedFieldSection.Span, out IReadOnlyList<QPackFieldLine>? cachedFieldLines))
                 {
-                    return cachedFieldLines;
+                    return new ValueTask<IReadOnlyList<QPackFieldLine>>(cachedFieldLines);
                 }
 
                 Http3FieldLineBuffer fieldLines = new();
@@ -2341,13 +2369,20 @@ public sealed class Http3Server : IAsyncDisposable
                 {
                     IReadOnlyList<QPackFieldLine> decodedFieldLines = fieldLines.CommitToReadOnlyList();
                     decodedRequestHeaderCache.Store(encodedFieldSection.Span, decodedFieldLines);
-                    return decodedFieldLines;
+                    return new ValueTask<IReadOnlyList<QPackFieldLine>>(decodedFieldLines);
                 }
 
                 blockedCompletion = new TaskCompletionSource<QPackFieldLine[]>(TaskCreationOptions.RunContinuationsAsynchronously);
                 blockedRequests[streamId] = blockedCompletion;
             }
 
+            return AwaitBlockedFieldLinesAsync(blockedCompletion, cancellationToken);
+        }
+
+        private static async ValueTask<IReadOnlyList<QPackFieldLine>> AwaitBlockedFieldLinesAsync(
+            TaskCompletionSource<QPackFieldLine[]> blockedCompletion,
+            CancellationToken cancellationToken)
+        {
             return await blockedCompletion.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
         }
 

@@ -1020,7 +1020,7 @@ public sealed class Http3Client : IAsyncDisposable
                 checked((int)localSettings.QPackBlockedStreams));
         }
 
-        public async ValueTask<IReadOnlyList<QPackFieldLine>> DecodeResponseHeadersAsync(
+        public ValueTask<IReadOnlyList<QPackFieldLine>> DecodeResponseHeadersAsync(
             ulong streamId,
             ReadOnlyMemory<byte> encodedFieldSection,
             CancellationToken cancellationToken)
@@ -1032,13 +1032,20 @@ public sealed class Http3Client : IAsyncDisposable
                 QPackFieldSectionDecodeStatus decoded = decoder.DecodeFieldSection(streamId, encodedFieldSection, fieldLines);
                 if (!decoded.IsBlocked)
                 {
-                    return fieldLines.CommitToReadOnlyList();
+                    return new ValueTask<IReadOnlyList<QPackFieldLine>>(fieldLines.CommitToReadOnlyList());
                 }
 
                 blockedCompletion = new TaskCompletionSource<QPackFieldLine[]>(TaskCreationOptions.RunContinuationsAsynchronously);
                 blockedResponses[streamId] = blockedCompletion;
             }
 
+            return AwaitBlockedFieldLinesAsync(blockedCompletion, cancellationToken);
+        }
+
+        private static async ValueTask<IReadOnlyList<QPackFieldLine>> AwaitBlockedFieldLinesAsync(
+            TaskCompletionSource<QPackFieldLine[]> blockedCompletion,
+            CancellationToken cancellationToken)
+        {
             return await blockedCompletion.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
         }
 
