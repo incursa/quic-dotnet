@@ -2607,9 +2607,14 @@ internal sealed partial class QuicConnectionRuntime
             || !sendRuntime.FlowController.TryBuildAckFrame(
                 QuicPacketNumberSpace.ApplicationData,
                 nowMicros,
-                out QuicAckFrame ackFrame)
-            || !TryBuildOutboundAckPayloadLease(ackFrame, out QuicBufferLease ackPayload))
+                out QuicAckFrame ackFrame))
         {
+            return false;
+        }
+
+        if (!TryBuildOutboundAckPayloadLease(ackFrame, out QuicBufferLease ackPayload))
+        {
+            ackFrame.Dispose();
             return false;
         }
 
@@ -2651,6 +2656,7 @@ internal sealed partial class QuicConnectionRuntime
         finally
         {
             ackPayload.Dispose();
+            ackFrame.Dispose();
         }
     }
 
@@ -2722,6 +2728,7 @@ internal sealed partial class QuicConnectionRuntime
             out ulong packetNumber,
             out byte[] protectedPacket))
         {
+            ackFrame?.Dispose();
             return false;
         }
 
@@ -2737,6 +2744,7 @@ internal sealed partial class QuicConnectionRuntime
                 protectedPacket.Length,
                 out QuicConnectionPathAmplificationState updatedAmplificationState))
         {
+            ackFrame?.Dispose();
             return false;
         }
 
@@ -2771,6 +2779,7 @@ internal sealed partial class QuicConnectionRuntime
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
             currentPath.Identity,
             protectedPacket));
+        ackFrame?.Dispose();
         return true;
     }
 
@@ -2785,10 +2794,16 @@ internal sealed partial class QuicConnectionRuntime
         ackFrame = null;
 
         byte[] ackPayload = [];
-        if (sendRuntime.FlowController.TryBuildAckFrame(packetNumberSpace, nowMicros, out QuicAckFrame builtAckFrame)
-            && TryBuildOutboundAckFramePayload(builtAckFrame, out ackPayload))
+        if (sendRuntime.FlowController.TryBuildAckFrame(packetNumberSpace, nowMicros, out QuicAckFrame builtAckFrame))
         {
-            ackFrame = builtAckFrame;
+            if (TryBuildOutboundAckFramePayload(builtAckFrame, out ackPayload))
+            {
+                ackFrame = builtAckFrame;
+            }
+            else
+            {
+                builtAckFrame.Dispose();
+            }
         }
 
         if (requireAckFrame && ackFrame is null)
@@ -2801,6 +2816,8 @@ internal sealed partial class QuicConnectionRuntime
         if (!QuicFrameCodec.TryFormatPingFrame(buffer.AsSpan(ackPayload.Length), out int pingBytesWritten)
             || pingBytesWritten <= 0)
         {
+            ackFrame?.Dispose();
+            ackFrame = null;
             return false;
         }
 
@@ -3422,6 +3439,10 @@ internal sealed partial class QuicConnectionRuntime
             finally
             {
                 ackFramePayload.Dispose();
+                if (hasPiggybackedAck)
+                {
+                    piggybackedAckFrame.Dispose();
+                }
             }
 
             TrackInitialPacket(packetNumber, protectedPacket, probePacket);
@@ -3534,6 +3555,10 @@ internal sealed partial class QuicConnectionRuntime
             finally
             {
                 ackFramePayload.Dispose();
+                if (hasPiggybackedAck)
+                {
+                    piggybackedAckFrame.Dispose();
+                }
             }
         }
 
@@ -3671,6 +3696,10 @@ internal sealed partial class QuicConnectionRuntime
             finally
             {
                 ackFramePayload.Dispose();
+                if (hasPiggybackedAck)
+                {
+                    piggybackedAckFrame.Dispose();
+                }
             }
         }
 
@@ -3789,6 +3818,10 @@ internal sealed partial class QuicConnectionRuntime
             finally
             {
                 ackFramePayload.Dispose();
+                if (hasPiggybackedAck)
+                {
+                    piggybackedAckFrame.Dispose();
+                }
             }
         }
 

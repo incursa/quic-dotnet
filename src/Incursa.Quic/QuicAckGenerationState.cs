@@ -245,7 +245,7 @@ internal sealed class QuicAckGenerationState
             int additionalRangeCount = rangeCount - 1 - firstRangeIndex;
             QuicAckRange[] additionalRanges = additionalRangeCount == 0
                 ? []
-                : new QuicAckRange[additionalRangeCount];
+                : ArrayPool<QuicAckRange>.Shared.Rent(additionalRangeCount);
             ulong previousSmallestAcknowledged = newestRange.Smallest;
 
             for (int rangeIndex = rangeCount - 2, additionalRangeIndex = 0;
@@ -269,15 +269,16 @@ internal sealed class QuicAckGenerationState
                 }
             }
 
-            frame = new QuicAckFrame
+            frame = QuicAckFrame.Rent();
+            frame.FrameType = ecnCounts.HasValue ? AckEcnFrameType : AckFrameType;
+            frame.LargestAcknowledged = newestRange.Largest;
+            frame.AckDelay = GetAckDelayMicros(nowMicros, state.Receipts[newestRange.Largest]);
+            frame.FirstAckRange = newestRange.Largest - newestRange.Smallest;
+            frame.EcnCounts = ecnCounts;
+            if (additionalRangeCount > 0)
             {
-                FrameType = ecnCounts.HasValue ? AckEcnFrameType : AckFrameType,
-                LargestAcknowledged = newestRange.Largest,
-                AckDelay = GetAckDelayMicros(nowMicros, state.Receipts[newestRange.Largest]),
-                FirstAckRange = newestRange.Largest - newestRange.Smallest,
-                AdditionalRanges = additionalRanges,
-                EcnCounts = ecnCounts,
-            };
+                frame.SetOwnedAdditionalRanges(additionalRanges, additionalRangeCount);
+            }
         }
         finally
         {

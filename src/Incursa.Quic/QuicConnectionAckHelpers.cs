@@ -180,6 +180,8 @@ internal static class QuicConnectionAckHelpers
             if (!TryFormatOutboundAckFramePayload(ackFrame, buffer.Slice(0, ackPayloadLength), out int formattedAckPayloadLength)
                 || formattedAckPayloadLength != ackPayloadLength)
             {
+                ackFrame.Dispose();
+                ackFrame = null!;
                 return false;
             }
 
@@ -212,13 +214,20 @@ internal static class QuicConnectionAckHelpers
             || !flowController.TryBuildAckFrame(
                 QuicPacketNumberSpace.ApplicationData,
                 nowMicros,
-                out ackFrame)
-            || !QuicFrameCodec.TryGetAckFramePayloadLength(ackFrame, out ackPayloadLength))
+                out ackFrame))
         {
             return false;
         }
 
-        return true;
+        if (QuicFrameCodec.TryGetAckFramePayloadLength(ackFrame, out ackPayloadLength))
+        {
+            return true;
+        }
+
+        ackFrame.Dispose();
+        ackFrame = null!;
+        ackPayloadLength = 0;
+        return false;
     }
 
     internal static bool TryBuildLongHeaderAckPiggybackFramePayload(
@@ -248,6 +257,8 @@ internal static class QuicConnectionAckHelpers
         Span<byte> framePayloadBuffer = stackalloc byte[MinimumAckPayloadBufferLength];
         if (!TryFormatOutboundAckFramePayload(ackFrame, framePayloadBuffer, out int frameBytesWritten))
         {
+            ackFrame.Dispose();
+            ackFrame = null!;
             return false;
         }
 
@@ -261,6 +272,8 @@ internal static class QuicConnectionAckHelpers
         {
             ackFramePayload.Dispose();
             ackFramePayload = default;
+            ackFrame.Dispose();
+            ackFrame = null!;
             return false;
         }
 

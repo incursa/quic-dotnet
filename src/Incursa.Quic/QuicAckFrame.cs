@@ -13,9 +13,32 @@ namespace Incursa.Quic;
 /// </summary>
 internal sealed class QuicAckFrame : IDisposable
 {
+    [ThreadStatic]
+    private static QuicAckFrame? pooledFrame;
+
     private QuicAckRange[] additionalRanges = [];
     private int additionalRangeCount;
     private bool ownsAdditionalRanges;
+    private bool returnToPool;
+
+    /// <summary>
+    /// Rents an ACK frame instance for hot runtime parse/build paths.
+    /// </summary>
+    internal static QuicAckFrame Rent()
+    {
+        QuicAckFrame? frame = pooledFrame;
+        if (frame is null)
+        {
+            frame = new QuicAckFrame();
+        }
+        else
+        {
+            pooledFrame = null;
+        }
+
+        frame.returnToPool = true;
+        return frame;
+    }
 
     /// <summary>
     /// Gets or sets the ACK frame type. Valid values are 0x02 and 0x03.
@@ -120,6 +143,20 @@ internal sealed class QuicAckFrame : IDisposable
     public void Dispose()
     {
         ReleaseOwnedAdditionalRanges();
+        ResetFields();
+
+        if (!returnToPool)
+        {
+            return;
+        }
+
+        returnToPool = false;
+        ReturnToPool(this);
+    }
+
+    private static void ReturnToPool(QuicAckFrame frame)
+    {
+        pooledFrame ??= frame;
     }
 
     private void ReleaseOwnedAdditionalRanges()
@@ -132,5 +169,14 @@ internal sealed class QuicAckFrame : IDisposable
         additionalRanges = [];
         additionalRangeCount = 0;
         ownsAdditionalRanges = false;
+    }
+
+    private void ResetFields()
+    {
+        FrameType = default;
+        LargestAcknowledged = default;
+        AckDelay = default;
+        FirstAckRange = default;
+        EcnCounts = null;
     }
 }

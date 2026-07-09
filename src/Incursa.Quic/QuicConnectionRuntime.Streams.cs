@@ -2366,6 +2366,7 @@ internal sealed partial class QuicConnectionRuntime
                 probePacket,
                 out exception))
         {
+            piggybackedAckFrame?.Dispose();
             return false;
         }
 
@@ -2391,6 +2392,7 @@ internal sealed partial class QuicConnectionRuntime
                     out protectedPacketLease)))
         {
             exception = new InvalidOperationException(protectFailureMessage);
+            piggybackedAckFrame?.Dispose();
             return false;
         }
 
@@ -2473,6 +2475,10 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             throw;
+        }
+        finally
+        {
+            piggybackedAckFrame?.Dispose();
         }
     }
 
@@ -2565,6 +2571,7 @@ internal sealed partial class QuicConnectionRuntime
                 out exception))
         {
             LogApplicationSend($"app-tx protect-blocked role={tlsState.Role} reason={exception?.Message} packetPayload={packetPayloadLength}.");
+            piggybackedAckFrame?.Dispose();
             return false;
         }
 
@@ -2572,6 +2579,7 @@ internal sealed partial class QuicConnectionRuntime
         {
             exception = new InvalidOperationException("The requested path is not available for an application packet.");
             LogApplicationSend($"app-tx protect-blocked role={tlsState.Role} reason={exception.Message}.");
+            piggybackedAckFrame?.Dispose();
             return false;
         }
 
@@ -2598,6 +2606,7 @@ internal sealed partial class QuicConnectionRuntime
         {
             exception = new InvalidOperationException(protectFailureMessage);
             LogApplicationSend($"app-tx protect-blocked role={tlsState.Role} reason={exception.Message}.");
+            piggybackedAckFrame?.Dispose();
             return false;
         }
 
@@ -2721,6 +2730,10 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             throw;
+        }
+        finally
+        {
+            piggybackedAckFrame?.Dispose();
         }
     }
 
@@ -2901,7 +2914,7 @@ internal sealed partial class QuicConnectionRuntime
                 !rebuildableCryptoRetransmission
                 && probeRetransmission.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData;
             bool hasPiggybackedAck = false;
-            QuicAckFrame piggybackedAckFrame = new();
+            QuicAckFrame piggybackedAckFrame = null!;
             if ((rebuildableCryptoRetransmission
                     && !TryBuildCryptoRetransmissionPacket(
                         probeRetransmission,
@@ -3016,7 +3029,7 @@ internal sealed partial class QuicConnectionRuntime
                 !rebuildableCryptoRetransmission
                 && retransmission.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData;
             bool hasPiggybackedAck = false;
-            QuicAckFrame piggybackedAckFrame = new();
+            QuicAckFrame piggybackedAckFrame = null!;
             if ((rebuildableCryptoRetransmission
                     && !TryBuildCryptoRetransmissionPacket(
                         retransmission,
@@ -3856,7 +3869,7 @@ internal sealed partial class QuicConnectionRuntime
         packetNumber = default;
         protectedPacket = [];
         hasPiggybackedAck = false;
-        piggybackedAckFrame = new();
+        piggybackedAckFrame = null!;
 
         if (!TryGetCryptoRetransmissionProtectionLevel(retransmission, out packetProtectionLevel))
         {
@@ -3896,7 +3909,7 @@ internal sealed partial class QuicConnectionRuntime
         packetNumber = default;
         protectedPacket = [];
         hasPiggybackedAck = false;
-        piggybackedAckFrame = new();
+        piggybackedAckFrame = null!;
 
         if (initialPacketProtection is null)
         {
@@ -3979,7 +3992,7 @@ internal sealed partial class QuicConnectionRuntime
         packetNumber = default;
         protectedPacket = [];
         hasPiggybackedAck = false;
-        piggybackedAckFrame = new();
+        piggybackedAckFrame = null!;
 
         if (!tlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial handshakeMaterial))
         {
@@ -4358,7 +4371,7 @@ internal sealed partial class QuicConnectionRuntime
         packetNumber = default;
         protectedPacket = [];
         hasPiggybackedAck = false;
-        piggybackedAckFrame = new();
+        piggybackedAckFrame = null!;
 
         if (!tlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial handshakeMaterial))
         {

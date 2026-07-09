@@ -270,14 +270,12 @@ internal static class QuicFrameCodec
             ecnCounts = new QuicEcnCounts(ect0Count, ect1Count, ecnCeCount);
         }
 
-        frame = new QuicAckFrame
-        {
-            FrameType = (byte)frameTypeValue,
-            LargestAcknowledged = largestAcknowledged,
-            AckDelay = ackDelay,
-            FirstAckRange = firstAckRange,
-            EcnCounts = ecnCounts,
-        };
+        frame = QuicAckFrame.Rent();
+        frame.FrameType = (byte)frameTypeValue;
+        frame.LargestAcknowledged = largestAcknowledged;
+        frame.AckDelay = ackDelay;
+        frame.FirstAckRange = firstAckRange;
+        frame.EcnCounts = ecnCounts;
         if (additionalRangeCount > 0)
         {
             frame.SetOwnedAdditionalRanges(additionalRanges, additionalRangeCount);
