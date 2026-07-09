@@ -11,13 +11,11 @@ internal sealed class QuicConnectionStreamState
     private const ulong MaximumStreamCount = 1UL << 60;
     private const ulong UnidirectionalBit = 0x02;
     private const int StreamIdTypeBitCount = 2;
-    private const int IncomingStreamTypeCapacity = 2;
     private const int MaximumInitialTrackedStreamCapacity = 128;
 
     private readonly bool isServer;
     private readonly object syncRoot = new();
     private readonly Dictionary<ulong, StreamState> streams;
-    private readonly Dictionary<QuicStreamType, ulong> highestCreatedIncomingStreamIndexes;
 
     private ulong initialLocalBidirectionalReceiveLimit;
     private ulong initialPeerBidirectionalReceiveLimit;
@@ -34,13 +32,16 @@ internal sealed class QuicConnectionStreamState
     private ulong peerUnidirectionalStreamLimit;
     private ulong connectionAccountedBytesReceived;
     private ulong connectionUniqueBytesSent;
+    private ulong highestCreatedIncomingBidirectionalStreamIndex;
+    private ulong highestCreatedIncomingUnidirectionalStreamIndex;
+    private bool hasCreatedIncomingBidirectionalStream;
+    private bool hasCreatedIncomingUnidirectionalStream;
 
     public QuicConnectionStreamState(QuicConnectionStreamStateOptions options)
     {
         ValidateLimits(options);
 
         streams = new Dictionary<ulong, StreamState>(GetInitialTrackedStreamCapacity(options));
-        highestCreatedIncomingStreamIndexes = new Dictionary<QuicStreamType, ulong>(IncomingStreamTypeCapacity);
         isServer = options.IsServer;
         ConnectionReceiveLimit = options.InitialConnectionReceiveLimit;
         ConnectionSendLimit = options.InitialConnectionSendLimit;
@@ -1227,8 +1228,9 @@ internal sealed class QuicConnectionStreamState
             return false;
         }
 
-        highestCreatedIncomingStreamIndexes.TryGetValue(streamId.StreamType, out ulong highestCreatedIndex);
-        ulong startIndex = highestCreatedIncomingStreamIndexes.ContainsKey(streamId.StreamType) ? highestCreatedIndex + 1 : 0;
+        ulong startIndex = TryGetHighestCreatedIncomingStreamIndex(streamId.StreamType, out ulong highestCreatedIndex)
+            ? highestCreatedIndex + 1
+            : 0;
 
         for (ulong index = startIndex; index <= streamIndex; index++)
         {
@@ -1236,9 +1238,34 @@ internal sealed class QuicConnectionStreamState
             streams.TryAdd(value, CreatePeerStreamState(new QuicStreamId(value)));
         }
 
-        highestCreatedIncomingStreamIndexes[streamId.StreamType] = streamIndex;
+        SetHighestCreatedIncomingStreamIndex(streamId.StreamType, streamIndex);
         state = streams[streamId.Value];
         return true;
+    }
+
+    private bool TryGetHighestCreatedIncomingStreamIndex(QuicStreamType streamType, out ulong highestCreatedIndex)
+    {
+        if (streamType == QuicStreamType.Bidirectional)
+        {
+            highestCreatedIndex = highestCreatedIncomingBidirectionalStreamIndex;
+            return hasCreatedIncomingBidirectionalStream;
+        }
+
+        highestCreatedIndex = highestCreatedIncomingUnidirectionalStreamIndex;
+        return hasCreatedIncomingUnidirectionalStream;
+    }
+
+    private void SetHighestCreatedIncomingStreamIndex(QuicStreamType streamType, ulong streamIndex)
+    {
+        if (streamType == QuicStreamType.Bidirectional)
+        {
+            highestCreatedIncomingBidirectionalStreamIndex = streamIndex;
+            hasCreatedIncomingBidirectionalStream = true;
+            return;
+        }
+
+        highestCreatedIncomingUnidirectionalStreamIndex = streamIndex;
+        hasCreatedIncomingUnidirectionalStream = true;
     }
 
     private StreamState CreateLocalStreamState(QuicStreamId streamId)
