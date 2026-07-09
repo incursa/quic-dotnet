@@ -1684,9 +1684,26 @@ internal static class QuicAllocationHarness
         }
     }
 
-    private static async Task EnsureEofAsync(Stream stream, byte[] probe, string failureMessage)
+    private static ValueTask EnsureEofAsync(Stream stream, byte[] probe, string failureMessage)
     {
-        int bytesRead = await stream.ReadAsync(probe.AsMemory(), cancellationToken: default).ConfigureAwait(false);
+        ValueTask<int> readTask = stream.ReadAsync(probe.AsMemory(), cancellationToken: default);
+        if (readTask.IsCompletedSuccessfully)
+        {
+            ValidateEofRead(readTask.Result, failureMessage);
+            return ValueTask.CompletedTask;
+        }
+
+        return AwaitEnsureEofAsync(readTask, failureMessage);
+    }
+
+    private static async ValueTask AwaitEnsureEofAsync(ValueTask<int> readTask, string failureMessage)
+    {
+        int bytesRead = await readTask.ConfigureAwait(false);
+        ValidateEofRead(bytesRead, failureMessage);
+    }
+
+    private static void ValidateEofRead(int bytesRead, string failureMessage)
+    {
         if (bytesRead != 0)
         {
             throw new InvalidOperationException(failureMessage);
