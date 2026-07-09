@@ -14,9 +14,11 @@ public sealed class Http3StreamDispatcher
     private const ulong UnidirectionalBit = 0x02;
     private const ulong ReservedStreamTypeOffset = 0x21;
     private const ulong ReservedStreamTypeModulus = 0x1F;
+    private const int InitialStreamCapacity = 32;
+    private const int InitialControlStreamCapacity = 2;
 
-    private readonly Dictionary<ulong, StreamState> streams = [];
-    private readonly Dictionary<Http3StreamInitiator, ulong> controlStreamsByInitiator = [];
+    private readonly Dictionary<ulong, StreamState> streams = new(InitialStreamCapacity);
+    private readonly Dictionary<Http3StreamInitiator, ulong> controlStreamsByInitiator = new(InitialControlStreamCapacity);
     private readonly bool allowServerInitiatedBidirectionalStreams;
 
     /// <summary>
@@ -206,6 +208,21 @@ public sealed class Http3StreamDispatcher
     public Http3StreamInfo GetStreamInfo(ulong streamId)
     {
         return GetExisting(streamId).Info;
+    }
+
+    /// <summary>
+    /// Removes a completed bidirectional request stream from dispatcher tracking.
+    /// </summary>
+    internal bool TryCompleteRequestStream(ulong streamId)
+    {
+        if (!streams.TryGetValue(streamId, out StreamState? state)
+            || state.Info.Direction != Http3StreamDirection.Bidirectional
+            || state.Info.Kind != Http3StreamKind.Request)
+        {
+            return false;
+        }
+
+        return streams.Remove(streamId);
     }
 
     /// <summary>

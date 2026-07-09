@@ -22,6 +22,36 @@ public sealed class Http3StreamDispatcherTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryCompleteRequestStream_RemovesCompletedBidirectionalRequestStream()
+    {
+        Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
+        dispatcher.RegisterBidirectionalStream(0);
+
+        Assert.True(dispatcher.TryCompleteRequestStream(0));
+
+        Http3Exception exception = Assert.Throws<Http3Exception>(() => dispatcher.GetStreamInfo(0));
+        Assert.Equal(Http3ErrorCode.StreamCreationError, exception.ErrorCode);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryCompleteRequestStream_DoesNotRemoveControlStream()
+    {
+        Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
+        dispatcher.RegisterUnidirectionalStream(2);
+        dispatcher.ReceiveUnidirectionalStreamTypeBytes(2, [(byte)Http3StreamType.Control]);
+
+        Assert.False(dispatcher.TryCompleteRequestStream(2));
+
+        Assert.Equal(Http3StreamKind.Control, dispatcher.GetStreamInfo(2).Kind);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RegisterBidirectionalStream_RejectsServerInitiatedStreamsWhenExtensionsAreNotEnabled()

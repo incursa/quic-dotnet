@@ -354,7 +354,7 @@ public sealed class Http3Server : IAsyncDisposable
 
             EmitStreamOpenedDiagnostic(diagnosticsSink, "server", stream.Id, streamKind);
             _ = stream.Type == QuicStreamType.Bidirectional
-                ? HandleRequestStreamAsync(connection, stream, controlStream, qpackState, cancellationToken)
+                ? HandleRequestStreamAsync(connection, stream, controlStream, dispatcher, dispatcherGate, qpackState, cancellationToken)
                 : ObservePeerUnidirectionalStreamAsync(connection, stream, dispatcher, dispatcherGate, qpackState, cancellationToken);
         }
     }
@@ -592,6 +592,8 @@ public sealed class Http3Server : IAsyncDisposable
         QuicConnection connection,
         QuicStream stream,
         QuicStream controlStream,
+        Http3StreamDispatcher dispatcher,
+        object dispatcherGate,
         ConnectionQPackState qpackState,
         CancellationToken cancellationToken)
     {
@@ -743,6 +745,11 @@ public sealed class Http3Server : IAsyncDisposable
             }
             finally
             {
+                lock (dispatcherGate)
+                {
+                    dispatcher.TryCompleteRequestStream(checked((ulong)stream.Id));
+                }
+
                 EmitStreamClosedDiagnostic(diagnosticsSink, "server", stream.Id, Http3StreamKind.Request);
             }
         }
