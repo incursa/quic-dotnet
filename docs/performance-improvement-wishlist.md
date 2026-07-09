@@ -4,6 +4,8 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-09: `Summarize-IncursaH3ProfilePack.ps1` now surfaces the retained ProtocolLab `quic-buffer-pool-summary.json` artifact directly in `summary.md`, including availability/unavailable reasons, overall pool counters, per-bucket actual rent/return/oversized/outstanding totals, and requested-size rows when future captures include them. This makes buffer-pool evidence discoverable from the local H3 profile pack summary instead of requiring manual artifact spelunking.
+
 - 2026-07-09: `QuicBufferPool` metrics now distinguish requested minimum buffer size from actual `ArrayPool<byte>` rent size. The metrics surface adds `incursa.quic.buffer_pool.requested_rents` and `incursa.quic.buffer_pool.bytes.requested` with bounded `requested_size_bucket` tags, while existing actual-size counters keep `size_bucket`. This gives ProtocolLab counter captures a direct way to tell true large buffer requests from normal pool over-return before changing default pool sizes. Treat this as buffer-pool diagnostic hardening, not a runtime throughput claim.
 
 - 2026-07-09: `Invoke-QuicPerformanceLane.ps1` now accepts `-BaselineAggregatePath` and emits a `performanceGate` block in `lane-summary.json` plus the Markdown summary. The gate compares matching current ProtocolLab aggregate cells against a retained baseline, flags `extreme-metric-regression` when the primary throughput/request-rate metric drops by at least 50 percent or p95 latency rises by at least 100 percent, and keeps confidence lanes report-only unless `-FailOnPerformanceGate` is supplied. This closes the local threshold-rule source-control piece without pretending local noisy lanes are publishable evidence.

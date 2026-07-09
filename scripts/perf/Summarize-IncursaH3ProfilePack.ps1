@@ -56,8 +56,111 @@ function Add-TopLines([System.Collections.Generic.List[string]] $Lines, [string]
     $Lines.Add("``````")
 }
 
+function Get-ObjectPropertyValue($Object, [string] $Name) {
+    if ($null -eq $Object -or -not ($Object.PSObject.Properties.Name -contains $Name)) {
+        return $null
+    }
+
+    return $Object.$Name
+}
+
 function Test-ObjectProperty($Object, [string] $Name) {
     return $null -ne $Object -and $Object.PSObject.Properties.Name -contains $Name
+}
+
+function Format-MetricSummary($Metric) {
+    if ($null -eq $Metric) {
+        return "n/a"
+    }
+
+    $parts = [System.Collections.Generic.List[string]]::new()
+    foreach ($name in @("total", "mean", "max", "latest", "delta")) {
+        $value = Get-ObjectPropertyValue $Metric $name
+        if ($null -ne $value) {
+            $parts.Add("$name $(Format-Value $value)") | Out-Null
+        }
+    }
+
+    if ($parts.Count -eq 0) {
+        return "n/a"
+    }
+
+    return ($parts -join ", ")
+}
+
+function Find-Metric($Metrics, [string] $MetricName) {
+    $matches = @($Metrics | Where-Object { $_.metricName -eq $MetricName } | Select-Object -First 1)
+    if ($matches.Count -eq 0) {
+        return $null
+    }
+
+    return $matches[0]
+}
+
+function Add-BufferPoolSummary([System.Collections.Generic.List[string]] $Lines, $Pass) {
+    $summaryFile = Get-ChildItem -LiteralPath $Pass.ProtocolLabRunRoot -Recurse -Filter "quic-buffer-pool-summary.json" -ErrorAction SilentlyContinue |
+        Select-Object -First 1
+    $summaryPath = if ($summaryFile) { $summaryFile.FullName } else { Join-Path $Pass.ProtocolLabRunRoot "quic-buffer-pool-summary.json" }
+
+    $Lines.Add("")
+    $Lines.Add("## QUIC Buffer Pool Summary")
+    $Lines.Add("")
+    $Lines.Add("- Source: ``$summaryPath``")
+
+    if (-not (Test-Path -LiteralPath $summaryPath)) {
+        $Lines.Add("- Status: unavailable")
+        $Lines.Add("- Reason: ``quic-buffer-pool-summary-missing``")
+        return
+    }
+
+    $summary = Get-Content -Path $summaryPath -Raw | ConvertFrom-Json
+    $Lines.Add("- Status: ``$($summary.status)``")
+    $Lines.Add("- Samples: ``$($summary.samples)``")
+
+    if ($summary.available -ne $true) {
+        $reason = if (Test-ObjectProperty $summary "unavailableReason") { $summary.unavailableReason } else { "unknown" }
+        $Lines.Add("- Reason: ``$reason``")
+        if ((Test-ObjectProperty $summary "parseWarnings") -and @($summary.parseWarnings).Count -gt 0) {
+            $Lines.Add("- Parse warnings: ``$(@($summary.parseWarnings) -join "`, `")``")
+        }
+        return
+    }
+
+    $Lines.Add("")
+    $Lines.Add("| metric | summary |")
+    $Lines.Add("| --- | --- |")
+    foreach ($metricName in @(
+        "incursa.quic.buffer_pool.requested_rents",
+        "incursa.quic.buffer_pool.bytes.requested",
+        "incursa.quic.buffer_pool.rents",
+        "incursa.quic.buffer_pool.bytes.rented",
+        "incursa.quic.buffer_pool.returns",
+        "incursa.quic.buffer_pool.bytes.returned",
+        "incursa.quic.buffer_pool.oversized_rents",
+        "incursa.quic.buffer_pool.outstanding.buffers",
+        "incursa.quic.buffer_pool.outstanding.bytes")) {
+        $metric = Find-Metric $summary.metrics $metricName
+        if ($null -ne $metric) {
+            $Lines.Add("| ``$metricName`` | $(Format-MetricSummary $metric) |")
+        }
+    }
+
+    $bucketRows = @($summary.sizeBuckets | Where-Object { @($_.metrics).Count -gt 0 })
+    if ($bucketRows.Count -gt 0) {
+        $Lines.Add("")
+        $Lines.Add("| bucket | requested rents | requested bytes | actual rents | actual bytes rented | oversized rents | peak outstanding bytes | latest outstanding bytes |")
+        $Lines.Add("| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
+        foreach ($bucket in $bucketRows) {
+            $bucketName = if (Test-ObjectProperty $bucket "requestedSizeBucket") { $bucket.requestedSizeBucket } else { $bucket.sizeBucket }
+            $requestedRents = Find-Metric $bucket.metrics "incursa.quic.buffer_pool.requested_rents"
+            $requestedBytes = Find-Metric $bucket.metrics "incursa.quic.buffer_pool.bytes.requested"
+            $actualRents = Find-Metric $bucket.metrics "incursa.quic.buffer_pool.rents"
+            $actualBytes = Find-Metric $bucket.metrics "incursa.quic.buffer_pool.bytes.rented"
+            $oversizedRents = Find-Metric $bucket.metrics "incursa.quic.buffer_pool.oversized_rents"
+            $outstandingBytes = Find-Metric $bucket.metrics "incursa.quic.buffer_pool.outstanding.bytes"
+            $Lines.Add("| ``$bucketName`` | $(Format-Value (Get-ObjectPropertyValue $requestedRents "total")) | $(Format-Value (Get-ObjectPropertyValue $requestedBytes "total")) | $(Format-Value (Get-ObjectPropertyValue $actualRents "total")) | $(Format-Value (Get-ObjectPropertyValue $actualBytes "total")) | $(Format-Value (Get-ObjectPropertyValue $oversizedRents "total")) | $(Format-Value (Get-ObjectPropertyValue $outstandingBytes "max")) | $(Format-Value (Get-ObjectPropertyValue $outstandingBytes "latest")) |")
+        }
+    }
 }
 
 $resolvedRoot = (Resolve-Path -LiteralPath $ProfilePackRoot).Path
@@ -119,6 +222,8 @@ if ($counterPass) {
     else {
         $lines.Add("No aggregate-results.json was found for the counter pass.")
     }
+
+    Add-BufferPoolSummary $lines $counterPass
 }
 
 $cpuPass = $profile.passes | Where-Object { $_.Name -eq "cpu-trace" } | Select-Object -First 1
