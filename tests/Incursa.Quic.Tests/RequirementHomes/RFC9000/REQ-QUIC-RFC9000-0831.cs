@@ -33,10 +33,11 @@ public sealed class REQ_QUIC_RFC9000_0831
             nowTicks: 20);
 
         Assert.True(result.StateChanged);
+        QuicEcnMarking expectedMarking = runtime.SendRuntime.CurrentEcnMarking;
         Assert.Contains(result.Effects, effect =>
             effect is QuicConnectionSendDatagramEffect sendDatagramEffect
             && sendDatagramEffect.PathIdentity == newPath
-            && sendDatagramEffect.EcnMarking == QuicEcnMarking.Ect0
+            && sendDatagramEffect.EcnMarking == expectedMarking
             && QuicFrameCodec.TryParsePathChallengeFrame(sendDatagramEffect.Datagram.Span, out _, out _));
     }
 
@@ -94,10 +95,11 @@ public sealed class REQ_QUIC_RFC9000_0831
                     new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
                 nowTicks: 20 + addressOffset);
 
+            QuicEcnMarking expectedMarking = runtime.SendRuntime.CurrentEcnMarking;
             Assert.Contains(result.Effects, effect =>
                 effect is QuicConnectionSendDatagramEffect sendDatagramEffect
                 && sendDatagramEffect.PathIdentity == newPath
-                && sendDatagramEffect.EcnMarking == QuicEcnMarking.Ect0
+                && sendDatagramEffect.EcnMarking == expectedMarking
                 && QuicFrameCodec.TryParsePathChallengeFrame(sendDatagramEffect.Datagram.Span, out _, out _));
         }
     }
