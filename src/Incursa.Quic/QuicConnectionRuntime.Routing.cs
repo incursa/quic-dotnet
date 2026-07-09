@@ -992,7 +992,7 @@ internal sealed partial class QuicConnectionRuntime
             && (activePath is null
                 || (!activePath.Value.AmplificationState.IsAddressValidated
                     && activePath.Value.AmplificationState.RemainingSendBudget == 0));
-        bool peerAddressValidationComplete = transportFlags.HasFlag(QuicConnectionTransportState.PeerAddressValidated);
+        bool peerAddressValidationComplete = (transportFlags & QuicConnectionTransportState.PeerAddressValidated) != 0;
         return recoveryController.TrySelectLossDetectionTimer(
             nowMicros,
             maxAckDelayMicros,

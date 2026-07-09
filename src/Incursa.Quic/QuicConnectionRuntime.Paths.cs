@@ -59,7 +59,7 @@ internal sealed partial class QuicConnectionRuntime
             pathIdentity,
             ActivatedAtTicks: nowTicks,
             LastActivityTicks: nowTicks,
-            IsValidated: trustedReuse || transportFlags.HasFlag(QuicConnectionTransportState.PeerAddressValidated),
+            IsValidated: trustedReuse || (transportFlags & QuicConnectionTransportState.PeerAddressValidated) != 0,
             RecoverySnapshot: trustedReuse ? recentlyValidatedPath.SavedRecoverySnapshot : null)
         {
             AmplificationState = amplificationState,
@@ -1624,7 +1624,7 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        return !transportFlags.HasFlag(QuicConnectionTransportState.DisableActiveMigration)
+        return (transportFlags & QuicConnectionTransportState.DisableActiveMigration) == 0
             || IsPreferredAddressPath(pathIdentity)
             || !IsLocalAddressChange(pathIdentity);
     }
@@ -1644,7 +1644,7 @@ internal sealed partial class QuicConnectionRuntime
     private void UpdatePeerAddressValidationFlag()
     {
         bool shouldBeValidated = HasValidatedPath;
-        bool isCurrentlyValidated = transportFlags.HasFlag(QuicConnectionTransportState.PeerAddressValidated);
+        bool isCurrentlyValidated = (transportFlags & QuicConnectionTransportState.PeerAddressValidated) != 0;
 
         if (shouldBeValidated == isCurrentlyValidated)
         {

@@ -733,7 +733,7 @@ internal sealed partial class QuicConnectionRuntime
 
     internal bool TryMarkPeerAddressValidatedByAddressValidationToken(long nowTicks)
     {
-        bool wasValidated = transportFlags.HasFlag(QuicConnectionTransportState.PeerAddressValidated);
+        bool wasValidated = (transportFlags & QuicConnectionTransportState.PeerAddressValidated) != 0;
         transportFlags |= QuicConnectionTransportState.PeerAddressValidated;
 
         bool stateChanged = !wasValidated;
