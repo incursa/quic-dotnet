@@ -382,10 +382,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
     }
 
-    private sealed class StreamOpenRequestCompletionSource : IValueTaskSource<ulong>
+    private sealed class StreamOpenRequestCompletionSource : IValueTaskSource<QuicStream>
     {
         private readonly QuicConnectionRuntime owner;
         private ManualResetValueTaskSourceCore<ulong> source;
+        private CancellationTokenRegistration cancellationRegistration;
 
         internal StreamOpenRequestCompletionSource(QuicConnectionRuntime owner)
         {
@@ -396,14 +397,36 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             };
         }
 
-        internal ValueTask<ulong> Task => new(this, source.Version);
+        internal ValueTask<QuicStream> Task => new(this, source.Version);
 
         internal QuicStreamType StreamType { get; set; }
 
         internal void Prepare(QuicStreamType streamType)
         {
+            cancellationRegistration.Dispose();
+            cancellationRegistration = default;
             StreamType = streamType;
             source.Reset();
+        }
+
+        internal void RegisterCancellation(long requestId, CancellationToken cancellationToken)
+        {
+            cancellationRegistration = cancellationToken.Register(static state =>
+            {
+                (QuicConnectionRuntime runtime, long requestId, CancellationToken token) =
+                    ((QuicConnectionRuntime, long, CancellationToken))state!;
+
+                if (runtime.TryRemovePendingStreamOpenRequest(requestId, out StreamOpenRequestCompletionSource? pendingCompletion))
+                {
+                    pendingCompletion!.TrySetCanceled(token);
+                }
+            }, (owner, requestId, cancellationToken));
+        }
+
+        internal void DisposeCancellationRegistration()
+        {
+            cancellationRegistration.Dispose();
+            cancellationRegistration = default;
         }
 
         internal void TrySetResult(ulong streamId)
@@ -415,24 +438,31 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         internal void TrySetCanceled(CancellationToken cancellationToken)
             => TrySetException(new OperationCanceledException(cancellationToken));
 
-        ulong IValueTaskSource<ulong>.GetResult(short token)
+        QuicStream IValueTaskSource<QuicStream>.GetResult(short token)
         {
             try
             {
-                return source.GetResult(token);
+                ulong streamId = source.GetResult(token);
+                if (!owner.streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamId, out _))
+                {
+                    throw new InvalidOperationException("The stream open completed without a committed stream state.");
+                }
+
+                return new QuicStream(owner.streamRegistry.Bookkeeping, streamId, owner);
             }
             finally
             {
+                DisposeCancellationRegistration();
                 owner.ReturnStreamOpenRequestCompletionSource(this);
             }
         }
 
-        ValueTaskSourceStatus IValueTaskSource<ulong>.GetStatus(short token)
+        ValueTaskSourceStatus IValueTaskSource<QuicStream>.GetStatus(short token)
         {
             return source.GetStatus(token);
         }
 
-        void IValueTaskSource<ulong>.OnCompleted(
+        void IValueTaskSource<QuicStream>.OnCompleted(
             Action<object?> continuation,
             object? state,
             short token,
@@ -1505,7 +1535,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
     }
 
-    internal async ValueTask<QuicStream> OpenOutboundStreamAsync(
+    internal ValueTask<QuicStream> OpenOutboundStreamAsync(
         QuicStreamType streamType,
         CancellationToken cancellationToken = default)
     {
@@ -1543,18 +1573,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             throw new InvalidOperationException("The connection runtime could not queue the stream open request.");
         }
 
-        using CancellationTokenRegistration cancellationRegistration = cancellationToken.CanBeCanceled
-            ? cancellationToken.Register(static state =>
-            {
-                (QuicConnectionRuntime runtime, long requestId, CancellationToken token) =
-                    ((QuicConnectionRuntime, long, CancellationToken))state!;
-
-                if (runtime.TryRemovePendingStreamOpenRequest(requestId, out StreamOpenRequestCompletionSource? pendingCompletion))
-                {
-                    pendingCompletion!.TrySetCanceled(token);
-                }
-            }, (this, requestId, cancellationToken))
-            : default;
+        if (cancellationToken.CanBeCanceled)
+        {
+            completion.RegisterCancellation(requestId, cancellationToken);
+        }
 
         if (!TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
             clock.Ticks,
@@ -1564,11 +1586,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         {
             if (TryRemovePendingStreamOpenRequest(requestId, out StreamOpenRequestCompletionSource? removedCompletion))
             {
+                removedCompletion!.DisposeCancellationRegistration();
                 ReturnStreamOpenRequestCompletionSource(removedCompletion!);
             }
             else
             {
-                await completion.Task.ConfigureAwait(false);
+                return OpenOutboundStreamPostFailureAsync(completion);
             }
 
             throw IsDisposed
@@ -1576,14 +1599,15 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 : new InvalidOperationException("The connection runtime could not queue the stream open request.");
         }
 
-        ulong streamId = await completion.Task.ConfigureAwait(false);
+        return completion.Task;
+    }
 
-        if (!streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamId, out _))
-        {
-            throw new InvalidOperationException("The stream open completed without a committed stream state.");
-        }
-
-        return new QuicStream(streamRegistry.Bookkeeping, streamId, this);
+    private async ValueTask<QuicStream> OpenOutboundStreamPostFailureAsync(StreamOpenRequestCompletionSource completion)
+    {
+        _ = await completion.Task.ConfigureAwait(false);
+        throw IsDisposed
+            ? new ObjectDisposedException(nameof(QuicConnectionRuntime))
+            : new InvalidOperationException("The connection runtime could not queue the stream open request.");
     }
 
     internal ValueTask WriteStreamAsync(
