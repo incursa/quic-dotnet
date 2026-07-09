@@ -28,6 +28,8 @@ public sealed class QuicStream : Stream
     private TaskCompletionSource<object?>? readsClosed;
     private TaskCompletionSource<object?>? writesClosed;
     private TaskCompletionSource<object?>? writeAborted;
+    private int readsClosedCompleted;
+    private int writesClosedCompleted;
 
     private TaskCompletionSource<object?> ReadsClosedTcs => readsClosed ??= new(TaskCreationOptions.RunContinuationsAsynchronously);
     private TaskCompletionSource<object?> WritesClosedTcs => writesClosed ??= new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -57,12 +59,12 @@ public sealed class QuicStream : Stream
 
         if (!canRead || snapshot.ReceiveState == QuicStreamReceiveState.DataRead)
         {
-            ReadsClosedTcs.TrySetResult(null);
+            CompleteReadsClosed();
         }
 
         if (!canWrite || snapshot.SendState is QuicStreamSendState.DataSent or QuicStreamSendState.DataRecvd or QuicStreamSendState.ResetSent or QuicStreamSendState.ResetRecvd)
         {
-            WritesClosedTcs.TrySetResult(null);
+            CompleteWritesClosed();
         }
 
         if (runtime is not null)
@@ -145,20 +147,24 @@ public sealed class QuicStream : Stream
         }
     }
 
+    private bool IsReadsClosed => Volatile.Read(ref readsClosedCompleted) != 0;
+
+    private bool IsWritesClosed => Volatile.Read(ref writesClosedCompleted) != 0;
+
     /// <summary>
     /// Gets a task that completes when the read side is closed.
     /// </summary>
-    public Task ReadsClosed => ReadsClosedTcs.Task;
+    public Task ReadsClosed => GetReadsClosedTask();
 
-    public Task WritesClosed => WritesClosedTcs.Task;
+    public Task WritesClosed => GetWritesClosedTask();
 
-    public override bool CanRead => Volatile.Read(ref disposed) == 0 && canRead && !ReadsClosedTcs.Task.IsCompleted;
+    public override bool CanRead => Volatile.Read(ref disposed) == 0 && canRead && !IsReadsClosed;
 
     public override bool CanSeek => false;
 
     public override bool CanTimeout => false;
 
-    public override bool CanWrite => Volatile.Read(ref disposed) == 0 && canWrite && !WritesClosedTcs.Task.IsCompleted;
+    public override bool CanWrite => Volatile.Read(ref disposed) == 0 && canWrite && !IsWritesClosed;
 
     public override long Length => throw new NotSupportedException();
 
@@ -323,12 +329,12 @@ public sealed class QuicStream : Stream
                 throw new NotSupportedException("Aborting both sides requires the supported connection runtime path.");
             }
 
-            if (!ReadsClosedTcs.Task.IsCompleted)
+            if (!IsReadsClosed)
             {
                 runtime.AbortStreamReadsAsync(streamId, checked((ulong)errorCode)).GetAwaiter().GetResult();
             }
 
-            if (!WritesClosedTcs.Task.IsCompleted)
+            if (!IsWritesClosed)
             {
                 runtime.AbortStreamWritesAsync(streamId, checked((ulong)errorCode)).GetAwaiter().GetResult();
             }
@@ -348,7 +354,7 @@ public sealed class QuicStream : Stream
                 throw new InvalidOperationException("This stream does not have a readable side.");
             }
 
-            if (ReadsClosedTcs.Task.IsCompleted)
+            if (IsReadsClosed)
             {
                 return;
             }
@@ -367,7 +373,7 @@ public sealed class QuicStream : Stream
             throw new InvalidOperationException("This stream does not have a writable side.");
         }
 
-        if (WritesClosedTcs.Task.IsCompleted)
+        if (IsWritesClosed)
         {
             return;
         }
@@ -392,7 +398,7 @@ public sealed class QuicStream : Stream
             throw new InvalidOperationException("This stream does not have a writable side.");
         }
 
-        if (WritesClosedTcs.Task.IsCompleted)
+        if (IsWritesClosed)
         {
             return;
         }
@@ -418,12 +424,12 @@ public sealed class QuicStream : Stream
 
             if (snapshot.SendState is not (QuicStreamSendState.Ready or QuicStreamSendState.Send))
             {
-                WritesClosedTcs.TrySetResult(null);
+                CompleteWritesClosed();
                 return;
             }
 
             await runtime.CompleteStreamWritesAsync(streamId, cancellationToken).ConfigureAwait(false);
-            WritesClosedTcs.TrySetResult(null);
+            CompleteWritesClosed();
             runtime.TryQueueStreamCapacityRelease(streamId);
         }
         finally
@@ -481,7 +487,7 @@ public sealed class QuicStream : Stream
                     {
                         if (await runtime.TryCompleteStreamWritesAsync(streamId).ConfigureAwait(false))
                         {
-                            WritesClosedTcs.TrySetResult(null);
+                            CompleteWritesClosed();
                             runtime.TryQueueStreamCapacityRelease(streamId);
                         }
                     }
@@ -503,8 +509,8 @@ public sealed class QuicStream : Stream
                 QuicMetrics.RecordStreamClosed(runtime.TlsState.Role, streamId, type);
             }
 
-            ReadsClosedTcs.TrySetResult(null);
-            WritesClosedTcs.TrySetResult(null);
+            CompleteReadsClosed();
+            CompleteWritesClosed();
             readGate.Release();
             readGate.Dispose();
             writeGate?.Dispose();
@@ -604,7 +610,7 @@ public sealed class QuicStream : Stream
 
             if (completed)
             {
-                ReadsClosedTcs.TrySetResult(null);
+                CompleteReadsClosed();
                 runtime?.TryQueueStreamCapacityRelease(streamId);
             }
 
@@ -614,7 +620,7 @@ public sealed class QuicStream : Stream
 
         if (completed)
         {
-            ReadsClosedTcs.TrySetResult(null);
+            CompleteReadsClosed();
             runtime?.TryQueueStreamCapacityRelease(streamId);
             return true;
         }
@@ -745,7 +751,7 @@ public sealed class QuicStream : Stream
             }
 
             await runtime.WriteFinalStreamAsync(streamId, buffer, cancellationToken).ConfigureAwait(false);
-            WritesClosedTcs.TrySetResult(null);
+            CompleteWritesClosed();
             runtime.TryQueueStreamCapacityRelease(streamId);
         }
         finally
@@ -807,7 +813,7 @@ public sealed class QuicStream : Stream
 
             if (finishWrites)
             {
-                WritesClosedTcs.TrySetResult(null);
+                CompleteWritesClosed();
                 runtime.TryQueueStreamCapacityRelease(streamId);
             }
 
@@ -824,29 +830,25 @@ public sealed class QuicStream : Stream
         switch (notification.Kind)
         {
             case QuicStreamNotificationKind.ReadAborted:
-                readTerminalException ??= notification.Exception;
-                ReadsClosedTcs.TrySetException(notification.Exception!);
+                CompleteReadsClosed(notification.Exception!);
                 readGate.Release();
                 runtime?.TryQueueStreamCapacityRelease(streamId);
                 break;
             case QuicStreamNotificationKind.WriteAborted:
-                writeTerminalException ??= notification.Exception;
                 writeAborted?.TrySetException(notification.Exception!);
-                WritesClosedTcs.TrySetException(notification.Exception!);
+                CompleteWritesClosed(notification.Exception!);
                 runtime?.TryQueueStreamCapacityRelease(streamId);
                 break;
             case QuicStreamNotificationKind.ConnectionTerminated:
-                if (canRead && !ReadsClosedTcs.Task.IsCompleted)
+                if (canRead && !IsReadsClosed)
                 {
-                    readTerminalException ??= notification.Exception;
-                    ReadsClosedTcs.TrySetException(notification.Exception!);
+                    CompleteReadsClosed(notification.Exception!);
                     readGate.Release();
                 }
 
-                if (canWrite && !WritesClosedTcs.Task.IsCompleted)
+                if (canWrite && !IsWritesClosed)
                 {
-                    writeTerminalException ??= notification.Exception;
-                    WritesClosedTcs.TrySetException(notification.Exception!);
+                    CompleteWritesClosed(notification.Exception!);
                 }
 
                 if (writeAborted is TaskCompletionSource<object?> writeAbortedCompletion
@@ -884,7 +886,7 @@ public sealed class QuicStream : Stream
             QuicError.StreamAborted,
             checked((long)snapshot.ReceiveAbortErrorCode),
             "The peer aborted the stream.");
-        ReadsClosedTcs.TrySetException(exception);
+        CompleteReadsClosed(exception);
         return true;
     }
 
@@ -899,6 +901,90 @@ public sealed class QuicStream : Stream
         TaskCompletionSource<object?> created = new(TaskCreationOptions.RunContinuationsAsynchronously);
         TaskCompletionSource<object?>? existing = Interlocked.CompareExchange(ref writeAborted, created, null);
         return existing ?? created;
+    }
+
+    private Task GetReadsClosedTask()
+    {
+        if (IsReadsClosed)
+        {
+            return readTerminalException is Exception exception
+                ? Task.FromException(exception)
+                : Task.CompletedTask;
+        }
+
+        TaskCompletionSource<object?> completion = ReadsClosedTcs;
+        if (IsReadsClosed)
+        {
+            CompleteReadsClosed(readTerminalException);
+        }
+
+        return completion.Task;
+    }
+
+    private Task GetWritesClosedTask()
+    {
+        if (IsWritesClosed)
+        {
+            return writeTerminalException is Exception exception
+                ? Task.FromException(exception)
+                : Task.CompletedTask;
+        }
+
+        TaskCompletionSource<object?> completion = WritesClosedTcs;
+        if (IsWritesClosed)
+        {
+            CompleteWritesClosed(writeTerminalException);
+        }
+
+        return completion.Task;
+    }
+
+    private void CompleteReadsClosed(Exception? exception = null)
+    {
+        if (exception is not null)
+        {
+            readTerminalException ??= exception;
+        }
+
+        Volatile.Write(ref readsClosedCompleted, 1);
+        TaskCompletionSource<object?>? completion = Volatile.Read(ref readsClosed);
+        if (completion is null)
+        {
+            return;
+        }
+
+        if (exception is not null)
+        {
+            completion.TrySetException(exception);
+        }
+        else
+        {
+            completion.TrySetResult(null);
+        }
+    }
+
+    private void CompleteWritesClosed(Exception? exception = null)
+    {
+        if (exception is not null)
+        {
+            writeTerminalException ??= exception;
+        }
+
+        Volatile.Write(ref writesClosedCompleted, 1);
+        TaskCompletionSource<object?>? completion = Volatile.Read(ref writesClosed);
+        if (completion is null)
+        {
+            return;
+        }
+
+        if (exception is not null)
+        {
+            completion.TrySetException(exception);
+        }
+        else
+        {
+            completion.TrySetResult(null);
+        }
     }
 
     private static void ValidateErrorCode(long errorCode)
