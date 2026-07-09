@@ -493,7 +493,7 @@ public sealed class Http3Client : IAsyncDisposable
     {
         await using (stream.ConfigureAwait(false))
         {
-            byte[] buffer = new byte[readBufferSize];
+            byte[] buffer = QuicBufferPool.RentBytes(readBufferSize);
             byte[] pendingStreamType = [];
             Http3StreamKind streamKind = Http3StreamKind.Unknown;
             try
@@ -576,6 +576,7 @@ public sealed class Http3Client : IAsyncDisposable
                     StreamId = stream.Id,
                     StreamKind = streamKind,
                 });
+                QuicBufferPool.ReturnBytes(buffer);
             }
         }
     }

@@ -375,7 +375,7 @@ public sealed class Http3Server : IAsyncDisposable
     {
         await using (stream.ConfigureAwait(false))
         {
-            byte[] buffer = new byte[readBufferSize];
+            byte[] buffer = QuicBufferPool.RentBytes(readBufferSize);
             Http3StreamKind streamKind = Http3StreamKind.Unknown;
             try
             {
@@ -456,6 +456,7 @@ public sealed class Http3Server : IAsyncDisposable
             finally
             {
                 EmitStreamClosedDiagnostic(diagnosticsSink, "server", stream.Id, streamKind);
+                QuicBufferPool.ReturnBytes(buffer);
             }
         }
     }
