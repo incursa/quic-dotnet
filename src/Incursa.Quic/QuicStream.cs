@@ -260,7 +260,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
         {
             ArgumentNullException.ThrowIfNull(buffer);
             ValidateRange(buffer.Length, offset, count);
-            return WriteCoreAsync(buffer.AsMemory(offset, count), cancellationToken);
+            return WriteCoreAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -274,7 +274,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
 
     public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
     {
-        return new ValueTask(WriteCoreAsync(buffer, cancellationToken));
+        return WriteCoreAsync(buffer, cancellationToken);
     }
 
     internal async ValueTask WriteFinalAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
@@ -531,9 +531,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
                 return bytesWritten;
             }
 
-            SemaphoreSlim signal = LazyInitializer.EnsureInitialized(
-                ref readGateSignal,
-                static () => new SemaphoreSlim(0, int.MaxValue));
+            SemaphoreSlim signal = GetOrCreateReadGateSignal();
 
             if (TryCompleteReadSynchronously(buffer, cancellationToken, out bytesWritten, suppressTerminalException))
             {
@@ -665,7 +663,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
         };
     }
 
-    private async Task WriteCoreAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
+    private async ValueTask WriteCoreAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
 
@@ -910,9 +908,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
 
     private async ValueTask WaitForWriteGateSlowAsync(CancellationToken cancellationToken)
     {
-        SemaphoreSlim signal = LazyInitializer.EnsureInitialized(
-            ref writeGateSignal,
-            static () => new SemaphoreSlim(0));
+        SemaphoreSlim signal = GetOrCreateWriteGateSignal();
 
         while (true)
         {
@@ -946,6 +942,31 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
         {
             Volatile.Read(ref writeGateSignal)?.Release();
         }
+    }
+
+    private SemaphoreSlim GetOrCreateReadGateSignal()
+        => GetOrCreateGateSignal(ref readGateSignal, int.MaxValue);
+
+    private SemaphoreSlim GetOrCreateWriteGateSignal()
+        => GetOrCreateGateSignal(ref writeGateSignal, 1);
+
+    private static SemaphoreSlim GetOrCreateGateSignal(ref SemaphoreSlim? gateSignal, int maxCount)
+    {
+        SemaphoreSlim? signal = Volatile.Read(ref gateSignal);
+        if (signal is not null)
+        {
+            return signal;
+        }
+
+        SemaphoreSlim created = new(0, maxCount);
+        signal = Interlocked.CompareExchange(ref gateSignal, created, null);
+        if (signal is not null)
+        {
+            created.Dispose();
+            return signal;
+        }
+
+        return created;
     }
 
     internal void HandleRuntimeNotification(QuicStreamNotification notification)
