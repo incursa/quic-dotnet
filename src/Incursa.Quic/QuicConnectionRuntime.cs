@@ -1211,9 +1211,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         ArgumentNullException.ThrowIfNull(observer);
 
         long observerId = Interlocked.Increment(ref nextStreamObserverId);
-        QuicStreamObserverSet observers = streamObservers.GetOrAdd(streamId);
 
-        if (!observers.TryAdd(observerId, observer))
+        if (!streamObservers.TryAdd(streamId, observerId, observer))
         {
             throw new InvalidOperationException("The connection runtime could not register the stream observer.");
         }
@@ -1246,13 +1245,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal void UnregisterStreamObserver(ulong streamId, long observerId)
     {
-        if (!streamObservers.TryGetValue(streamId, out QuicStreamObserverSet? observers))
-        {
-            return;
-        }
-
-        observers.TryRemove(observerId);
-        streamObservers.TryRemoveIfEmpty(streamId, observers);
+        streamObservers.TryRemove(streamId, observerId);
     }
 
     internal ValueTask<QuicStream> AcceptInboundStreamAsync(CancellationToken cancellationToken = default)

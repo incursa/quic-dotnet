@@ -5597,12 +5597,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private void NotifyStreamObservers(ulong streamId, QuicStreamNotification notification)
     {
-        if (!streamObservers.TryGetValue(streamId, out QuicStreamObserverSet? observers))
-        {
-            return;
-        }
-
-        observers.Notify(notification);
+        streamObservers.Notify(streamId, notification);
     }
 
     private void NotifyAllStreamObservers(Exception completionException)
@@ -5612,13 +5607,8 @@ internal sealed partial class QuicConnectionRuntime
             return;
         }
 
-        foreach (KeyValuePair<ulong, QuicStreamObserverSet> entry in streamObservers.Snapshot())
-        {
-            QuicStreamNotification notification = new(
-                QuicStreamNotificationKind.ConnectionTerminated,
-                completionException);
-
-            entry.Value.Notify(notification);
-        }
+        streamObservers.NotifyAll(new QuicStreamNotification(
+            QuicStreamNotificationKind.ConnectionTerminated,
+            completionException));
     }
 }
