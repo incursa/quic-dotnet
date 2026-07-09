@@ -69,6 +69,21 @@ public sealed class QPackMilestoneTests
         Assert.Equal(encoded.Length, bytesConsumed);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S2-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void HuffmanDecode_ReusesCachedShortDecodedStrings()
+    {
+        byte[] encoded = Convert.FromHexString("F1E3C2E5F23A6BA0AB90F4FF");
+
+        string first = QPackHuffman.Decode(encoded, QPackErrorCode.DecompressionFailed);
+        string second = QPackHuffman.Decode(encoded, QPackErrorCode.DecompressionFailed);
+
+        Assert.Equal("www.example.com", first);
+        Assert.Same(first, second);
+    }
+
     [Theory]
     [Requirement("REQ-QUIC-RFC9204-S2-0001")]
     [CoverageType(RequirementCoverageType.Negative)]
