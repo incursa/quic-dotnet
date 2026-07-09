@@ -1472,24 +1472,15 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     {
         try
         {
-            while (await WaitForInboundStreamAsync(cancellationToken).ConfigureAwait(false))
+            ulong streamId = await inboundStreamIds.Reader.ReadAsync(cancellationToken).ConfigureAwait(false);
+            if (ApplicationReceiveDebugEnabled)
             {
-                if (!inboundStreamIds.Reader.TryRead(out ulong streamId))
-                {
-                    continue;
-                }
-
-                if (ApplicationReceiveDebugEnabled)
-                {
-                    await Console.Error.WriteLineAsync($"app-rx accept-inbound-stream role={tlsState.Role} stream={streamId}.").ConfigureAwait(false);
-                }
-
-                return terminalState is not null
-                    ? null
-                    : new QuicStream(streamRegistry.Bookkeeping, streamId, this);
+                await Console.Error.WriteLineAsync($"app-rx accept-inbound-stream role={tlsState.Role} stream={streamId}.").ConfigureAwait(false);
             }
 
-            return null;
+            return terminalState is not null
+                ? null
+                : new QuicStream(streamRegistry.Bookkeeping, streamId, this);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -1508,38 +1499,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         {
             return null;
         }
-    }
-
-    private ValueTask<bool> WaitForInboundStreamAsync(CancellationToken cancellationToken)
-    {
-        ValueTask<bool> wait = inboundStreamIds.Reader.WaitToReadAsync();
-        if (!cancellationToken.CanBeCanceled || wait.IsCompleted)
+        catch (ChannelClosedException)
         {
-            return wait;
+            return null;
         }
-
-        return WaitForInboundStreamOrCancellationAsync(wait.AsTask(), cancellationToken);
-    }
-
-    private static async ValueTask<bool> WaitForInboundStreamOrCancellationAsync(
-        Task<bool> waitTask,
-        CancellationToken cancellationToken)
-    {
-        TaskCompletionSource<bool> cancellationSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        await using CancellationTokenRegistration registration = cancellationToken.UnsafeRegister(static state =>
-        {
-            TaskCompletionSource<bool> source = (TaskCompletionSource<bool>)state!;
-            source.TrySetResult(false);
-        }, cancellationSource);
-
-        Task<bool> cancellationTask = cancellationSource.Task;
-        Task completedTask = await Task.WhenAny(waitTask, cancellationTask).ConfigureAwait(false);
-        if (completedTask != waitTask)
-        {
-            return false;
-        }
-
-        return await waitTask.ConfigureAwait(false);
     }
 
     internal async ValueTask<QuicStream> OpenOutboundStreamAsync(
