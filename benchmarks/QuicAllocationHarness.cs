@@ -1133,6 +1133,9 @@ internal static class QuicAllocationHarness
             QuicPublicApiLoopbackBenchmarkSupport.CreateServerAuthenticationOptions(serverCertificate);
         byte[] requestPayload = CreatePayload(1024, 0x11);
         byte[] responsePayload = CreatePayload(1024, 0x33);
+        byte[] requestBuffer = new byte[requestPayload.Length];
+        byte[] responseBuffer = new byte[responsePayload.Length];
+        byte[] eofProbe = new byte[1];
 
         var incursaPasses = new List<PassResult>();
         var systemNetPasses = new List<PassResult>();
@@ -1156,7 +1159,10 @@ internal static class QuicAllocationHarness
                                     incursaPair.Client,
                                     incursaPair.Server,
                                     requestPayload,
-                                    responsePayload)
+                                    responsePayload,
+                                    requestBuffer,
+                                    responseBuffer,
+                                    eofProbe)
                                 .GetAwaiter()
                                 .GetResult()));
                     }
@@ -1186,7 +1192,10 @@ internal static class QuicAllocationHarness
                                     systemNetPair.Client,
                                     systemNetPair.Server,
                                     requestPayload,
-                                    responsePayload)
+                                    responsePayload,
+                                    requestBuffer,
+                                    responseBuffer,
+                                    eofProbe)
                                 .GetAwaiter()
                                 .GetResult()));
                     }
@@ -1560,7 +1569,10 @@ internal static class QuicAllocationHarness
         IncursaClientConnection clientConnection,
         IncursaClientConnection serverConnection,
         byte[] requestPayload,
-        byte[] responsePayload)
+        byte[] responsePayload,
+        byte[] requestBuffer,
+        byte[] responseBuffer,
+        byte[] eofProbe)
     {
         Task<IncursaStream> acceptStreamTask = serverConnection.AcceptInboundStreamAsync().AsTask();
         await Task.Yield();
@@ -1572,28 +1584,26 @@ internal static class QuicAllocationHarness
         await clientStream.WritesClosed.ConfigureAwait(false);
 
         await using IncursaStream serverStream = await acceptStreamTask.ConfigureAwait(false);
-        byte[] requestBuffer = new byte[requestPayload.Length];
         await ReadExactlyAsync(serverStream, requestBuffer).ConfigureAwait(false);
         if (!requestPayload.AsSpan().SequenceEqual(requestBuffer))
         {
             throw new InvalidOperationException("The server request payload did not match the client payload.");
         }
 
-        await EnsureEofAsync(serverStream, "The server did not observe request EOF.").ConfigureAwait(false);
+        await EnsureEofAsync(serverStream, eofProbe, "The server did not observe request EOF.").ConfigureAwait(false);
         await serverStream.ReadsClosed.ConfigureAwait(false);
 
         await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).ConfigureAwait(false);
         await serverStream.CompleteWritesAsync().ConfigureAwait(false);
         await serverStream.WritesClosed.ConfigureAwait(false);
 
-        byte[] responseBuffer = new byte[responsePayload.Length];
         await ReadExactlyAsync(clientStream, responseBuffer).ConfigureAwait(false);
         if (!responsePayload.AsSpan().SequenceEqual(responseBuffer))
         {
             throw new InvalidOperationException("The client response payload did not match the server payload.");
         }
 
-        await EnsureEofAsync(clientStream, "The client did not observe response EOF.").ConfigureAwait(false);
+        await EnsureEofAsync(clientStream, eofProbe, "The client did not observe response EOF.").ConfigureAwait(false);
         await clientStream.ReadsClosed.ConfigureAwait(false);
     }
 
@@ -1601,7 +1611,10 @@ internal static class QuicAllocationHarness
         SystemNetClientConnection clientConnection,
         SystemNetClientConnection serverConnection,
         byte[] requestPayload,
-        byte[] responsePayload)
+        byte[] responsePayload,
+        byte[] requestBuffer,
+        byte[] responseBuffer,
+        byte[] eofProbe)
     {
         Task<SystemNetStream> acceptStreamTask = serverConnection.AcceptInboundStreamAsync().AsTask();
         await Task.Yield();
@@ -1613,28 +1626,26 @@ internal static class QuicAllocationHarness
         await clientStream.WritesClosed.ConfigureAwait(false);
 
         await using SystemNetStream serverStream = await acceptStreamTask.ConfigureAwait(false);
-        byte[] requestBuffer = new byte[requestPayload.Length];
         await ReadExactlyAsync(serverStream, requestBuffer).ConfigureAwait(false);
         if (!requestPayload.AsSpan().SequenceEqual(requestBuffer))
         {
             throw new InvalidOperationException("The server request payload did not match the client payload.");
         }
 
-        await EnsureEofAsync(serverStream, "The server did not observe request EOF.").ConfigureAwait(false);
+        await EnsureEofAsync(serverStream, eofProbe, "The server did not observe request EOF.").ConfigureAwait(false);
         await serverStream.ReadsClosed.ConfigureAwait(false);
 
         await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).ConfigureAwait(false);
         serverStream.CompleteWrites();
         await serverStream.WritesClosed.ConfigureAwait(false);
 
-        byte[] responseBuffer = new byte[responsePayload.Length];
         await ReadExactlyAsync(clientStream, responseBuffer).ConfigureAwait(false);
         if (!responsePayload.AsSpan().SequenceEqual(responseBuffer))
         {
             throw new InvalidOperationException("The client response payload did not match the server payload.");
         }
 
-        await EnsureEofAsync(clientStream, "The client did not observe response EOF.").ConfigureAwait(false);
+        await EnsureEofAsync(clientStream, eofProbe, "The client did not observe response EOF.").ConfigureAwait(false);
         await clientStream.ReadsClosed.ConfigureAwait(false);
     }
 
@@ -1673,9 +1684,8 @@ internal static class QuicAllocationHarness
         }
     }
 
-    private static async Task EnsureEofAsync(Stream stream, string failureMessage)
+    private static async Task EnsureEofAsync(Stream stream, byte[] probe, string failureMessage)
     {
-        byte[] probe = new byte[1];
         int bytesRead = await stream.ReadAsync(probe, 0, probe.Length).ConfigureAwait(false);
         if (bytesRead != 0)
         {
