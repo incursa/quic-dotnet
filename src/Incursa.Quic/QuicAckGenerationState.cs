@@ -29,7 +29,7 @@ internal sealed class QuicAckGenerationState
     // the retained ACK set is genuinely bigger than the hot-path shape.
     private const int StackPacketRangeCapacity = 32;
     private const int StackAckFramePacketNumberCapacity = 32;
-    private const int InitialPacketNumberSpaceCapacity = 8;
+    private const int InitialPacketNumberSpaceCapacity = 32;
 
     private readonly int maximumRetainedAckRanges;
     private readonly int minimumAckElicitingPacketsBeforeDelayedAck;

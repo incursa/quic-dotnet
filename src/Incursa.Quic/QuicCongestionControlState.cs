@@ -774,7 +774,7 @@ internal readonly struct QuicPersistentCongestionPacket
 /// </summary>
 internal sealed class QuicSenderFlowController
 {
-    private const int InitialPacketNumberSpaceCapacity = 8;
+    private const int InitialPacketNumberSpaceCapacity = 32;
 
     private readonly Dictionary<QuicPacketNumberSpace, SortedList<ulong, SentPacketState>> sentPacketsBySpace = [];
 

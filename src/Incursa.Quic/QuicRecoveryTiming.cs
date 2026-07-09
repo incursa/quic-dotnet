@@ -836,7 +836,7 @@ internal sealed class QuicRecoveryController
 /// </summary>
 internal sealed class QuicRecoveryPacketNumberSpaceState
 {
-    private const int InitialPacketNumberSpaceCapacity = 8;
+    private const int InitialPacketNumberSpaceCapacity = 32;
 
     private readonly SortedList<ulong, QuicRecoverySentPacketState> ackElicitingPacketsInFlight;
 

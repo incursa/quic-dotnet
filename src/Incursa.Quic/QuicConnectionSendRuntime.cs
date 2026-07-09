@@ -53,8 +53,10 @@ internal readonly record struct QuicConnectionRetransmissionPlan(
 /// </summary>
 internal sealed class QuicConnectionSendRuntime
 {
+    private const int InitialSentPacketCapacity = 16;
+
     private static readonly bool ReceiveEcnMetadataSupported = QuicSocketEcnControl.GetReceiveEcnMetadataCapability().IsSupported;
-    private readonly Dictionary<QuicConnectionSentPacketKey, QuicConnectionSentPacket> sentPackets = [];
+    private readonly Dictionary<QuicConnectionSentPacketKey, QuicConnectionSentPacket> sentPackets = new(InitialSentPacketCapacity);
     private readonly QuicRetransmissionQueue retransmissionQueue = new();
     private readonly QuicSenderFlowController flowController;
     private readonly QuicRttEstimator rttEstimator;
