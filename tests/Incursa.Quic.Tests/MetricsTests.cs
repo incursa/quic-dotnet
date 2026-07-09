@@ -71,6 +71,8 @@ public class MetricsTests
         QuicMetrics.RecordAeadOpenFailure(QuicAeadAlgorithm.Aes128Gcm);
         QuicMetrics.RecordUdpError(QuicTlsRole.Server, "receive", SocketError.ConnectionReset);
         QuicMetrics.RecordRtt(QuicTlsRole.Client, 12_500);
+        byte[] rentedBuffer = QuicBufferPool.RentBytes(1);
+        QuicBufferPool.ReturnBytes(rentedBuffer);
 
         Assert.DoesNotContain(recorder.Measurements, measurement => measurement.HasAnyForbiddenTag());
         Assert.Contains(recorder.Measurements, measurement =>
@@ -89,6 +91,26 @@ public class MetricsTests
             measurement.InstrumentName == "incursa.quic.udp.errors"
             && measurement.HasTag("direction", "receive")
             && measurement.HasTag("socket_error", "connection_reset"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.buffer_pool.rents"
+            && measurement.Value == 1
+            && measurement.HasTag("size_bucket", "le_1kb"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.buffer_pool.returns"
+            && measurement.Value == 1
+            && measurement.HasTag("size_bucket", "le_1kb"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.buffer_pool.outstanding.buffers"
+            && measurement.Value == 1
+            && measurement.HasTag("size_bucket", "le_1kb"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.buffer_pool.outstanding.buffers"
+            && measurement.Value == -1
+            && measurement.HasTag("size_bucket", "le_1kb"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.buffer_pool.oversized_rents"
+            && measurement.Value == 1
+            && measurement.HasTag("size_bucket", "le_1kb"));
     }
 
     [Fact]

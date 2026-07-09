@@ -341,12 +341,20 @@ Done when:
 
 ## 14. Improve Buffer Pool Diagnostics And Tuning
 
+Status: partially closed for first-pass pool visibility. 2026-07-09 added
+`System.Diagnostics.Metrics` instruments to the central `QuicBufferPool` wrapper
+for rents, returns, rented/returned bytes, outstanding buffers/bytes, and
+oversized rents using bounded `size_bucket` tags. This gives ProtocolLab counter
+captures a no-code-change way to show pool pressure for any path that uses the
+central wrapper. True pool misses and retained-memory accounting remain open
+because `ArrayPool<byte>.Shared` does not expose those directly.
+
 Buffer reuse is central to reducing allocations, but pool behavior needs better visibility.
 
 Done when:
 
-- Buffer pool diagnostics can be enabled per ProtocolLab run without code changes.
-- Reports show rent/return counts, misses, peak outstanding buffers, oversized rents, and retained memory.
+- Buffer pool diagnostics can be enabled per ProtocolLab run without code changes. Central-wrapper metrics are now emitted through `Incursa.Quic`.
+- Reports show rent/return counts, misses, peak outstanding buffers, oversized rents, and retained memory. Rent/return counts, bytes, outstanding deltas, and oversized rents are now available; true misses, peak aggregation, and retained memory remain open.
 - The default pool sizes are justified by scenario evidence.
 - Pool tuning improves allocation rate without increasing retained memory unreasonably.
 

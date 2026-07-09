@@ -30,6 +30,12 @@ internal static class QuicMetrics
     private const int HttpStatusClientErrorMax = 499;
     private const int HttpStatusServerErrorMin = 500;
     private const int HttpStatusServerErrorMax = 599;
+    private const int BytesPerKilobyte = 1024;
+    private const int BufferPoolOneKilobyteBucket = BytesPerKilobyte;
+    private const int BufferPoolFourKilobyteBucket = 4 * BytesPerKilobyte;
+    private const int BufferPoolSixteenKilobyteBucket = 16 * BytesPerKilobyte;
+    private const int BufferPoolSixtyFourKilobyteBucket = 64 * BytesPerKilobyte;
+    private const int BufferPoolTwoHundredFiftySixKilobyteBucket = 256 * BytesPerKilobyte;
 
     private static readonly Meter Meter = new(MeterName);
     private static readonly Counter<long> ConnectionsStarted = Meter.CreateCounter<long>("incursa.quic.connections.started", unit: "connections");
@@ -50,6 +56,13 @@ internal static class QuicMetrics
     private static readonly Counter<long> AeadOpenFailures = Meter.CreateCounter<long>("incursa.quic.aead.open_failures", unit: "events");
     private static readonly Counter<long> UdpErrors = Meter.CreateCounter<long>("incursa.quic.udp.errors", unit: "events");
     private static readonly Histogram<double> Rtt = Meter.CreateHistogram<double>("incursa.quic.rtt.ms", unit: "ms");
+    private static readonly Counter<long> BufferPoolRents = Meter.CreateCounter<long>("incursa.quic.buffer_pool.rents", unit: "buffers");
+    private static readonly Counter<long> BufferPoolReturns = Meter.CreateCounter<long>("incursa.quic.buffer_pool.returns", unit: "buffers");
+    private static readonly Counter<long> BufferPoolBytesRented = Meter.CreateCounter<long>("incursa.quic.buffer_pool.bytes.rented", unit: "bytes");
+    private static readonly Counter<long> BufferPoolBytesReturned = Meter.CreateCounter<long>("incursa.quic.buffer_pool.bytes.returned", unit: "bytes");
+    private static readonly UpDownCounter<long> BufferPoolOutstandingBuffers = Meter.CreateUpDownCounter<long>("incursa.quic.buffer_pool.outstanding.buffers", unit: "buffers");
+    private static readonly UpDownCounter<long> BufferPoolOutstandingBytes = Meter.CreateUpDownCounter<long>("incursa.quic.buffer_pool.outstanding.bytes", unit: "bytes");
+    private static readonly Counter<long> BufferPoolOversizedRents = Meter.CreateCounter<long>("incursa.quic.buffer_pool.oversized_rents", unit: "buffers");
 
     internal static void RecordConnectionStarted(QuicTlsRole role)
     {
@@ -240,6 +253,46 @@ internal static class QuicMetrics
         Rtt.Record(rttMicros / MicrosecondsPerMillisecond, in tags);
     }
 
+    internal static void RecordBufferRent(int requestedLength, int rentedLength)
+    {
+        if (!BufferPoolRents.Enabled
+            && !BufferPoolBytesRented.Enabled
+            && !BufferPoolOutstandingBuffers.Enabled
+            && !BufferPoolOutstandingBytes.Enabled
+            && !BufferPoolOversizedRents.Enabled)
+        {
+            return;
+        }
+
+        TagList tags = CreateBufferPoolTags(rentedLength);
+        BufferPoolRents.Add(1, in tags);
+        BufferPoolBytesRented.Add(rentedLength, in tags);
+        BufferPoolOutstandingBuffers.Add(1, in tags);
+        BufferPoolOutstandingBytes.Add(rentedLength, in tags);
+
+        if (rentedLength > requestedLength)
+        {
+            BufferPoolOversizedRents.Add(1, in tags);
+        }
+    }
+
+    internal static void RecordBufferReturn(int bufferLength)
+    {
+        if (!BufferPoolReturns.Enabled
+            && !BufferPoolBytesReturned.Enabled
+            && !BufferPoolOutstandingBuffers.Enabled
+            && !BufferPoolOutstandingBytes.Enabled)
+        {
+            return;
+        }
+
+        TagList tags = CreateBufferPoolTags(bufferLength);
+        BufferPoolReturns.Add(1, in tags);
+        BufferPoolBytesReturned.Add(bufferLength, in tags);
+        BufferPoolOutstandingBuffers.Add(-1, in tags);
+        BufferPoolOutstandingBytes.Add(-bufferLength, in tags);
+    }
+
     internal static string GetRoleTag(QuicTlsRole role)
     {
         return role == QuicTlsRole.Server ? ServerRole : ClientRole;
@@ -333,6 +386,26 @@ internal static class QuicMetrics
         tags.Add("direction", GetDirectionTag(streamType));
         tags.Add("initiator", GetInitiatorTag(role, streamId));
         return tags;
+    }
+
+    private static TagList CreateBufferPoolTags(int bufferLength)
+    {
+        TagList tags = default;
+        tags.Add("size_bucket", GetBufferSizeBucket(bufferLength));
+        return tags;
+    }
+
+    private static string GetBufferSizeBucket(int bufferLength)
+    {
+        return bufferLength switch
+        {
+            <= BufferPoolOneKilobyteBucket => "le_1kb",
+            <= BufferPoolFourKilobyteBucket => "le_4kb",
+            <= BufferPoolSixteenKilobyteBucket => "le_16kb",
+            <= BufferPoolSixtyFourKilobyteBucket => "le_64kb",
+            <= BufferPoolTwoHundredFiftySixKilobyteBucket => "le_256kb",
+            _ => "gt_256kb",
+        };
     }
 
     private static string FormatPacketNumberSpace(QuicPacketNumberSpace packetNumberSpace)

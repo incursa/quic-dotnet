@@ -14,7 +14,9 @@ internal static class QuicBufferPool
             throw new ArgumentOutOfRangeException(nameof(minimumLength));
         }
 
-        return ArrayPool<byte>.Shared.Rent(minimumLength);
+        byte[] buffer = ArrayPool<byte>.Shared.Rent(minimumLength);
+        QuicMetrics.RecordBufferRent(minimumLength, buffer.Length);
+        return buffer;
     }
 
     // CONTEXT: array-pool returns are opt-in cleared to preserve hot-path throughput
@@ -35,6 +37,7 @@ internal static class QuicBufferPool
             return;
         }
 
+        QuicMetrics.RecordBufferReturn(buffer.Length);
         ArrayPool<byte>.Shared.Return(buffer, clearArray);
     }
 }
