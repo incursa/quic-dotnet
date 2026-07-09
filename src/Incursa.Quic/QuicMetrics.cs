@@ -4,6 +4,7 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace Incursa.Quic;
 
@@ -36,6 +37,13 @@ internal static class QuicMetrics
     private const int BufferPoolSixteenKilobyteBucket = 16 * BytesPerKilobyte;
     private const int BufferPoolSixtyFourKilobyteBucket = 64 * BytesPerKilobyte;
     private const int BufferPoolTwoHundredFiftySixKilobyteBucket = 256 * BytesPerKilobyte;
+    private const int BufferPoolOneKilobyteBucketIndex = 0;
+    private const int BufferPoolFourKilobyteBucketIndex = 1;
+    private const int BufferPoolSixteenKilobyteBucketIndex = 2;
+    private const int BufferPoolSixtyFourKilobyteBucketIndex = 3;
+    private const int BufferPoolTwoHundredFiftySixKilobyteBucketIndex = 4;
+    private const int BufferPoolGreaterThanTwoHundredFiftySixKilobyteBucketIndex = 5;
+    private const int BufferPoolBucketCount = 6;
 
     private static readonly Meter Meter = new(MeterName);
     private static readonly Counter<long> ConnectionsStarted = Meter.CreateCounter<long>("incursa.quic.connections.started", unit: "connections");
@@ -60,9 +68,11 @@ internal static class QuicMetrics
     private static readonly Counter<long> BufferPoolReturns = Meter.CreateCounter<long>("incursa.quic.buffer_pool.returns", unit: "buffers");
     private static readonly Counter<long> BufferPoolBytesRented = Meter.CreateCounter<long>("incursa.quic.buffer_pool.bytes.rented", unit: "bytes");
     private static readonly Counter<long> BufferPoolBytesReturned = Meter.CreateCounter<long>("incursa.quic.buffer_pool.bytes.returned", unit: "bytes");
-    private static readonly UpDownCounter<long> BufferPoolOutstandingBuffers = Meter.CreateUpDownCounter<long>("incursa.quic.buffer_pool.outstanding.buffers", unit: "buffers");
-    private static readonly UpDownCounter<long> BufferPoolOutstandingBytes = Meter.CreateUpDownCounter<long>("incursa.quic.buffer_pool.outstanding.bytes", unit: "bytes");
+    private static readonly ObservableGauge<long> BufferPoolOutstandingBuffers = Meter.CreateObservableGauge("incursa.quic.buffer_pool.outstanding.buffers", ObserveBufferPoolOutstandingBuffers, unit: "buffers");
+    private static readonly ObservableGauge<long> BufferPoolOutstandingBytes = Meter.CreateObservableGauge("incursa.quic.buffer_pool.outstanding.bytes", ObserveBufferPoolOutstandingBytes, unit: "bytes");
     private static readonly Counter<long> BufferPoolOversizedRents = Meter.CreateCounter<long>("incursa.quic.buffer_pool.oversized_rents", unit: "buffers");
+    private static readonly long[] BufferPoolOutstandingBufferCounts = new long[BufferPoolBucketCount];
+    private static readonly long[] BufferPoolOutstandingByteCounts = new long[BufferPoolBucketCount];
 
     internal static void RecordConnectionStarted(QuicTlsRole role)
     {
@@ -264,11 +274,12 @@ internal static class QuicMetrics
             return;
         }
 
-        TagList tags = CreateBufferPoolTags(rentedLength);
+        var bucketIndex = GetBufferSizeBucketIndex(rentedLength);
+        TagList tags = CreateBufferPoolTags(bucketIndex);
         BufferPoolRents.Add(1, in tags);
         BufferPoolBytesRented.Add(rentedLength, in tags);
-        BufferPoolOutstandingBuffers.Add(1, in tags);
-        BufferPoolOutstandingBytes.Add(rentedLength, in tags);
+        Interlocked.Increment(ref BufferPoolOutstandingBufferCounts[bucketIndex]);
+        Interlocked.Add(ref BufferPoolOutstandingByteCounts[bucketIndex], rentedLength);
 
         if (rentedLength > requestedLength)
         {
@@ -286,11 +297,11 @@ internal static class QuicMetrics
             return;
         }
 
-        TagList tags = CreateBufferPoolTags(bufferLength);
+        var bucketIndex = GetBufferSizeBucketIndex(bufferLength);
+        TagList tags = CreateBufferPoolTags(bucketIndex);
         BufferPoolReturns.Add(1, in tags);
         BufferPoolBytesReturned.Add(bufferLength, in tags);
-        BufferPoolOutstandingBuffers.Add(-1, in tags);
-        BufferPoolOutstandingBytes.Add(-bufferLength, in tags);
+        DecrementBufferPoolOutstanding(bucketIndex, bufferLength);
     }
 
     internal static string GetRoleTag(QuicTlsRole role)
@@ -388,22 +399,70 @@ internal static class QuicMetrics
         return tags;
     }
 
-    private static TagList CreateBufferPoolTags(int bufferLength)
+    private static IEnumerable<Measurement<long>> ObserveBufferPoolOutstandingBuffers()
+    {
+        for (var i = 0; i < BufferPoolBucketCount; i++)
+        {
+            yield return new Measurement<long>(
+                Volatile.Read(ref BufferPoolOutstandingBufferCounts[i]),
+                new KeyValuePair<string, object?>("size_bucket", GetBufferSizeBucket(i)));
+        }
+    }
+
+    private static IEnumerable<Measurement<long>> ObserveBufferPoolOutstandingBytes()
+    {
+        for (var i = 0; i < BufferPoolBucketCount; i++)
+        {
+            yield return new Measurement<long>(
+                Volatile.Read(ref BufferPoolOutstandingByteCounts[i]),
+                new KeyValuePair<string, object?>("size_bucket", GetBufferSizeBucket(i)));
+        }
+    }
+
+    private static void DecrementBufferPoolOutstanding(int bucketIndex, int bufferLength)
+    {
+        var buffers = Interlocked.Decrement(ref BufferPoolOutstandingBufferCounts[bucketIndex]);
+        if (buffers < 0)
+        {
+            Interlocked.Exchange(ref BufferPoolOutstandingBufferCounts[bucketIndex], 0);
+        }
+
+        var bytes = Interlocked.Add(ref BufferPoolOutstandingByteCounts[bucketIndex], -bufferLength);
+        if (bytes < 0)
+        {
+            Interlocked.Exchange(ref BufferPoolOutstandingByteCounts[bucketIndex], 0);
+        }
+    }
+
+    private static TagList CreateBufferPoolTags(int bucketIndex)
     {
         TagList tags = default;
-        tags.Add("size_bucket", GetBufferSizeBucket(bufferLength));
+        tags.Add("size_bucket", GetBufferSizeBucket(bucketIndex));
         return tags;
     }
 
-    private static string GetBufferSizeBucket(int bufferLength)
+    private static int GetBufferSizeBucketIndex(int bufferLength)
     {
         return bufferLength switch
         {
-            <= BufferPoolOneKilobyteBucket => "le_1kb",
-            <= BufferPoolFourKilobyteBucket => "le_4kb",
-            <= BufferPoolSixteenKilobyteBucket => "le_16kb",
-            <= BufferPoolSixtyFourKilobyteBucket => "le_64kb",
-            <= BufferPoolTwoHundredFiftySixKilobyteBucket => "le_256kb",
+            <= BufferPoolOneKilobyteBucket => BufferPoolOneKilobyteBucketIndex,
+            <= BufferPoolFourKilobyteBucket => BufferPoolFourKilobyteBucketIndex,
+            <= BufferPoolSixteenKilobyteBucket => BufferPoolSixteenKilobyteBucketIndex,
+            <= BufferPoolSixtyFourKilobyteBucket => BufferPoolSixtyFourKilobyteBucketIndex,
+            <= BufferPoolTwoHundredFiftySixKilobyteBucket => BufferPoolTwoHundredFiftySixKilobyteBucketIndex,
+            _ => BufferPoolGreaterThanTwoHundredFiftySixKilobyteBucketIndex,
+        };
+    }
+
+    private static string GetBufferSizeBucket(int bucketIndex)
+    {
+        return bucketIndex switch
+        {
+            BufferPoolOneKilobyteBucketIndex => "le_1kb",
+            BufferPoolFourKilobyteBucketIndex => "le_4kb",
+            BufferPoolSixteenKilobyteBucketIndex => "le_16kb",
+            BufferPoolSixtyFourKilobyteBucketIndex => "le_64kb",
+            BufferPoolTwoHundredFiftySixKilobyteBucketIndex => "le_256kb",
             _ => "gt_256kb",
         };
     }

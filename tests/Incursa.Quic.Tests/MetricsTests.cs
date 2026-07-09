@@ -72,7 +72,9 @@ public class MetricsTests
         QuicMetrics.RecordUdpError(QuicTlsRole.Server, "receive", SocketError.ConnectionReset);
         QuicMetrics.RecordRtt(QuicTlsRole.Client, 12_500);
         byte[] rentedBuffer = QuicBufferPool.RentBytes(1);
+        recorder.RecordObservableInstruments();
         QuicBufferPool.ReturnBytes(rentedBuffer);
+        recorder.RecordObservableInstruments();
 
         Assert.DoesNotContain(recorder.Measurements, measurement => measurement.HasAnyForbiddenTag());
         Assert.Contains(recorder.Measurements, measurement =>
@@ -105,7 +107,7 @@ public class MetricsTests
             && measurement.HasTag("size_bucket", "le_1kb"));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.outstanding.buffers"
-            && measurement.Value == -1
+            && measurement.Value == 0
             && measurement.HasTag("size_bucket", "le_1kb"));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.oversized_rents"
@@ -206,6 +208,11 @@ public class MetricsTests
         public void Dispose()
         {
             listener.Dispose();
+        }
+
+        public void RecordObservableInstruments()
+        {
+            listener.RecordObservableInstruments();
         }
 
         private void Record(Instrument instrument, long measurement, ReadOnlySpan<KeyValuePair<string, object?>> tags, object? state)

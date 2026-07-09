@@ -354,13 +354,24 @@ output includes `incursa.quic.buffer_pool.rents`, `returns`, `bytes.rented`,
 `bytes.returned`, `outstanding.buffers`, `outstanding.bytes`, and
 `oversized_rents` rows. The current ProtocolLab `counters-summary.json` parser
 does not yet roll those custom pool instruments into summary fields.
+ProtocolLab commit `d1f7d57` now emits an additive
+`quic-buffer-pool-summary.json` artifact, links it from `artifact-manifest.json`
+and `evidence-bundle.json`, and projects top pool metrics into the evidence
+bundle's `diagnostics.quicBufferPool` section without changing benchmark
+semantics. `QuicMetrics` now reports outstanding buffer/byte pressure as
+observable gauges instead of interval deltas, so the summary can report
+non-negative current/peak pool pressure by `size_bucket`. Smoke proof
+`codex-buffer-pool-gauge-summary-smoke-20260709a` passed
+`http3.payload.bytes.1kb` at c4-s4 with counter capture enabled and produced a
+populated pool summary with stable metric IDs, size-bucket rollups, and
+non-negative outstanding gauge values.
 
 Buffer reuse is central to reducing allocations, but pool behavior needs better visibility.
 
 Done when:
 
 - Buffer pool diagnostics can be enabled per ProtocolLab run without code changes. Central-wrapper metrics are now emitted through `Incursa.Quic`.
-- Reports show rent/return counts, misses, peak outstanding buffers, oversized rents, and retained memory. Rent/return counts, bytes, outstanding deltas, and oversized rents are now available in raw counter output; summary rollup, true misses, peak aggregation, and retained memory remain open.
+- Reports show rent/return counts, misses, peak outstanding buffers, oversized rents, and retained memory. Rent/return counts, bytes, oversized rents, and non-negative outstanding gauge summaries are now available through the dedicated pool summary artifact and evidence-bundle diagnostics; true misses and retained memory remain open because `ArrayPool<byte>.Shared` does not expose them directly.
 - The default pool sizes are justified by scenario evidence.
 - Pool tuning improves allocation rate without increasing retained memory unreasonably.
 
