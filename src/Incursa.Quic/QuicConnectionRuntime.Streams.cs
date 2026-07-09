@@ -1706,34 +1706,48 @@ internal sealed partial class QuicConnectionRuntime
         string amplificationFailureMessage,
         ref QuicConnectionEffectAccumulator effects)
     {
-        if (!TryBuildOutboundMaxDataPayload(frame, out byte[] payload))
+        byte[]? payloadOwner = null;
+        if (!TryBuildOutboundMaxDataPayload(frame, out ReadOnlyMemory<byte> payload, out payloadOwner))
         {
             return false;
         }
 
-        if (!TryProtectAndAccountApplicationPayload(
-            payload,
-            protectFailureMessage,
-            amplificationFailureMessage,
-            ref effects,
-            out QuicConnectionActivePathRecord currentPath,
-            out QuicConnectionPathAmplificationState updatedAmplificationState,
-            out ReadOnlyMemory<byte> protectedPacket,
-            out Exception? exception))
+        try
         {
-            _ = exception;
-            return false;
+            if (!TryProtectAndAccountApplicationPayload(
+                payload,
+                protectFailureMessage,
+                amplificationFailureMessage,
+                ref effects,
+                out QuicConnectionActivePathRecord currentPath,
+                out QuicConnectionPathAmplificationState updatedAmplificationState,
+                out ReadOnlyMemory<byte> protectedPacket,
+                out Exception? exception,
+                plaintextPayloadOwner: payloadOwner))
+            {
+                _ = exception;
+                return false;
+            }
+
+            payloadOwner = null;
+
+            activePath = currentPath with
+            {
+                AmplificationState = updatedAmplificationState,
+            };
+
+            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+                currentPath.Identity,
+                protectedPacket));
+            return true;
         }
-
-        activePath = currentPath with
+        finally
         {
-            AmplificationState = updatedAmplificationState,
-        };
-
-        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
-            currentPath.Identity,
-            protectedPacket));
-        return true;
+            if (payloadOwner is not null)
+            {
+                QuicBufferPool.ReturnBytes(payloadOwner);
+            }
+        }
     }
 
     private bool TrySendFlowControlCreditUpdate(
@@ -1743,34 +1757,52 @@ internal sealed partial class QuicConnectionRuntime
         string amplificationFailureMessage,
         ref QuicConnectionEffectAccumulator effects)
     {
-        if (!TryBuildOutboundFlowControlCreditPayload(maxDataFrame, maxStreamDataFrame, out byte[] payload))
+        byte[]? payloadOwner = null;
+        if (!TryBuildOutboundFlowControlCreditPayload(
+                maxDataFrame,
+                maxStreamDataFrame,
+                out ReadOnlyMemory<byte> payload,
+                out payloadOwner))
         {
             return false;
         }
 
-        if (!TryProtectAndAccountApplicationPayload(
-            payload,
-            protectFailureMessage,
-            amplificationFailureMessage,
-            ref effects,
-            out QuicConnectionActivePathRecord currentPath,
-            out QuicConnectionPathAmplificationState updatedAmplificationState,
-            out ReadOnlyMemory<byte> protectedPacket,
-            out Exception? exception))
+        try
         {
-            _ = exception;
-            return false;
+            if (!TryProtectAndAccountApplicationPayload(
+                payload,
+                protectFailureMessage,
+                amplificationFailureMessage,
+                ref effects,
+                out QuicConnectionActivePathRecord currentPath,
+                out QuicConnectionPathAmplificationState updatedAmplificationState,
+                out ReadOnlyMemory<byte> protectedPacket,
+                out Exception? exception,
+                plaintextPayloadOwner: payloadOwner))
+            {
+                _ = exception;
+                return false;
+            }
+
+            payloadOwner = null;
+
+            activePath = currentPath with
+            {
+                AmplificationState = updatedAmplificationState,
+            };
+
+            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+                currentPath.Identity,
+                protectedPacket));
+            return true;
         }
-
-        activePath = currentPath with
+        finally
         {
-            AmplificationState = updatedAmplificationState,
-        };
-
-        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
-            currentPath.Identity,
-            protectedPacket));
-        return true;
+            if (payloadOwner is not null)
+            {
+                QuicBufferPool.ReturnBytes(payloadOwner);
+            }
+        }
     }
 
     private bool TrySendFlowControlCreditUpdate(
@@ -1779,34 +1811,48 @@ internal sealed partial class QuicConnectionRuntime
         string amplificationFailureMessage,
         ref QuicConnectionEffectAccumulator effects)
     {
-        if (!TryBuildOutboundMaxStreamDataPayload(frame, out byte[] payload))
+        byte[]? payloadOwner = null;
+        if (!TryBuildOutboundMaxStreamDataPayload(frame, out ReadOnlyMemory<byte> payload, out payloadOwner))
         {
             return false;
         }
 
-        if (!TryProtectAndAccountApplicationPayload(
-            payload,
-            protectFailureMessage,
-            amplificationFailureMessage,
-            ref effects,
-            out QuicConnectionActivePathRecord currentPath,
-            out QuicConnectionPathAmplificationState updatedAmplificationState,
-            out ReadOnlyMemory<byte> protectedPacket,
-            out Exception? exception))
+        try
         {
-            _ = exception;
-            return false;
+            if (!TryProtectAndAccountApplicationPayload(
+                payload,
+                protectFailureMessage,
+                amplificationFailureMessage,
+                ref effects,
+                out QuicConnectionActivePathRecord currentPath,
+                out QuicConnectionPathAmplificationState updatedAmplificationState,
+                out ReadOnlyMemory<byte> protectedPacket,
+                out Exception? exception,
+                plaintextPayloadOwner: payloadOwner))
+            {
+                _ = exception;
+                return false;
+            }
+
+            payloadOwner = null;
+
+            activePath = currentPath with
+            {
+                AmplificationState = updatedAmplificationState,
+            };
+
+            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+                currentPath.Identity,
+                protectedPacket));
+            return true;
         }
-
-        activePath = currentPath with
+        finally
         {
-            AmplificationState = updatedAmplificationState,
-        };
-
-        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
-            currentPath.Identity,
-            protectedPacket));
-        return true;
+            if (payloadOwner is not null)
+            {
+                QuicBufferPool.ReturnBytes(payloadOwner);
+            }
+        }
     }
 
     private bool TrySendFlowControlBlockedSignal(
@@ -2161,39 +2207,56 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        if (!TryBuildOutboundMaxStreamsPayload(maxStreamsFrame, out byte[] streamPayload))
+        byte[]? streamPayloadOwner = null;
+        if (!TryBuildOutboundMaxStreamsPayload(
+                maxStreamsFrame,
+                out ReadOnlyMemory<byte> streamPayload,
+                out streamPayloadOwner))
         {
             return false;
         }
 
-        if (!TryProtectAndAccountApplicationPayload(
-            streamPayload,
-            "The connection runtime could not protect the stream capacity release packet.",
-            "The connection cannot send the stream capacity release packet.",
-            ref effects,
-            out QuicConnectionActivePathRecord currentPath,
-            out QuicConnectionPathAmplificationState updatedAmplificationState,
-            out ReadOnlyMemory<byte> protectedPacket,
-            out exception))
+        try
         {
-            return false;
+            if (!TryProtectAndAccountApplicationPayload(
+                streamPayload,
+                "The connection runtime could not protect the stream capacity release packet.",
+                "The connection cannot send the stream capacity release packet.",
+                ref effects,
+                out QuicConnectionActivePathRecord currentPath,
+                out QuicConnectionPathAmplificationState updatedAmplificationState,
+                out ReadOnlyMemory<byte> protectedPacket,
+                out exception,
+                plaintextPayloadOwner: streamPayloadOwner))
+            {
+                return false;
+            }
+
+            streamPayloadOwner = null;
+
+            if (!streamRegistry.Bookkeeping.TryCommitPeerStreamCapacityRelease(streamId, maxStreamsFrame))
+            {
+                return false;
+            }
+
+            activePath = currentPath with
+            {
+                AmplificationState = updatedAmplificationState,
+            };
+
+            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+                currentPath.Identity,
+                protectedPacket));
+
+            return true;
         }
-
-        if (!streamRegistry.Bookkeeping.TryCommitPeerStreamCapacityRelease(streamId, maxStreamsFrame))
+        finally
         {
-            return false;
+            if (streamPayloadOwner is not null)
+            {
+                QuicBufferPool.ReturnBytes(streamPayloadOwner);
+            }
         }
-
-        activePath = currentPath with
-        {
-            AmplificationState = updatedAmplificationState,
-        };
-
-        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
-            currentPath.Identity,
-            protectedPacket));
-
-        return true;
     }
 
     private bool TryDeferPeerStreamCapacityRelease(ulong streamId)
@@ -2302,7 +2365,8 @@ internal sealed partial class QuicConnectionRuntime
         out QuicConnectionActivePathRecord currentPath,
         out QuicConnectionPathAmplificationState updatedAmplificationState,
         out ReadOnlyMemory<byte> protectedPacket,
-        out Exception? exception)
+        out Exception? exception,
+        byte[]? plaintextPayloadOwner = null)
     {
         return TryProtectAndAccountApplicationPayload(
             payload,
@@ -2316,7 +2380,8 @@ internal sealed partial class QuicConnectionRuntime
             out currentPath,
             out updatedAmplificationState,
             out protectedPacket,
-            out exception);
+            out exception,
+            plaintextPayloadOwner: plaintextPayloadOwner);
     }
 
     private bool TryProtectAndAccountApplicationPayload(
@@ -2331,7 +2396,8 @@ internal sealed partial class QuicConnectionRuntime
         out QuicConnectionActivePathRecord currentPath,
         out QuicConnectionPathAmplificationState updatedAmplificationState,
         out ReadOnlyMemory<byte> protectedPacket,
-        out Exception? exception)
+        out Exception? exception,
+        byte[]? plaintextPayloadOwner = null)
     {
         currentPath = default;
         updatedAmplificationState = default;
@@ -2478,6 +2544,7 @@ internal sealed partial class QuicConnectionRuntime
                 streamId: null,
                 streamIds: streamIds,
                 plaintextPayload: retainPlaintextPayload ? payload : default,
+                plaintextPayloadOwner: plaintextPayloadOwner,
                 packetBytesOwner: protectedPacketOwner);
             protectedPacketOwner = null;
             if (piggybackedAckFrame is not null)
@@ -5036,9 +5103,11 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryBuildOutboundMaxDataPayload(
         QuicMaxDataFrame frame,
-        out byte[] payload)
+        out ReadOnlyMemory<byte> payload,
+        out byte[]? payloadOwner)
     {
-        payload = [];
+        payload = default;
+        payloadOwner = null;
 
         Span<byte> frameBuffer = stackalloc byte[64];
         if (!QuicFrameCodec.TryFormatMaxDataFrame(frame, frameBuffer, out int frameBytesWritten))
@@ -5046,14 +5115,16 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        return TryCreatePaddedApplicationPayload(frameBuffer[..frameBytesWritten], out payload);
+        return TryCreatePaddedApplicationPayload(frameBuffer[..frameBytesWritten], out payload, out payloadOwner);
     }
 
     private bool TryBuildOutboundMaxStreamDataPayload(
         QuicMaxStreamDataFrame frame,
-        out byte[] payload)
+        out ReadOnlyMemory<byte> payload,
+        out byte[]? payloadOwner)
     {
-        payload = [];
+        payload = default;
+        payloadOwner = null;
 
         Span<byte> frameBuffer = stackalloc byte[64];
         if (!QuicFrameCodec.TryFormatMaxStreamDataFrame(frame, frameBuffer, out int frameBytesWritten))
@@ -5061,15 +5132,17 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        return TryCreatePaddedApplicationPayload(frameBuffer[..frameBytesWritten], out payload);
+        return TryCreatePaddedApplicationPayload(frameBuffer[..frameBytesWritten], out payload, out payloadOwner);
     }
 
     private bool TryBuildOutboundFlowControlCreditPayload(
         QuicMaxDataFrame maxDataFrame,
         QuicMaxStreamDataFrame maxStreamDataFrame,
-        out byte[] payload)
+        out ReadOnlyMemory<byte> payload,
+        out byte[]? payloadOwner)
     {
-        payload = [];
+        payload = default;
+        payloadOwner = null;
 
         Span<byte> frameBuffer = stackalloc byte[128];
         if (!QuicFrameCodec.TryFormatMaxDataFrame(maxDataFrame, frameBuffer, out int maxDataBytesWritten))
@@ -5087,7 +5160,8 @@ internal sealed partial class QuicConnectionRuntime
 
         return TryCreatePaddedApplicationPayload(
             frameBuffer[..(maxDataBytesWritten + maxStreamDataBytesWritten)],
-            out payload);
+            out payload,
+            out payloadOwner);
     }
 
     private bool TryBuildOutboundDataBlockedPayload(
@@ -5168,9 +5242,13 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TryBuildOutboundMaxStreamsPayload(QuicMaxStreamsFrame frame, out byte[] payload)
+    private bool TryBuildOutboundMaxStreamsPayload(
+        QuicMaxStreamsFrame frame,
+        out ReadOnlyMemory<byte> payload,
+        out byte[]? payloadOwner)
     {
-        payload = [];
+        payload = default;
+        payloadOwner = null;
 
         Span<byte> frameBuffer = stackalloc byte[64];
         if (!QuicFrameCodec.TryFormatMaxStreamsFrame(frame, frameBuffer, out int frameBytesWritten))
@@ -5178,20 +5256,31 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        return TryCreatePaddedApplicationPayload(frameBuffer[..frameBytesWritten], out payload);
+        return TryCreatePaddedApplicationPayload(frameBuffer[..frameBytesWritten], out payload, out payloadOwner);
     }
 
-    private static bool TryCreatePaddedApplicationPayload(ReadOnlySpan<byte> frameBytes, out byte[] payload)
+    private static bool TryCreatePaddedApplicationPayload(
+        ReadOnlySpan<byte> frameBytes,
+        out ReadOnlyMemory<byte> payload,
+        out byte[]? payloadOwner)
     {
-        payload = [];
+        payload = default;
+        payloadOwner = null;
         if (frameBytes.IsEmpty)
         {
             return false;
         }
 
         int payloadLength = Math.Max(ApplicationMinimumProtectedPayloadLength, frameBytes.Length);
-        payload = new byte[payloadLength];
-        frameBytes.CopyTo(payload);
+        payloadOwner = QuicBufferPool.RentBytes(payloadLength);
+        Span<byte> payloadSpan = payloadOwner.AsSpan(0, payloadLength);
+        frameBytes.CopyTo(payloadSpan);
+        if (frameBytes.Length < payloadLength)
+        {
+            payloadSpan[frameBytes.Length..].Clear();
+        }
+
+        payload = payloadOwner.AsMemory(0, payloadLength);
         return true;
     }
 
