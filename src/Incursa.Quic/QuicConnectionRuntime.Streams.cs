@@ -2217,23 +2217,38 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         bool stateChanged = false;
-        ulong[] streamIds = pendingPeerStreamCapacityReleaseStreamIds.ToArray();
-        foreach (ulong streamId in streamIds)
+        int streamIdCount = pendingPeerStreamCapacityReleaseStreamIds.Count;
+        ulong[] streamIds = ArrayPool<ulong>.Shared.Rent(streamIdCount);
+        int copiedStreamIdCount = 0;
+        foreach (ulong streamId in pendingPeerStreamCapacityReleaseStreamIds)
         {
-            pendingPeerStreamCapacityReleaseStreamIds.Remove(streamId);
-            if (TryReleasePeerStreamCapacity(streamId, ref effects))
+            streamIds[copiedStreamIdCount++] = streamId;
+        }
+
+        try
+        {
+            for (int index = 0; index < copiedStreamIdCount; index++)
             {
+                ulong streamId = streamIds[index];
+                pendingPeerStreamCapacityReleaseStreamIds.Remove(streamId);
+                if (TryReleasePeerStreamCapacity(streamId, ref effects))
+                {
+                    ClearPeerStreamCapacityReleaseScheduled(streamId);
+                    stateChanged = true;
+                    continue;
+                }
+
+                if (TryDeferPeerStreamCapacityRelease(streamId))
+                {
+                    break;
+                }
+
                 ClearPeerStreamCapacityReleaseScheduled(streamId);
-                stateChanged = true;
-                continue;
             }
-
-            if (TryDeferPeerStreamCapacityRelease(streamId))
-            {
-                break;
-            }
-
-            ClearPeerStreamCapacityReleaseScheduled(streamId);
+        }
+        finally
+        {
+            ArrayPool<ulong>.Shared.Return(streamIds);
         }
 
         return stateChanged;
