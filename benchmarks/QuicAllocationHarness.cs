@@ -52,6 +52,12 @@ internal static class QuicAllocationHarness
         long WsDelta,
         long PrivDelta);
 
+    private sealed class PhaseResult
+    {
+        internal long ManagedDelta;
+        internal int Iterations;
+    }
+
     private readonly record struct LeakBatchResult(
         long ManagedLive,
         long WsLive,
@@ -136,6 +142,10 @@ internal static class QuicAllocationHarness
             Console.WriteLine("                        per-stream managed allocation and timing. Default N=2000.");
             Console.WriteLine("                        Add --target incursa|systemnet|all to isolate one implementation.");
             Console.WriteLine();
+            Console.WriteLine("  --profile-stream-phases N");
+            Console.WriteLine("                        Break established Incursa public stream request/response");
+            Console.WriteLine("                        transfer into public API allocation phases. Default N=2000.");
+            Console.WriteLine();
             Console.WriteLine("  --json [path]         Write machine-readable JSON metrics to the specified file.");
             Console.WriteLine("                        If no path is given, JSON output is suppressed.");
             Console.WriteLine("                        Example: --harness 10000 --json harness.json");
@@ -168,6 +178,11 @@ internal static class QuicAllocationHarness
         if (args is ["--profile-handshake", ..])
         {
             return RunHandshakeProfile(count);
+        }
+
+        if (args is ["--profile-stream-phases", ..])
+        {
+            return RunStreamTransferPhaseProfile(count);
         }
 
         if (args is ["--profile-stream", ..])
@@ -1243,6 +1258,143 @@ internal static class QuicAllocationHarness
         return 0;
     }
 
+    private static int RunStreamTransferPhaseProfile(int count)
+    {
+        Console.WriteLine();
+        Console.WriteLine("=== Public Stream Transfer Phase Allocation Profile ===");
+        Console.WriteLine($"Iterations: {count:N0}");
+        Console.WriteLine("Target: incursa");
+        Console.WriteLine("Workload: established-connection 1KB request/response stream transfer");
+        Console.WriteLine();
+
+        if (!IncursaClientConnection.IsSupported || !IncursaListener.IsSupported)
+        {
+            Console.WriteLine("Incursa.Quic is not supported on this platform.");
+            return 0;
+        }
+
+        X509Certificate2 serverCertificate = QuicPublicApiLoopbackBenchmarkSupport.CreateServerCertificate();
+        X509Certificate2 trustAnchor = X509CertificateLoader.LoadCertificate(serverCertificate.RawData);
+        SslClientAuthenticationOptions clientAuthOptions =
+            QuicPublicApiLoopbackBenchmarkSupport.CreateClientAuthenticationOptions(trustAnchor);
+        SslServerAuthenticationOptions serverAuthOptions =
+            QuicPublicApiLoopbackBenchmarkSupport.CreateServerAuthenticationOptions(serverCertificate);
+        byte[] requestPayload = CreatePayload(1024, 0x11);
+        byte[] responsePayload = CreatePayload(1024, 0x33);
+        byte[] requestBuffer = new byte[requestPayload.Length];
+        byte[] responseBuffer = new byte[responsePayload.Length];
+        byte[] eofProbe = new byte[1];
+        var phases = new Dictionary<string, PhaseResult>(StringComparer.Ordinal)
+        {
+            ["accept-task-start"] = new(),
+            ["task-yield"] = new(),
+            ["open-client-stream"] = new(),
+            ["client-write"] = new(),
+            ["client-complete-writes"] = new(),
+            ["client-writes-closed"] = new(),
+            ["server-accept-await"] = new(),
+            ["server-read-request"] = new(),
+            ["server-eof"] = new(),
+            ["server-reads-closed"] = new(),
+            ["server-write"] = new(),
+            ["server-complete-writes"] = new(),
+            ["server-writes-closed"] = new(),
+            ["client-read-response"] = new(),
+            ["client-eof"] = new(),
+            ["client-reads-closed"] = new(),
+            ["dispose-streams"] = new(),
+        };
+
+        try
+        {
+            var incursaPair = CreateIncursaConnectedPairAsync(serverAuthOptions, clientAuthOptions)
+                .GetAwaiter()
+                .GetResult();
+            try
+            {
+                for (int i = 0; i < WarmupCount; i++)
+                {
+                    RunIncursaRequestResponseStreamAsync(
+                            incursaPair.Client,
+                            incursaPair.Server,
+                            requestPayload,
+                            responsePayload,
+                            requestBuffer,
+                            responseBuffer,
+                            eofProbe)
+                        .GetAwaiter()
+                        .GetResult();
+                }
+
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+
+                long startStopwatch = Stopwatch.GetTimestamp();
+                for (int i = 0; i < count; i++)
+                {
+                    RunIncursaRequestResponseStreamPhaseAsync(
+                            incursaPair.Client,
+                            incursaPair.Server,
+                            requestPayload,
+                            responsePayload,
+                            requestBuffer,
+                            responseBuffer,
+                            eofProbe,
+                            phases)
+                        .GetAwaiter()
+                        .GetResult();
+                }
+
+                double elapsedSec = (double)(Stopwatch.GetTimestamp() - startStopwatch) / Stopwatch.Frequency;
+                Console.WriteLine($"  elapsed: {elapsedSec:N3}s  {elapsedSec / count * 1000:N3} ms/op");
+                Console.WriteLine();
+            }
+            finally
+            {
+                CloseIncursaPairAsync(incursaPair.Client, incursaPair.Server, incursaPair.Listener).GetAwaiter().GetResult();
+            }
+        }
+        finally
+        {
+            trustAnchor.Dispose();
+            serverCertificate.Dispose();
+        }
+
+        PrintStreamPhaseResults(phases);
+
+        if (JsonOutputPath is not null)
+        {
+            var json = new JsonObject
+            {
+                ["mode"] = "profile-stream-phases",
+                ["commandName"] = "profile-stream-phases",
+                ["count"] = count,
+                ["target"] = "incursa",
+                ["workload"] = "established-public-request-response",
+            };
+
+            var phaseArray = new JsonArray();
+            foreach (KeyValuePair<string, PhaseResult> phase in phases.OrderByDescending(static phase => phase.Value.ManagedDelta))
+            {
+                phaseArray.Add(new JsonObject
+                {
+                    ["name"] = phase.Key,
+                    ["iterations"] = phase.Value.Iterations,
+                    ["managedTotalBytes"] = phase.Value.ManagedDelta,
+                    ["managedBytesPerOp"] = phase.Value.Iterations == 0
+                        ? 0
+                        : (long)(phase.Value.ManagedDelta / (double)phase.Value.Iterations),
+                });
+            }
+
+            json["phases"] = phaseArray;
+            WriteJson(json);
+        }
+
+        return 0;
+    }
+
     private static int ParseCount(string[] args, int defaultCount)
     {
         for (int i = 1; i < args.Length; i++)
@@ -1607,6 +1759,113 @@ internal static class QuicAllocationHarness
         await clientStream.ReadsClosed.ConfigureAwait(false);
     }
 
+    private static async Task RunIncursaRequestResponseStreamPhaseAsync(
+        IncursaClientConnection clientConnection,
+        IncursaClientConnection serverConnection,
+        byte[] requestPayload,
+        byte[] responsePayload,
+        byte[] requestBuffer,
+        byte[] responseBuffer,
+        byte[] eofProbe,
+        Dictionary<string, PhaseResult> phases)
+    {
+        IncursaStream? clientStream = null;
+        IncursaStream? serverStream = null;
+
+        try
+        {
+            long start = SnapshotManaged();
+            Task<IncursaStream> acceptStreamTask = serverConnection.AcceptInboundStreamAsync().AsTask();
+            AddPhase(phases, "accept-task-start", start);
+
+            start = SnapshotManaged();
+            await Task.Yield();
+            AddPhase(phases, "task-yield", start);
+
+            start = SnapshotManaged();
+            clientStream = await clientConnection.OpenOutboundStreamAsync(
+                IncursaStreamType.Bidirectional).ConfigureAwait(false);
+            AddPhase(phases, "open-client-stream", start);
+
+            start = SnapshotManaged();
+            await clientStream.WriteAsync(requestPayload.AsMemory()).ConfigureAwait(false);
+            AddPhase(phases, "client-write", start);
+
+            start = SnapshotManaged();
+            await clientStream.CompleteWritesAsync().ConfigureAwait(false);
+            AddPhase(phases, "client-complete-writes", start);
+
+            start = SnapshotManaged();
+            await clientStream.WritesClosed.ConfigureAwait(false);
+            AddPhase(phases, "client-writes-closed", start);
+
+            start = SnapshotManaged();
+            serverStream = await acceptStreamTask.ConfigureAwait(false);
+            AddPhase(phases, "server-accept-await", start);
+
+            start = SnapshotManaged();
+            await ReadExactlyAsync(serverStream, requestBuffer).ConfigureAwait(false);
+            AddPhase(phases, "server-read-request", start);
+
+            if (!requestPayload.AsSpan().SequenceEqual(requestBuffer))
+            {
+                throw new InvalidOperationException("The server request payload did not match the client payload.");
+            }
+
+            start = SnapshotManaged();
+            await EnsureEofAsync(serverStream, eofProbe, "The server did not observe request EOF.").ConfigureAwait(false);
+            AddPhase(phases, "server-eof", start);
+
+            start = SnapshotManaged();
+            await serverStream.ReadsClosed.ConfigureAwait(false);
+            AddPhase(phases, "server-reads-closed", start);
+
+            start = SnapshotManaged();
+            await serverStream.WriteAsync(responsePayload.AsMemory()).ConfigureAwait(false);
+            AddPhase(phases, "server-write", start);
+
+            start = SnapshotManaged();
+            await serverStream.CompleteWritesAsync().ConfigureAwait(false);
+            AddPhase(phases, "server-complete-writes", start);
+
+            start = SnapshotManaged();
+            await serverStream.WritesClosed.ConfigureAwait(false);
+            AddPhase(phases, "server-writes-closed", start);
+
+            start = SnapshotManaged();
+            await ReadExactlyAsync(clientStream, responseBuffer).ConfigureAwait(false);
+            AddPhase(phases, "client-read-response", start);
+
+            if (!responsePayload.AsSpan().SequenceEqual(responseBuffer))
+            {
+                throw new InvalidOperationException("The client response payload did not match the server payload.");
+            }
+
+            start = SnapshotManaged();
+            await EnsureEofAsync(clientStream, eofProbe, "The client did not observe response EOF.").ConfigureAwait(false);
+            AddPhase(phases, "client-eof", start);
+
+            start = SnapshotManaged();
+            await clientStream.ReadsClosed.ConfigureAwait(false);
+            AddPhase(phases, "client-reads-closed", start);
+        }
+        finally
+        {
+            long start = SnapshotManaged();
+            if (serverStream is not null)
+            {
+                await serverStream.DisposeAsync().ConfigureAwait(false);
+            }
+
+            if (clientStream is not null)
+            {
+                await clientStream.DisposeAsync().ConfigureAwait(false);
+            }
+
+            AddPhase(phases, "dispose-streams", start);
+        }
+    }
+
     private static async Task RunSystemNetRequestResponseStreamAsync(
         SystemNetClientConnection clientConnection,
         SystemNetClientConnection serverConnection,
@@ -1647,6 +1906,29 @@ internal static class QuicAllocationHarness
 
         await EnsureEofAsync(clientStream, eofProbe, "The client did not observe response EOF.").ConfigureAwait(false);
         await clientStream.ReadsClosed.ConfigureAwait(false);
+    }
+
+    private static long SnapshotManaged()
+        => GC.GetTotalAllocatedBytes(precise: true);
+
+    private static void AddPhase(Dictionary<string, PhaseResult> phases, string name, long startManaged)
+    {
+        PhaseResult phase = phases[name];
+        phase.ManagedDelta += SnapshotManaged() - startManaged;
+        phase.Iterations++;
+    }
+
+    private static void PrintStreamPhaseResults(Dictionary<string, PhaseResult> phases)
+    {
+        Console.WriteLine($"  {"Phase",-28} {"Total (B)",14} {"B/op",10}");
+        Console.WriteLine($"  {"----------------------------",-28} {"--------------",14} {"----------",10}");
+        foreach (KeyValuePair<string, PhaseResult> phase in phases.OrderByDescending(static phase => phase.Value.ManagedDelta))
+        {
+            long bytesPerOp = phase.Value.Iterations == 0
+                ? 0
+                : (long)(phase.Value.ManagedDelta / (double)phase.Value.Iterations);
+            Console.WriteLine($"  {phase.Key,-28} {phase.Value.ManagedDelta,14:N0} {bytesPerOp,10:N0}");
+        }
     }
 
     private static async Task CloseIncursaPairAsync(
