@@ -16,8 +16,12 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using IncursaClientConnection = global::Incursa.Quic.QuicConnection;
 using IncursaListener = global::Incursa.Quic.QuicListener;
+using IncursaStream = global::Incursa.Quic.QuicStream;
+using IncursaStreamType = global::Incursa.Quic.QuicStreamType;
 using SystemNetClientConnection = global::System.Net.Quic.QuicConnection;
 using SystemNetListener = global::System.Net.Quic.QuicListener;
+using SystemNetStream = global::System.Net.Quic.QuicStream;
+using SystemNetStreamType = global::System.Net.Quic.QuicStreamType;
 
 namespace Incursa.Quic.Benchmarks;
 
@@ -120,6 +124,10 @@ internal static class QuicAllocationHarness
             Console.WriteLine("                        transcript, HKDF, cert construction, AesGcm, and packet buffers.");
             Console.WriteLine("                        Default N=200.");
             Console.WriteLine();
+            Console.WriteLine("  --profile-stream N    Profile established public stream request/response transfer.");
+            Console.WriteLine("                        Reuses one connected pair per implementation and reports");
+            Console.WriteLine("                        per-stream managed allocation and timing. Default N=2000.");
+            Console.WriteLine();
             Console.WriteLine("  --json [path]         Write machine-readable JSON metrics to the specified file.");
             Console.WriteLine("                        If no path is given, JSON output is suppressed.");
             Console.WriteLine("                        Example: --harness 10000 --json harness.json");
@@ -156,6 +164,11 @@ internal static class QuicAllocationHarness
         if (args is ["--profile-handshake", ..])
         {
             return RunHandshakeProfile(count);
+        }
+
+        if (args is ["--profile-stream", ..])
+        {
+            return RunStreamTransferProfile(count);
         }
 
         return RunAllocationHarness(count);
@@ -1092,6 +1105,119 @@ internal static class QuicAllocationHarness
         return 0;
     }
 
+    private static int RunStreamTransferProfile(int count)
+    {
+        Console.WriteLine();
+        Console.WriteLine("=== Public Stream Transfer Allocation Profile ===");
+        Console.WriteLine($"Iterations per pass: {count:N0}");
+        Console.WriteLine("Passes: 2");
+        Console.WriteLine("Workload: established-connection 1KB request/response stream transfer");
+        Console.WriteLine();
+
+        X509Certificate2 serverCertificate = QuicPublicApiLoopbackBenchmarkSupport.CreateServerCertificate();
+        X509Certificate2 trustAnchor = X509CertificateLoader.LoadCertificate(serverCertificate.RawData);
+        SslClientAuthenticationOptions clientAuthOptions =
+            QuicPublicApiLoopbackBenchmarkSupport.CreateClientAuthenticationOptions(trustAnchor);
+        SslServerAuthenticationOptions serverAuthOptions =
+            QuicPublicApiLoopbackBenchmarkSupport.CreateServerAuthenticationOptions(serverCertificate);
+        byte[] requestPayload = CreatePayload(1024, 0x11);
+        byte[] responsePayload = CreatePayload(1024, 0x33);
+
+        var incursaPasses = new List<PassResult>();
+        var systemNetPasses = new List<PassResult>();
+
+        try
+        {
+            if (IncursaClientConnection.IsSupported && IncursaListener.IsSupported)
+            {
+                Console.WriteLine("--- Incursa.Quic established stream transfer ---");
+                var incursaPair = CreateIncursaConnectedPairAsync(serverAuthOptions, clientAuthOptions)
+                    .GetAwaiter()
+                    .GetResult();
+                try
+                {
+                    for (int pass = 1; pass <= PassCount; pass++)
+                    {
+                        incursaPasses.Add(RunPass($"  pass {pass}/{PassCount}", count,
+                            () => RunIncursaRequestResponseStreamAsync(
+                                    incursaPair.Client,
+                                    incursaPair.Server,
+                                    requestPayload,
+                                    responsePayload)
+                                .GetAwaiter()
+                                .GetResult()));
+                    }
+                }
+                finally
+                {
+                    CloseIncursaPairAsync(incursaPair.Client, incursaPair.Server, incursaPair.Listener).GetAwaiter().GetResult();
+                }
+
+                Console.WriteLine();
+            }
+
+            if (SystemNetClientConnection.IsSupported && SystemNetListener.IsSupported)
+            {
+                Console.WriteLine("--- System.Net.Quic established stream transfer ---");
+                var systemNetPair = CreateSystemNetConnectedPairAsync(serverAuthOptions, clientAuthOptions)
+                    .GetAwaiter()
+                    .GetResult();
+                try
+                {
+                    for (int pass = 1; pass <= PassCount; pass++)
+                    {
+                        systemNetPasses.Add(RunPass($"  pass {pass}/{PassCount}", count,
+                            () => RunSystemNetRequestResponseStreamAsync(
+                                    systemNetPair.Client,
+                                    systemNetPair.Server,
+                                    requestPayload,
+                                    responsePayload)
+                                .GetAwaiter()
+                                .GetResult()));
+                    }
+                }
+                finally
+                {
+                    CloseSystemNetPairAsync(systemNetPair.Client, systemNetPair.Server).GetAwaiter().GetResult();
+                }
+            }
+        }
+        finally
+        {
+            trustAnchor.Dispose();
+            serverCertificate.Dispose();
+        }
+
+        if (JsonOutputPath is not null)
+        {
+            var json = new JsonObject
+            {
+                ["mode"] = "profile-stream",
+                ["commandName"] = "profile-stream",
+                ["count"] = count,
+                ["workload"] = "established-public-request-response",
+            };
+
+            var incursa = new JsonObject();
+            for (int i = 0; i < incursaPasses.Count; i++)
+            {
+                incursa[$"pass{i + 1}"] = PassResultToJson(incursaPasses[i]);
+            }
+
+            var sysNet = new JsonObject();
+            for (int i = 0; i < systemNetPasses.Count; i++)
+            {
+                sysNet[$"pass{i + 1}"] = PassResultToJson(systemNetPasses[i]);
+            }
+
+            json["incursa"] = incursa;
+            json["systemNet"] = sysNet;
+            WriteJson(json);
+        }
+
+        return 0;
+    }
+
     private static async Task<LeakBatchResult> RunLeakBatch(
         int count,
         SslServerAuthenticationOptions serverOptions,
@@ -1233,6 +1359,29 @@ internal static class QuicAllocationHarness
         await clientConnection.DisposeAsync().ConfigureAwait(false);
     }
 
+    private static async Task<(IncursaListener Listener, IncursaClientConnection Client, IncursaClientConnection Server)> CreateIncursaConnectedPairAsync(
+        SslServerAuthenticationOptions serverOptions,
+        SslClientAuthenticationOptions clientOptions)
+    {
+        IPEndPoint listenEndPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
+
+        IncursaListener listener = await IncursaListener.ListenAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaListenerOptions(
+                listenEndPoint, serverOptions)).ConfigureAwait(false);
+
+        Task<IncursaClientConnection> acceptTask = listener.AcceptConnectionAsync().AsTask();
+        Task<IncursaClientConnection> connectTask = IncursaClientConnection.ConnectAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaClientOptions(
+                new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
+                clientOptions)).AsTask();
+
+        await Task.WhenAll(acceptTask, connectTask).ConfigureAwait(false);
+
+        IncursaClientConnection server = await acceptTask.ConfigureAwait(false);
+        IncursaClientConnection client = await connectTask.ConfigureAwait(false);
+        return (listener, client, server);
+    }
+
     private static async Task<(SystemNetClientConnection Client, SystemNetClientConnection Server)> CreateSystemNetConnectedPairAsync(
         SslServerAuthenticationOptions serverOptions,
         SslClientAuthenticationOptions clientOptions)
@@ -1283,6 +1432,144 @@ internal static class QuicAllocationHarness
         await clientConnection.DisposeAsync().ConfigureAwait(false);
     }
 
+    private static async Task RunIncursaRequestResponseStreamAsync(
+        IncursaClientConnection clientConnection,
+        IncursaClientConnection serverConnection,
+        byte[] requestPayload,
+        byte[] responsePayload)
+    {
+        Task<IncursaStream> acceptStreamTask = serverConnection.AcceptInboundStreamAsync().AsTask();
+        await Task.Yield();
+        await using IncursaStream clientStream = await clientConnection.OpenOutboundStreamAsync(
+            IncursaStreamType.Bidirectional).ConfigureAwait(false);
+
+        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).ConfigureAwait(false);
+        await clientStream.CompleteWritesAsync().ConfigureAwait(false);
+        await clientStream.WritesClosed.ConfigureAwait(false);
+
+        await using IncursaStream serverStream = await acceptStreamTask.ConfigureAwait(false);
+        byte[] requestBuffer = new byte[requestPayload.Length];
+        await ReadExactlyAsync(serverStream, requestBuffer).ConfigureAwait(false);
+        if (!requestPayload.AsSpan().SequenceEqual(requestBuffer))
+        {
+            throw new InvalidOperationException("The server request payload did not match the client payload.");
+        }
+
+        await EnsureEofAsync(serverStream, "The server did not observe request EOF.").ConfigureAwait(false);
+        await serverStream.ReadsClosed.ConfigureAwait(false);
+
+        await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).ConfigureAwait(false);
+        await serverStream.CompleteWritesAsync().ConfigureAwait(false);
+        await serverStream.WritesClosed.ConfigureAwait(false);
+
+        byte[] responseBuffer = new byte[responsePayload.Length];
+        await ReadExactlyAsync(clientStream, responseBuffer).ConfigureAwait(false);
+        if (!responsePayload.AsSpan().SequenceEqual(responseBuffer))
+        {
+            throw new InvalidOperationException("The client response payload did not match the server payload.");
+        }
+
+        await EnsureEofAsync(clientStream, "The client did not observe response EOF.").ConfigureAwait(false);
+        await clientStream.ReadsClosed.ConfigureAwait(false);
+    }
+
+    private static async Task RunSystemNetRequestResponseStreamAsync(
+        SystemNetClientConnection clientConnection,
+        SystemNetClientConnection serverConnection,
+        byte[] requestPayload,
+        byte[] responsePayload)
+    {
+        Task<SystemNetStream> acceptStreamTask = serverConnection.AcceptInboundStreamAsync().AsTask();
+        await Task.Yield();
+        await using SystemNetStream clientStream = await clientConnection.OpenOutboundStreamAsync(
+            SystemNetStreamType.Bidirectional).ConfigureAwait(false);
+
+        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).ConfigureAwait(false);
+        clientStream.CompleteWrites();
+        await clientStream.WritesClosed.ConfigureAwait(false);
+
+        await using SystemNetStream serverStream = await acceptStreamTask.ConfigureAwait(false);
+        byte[] requestBuffer = new byte[requestPayload.Length];
+        await ReadExactlyAsync(serverStream, requestBuffer).ConfigureAwait(false);
+        if (!requestPayload.AsSpan().SequenceEqual(requestBuffer))
+        {
+            throw new InvalidOperationException("The server request payload did not match the client payload.");
+        }
+
+        await EnsureEofAsync(serverStream, "The server did not observe request EOF.").ConfigureAwait(false);
+        await serverStream.ReadsClosed.ConfigureAwait(false);
+
+        await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).ConfigureAwait(false);
+        serverStream.CompleteWrites();
+        await serverStream.WritesClosed.ConfigureAwait(false);
+
+        byte[] responseBuffer = new byte[responsePayload.Length];
+        await ReadExactlyAsync(clientStream, responseBuffer).ConfigureAwait(false);
+        if (!responsePayload.AsSpan().SequenceEqual(responseBuffer))
+        {
+            throw new InvalidOperationException("The client response payload did not match the server payload.");
+        }
+
+        await EnsureEofAsync(clientStream, "The client did not observe response EOF.").ConfigureAwait(false);
+        await clientStream.ReadsClosed.ConfigureAwait(false);
+    }
+
+    private static async Task CloseIncursaPairAsync(
+        IncursaClientConnection clientConnection,
+        IncursaClientConnection serverConnection,
+        IncursaListener listener)
+    {
+        await serverConnection.CloseAsync(0, CancellationToken.None).ConfigureAwait(false);
+        await clientConnection.CloseAsync(0, CancellationToken.None).ConfigureAwait(false);
+        await serverConnection.DisposeAsync().ConfigureAwait(false);
+        await clientConnection.DisposeAsync().ConfigureAwait(false);
+        await listener.DisposeAsync().ConfigureAwait(false);
+    }
+
+    private static async Task CloseSystemNetPairAsync(SystemNetClientConnection clientConnection, SystemNetClientConnection serverConnection)
+    {
+        await serverConnection.CloseAsync(0, CancellationToken.None).ConfigureAwait(false);
+        await clientConnection.CloseAsync(0, CancellationToken.None).ConfigureAwait(false);
+        await serverConnection.DisposeAsync().ConfigureAwait(false);
+        await clientConnection.DisposeAsync().ConfigureAwait(false);
+    }
+
+    private static async Task ReadExactlyAsync(Stream stream, byte[] buffer)
+    {
+        int offset = 0;
+        while (offset < buffer.Length)
+        {
+            int bytesRead = await stream.ReadAsync(buffer, offset, buffer.Length - offset).ConfigureAwait(false);
+            if (bytesRead == 0)
+            {
+                throw new InvalidOperationException("Unexpected EOF before the full payload was read.");
+            }
+
+            offset += bytesRead;
+        }
+    }
+
+    private static async Task EnsureEofAsync(Stream stream, string failureMessage)
+    {
+        byte[] probe = new byte[1];
+        int bytesRead = await stream.ReadAsync(probe, 0, probe.Length).ConfigureAwait(false);
+        if (bytesRead != 0)
+        {
+            throw new InvalidOperationException(failureMessage);
+        }
+    }
+
+    private static byte[] CreatePayload(int length, byte seed)
+    {
+        byte[] payload = new byte[length];
+        for (int index = 0; index < payload.Length; index++)
+        {
+            payload[index] = (byte)((seed + index) % 251);
+        }
+
+        return payload;
+    }
+
     private static JsonObject PassResultToJson(PassResult r)
     {
         return new JsonObject
@@ -1299,6 +1586,12 @@ internal static class QuicAllocationHarness
     private static void WriteJson(JsonObject json)
     {
         if (JsonOutputPath is null || JsonOutputPath.Length == 0) return;
+        string? directory = Path.GetDirectoryName(Path.GetFullPath(JsonOutputPath));
+        if (!string.IsNullOrEmpty(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
         var options = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
         string jsonText = json.ToJsonString(options);
         File.WriteAllText(JsonOutputPath, jsonText);

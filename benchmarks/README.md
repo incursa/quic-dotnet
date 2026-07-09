@@ -81,6 +81,17 @@ benchmarks or as full internet, HTTP/3, or interop-runner performance claims.
 The public stream-transfer comparison is traced under `REQ-QUIC-API-0016` and
 now has its own bounded benchmark suite.
 
+For a faster non-BDN allocation probe of the established-connection
+request/response path, run:
+
+```powershell
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --profile-stream 200 --json .artifacts/perf/public-stream-profile/local-profile-stream.json
+```
+
+`--profile-stream` reuses one connected pair per implementation and reports two
+passes of managed bytes, working set, private bytes, and elapsed time per
+request/response stream operation.
+
 ## Black-Box External Lane
 
 For public cross-implementation work, use an external client-driven benchmark
