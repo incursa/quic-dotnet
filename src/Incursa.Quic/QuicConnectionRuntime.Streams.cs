@@ -2068,10 +2068,17 @@ internal sealed partial class QuicConnectionRuntime
         pendingPeerStreamCapacityReleaseStreamIds.Remove(streamId);
         if (TryReleasePeerStreamCapacity(streamId, ref effects))
         {
+            ClearPeerStreamCapacityReleaseScheduled(streamId);
             return true;
         }
 
-        return TryDeferPeerStreamCapacityRelease(streamId);
+        if (TryDeferPeerStreamCapacityRelease(streamId))
+        {
+            return true;
+        }
+
+        ClearPeerStreamCapacityReleaseScheduled(streamId);
+        return false;
     }
 
     private bool HandleFlowControlCreditUpdated(
@@ -2216,6 +2223,7 @@ internal sealed partial class QuicConnectionRuntime
             pendingPeerStreamCapacityReleaseStreamIds.Remove(streamId);
             if (TryReleasePeerStreamCapacity(streamId, ref effects))
             {
+                ClearPeerStreamCapacityReleaseScheduled(streamId);
                 stateChanged = true;
                 continue;
             }
@@ -2224,6 +2232,8 @@ internal sealed partial class QuicConnectionRuntime
             {
                 break;
             }
+
+            ClearPeerStreamCapacityReleaseScheduled(streamId);
         }
 
         return stateChanged;

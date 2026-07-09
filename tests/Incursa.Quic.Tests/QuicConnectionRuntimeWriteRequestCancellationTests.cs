@@ -6,6 +6,57 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicConnectionRuntimeWriteRequestCancellationTests
 {
     [Fact]
+    public async Task TryQueueStreamCapacityRelease_SuppressesDuplicatePendingReleaseEvents()
+    {
+        await using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        int releaseEventCount = 0;
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            if (connectionEvent is QuicConnectionStreamActionEvent
+                {
+                    ActionKind: QuicConnectionStreamActionKind.ReleaseCapacity,
+                })
+            {
+                releaseEventCount++;
+            }
+
+            return true;
+        });
+
+        runtime.TryQueueStreamCapacityRelease(streamId: 0);
+        runtime.TryQueueStreamCapacityRelease(streamId: 0);
+
+        Assert.Equal(1, releaseEventCount);
+    }
+
+    [Fact]
+    public async Task TryQueueStreamCapacityRelease_AllowsRetryAfterPostFailure()
+    {
+        await using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        runtime.SetLocalApiEventDispatcher(_ => false);
+
+        runtime.TryQueueStreamCapacityRelease(streamId: 0);
+
+        int releaseEventCount = 0;
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            if (connectionEvent is QuicConnectionStreamActionEvent
+                {
+                    ActionKind: QuicConnectionStreamActionKind.ReleaseCapacity,
+                })
+            {
+                releaseEventCount++;
+            }
+
+            return true;
+        });
+
+        runtime.TryQueueStreamCapacityRelease(streamId: 0);
+
+        Assert.Equal(1, releaseEventCount);
+    }
+
+    [Fact]
     public async Task WriteStreamAsync_ObservesCancellationWhileTheRequestIsPending()
     {
         await using QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();

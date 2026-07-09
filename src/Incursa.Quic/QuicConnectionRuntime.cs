@@ -69,8 +69,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly ConcurrentDictionary<long, DatagramSendRequestCompletionSource> pendingDatagramSendRequests = new();
     private readonly ConcurrentQueue<object> completionSourcePool = new();
     private readonly object pendingStreamActionRequestsGate = new();
+    private readonly object scheduledPeerStreamCapacityReleaseGate = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
     private readonly HashSet<ulong> pendingPeerStreamCapacityReleaseStreamIds = [];
+    private readonly HashSet<ulong> scheduledPeerStreamCapacityReleaseStreamIds = [];
     private readonly Dictionary<ulong, QuicMaxStreamDataFrame> pendingFlowControlStreamCreditFrames = [];
     private readonly QuicStreamObserverDirectory streamObservers = new();
     private readonly QuicConnectionIssuedConnectionIdState issuedConnectionIdState = new();
@@ -1133,11 +1135,35 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             return;
         }
 
-        _ = TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
+        if (!TryMarkPeerStreamCapacityReleaseScheduled(streamId))
+        {
+            return;
+        }
+
+        if (!TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
             clock.Ticks,
             RequestId: 0,
             QuicConnectionStreamActionKind.ReleaseCapacity,
-            StreamId: streamId));
+            StreamId: streamId)))
+        {
+            ClearPeerStreamCapacityReleaseScheduled(streamId);
+        }
+    }
+
+    private bool TryMarkPeerStreamCapacityReleaseScheduled(ulong streamId)
+    {
+        lock (scheduledPeerStreamCapacityReleaseGate)
+        {
+            return scheduledPeerStreamCapacityReleaseStreamIds.Add(streamId);
+        }
+    }
+
+    private void ClearPeerStreamCapacityReleaseScheduled(ulong streamId)
+    {
+        lock (scheduledPeerStreamCapacityReleaseGate)
+        {
+            scheduledPeerStreamCapacityReleaseStreamIds.Remove(streamId);
+        }
     }
 
     internal void TryQueueFlowControlCreditUpdate(
