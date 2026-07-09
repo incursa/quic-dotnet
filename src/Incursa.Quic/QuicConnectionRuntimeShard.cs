@@ -134,6 +134,26 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             QuicConnectionRuntimeShardWorkItemKind.StreamCapacityRelease));
     }
 
+    public bool TryPostFlowControlCreditUpdate(QuicConnectionHandle handle, QuicConnectionRuntime runtime)
+    {
+        ArgumentNullException.ThrowIfNull(runtime);
+
+        if (Volatile.Read(ref disposed) != 0)
+        {
+            return false;
+        }
+
+        if (runtime.IsDisposed)
+        {
+            return false;
+        }
+
+        return inbox.Writer.TryWrite(new QuicConnectionRuntimeShardWorkItem(
+            handle,
+            runtime,
+            QuicConnectionRuntimeShardWorkItemKind.FlowControlCreditUpdate));
+    }
+
     /// <summary>
     /// Starts the shard consumer loop and returns the task that represents its lifetime.
     /// </summary>
@@ -321,6 +341,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     => runtime.TransitionPacketReceived(workItem.PacketReceived, clock.Ticks),
                 QuicConnectionRuntimeShardWorkItemKind.StreamCapacityRelease
                     => runtime.TransitionStreamCapacityRelease(clock.Ticks),
+                QuicConnectionRuntimeShardWorkItemKind.FlowControlCreditUpdate
+                    => runtime.TransitionFlowControlCreditUpdate(clock.Ticks),
                 _ => runtime.Transition(workItem.ConnectionEvent!, clock.Ticks),
             };
             transitionObserver?.Invoke(workItem.Handle, result);

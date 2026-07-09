@@ -19,6 +19,7 @@ internal enum QuicConnectionRuntimeShardWorkItemKind
     Event = 0,
     PacketReceived = 1,
     StreamCapacityRelease = 2,
+    FlowControlCreditUpdate = 3,
 }
 
 internal readonly record struct QuicConnectionRuntimeShardWorkItem
@@ -55,7 +56,8 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
         QuicConnectionRuntime runtime,
         QuicConnectionRuntimeShardWorkItemKind kind)
     {
-        if (kind != QuicConnectionRuntimeShardWorkItemKind.StreamCapacityRelease)
+        if (kind is not QuicConnectionRuntimeShardWorkItemKind.StreamCapacityRelease
+            and not QuicConnectionRuntimeShardWorkItemKind.FlowControlCreditUpdate)
         {
             throw new ArgumentOutOfRangeException(nameof(kind));
         }

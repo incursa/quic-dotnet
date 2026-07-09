@@ -145,6 +145,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private Exception? inboundDatagramQueueCompletionException;
     private Func<QuicConnectionEvent, bool>? localApiEventDispatcher;
     private Func<bool>? streamCapacityReleaseDispatcher;
+    private Func<bool>? flowControlCreditUpdateDispatcher;
     private Action<int, int>? streamCapacityObserver;
     private bool scheduledPeerStreamCapacityReleaseEventPending;
     private bool scheduledFlowControlCreditUpdatePending;
@@ -1217,6 +1218,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         streamCapacityReleaseDispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
     }
 
+    internal void SetFlowControlCreditUpdateDispatcher(Func<bool> dispatcher)
+    {
+        flowControlCreditUpdateDispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+    }
+
     internal void SetStreamCapacityObserver(Action<int, int>? observer)
     {
         streamCapacityObserver = observer;
@@ -1306,8 +1312,14 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         bool shouldPostEvent = TryMarkFlowControlCreditUpdateScheduled(maxDataFrame, maxStreamDataFrame);
-        if (shouldPostEvent
-            && !TryPostLocalApiEvent(new QuicConnectionFlowControlCreditUpdatedEvent(clock.Ticks)))
+        if (!shouldPostEvent)
+        {
+            return;
+        }
+
+        bool posted = flowControlCreditUpdateDispatcher?.Invoke()
+            ?? TryPostLocalApiEvent(new QuicConnectionFlowControlCreditUpdatedEvent(clock.Ticks));
+        if (!posted)
         {
             ClearFlowControlCreditUpdateScheduled();
         }
@@ -2319,6 +2331,25 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             transitionSequence,
             nowTicks,
             QuicConnectionEventKind.StreamAction,
+            previousPhase,
+            phase,
+            stateChanged,
+            effects);
+    }
+
+    internal QuicConnectionTransitionResult TransitionFlowControlCreditUpdate(long nowTicks)
+    {
+        QuicConnectionPhase previousPhase = phase;
+        lastTransitionTicks = nowTicks;
+        transitionSequence++;
+
+        QuicConnectionEffectAccumulator effects = default;
+        bool stateChanged = HandleScheduledFlowControlCreditUpdated(ref effects);
+
+        return new QuicConnectionTransitionResult(
+            transitionSequence,
+            nowTicks,
+            QuicConnectionEventKind.FlowControlCreditUpdated,
             previousPhase,
             phase,
             stateChanged,

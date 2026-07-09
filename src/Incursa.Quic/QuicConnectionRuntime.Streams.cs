@@ -2150,6 +2150,11 @@ internal sealed partial class QuicConnectionRuntime
             flowControlCreditUpdatedEvent.MaxDataFrame,
             flowControlCreditUpdatedEvent.MaxStreamDataFrame);
 
+        return HandleScheduledFlowControlCreditUpdated(ref effects);
+    }
+
+    private bool HandleScheduledFlowControlCreditUpdated(ref QuicConnectionEffectAccumulator effects)
+    {
         _ = TryDeferScheduledFlowControlCreditUpdate();
         return TryFlushPendingFlowControlCreditUpdates(ref effects);
     }

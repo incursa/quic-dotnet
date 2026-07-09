@@ -100,6 +100,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
 
         runtime.SetLocalApiEventDispatcher(connectionEvent => endpoint.Host.TryPostEvent(handle, connectionEvent));
         runtime.SetStreamCapacityReleaseDispatcher(() => endpoint.Host.TryPostStreamCapacityRelease(handle));
+        runtime.SetFlowControlCreditUpdateDispatcher(() => endpoint.Host.TryPostFlowControlCreditUpdate(handle));
 
         endpointHost = new QuicConnectionEndpointHost(
             endpoint,
