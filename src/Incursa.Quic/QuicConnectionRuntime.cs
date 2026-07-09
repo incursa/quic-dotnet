@@ -147,6 +147,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private Func<bool>? streamCapacityReleaseDispatcher;
     private Func<bool>? flowControlCreditUpdateDispatcher;
     private Func<long, QuicStreamType, bool>? streamOpenDispatcher;
+    private Func<long, QuicConnectionStreamActionKind, ulong, ReadOnlyMemory<byte>, bool>? streamWriteDispatcher;
     private Action<int, int>? streamCapacityObserver;
     private bool scheduledPeerStreamCapacityReleaseEventPending;
     private bool scheduledFlowControlCreditUpdatePending;
@@ -1215,6 +1216,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         streamCapacityReleaseDispatcher = null;
         flowControlCreditUpdateDispatcher = null;
         streamOpenDispatcher = null;
+        streamWriteDispatcher = null;
     }
 
     internal void SetStreamCapacityReleaseDispatcher(Func<bool> dispatcher)
@@ -1230,6 +1232,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     internal void SetStreamOpenDispatcher(Func<long, QuicStreamType, bool> dispatcher)
     {
         streamOpenDispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+    }
+
+    internal void SetStreamWriteDispatcher(Func<long, QuicConnectionStreamActionKind, ulong, ReadOnlyMemory<byte>, bool> dispatcher)
+    {
+        streamWriteDispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
     }
 
     internal void SetStreamCapacityObserver(Action<int, int>? observer)
@@ -1754,12 +1761,15 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             completion.RegisterCancellation(requestId, cancellationToken);
         }
 
-        if (!TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
-            clock.Ticks,
-            requestId,
-            finishWrites ? QuicConnectionStreamActionKind.Finish : QuicConnectionStreamActionKind.Write,
-            StreamId: streamId,
-            StreamData: buffer)))
+        QuicConnectionStreamActionKind actionKind = finishWrites ? QuicConnectionStreamActionKind.Finish : QuicConnectionStreamActionKind.Write;
+        bool posted = streamWriteDispatcher?.Invoke(requestId, actionKind, streamId, buffer)
+            ?? TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
+                clock.Ticks,
+                requestId,
+                actionKind,
+                StreamId: streamId,
+                StreamData: buffer));
+        if (!posted)
         {
             TryRemovePendingStreamActionRequest(requestId, out _);
             completion.DisposeCancellationRegistration();
@@ -1829,12 +1839,15 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             completion.RegisterCancellation(requestId, cancellationToken);
         }
 
-        if (!TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
-            clock.Ticks,
-            requestId,
-            finishWrites ? QuicConnectionStreamActionKind.Finish : QuicConnectionStreamActionKind.Write,
-            StreamId: streamId,
-            StreamData: buffer)))
+        QuicConnectionStreamActionKind actionKind = finishWrites ? QuicConnectionStreamActionKind.Finish : QuicConnectionStreamActionKind.Write;
+        bool posted = streamWriteDispatcher?.Invoke(requestId, actionKind, streamId, buffer)
+            ?? TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
+                clock.Ticks,
+                requestId,
+                actionKind,
+                StreamId: streamId,
+                StreamData: buffer));
+        if (!posted)
         {
             TryRemovePendingStreamActionRequest(requestId, out _);
             completion.DisposeCancellationRegistration();
@@ -2023,11 +2036,17 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             completion.RegisterCancellation(requestId, cancellationToken);
         }
 
-        if (!TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
-            clock.Ticks,
-            requestId,
-            QuicConnectionStreamActionKind.Finish,
-            StreamId: streamId)))
+        bool posted = streamWriteDispatcher?.Invoke(
+                requestId,
+                QuicConnectionStreamActionKind.Finish,
+                streamId,
+                ReadOnlyMemory<byte>.Empty)
+            ?? TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
+                clock.Ticks,
+                requestId,
+                QuicConnectionStreamActionKind.Finish,
+                StreamId: streamId));
+        if (!posted)
         {
             TryRemovePendingStreamActionRequest(requestId, out _);
             completion.DisposeCancellationRegistration();
@@ -2090,11 +2109,17 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             completion.RegisterCancellation(requestId, cancellationToken);
         }
 
-        if (!TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
-            clock.Ticks,
-            requestId,
-            QuicConnectionStreamActionKind.Finish,
-            StreamId: streamId)))
+        bool posted = streamWriteDispatcher?.Invoke(
+                requestId,
+                QuicConnectionStreamActionKind.Finish,
+                streamId,
+                ReadOnlyMemory<byte>.Empty)
+            ?? TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
+                clock.Ticks,
+                requestId,
+                QuicConnectionStreamActionKind.Finish,
+                StreamId: streamId));
+        if (!posted)
         {
             TryRemovePendingStreamActionRequest(requestId, out _);
             completion.DisposeCancellationRegistration();
@@ -2378,6 +2403,36 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         QuicConnectionEffectAccumulator effects = default;
         bool stateChanged = HandleOpenStreamAction(requestId, streamType, ref effects);
+
+        return new QuicConnectionTransitionResult(
+            transitionSequence,
+            nowTicks,
+            QuicConnectionEventKind.StreamAction,
+            previousPhase,
+            phase,
+            stateChanged,
+            effects);
+    }
+
+    internal QuicConnectionTransitionResult TransitionStreamWrite(
+        long requestId,
+        QuicConnectionStreamActionKind actionKind,
+        ulong streamId,
+        ReadOnlyMemory<byte> streamData,
+        long nowTicks)
+    {
+        QuicConnectionPhase previousPhase = phase;
+        lastTransitionTicks = nowTicks;
+        transitionSequence++;
+
+        QuicConnectionEffectAccumulator effects = default;
+        bool stateChanged = HandleWriteStreamAction(
+            nowTicks,
+            requestId,
+            streamId,
+            streamData,
+            actionKind == QuicConnectionStreamActionKind.Finish,
+            ref effects);
 
         return new QuicConnectionTransitionResult(
             transitionSequence,

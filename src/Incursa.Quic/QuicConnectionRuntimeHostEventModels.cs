@@ -21,6 +21,7 @@ internal enum QuicConnectionRuntimeShardWorkItemKind
     StreamCapacityRelease = 2,
     FlowControlCreditUpdate = 3,
     StreamOpen = 4,
+    StreamWrite = 5,
 }
 
 internal readonly record struct QuicConnectionRuntimeShardWorkItem
@@ -83,6 +84,29 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
         StreamType = streamType;
     }
 
+    internal QuicConnectionRuntimeShardWorkItem(
+        QuicConnectionHandle handle,
+        QuicConnectionRuntime runtime,
+        long requestId,
+        QuicConnectionStreamActionKind actionKind,
+        ulong streamId,
+        ReadOnlyMemory<byte> streamData)
+    {
+        if (actionKind is not QuicConnectionStreamActionKind.Write and not QuicConnectionStreamActionKind.Finish)
+        {
+            throw new ArgumentOutOfRangeException(nameof(actionKind));
+        }
+
+        Handle = handle;
+        Runtime = runtime;
+        ConnectionEvent = null;
+        Kind = QuicConnectionRuntimeShardWorkItemKind.StreamWrite;
+        RequestId = requestId;
+        StreamActionKind = actionKind;
+        StreamId = streamId;
+        StreamData = streamData;
+    }
+
     internal QuicConnectionRuntimeShardWorkItemKind Kind { get; }
 
     internal QuicConnectionHandle Handle { get; }
@@ -100,4 +124,10 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
     internal long RequestId { get; }
 
     internal QuicStreamType StreamType { get; }
+
+    internal QuicConnectionStreamActionKind StreamActionKind { get; }
+
+    internal ulong StreamId { get; }
+
+    internal ReadOnlyMemory<byte> StreamData { get; }
 }

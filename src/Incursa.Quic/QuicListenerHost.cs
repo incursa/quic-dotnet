@@ -1293,6 +1293,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             runtime.SetStreamCapacityReleaseDispatcher(() => endpoint.Host.TryPostStreamCapacityRelease(handle));
             runtime.SetFlowControlCreditUpdateDispatcher(() => endpoint.Host.TryPostFlowControlCreditUpdate(handle));
             runtime.SetStreamOpenDispatcher((requestId, streamType) => endpoint.Host.TryPostStreamOpen(handle, requestId, streamType));
+            runtime.SetStreamWriteDispatcher((requestId, actionKind, streamId, streamData) => endpoint.Host.TryPostStreamWrite(handle, requestId, actionKind, streamId, streamData));
 
             if (!connections.TryAdd(handle, new PendingConnectionState(handle, runtime, connection)))
             {
