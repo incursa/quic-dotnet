@@ -14,7 +14,14 @@ namespace Incursa.Quic;
 /// </remarks>
 internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 {
+    private static readonly TimerCallback DeadlineWakeTimerCallback = static state =>
+    {
+        ChannelWriter<QuicConnectionRuntimeShardWorkItem> writer = (ChannelWriter<QuicConnectionRuntimeShardWorkItem>)state!;
+        _ = writer.TryWrite(default);
+    };
+
     private readonly IMonotonicClock clock;
+    private readonly Timer deadlineWakeTimer;
     private readonly QuicConnectionRuntimeDeadlineScheduler deadlineScheduler = new();
     private readonly Channel<QuicConnectionRuntimeShardWorkItem> inbox;
     private readonly int shardIndex;
@@ -41,6 +48,12 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             SingleWriter = false,
             AllowSynchronousContinuations = false,
         });
+
+        deadlineWakeTimer = new Timer(
+            DeadlineWakeTimerCallback,
+            inbox.Writer,
+            Timeout.InfiniteTimeSpan,
+            Timeout.InfiniteTimeSpan);
     }
 
     /// <summary>
@@ -106,11 +119,19 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 
         // Completing the inbox tells the single reader to finish after draining any already-posted work.
         inbox.Writer.TryComplete();
+        deadlineWakeTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
 
         Task? processing = processingTask;
-        if (processing is not null)
+        try
         {
-            await processing.ConfigureAwait(false);
+            if (processing is not null)
+            {
+                await processing.ConfigureAwait(false);
+            }
+        }
+        finally
+        {
+            await deadlineWakeTimer.DisposeAsync().ConfigureAwait(false);
         }
     }
 
@@ -151,12 +172,22 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 
                 while (reader.TryRead(out QuicConnectionRuntimeShardWorkItem workItem))
                 {
+                    if (IsDeadlineWakeWorkItem(workItem))
+                    {
+                        continue;
+                    }
+
                     ProcessWorkItem(workItem, transitionObserver, effectObserver);
                 }
 
                 deadlineScheduler.EnqueueDueEntries(clock.Ticks, inbox.Writer);
                 if (reader.TryRead(out QuicConnectionRuntimeShardWorkItem queuedTimerWorkItem))
                 {
+                    if (IsDeadlineWakeWorkItem(queuedTimerWorkItem))
+                    {
+                        continue;
+                    }
+
                     ProcessWorkItem(queuedTimerWorkItem, transitionObserver, effectObserver);
                     continue;
                 }
@@ -176,25 +207,26 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     continue;
                 }
 
-                Task<bool> waitToReadTask = reader.WaitToReadAsync().AsTask();
-                Task delayTask = Task.Delay(wait);
-                Task completed = await Task.WhenAny(waitToReadTask, delayTask).ConfigureAwait(false);
-                if (completed == delayTask)
-                {
-                    continue;
-                }
-
-                if (!await waitToReadTask.ConfigureAwait(false))
+                deadlineWakeTimer.Change(wait, Timeout.InfiniteTimeSpan);
+                if (!await reader.WaitToReadAsync().ConfigureAwait(false))
                 {
                     break;
                 }
+
+                deadlineWakeTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             }
         }
         finally
         {
+            deadlineWakeTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             await cancellationRegistration.DisposeAsync().ConfigureAwait(false);
             while (reader.TryRead(out QuicConnectionRuntimeShardWorkItem workItem))
             {
+                if (IsDeadlineWakeWorkItem(workItem))
+                {
+                    continue;
+                }
+
                 ReleaseWorkItemResources(workItem);
             }
         }
@@ -245,6 +277,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             ReleaseWorkItemResources(workItem);
         }
     }
+
+    private static bool IsDeadlineWakeWorkItem(QuicConnectionRuntimeShardWorkItem workItem)
+        => workItem.Runtime is null && workItem.ConnectionEvent is null;
 
     private static void ReleaseWorkItemResources(QuicConnectionRuntimeShardWorkItem workItem)
     {
