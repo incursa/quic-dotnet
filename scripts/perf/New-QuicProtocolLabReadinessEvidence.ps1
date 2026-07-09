@@ -1718,7 +1718,7 @@ $readinessQuality = [ordered]@{
 $performanceCommands = @(
     [ordered]@{
         name = "Raw QUIC stream-throughput smoke"
-        command = "pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicPerformanceLane.ps1 -Lane Smoke -Surface RawQuicStreamThroughput"
+        command = "pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicPerformanceLane.ps1 -Lane Smoke -Surface RawQuicStreamThroughput -CaptureCounters"
         mode = "local-source-reference"
         publishable = $false
     },

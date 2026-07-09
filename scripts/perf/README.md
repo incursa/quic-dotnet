@@ -119,8 +119,14 @@ Example smoke run for raw QUIC stream-throughput isolation:
 ```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicPerformanceLane.ps1 `
   -Lane Smoke `
-  -Surface RawQuicStreamThroughput
+  -Surface RawQuicStreamThroughput `
+  -CaptureCounters
 ```
+
+Use `-CaptureCounters` on raw stream-throughput smoke runs when the result will
+feed a performance investigation. It records throughput, allocation, GC,
+exception-rate, CPU, validation, and load-generator process telemetry in the
+ProtocolLab aggregate.
 
 Example core ProtocolLab smoke run for both HTTP/3 and raw QUIC:
 
