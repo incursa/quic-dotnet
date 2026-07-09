@@ -760,14 +760,14 @@ public sealed class QuicStream : Stream
         }
     }
 
-    private async ValueTask<bool> TryWriteCoreAsync(
+    private ValueTask<bool> TryWriteCoreAsync(
         ReadOnlyMemory<byte> buffer,
         bool finishWrites,
         CancellationToken cancellationToken)
     {
         if (Volatile.Read(ref disposed) != 0)
         {
-            return false;
+            return new ValueTask<bool>(false);
         }
 
         if (!canWrite)
@@ -782,30 +782,92 @@ public sealed class QuicStream : Stream
 
         if (writeTerminalException is not null || runtime.HasTerminalStreamOperation)
         {
-            return false;
+            return new ValueTask<bool>(false);
         }
 
         if (buffer.IsEmpty && !finishWrites)
         {
-            return true;
+            return new ValueTask<bool>(true);
         }
 
-        await WriteGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        Task gateWait = WriteGate.WaitAsync(cancellationToken);
+        if (!gateWait.IsCompletedSuccessfully)
+        {
+            return TryWriteCoreAfterGateWaitAsync(gateWait, buffer, finishWrites, cancellationToken);
+        }
+
+        gateWait.GetAwaiter().GetResult();
+        return TryWriteCoreAfterGate(buffer, finishWrites, cancellationToken);
+    }
+
+    private async ValueTask<bool> TryWriteCoreAfterGateWaitAsync(
+        Task gateWait,
+        ReadOnlyMemory<byte> buffer,
+        bool finishWrites,
+        CancellationToken cancellationToken)
+    {
+        await gateWait.ConfigureAwait(false);
+        return await TryWriteCoreAfterGate(buffer, finishWrites, cancellationToken).ConfigureAwait(false);
+    }
+
+    private ValueTask<bool> TryWriteCoreAfterGate(
+        ReadOnlyMemory<byte> buffer,
+        bool finishWrites,
+        CancellationToken cancellationToken)
+    {
         try
         {
             if (Volatile.Read(ref disposed) != 0)
             {
-                return false;
+                WriteGate.Release();
+                return new ValueTask<bool>(false);
             }
 
-            if (writeTerminalException is not null || runtime.HasTerminalStreamOperation)
+            QuicConnectionRuntime currentRuntime = runtime!;
+            if (writeTerminalException is not null || currentRuntime.HasTerminalStreamOperation)
             {
-                return false;
+                WriteGate.Release();
+                return new ValueTask<bool>(false);
             }
 
-            bool completed = finishWrites
-                ? await runtime.TryWriteFinalStreamAsync(streamId, buffer, cancellationToken).ConfigureAwait(false)
-                : await runtime.TryWriteStreamAsync(streamId, buffer, cancellationToken).ConfigureAwait(false);
+            ValueTask<bool> writeTask = finishWrites
+                ? currentRuntime.TryWriteFinalStreamAsync(streamId, buffer, cancellationToken)
+                : currentRuntime.TryWriteStreamAsync(streamId, buffer, cancellationToken);
+            if (!writeTask.IsCompletedSuccessfully)
+            {
+                return TryWriteCoreAfterRuntimeWriteAsync(writeTask, finishWrites);
+            }
+
+            bool completed = writeTask.GetAwaiter().GetResult();
+            if (!completed)
+            {
+                WriteGate.Release();
+                return new ValueTask<bool>(false);
+            }
+
+            if (finishWrites)
+            {
+                CompleteWritesClosed();
+                currentRuntime.TryQueueStreamCapacityRelease(streamId);
+            }
+
+            WriteGate.Release();
+            return new ValueTask<bool>(true);
+        }
+        catch
+        {
+            WriteGate.Release();
+            throw;
+        }
+    }
+
+    private async ValueTask<bool> TryWriteCoreAfterRuntimeWriteAsync(
+        ValueTask<bool> writeTask,
+        bool finishWrites)
+    {
+        try
+        {
+            bool completed = await writeTask.ConfigureAwait(false);
             if (!completed)
             {
                 return false;
@@ -814,7 +876,7 @@ public sealed class QuicStream : Stream
             if (finishWrites)
             {
                 CompleteWritesClosed();
-                runtime.TryQueueStreamCapacityRelease(streamId);
+                runtime!.TryQueueStreamCapacityRelease(streamId);
             }
 
             return true;
