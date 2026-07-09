@@ -537,18 +537,35 @@ internal sealed class QuicConnectionSendRuntime
 
     private bool TrySuppressResetStreamRetransmissionForAcknowledgedStreamData(ReadOnlySpan<byte> payload)
     {
-        ulong[] acknowledgedStreamDataStreamIds = QuicFramePayloadInspector.GetStreamDataStreamIds(payload);
-        if (acknowledgedStreamDataStreamIds.Length == 0)
+        Span<ulong> inlineStreamIds = stackalloc ulong[4];
+        int streamIdCount = QuicFramePayloadInspector.CopyStreamDataStreamIds(
+            payload,
+            inlineStreamIds,
+            out ulong[]? overflowStreamIds);
+        if (streamIdCount == 0)
         {
             return false;
         }
 
         bool updated = false;
-        foreach (ulong streamId in acknowledgedStreamDataStreamIds)
+        if (overflowStreamIds is not null)
         {
-            if (!ContainsOutstandingStreamDataForStream(streamId))
+            foreach (ulong streamId in overflowStreamIds)
             {
-                updated |= TrySuppressResetStreamRetransmissionForStream(streamId);
+                if (!ContainsOutstandingStreamDataForStream(streamId))
+                {
+                    updated |= TrySuppressResetStreamRetransmissionForStream(streamId);
+                }
+            }
+
+            return updated;
+        }
+
+        for (int index = 0; index < streamIdCount; index++)
+        {
+            if (!ContainsOutstandingStreamDataForStream(inlineStreamIds[index]))
+            {
+                updated |= TrySuppressResetStreamRetransmissionForStream(inlineStreamIds[index]);
             }
         }
 

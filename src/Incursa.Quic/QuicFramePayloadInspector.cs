@@ -51,9 +51,24 @@ internal static class QuicFramePayloadInspector
 
     internal static ulong[] GetStreamDataStreamIds(ReadOnlySpan<byte> payload)
     {
-        ulong firstStreamId = 0;
-        bool hasFirstStreamId = false;
-        List<ulong>? streamIds = null;
+        Span<ulong> inlineStreamIds = stackalloc ulong[1];
+        int streamIdCount = CopyStreamDataStreamIds(payload, inlineStreamIds, out ulong[]? overflowStreamIds);
+        if (overflowStreamIds is not null)
+        {
+            return overflowStreamIds;
+        }
+
+        return streamIdCount == 0 ? [] : [inlineStreamIds[0]];
+    }
+
+    internal static int CopyStreamDataStreamIds(
+        ReadOnlySpan<byte> payload,
+        Span<ulong> streamIds,
+        out ulong[]? overflowStreamIds)
+    {
+        overflowStreamIds = null;
+        int streamIdCount = 0;
+        List<ulong>? overflowStreamIdList = null;
         int offset = 0;
         while (offset < payload.Length)
         {
@@ -64,9 +79,9 @@ internal static class QuicFramePayloadInspector
                 {
                     AddDistinctStreamId(
                         streamFrame.StreamId.Value,
-                        ref firstStreamId,
-                        ref hasFirstStreamId,
-                        ref streamIds);
+                        streamIds,
+                        ref streamIdCount,
+                        ref overflowStreamIdList);
                 }
 
                 offset += streamFrame.ConsumedLength;
@@ -82,12 +97,8 @@ internal static class QuicFramePayloadInspector
             break;
         }
 
-        if (streamIds is not null)
-        {
-            return streamIds.ToArray();
-        }
-
-        return hasFirstStreamId ? [firstStreamId] : [];
+        overflowStreamIds = overflowStreamIdList?.ToArray();
+        return streamIdCount;
     }
 
     internal static bool ContainsStreamDataForStream(ReadOnlySpan<byte> payload, ulong streamId)
@@ -168,26 +179,36 @@ internal static class QuicFramePayloadInspector
 
     private static void AddDistinctStreamId(
         ulong streamId,
-        ref ulong firstStreamId,
-        ref bool hasFirstStreamId,
-        ref List<ulong>? streamIds)
+        Span<ulong> inlineStreamIds,
+        ref int streamIdCount,
+        ref List<ulong>? overflowStreamIdList)
     {
-        if (!hasFirstStreamId)
+        if (overflowStreamIdList is not null)
         {
-            firstStreamId = streamId;
-            hasFirstStreamId = true;
+            if (!overflowStreamIdList.Contains(streamId))
+            {
+                overflowStreamIdList.Add(streamId);
+                streamIdCount++;
+            }
+
             return;
         }
 
-        if (streamId == firstStreamId)
+        for (int index = 0; index < streamIdCount; index++)
         {
+            if (inlineStreamIds[index] == streamId)
+            {
+                return;
+            }
+        }
+
+        if (overflowStreamIdList is null && streamIdCount < inlineStreamIds.Length)
+        {
+            inlineStreamIds[streamIdCount++] = streamId;
             return;
         }
 
-        streamIds ??= [firstStreamId];
-        if (!streamIds.Contains(streamId))
-        {
-            streamIds.Add(streamId);
-        }
+        overflowStreamIdList = [.. inlineStreamIds[..streamIdCount], streamId];
+        streamIdCount++;
     }
 }
