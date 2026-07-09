@@ -242,6 +242,34 @@ public sealed class REQ_QUIC_API_0010
     [Requirement("REQ-QUIC-API-0010")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public async Task UncontendedStreamWritesDoNotMaterializeTheSlowWriteGate()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
+            connectionSendLimit: 96,
+            localBidirectionalSendLimit: 96);
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            _ = runtime.Transition(connectionEvent);
+            return true;
+        });
+
+        await using QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        AcknowledgeTrackedPackets(runtime);
+
+        Assert.Null(GetSlowWriteGateSignal(stream));
+
+        byte[] payload = [0x10, 0x20, 0x30, 0x40];
+        await stream.WriteAsync(payload, 0, payload.Length).WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Null(GetSlowWriteGateSignal(stream));
+
+        await stream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Null(GetSlowWriteGateSignal(stream));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-API-0010")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task OversizedQueuedStreamWriteFlushesBoundedFragmentsPerLocalTransition()
     {
         using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
@@ -306,6 +334,14 @@ public sealed class REQ_QUIC_API_0010
         Task writeTask = stream.WriteAsync(payload, 0, payload.Length);
         await Task.Delay(150);
         Assert.False(writeTask.IsCompleted, "The write should still be waiting for peer stream credit.");
+
+        using CancellationTokenSource secondWriteCancellation = new();
+        byte[] secondPayload = [0xA1];
+        Task secondWriteTask = stream.WriteAsync(secondPayload, 0, secondPayload.Length, secondWriteCancellation.Token);
+        await Task.Delay(150);
+        Assert.False(secondWriteTask.IsCompleted, "The second write should still be waiting for the first write to release the write gate.");
+        await secondWriteCancellation.CancelAsync();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => secondWriteTask);
 
         QuicHandshakeFlowCoordinator peerCoordinator = new(runtime.CurrentHandshakeSourceConnectionId);
         byte[] maxStreamDataPayload = QuicFrameTestData.BuildMaxStreamDataFrame(
@@ -1136,6 +1172,13 @@ public sealed class REQ_QUIC_API_0010
                 $"FinalSize={snapshot.FinalSize}",
                 $"ReadOffset={snapshot.ReadOffset}",
             ]);
+    }
+
+    private static object? GetSlowWriteGateSignal(QuicStream stream)
+    {
+        return typeof(QuicStream)
+            .GetField("writeGateSignal", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(stream);
     }
 
     private static QuicConnectionRuntime GetRuntime(QuicConnection connection)

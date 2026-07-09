@@ -34,9 +34,9 @@ public sealed class QuicStream : Stream
     private TaskCompletionSource<object?> ReadsClosedTcs => readsClosed ??= new(TaskCreationOptions.RunContinuationsAsynchronously);
     private TaskCompletionSource<object?> WritesClosedTcs => writesClosed ??= new(TaskCreationOptions.RunContinuationsAsynchronously);
     private readonly SemaphoreSlim readGate = new(0, int.MaxValue);
-    private SemaphoreSlim? writeGate;
-
-    private SemaphoreSlim WriteGate => writeGate ??= new SemaphoreSlim(1, 1);
+    private SemaphoreSlim? writeGateSignal;
+    private int writeGateTaken;
+    private int writeGateWaiterCount;
     private readonly long? runtimeObserverId;
     private Exception? readTerminalException;
     private Exception? writeTerminalException;
@@ -408,7 +408,7 @@ public sealed class QuicStream : Stream
             throw new NotSupportedException("Completing writes requires the supported connection runtime path.");
         }
 
-        await WriteGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        await WaitForWriteGateAsync(cancellationToken).ConfigureAwait(false);
 
         try
         {
@@ -434,7 +434,7 @@ public sealed class QuicStream : Stream
         }
         finally
         {
-            WriteGate.Release();
+            ReleaseWriteGate();
         }
     }
 
@@ -472,11 +472,11 @@ public sealed class QuicStream : Stream
             {
                 if (useAsyncWait)
                 {
-                    await WriteGate.WaitAsync().ConfigureAwait(false);
+                    await WaitForWriteGateAsync().ConfigureAwait(false);
                 }
                 else
                 {
-                    WriteGate.WaitAsync().GetAwaiter().GetResult();
+                    WaitForWriteGateAsync().GetAwaiter().GetResult();
                 }
 
                 try
@@ -498,7 +498,7 @@ public sealed class QuicStream : Stream
                 }
                 finally
                 {
-                    WriteGate.Release();
+                    ReleaseWriteGate();
                 }
             }
         }
@@ -513,7 +513,7 @@ public sealed class QuicStream : Stream
             CompleteWritesClosed();
             readGate.Release();
             readGate.Dispose();
-            writeGate?.Dispose();
+            writeGateSignal?.Dispose();
             base.Dispose(disposing: true);
         }
     }
@@ -685,7 +685,7 @@ public sealed class QuicStream : Stream
             return;
         }
 
-        await WriteGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        await WaitForWriteGateAsync(cancellationToken).ConfigureAwait(false);
         try
         {
             ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
@@ -705,7 +705,7 @@ public sealed class QuicStream : Stream
         }
         finally
         {
-            WriteGate.Release();
+            ReleaseWriteGate();
         }
     }
 
@@ -734,7 +734,7 @@ public sealed class QuicStream : Stream
             throw runtimeException;
         }
 
-        await WriteGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        await WaitForWriteGateAsync(cancellationToken).ConfigureAwait(false);
         try
         {
             ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
@@ -756,7 +756,7 @@ public sealed class QuicStream : Stream
         }
         finally
         {
-            WriteGate.Release();
+            ReleaseWriteGate();
         }
     }
 
@@ -790,7 +790,7 @@ public sealed class QuicStream : Stream
             return new ValueTask<bool>(true);
         }
 
-        Task gateWait = WriteGate.WaitAsync(cancellationToken);
+        ValueTask gateWait = WaitForWriteGateAsync(cancellationToken);
         if (!gateWait.IsCompletedSuccessfully)
         {
             return TryWriteCoreAfterGateWaitAsync(gateWait, buffer, finishWrites, cancellationToken);
@@ -801,7 +801,7 @@ public sealed class QuicStream : Stream
     }
 
     private async ValueTask<bool> TryWriteCoreAfterGateWaitAsync(
-        Task gateWait,
+        ValueTask gateWait,
         ReadOnlyMemory<byte> buffer,
         bool finishWrites,
         CancellationToken cancellationToken)
@@ -819,14 +819,14 @@ public sealed class QuicStream : Stream
         {
             if (Volatile.Read(ref disposed) != 0)
             {
-                WriteGate.Release();
+                ReleaseWriteGate();
                 return new ValueTask<bool>(false);
             }
 
             QuicConnectionRuntime currentRuntime = runtime!;
             if (writeTerminalException is not null || currentRuntime.HasTerminalStreamOperation)
             {
-                WriteGate.Release();
+                ReleaseWriteGate();
                 return new ValueTask<bool>(false);
             }
 
@@ -841,7 +841,7 @@ public sealed class QuicStream : Stream
             bool completed = writeTask.GetAwaiter().GetResult();
             if (!completed)
             {
-                WriteGate.Release();
+                ReleaseWriteGate();
                 return new ValueTask<bool>(false);
             }
 
@@ -851,12 +851,12 @@ public sealed class QuicStream : Stream
                 currentRuntime.TryQueueStreamCapacityRelease(streamId);
             }
 
-            WriteGate.Release();
+            ReleaseWriteGate();
             return new ValueTask<bool>(true);
         }
         catch
         {
-            WriteGate.Release();
+            ReleaseWriteGate();
             throw;
         }
     }
@@ -883,7 +883,58 @@ public sealed class QuicStream : Stream
         }
         finally
         {
-            WriteGate.Release();
+            ReleaseWriteGate();
+        }
+    }
+
+    private ValueTask WaitForWriteGateAsync(CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (Interlocked.CompareExchange(ref writeGateTaken, 1, 0) == 0)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        return WaitForWriteGateSlowAsync(cancellationToken);
+    }
+
+    private async ValueTask WaitForWriteGateSlowAsync(CancellationToken cancellationToken)
+    {
+        SemaphoreSlim signal = LazyInitializer.EnsureInitialized(
+            ref writeGateSignal,
+            static () => new SemaphoreSlim(0));
+
+        while (true)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Interlocked.Increment(ref writeGateWaiterCount);
+            try
+            {
+                if (Interlocked.CompareExchange(ref writeGateTaken, 1, 0) == 0)
+                {
+                    return;
+                }
+
+                await signal.WaitAsync(cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                Interlocked.Decrement(ref writeGateWaiterCount);
+            }
+
+            if (Interlocked.CompareExchange(ref writeGateTaken, 1, 0) == 0)
+            {
+                return;
+            }
+        }
+    }
+
+    private void ReleaseWriteGate()
+    {
+        Volatile.Write(ref writeGateTaken, 0);
+        if (Volatile.Read(ref writeGateWaiterCount) > 0)
+        {
+            Volatile.Read(ref writeGateSignal)?.Release();
         }
     }
 
