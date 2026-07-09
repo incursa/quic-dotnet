@@ -777,8 +777,8 @@ public sealed class Http3Server : IAsyncDisposable
         ConnectionQPackState qpackState,
         CancellationToken cancellationToken)
     {
-        Http3FrameReader frameReader = new(ValidateRequestStreamFrameType);
-        Http3RequestMessageValidator validator = new();
+        Http3FrameReader? frameReader = null;
+        Http3RequestMessageValidator? validator = null;
         ArrayBufferWriter<byte>? body = null;
         // CONTEXT: Request read buffering
         // SEE: spec:REQ-QUIC-RFC9114-S4-0002
@@ -796,15 +796,31 @@ public sealed class Http3Server : IAsyncDisposable
                 int bytesRead = await stream.TryReadTerminalAsync(buffer.AsMemory(0, readBufferSize), cancellationToken).ConfigureAwait(false);
                 if (bytesRead == 0)
                 {
-                    foreach (Http3Frame frame in frameReader.Complete())
+                    if (frameReader is not null)
                     {
-                        EmitFrame(Http3DiagnosticKind.FrameReceived, stream.Id, frame);
-                        body = await ProcessRequestFrameAsync(frame, validator, body, stream.Id, qpackState, cancellationToken).ConfigureAwait(false);
+                        foreach (Http3Frame frame in frameReader.Complete())
+                        {
+                            EmitFrame(Http3DiagnosticKind.FrameReceived, stream.Id, frame);
+                            validator ??= new Http3RequestMessageValidator();
+                            body = await ProcessRequestFrameAsync(frame, validator, body, stream.Id, qpackState, cancellationToken).ConfigureAwait(false);
+                        }
                     }
 
                     break;
                 }
 
+                if (!IsDiagnosticEnabled(diagnosticsSink, Http3DiagnosticKind.FrameReceived)
+                    && await TryReadHeadersOnlyRequestFastPathAsync(
+                        buffer.AsMemory(0, bytesRead),
+                        stream.Id,
+                        qpackState,
+                        cancellationToken).ConfigureAwait(false) is { } fastPathRequest)
+                {
+                    return fastPathRequest;
+                }
+
+                frameReader ??= new Http3FrameReader(ValidateRequestStreamFrameType);
+                validator ??= new Http3RequestMessageValidator();
                 foreach (Http3Frame frame in frameReader.Read(buffer.AsSpan(0, bytesRead)))
                 {
                     EmitFrame(Http3DiagnosticKind.FrameReceived, stream.Id, frame);
@@ -815,6 +831,11 @@ public sealed class Http3Server : IAsyncDisposable
                 {
                     return request;
                 }
+            }
+
+            if (validator is null)
+            {
+                throw new Http3Exception(Http3ErrorCode.MessageError, "HTTP/3 request stream ended without request headers.");
             }
 
             validator.Complete();
@@ -830,6 +851,73 @@ public sealed class Http3Server : IAsyncDisposable
         {
             ArrayPool<byte>.Shared.Return(buffer, clearArray: false);
         }
+    }
+
+    private static async ValueTask<Http3Request?> TryReadHeadersOnlyRequestFastPathAsync(
+        ReadOnlyMemory<byte> bytes,
+        long streamId,
+        ConnectionQPackState qpackState,
+        CancellationToken cancellationToken)
+    {
+        if (!TryReadSingleCompleteHeadersPayload(bytes, out ReadOnlyMemory<byte> encodedFieldSection))
+        {
+            return null;
+        }
+
+        if (encodedFieldSection.IsEmpty || encodedFieldSection.Span[0] != 0)
+        {
+            return null;
+        }
+
+        IReadOnlyList<QPackFieldLine> fieldSection = await qpackState.DecodeRequestHeadersAsync(
+                checked((ulong)streamId),
+                encodedFieldSection,
+                cancellationToken).ConfigureAwait(false);
+        return TryCreateHeadersOnlyRequest(fieldSection, out Http3Request request) ? request : null;
+    }
+
+    private static bool TryReadSingleCompleteHeadersPayload(
+        ReadOnlyMemory<byte> bytes,
+        out ReadOnlyMemory<byte> payload)
+    {
+        payload = default;
+        ReadOnlySpan<byte> span = bytes.Span;
+        int index = 0;
+        if (!TryReadVariableLengthInteger(span, ref index, out ulong frameType)
+            || !TryReadVariableLengthInteger(span, ref index, out ulong payloadLength))
+        {
+            return false;
+        }
+
+        if (payloadLength > int.MaxValue)
+        {
+            throw new Http3Exception(Http3ErrorCode.ExcessiveLoad, "The HTTP/3 frame payload is too large for this parser.");
+        }
+
+        if (frameType != (ulong)Http3FrameType.Headers || span.Length - index != (int)payloadLength)
+        {
+            return false;
+        }
+
+        payload = bytes.Slice(index, (int)payloadLength);
+        return true;
+    }
+
+    private static bool TryReadVariableLengthInteger(ReadOnlySpan<byte> source, ref int index, out ulong value)
+    {
+        value = default;
+        if (index >= source.Length)
+        {
+            return false;
+        }
+
+        if (Http3VariableLengthInteger.TryParse(source[index..], out value, out int bytesConsumed))
+        {
+            index += bytesConsumed;
+            return true;
+        }
+
+        return false;
     }
 
     private static bool TryCreateHeadersOnlyRequest(
