@@ -389,7 +389,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
     /// <summary>
     /// Completes the writable side of the stream without closing the readable side.
     /// </summary>
-    public async ValueTask CompleteWritesAsync(CancellationToken cancellationToken = default)
+    public ValueTask CompleteWritesAsync(CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
 
@@ -400,7 +400,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
 
         if (IsWritesClosed)
         {
-            return;
+            return ValueTask.CompletedTask;
         }
 
         if (runtime is null)
@@ -408,11 +408,30 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
             throw new NotSupportedException("Completing writes requires the supported connection runtime path.");
         }
 
-        await WaitForWriteGateAsync(cancellationToken).ConfigureAwait(false);
+        ValueTask gateWait = WaitForWriteGateAsync(cancellationToken);
+        if (!gateWait.IsCompletedSuccessfully)
+        {
+            return CompleteWritesAfterGateWaitAsync(gateWait, cancellationToken);
+        }
 
+        gateWait.GetAwaiter().GetResult();
+        return CompleteWritesAfterGate(cancellationToken);
+    }
+
+    private async ValueTask CompleteWritesAfterGateWaitAsync(
+        ValueTask gateWait,
+        CancellationToken cancellationToken)
+    {
+        await gateWait.ConfigureAwait(false);
+        await CompleteWritesAfterGate(cancellationToken).ConfigureAwait(false);
+    }
+
+    private ValueTask CompleteWritesAfterGate(CancellationToken cancellationToken)
+    {
         try
         {
-            if (runtime.GetStreamOperationException() is Exception runtimeException)
+            QuicConnectionRuntime currentRuntime = runtime!;
+            if (currentRuntime.GetStreamOperationException() is Exception runtimeException)
             {
                 throw runtimeException;
             }
@@ -425,12 +444,36 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
             if (snapshot.SendState is not (QuicStreamSendState.Ready or QuicStreamSendState.Send))
             {
                 CompleteWritesClosed();
-                return;
+                ReleaseWriteGate();
+                return ValueTask.CompletedTask;
             }
 
-            await runtime.CompleteStreamWritesAsync(streamId, cancellationToken).ConfigureAwait(false);
+            ValueTask completeTask = currentRuntime.CompleteStreamWritesAsync(streamId, cancellationToken);
+            if (!completeTask.IsCompletedSuccessfully)
+            {
+                return CompleteWritesAfterRuntimeCompleteAsync(completeTask);
+            }
+
+            completeTask.GetAwaiter().GetResult();
             CompleteWritesClosed();
-            runtime.TryQueueStreamCapacityRelease(streamId);
+            currentRuntime.TryQueueStreamCapacityRelease(streamId);
+            ReleaseWriteGate();
+            return ValueTask.CompletedTask;
+        }
+        catch
+        {
+            ReleaseWriteGate();
+            throw;
+        }
+    }
+
+    private async ValueTask CompleteWritesAfterRuntimeCompleteAsync(ValueTask completeTask)
+    {
+        try
+        {
+            await completeTask.ConfigureAwait(false);
+            CompleteWritesClosed();
+            runtime!.TryQueueStreamCapacityRelease(streamId);
         }
         finally
         {
