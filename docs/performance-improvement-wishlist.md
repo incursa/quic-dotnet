@@ -175,7 +175,20 @@ Remaining work:
 
 ## 4. Establish Baseline Dashboards For Key Scenarios
 
-Status: partially closed for local file-based reporting and controller publication dry-run handoff. `scripts/perf/New-QuicProtocolLabBaselineReport.ps1` rolls retained ProtocolLab runs plus explicit or auto-discovered repo-local controller aggregate artifact wrappers into JSON and Markdown reports for the current core scenarios. `scripts/perf/Invoke-QuicProtocolLabPublication.ps1` can dry-run the existing controller publication endpoint for completed package-backed jobs so public-bundle readiness is repeatable before upload/import is enabled. The public/internal dashboard import remains open, and current local evidence still has variance blockers. The stale raw-multiplex validation blocker has a clean package-backed replacement row in `codex-package-backed-raw-baseline-20260709a`, and that replacement is now visible in default-style reports such as `codex-baseline-auto-repo-aggregates-20260709a`.
+Status: partially closed for local file-based reporting, controller publication
+dry-run handoff, and public report import. `scripts/perf/New-QuicProtocolLabBaselineReport.ps1`
+rolls retained ProtocolLab runs plus explicit or auto-discovered repo-local
+controller aggregate artifact wrappers into JSON and Markdown reports for the
+current core scenarios. `scripts/perf/Invoke-QuicProtocolLabPublication.ps1`
+can dry-run the existing controller publication endpoint for completed
+package-backed jobs so public-bundle readiness is repeatable before upload.
+ProtocolLab site/import now carries evidence quality, hotspot trends, artifact
+links, source/package provenance, and diagnostic-only wording through the public
+report path. Current local evidence still has variance and isolation blockers.
+The stale raw-multiplex validation blocker has a clean package-backed
+replacement row in `codex-package-backed-raw-baseline-20260709a`, and that
+replacement is now visible in default-style reports such as
+`codex-baseline-auto-repo-aggregates-20260709a`.
 
 Current local coverage:
 
@@ -188,7 +201,7 @@ Current local coverage:
 
 Remaining work:
 
-- Promote only intentionally selected diagnostic reports through upload/import once controller secrets and public dashboard targets are verified.
+- Promote only intentionally selected diagnostic reports through upload/import after operator review; the import path exists, but publication policy should stay explicit.
 - Decide whether local baseline reports need a separate dashboard path or should remain development-only rollups beside controller public reports; repo-local controller aggregate wrappers are now discoverable in the development rollup either way.
 - Keep publishability blockers visible until lab variance and provenance gates are resolved.
 
