@@ -15,7 +15,7 @@ public sealed class QuicByteRangeSetTests
         Assert.False(ranges.CoversPrefix(1));
 
         QuicByteRangeSetSnapshot snapshot = ranges.CaptureSnapshot();
-        Assert.Empty(snapshot.Ranges);
+        Assert.Equal(0, snapshot.RangeCount);
         Assert.Equal(0UL, snapshot.TotalLength);
     }
 
@@ -99,11 +99,12 @@ public sealed class QuicByteRangeSetTests
 
     private static void AssertRanges(QuicByteRangeSetSnapshot snapshot, params (ulong Start, ulong End)[] expected)
     {
-        Assert.Equal(expected.Length, snapshot.Ranges.Length);
+        Assert.Equal(expected.Length, snapshot.RangeCount);
         for (int index = 0; index < expected.Length; index++)
         {
-            Assert.Equal(expected[index].Start, snapshot.Ranges[index].Start);
-            Assert.Equal(expected[index].End, snapshot.Ranges[index].End);
+            QuicByteRange range = snapshot.GetRange(index);
+            Assert.Equal(expected[index].Start, range.Start);
+            Assert.Equal(expected[index].End, range.End);
         }
     }
 }

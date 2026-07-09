@@ -143,10 +143,12 @@ internal sealed class QuicByteRangeSet
         {
             if (!hasSingleRange)
             {
-                return new QuicByteRangeSetSnapshot([], TotalLength);
+                return QuicByteRangeSetSnapshot.CreateEmpty(TotalLength);
             }
 
-            return new QuicByteRangeSetSnapshot([new QuicByteRange(singleRange.Start, singleRange.End)], TotalLength);
+            return QuicByteRangeSetSnapshot.CreateSingle(
+                new QuicByteRange(singleRange.Start, singleRange.End),
+                TotalLength);
         }
 
         QuicByteRange[] snapshotRanges = new QuicByteRange[ranges.Count];
@@ -161,7 +163,7 @@ internal sealed class QuicByteRangeSet
 
     internal void Restore(QuicByteRangeSetSnapshot snapshot)
     {
-        if (snapshot.Ranges.Length == 0)
+        if (snapshot.RangeCount == 0)
         {
             ranges = null;
             hasSingleRange = false;
@@ -170,9 +172,9 @@ internal sealed class QuicByteRangeSet
             return;
         }
 
-        if (snapshot.Ranges.Length == 1)
+        if (snapshot.RangeCount == 1)
         {
-            QuicByteRange range = snapshot.Ranges[0];
+            QuicByteRange range = snapshot.GetRange(0);
             ranges = null;
             singleRange = new Range(range.Start, range.End);
             hasSingleRange = true;
@@ -180,12 +182,12 @@ internal sealed class QuicByteRangeSet
             return;
         }
 
-        ranges ??= new List<Range>(snapshot.Ranges.Length);
+        ranges ??= new List<Range>(snapshot.RangeCount);
         ranges.Clear();
-        ranges.EnsureCapacity(snapshot.Ranges.Length);
-        for (int index = 0; index < snapshot.Ranges.Length; index++)
+        ranges.EnsureCapacity(snapshot.RangeCount);
+        for (int index = 0; index < snapshot.RangeCount; index++)
         {
-            QuicByteRange range = snapshot.Ranges[index];
+            QuicByteRange range = snapshot.GetRange(index);
             ranges.Add(new Range(range.Start, range.End));
         }
 
@@ -269,4 +271,74 @@ internal sealed class QuicByteRangeSet
 
 internal readonly record struct QuicByteRange(ulong Start, ulong End);
 
-internal readonly record struct QuicByteRangeSetSnapshot(QuicByteRange[] Ranges, ulong TotalLength);
+internal readonly record struct QuicByteRangeSetSnapshot
+{
+    private readonly QuicByteRange singleRange;
+    private readonly QuicByteRange[]? ranges;
+
+    internal QuicByteRangeSetSnapshot(QuicByteRange[] ranges, ulong totalLength)
+    {
+        ArgumentNullException.ThrowIfNull(ranges);
+
+        if (ranges.Length == 0)
+        {
+            this.ranges = null;
+            singleRange = default;
+            RangeCount = 0;
+        }
+        else if (ranges.Length == 1)
+        {
+            this.ranges = null;
+            singleRange = ranges[0];
+            RangeCount = 1;
+        }
+        else
+        {
+            this.ranges = ranges;
+            singleRange = default;
+            RangeCount = ranges.Length;
+        }
+
+        TotalLength = totalLength;
+    }
+
+    private QuicByteRangeSetSnapshot(int rangeCount, QuicByteRange singleRange, ulong totalLength)
+    {
+        ranges = null;
+        this.singleRange = singleRange;
+        RangeCount = rangeCount;
+        TotalLength = totalLength;
+    }
+
+    internal int RangeCount { get; }
+
+    internal ulong TotalLength { get; }
+
+    internal QuicByteRange[] Ranges
+    {
+        get
+        {
+            return RangeCount switch
+            {
+                0 => [],
+                1 => [singleRange],
+                _ => ranges!,
+            };
+        }
+    }
+
+    internal static QuicByteRangeSetSnapshot CreateEmpty(ulong totalLength)
+        => new(0, default, totalLength);
+
+    internal static QuicByteRangeSetSnapshot CreateSingle(QuicByteRange range, ulong totalLength)
+        => new(1, range, totalLength);
+
+    internal QuicByteRange GetRange(int index)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(index);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, RangeCount);
+        return RangeCount == 1
+            ? singleRange
+            : ranges![index];
+    }
+}
