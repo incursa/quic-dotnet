@@ -233,6 +233,36 @@ public sealed class QuicStreamReadLifecycleTests
     }
 
     [Fact]
+    public async Task TryReadTerminalAsync_StreamAbortReturnsEndOfStreamForObserverDrain()
+    {
+        using QuicStream stream = CreateReadableStream();
+
+        QuicException abortException = new(QuicError.StreamAborted, 0x52, "test read abort");
+        stream.HandleRuntimeNotification(new QuicStreamNotification(QuicStreamNotificationKind.ReadAborted, abortException));
+
+        byte[] destination = new byte[1];
+        int bytesRead = await stream.TryReadTerminalAsync(destination.AsMemory(), CancellationToken.None);
+
+        Assert.Equal(0, bytesRead);
+    }
+
+    [Fact]
+    public async Task DisposeAsync_ReleasesPendingReadWithObjectDisposedException()
+    {
+        QuicStream stream = CreateReadableStream();
+
+        byte[] destination = new byte[1];
+        Task<int> readTask = stream.ReadAsync(destination.AsMemory()).AsTask();
+        await AssertPendingAsync(readTask);
+
+        await stream.DisposeAsync();
+
+        await Assert.ThrowsAsync<ObjectDisposedException>(async () => await readTask);
+        Assert.True(stream.ReadsClosed.IsCompletedSuccessfully);
+        Assert.True(stream.WritesClosed.IsCompletedSuccessfully);
+    }
+
+    [Fact]
     public async Task ReadAsync_FinWhileWaitingCompletesWithZeroAndClosesReads()
     {
         using QuicStream stream = CreateReadableStream();

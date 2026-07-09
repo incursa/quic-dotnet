@@ -702,7 +702,8 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
             QuicError: QuicError.ConnectionAborted
                 or QuicError.ConnectionIdle
                 or QuicError.ConnectionTimeout
-                or QuicError.OperationAborted,
+                or QuicError.OperationAborted
+                or QuicError.StreamAborted,
         };
     }
 

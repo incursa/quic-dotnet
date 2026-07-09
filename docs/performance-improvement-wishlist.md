@@ -4,6 +4,8 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-09: observer-only stream drains now treat peer stream abort as an expected terminal state. `QuicStream.TryReadTerminalAsync` suppresses `QuicError.StreamAborted` the same way it already suppresses expected connection/disposal terminal states, so HTTP/3 peer-stream observer cleanup can end quietly when a peer resets a stream. Focused lifecycle tests prove public reads still preserve stream-abort exceptions while terminal observer drains return end-of-stream, and disposal releases a pending read without hanging. Focused stream/runtime/HTTP/3 guard tests passed 56/56. Source-backed exception-attribution smoke `codex-h3-terminal-stream-abort-suppression-20260709a` passed validation and benchmark for `http3.payload.bytes.64kb` at c4-s4 and reported 0 exceptions / 0 groups.
+
 - 2026-07-09: current 1KB HTTP/3 allocation scout `codex-h3-1kb-current-allocation-scout-20260709a` passed source-backed ProtocolLab counters and GC trace for `http3.payload.bytes.1kb` at c4-s4 for 3 seconds plus 1 second warmup. The diagnostic counter row measured 3,967.33 req/s, p95 6.29 ms, allocation rate 6,212,944 B/s, 1,566.03 B/request, and zero failed/timeout requests. Allocation attribution over the GC trace found 5 sampled allocation ticks across 4 groups, 549,424 estimated bytes, 0 project-attributed bytes, and 0 actionable bytes; all sampled groups were runtime/EventPipe metadata rows. Together with the current 64KB scout, the latest short traces do not justify another HTTP/3 allocation code change without a new actionable Incursa-attributed group.
 
 - 2026-07-09: HTTP/3 client peer unidirectional stream observation now uses terminal-safe internal QUIC paths. `Http3Client` switched observer accept from public `AcceptInboundStreamAsync` to internal `TryAcceptInboundStreamAsync`, and observer-only peer stream drains now use `TryReadTerminalAsync`, matching the server observer cleanup shape. `QuicConnectionRuntime.TryAcceptInboundStreamSlowAsync` now waits with `WaitToReadAsync` plus `TryRead` so expected channel close can return `null` without first throwing `ChannelClosedException`. `Incursa.Quic.Http3` Release build passed; focused accept-cancellation, ProtocolLab source-guard, and HTTP/3 minimal-client tests passed 30/30. Source-backed exception-attribution smoke `codex-h3-client-terminal-observer-exceptions-20260709b` passed validation and benchmark for `http3.payload.bytes.64kb` at c4-s4 and reported 0 exceptions / 0 groups, improving the immediately preceding dirty-run smoke `codex-h3-client-terminal-observer-exceptions-20260709a` that still had one project-attributed `ChannelClosedException`.
@@ -271,14 +273,28 @@ Done when:
 
 ## 6. Tighten Stream Lifecycle Cleanup
 
+Status: closed for the current local stream terminal-cleanup pass. Stream
+observer drains now use non-throwing terminal paths for expected connection
+termination, disposal, cancellation, operation abort, and peer stream abort.
+Stream read lifecycle tests cover normal EOF, waiting read cancellation, peer
+read abort, terminal observer drain suppression, and disposal release. Existing
+runtime tests cover idempotent capacity-release scheduling and post-failure
+retry. The latest source-backed HTTP/3 shutdown/observer exception-attribution
+smoke reports zero exception groups, so there is no current actionable terminal
+cleanup exception pressure.
+
+Reopen this item when a fresh trace shows a project-attributed terminal cleanup
+exception group, or when a new lifecycle scenario lacks focused public/internal
+coverage.
+
 Stream disposal, final-write completion, read-side completion, and observer notification are still complicated. They are likely hiding both exception pressure and extra work.
 
 Done when:
 
-- Stream disposal has non-throwing internal cleanup paths for expected terminal states.
-- Stream observer unregister, capacity release, and read/write completion are idempotent and covered by focused tests.
-- ProtocolLab shutdown traces do not show repeated terminal cleanup exceptions.
-- Stream lifecycle tests cover normal EOF, reset, connection close, disposal, and cancellation separately.
+- Stream disposal has non-throwing internal cleanup paths for expected terminal states. Current disposal cleanup is best-effort, unregisters stream observers, releases pending reads, and focused tests cover pending-read disposal release.
+- Stream observer unregister, capacity release, and read/write completion are idempotent and covered by focused tests. Capacity-release duplicate suppression/retry tests and read/write closed completion paths are covered by the focused stream/runtime slice.
+- ProtocolLab shutdown traces do not show repeated terminal cleanup exceptions. `codex-h3-terminal-stream-abort-suppression-20260709a` reported zero exception groups.
+- Stream lifecycle tests cover normal EOF, reset, connection close, disposal, and cancellation separately. Current focused coverage includes EOF, reset/read-abort, terminal observer drain, connection terminal notification via requirement-home tests, disposal, and cancellation.
 
 ## 7. Add Raw QUIC Performance Proof
 
