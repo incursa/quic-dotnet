@@ -98,9 +98,17 @@ public class MetricsTests
             && measurement.Value == 1
             && measurement.HasTag("size_bucket", "le_1kb"));
         Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.buffer_pool.requested_rents"
+            && measurement.Value == 1
+            && measurement.HasTag("requested_size_bucket", "le_1kb"));
+        Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.returns"
             && measurement.Value == 1
             && measurement.HasTag("size_bucket", "le_1kb"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.buffer_pool.bytes.requested"
+            && measurement.Value == 1
+            && measurement.HasTag("requested_size_bucket", "le_1kb"));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.outstanding.buffers"
             && measurement.Value == 1

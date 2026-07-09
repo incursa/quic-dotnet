@@ -34,7 +34,9 @@ These metrics are diagnostic signals for live behavior and operational visibilit
 | `incursa.quic.pto.count` | Counter | Recovery probe timeout expirations. | `role`, `packet_type` |
 | `incursa.quic.rtt.ms` | Histogram | Latest RTT samples observed from ACK processing, in milliseconds. | `role` |
 | `incursa.quic.buffer_pool.rents` | Counter | Buffers rented through the central QUIC buffer pool wrapper. | `size_bucket` |
+| `incursa.quic.buffer_pool.requested_rents` | Counter | Buffer rent requests grouped by requested minimum size before `ArrayPool<byte>` expands the rent. | `requested_size_bucket` |
 | `incursa.quic.buffer_pool.returns` | Counter | Buffers returned through the central QUIC buffer pool wrapper. | `size_bucket` |
+| `incursa.quic.buffer_pool.bytes.requested` | Counter | Requested minimum bytes for central QUIC buffer pool rents before `ArrayPool<byte>` expands the rent. | `requested_size_bucket` |
 | `incursa.quic.buffer_pool.bytes.rented` | Counter | Actual array bytes rented through the central QUIC buffer pool wrapper. | `size_bucket` |
 | `incursa.quic.buffer_pool.bytes.returned` | Counter | Actual array bytes returned through the central QUIC buffer pool wrapper. | `size_bucket` |
 | `incursa.quic.buffer_pool.outstanding.buffers` | UpDownCounter | Net outstanding buffers observed while the metrics listener is active. | `size_bucket` |
@@ -62,6 +64,7 @@ Metrics only use bounded, low-cardinality tags:
 - `failure_reason`: `canceled`, `quic`, `qpack`, `http3`, `argument`, `exception`
 - `status_class`: `1xx`, `2xx`, `3xx`, `4xx`, `5xx`, `unknown`
 - `size_bucket`: `le_1kb`, `le_4kb`, `le_16kb`, `le_64kb`, `le_256kb`, `gt_256kb`
+- `requested_size_bucket`: `le_1kb`, `le_4kb`, `le_16kb`, `le_64kb`, `le_256kb`, `gt_256kb`
 
 The metrics surface must not tag by connection ID, stream ID, endpoint, peer address, URL path, exception message, or raw error text.
 
