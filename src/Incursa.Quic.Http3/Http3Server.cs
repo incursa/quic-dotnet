@@ -1278,7 +1278,7 @@ public sealed class Http3Server : IAsyncDisposable
         }
     }
 
-    private async ValueTask<bool> WriteResponseAsync(
+    private ValueTask<bool> WriteResponseAsync(
         QuicStream stream,
         Http3ServerResponse response,
         CancellationToken cancellationToken)
@@ -1286,27 +1286,88 @@ public sealed class Http3Server : IAsyncDisposable
         ResponseHeadersFrame headersFrame = GetResponseHeadersFrame(response);
         if (TryGetCompleteFixedResponseFrame(response, headersFrame.FrameBytes, out byte[]? completeResponseFrame))
         {
-            if (!await WriteFinalFrameBytesAsync(stream, completeResponseFrame, cancellationToken).ConfigureAwait(false))
-            {
-                return false;
-            }
-
-            EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Headers, headersFrame.FrameLength);
-            EmitResponseStartedDiagnostic(diagnosticsSink, "server", stream.Id, response.StatusCode);
-            EmitResponseDataFrames(stream, response.Body, response.DataFramePayloadSize);
-            return true;
+            return CompleteResponseWriteAsync(
+                stream,
+                response,
+                headersFrame,
+                WriteFinalFrameBytesAsync(stream, completeResponseFrame, cancellationToken),
+                emitDataFrames: true);
         }
 
+        if (response.StreamingBody is null && response.Body.IsEmpty)
+        {
+            return CompleteResponseWriteAsync(
+                stream,
+                response,
+                headersFrame,
+                WriteFinalFrameBytesAsync(stream, headersFrame.FrameBytes, cancellationToken),
+                emitDataFrames: false);
+        }
+
+        return WriteResponseSlowAsync(stream, response, headersFrame, cancellationToken);
+    }
+
+    private ValueTask<bool> CompleteResponseWriteAsync(
+        QuicStream stream,
+        Http3ServerResponse response,
+        ResponseHeadersFrame headersFrame,
+        ValueTask<bool> write,
+        bool emitDataFrames)
+    {
+        if (write.IsCompletedSuccessfully)
+        {
+            return new ValueTask<bool>(CompleteResponseWrite(stream, response, headersFrame, write.Result, emitDataFrames));
+        }
+
+        return CompleteResponseWriteSlowAsync(stream, response, headersFrame, write, emitDataFrames);
+    }
+
+    private async ValueTask<bool> CompleteResponseWriteSlowAsync(
+        QuicStream stream,
+        Http3ServerResponse response,
+        ResponseHeadersFrame headersFrame,
+        ValueTask<bool> write,
+        bool emitDataFrames)
+    {
+        return CompleteResponseWrite(
+            stream,
+            response,
+            headersFrame,
+            await write.ConfigureAwait(false),
+            emitDataFrames);
+    }
+
+    private bool CompleteResponseWrite(
+        QuicStream stream,
+        Http3ServerResponse response,
+        ResponseHeadersFrame headersFrame,
+        bool written,
+        bool emitDataFrames)
+    {
+        if (!written)
+        {
+            return false;
+        }
+
+        EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Headers, headersFrame.FrameLength);
+        EmitResponseStartedDiagnostic(diagnosticsSink, "server", stream.Id, response.StatusCode);
+        if (emitDataFrames)
+        {
+            EmitResponseDataFrames(stream, response.Body, response.DataFramePayloadSize);
+        }
+
+        return true;
+    }
+
+    private async ValueTask<bool> WriteResponseSlowAsync(
+        QuicStream stream,
+        Http3ServerResponse response,
+        ResponseHeadersFrame headersFrame,
+        CancellationToken cancellationToken)
+    {
         if (response.StreamingBody is not null)
         {
             if (!await WriteFrameBytesAsync(stream, headersFrame.FrameBytes, cancellationToken).ConfigureAwait(false))
-            {
-                return false;
-            }
-        }
-        else if (response.Body.IsEmpty)
-        {
-            if (!await WriteFinalFrameBytesAsync(stream, headersFrame.FrameBytes, cancellationToken).ConfigureAwait(false))
             {
                 return false;
             }
@@ -1330,7 +1391,7 @@ public sealed class Http3Server : IAsyncDisposable
                 return false;
             }
         }
-        else if (!response.Body.IsEmpty)
+        else
         {
             EmitResponseDataFrames(stream, response.Body, response.DataFramePayloadSize);
         }
