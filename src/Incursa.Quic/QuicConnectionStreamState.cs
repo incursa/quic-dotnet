@@ -157,6 +157,7 @@ internal sealed class QuicConnectionStreamState
                 }
 
                 peerBidirectionalStreamLimit = frame.MaximumStreams;
+                EnsureTrackedStreamCapacity();
                 return true;
             }
 
@@ -166,6 +167,7 @@ internal sealed class QuicConnectionStreamState
             }
 
             peerUnidirectionalStreamLimit = frame.MaximumStreams;
+            EnsureTrackedStreamCapacity();
             return true;
         }
     }
@@ -1075,6 +1077,23 @@ internal sealed class QuicConnectionStreamState
             options.InitialPeerUnidirectionalStreamLimit);
         ulong estimatedCapacity = SaturatingAdd(incomingCapacity, peerCapacity);
         return (int)Math.Min(estimatedCapacity, MaximumInitialTrackedStreamCapacity);
+    }
+
+    private void EnsureTrackedStreamCapacity()
+    {
+        ulong incomingCapacity = SaturatingAdd(
+            incomingBidirectionalStreamLimit,
+            incomingUnidirectionalStreamLimit);
+        ulong peerCapacity = SaturatingAdd(
+            peerBidirectionalStreamLimit,
+            peerUnidirectionalStreamLimit);
+        ulong estimatedCapacity = SaturatingAdd(incomingCapacity, peerCapacity);
+        if (estimatedCapacity == 0)
+        {
+            return;
+        }
+
+        streams.EnsureCapacity((int)Math.Min(estimatedCapacity, MaximumInitialTrackedStreamCapacity));
     }
 
     private static ulong SaturatingAdd(ulong left, ulong right)
