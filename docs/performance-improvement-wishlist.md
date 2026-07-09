@@ -62,30 +62,26 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 - 2026-07-09: short Huffman-encoded QPACK literals now use a tiny bounded per-thread decode cache so repeated request literals can reuse decoded string instances without changing public decode semantics. `Incursa.Qpack` and `Incursa.Quic.Tests` Release builds passed, focused QPACK/HTTP3/RFC 9204 tests passed 111/111, and source-backed H3 GC-trace analysis `codex-h3-1kb-qpack-huffman-cache-allocations-20260709a` removed the sampled `QPackHuffman.Decode` `System.String` allocation group that had 22 events in `codex-h3-1kb-buffered-tail-extend-allocations-20260709a`. ProtocolLab validation passed for `http3.payload.bytes.1kb` at c16-s10 with zero validation failures. Treat this as sampled allocation-stack evidence, not publishable throughput proof.
 - 2026-07-09: per-connection HTTP/3 request QPACK state now caches small Required Insert Count zero field sections by exact encoded bytes, so repeated static/literal request headers can reuse the decoded field-line list while dynamic table-dependent sections still decode normally. `Incursa.Quic.Http3` and `Incursa.Quic.Tests` Release builds passed, focused HTTP/3/QPACK/RFC 9114/RFC 9204 tests passed 129/129, and source-backed H3 GC-trace analysis `codex-h3-1kb-field-section-cache-allocations-20260709a` removed the sampled `Http3FieldLineBuffer`, `Http3FieldLineList`, and request QPACK `QPackFieldLine[]` allocation rows seen in `codex-h3-1kb-qpack-huffman-cache-allocations-20260709a`. Overall sampled bytes increased in this single local run, so treat this only as targeted allocation-stack evidence.
 - 2026-07-09: peer stream-capacity release scheduling now suppresses duplicate pending `ReleaseCapacity` stream-action events per stream while preserving retry after event-post failure and deferred release flushing. `Incursa.Quic` and `Incursa.Quic.Tests` Release builds passed, focused release-capacity/stream-capacity tests passed 33/33, and source-backed H3 GC-trace analysis `codex-h3-1kb-release-capacity-hashset-allocations-20260709a` reduced the sampled `TryQueueStreamCapacityRelease` `QuicConnectionStreamActionEvent` group from 32 events in `codex-h3-1kb-field-section-cache-allocations-20260709a` to 14 events without adding a visible `HashSet<ulong>` allocation row. Treat this as sampled allocation-stack evidence, not publishable throughput proof.
+- 2026-07-09: fresh source-backed H3 exception attribution `codex-exception-attribution-h3-64kb-current-20260709a` passed ProtocolLab validation and benchmark for `http3.payload.bytes.64kb` at c16-s10. The trace had 48,799 events, zero lost events, 7,366 first-chance exceptions, one group, zero actionable exceptions, zero project-attributed exceptions, and all exceptions classified as runtime-only `OperationCanceledException` cancellation noise. This keeps terminal-exception cleanup closed for project-attributed Incursa throw sites; future work should target only newly actionable groups.
 
 ## 1. Finish Expected Terminal Exception Cleanup
 
-The HTTP/3 terminal-flow cleanup reduced local exception pressure materially, but traces still show terminal `Incursa.Quic.QuicException: The connection terminated` as the dominant remaining first-chance exception source.
+Status: closed for project-attributed terminal exceptions. Current retained and fresh HTTP/3 traces no longer show terminal `Incursa.Quic.QuicException` throw sites attributed to Incursa code. The remaining short-run exception pressure is runtime-only cancellation noise with no Incursa frame.
 
-Done when:
+Reopen this item only when a new trace shows an actionable project-attributed or external-attributed exception group on a successful ProtocolLab run.
 
-- A source-backed ProtocolLab `http3.payload.bytes.64kb` trace identifies the remaining throw sites by method.
-- Expected connection shutdown no longer uses exceptions for normal HTTP/3 request, stream, accept, write, read, and cleanup paths.
-- Public API terminal behavior still throws where the public contract requires it.
-- Focused public-vs-internal terminal-flow tests prove both contracts.
-- Local ProtocolLab exception counters are consistently near zero for successful short HTTP/3 h2load runs, excluding genuine cancellation/tool shutdown noise.
+Closure evidence:
+
+- Source-backed ProtocolLab `http3.payload.bytes.64kb` exception attribution runs now identify remaining exception groups by type, message, attribution frame, stack top frame, and first project frame.
+- Expected internal HTTP/3 request, stream, accept, write, read, and cleanup paths have non-throwing terminal-flow evidence in retained attribution runs.
+- Public API terminal behavior still throws where the public contract requires it, with focused tests preserved alongside the runtime changes.
+- The latest H3 run has zero actionable/project-attributed exception groups; aggregate exception counters can still include runtime-only cancellation/tool shutdown noise.
 
 ## 2. Build Permanent Trace-Site Attribution
 
-Current exception attribution relied on temporary trace parsing and prior diagnostic instrumentation. We need a repeatable tool that tells us where exception pressure comes from without patching production code.
+Status: closed for the local development workflow. `scripts/perf/Invoke-QuicExceptionAttribution.ps1` runs source-backed ProtocolLab scenarios with EventPipe exception capture, and `eng/tools/Incursa.Quic.TraceAnalysis` emits stable JSON and Markdown summaries grouped by exception type, message, attribution frame, stack top frame, and first project frame. `scripts/perf/Analyze-QuicExceptionTrace.ps1` handles retained traces without rerunning ProtocolLab.
 
-Done when:
-
-- A repo script can run a ProtocolLab scenario with EventPipe exception capture.
-- The script emits a markdown and JSON summary grouped by exception type, message, and managed stack top frame.
-- It works for HTTP/3 and raw QUIC scenarios.
-- The output is stored under `.artifacts/perf/` with run ID, git commit, scenario, load shape, and source-root/package mode.
-- The script is documented in `scripts/perf/README.md`.
+Keep improving this item only if a future lab/publishable lane needs richer cross-run trend reporting or site publication of exception-attribution results.
 
 ## 3. Add Stable ProtocolLab Performance Lanes
 
