@@ -63,6 +63,7 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 - 2026-07-09: per-connection HTTP/3 request QPACK state now caches small Required Insert Count zero field sections by exact encoded bytes, so repeated static/literal request headers can reuse the decoded field-line list while dynamic table-dependent sections still decode normally. `Incursa.Quic.Http3` and `Incursa.Quic.Tests` Release builds passed, focused HTTP/3/QPACK/RFC 9114/RFC 9204 tests passed 129/129, and source-backed H3 GC-trace analysis `codex-h3-1kb-field-section-cache-allocations-20260709a` removed the sampled `Http3FieldLineBuffer`, `Http3FieldLineList`, and request QPACK `QPackFieldLine[]` allocation rows seen in `codex-h3-1kb-qpack-huffman-cache-allocations-20260709a`. Overall sampled bytes increased in this single local run, so treat this only as targeted allocation-stack evidence.
 - 2026-07-09: peer stream-capacity release scheduling now suppresses duplicate pending `ReleaseCapacity` stream-action events per stream while preserving retry after event-post failure and deferred release flushing. `Incursa.Quic` and `Incursa.Quic.Tests` Release builds passed, focused release-capacity/stream-capacity tests passed 33/33, and source-backed H3 GC-trace analysis `codex-h3-1kb-release-capacity-hashset-allocations-20260709a` reduced the sampled `TryQueueStreamCapacityRelease` `QuicConnectionStreamActionEvent` group from 32 events in `codex-h3-1kb-field-section-cache-allocations-20260709a` to 14 events without adding a visible `HashSet<ulong>` allocation row. Treat this as sampled allocation-stack evidence, not publishable throughput proof.
 - 2026-07-09: fresh source-backed H3 exception attribution `codex-exception-attribution-h3-64kb-current-20260709a` passed ProtocolLab validation and benchmark for `http3.payload.bytes.64kb` at c16-s10. The trace had 48,799 events, zero lost events, 7,366 first-chance exceptions, one group, zero actionable exceptions, zero project-attributed exceptions, and all exceptions classified as runtime-only `OperationCanceledException` cancellation noise. This keeps terminal-exception cleanup closed for project-attributed Incursa throw sites; future work should target only newly actionable groups.
+- 2026-07-09: local baseline report `codex-baseline-report-current-20260709a` scanned 182 retained ProtocolLab runs and matched 158 Incursa rows. It produced current rows for `http3.payload.bytes.1kb`, `http3.payload.bytes.64kb`, `quic.transport.stream-throughput.1mb`, `quic.transport.duplex-streams`, and `quic.transport.multiplex.100x64kb`, including validation/benchmark status, primary metric, p95, allocation rate, exception rate, repetitions, previous/best comparisons, evidence quality, and publishability blockers. The report also shows all current rows remain local evidence, variance blocks publishable claims, and the selected raw multiplex current row still has validation failures.
 
 ## 1. Finish Expected Terminal Exception Cleanup
 
@@ -85,31 +86,32 @@ Keep improving this item only if a future lab/publishable lane needs richer cros
 
 ## 3. Add Stable ProtocolLab Performance Lanes
 
-Single local runs are useful diagnostics but not stable enough for real performance claims. We need a repeatable lane that separates smoke, confidence, and publishable evidence.
+Status: partially closed. The local `Smoke` and `Confidence` lanes exist, emit `lane-summary.json`, label evidence quality, preserve failure categories, and can run HTTP/3 plus raw QUIC source-backed ProtocolLab slices. The publishable hosted lane remains open because it needs isolated lab hardware controls and stronger provenance gates outside this local wrapper.
 
-Done when:
+Remaining work:
 
-- Smoke lane runs one short local source-backed HTTP/3 and raw QUIC scenario.
-- Confidence lane runs at least three repetitions and reports variance.
-- Publishable lane runs on isolated lab hardware with explicit CPU, memory, network, and load-generator controls.
-- Reports clearly label each result as diagnostic, confidence, or publishable.
-- A failing lane distinguishes validation failure, benchmark failure, infrastructure failure, and performance regression.
+- Promote the same lane/surface vocabulary into the hosted lab runner.
+- Capture explicit CPU, memory, network, host isolation, load-generator, and package identity controls.
+- Keep local lanes diagnostic/report-only unless publishability gates pass.
 
 ## 4. Establish Baseline Dashboards For Key Scenarios
 
-We need a small set of benchmark scenarios that represent the real performance story instead of chasing one-off runs.
+Status: partially closed for local file-based reporting. `scripts/perf/New-QuicProtocolLabBaselineReport.ps1` rolls retained ProtocolLab runs into JSON and Markdown reports for the current core scenarios. The public/internal dashboard import remains open, and current local evidence still has variance and raw-multiplex validation blockers.
 
-Done when:
+Current local coverage:
 
-- ProtocolLab tracks current baselines for:
-  - `http3.payload.bytes.1kb`
-  - `http3.payload.bytes.64kb`
-  - `quic.transport.stream-throughput.1mb`
-  - high-concurrency HTTP/3 small payload
-  - raw QUIC stream fanout
-- Each baseline includes requests/sec or throughput, latency percentiles, allocation rate, GC counts, exception rate, and validation status.
-- Baselines are compared against the previous accepted run and the best known run.
-- Regressions are visible in the public report site or an internal generated report.
+- `http3.payload.bytes.1kb` high-concurrency local confidence row is present.
+- `http3.payload.bytes.64kb` local repeat row is present.
+- `quic.transport.stream-throughput.1mb` raw QUIC row is present.
+- `quic.transport.duplex-streams` raw stream fanout row is present.
+- `quic.transport.multiplex.100x64kb` row is present but the selected current row is not clean enough for confidence claims.
+- Reports include validation, benchmark status, primary metric, p95, allocation rate, exception rate, repetitions, previous/best comparisons, evidence quality, and publishability blockers.
+
+Remaining work:
+
+- Import baseline reports into a durable internal or public dashboard.
+- Add a clean current raw multiplex confidence row before treating that scenario as stable.
+- Keep publishability blockers visible until lab variance and provenance gates are resolved.
 
 ## 5. Reduce HTTP/3 Allocation Pressure
 
