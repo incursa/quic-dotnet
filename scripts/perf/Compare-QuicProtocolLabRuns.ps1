@@ -593,6 +593,84 @@ function Format-MetricForMarkdown {
     return "$baseline -> $current ($delta)"
 }
 
+function Invoke-NativeProtocolLabComparison {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $BaselineRoot,
+
+        [Parameter(Mandatory = $true)]
+        [string] $CurrentRoot,
+
+        [Parameter(Mandatory = $true)]
+        [string] $ResolvedProtocolLabExecutionRoot,
+
+        [Parameter(Mandatory = $true)]
+        [string] $ReportRoot
+    )
+
+    $baselineBundlePath = Join-Path $BaselineRoot "evidence-bundle.json"
+    $currentBundlePath = Join-Path $CurrentRoot "evidence-bundle.json"
+    $cliProject = Join-Path $ResolvedProtocolLabExecutionRoot "src\Incursa.ProtocolLab.Cli"
+    $jsonOutputPath = Join-Path $ReportRoot "protocol-lab-native-comparison.json"
+    $markdownOutputPath = Join-Path $ReportRoot "protocol-lab-native-comparison.md"
+
+    $missingReasons = [System.Collections.Generic.List[string]]::new()
+    if (-not (Test-Path -LiteralPath $baselineBundlePath -PathType Leaf)) {
+        $missingReasons.Add("baseline evidence-bundle.json not found at '$baselineBundlePath'") | Out-Null
+    }
+    if (-not (Test-Path -LiteralPath $currentBundlePath -PathType Leaf)) {
+        $missingReasons.Add("current evidence-bundle.json not found at '$currentBundlePath'") | Out-Null
+    }
+    if (-not (Test-Path -LiteralPath $cliProject -PathType Container)) {
+        $missingReasons.Add("ProtocolLab CLI project not found at '$cliProject'") | Out-Null
+    }
+
+    if ($missingReasons.Count -gt 0) {
+        return [pscustomobject][ordered]@{
+            available = $false
+            status = "skipped"
+            baselineBundle = $baselineBundlePath
+            currentBundle = $currentBundlePath
+            json = $null
+            markdown = $null
+            unavailableReasons = @($missingReasons)
+        }
+    }
+
+    try {
+        & dotnet run --project $cliProject -- compare --baseline $baselineBundlePath --candidate $currentBundlePath --format json --output-file $jsonOutputPath | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            throw "ProtocolLab native JSON compare exited with code $LASTEXITCODE."
+        }
+
+        & dotnet run --project $cliProject -- compare --baseline $baselineBundlePath --candidate $currentBundlePath --format markdown --output-file $markdownOutputPath | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            throw "ProtocolLab native Markdown compare exited with code $LASTEXITCODE."
+        }
+
+        return [pscustomobject][ordered]@{
+            available = $true
+            status = "completed"
+            baselineBundle = $baselineBundlePath
+            currentBundle = $currentBundlePath
+            json = $jsonOutputPath
+            markdown = $markdownOutputPath
+            unavailableReasons = @()
+        }
+    }
+    catch {
+        return [pscustomobject][ordered]@{
+            available = $false
+            status = "failed"
+            baselineBundle = $baselineBundlePath
+            currentBundle = $currentBundlePath
+            json = if (Test-Path -LiteralPath $jsonOutputPath -PathType Leaf) { $jsonOutputPath } else { $null }
+            markdown = if (Test-Path -LiteralPath $markdownOutputPath -PathType Leaf) { $markdownOutputPath } else { $null }
+            unavailableReasons = @("ProtocolLab native compare failed: $($_.Exception.Message)")
+        }
+    }
+}
+
 $repoRoot = Get-RepoRoot
 $resolvedProtocolLabExecutionRoot = Resolve-FullPath -Path $ProtocolLabExecutionRoot -BasePath $repoRoot
 if ([string]::IsNullOrWhiteSpace($RunsRoot)) {
@@ -715,6 +793,8 @@ foreach ($key in @($currentByKey.Keys | Sort-Object)) {
     }
 }
 
+$nativeProtocolLabComparison = Invoke-NativeProtocolLabComparison -BaselineRoot $baselineRoot -CurrentRoot $currentRoot -ResolvedProtocolLabExecutionRoot $resolvedProtocolLabExecutionRoot -ReportRoot $reportRoot
+
 $report = [pscustomobject][ordered]@{
     schemaVersion = "incursa.quic.protocol-lab-performance-triage.v1"
     generatedAtUtc = (Get-Date).ToUniversalTime().ToString("O")
@@ -732,6 +812,7 @@ $report = [pscustomobject][ordered]@{
     matchingRowCount = $matchingComparisons.Count
     missingRowCount = $missingRows.Count
     addedRowCount = $addedRows.Count
+    nativeProtocolLabComparison = $nativeProtocolLabComparison
     comparisons = @($matchingComparisons)
     missingRows = @($missingRows)
     addedRows = @($addedRows)
@@ -754,6 +835,14 @@ $lines.Add("- Matching rows: ``$($matchingComparisons.Count)``")
 $lines.Add("- Missing rows: ``$($missingRows.Count)``")
 $lines.Add("- Added rows: ``$($addedRows.Count)``")
 $lines.Add("- JSON: ``$jsonPath``")
+if ($nativeProtocolLabComparison.available) {
+    $lines.Add("- Native ProtocolLab comparison JSON: ``$($nativeProtocolLabComparison.json)``")
+    $lines.Add("- Native ProtocolLab comparison Markdown: ``$($nativeProtocolLabComparison.markdown)``")
+}
+else {
+    $nativeReasons = @($nativeProtocolLabComparison.unavailableReasons) -join "; "
+    $lines.Add("- Native ProtocolLab comparison: ``$($nativeProtocolLabComparison.status)`` ($nativeReasons)")
+}
 $lines.Add("")
 $lines.Add("This is a local triage report. It compares retained ProtocolLab aggregate rows and does not upgrade local evidence into publishable benchmark evidence.")
 $lines.Add("")
@@ -901,6 +990,10 @@ if (Test-Path -LiteralPath (Join-Path $baselineRoot "evidence-bundle.json") -Pat
 if (Test-Path -LiteralPath (Join-Path $currentRoot "evidence-bundle.json") -PathType Leaf) {
     $lines.Add("- Current evidence bundle: ``$(Join-Path $currentRoot "evidence-bundle.json")``")
 }
+if ($nativeProtocolLabComparison.available) {
+    $lines.Add("- Native ProtocolLab comparison JSON: ``$($nativeProtocolLabComparison.json)``")
+    $lines.Add("- Native ProtocolLab comparison Markdown: ``$($nativeProtocolLabComparison.markdown)``")
+}
 
 Set-Content -LiteralPath $markdownPath -Value $lines -Encoding utf8NoBOM
 
@@ -908,6 +1001,8 @@ Set-Content -LiteralPath $markdownPath -Value $lines -Encoding utf8NoBOM
     RunRoot = $reportRoot
     Json = $jsonPath
     Markdown = $markdownPath
+    NativeProtocolLabComparisonJson = if ($nativeProtocolLabComparison.available) { $nativeProtocolLabComparison.json } else { $null }
+    NativeProtocolLabComparisonMarkdown = if ($nativeProtocolLabComparison.available) { $nativeProtocolLabComparison.markdown } else { $null }
     MatchingRows = $matchingComparisons.Count
     MissingRows = $missingRows.Count
     AddedRows = $addedRows.Count

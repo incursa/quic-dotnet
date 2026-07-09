@@ -4,6 +4,16 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-09: `Compare-QuicProtocolLabRuns.ps1` now preserves ProtocolLab
+  native evidence-bundle comparison artifacts when both retained run roots have
+  `evidence-bundle.json`. The local triage report still compares aggregate rows
+  and highlights QUIC-side diagnostics, while the new
+  `protocol-lab-native-comparison.json` and `.md` outputs carry ProtocolLab's
+  current evidence-quality, validation/warning, source/package parity, and
+  metric-delta interpretation. Smoke proof
+  `codex-native-compare-wrapper-smoke-20260709a` matched one retained raw QUIC
+  row and emitted both native artifacts.
+
 - 2026-07-09: raw QUIC upload-only stream throughput now avoids artificial STOP_SENDING churn in the ProtocolLab raw load tool. `quic-go-raw-load` now reads the response side to EOF for `client-to-server` bidirectional streams and verifies zero response bytes instead of immediately canceling reads, and `IncursaRawQuicServer` now gracefully completes the write side for non-echo upload-only streams while only retaining completed echo streams for tail retransmission. Go package proof `go test ./cmd/quic-go-raw-load` passed. Source-backed c1/s4 `quic.transport.stream-throughput.1mb` single-repetition proof `codex-raw-stream-c1s4-clean-fin-summary-20260709a` passed validation and benchmark with 504/504 successful requests, 0 failed/timeouts, 33.53 req/s, 35.16 MB/s, and p95 145.02 ms. Counter-captured single-repetition proof `codex-raw-stream-c1s4-clean-fin-counter-summary-20260709a` also passed with 476/476 successful requests, 0 failed/timeouts, 31.62 req/s, 33.16 MB/s, and p95 154.88 ms. The repeated 9-repetition local c1/s4 counter run `codex-raw-stream-c1s4-clean-fin-confidence-20260709a` still had intermittent final-batch timeout/deadline failures on the shared host, so it was preserved as a ProtocolLab negative-result record rather than treated as a runtime optimization candidate.
 
 - 2026-07-09: observer-only stream drains now treat peer stream abort as an expected terminal state. `QuicStream.TryReadTerminalAsync` suppresses `QuicError.StreamAborted` the same way it already suppresses expected connection/disposal terminal states, so HTTP/3 peer-stream observer cleanup can end quietly when a peer resets a stream. Focused lifecycle tests prove public reads still preserve stream-abort exceptions while terminal observer drains return end-of-stream, and disposal releases a pending read without hanging. Focused stream/runtime/HTTP/3 guard tests passed 56/56. Source-backed exception-attribution smoke `codex-h3-terminal-stream-abort-suppression-20260709a` passed validation and benchmark for `http3.payload.bytes.64kb` at c4-s4 and reported 0 exceptions / 0 groups.

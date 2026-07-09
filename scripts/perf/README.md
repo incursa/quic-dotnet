@@ -363,6 +363,15 @@ Output is written under:
 .artifacts/perf-triage/{runId}/performance-triage.json
 ```
 
+When both retained run roots contain `evidence-bundle.json`, the script also
+preserves ProtocolLab's native comparison artifacts beside the local triage
+report:
+
+```text
+.artifacts/perf-triage/{runId}/protocol-lab-native-comparison.md
+.artifacts/perf-triage/{runId}/protocol-lab-native-comparison.json
+```
+
 ## H3 Allocation Hotspot Reports
 
 Use `New-QuicH3AllocationHotspotReport.ps1` to roll up one or more existing
