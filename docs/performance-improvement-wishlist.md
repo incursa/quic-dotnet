@@ -265,14 +265,25 @@ Done when:
 
 ## 10. Improve Counter And Trace Artifact Import
 
-ProtocolLab captures useful artifacts, but analysis still requires manual spelunking.
+Status: closed for the current ProtocolLab evidence workflow. ProtocolLab now
+emits `evidence-bundle.json` with validation status, benchmark metrics,
+diagnostics, qlog/artifact links, source/package provenance, evidence quality,
+and explicit non-publishability wording. The bundle also carries
+`hotspotTrends`, allocation/exception attribution availability, and first-class
+diagnostic/confidence/publishable classification. The public report path can
+import and display these fields without inferring publishability from local or
+diagnostic evidence.
+
+Keep improving this item only when a new diagnostic artifact family needs to be
+promoted into the standard evidence bundle, import queue, or public report
+schema.
 
 Done when:
 
-- Counter summaries, trace summaries, qlog status, validation proof, and benchmark metrics are imported into a single evidence document.
-- Reports include links to raw artifacts.
-- Exception type/count and allocation hot spots are first-class report fields.
-- The public site can show whether a run is diagnostic, confidence, or publishable.
+- Counter summaries, trace summaries, qlog status, validation proof, and benchmark metrics are imported into a single evidence document. Done through `evidence-bundle.json`.
+- Reports include links to raw artifacts. Done through run/cell artifact links and `artifact-manifest.json`.
+- Exception type/count and allocation hot spots are first-class report fields. Done through attribution artifacts and `hotspotTrends`, with explicit unavailable reasons when traces are absent.
+- The public site can show whether a run is diagnostic, confidence, or publishable. Done through evidence-quality classification; publishability remains gate-controlled.
 
 ## 11. Make Source-Backed And Package-Backed Runs Equivalent
 
