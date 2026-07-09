@@ -698,7 +698,11 @@ internal sealed partial class QuicConnectionRuntime
     {
         if (effect is QuicConnectionSendDatagramEffect sendDatagramEffect)
         {
-            effect = sendDatagramEffect with { EcnMarking = sendRuntime.CurrentEcnMarking };
+            QuicEcnMarking currentEcnMarking = sendRuntime.CurrentEcnMarking;
+            if (sendDatagramEffect.EcnMarking != currentEcnMarking)
+            {
+                effect = sendDatagramEffect with { EcnMarking = currentEcnMarking };
+            }
         }
 
         effects.Add(effect);
