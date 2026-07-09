@@ -114,6 +114,14 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicPerforma
   -Surface RawQuicMultiplex
 ```
 
+Example smoke run for raw QUIC stream-throughput isolation:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicPerformanceLane.ps1 `
+  -Lane Smoke `
+  -Surface RawQuicStreamThroughput
+```
+
 Example core ProtocolLab smoke run for both HTTP/3 and raw QUIC:
 
 ```powershell
@@ -383,6 +391,9 @@ Supported surfaces:
   `http3.payload.bytes.64kb` and raw QUIC
   `quic.transport.multiplex.100x64kb` in one report. It does not run
   BenchmarkDotNet filters unless another surface is selected.
+- `RawQuicStreamThroughput`: ProtocolLab
+  `quic.transport.stream-throughput.1mb` plus send/scheduler/parsing BDN
+  suites.
 - `RawQuicMultiplex`: ProtocolLab `quic.transport.multiplex.100x64kb` plus
   send/scheduler/parsing BDN suites.
 - `RawQuicDuplex`: ProtocolLab `quic.transport.duplex-streams` plus the same
@@ -408,8 +419,8 @@ Current local raw QUIC execution status:
   directory at `src\Incursa.ProtocolLab.Adapters.QuicGo`. Its manifest invokes
   `go -C src/Incursa.ProtocolLab.Adapters.QuicGo run ./cmd/quic-go-raw-load`.
 - Local source-reference proof now reaches the raw QUIC load generator and
-  produces parseable metrics for `quic.transport.multiplex.100x64kb` and
-  `quic.transport.duplex-streams`.
+  produces parseable metrics for `quic.transport.stream-throughput.1mb`,
+  `quic.transport.multiplex.100x64kb`, and `quic.transport.duplex-streams`.
   Successful proof artifacts should show `validation=Passed`,
   `benchmark=succeeded`, and `loadTool=quic-go-raw-load`.
 - This remains local shared-host evidence. It is useful for regression and

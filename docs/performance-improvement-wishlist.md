@@ -4,6 +4,7 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-09: added a first-class `RawQuicStreamThroughput` performance-lane surface for ProtocolLab `quic.transport.stream-throughput.1mb` with the existing raw send/scheduler/parsing BenchmarkDotNet companions, and surfaced it in the perf README, benchmark README, readiness command list, and script preflight test. Dry-run proof `codex-raw-stream-throughput-surface-dryrun-20260709a` emitted the expected BDN commands plus the raw QUIC ProtocolLab command. Source-backed smoke proof `codex-raw-stream-throughput-surface-smoke-20260709a` passed the raw QUIC stream-throughput ProtocolLab cell with validation passed 1/1, benchmark succeeded 1/1, no failed or timeout requests, `quic-go-raw-load`, and a local single-run throughput sample of 494,033.773 bytes/sec. Treat this as diagnostic lane coverage and validation proof only; publishability remains blocked by single repetition and local shared-host evidence.
 - 2026-07-09: public `QuicStream.CompleteWritesAsync` now mirrors the write path's fast-path shape: it returns synchronously when writes are already closed, waits on the write gate only when contended, and only creates an async continuation when the runtime FIN request has not completed. `Incursa.Quic` and benchmark Release builds passed, focused stream/API lifecycle tests passed 109/112 with three existing skips in the selected filter, and source-backed 200-iteration public stream profiles `codex-profile-stream-target-incursa-completewrites-fastpath-sourcebacked-20260709a.json` and `codex-profile-stream-target-incursa-completewrites-fastpath-sourcebacked-20260709c.json` measured pass-2 allocation at 11,302-11,331 B/op versus 11,379 B/op in `codex-profile-stream-target-incursa-finish-valuetask-sourcebacked-20260709a.json`. Treat this as a modest public stream completion fast-path allocation reduction only; elapsed time remains single-run noisy.
 - 2026-07-09: runtime FIN completion now uses the same pooled `StreamActionRequestCompletionSource` `ValueTask<bool>` path as stream writes instead of forcing `CompleteStreamWritesAsyncCore` through a `Task<bool>` async state machine and local cancellation-registration lifetime. `Incursa.Quic` and benchmark Release builds passed, focused stream/API lifecycle tests passed 107/107, and source-backed 200-iteration public stream profile `codex-profile-stream-target-incursa-finish-valuetask-sourcebacked-20260709a.json` reduced pass-2 allocation from 11,600 B/op in `codex-profile-stream-target-incursa-valuetask-writecore-sourcebacked-20260709a.json` to 11,380 B/op. Treat this as a targeted public stream FIN-path allocation reduction, not a throughput claim.
 - 2026-07-09: public `QuicStream.WriteAsync(ReadOnlyMemory<byte>, CancellationToken)` now returns the stream write `ValueTask` path directly instead of wrapping a `Task`-returning core, while the legacy byte-array `WriteAsync` overload keeps its `Task` compatibility wrapper. Read/write gate lazy initialization also avoids the `LazyInitializer` helper allocation that appeared in retained public-stream attribution by using `Volatile.Read` plus `Interlocked.CompareExchange` and disposing loser semaphores on races. `Incursa.Quic` and benchmark Release builds passed, focused stream/read/write lifecycle tests passed 92/92, and source-backed 200-iteration public stream profile `codex-profile-stream-target-incursa-valuetask-writecore-sourcebacked-20260709a.json` measured pass-2 allocation at 11,600 B/op versus the immediately preceding retained 200-iteration range of 11,642-11,737 B/op. Treat this as modest public stream allocation cleanup only; verbose GC allocation traces for this benchmark remained too expensive even at 50 iterations, so retained trace attribution was used for site selection.
@@ -181,11 +182,17 @@ Done when:
 
 HTTP/3 tells us end-to-end behavior, but raw QUIC scenarios are needed to isolate transport performance from QPACK and HTTP/3 framing.
 
+Status: partially closed for local smoke-lane coverage. `RawQuicStreamThroughput`,
+`RawQuicMultiplex`, and `RawQuicDuplex` now expose distinct source-reference
+raw QUIC ProtocolLab surfaces. The stream-throughput lane has a successful
+single-repetition smoke proof, but stable repeated raw QUIC confidence evidence
+and package-backed lab proof remain open.
+
 Done when:
 
-- `quic-dotnet-raw-dev` package/source mode can run raw stream throughput scenarios reliably.
+- `quic-dotnet-raw-dev` package/source mode can run raw stream throughput scenarios reliably. Source-reference local smoke proof exists; package-backed and repeated confidence proof remain open.
 - Raw QUIC scenarios report throughput, allocation, GC, exception count, and validation.
-- At least one raw stream-throughput scenario is part of the smoke lane.
+- At least one raw stream-throughput scenario is part of the smoke lane. Closed locally by `RawQuicStreamThroughput`.
 - HTTP/3 regressions can be compared against raw QUIC results to locate whether the problem is transport or application framing.
 
 ## 8. Compare Against External Implementations Honestly

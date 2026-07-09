@@ -34,6 +34,9 @@ runs:
   `QuicApplicationSendQueueSortingBenchmarks`,
   `QuicApplicationSendBatchPayloadBenchmarks`, and
   `QuicStreamParsingBenchmarks`.
+- `RawQuicStreamThroughput` runs the same send/parsing suites with
+  ProtocolLab `quic.transport.stream-throughput.1mb` for transport-only
+  throughput isolation.
 - `RawQuicDuplex` runs the same send/parsing suites plus
   `QuicConnectionStreamStateBenchmarks`.
 - `RawQuicSendCore` runs send-priority, queue-sorting, batch-payload,

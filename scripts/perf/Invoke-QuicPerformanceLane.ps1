@@ -3,7 +3,7 @@ param(
     [ValidateSet("Smoke", "Confidence")]
     [string] $Lane = "Smoke",
 
-    [ValidateSet("CoreProtocolLab", "RawQuicMultiplex", "RawQuicDuplex", "RawQuicSendCore", "CryptoCore", "PublicApiStream")]
+    [ValidateSet("CoreProtocolLab", "RawQuicStreamThroughput", "RawQuicMultiplex", "RawQuicDuplex", "RawQuicSendCore", "CryptoCore", "PublicApiStream")]
     [string] $Surface = "RawQuicMultiplex",
 
     [string] $ProtocolLabRoot = "C:\shared\src\incursa\protocol-lab",
@@ -231,6 +231,17 @@ function Get-SurfaceConfiguration {
                 BenchmarkFilters = $sendFilters
                 ProtocolLabEnabled = $true
                 ProtocolLabScenario = if ([string]::IsNullOrWhiteSpace($RequestedScenario)) { "quic.transport.multiplex.100x64kb" } else { $RequestedScenario }
+                Connections = Select-PositiveOrDefault $RequestedRawQuicConnections 1
+                StreamsPerConnection = Select-PositiveOrDefault $RequestedRawQuicStreamsPerConnection 1
+                ProtocolLabJobs = @()
+            }
+        }
+        "RawQuicStreamThroughput" {
+            return [pscustomobject]@{
+                BenchmarkScript = "scripts\benchmarks\Invoke-QuicBaseline.ps1"
+                BenchmarkFilters = $sendFilters
+                ProtocolLabEnabled = $true
+                ProtocolLabScenario = if ([string]::IsNullOrWhiteSpace($RequestedScenario)) { "quic.transport.stream-throughput.1mb" } else { $RequestedScenario }
                 Connections = Select-PositiveOrDefault $RequestedRawQuicConnections 1
                 StreamsPerConnection = Select-PositiveOrDefault $RequestedRawQuicStreamsPerConnection 1
                 ProtocolLabJobs = @()
