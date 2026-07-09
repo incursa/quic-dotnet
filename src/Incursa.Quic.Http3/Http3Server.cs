@@ -1290,7 +1290,7 @@ public sealed class Http3Server : IAsyncDisposable
         return new ResponseHeadersFrame(frameBytes, frameBytes.Length);
     }
 
-    private static async ValueTask<bool> WriteFixedResponseDataFramesAsync(
+    private static ValueTask<bool> WriteFixedResponseDataFramesAsync(
         QuicStream stream,
         Http3ServerResponse response,
         CancellationToken cancellationToken)
@@ -1306,9 +1306,18 @@ public sealed class Http3Server : IAsyncDisposable
                 cachedFrame = response.CacheSingleDataFrame(Http3FrameWriter.WriteData(body.Span));
             }
 
-            return await WriteFinalFrameBytesAsync(stream, cachedFrame, cancellationToken).ConfigureAwait(false);
+            return WriteFinalFrameBytesAsync(stream, cachedFrame, cancellationToken);
         }
 
+        return WriteFixedResponseDataFramesSlowAsync(stream, body, framePayloadSize, cancellationToken);
+    }
+
+    private static async ValueTask<bool> WriteFixedResponseDataFramesSlowAsync(
+        QuicStream stream,
+        ReadOnlyMemory<byte> body,
+        int framePayloadSize,
+        CancellationToken cancellationToken)
+    {
         int offset = 0;
         while (offset < body.Length)
         {
@@ -1433,7 +1442,20 @@ public sealed class Http3Server : IAsyncDisposable
         return true;
     }
 
-    private static async ValueTask<bool> WriteFrameBytesAsync(
+    private static ValueTask<bool> WriteFrameBytesAsync(
+        QuicStream stream,
+        byte[] frameBytes,
+        CancellationToken cancellationToken)
+    {
+        if (frameBytes.Length <= ResponseWriteChunkSize)
+        {
+            return stream.TryWriteAsync(frameBytes, cancellationToken);
+        }
+
+        return WriteFrameBytesSlowAsync(stream, frameBytes, cancellationToken);
+    }
+
+    private static async ValueTask<bool> WriteFrameBytesSlowAsync(
         QuicStream stream,
         byte[] frameBytes,
         CancellationToken cancellationToken)
@@ -1453,7 +1475,28 @@ public sealed class Http3Server : IAsyncDisposable
         return true;
     }
 
-    private static async ValueTask<bool> WritePayloadBytesAsync(
+    private static ValueTask<bool> WritePayloadBytesAsync(
+        QuicStream stream,
+        ReadOnlyMemory<byte> payload,
+        bool finalFrame,
+        CancellationToken cancellationToken)
+    {
+        if (payload.IsEmpty)
+        {
+            return new ValueTask<bool>(true);
+        }
+
+        if (payload.Length <= ResponseWriteChunkSize)
+        {
+            return finalFrame
+                ? stream.TryWriteFinalAsync(payload, cancellationToken)
+                : stream.TryWriteAsync(payload, cancellationToken);
+        }
+
+        return WritePayloadBytesSlowAsync(stream, payload, finalFrame, cancellationToken);
+    }
+
+    private static async ValueTask<bool> WritePayloadBytesSlowAsync(
         QuicStream stream,
         ReadOnlyMemory<byte> payload,
         bool finalFrame,
@@ -1485,13 +1528,31 @@ public sealed class Http3Server : IAsyncDisposable
         return true;
     }
 
-    private static async ValueTask<bool> WriteFinalFrameBytesAsync(
+    private static ValueTask<bool> WriteFinalFrameBytesAsync(
         QuicStream stream,
         byte[] frameBytes,
         CancellationToken cancellationToken)
-        => await WriteFinalFrameBytesAsync(stream, frameBytes.AsMemory(), cancellationToken).ConfigureAwait(false);
+        => WriteFinalFrameBytesAsync(stream, frameBytes.AsMemory(), cancellationToken);
 
-    private static async ValueTask<bool> WriteFinalFrameBytesAsync(
+    private static ValueTask<bool> WriteFinalFrameBytesAsync(
+        QuicStream stream,
+        ReadOnlyMemory<byte> frameBytes,
+        CancellationToken cancellationToken)
+    {
+        if (frameBytes.IsEmpty)
+        {
+            return new ValueTask<bool>(true);
+        }
+
+        if (frameBytes.Length <= ResponseWriteChunkSize)
+        {
+            return stream.TryWriteFinalAsync(frameBytes, cancellationToken);
+        }
+
+        return WriteFinalFrameBytesSlowAsync(stream, frameBytes, cancellationToken);
+    }
+
+    private static async ValueTask<bool> WriteFinalFrameBytesSlowAsync(
         QuicStream stream,
         ReadOnlyMemory<byte> frameBytes,
         CancellationToken cancellationToken)
