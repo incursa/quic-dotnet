@@ -288,6 +288,29 @@ Output is written under:
 .artifacts/perf-baselines/{runId}/baseline-report.json
 ```
 
+## ProtocolLab Evidence Bundle Comparison
+
+Use the ProtocolLab native `compare` command when two current runs both have
+`evidence-bundle.json`. This is the preferred path for source/package parity,
+before/after performance movement, and future peer comparisons because it keeps
+validation, warnings, evidence quality, attribution availability, and
+publishability blockers attached to the metric deltas.
+
+```powershell
+dotnet run --project C:\shared\src\incursa\protocol-lab-internal\src\Incursa.ProtocolLab.Cli -- `
+  compare `
+  --baseline C:\path\to\baseline\evidence-bundle.json `
+  --candidate C:\path\to\candidate\evidence-bundle.json `
+  --format markdown `
+  --output-file .\.artifacts\perf-triage\evidence-bundle-compare\run-comparison.md
+```
+
+For external implementation comparisons, only compare cells where the protocol,
+scenario, load profile, validation status, load tool semantics, source/package
+mode, and resource controls are compatible. Older aggregate-only external rows
+from `baseline-report.json` are useful inventory, but they are not equivalent to
+new evidence-bundle comparisons.
+
 ## ProtocolLab Controller Publication Bridge
 
 Use `Invoke-QuicProtocolLabPublication.ps1` to ask the ProtocolLab controller

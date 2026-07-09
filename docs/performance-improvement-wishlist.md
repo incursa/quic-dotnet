@@ -332,6 +332,23 @@ Done when:
 
 Performance only matters relative to known-good peers, but comparisons need matching scenarios and honest caveats.
 
+Status: partially closed for comparison plumbing and evidence classification.
+ProtocolLab now emits `evidence-bundle.json`, native run comparisons, evidence
+quality classifications, source/package parity verdicts, failure reason codes,
+artifact manifests, and hotspot trend data. The QUIC-side retained baseline
+report can still inventory older external-reference rows, but those older peer
+rows predate the evidence-bundle comparison path and should not be upgraded into
+publishable rankings. Treat local peer rows as diagnostic unless the run has
+matching scenario, protocol, load profile, validation status, source/package
+provenance, resource controls, repetition/variance proof, and readiness gates.
+
+Remaining work: run fresh peer comparison cells through the current
+evidence-bundle pipeline for `quic-go-http3` plus at least one C/Rust HTTP/3
+implementation, then use the native compare output to decide which cells are
+actually comparable. Do not compare Incursa HTTP/3 managed-load results against
+raw QUIC load-tool results, and do not compare old aggregate-only external rows
+against new evidence-bundle rows as if they had the same provenance.
+
 Done when:
 
 - ProtocolLab runs comparable scenarios against at least quic-go and one C/Rust implementation where available.
