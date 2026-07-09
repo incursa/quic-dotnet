@@ -137,6 +137,8 @@ internal sealed partial class QuicConnectionRuntime
                 => HandleReleaseCapacityStreamAction(
                     streamActionEvent.StreamId.Value,
                     ref effects),
+            QuicConnectionStreamActionKind.ReleaseCapacity
+                => HandleReleaseCapacityStreamAction(ref effects),
             _ => false,
         };
     }
@@ -2125,6 +2127,19 @@ internal sealed partial class QuicConnectionRuntime
 
         ClearPeerStreamCapacityReleaseScheduled(streamId);
         return false;
+    }
+
+    private bool HandleReleaseCapacityStreamAction(ref QuicConnectionEffectAccumulator effects)
+    {
+        try
+        {
+            _ = TryDeferScheduledPeerStreamCapacityReleases();
+            return TryFlushPendingPeerStreamCapacityReleases(ref effects);
+        }
+        finally
+        {
+            ClearPeerStreamCapacityReleaseEventScheduled();
+        }
     }
 
     private bool HandleFlowControlCreditUpdated(

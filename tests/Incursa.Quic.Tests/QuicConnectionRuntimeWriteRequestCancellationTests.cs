@@ -10,6 +10,34 @@ public sealed class QuicConnectionRuntimeWriteRequestCancellationTests
     {
         await using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
         int releaseEventCount = 0;
+        QuicConnectionStreamActionEvent? releaseEvent = null;
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            if (connectionEvent is QuicConnectionStreamActionEvent
+                {
+                    ActionKind: QuicConnectionStreamActionKind.ReleaseCapacity,
+                } streamActionEvent)
+            {
+                releaseEventCount++;
+                releaseEvent = streamActionEvent;
+            }
+
+            return true;
+        });
+
+        runtime.TryQueueStreamCapacityRelease(streamId: 0);
+        runtime.TryQueueStreamCapacityRelease(streamId: 0);
+
+        Assert.Equal(1, releaseEventCount);
+        Assert.NotNull(releaseEvent);
+        Assert.Null(releaseEvent.StreamId);
+    }
+
+    [Fact]
+    public async Task TryQueueStreamCapacityRelease_SuppressesPendingReleaseEventsForDifferentStreams()
+    {
+        await using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        int releaseEventCount = 0;
         runtime.SetLocalApiEventDispatcher(connectionEvent =>
         {
             if (connectionEvent is QuicConnectionStreamActionEvent
@@ -24,7 +52,7 @@ public sealed class QuicConnectionRuntimeWriteRequestCancellationTests
         });
 
         runtime.TryQueueStreamCapacityRelease(streamId: 0);
-        runtime.TryQueueStreamCapacityRelease(streamId: 0);
+        runtime.TryQueueStreamCapacityRelease(streamId: 4);
 
         Assert.Equal(1, releaseEventCount);
     }

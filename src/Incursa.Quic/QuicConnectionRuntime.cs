@@ -72,8 +72,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
     private readonly object scheduledFlowControlCreditGate = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
-    private readonly HashSet<ulong> pendingPeerStreamCapacityReleaseStreamIds = [];
-    private readonly HashSet<ulong> scheduledPeerStreamCapacityReleaseStreamIds = [];
+    private readonly HashSet<ulong> pendingPeerStreamCapacityReleaseStreamIds = new(capacity: 16);
+    private readonly HashSet<ulong> scheduledPeerStreamCapacityReleaseStreamIds = new(capacity: 16);
     private readonly Dictionary<ulong, QuicMaxStreamDataFrame> pendingFlowControlStreamCreditFrames = [];
     private readonly Dictionary<ulong, QuicMaxStreamDataFrame> scheduledFlowControlStreamCreditFrames = new(capacity: 16);
     private readonly QuicStreamObserverDirectory streamObservers = new();
@@ -145,6 +145,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private Exception? inboundDatagramQueueCompletionException;
     private Func<QuicConnectionEvent, bool>? localApiEventDispatcher;
     private Action<int, int>? streamCapacityObserver;
+    private bool scheduledPeerStreamCapacityReleaseEventPending;
     private bool scheduledFlowControlCreditUpdatePending;
     private long? pendingApplicationSendDelayDueTicks;
     private ulong largestObservedInitialPacketNumber;
@@ -1163,18 +1164,14 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             return;
         }
 
-        if (!TryMarkPeerStreamCapacityReleaseScheduled(streamId))
+        bool shouldPostEvent = TryMarkPeerStreamCapacityReleaseScheduled(streamId);
+        if (shouldPostEvent
+            && !TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
+                clock.Ticks,
+                RequestId: 0,
+                QuicConnectionStreamActionKind.ReleaseCapacity)))
         {
-            return;
-        }
-
-        if (!TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
-            clock.Ticks,
-            RequestId: 0,
-            QuicConnectionStreamActionKind.ReleaseCapacity,
-            StreamId: streamId)))
-        {
-            ClearPeerStreamCapacityReleaseScheduled(streamId);
+            ClearPeerStreamCapacityReleaseEventScheduled();
         }
     }
 
@@ -1182,7 +1179,14 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     {
         lock (scheduledPeerStreamCapacityReleaseGate)
         {
-            return scheduledPeerStreamCapacityReleaseStreamIds.Add(streamId);
+            scheduledPeerStreamCapacityReleaseStreamIds.Add(streamId);
+            if (scheduledPeerStreamCapacityReleaseEventPending)
+            {
+                return false;
+            }
+
+            scheduledPeerStreamCapacityReleaseEventPending = true;
+            return true;
         }
     }
 
@@ -1191,6 +1195,32 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         lock (scheduledPeerStreamCapacityReleaseGate)
         {
             scheduledPeerStreamCapacityReleaseStreamIds.Remove(streamId);
+        }
+    }
+
+    private bool TryDeferScheduledPeerStreamCapacityReleases()
+    {
+        lock (scheduledPeerStreamCapacityReleaseGate)
+        {
+            if (scheduledPeerStreamCapacityReleaseStreamIds.Count == 0)
+            {
+                return false;
+            }
+
+            foreach (ulong streamId in scheduledPeerStreamCapacityReleaseStreamIds)
+            {
+                pendingPeerStreamCapacityReleaseStreamIds.Add(streamId);
+            }
+
+            return true;
+        }
+    }
+
+    private void ClearPeerStreamCapacityReleaseEventScheduled()
+    {
+        lock (scheduledPeerStreamCapacityReleaseGate)
+        {
+            scheduledPeerStreamCapacityReleaseEventPending = false;
         }
     }
 
