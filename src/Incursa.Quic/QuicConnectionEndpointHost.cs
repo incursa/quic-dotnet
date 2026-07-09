@@ -72,7 +72,10 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         this.transitionObserver = transitionObserver;
         this.effectObserver = effectObserver;
         this.diagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSink);
-        receiveBufferPool = new QuicReceiveBufferPool(receiveBufferBytes, ownerName: nameof(QuicConnectionEndpointHost));
+        receiveBufferPool = new QuicReceiveBufferPool(
+            receiveBufferBytes,
+            ownerName: nameof(QuicConnectionEndpointHost),
+            preallocateRingBuffers: true);
         flowLabelSeed = unchecked((uint)RandomNumberGenerator.GetInt32(1, int.MaxValue));
 
         // Keep the socket open to migrated source endpoints. Outbound effects still use the

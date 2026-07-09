@@ -46,7 +46,10 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private readonly IQuicDiagnosticsSink listenerDiagnosticsSink;
     private readonly Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver;
     private readonly QuicConnectionRuntimeEndpoint endpoint;
-    private readonly QuicReceiveBufferPool receiveBufferPool = new(ReceiveBufferBytes, ownerName: nameof(QuicListenerHost));
+    private readonly QuicReceiveBufferPool receiveBufferPool = new(
+        ReceiveBufferBytes,
+        ownerName: nameof(QuicListenerHost),
+        preallocateRingBuffers: true);
     private readonly QuicListenerZeroRttPreInitialBuffer zeroRttPreInitialBuffer = new(MaximumBufferedZeroRttDatagramsPerConnection);
     private readonly QuicServerResumptionTicketStore serverResumptionTicketStore = new();
     private readonly ConcurrentDictionary<QuicConnectionHandle, PendingConnectionState> connections = new();

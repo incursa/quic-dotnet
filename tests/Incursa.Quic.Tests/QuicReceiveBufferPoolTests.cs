@@ -20,6 +20,23 @@ public sealed class QuicReceiveBufferPoolTests
     }
 
     [Fact]
+    public void Constructor_CanPreallocateRingBuffersWithoutRenting()
+    {
+        using QuicReceiveBufferPool pool = new(
+            bufferSize: 32,
+            ringSize: 2,
+            preallocateRingBuffers: true);
+
+        QuicReceiveBufferPoolSnapshot snapshot = pool.Snapshot;
+
+        Assert.Equal(2, snapshot.RingSize);
+        Assert.Equal(2, snapshot.AllocatedRingBuffers);
+        Assert.Equal(0, snapshot.RingRents);
+        Assert.Equal(0, snapshot.FallbackRents);
+        Assert.Equal(0, snapshot.CurrentOutstanding);
+    }
+
+    [Fact]
     public void Rent_UsesRingBeforeFallback()
     {
         using QuicReceiveBufferPool pool = new(bufferSize: 32, ringSize: 2);

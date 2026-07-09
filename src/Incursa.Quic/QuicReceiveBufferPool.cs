@@ -38,7 +38,8 @@ internal sealed class QuicReceiveBufferPool : IDisposable
     internal QuicReceiveBufferPool(
         int bufferSize,
         int? ringSize = null,
-        string ownerName = "unknown")
+        string ownerName = "unknown",
+        bool preallocateRingBuffers = false)
     {
         if (bufferSize <= 0)
         {
@@ -65,6 +66,11 @@ internal sealed class QuicReceiveBufferPool : IDisposable
         }
 
         freeCount = effectiveRingSize;
+        if (preallocateRingBuffers)
+        {
+            PreallocateRingBuffers();
+        }
+
         QuicReceiveBufferPoolDiagnostics.Register(this);
     }
 
@@ -102,10 +108,7 @@ internal sealed class QuicReceiveBufferPool : IDisposable
                 byte[]? buffer = ringBuffers[index];
                 if (buffer is null)
                 {
-                    buffer = new byte[bufferSize];
-                    ringBuffers[index] = buffer;
-                    ringIndexes.Add(buffer, index);
-                    Interlocked.Increment(ref allocatedRingBuffers);
+                    buffer = AllocateRingBuffer(index);
                 }
 
                 rentedRingBuffers[index] = true;
@@ -148,6 +151,23 @@ internal sealed class QuicReceiveBufferPool : IDisposable
         }
 
         RecordReturn();
+    }
+
+    private void PreallocateRingBuffers()
+    {
+        for (int index = 0; index < ringBuffers.Length; index++)
+        {
+            _ = AllocateRingBuffer(index);
+        }
+    }
+
+    private byte[] AllocateRingBuffer(int index)
+    {
+        byte[] buffer = new byte[bufferSize];
+        ringBuffers[index] = buffer;
+        ringIndexes.Add(buffer, index);
+        Interlocked.Increment(ref allocatedRingBuffers);
+        return buffer;
     }
 
     private void RecordRent(bool ring)
