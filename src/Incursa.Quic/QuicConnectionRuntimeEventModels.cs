@@ -291,11 +291,15 @@ internal sealed record QuicConnectionEmitDiagnosticEffect(QuicDiagnosticEvent Di
 
 internal struct QuicConnectionEffectAccumulator
 {
-    private const int InlineEffectCapacity = 4;
+    private const int InlineEffectCapacity = 8;
     private const int FirstInlineEffectIndex = 0;
     private const int SecondInlineEffectIndex = 1;
     private const int ThirdInlineEffectIndex = 2;
     private const int FourthInlineEffectIndex = 3;
+    private const int FifthInlineEffectIndex = 4;
+    private const int SixthInlineEffectIndex = 5;
+    private const int SeventhInlineEffectIndex = 6;
+    private const int EighthInlineEffectIndex = 7;
     private const int OverflowEffectListCapacity = InlineEffectCapacity * 2;
 
     private int effectCount;
@@ -303,6 +307,10 @@ internal struct QuicConnectionEffectAccumulator
     private QuicConnectionEffect? effect1;
     private QuicConnectionEffect? effect2;
     private QuicConnectionEffect? effect3;
+    private QuicConnectionEffect? effect4;
+    private QuicConnectionEffect? effect5;
+    private QuicConnectionEffect? effect6;
+    private QuicConnectionEffect? effect7;
     private List<QuicConnectionEffect>? effectList;
 
     private QuicConnectionEffectAccumulator(List<QuicConnectionEffect> effectList)
@@ -312,6 +320,10 @@ internal struct QuicConnectionEffectAccumulator
         effect1 = null;
         effect2 = null;
         effect3 = null;
+        effect4 = null;
+        effect5 = null;
+        effect6 = null;
+        effect7 = null;
         this.effectList = effectList;
     }
 
@@ -348,6 +360,22 @@ internal struct QuicConnectionEffectAccumulator
                 return;
             case FourthInlineEffectIndex:
                 effect3 = effect;
+                effectCount = FifthInlineEffectIndex;
+                return;
+            case FifthInlineEffectIndex:
+                effect4 = effect;
+                effectCount = SixthInlineEffectIndex;
+                return;
+            case SixthInlineEffectIndex:
+                effect5 = effect;
+                effectCount = SeventhInlineEffectIndex;
+                return;
+            case SeventhInlineEffectIndex:
+                effect6 = effect;
+                effectCount = EighthInlineEffectIndex;
+                return;
+            case EighthInlineEffectIndex:
+                effect7 = effect;
                 effectCount = InlineEffectCapacity;
                 return;
         }
@@ -358,6 +386,10 @@ internal struct QuicConnectionEffectAccumulator
             effect1!,
             effect2!,
             effect3!,
+            effect4!,
+            effect5!,
+            effect6!,
+            effect7!,
             effect,
         };
         effectCount = 0;
@@ -365,6 +397,10 @@ internal struct QuicConnectionEffectAccumulator
         effect1 = null;
         effect2 = null;
         effect3 = null;
+        effect4 = null;
+        effect5 = null;
+        effect6 = null;
+        effect7 = null;
     }
 
     internal QuicConnectionEffect GetEffect(int index)
@@ -384,7 +420,11 @@ internal struct QuicConnectionEffectAccumulator
             FirstInlineEffectIndex => effect0!,
             SecondInlineEffectIndex => effect1!,
             ThirdInlineEffectIndex => effect2!,
-            _ => effect3!,
+            FourthInlineEffectIndex => effect3!,
+            FifthInlineEffectIndex => effect4!,
+            SixthInlineEffectIndex => effect5!,
+            SeventhInlineEffectIndex => effect6!,
+            _ => effect7!,
         };
     }
 
@@ -442,6 +482,26 @@ internal struct QuicConnectionEffectAccumulator
         if (effectCount > FourthInlineEffectIndex)
         {
             effects[FourthInlineEffectIndex] = effect3!;
+        }
+
+        if (effectCount > FifthInlineEffectIndex)
+        {
+            effects[FifthInlineEffectIndex] = effect4!;
+        }
+
+        if (effectCount > SixthInlineEffectIndex)
+        {
+            effects[SixthInlineEffectIndex] = effect5!;
+        }
+
+        if (effectCount > SeventhInlineEffectIndex)
+        {
+            effects[SeventhInlineEffectIndex] = effect6!;
+        }
+
+        if (effectCount > EighthInlineEffectIndex)
+        {
+            effects[EighthInlineEffectIndex] = effect7!;
         }
     }
 }
