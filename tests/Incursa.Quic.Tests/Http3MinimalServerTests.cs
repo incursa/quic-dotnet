@@ -135,6 +135,29 @@ public sealed class Http3MinimalServerTests
         Assert.NotNull(cachedResponse.GetCachedCompleteResponseFrame());
     }
 
+    [Fact]
+    public async Task GetAsync_HeadersOnlyHandler_UsesFastPathWithoutFullRequest()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        HeadersOnlyFastPathHandler handler = new();
+
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+
+        Http3Response response = await context.GetAsync("/fast");
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.Equal("fast", System.Text.Encoding.UTF8.GetString(response.Body));
+        Assert.Equal(1, handler.HeadersOnlyCalls);
+        Assert.Equal(0, handler.FullRequestCalls);
+        Assert.Equal("GET", handler.Method);
+        Assert.Equal("/fast", handler.Path);
+        Assert.NotEmpty(handler.Headers);
+    }
+
     [Theory]
     [Requirement("REQ-QUIC-RFC9114-S9-0002")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -2853,6 +2876,39 @@ public sealed class Http3MinimalServerTests
             Body = request.Body.ToArray();
             Headers = request.Headers;
             return ValueTask.FromResult(new Http3ServerResponse(200, "ok"u8.ToArray()));
+        }
+    }
+
+    private sealed class HeadersOnlyFastPathHandler : IHttp3RequestHandler, IHttp3HeadersOnlyRequestHandler
+    {
+        public int HeadersOnlyCalls { get; private set; }
+
+        public int FullRequestCalls { get; private set; }
+
+        public string Method { get; private set; } = string.Empty;
+
+        public string Path { get; private set; } = string.Empty;
+
+        public IReadOnlyList<QPackFieldLine> Headers { get; private set; } = [];
+
+        public ValueTask<Http3ServerResponse> HandleAsync(Http3Request request, CancellationToken cancellationToken = default)
+        {
+            _ = request;
+            _ = cancellationToken;
+            FullRequestCalls++;
+            return ValueTask.FromResult(new Http3ServerResponse(500, "slow"u8.ToArray()));
+        }
+
+        public ValueTask<Http3ServerResponse> HandleHeadersOnlyAsync(
+            Http3HeadersOnlyRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            _ = cancellationToken;
+            HeadersOnlyCalls++;
+            Method = request.Method;
+            Path = request.Path;
+            Headers = request.Headers;
+            return ValueTask.FromResult(new Http3ServerResponse(200, "fast"u8.ToArray()));
         }
     }
 

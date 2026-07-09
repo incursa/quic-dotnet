@@ -149,7 +149,7 @@ internal static class Program
     }
 }
 
-public sealed class TechEmpowerHandler : IHttp3RequestHandler
+public sealed class TechEmpowerHandler : IHttp3RequestHandler, IHttp3HeadersOnlyRequestHandler
 {
     private const int StatusOk = 200;
     private const int StatusNotFound = 404;
@@ -169,6 +169,19 @@ public sealed class TechEmpowerHandler : IHttp3RequestHandler
     public ValueTask<Http3ServerResponse> HandleAsync(Http3Request request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        string path = StripQuery(request.Path);
+        Http3ServerResponse response = request.Method == "GET"
+            ? HandleGet(path)
+            : Text(StatusMethodNotAllowed, "Method Not Allowed");
+        return ValueTask.FromResult(response);
+    }
+
+    public ValueTask<Http3ServerResponse> HandleHeadersOnlyAsync(
+        Http3HeadersOnlyRequest request,
+        CancellationToken cancellationToken = default)
+    {
         cancellationToken.ThrowIfCancellationRequested();
 
         string path = StripQuery(request.Path);

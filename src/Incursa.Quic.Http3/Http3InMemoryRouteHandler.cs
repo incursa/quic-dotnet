@@ -9,7 +9,7 @@ namespace Incursa.Quic.Http3;
 /// <summary>
 /// Serves GET requests from an in-memory route table.
 /// </summary>
-public sealed class Http3InMemoryRouteHandler : IHttp3RequestHandler
+public sealed class Http3InMemoryRouteHandler : IHttp3RequestHandler, IHttp3HeadersOnlyRequestHandler
 {
     private const int StatusOk = 200;
     private const int StatusNotFound = 404;
@@ -58,12 +58,27 @@ public sealed class Http3InMemoryRouteHandler : IHttp3RequestHandler
         ArgumentNullException.ThrowIfNull(request);
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (request.Method != "GET")
+        return ValueTask.FromResult(Handle(request.Method, request.Path));
+    }
+
+    /// <inheritdoc />
+    public ValueTask<Http3ServerResponse> HandleHeadersOnlyAsync(
+        Http3HeadersOnlyRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return ValueTask.FromResult(Handle(request.Method, request.Path));
+    }
+
+    private Http3ServerResponse Handle(string method, string path)
+    {
+        if (method != "GET")
         {
-            return ValueTask.FromResult(new Http3ServerResponse(StatusMethodNotAllowed, ReadOnlyMemory<byte>.Empty));
+            return new Http3ServerResponse(StatusMethodNotAllowed, ReadOnlyMemory<byte>.Empty);
         }
 
-        string routePath = request.Path;
+        string routePath = path;
         int queryStart = routePath.IndexOf('?', StringComparison.Ordinal);
         if (queryStart >= 0)
         {
@@ -72,15 +87,15 @@ public sealed class Http3InMemoryRouteHandler : IHttp3RequestHandler
 
         if (routes.TryGetValue(routePath, out Http3ServerResponse? response))
         {
-            return ValueTask.FromResult(response);
+            return response;
         }
 
-        return ValueTask.FromResult(new Http3ServerResponse(
+        return new Http3ServerResponse(
             StatusNotFound,
             Encoding.UTF8.GetBytes("Not Found"),
             [
                 new QPackFieldLine("content-type", "text/plain; charset=utf-8"),
                 new QPackFieldLine("content-length", "9"),
-            ]));
+            ]);
     }
 }

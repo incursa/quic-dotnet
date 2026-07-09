@@ -143,6 +143,20 @@ public sealed class Http3SampleApplicationTests
         Assert.Contains(json.Headers, header => header.Name == "content-type" && header.Value == "application/json");
     }
 
+    [Fact]
+    public async Task TechEmpowerPlaintext_HeadersOnlyFastPathUsesExactPayload()
+    {
+        TechEmpowerHandler handler = new();
+        Http3HeadersOnlyRequest request = CreateHeadersOnlyRequest("GET", "/plaintext");
+
+        Http3ServerResponse response = await handler.HandleHeadersOnlyAsync(request);
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.Equal("Hello, World!", Encoding.UTF8.GetString(response.Body.Span));
+        Assert.Contains(response.Headers, header => header.Name == "server" && header.Value == "Incursa.Http3");
+        Assert.True(response.CacheEncodedHeaders);
+    }
+
     [Theory]
     [InlineData("/bytes/1024", 1024)]
     [InlineData("/bytes/65536", 64 * 1024)]
@@ -211,6 +225,27 @@ public sealed class Http3SampleApplicationTests
         }
 
         return new Http3Request(method, "https", "localhost", path, headers, body);
+    }
+
+    private static Http3HeadersOnlyRequest CreateHeadersOnlyRequest(
+        string method,
+        string path,
+        IReadOnlyList<QPackFieldLine>? extraHeaders = null)
+    {
+        List<QPackFieldLine> headers =
+        [
+            new QPackFieldLine(":method", method),
+            new QPackFieldLine(":scheme", "https"),
+            new QPackFieldLine(":authority", "localhost"),
+            new QPackFieldLine(":path", path),
+        ];
+
+        if (extraHeaders is not null)
+        {
+            headers.AddRange(extraHeaders);
+        }
+
+        return new Http3HeadersOnlyRequest(method, "https", "localhost", path, protocol: null, headers);
     }
 
     private static byte[] CreateDeterministicBytes(int length)
