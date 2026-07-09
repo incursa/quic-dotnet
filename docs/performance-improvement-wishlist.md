@@ -9,6 +9,7 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 - 2026-07-09: wider raw stream-throughput diagnostic run `codex-raw-stream-throughput-c1s4-confidence-20260709a` used the same scenario with `-RawQuicStreamsPerConnection 4`, passed validation and benchmark execution for all 9 repetitions, captured counters for all 9 repetitions, and had no failed or timeout requests. Compared with the c1/s1 confidence run, median throughput improved to 5,889,703.164 bytes/sec and throughput relative range dropped from 1.514 to 0.200, but p95 remained unstable with relative range 1.056 and publishability still blocked by `variance-above-publishable-threshold`. Treat c1/s4 as a better local diagnostic shape for transport throughput triage, not a replacement for the canonical single-stream scenario or publishable evidence.
 - 2026-07-09: package-backed raw stream-throughput smoke proof `job-aab2a89fae1a4807ab989ebb8df37f52` completed on `plab-worker-sut-01` using `quic-dotnet-raw-dev@dev-20260709T094345Z-14e8d5a2-clean` plus binary-backed `protocol-lab-quic-go-raw-load@dev-20260709T095500Z-14e8d5a2-clean-binraw` and `protocol-lab-raw-quic-scenarios@dev-20260709T095500Z-14e8d5a2-clean-binraw`. It passed validation 1/1, benchmark succeeded 1/1, produced readable controller artifacts, and measured a single-run throughput sample of 7,313,722.042 bytes/sec with p95 308.285 ms. Treat this as package-boundary validation evidence only; publishability remains blocked by `repeat-count-below-publishable-minimum`, local shared-host execution, no CPU/network isolation, missing runtime counters, and one repetition.
 - 2026-07-09: package-backed raw stream-throughput confidence proof `job-bcb049b36892490ca2949dcb6d8dcc00` reused the same admitted package references and completed 3 repetitions on `plab-worker-sut-01`. It passed validation 3/3, benchmark succeeded 3/3, had zero failed or timeout requests, captured target and load-generator process metrics, and produced readable controller artifacts. Median throughput was 7,070,152.333 bytes/sec with best/worst 7,605,253.432 / 6,714,902.639 bytes/sec; median p95 was 344.01 ms with best/worst 306.859 / 351.797 ms. Treat this as repeated package-boundary regression evidence, not publishable evidence; publishability remains blocked by `variance-above-publishable-threshold`, local shared-host/single-machine execution, no CPU/network isolation, missing runtime counters, and process-mode load-tool caveats.
+- 2026-07-09: package-backed raw multiplex and duplex confidence proofs completed through the same admitted `quic-dotnet-raw-dev`, `protocol-lab-quic-go-raw-load`, and `protocol-lab-raw-quic-scenarios` package references. `job-c1f45316b0ef4d3d85e179c794682c0c` proved `quic.transport.multiplex.100x64kb` with validation 3/3, benchmark succeeded 3/3, zero failed or timeout requests, median throughput 6,083,503.045 bytes/sec, and median p95 19.438 ms. `job-875a89f8926e45b6b93cf7ce806434f4` proved `quic.transport.duplex-streams` with validation 3/3, benchmark succeeded 3/3, zero failed or timeout requests, median throughput 6,054,715.481 bytes/sec, and median p95 18.611 ms. Treat these as clean package-backed regression rows only; publishability remains blocked by local shared-host execution and variance above threshold.
 - 2026-07-09: public `QuicStream.CompleteWritesAsync` now mirrors the write path's fast-path shape: it returns synchronously when writes are already closed, waits on the write gate only when contended, and only creates an async continuation when the runtime FIN request has not completed. `Incursa.Quic` and benchmark Release builds passed, focused stream/API lifecycle tests passed 109/112 with three existing skips in the selected filter, and source-backed 200-iteration public stream profiles `codex-profile-stream-target-incursa-completewrites-fastpath-sourcebacked-20260709a.json` and `codex-profile-stream-target-incursa-completewrites-fastpath-sourcebacked-20260709c.json` measured pass-2 allocation at 11,302-11,331 B/op versus 11,379 B/op in `codex-profile-stream-target-incursa-finish-valuetask-sourcebacked-20260709a.json`. Treat this as a modest public stream completion fast-path allocation reduction only; elapsed time remains single-run noisy.
 - 2026-07-09: runtime FIN completion now uses the same pooled `StreamActionRequestCompletionSource` `ValueTask<bool>` path as stream writes instead of forcing `CompleteStreamWritesAsyncCore` through a `Task<bool>` async state machine and local cancellation-registration lifetime. `Incursa.Quic` and benchmark Release builds passed, focused stream/API lifecycle tests passed 107/107, and source-backed 200-iteration public stream profile `codex-profile-stream-target-incursa-finish-valuetask-sourcebacked-20260709a.json` reduced pass-2 allocation from 11,600 B/op in `codex-profile-stream-target-incursa-valuetask-writecore-sourcebacked-20260709a.json` to 11,380 B/op. Treat this as a targeted public stream FIN-path allocation reduction, not a throughput claim.
 - 2026-07-09: public `QuicStream.WriteAsync(ReadOnlyMemory<byte>, CancellationToken)` now returns the stream write `ValueTask` path directly instead of wrapping a `Task`-returning core, while the legacy byte-array `WriteAsync` overload keeps its `Task` compatibility wrapper. Read/write gate lazy initialization also avoids the `LazyInitializer` helper allocation that appeared in retained public-stream attribution by using `Volatile.Read` plus `Interlocked.CompareExchange` and disposing loser semaphores on races. `Incursa.Quic` and benchmark Release builds passed, focused stream/read/write lifecycle tests passed 92/92, and source-backed 200-iteration public stream profile `codex-profile-stream-target-incursa-valuetask-writecore-sourcebacked-20260709a.json` measured pass-2 allocation at 11,600 B/op versus the immediately preceding retained 200-iteration range of 11,642-11,737 B/op. Treat this as modest public stream allocation cleanup only; verbose GC allocation traces for this benchmark remained too expensive even at 50 iterations, so retained trace attribution was used for site selection.
@@ -143,7 +144,7 @@ Remaining work:
 
 ## 4. Establish Baseline Dashboards For Key Scenarios
 
-Status: partially closed for local file-based reporting. `scripts/perf/New-QuicProtocolLabBaselineReport.ps1` rolls retained ProtocolLab runs into JSON and Markdown reports for the current core scenarios. The public/internal dashboard import remains open, and current local evidence still has variance and raw-multiplex validation blockers.
+Status: partially closed for local file-based reporting. `scripts/perf/New-QuicProtocolLabBaselineReport.ps1` rolls retained ProtocolLab runs into JSON and Markdown reports for the current core scenarios. The public/internal dashboard import remains open, and current local evidence still has variance blockers. The stale raw-multiplex validation blocker has a clean package-backed replacement row, but the baseline report should be regenerated before treating the dashboard snapshot as current.
 
 Current local coverage:
 
@@ -151,13 +152,13 @@ Current local coverage:
 - `http3.payload.bytes.64kb` local repeat row is present.
 - `quic.transport.stream-throughput.1mb` raw QUIC row is present.
 - `quic.transport.duplex-streams` raw stream fanout row is present.
-- `quic.transport.multiplex.100x64kb` row is present but the selected current row is not clean enough for confidence claims.
+- `quic.transport.multiplex.100x64kb` package-backed confidence row is clean for validation and benchmark execution, but still variance-blocked for publishable claims.
 - Reports include validation, benchmark status, primary metric, p95, allocation rate, exception rate, repetitions, previous/best comparisons, evidence quality, and publishability blockers.
 
 Remaining work:
 
 - Import baseline reports into a durable internal or public dashboard.
-- Add a clean current raw multiplex confidence row before treating that scenario as stable.
+- Regenerate the retained-run baseline report so it selects the clean package-backed raw multiplex confidence row.
 - Keep publishability blockers visible until lab variance and provenance gates are resolved.
 
 ## 5. Reduce HTTP/3 Allocation Pressure
@@ -195,10 +196,12 @@ confidence proof now validates 9/9 runs and captures all counters, but it still
 reports `performance-instability`. Package-backed rack-lab smoke proof now
 validates the same stream-throughput scenario through admitted implementation,
 test-executor, and scenario-pack packages, and repeated package-backed proof now
-validates 3/3 repetitions. The package-backed repeat is still variance-blocked
-and lacks runtime counters, so it is regression evidence only. A c1/s4
-diagnostic shape is more stable for throughput than c1/s1, but latency variance
-remains too high for publishable claims.
+validates 3/3 repetitions. Package-backed multiplex and duplex repeats also
+validate and benchmark 3/3 with zero failed or timeout requests. The
+package-backed repeats are still variance-blocked and lack runtime counters, so
+they are regression evidence only. A c1/s4 diagnostic shape is more stable for
+throughput than c1/s1, but latency variance remains too high for publishable
+claims.
 
 Done when:
 
@@ -249,11 +252,12 @@ run the raw stream-throughput scenario from pinned package references without
 rebuilding or re-uploading the implementation package. The proven package-backed
 jobs used the same `quic-dotnet-raw-dev` implementation identity as local
 source-backed raw runs and recorded readable package provenance. The latest
-package-backed repeat passed 3/3 validation and benchmark repetitions, but is
-still blocked from publishable use by variance, local shared-host execution, and
-missing runtime counters. Remaining work is richer counter capture,
-documenting/automating the binary-backed component package path for other raw
-scenarios, and moving the same evidence onto isolated lab hardware.
+package-backed repeats passed 3/3 validation and benchmark repetitions for
+stream throughput, multiplex, and duplex, but are still blocked from publishable
+use by variance, local shared-host execution, and missing runtime counters.
+Remaining work is richer counter capture, documenting/automating the
+binary-backed component package path beyond the local generated package flow,
+and moving the same evidence onto isolated lab hardware.
 
 Done when:
 
