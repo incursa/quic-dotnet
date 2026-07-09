@@ -2064,7 +2064,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             QuicConnectionFlowControlCreditUpdatedEvent flowControlCreditUpdatedEvent
                 => HandleFlowControlCreditUpdated(flowControlCreditUpdatedEvent, ref effects),
             QuicConnectionPacketReceivedEvent packetReceivedEvent
-                => HandlePacketReceived(packetReceivedEvent, nowTicks, ref effects),
+                => HandlePacketReceived(new QuicConnectionPacketReceivedContext(packetReceivedEvent), nowTicks, ref effects),
             QuicConnectionVersionNegotiationReceivedEvent versionNegotiationReceivedEvent
                 => HandleVersionNegotiationReceived(versionNegotiationReceivedEvent, nowTicks, ref effects),
             QuicConnectionIcmpMaximumDatagramSizeReductionEvent icmpMaximumDatagramSizeReductionEvent
@@ -2094,6 +2094,27 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             transitionSequence,
             nowTicks,
             connectionEvent.Kind,
+            previousPhase,
+            phase,
+            stateChanged,
+            effects);
+    }
+
+    internal QuicConnectionTransitionResult TransitionPacketReceived(
+        QuicConnectionPacketReceivedContext packetReceived,
+        long nowTicks)
+    {
+        QuicConnectionPhase previousPhase = phase;
+        lastTransitionTicks = nowTicks;
+        transitionSequence++;
+
+        QuicConnectionEffectAccumulator effects = default;
+        bool stateChanged = HandlePacketReceived(packetReceived, nowTicks, ref effects);
+
+        return new QuicConnectionTransitionResult(
+            transitionSequence,
+            nowTicks,
+            QuicConnectionEventKind.PacketReceived,
             previousPhase,
             phase,
             stateChanged,

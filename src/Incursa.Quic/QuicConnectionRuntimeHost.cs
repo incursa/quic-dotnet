@@ -146,6 +146,35 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
         return shards[route.ShardIndex].TryPost(handle, route.Runtime, connectionEvent);
     }
 
+    public bool TryPostPacketReceived(
+        QuicConnectionHandle handle,
+        QuicConnectionPacketReceivedContext packetReceived,
+        byte[]? ownedDatagramBuffer,
+        QuicReceiveBufferOwnership ownedDatagramBufferOwnership)
+    {
+        if (Volatile.Read(ref disposed) != 0)
+        {
+            return false;
+        }
+
+        if (!routes.TryGetValue(handle, out QuicConnectionRuntimeRoute route))
+        {
+            return false;
+        }
+
+        if (route.Runtime.IsDisposed)
+        {
+            return false;
+        }
+
+        return shards[route.ShardIndex].TryPostPacketReceived(
+            handle,
+            route.Runtime,
+            packetReceived,
+            ownedDatagramBuffer,
+            ownedDatagramBufferOwnership);
+    }
+
     /// <summary>
     /// Starts the shard consumers and returns a task that completes when all shards stop.
     /// </summary>

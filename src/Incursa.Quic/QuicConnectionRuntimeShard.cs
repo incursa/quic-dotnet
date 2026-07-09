@@ -87,6 +87,33 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         return inbox.Writer.TryWrite(new QuicConnectionRuntimeShardWorkItem(handle, runtime, connectionEvent));
     }
 
+    public bool TryPostPacketReceived(
+        QuicConnectionHandle handle,
+        QuicConnectionRuntime runtime,
+        QuicConnectionPacketReceivedContext packetReceived,
+        byte[]? ownedDatagramBuffer,
+        QuicReceiveBufferOwnership ownedDatagramBufferOwnership)
+    {
+        ArgumentNullException.ThrowIfNull(runtime);
+
+        if (Volatile.Read(ref disposed) != 0)
+        {
+            return false;
+        }
+
+        if (runtime.IsDisposed)
+        {
+            return false;
+        }
+
+        return inbox.Writer.TryWrite(new QuicConnectionRuntimeShardWorkItem(
+            handle,
+            runtime,
+            packetReceived,
+            ownedDatagramBuffer,
+            ownedDatagramBufferOwnership));
+    }
+
     /// <summary>
     /// Starts the shard consumer loop and returns the task that represents its lifetime.
     /// </summary>
@@ -255,20 +282,28 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
     {
         try
         {
-            if ((workItem.Runtime.IsDisposed
-                    && workItem.ConnectionEvent is not QuicConnectionLocalCloseRequestedEvent)
-                || workItem.Runtime.IsInboxConsumerRunning)
+            QuicConnectionRuntime? runtime = workItem.Runtime;
+            if (runtime is null)
             {
                 return;
             }
 
-            QuicConnectionTransitionResult result = workItem.Runtime.Transition(workItem.ConnectionEvent, clock.Ticks);
+            if ((runtime.IsDisposed
+                    && workItem.ConnectionEvent is not QuicConnectionLocalCloseRequestedEvent)
+                || runtime.IsInboxConsumerRunning)
+            {
+                return;
+            }
+
+            QuicConnectionTransitionResult result = workItem.Kind == QuicConnectionRuntimeShardWorkItemKind.PacketReceived
+                ? runtime.TransitionPacketReceived(workItem.PacketReceived, clock.Ticks)
+                : runtime.Transition(workItem.ConnectionEvent!, clock.Ticks);
             transitionObserver?.Invoke(workItem.Handle, result);
 
             for (int index = 0; index < result.EffectCount; index++)
             {
                 QuicConnectionEffect effect = result.GetEffect(index);
-                deadlineScheduler.Apply(workItem.Handle, workItem.Runtime, effect);
+                deadlineScheduler.Apply(workItem.Handle, runtime, effect);
                 effectObserver?.Invoke(workItem.Handle, effect);
             }
         }
@@ -279,13 +314,27 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
     }
 
     private static bool IsDeadlineWakeWorkItem(QuicConnectionRuntimeShardWorkItem workItem)
-        => workItem.Runtime is null && workItem.ConnectionEvent is null;
+        => workItem.Runtime is null && workItem.ConnectionEvent is null && workItem.Kind == QuicConnectionRuntimeShardWorkItemKind.Event;
 
     private static void ReleaseWorkItemResources(QuicConnectionRuntimeShardWorkItem workItem)
     {
         if (workItem.ConnectionEvent is QuicConnectionPacketReceivedEvent packetReceivedEvent)
         {
             packetReceivedEvent.ReleaseOwnedDatagramBuffer();
+            return;
+        }
+
+        if (workItem.Kind == QuicConnectionRuntimeShardWorkItemKind.PacketReceived
+            && workItem.OwnedDatagramBuffer is { } ownedDatagramBuffer)
+        {
+            if (workItem.OwnedDatagramBufferOwnership.Pool is { } pool)
+            {
+                pool.Return(ownedDatagramBuffer, workItem.OwnedDatagramBufferOwnership);
+            }
+            else
+            {
+                QuicBufferPool.ReturnBytes(ownedDatagramBuffer);
+            }
         }
     }
 }

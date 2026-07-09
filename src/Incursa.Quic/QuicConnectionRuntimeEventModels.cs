@@ -103,6 +103,34 @@ internal sealed record QuicConnectionPacketReceivedEvent(
     }
 }
 
+internal readonly record struct QuicConnectionPacketReceivedContext(
+    long ObservedAtTicks,
+    QuicConnectionPathIdentity PathIdentity,
+    ReadOnlyMemory<byte> Datagram,
+    ulong? RoutedLocallyIssuedConnectionId = null,
+    QuicEcnCounts? EcnCounts = null)
+{
+    internal QuicConnectionPacketReceivedContext(QuicConnectionPacketReceivedEvent packetReceivedEvent)
+        : this(
+            packetReceivedEvent.ObservedAtTicks,
+            packetReceivedEvent.PathIdentity,
+            packetReceivedEvent.Datagram,
+            packetReceivedEvent.RoutedLocallyIssuedConnectionId,
+            packetReceivedEvent.EcnCounts)
+    {
+    }
+
+    internal QuicConnectionPacketReceivedContext WithBorrowedDatagramSlice(ReadOnlyMemory<byte> datagram)
+    {
+        return new QuicConnectionPacketReceivedContext(
+            ObservedAtTicks,
+            PathIdentity,
+            datagram,
+            RoutedLocallyIssuedConnectionId,
+            EcnCounts);
+    }
+}
+
 internal sealed record QuicConnectionTimerExpiredEvent(
     long ObservedAtTicks,
     QuicConnectionTimerKind TimerKind,

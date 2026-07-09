@@ -967,14 +967,14 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         byte[]? ownedDatagramBuffer = null,
         QuicReceiveBufferOwnership ownedDatagramBufferOwnership = default)
     {
-        return host.TryPostEvent(handle, new QuicConnectionPacketReceivedEvent(
+        return host.TryPostPacketReceived(handle, new QuicConnectionPacketReceivedContext(
             clock.Ticks,
             pathIdentity,
             datagram,
             routedLocallyIssuedConnectionId,
-            ecnCounts,
+            ecnCounts),
             ownedDatagramBuffer,
-            ownedDatagramBufferOwnership));
+            ownedDatagramBufferOwnership);
     }
 
     private bool TryDispatchStatelessReset(

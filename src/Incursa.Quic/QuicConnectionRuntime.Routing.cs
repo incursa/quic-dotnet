@@ -14,7 +14,7 @@ internal sealed partial class QuicConnectionRuntime
     private const ulong PathValidationMaxChallengeSendCountBeforeAbandonment = 3UL;
 
     private bool HandlePacketReceived(
-        QuicConnectionPacketReceivedEvent packetReceivedEvent,
+        QuicConnectionPacketReceivedContext packetReceivedEvent,
         long nowTicks,
         ref QuicConnectionEffectAccumulator effects)
     {
@@ -106,7 +106,7 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryHandleClosingPacketReceived(
-        QuicConnectionPacketReceivedEvent packetReceivedEvent,
+        QuicConnectionPacketReceivedContext packetReceivedEvent,
         long nowTicks,
         ref QuicConnectionEffectAccumulator effects)
     {
@@ -187,7 +187,7 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryHandleReceivedPacketDatagram(
-        QuicConnectionPacketReceivedEvent packetReceivedEvent,
+        QuicConnectionPacketReceivedContext packetReceivedEvent,
         long nowTicks,
         ref QuicConnectionEffectAccumulator effects)
     {
@@ -214,7 +214,7 @@ internal sealed partial class QuicConnectionRuntime
                 return processedAnyPacket && stateChanged;
             }
 
-            QuicConnectionPacketReceivedEvent packetEvent = packetOffset == 0 && packetLength == packetReceivedEvent.Datagram.Length
+            QuicConnectionPacketReceivedContext packetEvent = packetOffset == 0 && packetLength == packetReceivedEvent.Datagram.Length
                 ? packetReceivedEvent
                 : packetReceivedEvent.WithBorrowedDatagramSlice(remainingDatagram[..packetLength]);
 
@@ -783,7 +783,7 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryHandlePreviouslyUnusedIssuedConnectionId(
-        QuicConnectionPacketReceivedEvent packetReceivedEvent,
+        QuicConnectionPacketReceivedContext packetReceivedEvent,
         ref QuicConnectionEffectAccumulator effects)
     {
         if (packetReceivedEvent.RoutedLocallyIssuedConnectionId is not ulong connectionId

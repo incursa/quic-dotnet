@@ -386,7 +386,7 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryHandleInitialPacketReceived(
-        QuicConnectionPacketReceivedEvent packetReceivedEvent,
+        QuicConnectionPacketReceivedContext packetReceivedEvent,
         long nowTicks,
         ref QuicConnectionEffectAccumulator effects)
     {
@@ -598,7 +598,7 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryHandleHandshakePacketReceived(
-        QuicConnectionPacketReceivedEvent packetReceivedEvent,
+        QuicConnectionPacketReceivedContext packetReceivedEvent,
         long nowTicks,
         ref QuicConnectionEffectAccumulator effects)
     {
@@ -610,7 +610,7 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryHandleHandshakePacketReceived(
-        QuicConnectionPacketReceivedEvent packetReceivedEvent,
+        QuicConnectionPacketReceivedContext packetReceivedEvent,
         long nowTicks,
         bool allowDeferredBuffering,
         ref QuicConnectionEffectAccumulator effects)
@@ -754,7 +754,7 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryBufferEstablishmentHandshakePacketForDeferredRetry(
-        QuicConnectionPacketReceivedEvent packetReceivedEvent)
+        QuicConnectionPacketReceivedContext packetReceivedEvent)
     {
         if (tlsState.Role != QuicTlsRole.Client
             || phase != QuicConnectionPhase.Establishing
@@ -843,7 +843,7 @@ internal sealed partial class QuicConnectionRuntime
             try
             {
                 stateChanged |= TryHandleHandshakePacketReceived(
-                    new QuicConnectionPacketReceivedEvent(
+                    new QuicConnectionPacketReceivedContext(
                         nowTicks,
                         bufferedPacket.PathIdentity,
                         bufferedPacket.Datagram,
@@ -1158,7 +1158,7 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryHandleApplicationPacketReceived(
-        QuicConnectionPacketReceivedEvent packetReceivedEvent,
+        QuicConnectionPacketReceivedContext packetReceivedEvent,
         long nowTicks,
         ref QuicConnectionEffectAccumulator effects)
     {
@@ -2060,7 +2060,7 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryHandleZeroRttApplicationPacketReceived(
-        QuicConnectionPacketReceivedEvent packetReceivedEvent,
+        QuicConnectionPacketReceivedContext packetReceivedEvent,
         long nowTicks,
         ref QuicConnectionEffectAccumulator effects)
     {

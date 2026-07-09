@@ -14,7 +14,52 @@ internal readonly record struct QuicConnectionRuntimeRoute(
     int ShardIndex,
     QuicConnectionRuntime Runtime);
 
-internal readonly record struct QuicConnectionRuntimeShardWorkItem(
-    QuicConnectionHandle Handle,
-    QuicConnectionRuntime Runtime,
-    QuicConnectionEvent ConnectionEvent);
+internal enum QuicConnectionRuntimeShardWorkItemKind
+{
+    Event = 0,
+    PacketReceived = 1,
+}
+
+internal readonly record struct QuicConnectionRuntimeShardWorkItem
+{
+    internal QuicConnectionRuntimeShardWorkItem(
+        QuicConnectionHandle handle,
+        QuicConnectionRuntime runtime,
+        QuicConnectionEvent connectionEvent)
+    {
+        Handle = handle;
+        Runtime = runtime;
+        ConnectionEvent = connectionEvent;
+        Kind = QuicConnectionRuntimeShardWorkItemKind.Event;
+    }
+
+    internal QuicConnectionRuntimeShardWorkItem(
+        QuicConnectionHandle handle,
+        QuicConnectionRuntime runtime,
+        QuicConnectionPacketReceivedContext packetReceived,
+        byte[]? ownedDatagramBuffer,
+        QuicReceiveBufferOwnership ownedDatagramBufferOwnership)
+    {
+        Handle = handle;
+        Runtime = runtime;
+        ConnectionEvent = null;
+        Kind = QuicConnectionRuntimeShardWorkItemKind.PacketReceived;
+        PacketReceived = packetReceived;
+        OwnedDatagramBuffer = ownedDatagramBuffer;
+        OwnedDatagramBufferOwnership = ownedDatagramBufferOwnership;
+    }
+
+    internal QuicConnectionRuntimeShardWorkItemKind Kind { get; }
+
+    internal QuicConnectionHandle Handle { get; }
+
+    internal QuicConnectionRuntime? Runtime { get; }
+
+    internal QuicConnectionEvent? ConnectionEvent { get; }
+
+    internal QuicConnectionPacketReceivedContext PacketReceived { get; }
+
+    internal byte[]? OwnedDatagramBuffer { get; }
+
+    internal QuicReceiveBufferOwnership OwnedDatagramBufferOwnership { get; }
+}
