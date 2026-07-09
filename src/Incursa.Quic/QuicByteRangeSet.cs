@@ -12,8 +12,10 @@ namespace Incursa.Quic;
 /// </summary>
 internal sealed class QuicByteRangeSet
 {
-    // Stored ranges are coalesced so each byte offset appears at most once.
-    private readonly List<Range> ranges = [];
+    // The common empty/single-range cases stay inline; multi-range state uses the same normalized list shape.
+    private List<Range>? ranges;
+    private Range singleRange;
+    private bool hasSingleRange;
 
     /// <summary>
     /// Gets the total length of unique bytes represented by the stored ranges.
@@ -34,40 +36,39 @@ internal sealed class QuicByteRangeSet
             return 0;
         }
 
+        if (ranges is List<Range> rangeList)
+        {
+            return MeasureAdditionalCoverage(rangeList, start, endExclusive);
+        }
+
+        return hasSingleRange
+            ? MeasureAdditionalCoverage(singleRange, start, endExclusive)
+            : endExclusive - start;
+    }
+
+    private static ulong MeasureAdditionalCoverage(List<Range> ranges, ulong start, ulong endExclusive)
+    {
         ulong additional = 0;
         ulong cursor = start;
 
         foreach (Range range in ranges)
         {
-            if (range.End <= cursor)
-            {
-                continue;
-            }
-
-            if (range.Start >= endExclusive)
+            if (!MeasureRangeCoverageGap(range, endExclusive, ref cursor, ref additional))
             {
                 break;
             }
-
-            if (range.Start > cursor)
-            {
-                additional += range.Start - cursor;
-            }
-
-            if (range.End >= endExclusive)
-            {
-                cursor = endExclusive;
-                break;
-            }
-
-            cursor = range.End;
         }
 
-        if (cursor < endExclusive)
-        {
-            additional += endExclusive - cursor;
-        }
+        AddTrailingGap(endExclusive, cursor, ref additional);
+        return additional;
+    }
 
+    private static ulong MeasureAdditionalCoverage(Range range, ulong start, ulong endExclusive)
+    {
+        ulong additional = 0;
+        ulong cursor = start;
+        MeasureRangeCoverageGap(range, endExclusive, ref cursor, ref additional);
+        AddTrailingGap(endExclusive, cursor, ref additional);
         return additional;
     }
 
@@ -83,6 +84,13 @@ internal sealed class QuicByteRangeSet
         if (additional == 0)
         {
             return 0;
+        }
+
+        if (ranges is null)
+        {
+            AddInline(start, endExclusive);
+            TotalLength += additional;
+            return additional;
         }
 
         int insertIndex = 0;
@@ -117,13 +125,30 @@ internal sealed class QuicByteRangeSet
             return true;
         }
 
-        return ranges.Count > 0
-            && ranges[0].Start == 0
-            && ranges[0].End >= endExclusive;
+        if (ranges is List<Range> rangeList)
+        {
+            return rangeList.Count > 0
+                && rangeList[0].Start == 0
+                && rangeList[0].End >= endExclusive;
+        }
+
+        return hasSingleRange
+            && singleRange.Start == 0
+            && singleRange.End >= endExclusive;
     }
 
     internal QuicByteRangeSetSnapshot CaptureSnapshot()
     {
+        if (ranges is null)
+        {
+            if (!hasSingleRange)
+            {
+                return new QuicByteRangeSetSnapshot([], TotalLength);
+            }
+
+            return new QuicByteRangeSetSnapshot([new QuicByteRange(singleRange.Start, singleRange.End)], TotalLength);
+        }
+
         QuicByteRange[] snapshotRanges = new QuicByteRange[ranges.Count];
         for (int index = 0; index < ranges.Count; index++)
         {
@@ -136,6 +161,26 @@ internal sealed class QuicByteRangeSet
 
     internal void Restore(QuicByteRangeSetSnapshot snapshot)
     {
+        if (snapshot.Ranges.Length == 0)
+        {
+            ranges = null;
+            hasSingleRange = false;
+            singleRange = default;
+            TotalLength = snapshot.TotalLength;
+            return;
+        }
+
+        if (snapshot.Ranges.Length == 1)
+        {
+            QuicByteRange range = snapshot.Ranges[0];
+            ranges = null;
+            singleRange = new Range(range.Start, range.End);
+            hasSingleRange = true;
+            TotalLength = snapshot.TotalLength;
+            return;
+        }
+
+        ranges ??= new List<Range>(snapshot.Ranges.Length);
         ranges.Clear();
         ranges.EnsureCapacity(snapshot.Ranges.Length);
         for (int index = 0; index < snapshot.Ranges.Length; index++)
@@ -144,7 +189,74 @@ internal sealed class QuicByteRangeSet
             ranges.Add(new Range(range.Start, range.End));
         }
 
+        hasSingleRange = false;
+        singleRange = default;
         TotalLength = snapshot.TotalLength;
+    }
+
+    private void AddInline(ulong start, ulong endExclusive)
+    {
+        if (!hasSingleRange)
+        {
+            singleRange = new Range(start, endExclusive);
+            hasSingleRange = true;
+            return;
+        }
+
+        if (endExclusive < singleRange.Start)
+        {
+            ranges = [new Range(start, endExclusive), singleRange];
+            hasSingleRange = false;
+            singleRange = default;
+            return;
+        }
+
+        if (singleRange.End < start)
+        {
+            ranges = [singleRange, new Range(start, endExclusive)];
+            hasSingleRange = false;
+            singleRange = default;
+            return;
+        }
+
+        singleRange = new Range(
+            Math.Min(singleRange.Start, start),
+            Math.Max(singleRange.End, endExclusive));
+    }
+
+    private static bool MeasureRangeCoverageGap(Range range, ulong endExclusive, ref ulong cursor, ref ulong additional)
+    {
+        if (range.End <= cursor)
+        {
+            return true;
+        }
+
+        if (range.Start >= endExclusive)
+        {
+            return false;
+        }
+
+        if (range.Start > cursor)
+        {
+            additional += range.Start - cursor;
+        }
+
+        if (range.End >= endExclusive)
+        {
+            cursor = endExclusive;
+            return false;
+        }
+
+        cursor = range.End;
+        return true;
+    }
+
+    private static void AddTrailingGap(ulong endExclusive, ulong cursor, ref ulong additional)
+    {
+        if (cursor < endExclusive)
+        {
+            additional += endExclusive - cursor;
+        }
     }
 
     /// <summary>
