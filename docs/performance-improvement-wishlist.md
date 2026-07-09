@@ -4,6 +4,8 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-09: `Compare-QuicProtocolLabRuns.ps1` now reads `evidence-bundle.json` next to retained ProtocolLab run roots when present and carries evidence quality, publishability blockers, qlog status, buffer-pool diagnostics, allocation/exception attribution status, hotspot trend counts, and top diagnostic groups into the local triage JSON and Markdown. Smoke proof `codex-evidence-bundle-triage-smoke-20260709a` exercised a current bundle-backed run, and `codex-no-bundle-triage-smoke-20260709a` verified older aggregate-only retained runs still report cleanly with an explicit missing-bundle note. This makes the QUIC-side triage command a better selector for the next runtime optimization without treating diagnostic or local evidence as publishable.
+
 - 2026-07-09: `PublicApiStream` smoke lane `codex-public-stream-typed-workitems-20260709a` passed on clean commit `a31ee359` after the hosted stream-open/write typed work-item changes. The steady-state established-connection dry rows now measure Incursa request/response at 9.749 ms and 15.36 KB versus `System.Net.Quic` at 4.296 ms and 10.92 KB, and Incursa small queued-write at 10.196 ms and 6.67 KB versus `System.Net.Quic` at 2.401 ms and 5.79 KB. This materially improves the previous steady-state smoke row of 25.72 KB and 11.17 KB for Incursa, but full transfer/dispose dry rows remain setup/lifecycle dominated at roughly 1.48-1.56 MB for Incursa versus 151-194 KB for `System.Net.Quic`. Treat this as diagnostic smoke evidence only because the BDN job is Dry/single-iteration.
 
 - 2026-07-09: hosted stream write and finish-write requests now use a typed shard work item, avoiding `QuicConnectionStreamActionEvent` allocation for the normal hosted public write/complete-write paths while preserving direct runtime event fallback for tests and local-dispatch instrumentation. `Incursa.Quic` Release build passed; focused write/complete/open/runtime-host/runtime-shard/public-stream/HTTP/3 tests passed 98/99 with the known 1 MB HTTP/3 body skip. Phase profile `codex-profile-stream-phases-streamwrite-workitem-20260709a.json` reduced start-side write buckets versus `codex-profile-stream-phases-streamopen-workitem-20260709a.json`: `client-write-start` 369 to 269 B/op, `client-complete-writes-start` 264 to 175 B/op, `server-write-start` 234 to 139 B/op, and `server-complete-writes-start` 245 to 146 B/op. Aggregate profile `codex-profile-stream-streamwrite-workitem-20260709a.json` measured pass-2 managed allocation at 7,849 B/op, down from 8,222 B/op in `codex-profile-stream-streamopen-workitem-20260709a.json`. Treat this as local diagnostic public-stream allocation evidence, not publishable throughput proof.
@@ -454,7 +456,10 @@ Markdown plus JSON under `.artifacts/perf-triage/{runId}`. Proof run
 `codex-triage-command-proof-20260709a` compared the listener-endpoint-cache counters run with
 the complete-response-frame-cache counters run, found 1 matching row with no missing or added
 rows, flagged request-rate and p95 improvements, and called out allocation-rate noise as a
-regressed signal.
+regressed signal. The command now also consumes adjacent `evidence-bundle.json` files when
+present, surfacing evidence quality, publishability blockers, qlog status, buffer-pool
+diagnostics, allocation/exception attribution availability, hotspot trend counts, and top
+diagnostic groups while keeping aggregate-only retained runs compatible.
 
 Keep improving this item only if future closeout needs cross-run trace-attribution deltas,
 dashboard import, or hosted-lab integration.

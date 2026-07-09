@@ -90,6 +90,236 @@ function Get-StringArray {
     return @($Value | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | ForEach-Object { [string]$_ })
 }
 
+function Get-ObjectArray {
+    param($Value)
+
+    if ($null -eq $Value) {
+        return @()
+    }
+
+    return @($Value)
+}
+
+function Get-ObjectPropertyByPath {
+    param($Object, [string[]] $Path)
+
+    $current = $Object
+    foreach ($segment in $Path) {
+        if (-not (Test-Property $current $segment)) {
+            return $null
+        }
+
+        $current = Get-OptionalPropertyValue $current $segment
+        if ($null -eq $current) {
+            return $null
+        }
+    }
+
+    return $current
+}
+
+function Format-DiagnosticGroup {
+    param($Group)
+
+    if ($null -eq $Group) {
+        return $null
+    }
+
+    $preferredNames = @(
+        "groupKey",
+        "type",
+        "exceptionType",
+        "message",
+        "allocatedType",
+        "metricName",
+        "label",
+        "method",
+        "attributionFrame",
+        "stackTopFrame",
+        "firstProjectFrame",
+        "mean",
+        "max",
+        "latest",
+        "delta",
+        "sampleCount",
+        "inclusiveSampleCount",
+        "exclusiveSampleCount"
+    )
+
+    $parts = [System.Collections.Generic.List[string]]::new()
+    foreach ($name in $preferredNames) {
+        $value = Get-OptionalPropertyValue $Group $name
+        if ($null -eq $value) {
+            continue
+        }
+
+        $text = [string]$value
+        if ([string]::IsNullOrWhiteSpace($text)) {
+            continue
+        }
+
+        $parts.Add("$name=$text") | Out-Null
+        if ($parts.Count -ge 5) {
+            break
+        }
+    }
+
+    if ($parts.Count -gt 0) {
+        return $parts -join "; "
+    }
+
+    return ($Group | ConvertTo-Json -Compress -Depth 8)
+}
+
+function Get-TopDiagnosticGroups {
+    param($Groups, [int] $Count = 3)
+
+    return @(
+        Get-ObjectArray $Groups |
+            Select-Object -First $Count |
+            ForEach-Object { Format-DiagnosticGroup $_ } |
+            Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) }
+    )
+}
+
+function Read-EvidenceBundle {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $RunRoot
+    )
+
+    $bundlePath = Join-Path $RunRoot "evidence-bundle.json"
+    if (-not (Test-Path -LiteralPath $bundlePath -PathType Leaf)) {
+        return [pscustomobject][ordered]@{
+            available = $false
+            path = $bundlePath
+            document = $null
+            cellsByKey = @{}
+            hotspotGroupsByKey = @{}
+        }
+    }
+
+    $document = Get-Content -LiteralPath $bundlePath -Raw | ConvertFrom-Json
+    $cellsByKey = @{}
+    foreach ($cell in @(Get-ObjectPropertyByPath $document @("cells"))) {
+        $scenario = [string](Get-OptionalPropertyValue $cell "scenarioId")
+        $implementation = [string](Get-OptionalPropertyValue $cell "implementationId")
+        if ([string]::IsNullOrWhiteSpace($scenario) -or [string]::IsNullOrWhiteSpace($implementation)) {
+            continue
+        }
+
+        $key = "$implementation|$scenario"
+        if (-not $cellsByKey.ContainsKey($key)) {
+            $cellsByKey[$key] = $cell
+        }
+    }
+
+    $hotspotGroupsByKey = @{}
+    foreach ($group in @(Get-ObjectPropertyByPath $document @("hotspotTrends", "groups"))) {
+        $scenario = [string](Get-OptionalPropertyValue $group "scenarioId")
+        $implementation = [string](Get-OptionalPropertyValue $group "implementationId")
+        if ([string]::IsNullOrWhiteSpace($scenario) -or [string]::IsNullOrWhiteSpace($implementation)) {
+            continue
+        }
+
+        $key = "$implementation|$scenario"
+        if (-not $hotspotGroupsByKey.ContainsKey($key)) {
+            $hotspotGroupsByKey[$key] = [System.Collections.Generic.List[object]]::new()
+        }
+
+        $hotspotGroupsByKey[$key].Add($group) | Out-Null
+    }
+
+    return [pscustomobject][ordered]@{
+        available = $true
+        path = $bundlePath
+        document = $document
+        cellsByKey = $cellsByKey
+        hotspotGroupsByKey = $hotspotGroupsByKey
+    }
+}
+
+function New-EvidenceDiagnostics {
+    param($Bundle, [string] $Key)
+
+    if ($null -eq $Bundle -or -not $Bundle.available) {
+        return [pscustomobject][ordered]@{
+            bundleAvailable = $false
+            bundlePath = if ($Bundle) { $Bundle.path } else { $null }
+            evidenceQualityClass = $null
+            evidenceQualityPublishable = $null
+            evidenceQualityBlockers = @()
+            evidenceQualityWarnings = @()
+            qlogStatus = $null
+            qlogFileCount = $null
+            quicBufferPoolStatus = $null
+            quicBufferPoolUnavailableReason = $null
+            quicBufferPoolTopMetrics = @()
+            allocationAttributionStatus = $null
+            allocationAttributionUnavailableReason = $null
+            allocationTopGroups = @()
+            exceptionAttributionStatus = $null
+            exceptionAttributionUnavailableReason = $null
+            exceptionTopGroups = @()
+            hotspotTrendCount = 0
+        }
+    }
+
+    $document = $Bundle.document
+    $cell = if ($Bundle.cellsByKey.ContainsKey($Key)) { $Bundle.cellsByKey[$Key] } else { $null }
+    $hotspotGroups = if ($Bundle.hotspotGroupsByKey.ContainsKey($Key)) { @($Bundle.hotspotGroupsByKey[$Key]) } else { @() }
+
+    $cellAllocation = Get-ObjectPropertyByPath $cell @("diagnostics", "allocationAttribution")
+    $cellException = Get-ObjectPropertyByPath $cell @("diagnostics", "exceptionAttribution")
+    $cellBufferPool = Get-ObjectPropertyByPath $cell @("diagnostics", "quicBufferPool")
+    $cellQlog = Get-ObjectPropertyByPath $cell @("diagnostics", "qlog")
+
+    $hotspotAllocationGroups = @()
+    $hotspotExceptionGroups = @()
+    foreach ($hotspotGroup in $hotspotGroups) {
+        $allocation = Get-OptionalPropertyValue $hotspotGroup "allocationAttribution"
+        if ($allocation) {
+            $hotspotAllocationGroups += @(Get-OptionalPropertyValue $allocation "topGroups")
+        }
+
+        $exception = Get-OptionalPropertyValue $hotspotGroup "exceptionAttribution"
+        if ($exception) {
+            $hotspotExceptionGroups += @(Get-OptionalPropertyValue $exception "topGroups")
+        }
+    }
+
+    $allocationTopGroups = @(Get-TopDiagnosticGroups (Get-OptionalPropertyValue $cellAllocation "topGroups"))
+    if ($allocationTopGroups.Count -eq 0) {
+        $allocationTopGroups = @(Get-TopDiagnosticGroups $hotspotAllocationGroups)
+    }
+
+    $exceptionTopGroups = @(Get-TopDiagnosticGroups (Get-OptionalPropertyValue $cellException "topGroups"))
+    if ($exceptionTopGroups.Count -eq 0) {
+        $exceptionTopGroups = @(Get-TopDiagnosticGroups $hotspotExceptionGroups)
+    }
+
+    return [pscustomobject][ordered]@{
+        bundleAvailable = $true
+        bundlePath = $Bundle.path
+        evidenceQualityClass = [string](Get-ObjectPropertyByPath $document @("evidenceQuality", "class"))
+        evidenceQualityPublishable = Get-ObjectPropertyByPath $document @("evidenceQuality", "publishable")
+        evidenceQualityBlockers = Get-StringArray (Get-ObjectPropertyByPath $document @("evidenceQuality", "blockers"))
+        evidenceQualityWarnings = Get-StringArray (Get-ObjectPropertyByPath $document @("evidenceQuality", "warnings"))
+        qlogStatus = [string](Get-OptionalPropertyValue $cellQlog "status")
+        qlogFileCount = Get-OptionalPropertyValue $cellQlog "fileCount"
+        quicBufferPoolStatus = [string](Get-OptionalPropertyValue $cellBufferPool "status")
+        quicBufferPoolUnavailableReason = [string](Get-OptionalPropertyValue $cellBufferPool "unavailableReason")
+        quicBufferPoolTopMetrics = @(Get-TopDiagnosticGroups (Get-OptionalPropertyValue $cellBufferPool "topMetrics"))
+        allocationAttributionStatus = [string](Get-OptionalPropertyValue $cellAllocation "status")
+        allocationAttributionUnavailableReason = [string](Get-OptionalPropertyValue $cellAllocation "unavailableReason")
+        allocationTopGroups = @($allocationTopGroups)
+        exceptionAttributionStatus = [string](Get-OptionalPropertyValue $cellException "status")
+        exceptionAttributionUnavailableReason = [string](Get-OptionalPropertyValue $cellException "unavailableReason")
+        exceptionTopGroups = @($exceptionTopGroups)
+        hotspotTrendCount = $hotspotGroups.Count
+    }
+}
+
 function Format-StatusMap {
     param($Map)
 
@@ -200,6 +430,7 @@ function Read-RunRows {
 
     $aggregatePath = Join-Path $RunRoot "aggregate-results.json"
     $document = Get-Content -LiteralPath $aggregatePath -Raw | ConvertFrom-Json
+    $evidenceBundle = Read-EvidenceBundle -RunRoot $RunRoot
     $rows = [System.Collections.Generic.List[object]]::new()
 
     foreach ($aggregate in @($document.aggregates)) {
@@ -214,13 +445,16 @@ function Read-RunRows {
         $primaryMetric = Get-PrimaryMetricName -Scenario $scenario
         $primaryMetricValue = Get-MedianMetric $aggregate $primaryMetric
         $publishabilityGate = Get-OptionalPropertyValue $aggregate "publishabilityGate"
+        $rowKey = "$implementation|$scenario"
+        $evidenceDiagnostics = New-EvidenceDiagnostics -Bundle $evidenceBundle -Key $rowKey
 
         $rows.Add([pscustomobject][ordered]@{
-            key = "$implementation|$scenario"
+            key = $rowKey
             runId = [string]$document.runId
             generatedAt = [string](Get-OptionalPropertyValue $document "generatedAt")
             runRoot = $RunRoot
             aggregatePath = $aggregatePath
+            evidenceBundlePath = if ($evidenceDiagnostics.bundleAvailable) { $evidenceDiagnostics.bundlePath } else { $null }
             implementationId = $implementation
             implementationName = [string](Get-OptionalPropertyValue $aggregate "implementationName")
             scenarioId = $scenario
@@ -265,6 +499,7 @@ function Read-RunRows {
             publishabilityBlockers = if ($publishabilityGate) { Get-StringArray (Get-OptionalPropertyValue $publishabilityGate "blockers") } else { @() }
             warnings = Get-StringArray (Get-OptionalPropertyValue $aggregate "warnings")
             failureReasons = Get-StringArray (Get-OptionalPropertyValue $aggregate "failureReasons")
+            evidenceDiagnostics = $evidenceDiagnostics
         }) | Out-Null
     }
 
@@ -445,10 +680,30 @@ foreach ($key in @($baselineByKey.Keys | Sort-Object)) {
             if ($baseline.publishabilityGateStatus -ne $current.publishabilityGateStatus) {
                 "publishabilityGate: $($baseline.publishabilityGateStatus) -> $($current.publishabilityGateStatus)"
             }
+            if ($baseline.evidenceDiagnostics.evidenceQualityClass -ne $current.evidenceDiagnostics.evidenceQualityClass) {
+                "evidenceQualityClass: $($baseline.evidenceDiagnostics.evidenceQualityClass) -> $($current.evidenceDiagnostics.evidenceQualityClass)"
+            }
+            if ($baseline.evidenceDiagnostics.evidenceQualityPublishable -ne $current.evidenceDiagnostics.evidenceQualityPublishable) {
+                "evidenceQualityPublishable: $($baseline.evidenceDiagnostics.evidenceQualityPublishable) -> $($current.evidenceDiagnostics.evidenceQualityPublishable)"
+            }
+            if ($baseline.evidenceDiagnostics.allocationAttributionStatus -ne $current.evidenceDiagnostics.allocationAttributionStatus) {
+                "allocationAttribution: $($baseline.evidenceDiagnostics.allocationAttributionStatus) -> $($current.evidenceDiagnostics.allocationAttributionStatus)"
+            }
+            if ($baseline.evidenceDiagnostics.exceptionAttributionStatus -ne $current.evidenceDiagnostics.exceptionAttributionStatus) {
+                "exceptionAttribution: $($baseline.evidenceDiagnostics.exceptionAttributionStatus) -> $($current.evidenceDiagnostics.exceptionAttributionStatus)"
+            }
+            if ($baseline.evidenceDiagnostics.quicBufferPoolStatus -ne $current.evidenceDiagnostics.quicBufferPoolStatus) {
+                "quicBufferPool: $($baseline.evidenceDiagnostics.quicBufferPoolStatus) -> $($current.evidenceDiagnostics.quicBufferPoolStatus)"
+            }
             $baselineBlockers = @($baseline.publishabilityBlockers) -join ", "
             $currentBlockers = @($current.publishabilityBlockers) -join ", "
             if ($baselineBlockers -ne $currentBlockers) {
                 "publishabilityBlockers: $baselineBlockers -> $currentBlockers"
+            }
+            $baselineQualityBlockers = @($baseline.evidenceDiagnostics.evidenceQualityBlockers) -join ", "
+            $currentQualityBlockers = @($current.evidenceDiagnostics.evidenceQualityBlockers) -join ", "
+            if ($baselineQualityBlockers -ne $currentQualityBlockers) {
+                "evidenceQualityBlockers: $baselineQualityBlockers -> $currentQualityBlockers"
             }
         )
     }) | Out-Null
@@ -589,6 +844,40 @@ else {
 }
 
 $lines.Add("")
+$lines.Add("## Current Evidence Bundle Diagnostics")
+$lines.Add("")
+$diagnosticRows = @($matchingComparisons | Sort-Object scenarioId, implementationId)
+if ($diagnosticRows.Count -eq 0) {
+    $lines.Add("- No matching rows were available for evidence-bundle diagnostics.")
+}
+else {
+    foreach ($comparison in $diagnosticRows) {
+        $diagnostics = $comparison.current.evidenceDiagnostics
+        if (-not $diagnostics.bundleAvailable) {
+            $lines.Add("- ``$($comparison.scenarioId)`` / ``$($comparison.implementationId)``: no ``evidence-bundle.json`` was found next to the current aggregate.")
+            continue
+        }
+
+        $qualityBlockers = @($diagnostics.evidenceQualityBlockers)
+        $qualityText = if ($qualityBlockers.Count -gt 0) { $qualityBlockers -join "; " } else { "none" }
+        $allocationReason = if ([string]::IsNullOrWhiteSpace($diagnostics.allocationAttributionUnavailableReason)) { "" } else { " ($($diagnostics.allocationAttributionUnavailableReason))" }
+        $exceptionReason = if ([string]::IsNullOrWhiteSpace($diagnostics.exceptionAttributionUnavailableReason)) { "" } else { " ($($diagnostics.exceptionAttributionUnavailableReason))" }
+        $bufferReason = if ([string]::IsNullOrWhiteSpace($diagnostics.quicBufferPoolUnavailableReason)) { "" } else { " ($($diagnostics.quicBufferPoolUnavailableReason))" }
+        $lines.Add("- ``$($comparison.scenarioId)`` / ``$($comparison.implementationId)``: quality ``$($diagnostics.evidenceQualityClass)``; publishable ``$($diagnostics.evidenceQualityPublishable)``; blockers: $qualityText")
+        $lines.Add("  - diagnostics: allocation ``$($diagnostics.allocationAttributionStatus)``$allocationReason; exceptions ``$($diagnostics.exceptionAttributionStatus)``$exceptionReason; buffer pool ``$($diagnostics.quicBufferPoolStatus)``$bufferReason; qlog ``$($diagnostics.qlogStatus)`` files ``$($diagnostics.qlogFileCount)``; hotspot trend groups ``$($diagnostics.hotspotTrendCount)``")
+        foreach ($group in @($diagnostics.allocationTopGroups)) {
+            $lines.Add("  - allocation hotspot: $group")
+        }
+        foreach ($group in @($diagnostics.exceptionTopGroups)) {
+            $lines.Add("  - exception hotspot: $group")
+        }
+        foreach ($group in @($diagnostics.quicBufferPoolTopMetrics)) {
+            $lines.Add("  - buffer-pool metric: $group")
+        }
+    }
+}
+
+$lines.Add("")
 $lines.Add("## Missing Or Added Rows")
 $lines.Add("")
 if ($missingRows.Count -eq 0 -and $addedRows.Count -eq 0) {
@@ -606,6 +895,12 @@ $lines.Add("## Source Files")
 $lines.Add("")
 $lines.Add("- Baseline aggregate: ``$(Join-Path $baselineRoot "aggregate-results.json")``")
 $lines.Add("- Current aggregate: ``$(Join-Path $currentRoot "aggregate-results.json")``")
+if (Test-Path -LiteralPath (Join-Path $baselineRoot "evidence-bundle.json") -PathType Leaf) {
+    $lines.Add("- Baseline evidence bundle: ``$(Join-Path $baselineRoot "evidence-bundle.json")``")
+}
+if (Test-Path -LiteralPath (Join-Path $currentRoot "evidence-bundle.json") -PathType Leaf) {
+    $lines.Add("- Current evidence bundle: ``$(Join-Path $currentRoot "evidence-bundle.json")``")
+}
 
 Set-Content -LiteralPath $markdownPath -Value $lines -Encoding utf8NoBOM
 
