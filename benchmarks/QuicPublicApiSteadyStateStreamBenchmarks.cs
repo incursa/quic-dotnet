@@ -290,8 +290,8 @@ public class QuicPublicApiSteadyStateStreamBenchmarks
             IncursaStreamType.Bidirectional,
             cancellationToken).ConfigureAwait(false);
 
-        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
-        await clientStream.CompleteWritesAsync().AsTask().WaitAsync(cancellationToken).ConfigureAwait(false);
+        await clientStream.WriteAsync(requestPayload.AsMemory(), cancellationToken).ConfigureAwait(false);
+        await clientStream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
         await clientStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         await using IncursaStream serverStream = await acceptStreamTask.ConfigureAwait(false);
@@ -306,8 +306,8 @@ public class QuicPublicApiSteadyStateStreamBenchmarks
         await EnsureEofAsync(serverStream, cancellationToken, "The server did not observe request EOF.").ConfigureAwait(false);
         await serverStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
-        await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
-        await serverStream.CompleteWritesAsync().AsTask().WaitAsync(cancellationToken).ConfigureAwait(false);
+        await serverStream.WriteAsync(responsePayload.AsMemory(), cancellationToken).ConfigureAwait(false);
+        await serverStream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
         await serverStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         byte[] responseBuffer = new byte[responsePayload.Length];
@@ -329,7 +329,7 @@ public class QuicPublicApiSteadyStateStreamBenchmarks
         IncursaStream serverStream = incursaQueuedWriteServerStream ?? throw new InvalidOperationException("The Incursa.Quic queued-write server stream has not been initialized.");
         byte[] requestBuffer = smallRequestBuffer ?? throw new InvalidOperationException("The benchmark small request buffer has not been initialized.");
 
-        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
+        await clientStream.WriteAsync(requestPayload.AsMemory(), cancellationToken).ConfigureAwait(false);
         await ReadExactlyAsync(serverStream, requestBuffer, cancellationToken).ConfigureAwait(false);
         if (!requestPayload.AsSpan().SequenceEqual(requestBuffer.AsSpan(0, requestPayload.Length)))
         {
@@ -351,7 +351,7 @@ public class QuicPublicApiSteadyStateStreamBenchmarks
             SystemNetStreamType.Bidirectional,
             cancellationToken).ConfigureAwait(false);
 
-        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
+        await clientStream.WriteAsync(requestPayload.AsMemory(), cancellationToken).ConfigureAwait(false);
         clientStream.CompleteWrites();
         await clientStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
@@ -367,7 +367,7 @@ public class QuicPublicApiSteadyStateStreamBenchmarks
         await EnsureEofAsync(serverStream, cancellationToken, "The server did not observe request EOF.").ConfigureAwait(false);
         await serverStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
-        await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
+        await serverStream.WriteAsync(responsePayload.AsMemory(), cancellationToken).ConfigureAwait(false);
         serverStream.CompleteWrites();
         await serverStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
@@ -390,7 +390,7 @@ public class QuicPublicApiSteadyStateStreamBenchmarks
         SystemNetStream serverStream = systemNetQueuedWriteServerStream ?? throw new InvalidOperationException("The System.Net.Quic queued-write server stream has not been initialized.");
         byte[] requestBuffer = smallRequestBuffer ?? throw new InvalidOperationException("The benchmark small request buffer has not been initialized.");
 
-        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
+        await clientStream.WriteAsync(requestPayload.AsMemory(), cancellationToken).ConfigureAwait(false);
         await ReadExactlyAsync(serverStream, requestBuffer, cancellationToken).ConfigureAwait(false);
         if (!requestPayload.AsSpan().SequenceEqual(requestBuffer.AsSpan(0, requestPayload.Length)))
         {
@@ -409,7 +409,7 @@ public class QuicPublicApiSteadyStateStreamBenchmarks
         incursaQueuedWriteClientStream = await clientConnection.OpenOutboundStreamAsync(
             IncursaStreamType.Unidirectional,
             cancellationToken).ConfigureAwait(false);
-        await incursaQueuedWriteClientStream.WriteAsync(requestPayload, 0, requestPayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
+        await incursaQueuedWriteClientStream.WriteAsync(requestPayload.AsMemory(), cancellationToken).ConfigureAwait(false);
         incursaQueuedWriteServerStream = await acceptStreamTask.ConfigureAwait(false);
         await ReadExactlyAsync(incursaQueuedWriteServerStream, requestBuffer, cancellationToken).ConfigureAwait(false);
     }
@@ -425,7 +425,7 @@ public class QuicPublicApiSteadyStateStreamBenchmarks
         systemNetQueuedWriteClientStream = await clientConnection.OpenOutboundStreamAsync(
             SystemNetStreamType.Unidirectional,
             cancellationToken).ConfigureAwait(false);
-        await systemNetQueuedWriteClientStream.WriteAsync(requestPayload, 0, requestPayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
+        await systemNetQueuedWriteClientStream.WriteAsync(requestPayload.AsMemory(), cancellationToken).ConfigureAwait(false);
         systemNetQueuedWriteServerStream = await acceptStreamTask.ConfigureAwait(false);
         await ReadExactlyAsync(systemNetQueuedWriteServerStream, requestBuffer, cancellationToken).ConfigureAwait(false);
     }

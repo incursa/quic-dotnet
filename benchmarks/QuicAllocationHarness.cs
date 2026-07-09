@@ -1579,7 +1579,7 @@ internal static class QuicAllocationHarness
         await using IncursaStream clientStream = await clientConnection.OpenOutboundStreamAsync(
             IncursaStreamType.Bidirectional).ConfigureAwait(false);
 
-        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).ConfigureAwait(false);
+        await clientStream.WriteAsync(requestPayload.AsMemory()).ConfigureAwait(false);
         await clientStream.CompleteWritesAsync().ConfigureAwait(false);
         await clientStream.WritesClosed.ConfigureAwait(false);
 
@@ -1593,7 +1593,7 @@ internal static class QuicAllocationHarness
         await EnsureEofAsync(serverStream, eofProbe, "The server did not observe request EOF.").ConfigureAwait(false);
         await serverStream.ReadsClosed.ConfigureAwait(false);
 
-        await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).ConfigureAwait(false);
+        await serverStream.WriteAsync(responsePayload.AsMemory()).ConfigureAwait(false);
         await serverStream.CompleteWritesAsync().ConfigureAwait(false);
         await serverStream.WritesClosed.ConfigureAwait(false);
 
@@ -1621,7 +1621,7 @@ internal static class QuicAllocationHarness
         await using SystemNetStream clientStream = await clientConnection.OpenOutboundStreamAsync(
             SystemNetStreamType.Bidirectional).ConfigureAwait(false);
 
-        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).ConfigureAwait(false);
+        await clientStream.WriteAsync(requestPayload.AsMemory()).ConfigureAwait(false);
         clientStream.CompleteWrites();
         await clientStream.WritesClosed.ConfigureAwait(false);
 
@@ -1635,7 +1635,7 @@ internal static class QuicAllocationHarness
         await EnsureEofAsync(serverStream, eofProbe, "The server did not observe request EOF.").ConfigureAwait(false);
         await serverStream.ReadsClosed.ConfigureAwait(false);
 
-        await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).ConfigureAwait(false);
+        await serverStream.WriteAsync(responsePayload.AsMemory()).ConfigureAwait(false);
         serverStream.CompleteWrites();
         await serverStream.WritesClosed.ConfigureAwait(false);
 

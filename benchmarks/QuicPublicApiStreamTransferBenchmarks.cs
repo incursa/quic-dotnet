@@ -306,8 +306,8 @@ public class QuicPublicApiStreamTransferBenchmarks
             cancellationToken).AsTask();
         await using IncursaStream clientStream = await openStreamTask.ConfigureAwait(false);
 
-        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
-        await clientStream.CompleteWritesAsync().AsTask().WaitAsync(cancellationToken).ConfigureAwait(false);
+        await clientStream.WriteAsync(requestPayload.AsMemory(), cancellationToken).ConfigureAwait(false);
+        await clientStream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
         await clientStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         await using IncursaStream serverStream = await acceptStreamTask.ConfigureAwait(false);
@@ -322,8 +322,8 @@ public class QuicPublicApiStreamTransferBenchmarks
         await EnsureEofAsync(serverStream, cancellationToken, "The server did not observe request EOF.").ConfigureAwait(false);
         await serverStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
-        await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
-        await serverStream.CompleteWritesAsync().AsTask().WaitAsync(cancellationToken).ConfigureAwait(false);
+        await serverStream.WriteAsync(responsePayload.AsMemory(), cancellationToken).ConfigureAwait(false);
+        await serverStream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
         await serverStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         byte[] responseBuffer = new byte[responsePayload.Length];
@@ -350,8 +350,8 @@ public class QuicPublicApiStreamTransferBenchmarks
             cancellationToken).AsTask();
         await using IncursaStream clientStream = await openStreamTask.ConfigureAwait(false);
 
-        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
-        await clientStream.CompleteWritesAsync().AsTask().WaitAsync(cancellationToken).ConfigureAwait(false);
+        await clientStream.WriteAsync(requestPayload.AsMemory(), cancellationToken).ConfigureAwait(false);
+        await clientStream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
         await clientStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         await using IncursaStream serverStream = await acceptStreamTask.ConfigureAwait(false);
@@ -365,7 +365,7 @@ public class QuicPublicApiStreamTransferBenchmarks
 
         await EnsureEofAsync(serverStream, cancellationToken, "The server did not observe request EOF.").ConfigureAwait(false);
         await serverStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
-        await serverStream.CompleteWritesAsync().AsTask().WaitAsync(cancellationToken).ConfigureAwait(false);
+        await serverStream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
         await serverStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
         await EnsureEofAsync(clientStream, cancellationToken, "The client did not observe upload response EOF.").ConfigureAwait(false);
         await clientStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -384,15 +384,15 @@ public class QuicPublicApiStreamTransferBenchmarks
             cancellationToken).AsTask();
         await using IncursaStream clientStream = await openStreamTask.ConfigureAwait(false);
 
-        await clientStream.CompleteWritesAsync().AsTask().WaitAsync(cancellationToken).ConfigureAwait(false);
+        await clientStream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
         await clientStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         await using IncursaStream serverStream = await acceptStreamTask.ConfigureAwait(false);
         await EnsureEofAsync(serverStream, cancellationToken, "The server did not observe download request EOF.").ConfigureAwait(false);
         await serverStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
-        await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
-        await serverStream.CompleteWritesAsync().AsTask().WaitAsync(cancellationToken).ConfigureAwait(false);
+        await serverStream.WriteAsync(responsePayload.AsMemory(), cancellationToken).ConfigureAwait(false);
+        await serverStream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
         await serverStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         byte[] responseBuffer = new byte[responsePayload.Length];
@@ -551,7 +551,7 @@ public class QuicPublicApiStreamTransferBenchmarks
             cancellationToken).AsTask();
         await using SystemNetStream clientStream = await openStreamTask.ConfigureAwait(false);
 
-        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
+        await clientStream.WriteAsync(requestPayload.AsMemory(), cancellationToken).ConfigureAwait(false);
         clientStream.CompleteWrites();
         await clientStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
@@ -567,7 +567,7 @@ public class QuicPublicApiStreamTransferBenchmarks
         await EnsureEofAsync(serverStream, cancellationToken, "The server did not observe request EOF.").ConfigureAwait(false);
         await serverStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
-        await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
+        await serverStream.WriteAsync(responsePayload.AsMemory(), cancellationToken).ConfigureAwait(false);
         serverStream.CompleteWrites();
         await serverStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
@@ -595,7 +595,7 @@ public class QuicPublicApiStreamTransferBenchmarks
             cancellationToken).AsTask();
         await using SystemNetStream clientStream = await openStreamTask.ConfigureAwait(false);
 
-        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
+        await clientStream.WriteAsync(requestPayload.AsMemory(), cancellationToken).ConfigureAwait(false);
         clientStream.CompleteWrites();
         await clientStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
@@ -636,7 +636,7 @@ public class QuicPublicApiStreamTransferBenchmarks
         await EnsureEofAsync(serverStream, cancellationToken, "The server did not observe download request EOF.").ConfigureAwait(false);
         await serverStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
-        await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
+        await serverStream.WriteAsync(responsePayload.AsMemory(), cancellationToken).ConfigureAwait(false);
         serverStream.CompleteWrites();
         await serverStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
