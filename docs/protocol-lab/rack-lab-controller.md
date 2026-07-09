@@ -93,7 +93,7 @@ Internal execution manifest fields:
 
 Implementation manifests live inside the package, normally under `implementations/*.yaml`. Paths inside those manifests are package-relative; the worker resolves them into the per-attempt package workspace before invoking the ProtocolLab runner.
 
-The default QUIC.NET template creates `quic-dotnet-dev` for `samples/Incursa.Http3.Samples.TechEmpower` and advertises HTTP/3 scenarios only, including the deterministic 1KB byte-payload lane. Raw QUIC is supported only by the separate `quic-dotnet-raw-dev` target, which packages framework-dependent Linux x64 and Windows x64 raw QUIC adapter/server payloads owned under `eng/protocol-lab` and advertises `quic` protocol support, workload family `quic.transport`, and only `quic.transport.multiplex.100x64kb` plus `quic.transport.duplex-streams`. The raw QUIC package requires worker-installed `dotnet` and `pwsh`, does not require `bash`, and still declares `libmsquic` as a worker environment prerequisite.
+The default QUIC.NET template creates `quic-dotnet-dev` for `samples/Incursa.Http3.Samples.TechEmpower` and advertises HTTP/3 scenarios only, including the deterministic 1KB byte-payload lane. Raw QUIC is supported only by the separate `quic-dotnet-raw-dev` target, which packages framework-dependent Linux x64 and Windows x64 raw QUIC adapter/server payloads owned under `eng/protocol-lab` and advertises `quic` protocol support, workload family `quic.transport`, and `quic.transport.stream-throughput.1mb`, `quic.transport.multiplex.100x64kb`, and `quic.transport.duplex-streams`. The raw QUIC package requires worker-installed `dotnet` and `pwsh`, does not require `bash`, and still declares `libmsquic` as a worker environment prerequisite.
 
 ## API Workflow
 
@@ -202,11 +202,16 @@ For raw QUIC, the helper builds and uploads the `quic-dotnet-raw-dev`
 implementation package plus the public ProtocolLab raw QUIC test-executor and
 scenario-pack component packages. Add `-PackageReference` only when the
 controller should include extra component packages that have already been
-uploaded.
+uploaded. Add `-UsePackageReferenceOnly` when every selected implementation,
+test-executor, and scenario-pack package has already been admitted by the
+controller and the helper should submit pinned package references without a
+build/upload step.
 
 Do not override the raw helper onto the H3 lane. `RawQuic` accepts only suite
 `quic-transport-v1-comparison`, protocol `quic`, and scenarios
-`quic.transport.multiplex.100x64kb` and `quic.transport.duplex-streams`.
+`quic.transport.stream-throughput.1mb`,
+`quic.transport.multiplex.100x64kb`, and
+`quic.transport.duplex-streams`.
 
 ## Verification Guidance
 

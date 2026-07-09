@@ -32,6 +32,8 @@ param(
 
     [string[]] $PackageReference = @(),
 
+    [switch] $UsePackageReferenceOnly,
+
     [string] $RawQuicTestExecutorRuntimeIdentifier = "linux-x64",
 
     [switch] $BinaryBackedRawQuicTestExecutor,
@@ -214,10 +216,13 @@ if (-not $PSBoundParameters.ContainsKey("TestExecutorId")) {
     $TestExecutorId = $targetConfig.TestExecutorId
 }
 if (-not $PSBoundParameters.ContainsKey("RequiredCapability")) {
-    $RequiredCapability = $targetConfig.RequiredCapabilities
+    $RequiredCapability = @()
 }
 if ($PSBoundParameters.ContainsKey("Repetitions") -and $Repetitions -lt 1) {
     throw "Repetitions must be greater than zero when specified."
+}
+if ($UsePackageReferenceOnly -and $PackageReference.Count -eq 0) {
+    throw "UsePackageReferenceOnly requires at least one -PackageReference entry."
 }
 
 Assert-RunSelection `
@@ -344,22 +349,25 @@ function Wait-LabJob {
     throw "Timed out waiting for lab job '$JobId' after $TimeoutSeconds seconds."
 }
 
-$packageResultJson = & (Join-Path $PSScriptRoot "New-QuicDotNetProtocolLabPackage.ps1") `
-    -PackageTarget $PackageTarget `
-    -ProtocolLabRoot $protocolLabRootFullPath `
-    -Project $Project `
-    -Configuration $Configuration `
-    -RuntimeIdentifier $RuntimeIdentifier `
-    -Force
+$packageResult = $null
+if (-not $UsePackageReferenceOnly) {
+    $packageResultJson = & (Join-Path $PSScriptRoot "New-QuicDotNetProtocolLabPackage.ps1") `
+        -PackageTarget $PackageTarget `
+        -ProtocolLabRoot $protocolLabRootFullPath `
+        -Project $Project `
+        -Configuration $Configuration `
+        -RuntimeIdentifier $RuntimeIdentifier `
+        -Force
 
-$packageResult = $packageResultJson | ConvertFrom-Json
+    $packageResult = $packageResultJson | ConvertFrom-Json
+}
 $resultRoot = Join-Path (Get-Location) "artifacts/protocol-lab/results"
 New-Item -ItemType Directory -Force -Path $resultRoot | Out-Null
 
 $componentPackageResult = $null
 $componentPackageReferences = @()
 $componentPackagePaths = @()
-if ($PackageTarget -eq "RawQuic" -and $rawComponentPackageBuilderExists) {
+if (-not $UsePackageReferenceOnly -and $PackageTarget -eq "RawQuic" -and $rawComponentPackageBuilderExists) {
     $componentOutputRoot = Join-Path (Get-Location) "artifacts/protocol-lab/component-packages/$($packageResult.packageVersion)"
     $componentArgs = @(
         "-NoLogo",
@@ -391,7 +399,7 @@ if ($PackageTarget -eq "RawQuic" -and $rawComponentPackageBuilderExists) {
         [string]$componentPackageResult.scenarioPackage.path
     )
 }
-elseif ($PackageTarget -eq "Http3" -and $h3ComponentPackageBuilderExists) {
+elseif (-not $UsePackageReferenceOnly -and $PackageTarget -eq "Http3" -and $h3ComponentPackageBuilderExists) {
     $componentOutputRoot = Join-Path (Get-Location) "artifacts/protocol-lab/component-packages/$($packageResult.packageVersion)"
     $componentArgs = @(
         "-NoLogo",
@@ -421,9 +429,11 @@ elseif ($PackageTarget -eq "Http3" -and $h3ComponentPackageBuilderExists) {
 
 $artifactPath = Join-Path $resultRoot "latest.zip"
 $uploadedPackages = @()
-$uploadedPackages += Upload-LabPackage -ControllerUri $ControllerUri -Path $packageResult.path
-foreach ($componentPackagePath in $componentPackagePaths) {
-    $uploadedPackages += Upload-LabPackage -ControllerUri $ControllerUri -Path $componentPackagePath
+if (-not $UsePackageReferenceOnly) {
+    $uploadedPackages += Upload-LabPackage -ControllerUri $ControllerUri -Path $packageResult.path
+    foreach ($componentPackagePath in $componentPackagePaths) {
+        $uploadedPackages += Upload-LabPackage -ControllerUri $ControllerUri -Path $componentPackagePath
+    }
 }
 
 $allPackageReferences = @()
