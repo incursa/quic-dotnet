@@ -349,7 +349,7 @@ public sealed class Http3Server : IAsyncDisposable
             {
                 lock (dispatcherGate)
                 {
-                    dispatcher.RegisterBidirectionalStream(checked((ulong)stream.Id));
+                    dispatcher.RegisterBidirectionalStreamState(checked((ulong)stream.Id));
                 }
             }
 
@@ -381,7 +381,7 @@ public sealed class Http3Server : IAsyncDisposable
             {
                 lock (dispatcherGate)
                 {
-                    dispatcher.RegisterUnidirectionalStream(checked((ulong)stream.Id));
+                    dispatcher.RegisterUnidirectionalStreamState(checked((ulong)stream.Id));
                 }
 
                 while (true)

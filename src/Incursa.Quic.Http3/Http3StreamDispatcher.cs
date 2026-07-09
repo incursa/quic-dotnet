@@ -52,6 +52,19 @@ public sealed class Http3StreamDispatcher
     /// </summary>
     public Http3StreamInfo RegisterBidirectionalStream(ulong streamId)
     {
+        StreamState state = CreateBidirectionalStreamState(streamId);
+        Http3StreamInfo info = state.GetInfo();
+        streams[streamId] = state;
+        return info;
+    }
+
+    internal void RegisterBidirectionalStreamState(ulong streamId)
+    {
+        streams[streamId] = CreateBidirectionalStreamState(streamId);
+    }
+
+    private StreamState CreateBidirectionalStreamState(ulong streamId)
+    {
         ValidateDirection(streamId, Http3StreamDirection.Bidirectional);
         Http3StreamInitiator initiator = GetInitiator(streamId);
         if (initiator == Http3StreamInitiator.Server && !allowServerInitiatedBidirectionalStreams)
@@ -59,9 +72,7 @@ public sealed class Http3StreamDispatcher
             throw new Http3Exception(Http3ErrorCode.StreamCreationError, "Server-initiated bidirectional HTTP/3 streams are not allowed.");
         }
 
-        Http3StreamInfo info = new(streamId, initiator, Http3StreamDirection.Bidirectional, Http3StreamKind.Request, streamType: null);
-        streams[streamId] = new StreamState(info);
-        return info;
+        return new StreamState(streamId, initiator, Http3StreamDirection.Bidirectional, Http3StreamKind.Request, streamType: null);
     }
 
     /// <summary>
@@ -69,15 +80,26 @@ public sealed class Http3StreamDispatcher
     /// </summary>
     public Http3StreamInfo RegisterUnidirectionalStream(ulong streamId)
     {
+        StreamState state = CreateUnidirectionalStreamState(streamId);
+        Http3StreamInfo info = state.GetInfo();
+        streams[streamId] = state;
+        return info;
+    }
+
+    internal void RegisterUnidirectionalStreamState(ulong streamId)
+    {
+        streams[streamId] = CreateUnidirectionalStreamState(streamId);
+    }
+
+    private StreamState CreateUnidirectionalStreamState(ulong streamId)
+    {
         ValidateDirection(streamId, Http3StreamDirection.Unidirectional);
-        Http3StreamInfo info = new(
+        return new StreamState(
             streamId,
             GetInitiator(streamId),
             Http3StreamDirection.Unidirectional,
             Http3StreamKind.Unknown,
             streamType: null);
-        streams[streamId] = new StreamState(info);
-        return info;
     }
 
     /// <summary>
@@ -86,9 +108,9 @@ public sealed class Http3StreamDispatcher
     public Http3StreamInfo ReceiveUnidirectionalStreamTypeBytes(ulong streamId, ReadOnlySpan<byte> bytes, bool endOfStream = false)
     {
         ref StreamState state = ref GetExisting(streamId);
-        if (state.Info.StreamType.HasValue)
+        if (state.StreamType.HasValue)
         {
-            return state.Info;
+            return state.GetInfo();
         }
 
         if (!TryReceiveUnidirectionalStreamTypeBytes(
@@ -122,14 +144,14 @@ public sealed class Http3StreamDispatcher
         bool endOfStream = false)
     {
         ref StreamState state = ref GetExisting(streamId);
-        info = state.Info;
+        info = state.GetInfo();
         bytesConsumed = 0;
-        if (state.Info.Direction != Http3StreamDirection.Unidirectional)
+        if (state.Direction != Http3StreamDirection.Unidirectional)
         {
             throw new Http3Exception(Http3ErrorCode.StreamCreationError, "Bidirectional streams do not carry an HTTP/3 unidirectional stream type.");
         }
 
-        if (state.Info.StreamType.HasValue)
+        if (state.StreamType.HasValue)
         {
             return true;
         }
@@ -147,8 +169,8 @@ public sealed class Http3StreamDispatcher
         }
 
         Http3StreamKind kind = MapStreamKind(streamType);
-        ValidateUniqueStreamType(streamId, state.Info.Initiator, kind);
-        if (kind == Http3StreamKind.Push && state.Info.Initiator != Http3StreamInitiator.Server)
+        ValidateUniqueStreamType(streamId, state.Initiator, kind);
+        if (kind == Http3StreamKind.Push && state.Initiator != Http3StreamInitiator.Server)
         {
             throw new Http3Exception(Http3ErrorCode.StreamCreationError, "HTTP/3 push streams can only be server initiated.");
         }
@@ -158,14 +180,9 @@ public sealed class Http3StreamDispatcher
             throw new Http3Exception(Http3ErrorCode.IdError, "HTTP/3 push streams are disabled.");
         }
 
-        state.Info = new Http3StreamInfo(
-            streamId,
-            state.Info.Initiator,
-            Http3StreamDirection.Unidirectional,
-            kind,
-            streamType);
+        state.SetKind(kind, streamType);
         state.PendingStreamTypeBytes = [];
-        info = state.Info;
+        info = state.GetInfo();
         bytesConsumed = Math.Max(0, parsedBytesConsumed - pendingLength);
         return true;
     }
@@ -177,12 +194,12 @@ public sealed class Http3StreamDispatcher
     {
         ArgumentNullException.ThrowIfNull(frame);
         ref StreamState state = ref GetExisting(streamId);
-        if (state.Info.Direction == Http3StreamDirection.Unidirectional && !state.Info.StreamType.HasValue)
+        if (state.Direction == Http3StreamDirection.Unidirectional && !state.StreamType.HasValue)
         {
             throw new Http3Exception(Http3ErrorCode.StreamCreationError, "The HTTP/3 unidirectional stream type is not known.");
         }
 
-        switch (state.Info.Kind)
+        switch (state.Kind)
         {
             case Http3StreamKind.Request:
                 ValidateRequestStreamFrame(frame);
@@ -211,7 +228,7 @@ public sealed class Http3StreamDispatcher
     public Http3StreamInfo GetStreamInfo(ulong streamId)
     {
         ref StreamState state = ref GetExisting(streamId);
-        return state.Info;
+        return state.GetInfo();
     }
 
     /// <summary>
@@ -220,8 +237,8 @@ public sealed class Http3StreamDispatcher
     internal bool TryCompleteRequestStream(ulong streamId)
     {
         if (!streams.TryGetValue(streamId, out StreamState state)
-            || state.Info.Direction != Http3StreamDirection.Bidirectional
-            || state.Info.Kind != Http3StreamKind.Request)
+            || state.Direction != Http3StreamDirection.Bidirectional
+            || state.Kind != Http3StreamKind.Request)
         {
             return false;
         }
@@ -363,17 +380,50 @@ public sealed class Http3StreamDispatcher
 
     private struct StreamState
     {
-        internal StreamState(Http3StreamInfo info)
+        internal StreamState(
+            ulong streamId,
+            Http3StreamInitiator initiator,
+            Http3StreamDirection direction,
+            Http3StreamKind kind,
+            ulong? streamType)
         {
-            Info = info;
+            StreamId = streamId;
+            Initiator = initiator;
+            Direction = direction;
+            Kind = kind;
+            StreamType = streamType;
+            cachedInfo = null;
             PendingStreamTypeBytes = [];
             ControlState = null;
         }
 
-        internal Http3StreamInfo Info { get; set; }
+        internal ulong StreamId { get; }
+
+        internal Http3StreamInitiator Initiator { get; }
+
+        internal Http3StreamDirection Direction { get; }
+
+        internal Http3StreamKind Kind { get; private set; }
+
+        internal ulong? StreamType { get; private set; }
+
+        private Http3StreamInfo? cachedInfo;
 
         internal byte[] PendingStreamTypeBytes { get; set; }
 
         internal Http3ControlStreamState? ControlState { get; set; }
+
+        internal Http3StreamInfo GetInfo()
+        {
+            cachedInfo ??= new Http3StreamInfo(StreamId, Initiator, Direction, Kind, StreamType);
+            return cachedInfo;
+        }
+
+        internal void SetKind(Http3StreamKind kind, ulong? streamType)
+        {
+            Kind = kind;
+            StreamType = streamType;
+            cachedInfo = null;
+        }
     }
 }

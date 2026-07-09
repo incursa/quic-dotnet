@@ -477,7 +477,7 @@ public sealed class Http3Client : IAsyncDisposable
             {
                 lock (peerStreamDispatcherGate)
                 {
-                    peerStreamDispatcher.RegisterBidirectionalStream(checked((ulong)stream.Id));
+                    peerStreamDispatcher.RegisterBidirectionalStreamState(checked((ulong)stream.Id));
                 }
             }
             catch (Http3Exception exception)
@@ -500,7 +500,7 @@ public sealed class Http3Client : IAsyncDisposable
             {
                 lock (peerStreamDispatcherGate)
                 {
-                    peerStreamDispatcher.RegisterUnidirectionalStream(checked((ulong)stream.Id));
+                    peerStreamDispatcher.RegisterUnidirectionalStreamState(checked((ulong)stream.Id));
                 }
 
                 while (true)
