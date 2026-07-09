@@ -67,7 +67,8 @@ between the Incursa public facade and `System.Net.Quic`:
 These suites are intentionally narrow. The current proven floor for
 `QuicPublicApiLoopbackBenchmarks` compares only public-facade loopback
 connection establishment plus disposal. `QuicPublicApiStreamTransferBenchmarks`
-compares one bounded public-facade loopback request/response stream workload.
+compares bounded public-facade loopback upload-only, download-only,
+request/response, and sequential many-stream request/response workloads.
 Unsupported implementations are omitted when either public support marker
 (`QuicConnection.IsSupported` or `QuicListener.IsSupported`) is false, and the
 results must not be treated as equivalent to the repo's internal helper

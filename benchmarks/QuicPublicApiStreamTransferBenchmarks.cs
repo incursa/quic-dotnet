@@ -40,6 +40,7 @@ public enum QuicPublicApiStreamTransferImplementation
 public class QuicPublicApiStreamTransferBenchmarks
 {
     private const int PayloadBytes = 1024;
+    private const int SequentialStreamCount = 8;
 
     private X509Certificate2? serverCertificate;
     private X509Certificate2? trustAnchor;
@@ -114,6 +115,52 @@ public class QuicPublicApiStreamTransferBenchmarks
         };
     }
 
+    [Benchmark]
+    public Task LoopbackClientUploadDispose()
+    {
+        SslClientAuthenticationOptions clientOptions = clientAuthenticationOptions ?? throw new InvalidOperationException("The benchmark client authentication options have not been initialized.");
+        SslServerAuthenticationOptions serverOptions = serverAuthenticationOptions ?? throw new InvalidOperationException("The benchmark server authentication options have not been initialized.");
+        byte[] request = requestPayload ?? throw new InvalidOperationException("The benchmark request payload has not been initialized.");
+
+        return Implementation switch
+        {
+            QuicPublicApiStreamTransferImplementation.IncursaQuic => RunIncursaClientUploadDisposeAsync(clientOptions, serverOptions, request),
+            QuicPublicApiStreamTransferImplementation.SystemNetQuic => RunSystemNetClientUploadDisposeAsync(clientOptions, serverOptions, request),
+            _ => throw new ArgumentOutOfRangeException(nameof(Implementation)),
+        };
+    }
+
+    [Benchmark]
+    public Task LoopbackServerDownloadDispose()
+    {
+        SslClientAuthenticationOptions clientOptions = clientAuthenticationOptions ?? throw new InvalidOperationException("The benchmark client authentication options have not been initialized.");
+        SslServerAuthenticationOptions serverOptions = serverAuthenticationOptions ?? throw new InvalidOperationException("The benchmark server authentication options have not been initialized.");
+        byte[] response = responsePayload ?? throw new InvalidOperationException("The benchmark response payload has not been initialized.");
+
+        return Implementation switch
+        {
+            QuicPublicApiStreamTransferImplementation.IncursaQuic => RunIncursaServerDownloadDisposeAsync(clientOptions, serverOptions, response),
+            QuicPublicApiStreamTransferImplementation.SystemNetQuic => RunSystemNetServerDownloadDisposeAsync(clientOptions, serverOptions, response),
+            _ => throw new ArgumentOutOfRangeException(nameof(Implementation)),
+        };
+    }
+
+    [Benchmark]
+    public Task LoopbackSequentialRequestResponseStreamsDispose()
+    {
+        SslClientAuthenticationOptions clientOptions = clientAuthenticationOptions ?? throw new InvalidOperationException("The benchmark client authentication options have not been initialized.");
+        SslServerAuthenticationOptions serverOptions = serverAuthenticationOptions ?? throw new InvalidOperationException("The benchmark server authentication options have not been initialized.");
+        byte[] request = requestPayload ?? throw new InvalidOperationException("The benchmark request payload has not been initialized.");
+        byte[] response = responsePayload ?? throw new InvalidOperationException("The benchmark response payload has not been initialized.");
+
+        return Implementation switch
+        {
+            QuicPublicApiStreamTransferImplementation.IncursaQuic => RunIncursaSequentialRequestResponseStreamsDisposeAsync(clientOptions, serverOptions, request, response),
+            QuicPublicApiStreamTransferImplementation.SystemNetQuic => RunSystemNetSequentialRequestResponseStreamsDisposeAsync(clientOptions, serverOptions, request, response),
+            _ => throw new ArgumentOutOfRangeException(nameof(Implementation)),
+        };
+    }
+
     private static async Task RunIncursaRequestResponseDisposeAsync(
         SslClientAuthenticationOptions clientAuthenticationOptions,
         SslServerAuthenticationOptions serverAuthenticationOptions,
@@ -139,42 +186,224 @@ public class QuicPublicApiStreamTransferBenchmarks
         await using IncursaClientConnection serverConnection = await acceptConnectionTask.ConfigureAwait(false);
         await using IncursaClientConnection clientConnection = await connectTask.ConfigureAwait(false);
 
-        Task<IncursaStream> acceptStreamTask = serverConnection.AcceptInboundStreamAsync(cancellationSource.Token).AsTask();
+        await RunIncursaRequestResponseOnConnectedAsync(
+            clientConnection,
+            serverConnection,
+            requestPayload,
+            responsePayload,
+            cancellationSource.Token).ConfigureAwait(false);
+    }
+
+    private static async Task RunIncursaClientUploadDisposeAsync(
+        SslClientAuthenticationOptions clientAuthenticationOptions,
+        SslServerAuthenticationOptions serverAuthenticationOptions,
+        byte[] requestPayload)
+    {
+        using CancellationTokenSource cancellationSource = new(TimeSpan.FromSeconds(60));
+        IPEndPoint listenEndPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
+
+        await using IncursaListener listener = await IncursaListener.ListenAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaListenerOptions(listenEndPoint, serverAuthenticationOptions),
+            cancellationSource.Token).ConfigureAwait(false);
+
+        Task<IncursaClientConnection> acceptConnectionTask = listener.AcceptConnectionAsync(cancellationSource.Token).AsTask();
+        Task<IncursaClientConnection> connectTask = IncursaClientConnection.ConnectAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaClientOptions(
+                new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
+                clientAuthenticationOptions),
+            cancellationSource.Token).AsTask();
+
+        await Task.WhenAll(acceptConnectionTask, connectTask).ConfigureAwait(false);
+
+        await using IncursaClientConnection serverConnection = await acceptConnectionTask.ConfigureAwait(false);
+        await using IncursaClientConnection clientConnection = await connectTask.ConfigureAwait(false);
+
+        await RunIncursaClientUploadOnConnectedAsync(
+            clientConnection,
+            serverConnection,
+            requestPayload,
+            cancellationSource.Token).ConfigureAwait(false);
+    }
+
+    private static async Task RunIncursaServerDownloadDisposeAsync(
+        SslClientAuthenticationOptions clientAuthenticationOptions,
+        SslServerAuthenticationOptions serverAuthenticationOptions,
+        byte[] responsePayload)
+    {
+        using CancellationTokenSource cancellationSource = new(TimeSpan.FromSeconds(60));
+        IPEndPoint listenEndPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
+
+        await using IncursaListener listener = await IncursaListener.ListenAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaListenerOptions(listenEndPoint, serverAuthenticationOptions),
+            cancellationSource.Token).ConfigureAwait(false);
+
+        Task<IncursaClientConnection> acceptConnectionTask = listener.AcceptConnectionAsync(cancellationSource.Token).AsTask();
+        Task<IncursaClientConnection> connectTask = IncursaClientConnection.ConnectAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaClientOptions(
+                new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
+                clientAuthenticationOptions),
+            cancellationSource.Token).AsTask();
+
+        await Task.WhenAll(acceptConnectionTask, connectTask).ConfigureAwait(false);
+
+        await using IncursaClientConnection serverConnection = await acceptConnectionTask.ConfigureAwait(false);
+        await using IncursaClientConnection clientConnection = await connectTask.ConfigureAwait(false);
+
+        await RunIncursaServerDownloadOnConnectedAsync(
+            clientConnection,
+            serverConnection,
+            responsePayload,
+            cancellationSource.Token).ConfigureAwait(false);
+    }
+
+    private static async Task RunIncursaSequentialRequestResponseStreamsDisposeAsync(
+        SslClientAuthenticationOptions clientAuthenticationOptions,
+        SslServerAuthenticationOptions serverAuthenticationOptions,
+        byte[] requestPayload,
+        byte[] responsePayload)
+    {
+        using CancellationTokenSource cancellationSource = new(TimeSpan.FromSeconds(60));
+        IPEndPoint listenEndPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
+
+        await using IncursaListener listener = await IncursaListener.ListenAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaListenerOptions(listenEndPoint, serverAuthenticationOptions),
+            cancellationSource.Token).ConfigureAwait(false);
+
+        Task<IncursaClientConnection> acceptConnectionTask = listener.AcceptConnectionAsync(cancellationSource.Token).AsTask();
+        Task<IncursaClientConnection> connectTask = IncursaClientConnection.ConnectAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaClientOptions(
+                new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
+                clientAuthenticationOptions),
+            cancellationSource.Token).AsTask();
+
+        await Task.WhenAll(acceptConnectionTask, connectTask).ConfigureAwait(false);
+
+        await using IncursaClientConnection serverConnection = await acceptConnectionTask.ConfigureAwait(false);
+        await using IncursaClientConnection clientConnection = await connectTask.ConfigureAwait(false);
+
+        for (int streamIndex = 0; streamIndex < SequentialStreamCount; streamIndex++)
+        {
+            await RunIncursaRequestResponseOnConnectedAsync(
+                clientConnection,
+                serverConnection,
+                requestPayload,
+                responsePayload,
+                cancellationSource.Token).ConfigureAwait(false);
+        }
+    }
+
+    private static async Task RunIncursaRequestResponseOnConnectedAsync(
+        IncursaClientConnection clientConnection,
+        IncursaClientConnection serverConnection,
+        byte[] requestPayload,
+        byte[] responsePayload,
+        CancellationToken cancellationToken)
+    {
+        Task<IncursaStream> acceptStreamTask = serverConnection.AcceptInboundStreamAsync(cancellationToken).AsTask();
         await Task.Yield();
         Task<IncursaStream> openStreamTask = clientConnection.OpenOutboundStreamAsync(
             IncursaStreamType.Bidirectional,
-            cancellationSource.Token).AsTask();
+            cancellationToken).AsTask();
         await using IncursaStream clientStream = await openStreamTask.ConfigureAwait(false);
 
-        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).WaitAsync(cancellationSource.Token).ConfigureAwait(false);
-        await clientStream.CompleteWritesAsync().AsTask().WaitAsync(cancellationSource.Token).ConfigureAwait(false);
-        await clientStream.WritesClosed.WaitAsync(cancellationSource.Token).ConfigureAwait(false);
+        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
+        await clientStream.CompleteWritesAsync().AsTask().WaitAsync(cancellationToken).ConfigureAwait(false);
+        await clientStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         await using IncursaStream serverStream = await acceptStreamTask.ConfigureAwait(false);
 
         byte[] requestBuffer = new byte[requestPayload.Length];
-        await ReadExactlyAsync(serverStream, requestBuffer, cancellationSource.Token).ConfigureAwait(false);
+        await ReadExactlyAsync(serverStream, requestBuffer, cancellationToken).ConfigureAwait(false);
         if (!requestPayload.AsSpan().SequenceEqual(requestBuffer))
         {
             throw new InvalidOperationException("The server request payload did not match the client payload.");
         }
 
-        await EnsureEofAsync(serverStream, cancellationSource.Token, "The server did not observe request EOF.").ConfigureAwait(false);
-        await serverStream.ReadsClosed.WaitAsync(cancellationSource.Token).ConfigureAwait(false);
+        await EnsureEofAsync(serverStream, cancellationToken, "The server did not observe request EOF.").ConfigureAwait(false);
+        await serverStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
-        await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).WaitAsync(cancellationSource.Token).ConfigureAwait(false);
-        await serverStream.CompleteWritesAsync().AsTask().WaitAsync(cancellationSource.Token).ConfigureAwait(false);
-        await serverStream.WritesClosed.WaitAsync(cancellationSource.Token).ConfigureAwait(false);
+        await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
+        await serverStream.CompleteWritesAsync().AsTask().WaitAsync(cancellationToken).ConfigureAwait(false);
+        await serverStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         byte[] responseBuffer = new byte[responsePayload.Length];
-        await ReadExactlyAsync(clientStream, responseBuffer, cancellationSource.Token).ConfigureAwait(false);
+        await ReadExactlyAsync(clientStream, responseBuffer, cancellationToken).ConfigureAwait(false);
         if (!responsePayload.AsSpan().SequenceEqual(responseBuffer))
         {
             throw new InvalidOperationException("The client response payload did not match the server payload.");
         }
 
-        await EnsureEofAsync(clientStream, cancellationSource.Token, "The client did not observe response EOF.").ConfigureAwait(false);
-        await clientStream.ReadsClosed.WaitAsync(cancellationSource.Token).ConfigureAwait(false);
+        await EnsureEofAsync(clientStream, cancellationToken, "The client did not observe response EOF.").ConfigureAwait(false);
+        await clientStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async Task RunIncursaClientUploadOnConnectedAsync(
+        IncursaClientConnection clientConnection,
+        IncursaClientConnection serverConnection,
+        byte[] requestPayload,
+        CancellationToken cancellationToken)
+    {
+        Task<IncursaStream> acceptStreamTask = serverConnection.AcceptInboundStreamAsync(cancellationToken).AsTask();
+        await Task.Yield();
+        Task<IncursaStream> openStreamTask = clientConnection.OpenOutboundStreamAsync(
+            IncursaStreamType.Bidirectional,
+            cancellationToken).AsTask();
+        await using IncursaStream clientStream = await openStreamTask.ConfigureAwait(false);
+
+        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
+        await clientStream.CompleteWritesAsync().AsTask().WaitAsync(cancellationToken).ConfigureAwait(false);
+        await clientStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        await using IncursaStream serverStream = await acceptStreamTask.ConfigureAwait(false);
+
+        byte[] requestBuffer = new byte[requestPayload.Length];
+        await ReadExactlyAsync(serverStream, requestBuffer, cancellationToken).ConfigureAwait(false);
+        if (!requestPayload.AsSpan().SequenceEqual(requestBuffer))
+        {
+            throw new InvalidOperationException("The server request payload did not match the client payload.");
+        }
+
+        await EnsureEofAsync(serverStream, cancellationToken, "The server did not observe request EOF.").ConfigureAwait(false);
+        await serverStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
+        await serverStream.CompleteWritesAsync().AsTask().WaitAsync(cancellationToken).ConfigureAwait(false);
+        await serverStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
+        await EnsureEofAsync(clientStream, cancellationToken, "The client did not observe upload response EOF.").ConfigureAwait(false);
+        await clientStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async Task RunIncursaServerDownloadOnConnectedAsync(
+        IncursaClientConnection clientConnection,
+        IncursaClientConnection serverConnection,
+        byte[] responsePayload,
+        CancellationToken cancellationToken)
+    {
+        Task<IncursaStream> acceptStreamTask = serverConnection.AcceptInboundStreamAsync(cancellationToken).AsTask();
+        await Task.Yield();
+        Task<IncursaStream> openStreamTask = clientConnection.OpenOutboundStreamAsync(
+            IncursaStreamType.Bidirectional,
+            cancellationToken).AsTask();
+        await using IncursaStream clientStream = await openStreamTask.ConfigureAwait(false);
+
+        await clientStream.CompleteWritesAsync().AsTask().WaitAsync(cancellationToken).ConfigureAwait(false);
+        await clientStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        await using IncursaStream serverStream = await acceptStreamTask.ConfigureAwait(false);
+        await EnsureEofAsync(serverStream, cancellationToken, "The server did not observe download request EOF.").ConfigureAwait(false);
+        await serverStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
+        await serverStream.CompleteWritesAsync().AsTask().WaitAsync(cancellationToken).ConfigureAwait(false);
+        await serverStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        byte[] responseBuffer = new byte[responsePayload.Length];
+        await ReadExactlyAsync(clientStream, responseBuffer, cancellationToken).ConfigureAwait(false);
+        if (!responsePayload.AsSpan().SequenceEqual(responseBuffer))
+        {
+            throw new InvalidOperationException("The client response payload did not match the server payload.");
+        }
+
+        await EnsureEofAsync(clientStream, cancellationToken, "The client did not observe response EOF.").ConfigureAwait(false);
+        await clientStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private static async Task RunSystemNetRequestResponseDisposeAsync(
@@ -202,42 +431,224 @@ public class QuicPublicApiStreamTransferBenchmarks
         await using SystemNetClientConnection serverConnection = await acceptConnectionTask.ConfigureAwait(false);
         await using SystemNetClientConnection clientConnection = await connectTask.ConfigureAwait(false);
 
-        Task<SystemNetStream> acceptStreamTask = serverConnection.AcceptInboundStreamAsync(cancellationSource.Token).AsTask();
+        await RunSystemNetRequestResponseOnConnectedAsync(
+            clientConnection,
+            serverConnection,
+            requestPayload,
+            responsePayload,
+            cancellationSource.Token).ConfigureAwait(false);
+    }
+
+    private static async Task RunSystemNetClientUploadDisposeAsync(
+        SslClientAuthenticationOptions clientAuthenticationOptions,
+        SslServerAuthenticationOptions serverAuthenticationOptions,
+        byte[] requestPayload)
+    {
+        using CancellationTokenSource cancellationSource = new(TimeSpan.FromSeconds(60));
+        IPEndPoint listenEndPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
+
+        await using SystemNetListener listener = await SystemNetListener.ListenAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateSystemNetListenerOptions(listenEndPoint, serverAuthenticationOptions),
+            cancellationSource.Token).ConfigureAwait(false);
+
+        Task<SystemNetClientConnection> acceptConnectionTask = listener.AcceptConnectionAsync(cancellationSource.Token).AsTask();
+        Task<SystemNetClientConnection> connectTask = SystemNetClientConnection.ConnectAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateSystemNetClientOptions(
+                new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
+                clientAuthenticationOptions),
+            cancellationSource.Token).AsTask();
+
+        await Task.WhenAll(acceptConnectionTask, connectTask).ConfigureAwait(false);
+
+        await using SystemNetClientConnection serverConnection = await acceptConnectionTask.ConfigureAwait(false);
+        await using SystemNetClientConnection clientConnection = await connectTask.ConfigureAwait(false);
+
+        await RunSystemNetClientUploadOnConnectedAsync(
+            clientConnection,
+            serverConnection,
+            requestPayload,
+            cancellationSource.Token).ConfigureAwait(false);
+    }
+
+    private static async Task RunSystemNetServerDownloadDisposeAsync(
+        SslClientAuthenticationOptions clientAuthenticationOptions,
+        SslServerAuthenticationOptions serverAuthenticationOptions,
+        byte[] responsePayload)
+    {
+        using CancellationTokenSource cancellationSource = new(TimeSpan.FromSeconds(60));
+        IPEndPoint listenEndPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
+
+        await using SystemNetListener listener = await SystemNetListener.ListenAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateSystemNetListenerOptions(listenEndPoint, serverAuthenticationOptions),
+            cancellationSource.Token).ConfigureAwait(false);
+
+        Task<SystemNetClientConnection> acceptConnectionTask = listener.AcceptConnectionAsync(cancellationSource.Token).AsTask();
+        Task<SystemNetClientConnection> connectTask = SystemNetClientConnection.ConnectAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateSystemNetClientOptions(
+                new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
+                clientAuthenticationOptions),
+            cancellationSource.Token).AsTask();
+
+        await Task.WhenAll(acceptConnectionTask, connectTask).ConfigureAwait(false);
+
+        await using SystemNetClientConnection serverConnection = await acceptConnectionTask.ConfigureAwait(false);
+        await using SystemNetClientConnection clientConnection = await connectTask.ConfigureAwait(false);
+
+        await RunSystemNetServerDownloadOnConnectedAsync(
+            clientConnection,
+            serverConnection,
+            responsePayload,
+            cancellationSource.Token).ConfigureAwait(false);
+    }
+
+    private static async Task RunSystemNetSequentialRequestResponseStreamsDisposeAsync(
+        SslClientAuthenticationOptions clientAuthenticationOptions,
+        SslServerAuthenticationOptions serverAuthenticationOptions,
+        byte[] requestPayload,
+        byte[] responsePayload)
+    {
+        using CancellationTokenSource cancellationSource = new(TimeSpan.FromSeconds(60));
+        IPEndPoint listenEndPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
+
+        await using SystemNetListener listener = await SystemNetListener.ListenAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateSystemNetListenerOptions(listenEndPoint, serverAuthenticationOptions),
+            cancellationSource.Token).ConfigureAwait(false);
+
+        Task<SystemNetClientConnection> acceptConnectionTask = listener.AcceptConnectionAsync(cancellationSource.Token).AsTask();
+        Task<SystemNetClientConnection> connectTask = SystemNetClientConnection.ConnectAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateSystemNetClientOptions(
+                new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
+                clientAuthenticationOptions),
+            cancellationSource.Token).AsTask();
+
+        await Task.WhenAll(acceptConnectionTask, connectTask).ConfigureAwait(false);
+
+        await using SystemNetClientConnection serverConnection = await acceptConnectionTask.ConfigureAwait(false);
+        await using SystemNetClientConnection clientConnection = await connectTask.ConfigureAwait(false);
+
+        for (int streamIndex = 0; streamIndex < SequentialStreamCount; streamIndex++)
+        {
+            await RunSystemNetRequestResponseOnConnectedAsync(
+                clientConnection,
+                serverConnection,
+                requestPayload,
+                responsePayload,
+                cancellationSource.Token).ConfigureAwait(false);
+        }
+    }
+
+    private static async Task RunSystemNetRequestResponseOnConnectedAsync(
+        SystemNetClientConnection clientConnection,
+        SystemNetClientConnection serverConnection,
+        byte[] requestPayload,
+        byte[] responsePayload,
+        CancellationToken cancellationToken)
+    {
+        Task<SystemNetStream> acceptStreamTask = serverConnection.AcceptInboundStreamAsync(cancellationToken).AsTask();
         await Task.Yield();
         Task<SystemNetStream> openStreamTask = clientConnection.OpenOutboundStreamAsync(
             SystemNetStreamType.Bidirectional,
-            cancellationSource.Token).AsTask();
+            cancellationToken).AsTask();
         await using SystemNetStream clientStream = await openStreamTask.ConfigureAwait(false);
 
-        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).WaitAsync(cancellationSource.Token).ConfigureAwait(false);
+        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
         clientStream.CompleteWrites();
-        await clientStream.WritesClosed.WaitAsync(cancellationSource.Token).ConfigureAwait(false);
+        await clientStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         await using SystemNetStream serverStream = await acceptStreamTask.ConfigureAwait(false);
 
         byte[] requestBuffer = new byte[requestPayload.Length];
-        await ReadExactlyAsync(serverStream, requestBuffer, cancellationSource.Token).ConfigureAwait(false);
+        await ReadExactlyAsync(serverStream, requestBuffer, cancellationToken).ConfigureAwait(false);
         if (!requestPayload.AsSpan().SequenceEqual(requestBuffer))
         {
             throw new InvalidOperationException("The server request payload did not match the client payload.");
         }
 
-        await EnsureEofAsync(serverStream, cancellationSource.Token, "The server did not observe request EOF.").ConfigureAwait(false);
-        await serverStream.ReadsClosed.WaitAsync(cancellationSource.Token).ConfigureAwait(false);
+        await EnsureEofAsync(serverStream, cancellationToken, "The server did not observe request EOF.").ConfigureAwait(false);
+        await serverStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
-        await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).WaitAsync(cancellationSource.Token).ConfigureAwait(false);
+        await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
         serverStream.CompleteWrites();
-        await serverStream.WritesClosed.WaitAsync(cancellationSource.Token).ConfigureAwait(false);
+        await serverStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         byte[] responseBuffer = new byte[responsePayload.Length];
-        await ReadExactlyAsync(clientStream, responseBuffer, cancellationSource.Token).ConfigureAwait(false);
+        await ReadExactlyAsync(clientStream, responseBuffer, cancellationToken).ConfigureAwait(false);
         if (!responsePayload.AsSpan().SequenceEqual(responseBuffer))
         {
             throw new InvalidOperationException("The client response payload did not match the server payload.");
         }
 
-        await EnsureEofAsync(clientStream, cancellationSource.Token, "The client did not observe response EOF.").ConfigureAwait(false);
-        await clientStream.ReadsClosed.WaitAsync(cancellationSource.Token).ConfigureAwait(false);
+        await EnsureEofAsync(clientStream, cancellationToken, "The client did not observe response EOF.").ConfigureAwait(false);
+        await clientStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async Task RunSystemNetClientUploadOnConnectedAsync(
+        SystemNetClientConnection clientConnection,
+        SystemNetClientConnection serverConnection,
+        byte[] requestPayload,
+        CancellationToken cancellationToken)
+    {
+        Task<SystemNetStream> acceptStreamTask = serverConnection.AcceptInboundStreamAsync(cancellationToken).AsTask();
+        await Task.Yield();
+        Task<SystemNetStream> openStreamTask = clientConnection.OpenOutboundStreamAsync(
+            SystemNetStreamType.Bidirectional,
+            cancellationToken).AsTask();
+        await using SystemNetStream clientStream = await openStreamTask.ConfigureAwait(false);
+
+        await clientStream.WriteAsync(requestPayload, 0, requestPayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
+        clientStream.CompleteWrites();
+        await clientStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        await using SystemNetStream serverStream = await acceptStreamTask.ConfigureAwait(false);
+
+        byte[] requestBuffer = new byte[requestPayload.Length];
+        await ReadExactlyAsync(serverStream, requestBuffer, cancellationToken).ConfigureAwait(false);
+        if (!requestPayload.AsSpan().SequenceEqual(requestBuffer))
+        {
+            throw new InvalidOperationException("The server request payload did not match the client payload.");
+        }
+
+        await EnsureEofAsync(serverStream, cancellationToken, "The server did not observe request EOF.").ConfigureAwait(false);
+        await serverStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
+        serverStream.CompleteWrites();
+        await serverStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
+        await EnsureEofAsync(clientStream, cancellationToken, "The client did not observe upload response EOF.").ConfigureAwait(false);
+        await clientStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async Task RunSystemNetServerDownloadOnConnectedAsync(
+        SystemNetClientConnection clientConnection,
+        SystemNetClientConnection serverConnection,
+        byte[] responsePayload,
+        CancellationToken cancellationToken)
+    {
+        Task<SystemNetStream> acceptStreamTask = serverConnection.AcceptInboundStreamAsync(cancellationToken).AsTask();
+        await Task.Yield();
+        Task<SystemNetStream> openStreamTask = clientConnection.OpenOutboundStreamAsync(
+            SystemNetStreamType.Bidirectional,
+            cancellationToken).AsTask();
+        await using SystemNetStream clientStream = await openStreamTask.ConfigureAwait(false);
+
+        clientStream.CompleteWrites();
+        await clientStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        await using SystemNetStream serverStream = await acceptStreamTask.ConfigureAwait(false);
+        await EnsureEofAsync(serverStream, cancellationToken, "The server did not observe download request EOF.").ConfigureAwait(false);
+        await serverStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        await serverStream.WriteAsync(responsePayload, 0, responsePayload.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
+        serverStream.CompleteWrites();
+        await serverStream.WritesClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        byte[] responseBuffer = new byte[responsePayload.Length];
+        await ReadExactlyAsync(clientStream, responseBuffer, cancellationToken).ConfigureAwait(false);
+        if (!responsePayload.AsSpan().SequenceEqual(responseBuffer))
+        {
+            throw new InvalidOperationException("The client response payload did not match the server payload.");
+        }
+
+        await EnsureEofAsync(clientStream, cancellationToken, "The client did not observe response EOF.").ConfigureAwait(false);
+        await clientStream.ReadsClosed.WaitAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private static async Task ReadExactlyAsync(Stream stream, byte[] buffer, CancellationToken cancellationToken)
