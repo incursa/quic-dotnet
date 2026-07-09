@@ -257,6 +257,34 @@ Output is written under:
 .artifacts/perf-baselines/{runId}/baseline-report.json
 ```
 
+## ProtocolLab Controller Publication Bridge
+
+Use `Invoke-QuicProtocolLabPublication.ps1` to ask the ProtocolLab controller
+to build site-compatible public report bundles for completed package-backed lab
+jobs. The helper defaults to controller dry-run mode, so it validates the
+publication bundle path without uploading to R2 or enqueueing site import.
+
+Dry-run the current package-backed raw QUIC confidence jobs:
+
+```powershell
+$jobIds = "job-bcb049b36892490ca2949dcb6d8dcc00,job-c1f45316b0ef4d3d85e179c794682c0c,job-875a89f8926e45b6b93cf7ce806434f4"
+
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicProtocolLabPublication.ps1 `
+  -ControllerUrl http://localhost:5088 `
+  -JobId $jobIds
+```
+
+The helper writes a reviewable manifest under:
+
+```text
+.artifacts/perf-publication/{runId}/publication-results.json
+```
+
+Only add `-Publish` when the controller publication secrets, R2 target, and
+site import endpoint are intentionally configured. Publication does not upgrade
+evidence quality; local/shared-host and variance blockers must remain visible
+in the generated report.
+
 ## ProtocolLab Performance Triage
 
 Use `Compare-QuicProtocolLabRuns.ps1` when you need one closeout command for
