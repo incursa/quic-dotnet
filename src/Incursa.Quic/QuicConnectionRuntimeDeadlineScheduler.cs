@@ -15,11 +15,12 @@ namespace Incursa.Quic;
 /// </remarks>
 internal sealed class QuicConnectionRuntimeDeadlineScheduler
 {
+    private const int InitialTimerCapacity = 16;
     private const int StaleTimerHeapCompactionThreshold = 256;
     private const int StaleTimerHeapCompactionFactor = 4;
 
-    private readonly PriorityQueue<QuicConnectionRuntimeScheduledTimerEntry, QuicConnectionTimerPriority> timerHeap = new();
-    private readonly Dictionary<QuicConnectionRuntimeScheduledTimerKey, QuicConnectionRuntimeScheduledTimerRegistration> registrations = [];
+    private readonly PriorityQueue<QuicConnectionRuntimeScheduledTimerEntry, QuicConnectionTimerPriority> timerHeap = new(InitialTimerCapacity);
+    private readonly Dictionary<QuicConnectionRuntimeScheduledTimerKey, QuicConnectionRuntimeScheduledTimerRegistration> registrations = new(InitialTimerCapacity);
 
     /// <summary>
     /// Gets the number of currently active timer registrations.
