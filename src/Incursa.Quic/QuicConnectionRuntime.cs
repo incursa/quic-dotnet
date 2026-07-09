@@ -146,6 +146,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private Func<QuicConnectionEvent, bool>? localApiEventDispatcher;
     private Func<bool>? streamCapacityReleaseDispatcher;
     private Func<bool>? flowControlCreditUpdateDispatcher;
+    private Func<long, QuicStreamType, bool>? streamOpenDispatcher;
     private Action<int, int>? streamCapacityObserver;
     private bool scheduledPeerStreamCapacityReleaseEventPending;
     private bool scheduledFlowControlCreditUpdatePending;
@@ -1211,6 +1212,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     internal void SetLocalApiEventDispatcher(Func<QuicConnectionEvent, bool> dispatcher)
     {
         localApiEventDispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+        streamCapacityReleaseDispatcher = null;
+        flowControlCreditUpdateDispatcher = null;
+        streamOpenDispatcher = null;
     }
 
     internal void SetStreamCapacityReleaseDispatcher(Func<bool> dispatcher)
@@ -1221,6 +1225,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     internal void SetFlowControlCreditUpdateDispatcher(Func<bool> dispatcher)
     {
         flowControlCreditUpdateDispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+    }
+
+    internal void SetStreamOpenDispatcher(Func<long, QuicStreamType, bool> dispatcher)
+    {
+        streamOpenDispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
     }
 
     internal void SetStreamCapacityObserver(Action<int, int>? observer)
@@ -1631,11 +1640,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             completion.RegisterCancellation(requestId, cancellationToken);
         }
 
-        if (!TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
-            clock.Ticks,
-            requestId,
-            QuicConnectionStreamActionKind.Open,
-            StreamType: streamType)))
+        bool posted = streamOpenDispatcher?.Invoke(requestId, streamType)
+            ?? TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
+                clock.Ticks,
+                requestId,
+                QuicConnectionStreamActionKind.Open,
+                StreamType: streamType));
+        if (!posted)
         {
             if (TryRemovePendingStreamOpenRequest(requestId, out StreamOpenRequestCompletionSource? removedCompletion))
             {
@@ -2350,6 +2361,28 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             transitionSequence,
             nowTicks,
             QuicConnectionEventKind.FlowControlCreditUpdated,
+            previousPhase,
+            phase,
+            stateChanged,
+            effects);
+    }
+
+    internal QuicConnectionTransitionResult TransitionStreamOpen(
+        long requestId,
+        QuicStreamType streamType,
+        long nowTicks)
+    {
+        QuicConnectionPhase previousPhase = phase;
+        lastTransitionTicks = nowTicks;
+        transitionSequence++;
+
+        QuicConnectionEffectAccumulator effects = default;
+        bool stateChanged = HandleOpenStreamAction(requestId, streamType, ref effects);
+
+        return new QuicConnectionTransitionResult(
+            transitionSequence,
+            nowTicks,
+            QuicConnectionEventKind.StreamAction,
             previousPhase,
             phase,
             stateChanged,

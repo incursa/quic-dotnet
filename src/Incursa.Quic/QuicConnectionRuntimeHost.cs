@@ -215,6 +215,29 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
         return shards[route.ShardIndex].TryPostFlowControlCreditUpdate(handle, route.Runtime);
     }
 
+    public bool TryPostStreamOpen(
+        QuicConnectionHandle handle,
+        long requestId,
+        QuicStreamType streamType)
+    {
+        if (Volatile.Read(ref disposed) != 0)
+        {
+            return false;
+        }
+
+        if (!routes.TryGetValue(handle, out QuicConnectionRuntimeRoute route))
+        {
+            return false;
+        }
+
+        if (route.Runtime.IsDisposed)
+        {
+            return false;
+        }
+
+        return shards[route.ShardIndex].TryPostStreamOpen(handle, route.Runtime, requestId, streamType);
+    }
+
     /// <summary>
     /// Starts the shard consumers and returns a task that completes when all shards stop.
     /// </summary>

@@ -20,6 +20,7 @@ internal enum QuicConnectionRuntimeShardWorkItemKind
     PacketReceived = 1,
     StreamCapacityRelease = 2,
     FlowControlCreditUpdate = 3,
+    StreamOpen = 4,
 }
 
 internal readonly record struct QuicConnectionRuntimeShardWorkItem
@@ -68,6 +69,20 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
         Kind = kind;
     }
 
+    internal QuicConnectionRuntimeShardWorkItem(
+        QuicConnectionHandle handle,
+        QuicConnectionRuntime runtime,
+        long requestId,
+        QuicStreamType streamType)
+    {
+        Handle = handle;
+        Runtime = runtime;
+        ConnectionEvent = null;
+        Kind = QuicConnectionRuntimeShardWorkItemKind.StreamOpen;
+        RequestId = requestId;
+        StreamType = streamType;
+    }
+
     internal QuicConnectionRuntimeShardWorkItemKind Kind { get; }
 
     internal QuicConnectionHandle Handle { get; }
@@ -81,4 +96,8 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
     internal byte[]? OwnedDatagramBuffer { get; }
 
     internal QuicReceiveBufferOwnership OwnedDatagramBufferOwnership { get; }
+
+    internal long RequestId { get; }
+
+    internal QuicStreamType StreamType { get; }
 }
