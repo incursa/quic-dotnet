@@ -20,7 +20,9 @@ param(
         "quic.transport.stream-throughput.1mb",
         "quic.transport.multiplex.100x64kb",
         "quic.transport.duplex-streams"
-    )
+    ),
+
+    [switch] $SkipRepoAggregateResults
 )
 
 Set-StrictMode -Version Latest
@@ -232,6 +234,21 @@ function Read-AggregateDocument {
     return $document
 }
 
+function Get-RepoAggregateResultFiles {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $RepositoryRoot
+    )
+
+    $repoResultsRoot = Join-Path $RepositoryRoot "artifacts\protocol-lab\results"
+    if (-not (Test-Path -LiteralPath $repoResultsRoot -PathType Container)) {
+        return
+    }
+
+    Get-ChildItem -LiteralPath $repoResultsRoot -File -Filter "*aggregate-results.json" |
+        Sort-Object FullName
+}
+
 function Add-AggregateRows {
     param(
         [Parameter(Mandatory = $true)]
@@ -346,21 +363,30 @@ foreach ($runDirectory in $runDirectories) {
 }
 
 $aggregateResultFiles = New-Object System.Collections.Generic.List[object]
-foreach ($aggregateResultPathValue in @($AggregateResultPath)) {
-    foreach ($aggregateResultPath in @(Expand-StringList $aggregateResultPathValue)) {
-        $resolvedAggregateResultPath = Resolve-FullPath -Path ([string]$aggregateResultPath) -BasePath $repoRoot
-        if (-not (Test-Path -LiteralPath $resolvedAggregateResultPath -PathType Leaf)) {
-            Write-Warning "Skipping missing aggregate result file: $resolvedAggregateResultPath"
-            continue
-        }
-
-        $aggregateResultFile = Get-Item -LiteralPath $resolvedAggregateResultPath
-        $aggregateResultFiles.Add($aggregateResultFile) | Out-Null
+$expandedAggregateResultPaths = @(Expand-StringList $AggregateResultPath)
+if (-not $SkipRepoAggregateResults -and $expandedAggregateResultPaths.Count -eq 0) {
+    foreach ($repoAggregateResultFile in @(Get-RepoAggregateResultFiles -RepositoryRoot $repoRoot)) {
+        $aggregateResultFiles.Add($repoAggregateResultFile) | Out-Null
         Add-AggregateRows `
-            -AggregatePath $aggregateResultFile.FullName `
-            -SourceRoot (Split-Path -Parent $aggregateResultFile.FullName) `
-            -FallbackLastWriteTimeUtc $aggregateResultFile.LastWriteTimeUtc
+            -AggregatePath $repoAggregateResultFile.FullName `
+            -SourceRoot (Split-Path -Parent $repoAggregateResultFile.FullName) `
+            -FallbackLastWriteTimeUtc $repoAggregateResultFile.LastWriteTimeUtc
     }
+}
+
+foreach ($aggregateResultPath in $expandedAggregateResultPaths) {
+    $resolvedAggregateResultPath = Resolve-FullPath -Path ([string]$aggregateResultPath) -BasePath $repoRoot
+    if (-not (Test-Path -LiteralPath $resolvedAggregateResultPath -PathType Leaf)) {
+        Write-Warning "Skipping missing aggregate result file: $resolvedAggregateResultPath"
+        continue
+    }
+
+    $aggregateResultFile = Get-Item -LiteralPath $resolvedAggregateResultPath
+    $aggregateResultFiles.Add($aggregateResultFile) | Out-Null
+    Add-AggregateRows `
+        -AggregatePath $aggregateResultFile.FullName `
+        -SourceRoot (Split-Path -Parent $aggregateResultFile.FullName) `
+        -FallbackLastWriteTimeUtc $aggregateResultFile.LastWriteTimeUtc
 }
 
 $groups = New-Object System.Collections.Generic.List[object]
