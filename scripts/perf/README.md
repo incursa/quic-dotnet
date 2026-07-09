@@ -232,6 +232,24 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\New-QuicProtocolLab
   -ProtocolLabRunRoot $runRoots
 ```
 
+To include package-backed controller artifact downloads saved by
+`Invoke-QuicDotNetProtocolLabRun.ps1`, pass the downloaded aggregate result
+wrappers explicitly. The report accepts both raw `aggregate-results.json` files
+and controller artifact wrapper files that contain an `artifact` object plus
+inline `text`.
+
+```powershell
+$aggregateResults = @(
+  ".\artifacts\protocol-lab\results\job-bcb049b36892490ca2949dcb6d8dcc00-aggregate-results.json",
+  ".\artifacts\protocol-lab\results\job-c1f45316b0ef4d3d85e179c794682c0c-aggregate-results.json",
+  ".\artifacts\protocol-lab\results\job-875a89f8926e45b6b93cf7ce806434f4-aggregate-results.json"
+)
+
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\New-QuicProtocolLabBaselineReport.ps1 `
+  -ImplementationId quic-dotnet-raw-dev `
+  -AggregateResultPath $aggregateResults
+```
+
 Output is written under:
 
 ```text

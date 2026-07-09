@@ -6,6 +6,8 @@ param(
 
     [string[]] $ProtocolLabRunRoot = @(),
 
+    [string[]] $AggregateResultPath = @(),
+
     [string] $OutputRoot = ".artifacts\perf-baselines",
 
     [string] $RunId = "quic-baseline-$((Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssZ'))",
@@ -155,14 +157,23 @@ function Get-StringArray {
 }
 
 function Expand-StringList {
-    param([string[]] $Value)
+    param($Value)
 
     foreach ($item in @($Value)) {
-        if ([string]::IsNullOrWhiteSpace($item)) {
+        if ($item -is [System.Array] -and -not ($item -is [string])) {
+            foreach ($nested in @(Expand-StringList $item)) {
+                $nested
+            }
+
             continue
         }
 
-        foreach ($part in $item -split ",") {
+        $text = [string]$item
+        if ([string]::IsNullOrWhiteSpace($text)) {
+            continue
+        }
+
+        foreach ($part in $text -split ",") {
             $trimmed = $part.Trim()
             if (-not [string]::IsNullOrWhiteSpace($trimmed)) {
                 $trimmed
@@ -192,6 +203,10 @@ function Get-RunDirectories {
     }
 
     if (-not (Test-Path -LiteralPath $ResolvedRunsRoot -PathType Container)) {
+        if (@(Expand-StringList $AggregateResultPath).Count -gt 0) {
+            return
+        }
+
         throw "Runs root not found: $ResolvedRunsRoot"
     }
 
@@ -199,43 +214,42 @@ function Get-RunDirectories {
         Where-Object { Test-Path -LiteralPath (Join-Path $_.FullName "aggregate-results.json") -PathType Leaf }
 }
 
-$repoRoot = Get-RepoRoot
-$resolvedProtocolLabExecutionRoot = Resolve-FullPath -Path $ProtocolLabExecutionRoot -BasePath $repoRoot
-if ([string]::IsNullOrWhiteSpace($RunsRoot)) {
-    $RunsRoot = Join-Path $resolvedProtocolLabExecutionRoot ".artifacts\runs"
-}
+function Read-AggregateDocument {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $AggregatePath
+    )
 
-$resolvedRunsRoot = Resolve-FullPath -Path $RunsRoot -BasePath $repoRoot
-$resolvedOutputRoot = Resolve-FullPath -Path $OutputRoot -BasePath $repoRoot
-$reportRoot = Join-Path $resolvedOutputRoot $RunId
-$jsonPath = Join-Path $reportRoot "baseline-report.json"
-$markdownPath = Join-Path $reportRoot "baseline-report.md"
-New-Item -ItemType Directory -Force -Path $reportRoot | Out-Null
-
-$scenarioSet = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
-foreach ($id in @(Expand-StringList $ScenarioId)) {
-    if (-not [string]::IsNullOrWhiteSpace($id)) {
-        [void]$scenarioSet.Add($id)
+    $document = Get-Content -LiteralPath $AggregatePath -Raw | ConvertFrom-Json
+    if ((Test-Property $document "text") -and (Test-Property $document "artifact")) {
+        $artifact = Get-OptionalPropertyValue $document "artifact"
+        $artifactName = if ($artifact) { [string](Get-OptionalPropertyValue $artifact "name") } else { "" }
+        if ([string]::Equals($artifactName, "aggregate-results.json", [StringComparison]::OrdinalIgnoreCase)) {
+            return $document.text | ConvertFrom-Json
+        }
     }
+
+    return $document
 }
 
-$implementationSet = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
-foreach ($id in @(Expand-StringList $ImplementationId)) {
-    if (-not [string]::IsNullOrWhiteSpace($id)) {
-        [void]$implementationSet.Add($id)
-    }
-}
+function Add-AggregateRows {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $AggregatePath,
 
-$rows = New-Object System.Collections.Generic.List[object]
-$runDirectories = @(Get-RunDirectories -RequestedRunRoots $ProtocolLabRunRoot -ResolvedRunsRoot $resolvedRunsRoot)
-foreach ($runDirectory in $runDirectories) {
-    $aggregatePath = Join-Path $runDirectory.FullName "aggregate-results.json"
-    $document = Get-Content -LiteralPath $aggregatePath -Raw | ConvertFrom-Json
-    $generatedAt = if (Test-Property $document "generatedAt") { [DateTimeOffset]::Parse([string]$document.generatedAt) } else { [DateTimeOffset]::new([DateTime]::SpecifyKind($runDirectory.LastWriteTimeUtc, [DateTimeKind]::Utc)) }
+        [Parameter(Mandatory = $true)]
+        [string] $SourceRoot,
+
+        [Parameter(Mandatory = $true)]
+        [DateTime] $FallbackLastWriteTimeUtc
+    )
+
+    $document = Read-AggregateDocument -AggregatePath $AggregatePath
+    $generatedAt = if (Test-Property $document "generatedAt") { [DateTimeOffset]::Parse([string]$document.generatedAt) } else { [DateTimeOffset]::new([DateTime]::SpecifyKind($FallbackLastWriteTimeUtc, [DateTimeKind]::Utc)) }
     foreach ($aggregate in @($document.aggregates)) {
         $scenario = [string](Get-OptionalPropertyValue $aggregate "scenarioId")
         if ([string]::IsNullOrWhiteSpace($scenario)) {
-            Write-Warning "Skipping aggregate row without scenarioId in $aggregatePath"
+            Write-Warning "Skipping aggregate row without scenarioId in $AggregatePath"
             continue
         }
         if ($scenarioSet.Count -gt 0 -and -not $scenarioSet.Contains($scenario)) {
@@ -250,11 +264,12 @@ foreach ($runDirectory in $runDirectories) {
         $primaryMetric = Get-PrimaryMetricName -Scenario $scenario
         $validation = Get-OptionalPropertyValue $aggregate "validation"
         $evidence = Get-OptionalPropertyValue $aggregate "evidence"
+        $runId = if (Test-Property $document "runId") { [string]$document.runId } else { [System.IO.Path]::GetFileNameWithoutExtension($AggregatePath) }
         $row = [ordered]@{
-            runId = [string]$document.runId
+            runId = $runId
             generatedAt = $generatedAt.ToUniversalTime().ToString("O")
-            runRoot = $runDirectory.FullName
-            aggregatePath = $aggregatePath
+            runRoot = $SourceRoot
+            aggregatePath = $AggregatePath
             implementationId = $implementation
             implementationName = [string](Get-OptionalPropertyValue $aggregate "implementationName")
             scenarioId = $scenario
@@ -293,6 +308,58 @@ foreach ($runDirectory in $runDirectories) {
             failureReasons = Get-StringArray (Get-OptionalPropertyValue $aggregate "failureReasons")
         }
         $rows.Add([pscustomobject]$row) | Out-Null
+    }
+}
+
+$repoRoot = Get-RepoRoot
+$resolvedProtocolLabExecutionRoot = Resolve-FullPath -Path $ProtocolLabExecutionRoot -BasePath $repoRoot
+if ([string]::IsNullOrWhiteSpace($RunsRoot)) {
+    $RunsRoot = Join-Path $resolvedProtocolLabExecutionRoot ".artifacts\runs"
+}
+
+$resolvedRunsRoot = Resolve-FullPath -Path $RunsRoot -BasePath $repoRoot
+$resolvedOutputRoot = Resolve-FullPath -Path $OutputRoot -BasePath $repoRoot
+$reportRoot = Join-Path $resolvedOutputRoot $RunId
+$jsonPath = Join-Path $reportRoot "baseline-report.json"
+$markdownPath = Join-Path $reportRoot "baseline-report.md"
+New-Item -ItemType Directory -Force -Path $reportRoot | Out-Null
+
+$scenarioSet = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+foreach ($id in @(Expand-StringList $ScenarioId)) {
+    if (-not [string]::IsNullOrWhiteSpace($id)) {
+        [void]$scenarioSet.Add($id)
+    }
+}
+
+$implementationSet = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+foreach ($id in @(Expand-StringList $ImplementationId)) {
+    if (-not [string]::IsNullOrWhiteSpace($id)) {
+        [void]$implementationSet.Add($id)
+    }
+}
+
+$rows = New-Object System.Collections.Generic.List[object]
+$runDirectories = @(Get-RunDirectories -RequestedRunRoots $ProtocolLabRunRoot -ResolvedRunsRoot $resolvedRunsRoot)
+foreach ($runDirectory in $runDirectories) {
+    $aggregatePath = Join-Path $runDirectory.FullName "aggregate-results.json"
+    Add-AggregateRows -AggregatePath $aggregatePath -SourceRoot $runDirectory.FullName -FallbackLastWriteTimeUtc $runDirectory.LastWriteTimeUtc
+}
+
+$aggregateResultFiles = New-Object System.Collections.Generic.List[object]
+foreach ($aggregateResultPathValue in @($AggregateResultPath)) {
+    foreach ($aggregateResultPath in @(Expand-StringList $aggregateResultPathValue)) {
+        $resolvedAggregateResultPath = Resolve-FullPath -Path ([string]$aggregateResultPath) -BasePath $repoRoot
+        if (-not (Test-Path -LiteralPath $resolvedAggregateResultPath -PathType Leaf)) {
+            Write-Warning "Skipping missing aggregate result file: $resolvedAggregateResultPath"
+            continue
+        }
+
+        $aggregateResultFile = Get-Item -LiteralPath $resolvedAggregateResultPath
+        $aggregateResultFiles.Add($aggregateResultFile) | Out-Null
+        Add-AggregateRows `
+            -AggregatePath $aggregateResultFile.FullName `
+            -SourceRoot (Split-Path -Parent $aggregateResultFile.FullName) `
+            -FallbackLastWriteTimeUtc $aggregateResultFile.LastWriteTimeUtc
     }
 }
 
@@ -337,6 +404,7 @@ $reportImplementationIds = @(Expand-StringList $ImplementationId | Sort-Object -
 $reportGroups = @($groups.ToArray())
 $reportRows = @($rows.ToArray())
 $reportRunDirectories = @($runDirectories)
+$reportAggregateResultFiles = @($aggregateResultFiles.ToArray())
 
 $report = [ordered]@{
     schemaVersion = "incursa.quic.protocol-lab-baseline-report.v1"
@@ -348,6 +416,7 @@ $report = [ordered]@{
     scenarioIds = $reportScenarioIds
     implementationIds = $reportImplementationIds
     sourceRunCount = $reportRunDirectories.Count
+    sourceAggregateFileCount = $reportAggregateResultFiles.Count
     rowCount = $reportRows.Count
     groups = $reportGroups
     rows = $reportRows
@@ -363,6 +432,7 @@ $lines.Add("- Run ID: ``$RunId``")
 $lines.Add("- Generated: ``$($report.generatedAt)``")
 $lines.Add("- ProtocolLab execution root: ``$resolvedProtocolLabExecutionRoot``")
 $lines.Add("- Runs scanned: ``$($runDirectories.Count)``")
+$lines.Add("- Aggregate result files scanned: ``$($aggregateResultFiles.Count)``")
 $lines.Add("- Matching rows: ``$($rows.Count)``")
 if ($reportImplementationIds.Count -gt 0) {
     $lines.Add("- Implementation filter: ``$($reportImplementationIds -join ', ')``")
@@ -420,6 +490,9 @@ $lines.Add("## Source Runs")
 $lines.Add("")
 foreach ($runDirectory in $runDirectories | Sort-Object Name) {
     $lines.Add("- ``$($runDirectory.Name)``: ``$($runDirectory.FullName)``")
+}
+foreach ($aggregateResultFile in $aggregateResultFiles | Sort-Object Name) {
+    $lines.Add("- ``$($aggregateResultFile.Name)``: ``$($aggregateResultFile.FullName)``")
 }
 
 Set-Content -LiteralPath $markdownPath -Value $lines -Encoding utf8NoBOM
