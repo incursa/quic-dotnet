@@ -1674,7 +1674,7 @@ internal static class QuicAllocationHarness
         int offset = 0;
         while (offset < buffer.Length)
         {
-            int bytesRead = await stream.ReadAsync(buffer, offset, buffer.Length - offset).ConfigureAwait(false);
+            int bytesRead = await stream.ReadAsync(buffer.AsMemory(offset), cancellationToken: default).ConfigureAwait(false);
             if (bytesRead == 0)
             {
                 throw new InvalidOperationException("Unexpected EOF before the full payload was read.");
@@ -1686,7 +1686,7 @@ internal static class QuicAllocationHarness
 
     private static async Task EnsureEofAsync(Stream stream, byte[] probe, string failureMessage)
     {
-        int bytesRead = await stream.ReadAsync(probe, 0, probe.Length).ConfigureAwait(false);
+        int bytesRead = await stream.ReadAsync(probe.AsMemory(), cancellationToken: default).ConfigureAwait(false);
         if (bytesRead != 0)
         {
             throw new InvalidOperationException(failureMessage);

@@ -435,9 +435,7 @@ public class QuicPublicApiSteadyStateStreamBenchmarks
         int offset = 0;
         while (offset < buffer.Length)
         {
-            int bytesRead = await stream.ReadAsync(buffer, offset, buffer.Length - offset)
-                .WaitAsync(cancellationToken)
-                .ConfigureAwait(false);
+            int bytesRead = await stream.ReadAsync(buffer.AsMemory(offset), cancellationToken).ConfigureAwait(false);
 
             if (bytesRead == 0)
             {
@@ -451,7 +449,7 @@ public class QuicPublicApiSteadyStateStreamBenchmarks
     private static async Task EnsureEofAsync(Stream stream, CancellationToken cancellationToken, string failureMessage)
     {
         byte[] probe = new byte[1];
-        int bytesRead = await stream.ReadAsync(probe, 0, probe.Length).WaitAsync(cancellationToken).ConfigureAwait(false);
+        int bytesRead = await stream.ReadAsync(probe.AsMemory(), cancellationToken).ConfigureAwait(false);
         if (bytesRead != 0)
         {
             throw new InvalidOperationException(failureMessage);
