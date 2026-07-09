@@ -15,6 +15,8 @@ param(
     [ValidateSet("Quick", "Regression", "Comparison")]
     [string] $WorkflowProfile = "Quick",
 
+    [string] $LoadProfileId,
+
     [string] $RunIdPrefix = "local-quic-dev-$((Get-Date).ToString('yyyyMMddHHmmss'))",
 
     [ValidateSet("Debug", "Release")]
@@ -796,6 +798,9 @@ if (-not [string]::IsNullOrWhiteSpace($scenarioFilter)) {
     Write-Host "  scenario filter: $scenarioFilter"
 }
 Write-Host "  workflow profile: $WorkflowProfile"
+if (-not [string]::IsNullOrWhiteSpace($LoadProfileId)) {
+    Write-Host "  load profile: $LoadProfileId"
+}
 Write-Host "  run id prefix: $RunIdPrefix"
 if ($useLocalPackageMode) {
     Write-Host "  local feed: $resolvedFeedRoot"
@@ -927,6 +932,10 @@ try {
 
     if ($NoRestore) {
         $benchmarkArgs += "-NoRestore"
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($LoadProfileId)) {
+        $benchmarkArgs += @("-LoadProfileId", $LoadProfileId)
     }
 
     if (-not [string]::IsNullOrWhiteSpace($implementationFilter)) {

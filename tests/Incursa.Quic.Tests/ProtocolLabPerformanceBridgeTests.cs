@@ -51,7 +51,7 @@ public sealed class ProtocolLabPerformanceBridgeTests
             "-Suite",
             "quic-transport-v1-comparison",
             "-Implementation",
-            "incursa-raw-quic-adapter-v1",
+            "quic-dotnet-raw-dev",
             "-Scenario",
             "quic.transport.multiplex.100x64kb",
             "-WorkflowProfile",

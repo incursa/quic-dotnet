@@ -86,7 +86,7 @@ if ([string]::IsNullOrWhiteSpace($Suite)) {
 }
 
 if ([string]::IsNullOrWhiteSpace($ImplementationId)) {
-    $ImplementationId = if ($Protocol -eq "quic") { "incursa-raw-quic-adapter-v1" } else { "incursa-http3" }
+    $ImplementationId = if ($Protocol -eq "quic") { "quic-dotnet-raw-dev" } else { "incursa-http3" }
 }
 
 if ([string]::IsNullOrWhiteSpace($Scenario)) {

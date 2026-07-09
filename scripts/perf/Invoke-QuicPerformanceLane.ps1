@@ -24,6 +24,8 @@ param(
 
     [string] $RawQuicScenario = "quic.transport.multiplex.100x64kb",
 
+    [string] $ProtocolLabLoadProfile,
+
     [int] $Http3Connections = 0,
 
     [int] $Http3StreamsPerConnection = 0,
@@ -217,7 +219,7 @@ function Get-SurfaceConfiguration {
                         Id = "raw-quic"
                         Name = "Raw QUIC"
                         Suite = "quic-transport-v1-comparison"
-                        Implementation = "incursa-raw-quic-adapter-v1"
+                        Implementation = "quic-dotnet-raw-dev"
                         Scenario = if ([string]::IsNullOrWhiteSpace($RequestedRawQuicScenario)) { "quic.transport.multiplex.100x64kb" } else { $RequestedRawQuicScenario }
                         Connections = Select-PositiveOrDefault $RequestedRawQuicConnections 1
                         StreamsPerConnection = Select-PositiveOrDefault $RequestedRawQuicStreamsPerConnection 1
@@ -381,7 +383,7 @@ function Get-ProtocolLabJobs {
             Id = "raw-quic"
             Name = "Raw QUIC"
             Suite = "quic-transport-v1-comparison"
-            Implementation = "incursa-raw-quic-adapter-v1"
+            Implementation = "quic-dotnet-raw-dev"
             Scenario = $SurfaceConfiguration.ProtocolLabScenario
             Connections = $SurfaceConfiguration.Connections
             StreamsPerConnection = $SurfaceConfiguration.StreamsPerConnection
@@ -794,6 +796,10 @@ if ($shouldRunProtocolLab) {
             $protocolLabArgs += "-NoRestore"
         }
 
+        if (-not [string]::IsNullOrWhiteSpace($ProtocolLabLoadProfile)) {
+            $protocolLabArgs += @("-LoadProfileId", $ProtocolLabLoadProfile)
+        }
+
         if ($CaptureCounters) {
             $protocolLabArgs += @(
                 "-CaptureCounters",
@@ -940,6 +946,7 @@ $laneSummaryDocument = [ordered]@{
         warmupSeconds = $warmupSeconds
         repetitions = $repetitions
         failOnProtocolLabError = [bool]$effectiveFailOnProtocolLabError
+        loadProfileId = $ProtocolLabLoadProfile
     }
     benchmarkDotNet = [ordered]@{
         skipped = [bool]$SkipBenchmarks

@@ -217,7 +217,7 @@ Create an Incursa-focused report from the shared local run store:
 
 ```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\New-QuicProtocolLabBaselineReport.ps1 `
-  -ImplementationId incursa-http3,incursa-raw-quic-adapter-v1
+  -ImplementationId incursa-http3,quic-dotnet-raw-dev
 ```
 
 To limit the report to specific run roots:
@@ -505,7 +505,7 @@ For tight performance iteration, use project references and focused filters:
 pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-ProtocolLabLocalQuicBenchmark.ps1 `
   -UseProjectReferences `
   -Suite quic-transport-v1-comparison `
-  -Implementation incursa-raw-quic-adapter-v1 `
+  -Implementation quic-dotnet-raw-dev `
   -Scenario quic.transport.multiplex.100x64kb `
   -DurationSeconds 1 `
   -WarmupSeconds 1 `
@@ -522,7 +522,7 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-ProtocolLabL
   -UseProjectReferences `
   -NoRestore `
   -Suite quic-transport-v1-comparison `
-  -Implementation incursa-raw-quic-adapter-v1 `
+  -Implementation quic-dotnet-raw-dev `
   -Scenario quic.transport.multiplex.100x64kb `
   -DurationSeconds 1 `
   -WarmupSeconds 1 `
@@ -564,7 +564,7 @@ close-loop target should be:
 
 ```text
 suite: quic-transport-v1-comparison
-implementation: incursa-raw-quic-adapter-v1
+implementation: quic-dotnet-raw-dev
 scenario: quic.transport.multiplex.100x64kb
 ```
 

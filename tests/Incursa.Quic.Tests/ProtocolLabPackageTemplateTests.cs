@@ -480,7 +480,7 @@ public sealed class ProtocolLabPackageTemplateTests
               },
               "aggregates": [
                 {
-                  "implementationId": "incursa-raw-quic-adapter-v1",
+                  "implementationId": "quic-dotnet-raw-dev",
                   "scenarioId": "quic.transport.multiplex.100x64kb",
                   "protocol": "quic",
                   "executionProfile": "local-process",
