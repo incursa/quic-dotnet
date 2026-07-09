@@ -254,7 +254,16 @@ Done when:
 
 ## 16. Build A Small “Performance Triage” Command
 
-We need one command that answers “what got slower, what got noisier, and why should I care?”
+Status: closed for local retained-run closeout. `scripts/perf/Compare-QuicProtocolLabRuns.ps1`
+accepts two retained ProtocolLab aggregate run roots or resolvable run IDs and emits concise
+Markdown plus JSON under `.artifacts/perf-triage/{runId}`. Proof run
+`codex-triage-command-proof-20260709a` compared the listener-endpoint-cache counters run with
+the complete-response-frame-cache counters run, found 1 matching row with no missing or added
+rows, flagged request-rate and p95 improvements, and called out allocation-rate noise as a
+regressed signal.
+
+Keep improving this item only if future closeout needs cross-run trace-attribution deltas,
+dashboard import, or hosted-lab integration.
 
 Done when:
 
