@@ -18,6 +18,7 @@ internal enum QuicConnectionRuntimeShardWorkItemKind
 {
     Event = 0,
     PacketReceived = 1,
+    StreamCapacityRelease = 2,
 }
 
 internal readonly record struct QuicConnectionRuntimeShardWorkItem
@@ -47,6 +48,22 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
         PacketReceived = packetReceived;
         OwnedDatagramBuffer = ownedDatagramBuffer;
         OwnedDatagramBufferOwnership = ownedDatagramBufferOwnership;
+    }
+
+    internal QuicConnectionRuntimeShardWorkItem(
+        QuicConnectionHandle handle,
+        QuicConnectionRuntime runtime,
+        QuicConnectionRuntimeShardWorkItemKind kind)
+    {
+        if (kind != QuicConnectionRuntimeShardWorkItemKind.StreamCapacityRelease)
+        {
+            throw new ArgumentOutOfRangeException(nameof(kind));
+        }
+
+        Handle = handle;
+        Runtime = runtime;
+        ConnectionEvent = null;
+        Kind = kind;
     }
 
     internal QuicConnectionRuntimeShardWorkItemKind Kind { get; }

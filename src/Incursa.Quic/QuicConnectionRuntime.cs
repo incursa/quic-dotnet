@@ -144,6 +144,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private Exception? inboundStreamQueueCompletionException;
     private Exception? inboundDatagramQueueCompletionException;
     private Func<QuicConnectionEvent, bool>? localApiEventDispatcher;
+    private Func<bool>? streamCapacityReleaseDispatcher;
     private Action<int, int>? streamCapacityObserver;
     private bool scheduledPeerStreamCapacityReleaseEventPending;
     private bool scheduledFlowControlCreditUpdatePending;
@@ -1211,6 +1212,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         localApiEventDispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
     }
 
+    internal void SetStreamCapacityReleaseDispatcher(Func<bool> dispatcher)
+    {
+        streamCapacityReleaseDispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+    }
+
     internal void SetStreamCapacityObserver(Action<int, int>? observer)
     {
         streamCapacityObserver = observer;
@@ -1224,11 +1230,17 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         bool shouldPostEvent = TryMarkPeerStreamCapacityReleaseScheduled(streamId);
-        if (shouldPostEvent
-            && !TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
-                clock.Ticks,
-                RequestId: 0,
-                QuicConnectionStreamActionKind.ReleaseCapacity)))
+        if (!shouldPostEvent)
+        {
+            return;
+        }
+
+        bool posted = streamCapacityReleaseDispatcher?.Invoke()
+            ?? TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
+                    clock.Ticks,
+                    RequestId: 0,
+                    QuicConnectionStreamActionKind.ReleaseCapacity));
+        if (!posted)
         {
             ClearPeerStreamCapacityReleaseEventScheduled();
         }
@@ -2288,6 +2300,25 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             transitionSequence,
             nowTicks,
             QuicConnectionEventKind.PacketReceived,
+            previousPhase,
+            phase,
+            stateChanged,
+            effects);
+    }
+
+    internal QuicConnectionTransitionResult TransitionStreamCapacityRelease(long nowTicks)
+    {
+        QuicConnectionPhase previousPhase = phase;
+        lastTransitionTicks = nowTicks;
+        transitionSequence++;
+
+        QuicConnectionEffectAccumulator effects = default;
+        bool stateChanged = HandleReleaseCapacityStreamAction(ref effects);
+
+        return new QuicConnectionTransitionResult(
+            transitionSequence,
+            nowTicks,
+            QuicConnectionEventKind.StreamAction,
             previousPhase,
             phase,
             stateChanged,

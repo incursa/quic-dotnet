@@ -1290,6 +1290,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             }
 
             runtime.SetLocalApiEventDispatcher(connectionEvent => endpoint.Host.TryPostEvent(handle, connectionEvent));
+            runtime.SetStreamCapacityReleaseDispatcher(() => endpoint.Host.TryPostStreamCapacityRelease(handle));
 
             if (!connections.TryAdd(handle, new PendingConnectionState(handle, runtime, connection)))
             {

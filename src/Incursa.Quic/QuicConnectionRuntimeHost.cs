@@ -175,6 +175,26 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
             ownedDatagramBufferOwnership);
     }
 
+    public bool TryPostStreamCapacityRelease(QuicConnectionHandle handle)
+    {
+        if (Volatile.Read(ref disposed) != 0)
+        {
+            return false;
+        }
+
+        if (!routes.TryGetValue(handle, out QuicConnectionRuntimeRoute route))
+        {
+            return false;
+        }
+
+        if (route.Runtime.IsDisposed)
+        {
+            return false;
+        }
+
+        return shards[route.ShardIndex].TryPostStreamCapacityRelease(handle, route.Runtime);
+    }
+
     /// <summary>
     /// Starts the shard consumers and returns a task that completes when all shards stop.
     /// </summary>
