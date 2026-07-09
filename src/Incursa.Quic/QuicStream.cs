@@ -15,7 +15,7 @@ namespace Incursa.Quic;
 // CONTEXT: Read and write closure stay separate so half-closed and aborted states do not collapse
 // into a single terminal flag, and the write gate serializes finalization against concurrent writes.
 // SEE: CompleteWritesAsync and Abort
-public sealed class QuicStream : Stream
+public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
 {
     private const long MaximumErrorCodeValue = (1L << 62) - 1;
 
@@ -70,7 +70,7 @@ public sealed class QuicStream : Stream
         if (runtime is not null)
         {
             QuicMetrics.RecordStreamOpened(runtime.TlsState.Role, streamId, type);
-            runtimeObserverId = runtime.RegisterStreamObserver(streamId, HandleRuntimeNotification);
+            runtimeObserverId = runtime.RegisterStreamObserver(streamId, this);
         }
     }
 
@@ -1125,4 +1125,7 @@ public sealed class QuicStream : Stream
             throw new ArgumentException("The buffer offset and count exceed the available range.", nameof(count));
         }
     }
+
+    void IQuicStreamNotificationObserver.OnStreamNotification(QuicStreamNotification notification)
+        => HandleRuntimeNotification(notification);
 }

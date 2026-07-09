@@ -31,19 +31,35 @@ internal sealed class QuicStreamObserverDirectory
         Action<QuicStreamNotification> observer)
     {
         ArgumentNullException.ThrowIfNull(observer);
+        return TryAdd(streamId, observerId, observer, observerTarget: null);
+    }
 
+    internal bool TryAdd(
+        ulong streamId,
+        long observerId,
+        IQuicStreamNotificationObserver observer)
+    {
+        ArgumentNullException.ThrowIfNull(observer);
+        return TryAdd(streamId, observerId, observerAction: null, observerTarget: observer);
+    }
+
+    private bool TryAdd(
+        ulong streamId,
+        long observerId,
+        Action<QuicStreamNotification>? observerAction,
+        IQuicStreamNotificationObserver? observerTarget)
+    {
         lock (sync)
         {
             if (!observersByStreamId.TryGetValue(streamId, out ObserverSlot slot))
             {
                 observersByStreamId.Add(
                     streamId,
-                    new ObserverSlot(observerId, observer, EmptyObservers));
+                    new ObserverSlot(observerId, observerAction, observerTarget, EmptyObservers));
                 return true;
             }
 
-            Action<QuicStreamNotification>? single = slot.SingleObserver;
-            if (single is not null)
+            if (slot.HasSingleObserver)
             {
                 if (slot.SingleObserverId == observerId)
                 {
@@ -52,11 +68,11 @@ internal sealed class QuicStreamObserverDirectory
 
                 ObserverEntry[] upgraded =
                 [
-                    new ObserverEntry(slot.SingleObserverId, single),
-                    new ObserverEntry(observerId, observer),
+                    new ObserverEntry(slot.SingleObserverId, slot.SingleObserverAction, slot.SingleObserverTarget),
+                    new ObserverEntry(observerId, observerAction, observerTarget),
                 ];
 
-                observersByStreamId[streamId] = new ObserverSlot(0, null, upgraded);
+                observersByStreamId[streamId] = new ObserverSlot(0, null, null, upgraded);
                 return true;
             }
 
@@ -71,8 +87,8 @@ internal sealed class QuicStreamObserverDirectory
 
             ObserverEntry[] updated = new ObserverEntry[snapshot.Length + 1];
             Array.Copy(snapshot, updated, snapshot.Length);
-            updated[^1] = new ObserverEntry(observerId, observer);
-            observersByStreamId[streamId] = new ObserverSlot(0, null, updated);
+            updated[^1] = new ObserverEntry(observerId, observerAction, observerTarget);
+            observersByStreamId[streamId] = new ObserverSlot(0, null, null, updated);
             return true;
         }
     }
@@ -86,8 +102,7 @@ internal sealed class QuicStreamObserverDirectory
                 return false;
             }
 
-            Action<QuicStreamNotification>? single = slot.SingleObserver;
-            if (single is not null)
+            if (slot.HasSingleObserver)
             {
                 if (slot.SingleObserverId != observerId)
                 {
@@ -125,7 +140,8 @@ internal sealed class QuicStreamObserverDirectory
                 ObserverEntry remaining = snapshot[1 - removedIndex];
                 observersByStreamId[streamId] = new ObserverSlot(
                     remaining.ObserverId,
-                    remaining.Observer,
+                    remaining.ObserverAction,
+                    remaining.ObserverTarget,
                     EmptyObservers);
                 return true;
             }
@@ -142,14 +158,15 @@ internal sealed class QuicStreamObserverDirectory
                 Array.Copy(snapshot, removedIndex + 1, updated, removedIndex, remainingAfterRemoved);
             }
 
-            observersByStreamId[streamId] = new ObserverSlot(0, null, updated);
+            observersByStreamId[streamId] = new ObserverSlot(0, null, null, updated);
             return true;
         }
     }
 
     internal bool Notify(ulong streamId, QuicStreamNotification notification)
     {
-        Action<QuicStreamNotification>? single;
+        Action<QuicStreamNotification>? singleAction;
+        IQuicStreamNotificationObserver? singleTarget;
         ObserverEntry[] snapshot;
 
         lock (sync)
@@ -159,19 +176,20 @@ internal sealed class QuicStreamObserverDirectory
                 return false;
             }
 
-            single = slot.SingleObserver;
+            singleAction = slot.SingleObserverAction;
+            singleTarget = slot.SingleObserverTarget;
             snapshot = slot.Observers;
         }
 
-        if (single is not null)
+        if (singleAction is not null || singleTarget is not null)
         {
-            InvokeObserver(single, notification);
+            InvokeObserver(singleAction, singleTarget, notification);
             return true;
         }
 
         for (int index = 0; index < snapshot.Length; index++)
         {
-            InvokeObserver(snapshot[index].Observer, notification);
+            InvokeObserver(snapshot[index].ObserverAction, snapshot[index].ObserverTarget, notification);
         }
 
         return true;
@@ -189,28 +207,37 @@ internal sealed class QuicStreamObserverDirectory
 
         for (int slotIndex = 0; slotIndex < snapshot.Length; slotIndex++)
         {
-            Action<QuicStreamNotification>? single = snapshot[slotIndex].SingleObserver;
-            if (single is not null)
+            Action<QuicStreamNotification>? singleAction = snapshot[slotIndex].SingleObserverAction;
+            IQuicStreamNotificationObserver? singleTarget = snapshot[slotIndex].SingleObserverTarget;
+            if (singleAction is not null || singleTarget is not null)
             {
-                InvokeObserver(single, notification);
+                InvokeObserver(singleAction, singleTarget, notification);
                 continue;
             }
 
             ObserverEntry[] observers = snapshot[slotIndex].Observers;
             for (int observerIndex = 0; observerIndex < observers.Length; observerIndex++)
             {
-                InvokeObserver(observers[observerIndex].Observer, notification);
+                InvokeObserver(observers[observerIndex].ObserverAction, observers[observerIndex].ObserverTarget, notification);
             }
         }
     }
 
     private static void InvokeObserver(
-        Action<QuicStreamNotification> observer,
+        Action<QuicStreamNotification>? observerAction,
+        IQuicStreamNotificationObserver? observerTarget,
         QuicStreamNotification notification)
     {
         try
         {
-            observer(notification);
+            if (observerAction is not null)
+            {
+                observerAction(notification);
+            }
+            else
+            {
+                observerTarget!.OnStreamNotification(notification);
+            }
         }
         catch
         {
@@ -220,10 +247,15 @@ internal sealed class QuicStreamObserverDirectory
 
     private readonly record struct ObserverSlot(
         long SingleObserverId,
-        Action<QuicStreamNotification>? SingleObserver,
-        ObserverEntry[] Observers);
+        Action<QuicStreamNotification>? SingleObserverAction,
+        IQuicStreamNotificationObserver? SingleObserverTarget,
+        ObserverEntry[] Observers)
+    {
+        internal bool HasSingleObserver => SingleObserverAction is not null || SingleObserverTarget is not null;
+    }
 
     private readonly record struct ObserverEntry(
         long ObserverId,
-        Action<QuicStreamNotification> Observer);
+        Action<QuicStreamNotification>? ObserverAction,
+        IQuicStreamNotificationObserver? ObserverTarget);
 }

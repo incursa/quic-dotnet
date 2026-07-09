@@ -17,3 +17,8 @@ internal enum QuicStreamNotificationKind
 internal readonly record struct QuicStreamNotification(
     QuicStreamNotificationKind Kind,
     Exception? Exception);
+
+internal interface IQuicStreamNotificationObserver
+{
+    void OnStreamNotification(QuicStreamNotification notification);
+}

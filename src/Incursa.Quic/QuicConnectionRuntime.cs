@@ -1217,9 +1217,33 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             throw new InvalidOperationException("The connection runtime could not register the stream observer.");
         }
 
+        NotifyCurrentStreamObserverState(streamId, observer, observerTarget: null);
+        return observerId;
+    }
+
+    internal long RegisterStreamObserver(ulong streamId, IQuicStreamNotificationObserver observer)
+    {
+        ArgumentNullException.ThrowIfNull(observer);
+
+        long observerId = Interlocked.Increment(ref nextStreamObserverId);
+
+        if (!streamObservers.TryAdd(streamId, observerId, observer))
+        {
+            throw new InvalidOperationException("The connection runtime could not register the stream observer.");
+        }
+
+        NotifyCurrentStreamObserverState(streamId, observerAction: null, observerTarget: observer);
+        return observerId;
+    }
+
+    private void NotifyCurrentStreamObserverState(
+        ulong streamId,
+        Action<QuicStreamNotification>? observerAction,
+        IQuicStreamNotificationObserver? observerTarget)
+    {
         if (terminalState is QuicConnectionTerminalState terminalStateValue)
         {
-            observer(new QuicStreamNotification(
+            NotifyStreamObserver(observerAction, observerTarget, new QuicStreamNotification(
                 QuicStreamNotificationKind.ConnectionTerminated,
                 CreateTerminalException(terminalStateValue)));
         }
@@ -1227,20 +1251,32 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         {
             if (streamRegistry.Bookkeeping.TryGetReceiveAbortErrorCode(streamId, out ulong receiveAbortErrorCode))
             {
-                observer(new QuicStreamNotification(
+                NotifyStreamObserver(observerAction, observerTarget, new QuicStreamNotification(
                     QuicStreamNotificationKind.ReadAborted,
                     CreateStreamReadAbortedException(receiveAbortErrorCode)));
             }
 
             if (streamRegistry.Bookkeeping.TryGetSendAbortErrorCode(streamId, out ulong sendAbortErrorCode))
             {
-                observer(new QuicStreamNotification(
+                NotifyStreamObserver(observerAction, observerTarget, new QuicStreamNotification(
                     QuicStreamNotificationKind.WriteAborted,
                     CreateStreamWriteAbortedException(sendAbortErrorCode)));
             }
         }
+    }
 
-        return observerId;
+    private static void NotifyStreamObserver(
+        Action<QuicStreamNotification>? observerAction,
+        IQuicStreamNotificationObserver? observerTarget,
+        QuicStreamNotification notification)
+    {
+        if (observerAction is not null)
+        {
+            observerAction(notification);
+            return;
+        }
+
+        observerTarget!.OnStreamNotification(notification);
     }
 
     internal void UnregisterStreamObserver(ulong streamId, long observerId)
