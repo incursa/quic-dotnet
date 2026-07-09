@@ -740,6 +740,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("ProtocolLab benchmark set script was not found", script);
         Assert.Contains("Test-Path -LiteralPath $protocolLabBenchmarkScript -PathType Leaf", script);
         Assert.Contains("throw \"ProtocolLab benchmark set script was not found in execution root: $protocolLabBenchmarkScript\"", script);
+        Assert.Contains("\"CryptoCore\"", script);
+        Assert.Contains("*QuicTlsX25519Benchmarks*", script);
     }
 
     [Fact]

@@ -39,6 +39,9 @@ runs:
 - `RawQuicSendCore` runs send-priority, queue-sorting, batch-payload,
   distinct-stream-id, congestion-control, and congestion-discard suites without
   a ProtocolLab run unless the caller supplies a raw QUIC scenario.
+- `CryptoCore` runs packet-protection, key-phase, crypto-buffer, and managed
+  X25519 suites without a ProtocolLab run. It is a local microbenchmark surface
+  for cryptographic hot paths, not an end-to-end transport benchmark.
 - `PublicApiStream` runs `QuicPublicApiStreamTransferBenchmarks` through the
   public comparison launcher and does not claim equivalence with ProtocolLab
   raw QUIC or HTTP/3 scenarios.

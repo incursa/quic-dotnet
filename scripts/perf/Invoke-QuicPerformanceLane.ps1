@@ -3,7 +3,7 @@ param(
     [ValidateSet("Smoke", "Confidence")]
     [string] $Lane = "Smoke",
 
-    [ValidateSet("CoreProtocolLab", "RawQuicMultiplex", "RawQuicDuplex", "RawQuicSendCore", "PublicApiStream")]
+    [ValidateSet("CoreProtocolLab", "RawQuicMultiplex", "RawQuicDuplex", "RawQuicSendCore", "CryptoCore", "PublicApiStream")]
     [string] $Surface = "RawQuicMultiplex",
 
     [string] $ProtocolLabRoot = "C:\shared\src\incursa\protocol-lab",
@@ -262,6 +262,24 @@ function Get-SurfaceConfiguration {
                 ProtocolLabScenario = $RequestedScenario
                 Connections = Select-PositiveOrDefault $RequestedRawQuicConnections 1
                 StreamsPerConnection = Select-PositiveOrDefault $RequestedRawQuicStreamsPerConnection 1
+                ProtocolLabJobs = @()
+            }
+        }
+        "CryptoCore" {
+            return [pscustomobject]@{
+                BenchmarkScript = "scripts\benchmarks\Invoke-QuicBaseline.ps1"
+                BenchmarkFilters = @(
+                    "*QuicInitialPacketProtectionBenchmarks*",
+                    "*QuicInitialPacketOpenBenchmarks*",
+                    "*QuicHandshakePacketProtectionBenchmarks*",
+                    "*QuicApplicationPacketKeyPhaseBenchmarks*",
+                    "*QuicCryptoBufferBenchmarks*",
+                    "*QuicTlsX25519Benchmarks*"
+                )
+                ProtocolLabEnabled = $false
+                ProtocolLabScenario = $null
+                Connections = 1
+                StreamsPerConnection = 1
                 ProtocolLabJobs = @()
             }
         }
