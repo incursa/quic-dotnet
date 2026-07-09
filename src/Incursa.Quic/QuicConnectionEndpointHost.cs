@@ -197,6 +197,8 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
     private async Task ReceiveLoopAsync(CancellationToken cancellationToken)
     {
+        QuicSocketPacketInformationControl.LocalEndPointCache localEndPointCache = new();
+
         while (!cancellationToken.IsCancellationRequested)
         {
             GetSocketBinding(out Socket currentSocket);
@@ -225,7 +227,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
                 QuicMetrics.RecordDatagramReceived(QuicTlsRole.Client, receiveResult.ReceivedBytes);
                 IPEndPoint receivedFrom = (IPEndPoint)receiveResult.RemoteEndPoint;
-                IPEndPoint localEndPoint = QuicSocketPacketInformationControl.ResolveLocalEndPoint(
+                IPEndPoint localEndPoint = localEndPointCache.Resolve(
                     (IPEndPoint)currentSocket.LocalEndPoint!,
                     receiveResult.PacketInformation.Address);
                 QuicConnectionPathIdentity currentPathIdentity = CreatePathIdentity(receivedFrom, localEndPoint);

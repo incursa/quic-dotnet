@@ -358,6 +358,46 @@ public sealed class REQ_QUIC_INT_0008
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void PacketInformationLocalEndpointCacheReusesRepeatedConcretePacketAddress()
+    {
+        IPEndPoint fallback = new(IPAddress.IPv6Any, 443);
+        IPAddress packetAddress = IPAddress.Parse("2001:db8::443");
+        QuicSocketPacketInformationControl.LocalEndPointCache cache = new();
+
+        IPEndPoint first = cache.Resolve(fallback, packetAddress);
+        IPEndPoint second = cache.Resolve(fallback, IPAddress.Parse("2001:db8::443"));
+
+        Assert.Same(first, second);
+        Assert.Equal(packetAddress, first.Address);
+        Assert.Equal(fallback.Port, first.Port);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void PacketInformationLocalEndpointCacheInvalidatesWhenPortOrAddressChanges()
+    {
+        QuicSocketPacketInformationControl.LocalEndPointCache cache = new();
+        IPEndPoint first = cache.Resolve(
+            new IPEndPoint(IPAddress.IPv6Any, 443),
+            IPAddress.Parse("2001:db8::443"));
+
+        IPEndPoint differentPort = cache.Resolve(
+            new IPEndPoint(IPAddress.IPv6Any, 8443),
+            IPAddress.Parse("2001:db8::443"));
+        IPEndPoint differentAddress = cache.Resolve(
+            new IPEndPoint(IPAddress.IPv6Any, 8443),
+            IPAddress.Parse("2001:db8::8443"));
+
+        Assert.NotSame(first, differentPort);
+        Assert.NotSame(differentPort, differentAddress);
+        Assert.Equal(8443, differentPort.Port);
+        Assert.Equal(IPAddress.Parse("2001:db8::8443"), differentAddress.Address);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task EndpointHostRejectsPathPromotionRebindingAfterDispose()

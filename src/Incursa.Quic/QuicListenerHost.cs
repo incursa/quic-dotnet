@@ -368,6 +368,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         EndPoint remoteEndPoint = socket.AddressFamily == AddressFamily.InterNetworkV6
             ? new IPEndPoint(IPAddress.IPv6Any, 0)
             : new IPEndPoint(IPAddress.Any, 0);
+        QuicSocketPacketInformationControl.LocalEndPointCache localEndPointCache = new();
 
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -413,7 +414,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 QuicConnectionPathIdentity pathIdentity;
                 try
                 {
-                    IPEndPoint localEndPoint = QuicSocketPacketInformationControl.ResolveLocalEndPoint(
+                    IPEndPoint localEndPoint = localEndPointCache.Resolve(
                         (IPEndPoint)socket.LocalEndPoint!,
                         receiveResult.PacketInformation.Address);
                     pathIdentity = CreatePathIdentity(receivedFrom, localEndPoint);

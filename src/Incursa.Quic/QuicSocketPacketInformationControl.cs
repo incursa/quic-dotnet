@@ -65,4 +65,36 @@ internal static class QuicSocketPacketInformationControl
 
         return new IPEndPoint(packetInformationAddress, fallback.Port);
     }
+
+    internal sealed class LocalEndPointCache
+    {
+        private IPAddress? cachedPacketInformationAddress;
+        private int cachedPort = -1;
+        private IPEndPoint? cachedEndPoint;
+
+        internal IPEndPoint Resolve(IPEndPoint fallback, IPAddress? packetInformationAddress)
+        {
+            ArgumentNullException.ThrowIfNull(fallback);
+
+            if (packetInformationAddress is null
+                || packetInformationAddress.Equals(IPAddress.Any)
+                || packetInformationAddress.Equals(IPAddress.IPv6Any))
+            {
+                return fallback;
+            }
+
+            if (cachedEndPoint is not null
+                && cachedPort == fallback.Port
+                && cachedPacketInformationAddress is not null
+                && cachedPacketInformationAddress.Equals(packetInformationAddress))
+            {
+                return cachedEndPoint;
+            }
+
+            cachedPacketInformationAddress = packetInformationAddress;
+            cachedPort = fallback.Port;
+            cachedEndPoint = new IPEndPoint(packetInformationAddress, fallback.Port);
+            return cachedEndPoint;
+        }
+    }
 }
