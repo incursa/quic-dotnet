@@ -100,9 +100,9 @@ internal static class QuicTlsX25519
             BigInteger daMinusCb = Mod(da - cb);
 
             x3 = Mod(daPlusCb * daPlusCb);
-            z3 = Mod(x1 * Mod(daMinusCb * daMinusCb));
+            z3 = Mod(x1 * daMinusCb * daMinusCb);
             x2 = Mod(aa * bb);
-            z2 = Mod(e * Mod(aa + (A24 * e)));
+            z2 = Mod(e * (aa + (A24 * e)));
         }
 
         ConditionalSwap(swap, ref x2, ref x3);
