@@ -70,10 +70,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly ConcurrentQueue<object> completionSourcePool = new();
     private readonly object pendingStreamActionRequestsGate = new();
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
+    private readonly object scheduledFlowControlCreditGate = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
     private readonly HashSet<ulong> pendingPeerStreamCapacityReleaseStreamIds = [];
     private readonly HashSet<ulong> scheduledPeerStreamCapacityReleaseStreamIds = [];
     private readonly Dictionary<ulong, QuicMaxStreamDataFrame> pendingFlowControlStreamCreditFrames = [];
+    private readonly Dictionary<ulong, QuicMaxStreamDataFrame> scheduledFlowControlStreamCreditFrames = new(capacity: 16);
     private readonly QuicStreamObserverDirectory streamObservers = new();
     private readonly QuicConnectionIssuedConnectionIdState issuedConnectionIdState = new();
     private readonly Dictionary<string, QuicConnectionNewTokenEmissionRecord> newTokenEmissionsByRemoteAddress = new(StringComparer.Ordinal);
@@ -90,6 +92,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver;
     private readonly bool enableInitialPeerUsableConnectionId;
     private QuicMaxDataFrame? pendingFlowControlConnectionCreditFrame;
+    private QuicMaxDataFrame? scheduledFlowControlConnectionCreditFrame;
     private QuicConnectionVersionProfile versionProfile;
     private readonly QuicAddressValidationTokenProtector addressValidationTokenProtector;
     private readonly bool allowClientPeerInitialReplacementBeforeTranscript;
@@ -142,6 +145,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private Exception? inboundDatagramQueueCompletionException;
     private Func<QuicConnectionEvent, bool>? localApiEventDispatcher;
     private Action<int, int>? streamCapacityObserver;
+    private bool scheduledFlowControlCreditUpdatePending;
     private long? pendingApplicationSendDelayDueTicks;
     private ulong largestObservedInitialPacketNumber;
     private ulong largestObservedHandshakePacketNumber;
@@ -1200,10 +1204,70 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             return;
         }
 
-        _ = TryPostLocalApiEvent(new QuicConnectionFlowControlCreditUpdatedEvent(
-            clock.Ticks,
-            maxDataFrame,
-            maxStreamDataFrame));
+        bool shouldPostEvent = TryMarkFlowControlCreditUpdateScheduled(maxDataFrame, maxStreamDataFrame);
+        if (shouldPostEvent
+            && !TryPostLocalApiEvent(new QuicConnectionFlowControlCreditUpdatedEvent(clock.Ticks)))
+        {
+            ClearFlowControlCreditUpdateScheduled();
+        }
+    }
+
+    private bool TryMarkFlowControlCreditUpdateScheduled(
+        QuicMaxDataFrame? maxDataFrame,
+        QuicMaxStreamDataFrame? maxStreamDataFrame)
+    {
+        lock (scheduledFlowControlCreditGate)
+        {
+            if (maxDataFrame is { } connectionCredit
+                && (!scheduledFlowControlConnectionCreditFrame.HasValue
+                    || connectionCredit.MaximumData > scheduledFlowControlConnectionCreditFrame.Value.MaximumData))
+            {
+                scheduledFlowControlConnectionCreditFrame = connectionCredit;
+            }
+
+            if (maxStreamDataFrame is { } streamCredit
+                && (!scheduledFlowControlStreamCreditFrames.TryGetValue(streamCredit.StreamId, out QuicMaxStreamDataFrame pendingStreamCredit)
+                    || streamCredit.MaximumStreamData > pendingStreamCredit.MaximumStreamData))
+            {
+                scheduledFlowControlStreamCreditFrames[streamCredit.StreamId] = streamCredit;
+            }
+
+            if (scheduledFlowControlCreditUpdatePending)
+            {
+                return false;
+            }
+
+            scheduledFlowControlCreditUpdatePending = true;
+            return true;
+        }
+    }
+
+    private void ClearFlowControlCreditUpdateScheduled()
+    {
+        lock (scheduledFlowControlCreditGate)
+        {
+            scheduledFlowControlCreditUpdatePending = false;
+        }
+    }
+
+    private bool TryDeferScheduledFlowControlCreditUpdate()
+    {
+        lock (scheduledFlowControlCreditGate)
+        {
+            bool deferred = TryDeferFlowControlCreditUpdate(
+                scheduledFlowControlConnectionCreditFrame,
+                null);
+            scheduledFlowControlConnectionCreditFrame = null;
+
+            foreach (QuicMaxStreamDataFrame scheduledStreamCredit in scheduledFlowControlStreamCreditFrames.Values)
+            {
+                deferred |= TryDeferFlowControlCreditUpdate(null, scheduledStreamCredit);
+            }
+
+            scheduledFlowControlStreamCreditFrames.Clear();
+            scheduledFlowControlCreditUpdatePending = false;
+            return deferred;
+        }
     }
 
     internal long RegisterStreamObserver(ulong streamId, Action<QuicStreamNotification> observer)

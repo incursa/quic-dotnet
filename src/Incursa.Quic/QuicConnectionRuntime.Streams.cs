@@ -2134,6 +2134,8 @@ internal sealed partial class QuicConnectionRuntime
         _ = TryDeferFlowControlCreditUpdate(
             flowControlCreditUpdatedEvent.MaxDataFrame,
             flowControlCreditUpdatedEvent.MaxStreamDataFrame);
+
+        _ = TryDeferScheduledFlowControlCreditUpdate();
         return TryFlushPendingFlowControlCreditUpdates(ref effects);
     }
 

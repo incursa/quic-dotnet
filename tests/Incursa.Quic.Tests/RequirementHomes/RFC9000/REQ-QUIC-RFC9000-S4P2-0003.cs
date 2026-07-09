@@ -90,6 +90,100 @@ public sealed class REQ_QUIC_RFC9000_S4P2_0003
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S4P2-0003")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryQueueFlowControlCreditUpdate_SuppressesDuplicatePendingEventsAndKeepsHighestCredit()
+    {
+        using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
+
+        int postedEventCount = 0;
+        QuicConnectionEvent? postedEvent = null;
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            if (connectionEvent is QuicConnectionFlowControlCreditUpdatedEvent)
+            {
+                postedEventCount++;
+                postedEvent = connectionEvent;
+            }
+
+            return true;
+        });
+
+        runtime.TryQueueFlowControlCreditUpdate(new QuicMaxDataFrame(128), new QuicMaxStreamDataFrame(1, 64));
+        runtime.TryQueueFlowControlCreditUpdate(new QuicMaxDataFrame(256), new QuicMaxStreamDataFrame(1, 128));
+
+        Assert.Equal(1, postedEventCount);
+        Assert.NotNull(postedEvent);
+
+        QuicConnectionTransitionResult result = runtime.Transition(postedEvent!, nowTicks: 10);
+
+        QuicConnectionSendDatagramEffect sendEffect =
+            Assert.Single(result.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        byte[] payload = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
+        ReadOnlySpan<byte> creditPayload = SkipAckAndPadding(payload);
+
+        Assert.True(QuicFrameCodec.TryParseMaxDataFrame(
+            creditPayload,
+            out QuicMaxDataFrame parsedMaxDataFrame,
+            out int maxDataBytesConsumed));
+        Assert.Equal(new QuicMaxDataFrame(256), parsedMaxDataFrame);
+
+        Assert.True(QuicFrameCodec.TryParseMaxStreamDataFrame(
+            creditPayload[maxDataBytesConsumed..],
+            out QuicMaxStreamDataFrame parsedMaxStreamDataFrame,
+            out int maxStreamDataBytesConsumed));
+        Assert.Equal(new QuicMaxStreamDataFrame(1, 128), parsedMaxStreamDataFrame);
+        Assert.True(maxStreamDataBytesConsumed > 0);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S4P2-0003")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void TryQueueFlowControlCreditUpdate_AllowsRetryAfterPostFailure()
+    {
+        using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
+
+        runtime.SetLocalApiEventDispatcher(_ => false);
+        runtime.TryQueueFlowControlCreditUpdate(new QuicMaxDataFrame(128), null);
+
+        int postedEventCount = 0;
+        QuicConnectionEvent? postedEvent = null;
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            if (connectionEvent is QuicConnectionFlowControlCreditUpdatedEvent)
+            {
+                postedEventCount++;
+                postedEvent = connectionEvent;
+            }
+
+            return true;
+        });
+
+        runtime.TryQueueFlowControlCreditUpdate(new QuicMaxDataFrame(256), null);
+
+        Assert.Equal(1, postedEventCount);
+        Assert.NotNull(postedEvent);
+
+        QuicConnectionTransitionResult result = runtime.Transition(postedEvent!, nowTicks: 10);
+
+        QuicConnectionSendDatagramEffect sendEffect =
+            Assert.Single(result.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        byte[] payload = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
+        ReadOnlySpan<byte> creditPayload = SkipAckAndPadding(payload);
+
+        Assert.True(QuicFrameCodec.TryParseMaxDataFrame(
+            creditPayload,
+            out QuicMaxDataFrame parsedMaxDataFrame,
+            out int maxDataBytesConsumed));
+        Assert.Equal(new QuicMaxDataFrame(256), parsedMaxDataFrame);
+        Assert.True(maxDataBytesConsumed > 0);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S4P2-0003")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void FlowControlCreditUpdate_RetriesAfterCongestionBlocksInitialEmission()
