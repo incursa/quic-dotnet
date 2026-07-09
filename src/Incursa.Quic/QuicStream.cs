@@ -277,16 +277,16 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
         return WriteCoreAsync(buffer, cancellationToken);
     }
 
-    internal async ValueTask WriteFinalAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+    internal ValueTask WriteFinalAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(buffer);
         ValidateRange(buffer.Length, offset, count);
-        await WriteFinalCoreAsync(buffer.AsMemory(offset, count), cancellationToken).ConfigureAwait(false);
+        return WriteFinalCoreAsync(buffer.AsMemory(offset, count), cancellationToken);
     }
 
-    internal async ValueTask WriteFinalAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
+    internal ValueTask WriteFinalAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
     {
-        await WriteFinalCoreAsync(buffer, cancellationToken).ConfigureAwait(false);
+        return WriteFinalCoreAsync(buffer, cancellationToken);
     }
 
     internal ValueTask<bool> TryWriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
@@ -802,7 +802,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
         }
     }
 
-    private async ValueTask WriteFinalCoreAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
+    private ValueTask WriteFinalCoreAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
 
@@ -827,12 +827,33 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
             throw runtimeException;
         }
 
-        await WaitForWriteGateAsync(cancellationToken).ConfigureAwait(false);
+        ValueTask gateWait = WaitForWriteGateAsync(cancellationToken);
+        if (!gateWait.IsCompletedSuccessfully)
+        {
+            return WriteFinalAfterGateWaitAsync(gateWait, buffer, cancellationToken);
+        }
+
+        gateWait.GetAwaiter().GetResult();
+        return WriteFinalAfterGate(buffer, cancellationToken);
+    }
+
+    private async ValueTask WriteFinalAfterGateWaitAsync(
+        ValueTask gateWait,
+        ReadOnlyMemory<byte> buffer,
+        CancellationToken cancellationToken)
+    {
+        await gateWait.ConfigureAwait(false);
+        await WriteFinalAfterGate(buffer, cancellationToken).ConfigureAwait(false);
+    }
+
+    private ValueTask WriteFinalAfterGate(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
+    {
         try
         {
             ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
 
-            runtimeException = runtime.GetStreamOperationException();
+            QuicConnectionRuntime currentRuntime = runtime!;
+            Exception? runtimeException = currentRuntime.GetStreamOperationException();
             if (runtimeException is not null)
             {
                 throw runtimeException;
@@ -843,9 +864,34 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
                 throw completedWriteException;
             }
 
-            await runtime.WriteFinalStreamAsync(streamId, buffer, cancellationToken).ConfigureAwait(false);
+            ValueTask writeTask = currentRuntime.WriteFinalStreamAsync(streamId, buffer, cancellationToken);
+            if (!writeTask.IsCompletedSuccessfully)
+            {
+                return WriteFinalAfterRuntimeWriteAsync(writeTask, currentRuntime);
+            }
+
+            writeTask.GetAwaiter().GetResult();
             CompleteWritesClosed();
-            runtime.TryQueueStreamCapacityRelease(streamId);
+            currentRuntime.TryQueueStreamCapacityRelease(streamId);
+            ReleaseWriteGate();
+            return ValueTask.CompletedTask;
+        }
+        catch
+        {
+            ReleaseWriteGate();
+            throw;
+        }
+    }
+
+    private async ValueTask WriteFinalAfterRuntimeWriteAsync(
+        ValueTask writeTask,
+        QuicConnectionRuntime currentRuntime)
+    {
+        try
+        {
+            await writeTask.ConfigureAwait(false);
+            CompleteWritesClosed();
+            currentRuntime.TryQueueStreamCapacityRelease(streamId);
         }
         finally
         {
