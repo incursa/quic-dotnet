@@ -1379,6 +1379,18 @@ internal sealed class QuicConnectionStreamState
             return;
         }
 
+        BufferedSegment tailSegment = state.BufferedSegments[^1];
+        if (tailSegment.Offset <= currentOffset
+            && currentOffset < tailSegment.End
+            && tailSegment.End < endOffset)
+        {
+            int tailDataIndex = (int)(tailSegment.End - offset);
+            int tailLength = (int)(endOffset - tailSegment.End);
+            state.BufferedSegments.Add(CreateBufferedSegment(tailSegment.End, data, tailDataIndex, tailLength));
+            state.BufferedReadableBytes += tailLength;
+            return;
+        }
+
         List<BufferedSegment> updated = state.BufferedSegmentScratch ??= new List<BufferedSegment>(state.BufferedSegments.Count + 2);
         updated.Clear();
         int expectedUpdatedCount = state.BufferedSegments.Count + 2;
