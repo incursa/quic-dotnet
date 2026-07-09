@@ -99,6 +99,76 @@ public sealed class REQ_QUIC_INT_0008
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void EndpointHostCanSkipRoutedDatagramObserverCallbacks()
+    {
+        var (serverSocket, clientSocket, serverEndPoint, clientEndPoint) = InteropEndpointHostTestSupport.CreateConnectedUdpSocketPair();
+        using QuicConnectionRuntimeEndpoint endpoint = new(1);
+        using QuicConnectionRuntime runtime = InteropEndpointHostTestSupport.CreateRuntime();
+
+        try
+        {
+            QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+            Assert.True(endpoint.TryRegisterConnection(handle, runtime));
+
+            byte[] routeConnectionId =
+            [
+                0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+            ];
+            Assert.True(endpoint.TryRegisterConnectionId(handle, routeConnectionId, statelessResetConnectionId: 0UL));
+
+            QuicTlsPacketProtectionMaterial material = InteropEndpointHostTestSupport.CreateHandshakeMaterial();
+            QuicConnectionPathIdentity pathIdentity = new(
+                clientEndPoint.Address.ToString(),
+                serverEndPoint.Address.ToString(),
+                clientEndPoint.Port,
+                serverEndPoint.Port);
+
+            Assert.True(endpoint.Host.TryPostEvent(handle, new QuicConnectionTlsStateUpdatedEvent(
+                ObservedAtTicks: 1,
+                new QuicTlsStateUpdate(
+                    QuicTlsUpdateKind.PacketProtectionMaterialAvailable,
+                    PacketProtectionMaterial: material))));
+
+            using ManualResetEventSlim ingressSeen = new(false);
+            using ManualResetEventSlim datagramObserverSeen = new(false);
+
+            using QuicConnectionEndpointHost shell = new(
+                endpoint,
+                serverSocket,
+                pathIdentity,
+                ingressObserver: ingressResult =>
+                {
+                    if (ingressResult.Disposition == QuicConnectionIngressDisposition.RoutedToConnection)
+                    {
+                        ingressSeen.Set();
+                    }
+                },
+                ingressDatagramObserver: (_, _) => datagramObserverSeen.Set(),
+                observeRoutedDatagrams: false);
+
+            _ = shell.RunAsync();
+
+            byte[] serverHelloPacket = InteropEndpointHostTestSupport.BuildProtectedHandshakePacket(
+                material,
+                InteropEndpointHostTestSupport.CreateServerHelloTranscript(),
+                routeConnectionId);
+
+            int bytesSent = clientSocket.Send(serverHelloPacket);
+            Assert.Equal(serverHelloPacket.Length, bytesSent);
+
+            Assert.True(ingressSeen.Wait(TimeSpan.FromSeconds(5)));
+            Assert.False(datagramObserverSeen.Wait(TimeSpan.FromMilliseconds(100)));
+        }
+        finally
+        {
+            serverSocket.Dispose();
+            clientSocket.Dispose();
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task EndpointHostRoutesMigratedHandshakeDatagramsFromANewSourceEndpoint()
     {
         var (serverSocket, clientSocket, serverEndPoint, clientEndPoint) = InteropEndpointHostTestSupport.CreateConnectedUdpSocketPair();

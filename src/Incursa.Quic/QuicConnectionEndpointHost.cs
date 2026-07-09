@@ -24,6 +24,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
     private readonly QuicConnectionRuntimeEndpoint endpoint;
     private readonly Action<QuicConnectionIngressResult>? ingressObserver;
     private readonly Action<ReadOnlyMemory<byte>, QuicConnectionIngressResult>? ingressDatagramObserver;
+    private readonly bool observeRoutedDatagrams;
     private readonly Action<QuicConnectionTransitionResult>? transitionObserver;
     private readonly Action<QuicConnectionEffect>? effectObserver;
     private readonly IQuicDiagnosticsSink diagnosticsSink;
@@ -47,6 +48,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         Action<QuicConnectionEffect>? effectObserver = null,
         int receiveBufferBytes = 4096,
         Action<ReadOnlyMemory<byte>, QuicConnectionIngressResult>? ingressDatagramObserver = null,
+        bool observeRoutedDatagrams = true,
         IQuicDiagnosticsSink? diagnosticsSink = null)
     {
         ArgumentNullException.ThrowIfNull(endpoint);
@@ -63,6 +65,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         this.peerPathIdentity = peerPathIdentity;
         this.ingressObserver = ingressObserver;
         this.ingressDatagramObserver = ingressDatagramObserver;
+        this.observeRoutedDatagrams = observeRoutedDatagrams;
         this.transitionObserver = transitionObserver;
         this.effectObserver = effectObserver;
         this.diagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSink);
@@ -246,8 +249,11 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                     ecnCounts,
                     ownedDatagramBuffer: datagramBuffer,
                     ownedDatagramBufferOwnership: datagramLease.Ownership);
+                bool shouldInvokeDatagramObserver = ingressDatagramObserver is not null
+                    && (observeRoutedDatagrams
+                        || ingressResult.Disposition != QuicConnectionIngressDisposition.RoutedToConnection);
                 ReadOnlyMemory<byte> observerDatagram = datagram;
-                if (ingressDatagramObserver is not null
+                if (shouldInvokeDatagramObserver
                     && ingressResult.Disposition == QuicConnectionIngressDisposition.RoutedToConnection)
                 {
                     observerDatagram = datagram.ToArray();
@@ -273,7 +279,11 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                     QuicMetrics.RecordPacketDropped(QuicTlsRole.Client);
                 }
 
-                ingressDatagramObserver?.Invoke(observerDatagram, ingressResult);
+                if (shouldInvokeDatagramObserver)
+                {
+                    ingressDatagramObserver?.Invoke(observerDatagram, ingressResult);
+                }
+
                 ingressObserver?.Invoke(ingressResult);
                 continue;
             }

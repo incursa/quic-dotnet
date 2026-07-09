@@ -106,6 +106,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             pathIdentity,
             transitionObserver: ObserveTransition,
             ingressDatagramObserver: ObserveIngressDatagram,
+            observeRoutedDatagrams: false,
             diagnosticsSink: diagnosticsSink);
     }
 
