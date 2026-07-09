@@ -348,13 +348,19 @@ oversized rents using bounded `size_bucket` tags. This gives ProtocolLab counter
 captures a no-code-change way to show pool pressure for any path that uses the
 central wrapper. True pool misses and retained-memory accounting remain open
 because `ArrayPool<byte>.Shared` does not expose those directly.
+Smoke proof `codex-buffer-pool-metrics-smoke-20260709a` passed
+`http3.payload.bytes.1kb` at c4-s4 with counter capture enabled; raw counter
+output includes `incursa.quic.buffer_pool.rents`, `returns`, `bytes.rented`,
+`bytes.returned`, `outstanding.buffers`, `outstanding.bytes`, and
+`oversized_rents` rows. The current ProtocolLab `counters-summary.json` parser
+does not yet roll those custom pool instruments into summary fields.
 
 Buffer reuse is central to reducing allocations, but pool behavior needs better visibility.
 
 Done when:
 
 - Buffer pool diagnostics can be enabled per ProtocolLab run without code changes. Central-wrapper metrics are now emitted through `Incursa.Quic`.
-- Reports show rent/return counts, misses, peak outstanding buffers, oversized rents, and retained memory. Rent/return counts, bytes, outstanding deltas, and oversized rents are now available; true misses, peak aggregation, and retained memory remain open.
+- Reports show rent/return counts, misses, peak outstanding buffers, oversized rents, and retained memory. Rent/return counts, bytes, outstanding deltas, and oversized rents are now available in raw counter output; summary rollup, true misses, peak aggregation, and retained memory remain open.
 - The default pool sizes are justified by scenario evidence.
 - Pool tuning improves allocation rate without increasing retained memory unreasonably.
 
