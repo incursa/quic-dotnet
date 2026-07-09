@@ -774,6 +774,8 @@ internal readonly struct QuicPersistentCongestionPacket
 /// </summary>
 internal sealed class QuicSenderFlowController
 {
+    private const int InitialPacketNumberSpaceCapacity = 8;
+
     private readonly Dictionary<QuicPacketNumberSpace, SortedList<ulong, SentPacketState>> sentPacketsBySpace = [];
 
     /// <summary>
@@ -1082,7 +1084,7 @@ internal sealed class QuicSenderFlowController
     {
         if (!sentPacketsBySpace.TryGetValue(packetNumberSpace, out SortedList<ulong, SentPacketState>? sentPackets))
         {
-            sentPackets = [];
+            sentPackets = new SortedList<ulong, SentPacketState>(InitialPacketNumberSpaceCapacity);
             sentPacketsBySpace[packetNumberSpace] = sentPackets;
         }
 

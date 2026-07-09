@@ -29,6 +29,7 @@ internal sealed class QuicAckGenerationState
     // the retained ACK set is genuinely bigger than the hot-path shape.
     private const int StackPacketRangeCapacity = 32;
     private const int StackAckFramePacketNumberCapacity = 32;
+    private const int InitialPacketNumberSpaceCapacity = 8;
 
     private readonly int maximumRetainedAckRanges;
     private readonly int minimumAckElicitingPacketsBeforeDelayedAck;
@@ -562,7 +563,7 @@ internal sealed class QuicAckGenerationState
     {
         if (!spaces.TryGetValue(packetNumberSpace, out SpaceState? state))
         {
-            state = new SpaceState();
+            state = new SpaceState(InitialPacketNumberSpaceCapacity);
             spaces.Add(packetNumberSpace, state);
         }
 
@@ -636,8 +637,14 @@ internal sealed class QuicAckGenerationState
 
     private sealed class SpaceState
     {
-        internal SortedList<ulong, PacketReceipt> Receipts { get; } = new();
-        internal Dictionary<ulong, SentAckFrameState> SentAckFrames { get; } = new();
+        internal SpaceState(int initialCapacity)
+        {
+            Receipts = new SortedList<ulong, PacketReceipt>(initialCapacity);
+            SentAckFrames = new Dictionary<ulong, SentAckFrameState>(initialCapacity);
+        }
+
+        internal SortedList<ulong, PacketReceipt> Receipts { get; }
+        internal Dictionary<ulong, SentAckFrameState> SentAckFrames { get; }
 
         internal bool ImmediateAckRequired { get; set; }
 

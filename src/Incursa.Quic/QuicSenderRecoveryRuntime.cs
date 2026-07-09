@@ -19,6 +19,8 @@ internal readonly record struct QuicSenderPacketRecord(
 // SEE: QuicRecoveryController:
 internal sealed class QuicSenderRecoveryRuntime
 {
+    private const int InitialPacketNumberSpaceCapacity = 8;
+
     private readonly Dictionary<QuicPacketNumberSpace, SortedList<ulong, QuicSenderPacketRecord>> sentPacketsBySpace = [];
 
     /// <summary>
@@ -210,7 +212,7 @@ internal sealed class QuicSenderRecoveryRuntime
     {
         if (!sentPacketsBySpace.TryGetValue(packetNumberSpace, out SortedList<ulong, QuicSenderPacketRecord>? sentPackets))
         {
-            sentPackets = [];
+            sentPackets = new SortedList<ulong, QuicSenderPacketRecord>(InitialPacketNumberSpaceCapacity);
             sentPacketsBySpace[packetNumberSpace] = sentPackets;
         }
 

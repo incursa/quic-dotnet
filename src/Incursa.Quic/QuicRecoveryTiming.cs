@@ -836,6 +836,8 @@ internal sealed class QuicRecoveryController
 /// </summary>
 internal sealed class QuicRecoveryPacketNumberSpaceState
 {
+    private const int InitialPacketNumberSpaceCapacity = 8;
+
     private readonly SortedList<ulong, QuicRecoverySentPacketState> ackElicitingPacketsInFlight;
 
     /// <summary>
@@ -847,7 +849,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
     {
         PacketNumberSpace = packetNumberSpace;
         RttEstimator = rttEstimator ?? throw new ArgumentNullException(nameof(rttEstimator));
-        ackElicitingPacketsInFlight = new SortedList<ulong, QuicRecoverySentPacketState>();
+        ackElicitingPacketsInFlight = new SortedList<ulong, QuicRecoverySentPacketState>(InitialPacketNumberSpaceCapacity);
         LargestAcknowledgedPacketNumber = 0;
     }
 
