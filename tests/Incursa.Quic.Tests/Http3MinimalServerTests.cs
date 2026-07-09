@@ -38,6 +38,10 @@ public sealed class Http3MinimalServerTests
         byte[] dataFrame = [0x00, 0x02, 0x01, 0x02];
         Assert.Same(dataFrame, response.CacheSingleDataFrame(dataFrame));
         Assert.Same(dataFrame, response.GetCachedSingleDataFrame());
+
+        byte[] completeFrame = [0x01, 0x02, 0x03, 0x04];
+        Assert.Same(completeFrame, response.CacheCompleteResponseFrame(completeFrame));
+        Assert.Same(completeFrame, response.GetCachedCompleteResponseFrame());
     }
 
     [Fact]
@@ -96,6 +100,39 @@ public sealed class Http3MinimalServerTests
         Assert.Equal(200, response.StatusCode);
         Assert.Equal("hello from server", System.Text.Encoding.UTF8.GetString(response.Body));
         Assert.True(response.StreamCompleted);
+    }
+
+    [Fact]
+    public async Task GetAsync_StaticRoute_CachesCompleteFixedResponseFrame()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        Http3InMemoryRouteHandler handler = new();
+        handler.MapGetText("/hello", "hello");
+        Http3Request request = new(
+            "GET",
+            "https",
+            "localhost",
+            "/hello",
+            [
+                new QPackFieldLine(":method", "GET"),
+                new QPackFieldLine(":scheme", "https"),
+                new QPackFieldLine(":authority", "localhost"),
+                new QPackFieldLine(":path", "/hello"),
+            ]);
+        Http3ServerResponse cachedResponse = await handler.HandleAsync(request);
+
+        Assert.Null(cachedResponse.GetCachedCompleteResponseFrame());
+
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        Http3Response response = await context.GetAsync("/hello");
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.Equal("hello", System.Text.Encoding.UTF8.GetString(response.Body));
+        Assert.NotNull(cachedResponse.GetCachedCompleteResponseFrame());
     }
 
     [Theory]

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Net.Security;
 using Incursa.Qpack;
@@ -1216,6 +1217,19 @@ public sealed class Http3Server : IAsyncDisposable
         CancellationToken cancellationToken)
     {
         ResponseHeadersFrame headersFrame = GetResponseHeadersFrame(response);
+        if (TryGetCompleteFixedResponseFrame(response, headersFrame.FrameBytes, out byte[]? completeResponseFrame))
+        {
+            if (!await WriteFinalFrameBytesAsync(stream, completeResponseFrame, cancellationToken).ConfigureAwait(false))
+            {
+                return false;
+            }
+
+            EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Headers, headersFrame.FrameLength);
+            EmitResponseStartedDiagnostic(diagnosticsSink, "server", stream.Id, response.StatusCode);
+            EmitResponseDataFrames(stream, response.Body, response.DataFramePayloadSize);
+            return true;
+        }
+
         if (response.StreamingBody is not null)
         {
             if (!await WriteFrameBytesAsync(stream, headersFrame.FrameBytes, cancellationToken).ConfigureAwait(false))
@@ -1254,6 +1268,44 @@ public sealed class Http3Server : IAsyncDisposable
             EmitResponseDataFrames(stream, response.Body, response.DataFramePayloadSize);
         }
 
+        return true;
+    }
+
+    private static bool TryGetCompleteFixedResponseFrame(
+        Http3ServerResponse response,
+        byte[] headersFrame,
+        [NotNullWhen(true)] out byte[]? completeResponseFrame)
+    {
+        completeResponseFrame = null;
+        if (response.StreamingBody is not null || response.Body.IsEmpty)
+        {
+            return false;
+        }
+
+        int framePayloadSize = response.DataFramePayloadSize ?? ResponseDataFrameChunkSize;
+        if (!CanCacheSingleResponseDataFrame(response, framePayloadSize))
+        {
+            return false;
+        }
+
+        byte[]? cachedFrame = response.GetCachedCompleteResponseFrame();
+        if (cachedFrame is not null)
+        {
+            completeResponseFrame = cachedFrame;
+            return true;
+        }
+
+        byte[] dataFrame = response.GetCachedSingleDataFrame()
+            ?? response.CacheSingleDataFrame(Http3FrameWriter.WriteData(response.Body.Span));
+        if (headersFrame.Length > ResponseWriteChunkSize - dataFrame.Length)
+        {
+            return false;
+        }
+
+        byte[] combinedFrame = GC.AllocateUninitializedArray<byte>(headersFrame.Length + dataFrame.Length);
+        headersFrame.CopyTo(combinedFrame, 0);
+        dataFrame.CopyTo(combinedFrame, headersFrame.Length);
+        completeResponseFrame = response.CacheCompleteResponseFrame(combinedFrame);
         return true;
     }
 
