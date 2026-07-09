@@ -55,6 +55,29 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    public async Task InMemoryRouteHandler_MapGet_CopiesCallerBodyAndCachesStoredResponse()
+    {
+        byte[] body = [0x01, 0x02, 0x03];
+        Http3InMemoryRouteHandler handler = new();
+        handler.MapGet("/cached", body);
+        body[0] = 0xFF;
+
+        QPackFieldLine[] headers =
+        [
+            new(":method", "GET"),
+            new(":scheme", "https"),
+            new(":authority", "localhost"),
+            new(":path", "/cached"),
+        ];
+        Http3Request request = new("GET", "https", "localhost", "/cached", headers);
+
+        Http3ServerResponse response = await handler.HandleAsync(request);
+
+        Assert.Equal([0x01, 0x02, 0x03], response.Body.ToArray());
+        Assert.True(response.CacheEncodedHeaders);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9114-S9-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

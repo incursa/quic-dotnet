@@ -11,6 +11,10 @@ namespace Incursa.Quic.Http3;
 /// </summary>
 public sealed class Http3InMemoryRouteHandler : IHttp3RequestHandler
 {
+    private const int StatusOk = 200;
+    private const int StatusNotFound = 404;
+    private const int StatusMethodNotAllowed = 405;
+
     private readonly Dictionary<string, Http3ServerResponse> routes = new(StringComparer.Ordinal);
 
     /// <summary>
@@ -25,13 +29,17 @@ public sealed class Http3InMemoryRouteHandler : IHttp3RequestHandler
             throw new ArgumentException("HTTP/3 route paths must begin with '/'.", nameof(path));
         }
 
-        routes[path] = new Http3ServerResponse(
-            200,
-            body,
-            [
-                new QPackFieldLine("content-type", contentType),
-                new QPackFieldLine("content-length", body.Length.ToString()),
-            ]);
+        byte[] routeBody = body.ToArray();
+        QPackFieldLine[] routeHeaders =
+        [
+            new QPackFieldLine("content-type", contentType),
+            new QPackFieldLine("content-length", routeBody.Length.ToString()),
+        ];
+
+        routes[path] = Http3ServerResponse.CreateFromImmutableBodyAndHeaders(
+            StatusOk,
+            routeBody,
+            routeHeaders);
         return this;
     }
 
@@ -52,7 +60,7 @@ public sealed class Http3InMemoryRouteHandler : IHttp3RequestHandler
 
         if (request.Method != "GET")
         {
-            return ValueTask.FromResult(new Http3ServerResponse(405, ReadOnlyMemory<byte>.Empty));
+            return ValueTask.FromResult(new Http3ServerResponse(StatusMethodNotAllowed, ReadOnlyMemory<byte>.Empty));
         }
 
         string routePath = request.Path;
@@ -68,7 +76,7 @@ public sealed class Http3InMemoryRouteHandler : IHttp3RequestHandler
         }
 
         return ValueTask.FromResult(new Http3ServerResponse(
-            404,
+            StatusNotFound,
             Encoding.UTF8.GetBytes("Not Found"),
             [
                 new QPackFieldLine("content-type", "text/plain; charset=utf-8"),

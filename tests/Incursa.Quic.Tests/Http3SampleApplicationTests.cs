@@ -3,6 +3,7 @@
 
 using System.Security.Cryptography;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using Incursa.Http3.Samples.ObjectStore;
@@ -157,6 +158,21 @@ public sealed class Http3SampleApplicationTests
         Assert.Contains(response.Headers, header => header.Name == "content-type" && header.Value == "application/octet-stream");
         Assert.Contains(response.Headers, header => header.Name == "content-length" && header.Value == expectedLength.ToString(CultureInfo.InvariantCulture));
         Assert.Equal(CreateDeterministicBytes(expectedLength), response.Body.ToArray());
+    }
+
+    [Fact]
+    public async Task TechEmpowerPayloadRoutes_BorrowStaticPayloadBodyMemory()
+    {
+        TechEmpowerHandler handler = new();
+
+        Http3ServerResponse first = await handler.HandleAsync(CreateRequest("GET", "/bytes/1024"));
+        Http3ServerResponse second = await handler.HandleAsync(CreateRequest("GET", "/bytes/1024"));
+
+        Assert.True(first.CacheEncodedHeaders);
+        Assert.True(second.CacheEncodedHeaders);
+        Assert.True(MemoryMarshal.TryGetArray(first.Body, out ArraySegment<byte> firstSegment));
+        Assert.True(MemoryMarshal.TryGetArray(second.Body, out ArraySegment<byte> secondSegment));
+        Assert.Same(firstSegment.Array, secondSegment.Array);
     }
 
     [Theory]

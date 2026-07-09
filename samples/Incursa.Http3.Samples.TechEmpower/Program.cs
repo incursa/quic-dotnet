@@ -215,28 +215,34 @@ public sealed class TechEmpowerHandler : IHttp3RequestHandler
 
     private static Http3ServerResponse Payload(ReadOnlyMemory<byte> body, string contentType)
     {
-        return new Http3ServerResponse(
+        QPackFieldLine[] headers =
+        [
+            new QPackFieldLine("content-type", contentType),
+            new QPackFieldLine("content-length", body.Length.ToString(CultureInfo.InvariantCulture)),
+            new QPackFieldLine("date", DateTimeOffset.UtcNow.ToString("R", CultureInfo.InvariantCulture)),
+            new QPackFieldLine("server", "Incursa.Http3"),
+        ];
+
+        return Http3ServerResponse.CreateFromImmutableBodyAndHeaders(
             StatusOk,
             body,
-            [
-                new QPackFieldLine("content-type", contentType),
-                new QPackFieldLine("content-length", body.Length.ToString(CultureInfo.InvariantCulture)),
-                new QPackFieldLine("date", DateTimeOffset.UtcNow.ToString("R", CultureInfo.InvariantCulture)),
-                new QPackFieldLine("server", "Incursa.Http3"),
-            ]);
+            headers);
     }
 
     private static Http3ServerResponse Text(int statusCode, string text)
     {
         byte[] body = System.Text.Encoding.UTF8.GetBytes(text);
-        return new Http3ServerResponse(
+        QPackFieldLine[] headers =
+        [
+            new QPackFieldLine("content-type", "text/plain; charset=utf-8"),
+            new QPackFieldLine("content-length", body.Length.ToString(CultureInfo.InvariantCulture)),
+            new QPackFieldLine("server", "Incursa.Http3"),
+        ];
+
+        return Http3ServerResponse.CreateFromImmutableBodyAndHeaders(
             statusCode,
             body,
-            [
-                new QPackFieldLine("content-type", "text/plain; charset=utf-8"),
-                new QPackFieldLine("content-length", body.Length.ToString(CultureInfo.InvariantCulture)),
-                new QPackFieldLine("server", "Incursa.Http3"),
-            ]);
+            headers);
     }
 
     private static string StripQuery(string requestTarget)
