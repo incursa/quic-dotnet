@@ -35,6 +35,9 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
     private Socket socket;
     private QuicConnectionPathIdentity peerPathIdentity;
+    private QuicConnectionPathIdentity? cachedRemoteAddressPathIdentity;
+    private IPEndPoint? cachedRemoteEndPoint;
+    private SocketAddress? cachedRemoteSocketAddress;
     private Task? runningTask;
     private CancellationTokenSource? linkedCancellation;
     private int disposed;
@@ -350,8 +353,8 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
             lock (socketGate)
             {
                 _ = QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, QuicEcnMarking.NotEct);
-                IPEndPoint remoteEndPoint = CreateRemoteEndPoint(pathIdentity);
-                int bytesSent = socket.SendTo(reset.Datagram.Span, SocketFlags.None, remoteEndPoint);
+                SocketAddress remoteSocketAddress = GetRemoteSocketAddress(pathIdentity);
+                int bytesSent = socket.SendTo(reset.Datagram.Span, SocketFlags.None, remoteSocketAddress);
                 if (bytesSent != reset.Datagram.Length)
                 {
                     throw new IOException("Failed to send the complete QUIC Stateless Reset datagram.");
@@ -381,7 +384,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
             {
                 _ = QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, sendDatagramEffect.EcnMarking);
                 IPEndPoint localEndPoint = (IPEndPoint)socket.LocalEndPoint!;
-                IPEndPoint remoteEndPoint = CreateRemoteEndPoint(sendDatagramEffect.PathIdentity);
+                IPEndPoint remoteEndPoint = GetRemoteEndPoint(sendDatagramEffect.PathIdentity);
                 int bytesSent;
                 if (TryResolvePacketInformationSourceAddress(
                     localEndPoint,
@@ -415,7 +418,10 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
                 if (bytesSent == 0)
                 {
-                    bytesSent = socket.SendTo(sendDatagramEffect.Datagram.Span, SocketFlags.None, remoteEndPoint);
+                    bytesSent = socket.SendTo(
+                        sendDatagramEffect.Datagram.Span,
+                        SocketFlags.None,
+                        GetRemoteSocketAddress(sendDatagramEffect.PathIdentity));
                 }
 
                 if (bytesSent != sendDatagramEffect.Datagram.Length)
@@ -524,6 +530,37 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         return new IPEndPoint(
             IPAddress.Parse(pathIdentity.RemoteAddress),
             pathIdentity.RemotePort ?? throw new InvalidOperationException("The endpoint path is missing a remote port."));
+    }
+
+    private IPEndPoint GetRemoteEndPoint(QuicConnectionPathIdentity pathIdentity)
+    {
+        if (cachedRemoteEndPoint is not null
+            && cachedRemoteAddressPathIdentity is QuicConnectionPathIdentity cachedPathIdentity
+            && cachedPathIdentity.Equals(pathIdentity))
+        {
+            return cachedRemoteEndPoint;
+        }
+
+        IPEndPoint remoteEndPoint = CreateRemoteEndPoint(pathIdentity);
+        cachedRemoteAddressPathIdentity = pathIdentity;
+        cachedRemoteEndPoint = remoteEndPoint;
+        cachedRemoteSocketAddress = null;
+        return remoteEndPoint;
+    }
+
+    private SocketAddress GetRemoteSocketAddress(QuicConnectionPathIdentity pathIdentity)
+    {
+        if (cachedRemoteSocketAddress is not null
+            && cachedRemoteAddressPathIdentity is QuicConnectionPathIdentity cachedPathIdentity
+            && cachedPathIdentity.Equals(pathIdentity))
+        {
+            return cachedRemoteSocketAddress;
+        }
+
+        IPEndPoint remoteEndPoint = GetRemoteEndPoint(pathIdentity);
+        SocketAddress socketAddress = remoteEndPoint.Serialize();
+        cachedRemoteSocketAddress = socketAddress;
+        return socketAddress;
     }
 
     private static QuicConnectionPathIdentity CreatePathIdentity(IPEndPoint remoteEndPoint, IPEndPoint localEndPoint)
