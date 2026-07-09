@@ -1765,17 +1765,17 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
     }
 
-    internal async ValueTask CompleteStreamWritesAsync(
+    internal ValueTask CompleteStreamWritesAsync(
         ulong streamId,
         CancellationToken cancellationToken = default)
-        => await CompleteStreamWritesAsyncCore(streamId, suppressTerminalException: false, cancellationToken).ConfigureAwait(false);
+        => AwaitWriteStreamResultAsync(CompleteStreamWritesAsyncCore(streamId, suppressTerminalException: false, cancellationToken));
 
     internal ValueTask<bool> TryCompleteStreamWritesAsync(
         ulong streamId,
         CancellationToken cancellationToken = default)
-        => new(CompleteStreamWritesAsyncCore(streamId, suppressTerminalException: true, cancellationToken));
+        => CompleteStreamWritesAsyncCore(streamId, suppressTerminalException: true, cancellationToken);
 
-    private async Task<bool> CompleteStreamWritesAsyncCore(
+    private ValueTask<bool> CompleteStreamWritesAsyncCore(
         ulong streamId,
         bool suppressTerminalException,
         CancellationToken cancellationToken)
@@ -1784,7 +1784,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         {
             if (suppressTerminalException)
             {
-                return false;
+                return new ValueTask<bool>(false);
             }
 
             throw new ObjectDisposedException(nameof(QuicConnectionRuntime));
@@ -1794,7 +1794,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         {
             if (suppressTerminalException)
             {
-                return false;
+                return new ValueTask<bool>(false);
             }
 
             throw CreateTerminalException(terminalState.Value);
@@ -1814,24 +1814,16 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             ReturnStreamActionRequestCompletionSource(completion);
             if (suppressTerminalException && (IsDisposed || terminalState is not null))
             {
-                return false;
+                return new ValueTask<bool>(false);
             }
 
             throw new InvalidOperationException("The connection runtime could not queue the stream finish request.");
         }
 
-        using CancellationTokenRegistration cancellationRegistration = cancellationToken.CanBeCanceled
-            ? cancellationToken.Register(static state =>
-            {
-                (QuicConnectionRuntime runtime, long requestId, CancellationToken token) =
-                    ((QuicConnectionRuntime, long, CancellationToken))state!;
-
-                if (runtime.TryRemovePendingStreamActionRequest(requestId, out StreamActionRequestCompletionSource pendingCompletion))
-                {
-                    pendingCompletion.TrySetCanceled(token);
-                }
-            }, (this, requestId, cancellationToken))
-            : default;
+        if (cancellationToken.CanBeCanceled)
+        {
+            completion.RegisterCancellation(requestId, cancellationToken);
+        }
 
         if (!TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
             clock.Ticks,
@@ -1840,10 +1832,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             StreamId: streamId)))
         {
             TryRemovePendingStreamActionRequest(requestId, out _);
+            completion.DisposeCancellationRegistration();
             ReturnStreamActionRequestCompletionSource(completion);
             if (suppressTerminalException && (IsDisposed || terminalState is not null))
             {
-                return false;
+                return new ValueTask<bool>(false);
             }
 
             throw IsDisposed
@@ -1851,7 +1844,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 : new InvalidOperationException("The connection runtime could not queue the stream finish request.");
         }
 
-        return await completion.Task.ConfigureAwait(false);
+        return completion.Task;
     }
 
     internal async ValueTask AbortStreamWritesAsync(
