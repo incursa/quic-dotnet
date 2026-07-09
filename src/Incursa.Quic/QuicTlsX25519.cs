@@ -87,17 +87,17 @@ internal static class QuicTlsX25519
             ConditionalSwap(swap, ref z2, ref z3);
             swap = bit;
 
-            BigInteger a = Mod(x2 + z2);
+            BigInteger a = x2 + z2;
             BigInteger aa = Mod(a * a);
-            BigInteger b = Mod(x2 - z2);
+            BigInteger b = x2 - z2;
             BigInteger bb = Mod(b * b);
-            BigInteger e = Mod(aa - bb);
-            BigInteger c = Mod(x3 + z3);
-            BigInteger d = Mod(x3 - z3);
+            BigInteger e = aa - bb;
+            BigInteger c = x3 + z3;
+            BigInteger d = x3 - z3;
             BigInteger da = Mod(d * a);
             BigInteger cb = Mod(c * b);
-            BigInteger daPlusCb = Mod(da + cb);
-            BigInteger daMinusCb = Mod(da - cb);
+            BigInteger daPlusCb = da + cb;
+            BigInteger daMinusCb = da - cb;
 
             x3 = Mod(daPlusCb * daPlusCb);
             z3 = Mod(x1 * daMinusCb * daMinusCb);
