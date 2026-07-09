@@ -102,7 +102,9 @@ default comparison run.
 
 `--profile-stream-phases` reuses one Incursa connected pair and breaks the same
 established request/response stream operation into public API phases such as
-open, write, complete-writes, read, EOF, and dispose. Treat the phase output as
+open, write, complete-writes, read, EOF, and dispose. Open, write, and
+complete-writes are split into API-start and await-completion buckets so setup
+cost can be separated from runtime completion cost. Treat the phase output as
 diagnostic attribution for choosing the next code-review target, not as a
 standalone performance claim.
 

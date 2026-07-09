@@ -1288,16 +1288,21 @@ internal static class QuicAllocationHarness
         {
             ["accept-task-start"] = new(),
             ["task-yield"] = new(),
-            ["open-client-stream"] = new(),
-            ["client-write"] = new(),
-            ["client-complete-writes"] = new(),
+            ["open-client-stream-start"] = new(),
+            ["open-client-stream-await"] = new(),
+            ["client-write-start"] = new(),
+            ["client-write-await"] = new(),
+            ["client-complete-writes-start"] = new(),
+            ["client-complete-writes-await"] = new(),
             ["client-writes-closed"] = new(),
             ["server-accept-await"] = new(),
             ["server-read-request"] = new(),
             ["server-eof"] = new(),
             ["server-reads-closed"] = new(),
-            ["server-write"] = new(),
-            ["server-complete-writes"] = new(),
+            ["server-write-start"] = new(),
+            ["server-write-await"] = new(),
+            ["server-complete-writes-start"] = new(),
+            ["server-complete-writes-await"] = new(),
             ["server-writes-closed"] = new(),
             ["client-read-response"] = new(),
             ["client-eof"] = new(),
@@ -1783,17 +1788,29 @@ internal static class QuicAllocationHarness
             AddPhase(phases, "task-yield", start);
 
             start = SnapshotManaged();
-            clientStream = await clientConnection.OpenOutboundStreamAsync(
-                IncursaStreamType.Bidirectional).ConfigureAwait(false);
-            AddPhase(phases, "open-client-stream", start);
+            ValueTask<IncursaStream> openStreamTask = clientConnection.OpenOutboundStreamAsync(
+                IncursaStreamType.Bidirectional);
+            AddPhase(phases, "open-client-stream-start", start);
 
             start = SnapshotManaged();
-            await clientStream.WriteAsync(requestPayload.AsMemory()).ConfigureAwait(false);
-            AddPhase(phases, "client-write", start);
+            clientStream = await openStreamTask.ConfigureAwait(false);
+            AddPhase(phases, "open-client-stream-await", start);
 
             start = SnapshotManaged();
-            await clientStream.CompleteWritesAsync().ConfigureAwait(false);
-            AddPhase(phases, "client-complete-writes", start);
+            ValueTask clientWriteTask = clientStream.WriteAsync(requestPayload.AsMemory());
+            AddPhase(phases, "client-write-start", start);
+
+            start = SnapshotManaged();
+            await clientWriteTask.ConfigureAwait(false);
+            AddPhase(phases, "client-write-await", start);
+
+            start = SnapshotManaged();
+            ValueTask clientCompleteWritesTask = clientStream.CompleteWritesAsync();
+            AddPhase(phases, "client-complete-writes-start", start);
+
+            start = SnapshotManaged();
+            await clientCompleteWritesTask.ConfigureAwait(false);
+            AddPhase(phases, "client-complete-writes-await", start);
 
             start = SnapshotManaged();
             await clientStream.WritesClosed.ConfigureAwait(false);
@@ -1821,12 +1838,20 @@ internal static class QuicAllocationHarness
             AddPhase(phases, "server-reads-closed", start);
 
             start = SnapshotManaged();
-            await serverStream.WriteAsync(responsePayload.AsMemory()).ConfigureAwait(false);
-            AddPhase(phases, "server-write", start);
+            ValueTask serverWriteTask = serverStream.WriteAsync(responsePayload.AsMemory());
+            AddPhase(phases, "server-write-start", start);
 
             start = SnapshotManaged();
-            await serverStream.CompleteWritesAsync().ConfigureAwait(false);
-            AddPhase(phases, "server-complete-writes", start);
+            await serverWriteTask.ConfigureAwait(false);
+            AddPhase(phases, "server-write-await", start);
+
+            start = SnapshotManaged();
+            ValueTask serverCompleteWritesTask = serverStream.CompleteWritesAsync();
+            AddPhase(phases, "server-complete-writes-start", start);
+
+            start = SnapshotManaged();
+            await serverCompleteWritesTask.ConfigureAwait(false);
+            AddPhase(phases, "server-complete-writes-await", start);
 
             start = SnapshotManaged();
             await serverStream.WritesClosed.ConfigureAwait(false);
