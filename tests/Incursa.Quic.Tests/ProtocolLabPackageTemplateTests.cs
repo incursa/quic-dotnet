@@ -753,6 +753,23 @@ public sealed class ProtocolLabPackageTemplateTests
     }
 
     [Fact]
+    public void Performance_closeout_helper_preserves_traceability_sections()
+    {
+        var repoRoot = FindRepoRoot();
+        var script = File.ReadAllText(Path.Combine(repoRoot, "scripts", "perf", "New-QuicPerformanceCloseout.ps1"));
+        var readme = File.ReadAllText(Path.Combine(repoRoot, "scripts", "perf", "README.md"));
+
+        Assert.Contains("incursa.quic.performance-closeout.v1", script);
+        Assert.Contains("correctnessEvidence", script);
+        Assert.Contains("performanceEvidence", script);
+        Assert.Contains("RequirementHomeTestCommand", script);
+        Assert.Contains("KnownSpecTraceBacklogNote", script);
+        Assert.Contains("ProtocolLabArtifactPath", script);
+        Assert.Contains("Performance Closeout Evidence", readme);
+        Assert.Contains("New-QuicPerformanceCloseout.ps1", readme);
+    }
+
+    [Fact]
     public void Local_protocol_lab_benchmark_helper_resolves_internal_package_version_pins()
     {
         var repoRoot = FindRepoRoot();

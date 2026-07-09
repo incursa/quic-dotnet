@@ -6,6 +6,8 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 - 2026-07-09: `Invoke-QuicPerformanceLane.ps1` now accepts `-BaselineAggregatePath` and emits a `performanceGate` block in `lane-summary.json` plus the Markdown summary. The gate compares matching current ProtocolLab aggregate cells against a retained baseline, flags `extreme-metric-regression` when the primary throughput/request-rate metric drops by at least 50 percent or p95 latency rises by at least 100 percent, and keeps confidence lanes report-only unless `-FailOnPerformanceGate` is supplied. This closes the local threshold-rule source-control piece without pretending local noisy lanes are publishable evidence.
 
+- 2026-07-09: `New-QuicPerformanceCloseout.ps1` records performance-slice closeout evidence under `.artifacts/perf-closeout/{runId}` with separate correctness and performance sections: requirement/spec artifacts, focused test commands, requirement-home test commands, full-suite commands, SpecTrace validation/backlog notes, ProtocolLab artifacts, local performance artifacts, git status, changed files, and artifact hashes where available. This gives future runtime optimization commits a repeatable traceability ledger without conflating correctness proof with benchmark evidence.
+
 - 2026-07-09: `Compare-QuicProtocolLabRuns.ps1` now reads `evidence-bundle.json` next to retained ProtocolLab run roots when present and carries evidence quality, publishability blockers, qlog status, buffer-pool diagnostics, allocation/exception attribution status, hotspot trend counts, and top diagnostic groups into the local triage JSON and Markdown. Smoke proof `codex-evidence-bundle-triage-smoke-20260709a` exercised a current bundle-backed run, and `codex-no-bundle-triage-smoke-20260709a` verified older aggregate-only retained runs still report cleanly with an explicit missing-bundle note. This makes the QUIC-side triage command a better selector for the next runtime optimization without treating diagnostic or local evidence as publishable.
 
 - 2026-07-09: `PublicApiStream` smoke lane `codex-public-stream-typed-workitems-20260709a` passed on clean commit `a31ee359` after the hosted stream-open/write typed work-item changes. The steady-state established-connection dry rows now measure Incursa request/response at 9.749 ms and 15.36 KB versus `System.Net.Quic` at 4.296 ms and 10.92 KB, and Incursa small queued-write at 10.196 ms and 6.67 KB versus `System.Net.Quic` at 2.401 ms and 5.79 KB. This materially improves the previous steady-state smoke row of 25.72 KB and 11.17 KB for Incursa, but full transfer/dispose dry rows remain setup/lifecycle dominated at roughly 1.48-1.56 MB for Incursa versus 151-194 KB for `System.Net.Quic`. Treat this as diagnostic smoke evidence only because the BDN job is Dry/single-iteration.
@@ -444,6 +446,8 @@ Done when:
 ## 15. Keep Requirement Trace And Performance Evidence Connected
 
 Performance changes can accidentally weaken protocol behavior. Every optimization should preserve traceability.
+
+Status: closed for local performance-slice closeout. `New-QuicPerformanceCloseout.ps1` creates a reviewable JSON/Markdown ledger that records requirement/spec artifacts, correctness commands, requirement-home commands, SpecTrace validation/backlog notes, ProtocolLab artifacts, local performance artifacts, and git diff hygiene separately. Runtime changes still need human judgment to choose the nearest requirement artifacts.
 
 Done when:
 

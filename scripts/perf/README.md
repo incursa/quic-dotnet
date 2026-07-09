@@ -200,6 +200,37 @@ median/best/worst values, relative ranges, and publishability gate blockers.
 Use the JSON file when comparing repeated local confidence runs or feeding
 results into a later dashboard; use `summary.md` for human review.
 
+## Performance Closeout Evidence
+
+Use `New-QuicPerformanceCloseout.ps1` at the end of a performance slice to keep
+correctness evidence separate from performance evidence. The helper records git
+state, changed files, requirement/spec artifacts, focused tests,
+requirement-home tests, full-suite commands, SpecTrace validation/backlog notes,
+ProtocolLab artifacts, and local performance artifacts in JSON plus Markdown.
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\New-QuicPerformanceCloseout.ps1 `
+  -RunId codex-stream-open-closeout `
+  -RuntimeChangeSummary "Avoided one stream-open allocation on the hosted public path." `
+  -RequirementArtifact tests\Incursa.Quic.Tests\RequirementHomes\QUIC\REQ-QUIC-API-0014.cs `
+  -FocusedTestCommand "dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --filter OpenOutboundStreamAsync" `
+  -RequirementHomeTestCommand "dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --filter FullyQualifiedName~RequirementHomes.QUIC" `
+  -ProtocolLabArtifactPath .\.artifacts\perf-lanes\codex-stream-open\lane-summary.json `
+  -PerformanceArtifactPath .\.artifacts\perf\public-stream-profile\codex-profile-stream-phases.json
+```
+
+Output is written under:
+
+```text
+.artifacts/perf-closeout/{runId}/performance-closeout.md
+.artifacts/perf-closeout/{runId}/performance-closeout.json
+```
+
+The closeout record does not prove publishable benchmark quality by itself. It
+is the local review ledger tying runtime changes back to requirement evidence,
+test commands, ProtocolLab validation artifacts, and known standing SpecTrace
+validation backlog.
+
 ## ProtocolLab Baseline Reports
 
 Use `New-QuicProtocolLabBaselineReport.ps1` to roll up existing
