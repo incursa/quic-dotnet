@@ -5,6 +5,7 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 ## Progress Notes
 
 - 2026-07-09: expanded `QuicPublicApiStreamTransferBenchmarks` from one request/response workload to four public-facade stream-transfer workloads: client upload, server download, bidirectional request/response, and eight sequential request/response streams over one connection. `dotnet build .\benchmarks\Incursa.Quic.Benchmarks.csproj -c Release --no-restore` passed, BDN Dry evidence `codex-public-api-stream-expanded-20260709a` executed all 8 Incursa/System.Net.Quic cells, and `PublicApiStream` smoke lane `codex-public-api-stream-expanded-smoke-20260709a` passed through the normal lane wrapper. The lane proof measured Incursa single-stream allocations at 404.68-413.41 KB versus System.Net.Quic 150.47-168.28 KB; the sequential reuse workload was 550.63 KB for Incursa versus 195.2 KB for System.Net.Quic. Treat this as public API baseline coverage and a measured gap, not a runtime fix.
+- 2026-07-09: `PublicApiStream` now also runs `QuicPublicApiSteadyStateStreamBenchmarks`, so the lane covers both full transfer lifecycle workloads and established-connection stream workloads. Smoke proof `codex-public-api-stream-steady-lane-20260709a` passed the transfer and steady-state slices. Established-connection Dry evidence measured Incursa request/response at 13.892 ms and 41.89 KB versus System.Net.Quic at 5.572 ms and 11.48 KB; the small queued-write case was closer at 8.565 ms and 7.31 KB versus 1.926 ms and 5.99 KB. Treat this as evidence that a meaningful part of the public API gap remains in per-stream request/response work after setup is removed.
 - 2026-07-09: `PublicApiStream` smoke lane proof `codex-public-api-stream-smoke-20260709a` passed on clean commit `401db2296ad5c955431bcfabfb50c2263b0b4a67`, running `QuicPublicApiStreamTransferBenchmarks` through `Invoke-QuicPublicComparison.ps1 -Job Dry`. The diagnostic Dry comparison measured the bounded 1 KB public-facade request/response stream workload at 374.56 ms and 412.87 KB for Incursa.Quic versus 80.39 ms and 145.62 KB for `System.Net.Quic`. Treat this as a baseline gap and lane proof, not an optimized result or publishable comparison.
 - 2026-07-09: managed X25519 now avoids two mathematically redundant inner modular reductions inside each Montgomery ladder step while preserving the same outer field reductions. Focused X25519/RFC 7748 tests passed 6/6. `QuicTlsX25519Benchmarks` Dry evidence `codex-x25519-reduced-inner-mod-20260709a` reduced allocation from the `codex-crypto-core-smoke-20260709a` smoke baseline from 580.8 KB to 555.87 KB for public-key derivation, 592.14 KB to 574.28 KB for shared-secret derivation, and 1,754.95 KB to 1,687.24 KB for a full exchange. This is a bounded `BigInteger` cleanup; the larger fixed-limb X25519 rewrite remains open.
 - 2026-07-09: CRYPTO buffer insertion scratch storage now grows geometrically instead of exact-fitting `insertScratch` capacity as shuffled frame entry counts rise. Focused RFC 9000 CRYPTO-buffer tests passed 9/9. `QuicCryptoBufferBenchmarks` Dry evidence `codex-crypto-buffer-scratch-growth-20260709a` reduced `BufferAndDrainMinimumCryptoStream` allocation further to 19.55 KB without overlap and 23.59 KB with overlap. Dry-mode timing was noisy, so treat this as local allocation evidence only.
@@ -219,19 +220,20 @@ Done when:
 ## 12. Add Public API Stream Transfer Benchmarks
 
 Status: partially closed. `QuicPublicApiStreamTransferBenchmarks` and the
-`PublicApiStream` performance-lane surface now provide bounded public-facade
-upload-only, download-only, bidirectional request/response, and sequential
-many-stream request/response comparisons between Incursa.Quic and
+`QuicPublicApiSteadyStateStreamBenchmarks` suites now give the `PublicApiStream`
+performance-lane surface bounded public-facade upload-only, download-only,
+bidirectional request/response, sequential many-stream request/response, and
+established-connection stream comparisons between Incursa.Quic and
 `System.Net.Quic`. Smoke proof `codex-public-api-stream-smoke-20260709a` passed,
-and expanded smoke proof `codex-public-api-stream-expanded-smoke-20260709a`
-documents current Incursa latency/allocation gaps that should drive follow-up
-runtime work.
+expanded smoke proof `codex-public-api-stream-expanded-smoke-20260709a`
+documents current Incursa latency/allocation gaps, and the lane now includes the
+steady-state suite for follow-up runtime work.
 
 Existing public comparison work is mostly connection establishment. We need public stream transfer workloads that compare real user-facing APIs.
 
 Done when:
 
-- BenchmarkDotNet includes public facade stream upload, download, bidirectional echo, and many-stream workloads. Upload-only, download-only, bidirectional request/response, and sequential many-stream request/response workloads now exist; concurrent many-stream and richer echo variants remain optional follow-up.
+- BenchmarkDotNet includes public facade stream upload, download, bidirectional echo, and many-stream workloads. Upload-only, download-only, bidirectional request/response, sequential many-stream request/response, and established-connection stream workloads now exist; concurrent many-stream and richer echo variants remain optional follow-up.
 - Incursa and `System.Net.Quic` are compared only where both can run the same public workload honestly.
 - The benchmark does not use internal runtime helpers.
 - Results are documented separately from HTTP/3 and raw internal transport benchmarks.

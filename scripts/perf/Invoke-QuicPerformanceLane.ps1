@@ -286,7 +286,10 @@ function Get-SurfaceConfiguration {
         "PublicApiStream" {
             return [pscustomobject]@{
                 BenchmarkScript = "scripts\benchmarks\Invoke-QuicPublicComparison.ps1"
-                BenchmarkFilters = @("*QuicPublicApiStreamTransferBenchmarks*")
+                BenchmarkFilters = @(
+                    "*QuicPublicApiStreamTransferBenchmarks*",
+                    "*QuicPublicApiSteadyStateStreamBenchmarks*"
+                )
                 ProtocolLabEnabled = $false
                 ProtocolLabScenario = $null
                 Connections = 1

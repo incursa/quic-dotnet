@@ -42,9 +42,10 @@ runs:
 - `CryptoCore` runs packet-protection, key-phase, crypto-buffer, and managed
   X25519 suites without a ProtocolLab run. It is a local microbenchmark surface
   for cryptographic hot paths, not an end-to-end transport benchmark.
-- `PublicApiStream` runs `QuicPublicApiStreamTransferBenchmarks` through the
-  public comparison launcher and does not claim equivalence with ProtocolLab
-  raw QUIC or HTTP/3 scenarios.
+- `PublicApiStream` runs `QuicPublicApiStreamTransferBenchmarks` and
+  `QuicPublicApiSteadyStateStreamBenchmarks` through the public comparison
+  launcher and does not claim equivalence with ProtocolLab raw QUIC or HTTP/3
+  scenarios.
 
 The `Smoke` lane uses BDN `Dry`. The `Confidence` lane uses BDN `Short` and is
 report-only until stable baselines and thresholds are established.
@@ -55,6 +56,7 @@ The benchmark project also carries a bounded public-facade comparison suite:
 
 - `QuicPublicApiLoopbackBenchmarks`
 - `QuicPublicApiStreamTransferBenchmarks`
+- `QuicPublicApiSteadyStateStreamBenchmarks`
 
 Run it through the launcher when the goal is a like-for-like local comparison
 between the Incursa public facade and `System.Net.Quic`:
@@ -69,6 +71,9 @@ These suites are intentionally narrow. The current proven floor for
 connection establishment plus disposal. `QuicPublicApiStreamTransferBenchmarks`
 compares bounded public-facade loopback upload-only, download-only,
 request/response, and sequential many-stream request/response workloads.
+`QuicPublicApiSteadyStateStreamBenchmarks` keeps a connection established across
+iterations so per-stream request/response and queued-write costs can be separated
+from connection setup and handshake cost.
 Unsupported implementations are omitted when either public support marker
 (`QuicConnection.IsSupported` or `QuicListener.IsSupported`) is false, and the
 results must not be treated as equivalent to the repo's internal helper
@@ -95,6 +100,7 @@ The benchmark project also contains the following permanent suites:
 
 - `QuicPublicApiLoopbackBenchmarks`
 - `QuicPublicApiStreamTransferBenchmarks`
+- `QuicPublicApiSteadyStateStreamBenchmarks`
 - `QuicFrameCodecBenchmarks`
 - `Http3AllocationPathBenchmarks`
 - `QuicPathValidationBenchmarks`
