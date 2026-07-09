@@ -4,6 +4,8 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-09: buffer-pool tuning smoke `codex-buffer-pool-tuning-smoke-20260709a-h3-local-v1` used the new ProtocolLab `quic-buffer-pool-summary.json` evidence path on `http3.payload.bytes.1kb` at c4-s4 with counter capture. Validation and benchmark passed, evidence remained diagnostic, and the pool summary reported zero outstanding buffers/bytes at sample time. The high `oversized_rents` count was concentrated in `le_1kb` and `le_4kb` buckets and reflects `ArrayPool<byte>` returning larger arrays than requested minimums, not retained memory or large requested buffers. No runtime pool-size change is justified from this smoke alone; the next useful pool work is richer requested-size distribution or repeated traces before tuning defaults.
+
 - 2026-07-09: committed public stream open/write allocation cleanups were rechecked through the `PublicApiStream` smoke lane `codex-public-stream-runtime-cleanups-20260709a`, which passed both `QuicPublicApiStreamTransferBenchmarks` and `QuicPublicApiSteadyStateStreamBenchmarks` Dry slices. The steady-state request/response row measured Incursa at 11.591 ms and 25.72 KB versus `System.Net.Quic` at 4.017 ms and 11.25 KB; the small queued-write row measured Incursa at 5.925 ms and 11.17 KB versus `System.Net.Quic` at 1.993 ms and 6.12 KB. Treat this as benchmark smoke and direction-setting evidence only; Dry rows are single-iteration and the full transfer/dispose rows remain cold-start dominated.
 
 - 2026-07-09: public `QuicStream.WriteAsync(ReadOnlyMemory<byte>, CancellationToken)` now routes through a non-async `WriteCoreAsync` wrapper and only allocates an async continuation when the write gate or runtime write actually waits. `Incursa.Quic` Release build passed, focused write/read/open lifecycle tests passed 131/134 with three existing skips, and 400-iteration Incursa-only public stream profile `codex-profile-stream-writecore-wrapper-20260709a.json` measured pass-2 allocation at 9,241 B/op versus 9,361 B/op after the stream-open completion-source cleanup. Treat this as a small public stream allocation cleanup; elapsed time remained local/noisy and did not improve in this sample.
@@ -403,6 +405,10 @@ non-negative current/peak pool pressure by `size_bucket`. Smoke proof
 `http3.payload.bytes.1kb` at c4-s4 with counter capture enabled and produced a
 populated pool summary with stable metric IDs, size-bucket rollups, and
 non-negative outstanding gauge values.
+Follow-up smoke `codex-buffer-pool-tuning-smoke-20260709a-h3-local-v1` found no
+outstanding retained pool pressure in the sampled H3 1KB c4-s4 run; apparent
+oversized rents were small-bucket ArrayPool rounding, so default pool-size
+tuning remains unproven.
 
 Buffer reuse is central to reducing allocations, but pool behavior needs better visibility.
 
