@@ -161,31 +161,32 @@ internal enum QuicCryptoBufferResult
             return true;
         }
 
-        byte[] data = frame.CryptoData.ToArray();
-        if (data.Length == 0)
+        ReadOnlySpan<byte> data = frame.CryptoData;
+        if (data.IsEmpty)
         {
             return true;
         }
 
-        if (frame.Offset > QuicVariableLengthInteger.MaxValue - (ulong)data.Length)
+        ulong frameOffset = frame.Offset;
+        if (frameOffset > QuicVariableLengthInteger.MaxValue - (ulong)data.Length)
         {
             result = QuicCryptoBufferResult.BufferExceeded;
             return false;
         }
 
-        if (frame.Offset < nextReadOffset)
+        if (frameOffset < nextReadOffset)
         {
-            int trim = (int)(nextReadOffset - frame.Offset);
+            int trim = (int)(nextReadOffset - frameOffset);
             if (trim >= data.Length)
             {
                 return true;
             }
 
             data = data[trim..];
-            frame = new QuicCryptoFrame(nextReadOffset, data);
+            frameOffset = nextReadOffset;
         }
 
-        if (!TryInsertFrameData(frame.Offset, data, out int newBufferedBytes))
+        if (!TryInsertFrameData(frameOffset, data, out int newBufferedBytes))
         {
             if (HandshakeComplete && DiscardOverflowFramesAfterHandshakeComplete)
             {
@@ -355,7 +356,7 @@ internal enum QuicCryptoBufferResult
         return true;
     }
 
-    private bool TryInsertFrameData(ulong offset, byte[] data, out int newBufferedBytes)
+    private bool TryInsertFrameData(ulong offset, ReadOnlySpan<byte> data, out int newBufferedBytes)
     {
         List<Entry> updated = insertScratch;
         updated.Clear();
@@ -385,7 +386,7 @@ internal enum QuicCryptoBufferResult
                 int gapLength = (int)(gapEnd - currentOffset);
                 if (gapLength > 0)
                 {
-                    updated.Add(new Entry(currentOffset, data[dataIndex..(dataIndex + gapLength)]));
+                    updated.Add(new Entry(currentOffset, data.Slice(dataIndex, gapLength).ToArray()));
                     dataIndex += gapLength;
                     currentOffset += (ulong)gapLength;
                 }
@@ -410,7 +411,7 @@ internal enum QuicCryptoBufferResult
         if (currentOffset < endOffset)
         {
             int tailLength = (int)(endOffset - currentOffset);
-            updated.Add(new Entry(currentOffset, data[dataIndex..(dataIndex + tailLength)]));
+            updated.Add(new Entry(currentOffset, data.Slice(dataIndex, tailLength).ToArray()));
         }
 
         while (currentIndex < entries.Count)
