@@ -796,7 +796,7 @@ internal sealed class QuicConnectionStreamState
                 return false;
             }
 
-            if (destination.IsEmpty || state.BufferedSegments.Count == 0)
+            if (destination.IsEmpty || GetBufferedSegmentCount(state) == 0)
             {
                 completed = state.ReceiveFinalSize.HasValue && state.ReadOffset == state.ReceiveFinalSize.Value;
                 return false;
@@ -805,9 +805,9 @@ internal sealed class QuicConnectionStreamState
             ulong expectedOffset = state.ReadOffset;
             int destinationIndex = 0;
 
-            while (destinationIndex < destination.Length && state.BufferedSegments.Count > 0)
+            while (destinationIndex < destination.Length && GetBufferedSegmentCount(state) > 0)
             {
-                BufferedSegment entry = state.BufferedSegments[0];
+                BufferedSegment entry = GetBufferedSegment(state, 0);
                 if (entry.Offset > expectedOffset)
                 {
                     break;
@@ -838,7 +838,7 @@ internal sealed class QuicConnectionStreamState
                 }
                 else
                 {
-                    state.BufferedSegments[0] = entry.Slice(bytesToCopy);
+                    SetBufferedSegment(state, 0, entry.Slice(bytesToCopy));
                     break;
                 }
             }
@@ -1365,48 +1365,50 @@ internal sealed class QuicConnectionStreamState
         ulong endOffset = offset + (ulong)data.Length;
         int dataIndex = 0;
         int currentIndex = 0;
-        if (state.BufferedSegments.Count == 0)
+        int bufferedSegmentCount = GetBufferedSegmentCount(state);
+        if (bufferedSegmentCount == 0)
         {
-            state.BufferedSegments.Add(CreateBufferedSegment(currentOffset, data, dataIndex, data.Length));
+            AddBufferedSegment(state, CreateBufferedSegment(currentOffset, data, dataIndex, data.Length));
             state.BufferedReadableBytes += data.Length;
             return;
         }
 
-        if (state.BufferedSegments[^1].End <= currentOffset)
+        BufferedSegment lastSegment = GetBufferedSegment(state, bufferedSegmentCount - 1);
+        if (lastSegment.End <= currentOffset)
         {
-            state.BufferedSegments.Add(CreateBufferedSegment(currentOffset, data, dataIndex, data.Length));
+            AddBufferedSegment(state, CreateBufferedSegment(currentOffset, data, dataIndex, data.Length));
             state.BufferedReadableBytes += data.Length;
             return;
         }
 
-        BufferedSegment tailSegment = state.BufferedSegments[^1];
+        BufferedSegment tailSegment = lastSegment;
         if (tailSegment.Offset <= currentOffset
             && currentOffset < tailSegment.End
             && tailSegment.End < endOffset)
         {
             int tailDataIndex = (int)(tailSegment.End - offset);
             int tailLength = (int)(endOffset - tailSegment.End);
-            state.BufferedSegments.Add(CreateBufferedSegment(tailSegment.End, data, tailDataIndex, tailLength));
+            AddBufferedSegment(state, CreateBufferedSegment(tailSegment.End, data, tailDataIndex, tailLength));
             state.BufferedReadableBytes += tailLength;
             return;
         }
 
-        List<BufferedSegment> updated = state.BufferedSegmentScratch ??= new List<BufferedSegment>(state.BufferedSegments.Count + 2);
+        List<BufferedSegment> updated = state.BufferedSegmentScratch ??= new List<BufferedSegment>(bufferedSegmentCount + 2);
         updated.Clear();
-        int expectedUpdatedCount = state.BufferedSegments.Count + 2;
+        int expectedUpdatedCount = bufferedSegmentCount + 2;
         if (updated.Capacity < expectedUpdatedCount)
         {
             updated.Capacity = expectedUpdatedCount;
         }
 
-        while (currentIndex < state.BufferedSegments.Count && state.BufferedSegments[currentIndex].End <= currentOffset)
+        while (currentIndex < bufferedSegmentCount && GetBufferedSegment(state, currentIndex).End <= currentOffset)
         {
-            updated.Add(state.BufferedSegments[currentIndex++]);
+            updated.Add(GetBufferedSegment(state, currentIndex++));
         }
 
-        while (currentIndex < state.BufferedSegments.Count && currentOffset < endOffset)
+        while (currentIndex < bufferedSegmentCount && currentOffset < endOffset)
         {
-            BufferedSegment existing = state.BufferedSegments[currentIndex];
+            BufferedSegment existing = GetBufferedSegment(state, currentIndex);
             if (existing.Offset > currentOffset)
             {
                 ulong gapEnd = Math.Min(existing.Offset, endOffset);
@@ -1446,14 +1448,99 @@ internal sealed class QuicConnectionStreamState
             state.BufferedReadableBytes += tailLength;
         }
 
-        while (currentIndex < state.BufferedSegments.Count)
+        while (currentIndex < bufferedSegmentCount)
         {
-            updated.Add(state.BufferedSegments[currentIndex++]);
+            updated.Add(GetBufferedSegment(state, currentIndex++));
         }
 
-        state.BufferedSegments.Clear();
-        state.BufferedSegments.AddRange(updated);
+        ReplaceBufferedSegments(state, updated);
         updated.Clear();
+    }
+
+    private static int GetBufferedSegmentCount(StreamState state)
+    {
+        return state.BufferedSegmentList?.Count ?? (state.HasInlineBufferedSegment ? 1 : 0);
+    }
+
+    private static BufferedSegment GetBufferedSegment(StreamState state, int index)
+    {
+        if (state.BufferedSegmentList is { } segments)
+        {
+            return segments[index];
+        }
+
+        if (index == 0 && state.HasInlineBufferedSegment)
+        {
+            return state.InlineBufferedSegment;
+        }
+
+        throw new ArgumentOutOfRangeException(nameof(index));
+    }
+
+    private static void SetBufferedSegment(StreamState state, int index, BufferedSegment segment)
+    {
+        if (state.BufferedSegmentList is { } segments)
+        {
+            segments[index] = segment;
+            return;
+        }
+
+        if (index == 0 && state.HasInlineBufferedSegment)
+        {
+            state.InlineBufferedSegment = segment;
+            return;
+        }
+
+        throw new ArgumentOutOfRangeException(nameof(index));
+    }
+
+    private static void AddBufferedSegment(StreamState state, BufferedSegment segment)
+    {
+        if (state.BufferedSegmentList is { } segments)
+        {
+            segments.Add(segment);
+            return;
+        }
+
+        if (!state.HasInlineBufferedSegment)
+        {
+            state.InlineBufferedSegment = segment;
+            state.HasInlineBufferedSegment = true;
+            return;
+        }
+
+        state.BufferedSegmentList = new List<BufferedSegment>(capacity: 2)
+        {
+            state.InlineBufferedSegment,
+            segment,
+        };
+        state.InlineBufferedSegment = default;
+        state.HasInlineBufferedSegment = false;
+    }
+
+    private static void ReplaceBufferedSegments(StreamState state, List<BufferedSegment> segments)
+    {
+        ClearBufferedSegmentStorage(state);
+        switch (segments.Count)
+        {
+            case 0:
+                return;
+            case 1:
+                state.InlineBufferedSegment = segments[0];
+                state.HasInlineBufferedSegment = true;
+                return;
+        }
+
+        List<BufferedSegment> destination = state.BufferedSegmentList ??= new List<BufferedSegment>(segments.Count);
+        destination.AddRange(segments);
+    }
+
+    private static void ClearBufferedSegmentStorage(StreamState state)
+    {
+        state.BufferedSegmentList?.Clear();
+        state.BufferedSegmentList = null;
+        state.InlineBufferedSegment = default;
+        state.HasInlineBufferedSegment = false;
     }
 
     private static BufferedSegment CreateBufferedSegment(ulong offset, ReadOnlySpan<byte> data, int dataIndex, int length)
@@ -1465,25 +1552,48 @@ internal sealed class QuicConnectionStreamState
 
     private static void RemoveBufferedSegmentAt(StreamState state, int index)
     {
-        state.BufferedSegments[index].Release();
-        state.BufferedSegments.RemoveAt(index);
+        BufferedSegment segment = GetBufferedSegment(state, index);
+        segment.Release();
+        if (state.BufferedSegmentList is { } segments)
+        {
+            segments.RemoveAt(index);
+            if (segments.Count == 1)
+            {
+                state.InlineBufferedSegment = segments[0];
+                state.HasInlineBufferedSegment = true;
+                segments.Clear();
+                state.BufferedSegmentList = null;
+            }
+
+            return;
+        }
+
+        if (index == 0 && state.HasInlineBufferedSegment)
+        {
+            state.InlineBufferedSegment = default;
+            state.HasInlineBufferedSegment = false;
+            return;
+        }
+
+        throw new ArgumentOutOfRangeException(nameof(index));
     }
 
     private static void ReleaseBufferedSegments(StreamState state)
     {
-        for (int index = 0; index < state.BufferedSegments.Count; index++)
+        int count = GetBufferedSegmentCount(state);
+        for (int index = 0; index < count; index++)
         {
-            state.BufferedSegments[index].Release();
+            GetBufferedSegment(state, index).Release();
         }
 
-        state.BufferedSegments.Clear();
+        ClearBufferedSegmentStorage(state);
     }
 
     private static bool HasContiguousReadableBytes(StreamState state)
     {
-        return state.BufferedSegments.Count > 0
-            && state.BufferedSegments[0].Offset <= state.ReadOffset
-            && state.BufferedSegments[0].End > state.ReadOffset;
+        return GetBufferedSegmentCount(state) > 0
+            && GetBufferedSegment(state, 0).Offset <= state.ReadOffset
+            && GetBufferedSegment(state, 0).End > state.ReadOffset;
     }
 
     private sealed class StreamState(
@@ -1520,7 +1630,9 @@ internal sealed class QuicConnectionStreamState
         public bool PeerAcceptQueued { get; set; }
         public QuicByteRangeSet SentRanges = new();
         public QuicByteRangeSet ReceivedRanges = new();
-        public List<BufferedSegment> BufferedSegments { get; } = [];
+        public BufferedSegment InlineBufferedSegment { get; set; }
+        public bool HasInlineBufferedSegment { get; set; }
+        public List<BufferedSegment>? BufferedSegmentList { get; set; }
         public List<BufferedSegment>? BufferedSegmentScratch { get; set; }
         public bool ReceivedZeroRttData { get; set; }
         public bool ReceivedOneRttData { get; set; }
