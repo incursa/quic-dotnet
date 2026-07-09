@@ -813,7 +813,7 @@ public sealed class Http3Server : IAsyncDisposable
         // A pooled buffer is used here because frame parsing spans multiple
         // awaited reads and the frame reader may hold partial bytes until it
         // can complete a frame.
-        byte[] buffer = ArrayPool<byte>.Shared.Rent(readBufferSize);
+        byte[] buffer = QuicBufferPool.RentBytes(readBufferSize);
 
         try
         {
@@ -875,7 +875,7 @@ public sealed class Http3Server : IAsyncDisposable
         }
         finally
         {
-            ArrayPool<byte>.Shared.Return(buffer, clearArray: false);
+            QuicBufferPool.ReturnBytes(buffer);
         }
     }
 
