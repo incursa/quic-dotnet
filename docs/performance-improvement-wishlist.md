@@ -4,6 +4,7 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-09: `PublicApiStream` smoke lane proof `codex-public-api-stream-smoke-20260709a` passed on clean commit `401db2296ad5c955431bcfabfb50c2263b0b4a67`, running `QuicPublicApiStreamTransferBenchmarks` through `Invoke-QuicPublicComparison.ps1 -Job Dry`. The diagnostic Dry comparison measured the bounded 1 KB public-facade request/response stream workload at 374.56 ms and 412.87 KB for Incursa.Quic versus 80.39 ms and 145.62 KB for `System.Net.Quic`. Treat this as a baseline gap and lane proof, not an optimized result or publishable comparison.
 - 2026-07-09: managed X25519 now avoids two mathematically redundant inner modular reductions inside each Montgomery ladder step while preserving the same outer field reductions. Focused X25519/RFC 7748 tests passed 6/6. `QuicTlsX25519Benchmarks` Dry evidence `codex-x25519-reduced-inner-mod-20260709a` reduced allocation from the `codex-crypto-core-smoke-20260709a` smoke baseline from 580.8 KB to 555.87 KB for public-key derivation, 592.14 KB to 574.28 KB for shared-secret derivation, and 1,754.95 KB to 1,687.24 KB for a full exchange. This is a bounded `BigInteger` cleanup; the larger fixed-limb X25519 rewrite remains open.
 - 2026-07-09: CRYPTO buffer insertion scratch storage now grows geometrically instead of exact-fitting `insertScratch` capacity as shuffled frame entry counts rise. Focused RFC 9000 CRYPTO-buffer tests passed 9/9. `QuicCryptoBufferBenchmarks` Dry evidence `codex-crypto-buffer-scratch-growth-20260709a` reduced `BufferAndDrainMinimumCryptoStream` allocation further to 19.55 KB without overlap and 23.59 KB with overlap. Dry-mode timing was noisy, so treat this as local allocation evidence only.
 - 2026-07-09: CRYPTO buffer insertion now defers copying until retained frame segments are known, avoiding the prior whole-frame copy before insertion then per-segment copy inside `TryInsertFrameData`. Focused RFC 9000 CRYPTO-buffer tests passed 9/9. `QuicCryptoBufferBenchmarks` Dry evidence `codex-crypto-buffer-span-insert-20260709a` reduced `BufferAndDrainMinimumCryptoStream` allocation from the `codex-crypto-core-smoke-20260709a` smoke baseline from 152.39 KB to 144.97 KB without overlap and from 159.02 KB to 151.07 KB with overlap. Treat this as local diagnostic microbenchmark evidence, not end-to-end throughput proof.
@@ -216,11 +217,18 @@ Done when:
 
 ## 12. Add Public API Stream Transfer Benchmarks
 
+Status: partially closed. `QuicPublicApiStreamTransferBenchmarks` and the
+`PublicApiStream` performance-lane surface now provide a bounded public-facade
+request/response stream-transfer comparison between Incursa.Quic and
+`System.Net.Quic`. Smoke proof `codex-public-api-stream-smoke-20260709a` passed
+and documents a current Incursa latency/allocation gap that should drive follow-up
+runtime work.
+
 Existing public comparison work is mostly connection establishment. We need public stream transfer workloads that compare real user-facing APIs.
 
 Done when:
 
-- BenchmarkDotNet includes public facade stream upload, download, bidirectional echo, and many-stream workloads.
+- BenchmarkDotNet includes public facade stream upload, download, bidirectional echo, and many-stream workloads. The first request/response stream-transfer workload exists; upload/download-only, bidirectional echo, and many-stream variants remain open.
 - Incursa and `System.Net.Quic` are compared only where both can run the same public workload honestly.
 - The benchmark does not use internal runtime helpers.
 - Results are documented separately from HTTP/3 and raw internal transport benchmarks.
