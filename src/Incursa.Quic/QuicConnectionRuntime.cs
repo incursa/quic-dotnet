@@ -1571,24 +1571,15 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     {
         try
         {
-            while (await inboundStreamIds.Reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
+            ulong streamId = await inboundStreamIds.Reader.ReadAsync(cancellationToken).ConfigureAwait(false);
+            if (ApplicationReceiveDebugEnabled)
             {
-                if (!inboundStreamIds.Reader.TryRead(out ulong streamId))
-                {
-                    continue;
-                }
-
-                if (ApplicationReceiveDebugEnabled)
-                {
-                    await Console.Error.WriteLineAsync($"app-rx accept-inbound-stream role={tlsState.Role} stream={streamId}.").ConfigureAwait(false);
-                }
-
-                return terminalState is not null
-                    ? null
-                    : new QuicStream(streamRegistry.Bookkeeping, streamId, this);
+                await Console.Error.WriteLineAsync($"app-rx accept-inbound-stream role={tlsState.Role} stream={streamId}.").ConfigureAwait(false);
             }
 
-            return null;
+            return terminalState is not null
+                ? null
+                : new QuicStream(streamRegistry.Bookkeeping, streamId, this);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
