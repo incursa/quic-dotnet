@@ -11,11 +11,13 @@ internal sealed class QuicConnectionStreamState
     private const ulong MaximumStreamCount = 1UL << 60;
     private const ulong UnidirectionalBit = 0x02;
     private const int StreamIdTypeBitCount = 2;
+    private const int IncomingStreamTypeCapacity = 2;
+    private const int MaximumInitialTrackedStreamCapacity = 128;
 
     private readonly bool isServer;
     private readonly object syncRoot = new();
-    private readonly Dictionary<ulong, StreamState> streams = [];
-    private readonly Dictionary<QuicStreamType, ulong> highestCreatedIncomingStreamIndexes = [];
+    private readonly Dictionary<ulong, StreamState> streams;
+    private readonly Dictionary<QuicStreamType, ulong> highestCreatedIncomingStreamIndexes;
 
     private ulong initialLocalBidirectionalReceiveLimit;
     private ulong initialPeerBidirectionalReceiveLimit;
@@ -37,6 +39,8 @@ internal sealed class QuicConnectionStreamState
     {
         ValidateLimits(options);
 
+        streams = new Dictionary<ulong, StreamState>(GetInitialTrackedStreamCapacity(options));
+        highestCreatedIncomingStreamIndexes = new Dictionary<QuicStreamType, ulong>(IncomingStreamTypeCapacity);
         isServer = options.IsServer;
         ConnectionReceiveLimit = options.InitialConnectionReceiveLimit;
         ConnectionSendLimit = options.InitialConnectionSendLimit;
@@ -1059,6 +1063,24 @@ internal sealed class QuicConnectionStreamState
         ValidateStreamCount(options.InitialIncomingUnidirectionalStreamLimit);
         ValidateStreamCount(options.InitialPeerBidirectionalStreamLimit);
         ValidateStreamCount(options.InitialPeerUnidirectionalStreamLimit);
+    }
+
+    private static int GetInitialTrackedStreamCapacity(QuicConnectionStreamStateOptions options)
+    {
+        ulong incomingCapacity = SaturatingAdd(
+            options.InitialIncomingBidirectionalStreamLimit,
+            options.InitialIncomingUnidirectionalStreamLimit);
+        ulong peerCapacity = SaturatingAdd(
+            options.InitialPeerBidirectionalStreamLimit,
+            options.InitialPeerUnidirectionalStreamLimit);
+        ulong estimatedCapacity = SaturatingAdd(incomingCapacity, peerCapacity);
+        return (int)Math.Min(estimatedCapacity, MaximumInitialTrackedStreamCapacity);
+    }
+
+    private static ulong SaturatingAdd(ulong left, ulong right)
+    {
+        ulong sum = left + right;
+        return sum < left ? ulong.MaxValue : sum;
     }
 
     private static void ValidateFlowControlLimit(ulong value)
