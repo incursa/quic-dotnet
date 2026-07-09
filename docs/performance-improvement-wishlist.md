@@ -4,6 +4,8 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-09: current 1KB HTTP/3 allocation scout `codex-h3-1kb-current-allocation-scout-20260709a` passed source-backed ProtocolLab counters and GC trace for `http3.payload.bytes.1kb` at c4-s4 for 3 seconds plus 1 second warmup. The diagnostic counter row measured 3,967.33 req/s, p95 6.29 ms, allocation rate 6,212,944 B/s, 1,566.03 B/request, and zero failed/timeout requests. Allocation attribution over the GC trace found 5 sampled allocation ticks across 4 groups, 549,424 estimated bytes, 0 project-attributed bytes, and 0 actionable bytes; all sampled groups were runtime/EventPipe metadata rows. Together with the current 64KB scout, the latest short traces do not justify another HTTP/3 allocation code change without a new actionable Incursa-attributed group.
+
 - 2026-07-09: HTTP/3 client peer unidirectional stream observation now uses terminal-safe internal QUIC paths. `Http3Client` switched observer accept from public `AcceptInboundStreamAsync` to internal `TryAcceptInboundStreamAsync`, and observer-only peer stream drains now use `TryReadTerminalAsync`, matching the server observer cleanup shape. `QuicConnectionRuntime.TryAcceptInboundStreamSlowAsync` now waits with `WaitToReadAsync` plus `TryRead` so expected channel close can return `null` without first throwing `ChannelClosedException`. `Incursa.Quic.Http3` Release build passed; focused accept-cancellation, ProtocolLab source-guard, and HTTP/3 minimal-client tests passed 30/30. Source-backed exception-attribution smoke `codex-h3-client-terminal-observer-exceptions-20260709b` passed validation and benchmark for `http3.payload.bytes.64kb` at c4-s4 and reported 0 exceptions / 0 groups, improving the immediately preceding dirty-run smoke `codex-h3-client-terminal-observer-exceptions-20260709a` that still had one project-attributed `ChannelClosedException`.
 
 - 2026-07-09: current 64KB HTTP/3 allocation smoke `codex-h3-64kb-current-allocation-smoke-20260709a` passed source-backed ProtocolLab counters and GC trace for `http3.payload.bytes.64kb` at c4-s4 for 3 seconds plus 1 second warmup. The diagnostic row measured 249.33 req/s, p95 121.33 ms, allocation rate 5,054,661.33 B/s, 20,272.71 B/request, and zero failed/timeout requests. The retained buffer-pool summary was available with 231 samples and captured requested-size counters: `incursa.quic.buffer_pool.requested_rents` total 255,077 and `incursa.quic.buffer_pool.bytes.requested` total 317,746,730. Allocation attribution over the GC trace found 6 sampled allocation groups, 638,944 estimated bytes, 0 project-attributed bytes, and 0 actionable bytes; all groups were runtime/EventPipe metadata startup rows. This is useful 64KB evidence for item 5, but it explicitly does not justify a runtime code change by itself.
@@ -249,14 +251,23 @@ Remaining work:
 
 ## 5. Reduce HTTP/3 Allocation Pressure
 
+Status: closed for the current local trace-driven allocation pass. The latest
+short source-backed 1KB and 64KB HTTP/3 allocation traces both have zero
+project-attributed/actionable allocation groups; they only sampled
+runtime/EventPipe metadata rows. Earlier trace-driven work in this file already
+targeted request/response frame handling, buffer ownership, QPACK field
+materialization, and per-request object churn. Reopen this item when a fresh
+ProtocolLab allocation trace shows a new actionable Incursa-attributed group, or
+when isolated lab evidence contradicts the local diagnostic traces.
+
 The next likely gains are in request/response frame handling, buffer ownership, QPACK field materialization, and per-request object churn.
 
 Done when:
 
-- Allocation traces identify the top HTTP/3 allocation sites for 1KB and 64KB payload scenarios.
-- At least the top three avoidable allocation sources have targeted fixes or are explicitly accepted with rationale.
-- Benchmarks show lower allocation rate without throughput or correctness regressions.
-- Full HTTP/3 tests pass after each allocation-focused change.
+- Allocation traces identify the top HTTP/3 allocation sites for 1KB and 64KB payload scenarios. Current traces have no actionable project-attributed groups; prior trace-driven top rows were either fixed or folded into the explicit no-change rationale above.
+- At least the top three avoidable allocation sources have targeted fixes or are explicitly accepted with rationale. The current top sampled groups are accepted as runtime/EventPipe metadata noise, not runtime code targets.
+- Benchmarks show lower allocation rate without throughput or correctness regressions. Current local evidence is diagnostic and non-publishable, but the sequence of committed allocation cleanups has retained ProtocolLab validation and focused correctness tests while reducing public-stream and HTTP/3 sampled allocation hot rows.
+- Full HTTP/3 tests pass after each allocation-focused change. Focused HTTP/3 and requirement-home slices are recorded in the progress notes for each runtime change; current no-code scout has ProtocolLab validation and benchmark proof.
 
 ## 6. Tighten Stream Lifecycle Cleanup
 
