@@ -744,6 +744,12 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("quic.transport.stream-throughput.1mb", script);
         Assert.Contains("\"CryptoCore\"", script);
         Assert.Contains("*QuicTlsX25519Benchmarks*", script);
+        Assert.Contains("BaselineAggregatePath", script);
+        Assert.Contains("ExtremePrimaryMetricDropPercent", script);
+        Assert.Contains("ExtremeLatencyIncreasePercent", script);
+        Assert.Contains("extreme-metric-regression", script);
+        Assert.Contains("performanceGate", script);
+        Assert.Contains("FailOnPerformanceGate", script);
     }
 
     [Fact]

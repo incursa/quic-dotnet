@@ -46,6 +46,14 @@ param(
 
     [switch] $FailOnProtocolLabError,
 
+    [string] $BaselineAggregatePath,
+
+    [double] $ExtremePrimaryMetricDropPercent = 50.0,
+
+    [double] $ExtremeLatencyIncreasePercent = 100.0,
+
+    [switch] $FailOnPerformanceGate,
+
     [switch] $SkipBenchmarks,
 
     [switch] $DryRun,
@@ -462,6 +470,264 @@ function ConvertTo-MetricSummary {
         best = Get-ObjectPropertyValue -Object $Metric -Name "best"
         worst = Get-ObjectPropertyValue -Object $Metric -Name "worst"
         relativeRange = $RelativeRange
+    }
+}
+
+function Get-MetricMedianValue {
+    param(
+        [AllowNull()]
+        [object] $Object,
+
+        [Parameter(Mandatory = $true)]
+        [string] $Name
+    )
+
+    $metric = Get-ObjectPropertyValue -Object $Object -Name $Name
+    if ($null -eq $metric) {
+        return $null
+    }
+
+    $median = Get-ObjectPropertyValue -Object $metric -Name "median"
+    if ($null -eq $median) {
+        return $null
+    }
+
+    try {
+        return [double]$median
+    }
+    catch {
+        return $null
+    }
+}
+
+function Get-PerformanceGateCellKey {
+    param(
+        [AllowNull()]
+        [object] $Aggregate
+    )
+
+    if ($null -eq $Aggregate) {
+        return $null
+    }
+
+    $parts = @(
+        $Aggregate.implementationId,
+        $Aggregate.scenarioId,
+        $Aggregate.protocol,
+        $Aggregate.loadTool,
+        $Aggregate.loadToolMode,
+        $Aggregate.connections,
+        $Aggregate.streamsPerConnection
+    )
+
+    return ($parts | ForEach-Object { if ($null -eq $_) { "" } else { [string]$_ } }) -join "|"
+}
+
+function Get-PrimaryMetricName {
+    param(
+        [AllowNull()]
+        [object] $Aggregate
+    )
+
+    $scenarioId = [string](Get-ObjectPropertyValue -Object $Aggregate -Name "scenarioId")
+    if ($scenarioId.StartsWith("quic.transport.", [StringComparison]::OrdinalIgnoreCase)) {
+        return "throughputBytesPerSecond"
+    }
+
+    return "requestsPerSecond"
+}
+
+function Get-PercentChange {
+    param(
+        [double] $Baseline,
+
+        [double] $Current
+    )
+
+    if ($Baseline -le 0) {
+        return $null
+    }
+
+    return (($Current - $Baseline) / $Baseline) * 100.0
+}
+
+function New-PerformanceGateResult {
+    param(
+        [string] $RequestedBaselineAggregatePath,
+
+        [object[]] $CurrentRunRecords,
+
+        [string] $RepositoryRoot,
+
+        [string] $CurrentLane,
+
+        [double] $PrimaryMetricDropThresholdPercent,
+
+        [double] $LatencyIncreaseThresholdPercent,
+
+        [bool] $ExplicitFailOnPerformanceGate
+    )
+
+    $thresholds = [ordered]@{
+        primaryMetricDropPercent = $PrimaryMetricDropThresholdPercent
+        latencyP95IncreasePercent = $LatencyIncreaseThresholdPercent
+    }
+
+    if ([string]::IsNullOrWhiteSpace($RequestedBaselineAggregatePath)) {
+        return [ordered]@{
+            enabled = $false
+            status = "not-configured"
+            reportOnly = [bool]($CurrentLane -eq "Confidence" -and -not $ExplicitFailOnPerformanceGate)
+            baselineAggregatePath = $null
+            thresholds = $thresholds
+            unavailableReasons = @("No baseline aggregate path was supplied.")
+            comparisons = @()
+            extremeRegressions = @()
+        }
+    }
+
+    $resolvedBaselineAggregatePath = Resolve-FullPath -Path $RequestedBaselineAggregatePath -BasePath $RepositoryRoot
+    $reportOnly = [bool]($CurrentLane -eq "Confidence" -and -not $ExplicitFailOnPerformanceGate)
+    $unavailableReasons = New-Object System.Collections.Generic.List[string]
+    $comparisons = New-Object System.Collections.Generic.List[object]
+    $extremeRegressions = New-Object System.Collections.Generic.List[object]
+
+    if (-not (Test-Path -LiteralPath $resolvedBaselineAggregatePath -PathType Leaf)) {
+        $unavailableReasons.Add("Baseline aggregate was not found: $resolvedBaselineAggregatePath") | Out-Null
+        return [ordered]@{
+            enabled = $true
+            status = "baseline-missing"
+            reportOnly = $reportOnly
+            baselineAggregatePath = $resolvedBaselineAggregatePath
+            thresholds = $thresholds
+            unavailableReasons = @($unavailableReasons.ToArray())
+            comparisons = @()
+            extremeRegressions = @()
+        }
+    }
+
+    $baselineDocument = Get-Content -LiteralPath $resolvedBaselineAggregatePath -Raw | ConvertFrom-Json
+    $baselineByKey = @{}
+    foreach ($aggregate in @($baselineDocument.aggregates)) {
+        $key = Get-PerformanceGateCellKey -Aggregate $aggregate
+        if (-not [string]::IsNullOrWhiteSpace($key) -and -not $baselineByKey.ContainsKey($key)) {
+            $baselineByKey[$key] = $aggregate
+        }
+    }
+
+    foreach ($record in @($CurrentRunRecords)) {
+        if (-not (Test-Path -LiteralPath $record.AggregatePath -PathType Leaf)) {
+            $unavailableReasons.Add("$($record.Job.Name): current aggregate was not found: $($record.AggregatePath)") | Out-Null
+            continue
+        }
+
+        $currentDocument = Get-Content -LiteralPath $record.AggregatePath -Raw | ConvertFrom-Json
+        foreach ($currentAggregate in @($currentDocument.aggregates)) {
+            $key = Get-PerformanceGateCellKey -Aggregate $currentAggregate
+            $comparison = [ordered]@{
+                jobName = $record.Job.Name
+                implementationId = $currentAggregate.implementationId
+                scenarioId = $currentAggregate.scenarioId
+                cellKey = $key
+                status = "matched"
+                signals = @()
+            }
+
+            if ([string]::IsNullOrWhiteSpace($key) -or -not $baselineByKey.ContainsKey($key)) {
+                $comparison.status = "missing-baseline-cell"
+                $comparisons.Add($comparison) | Out-Null
+                continue
+            }
+
+            $baselineAggregate = $baselineByKey[$key]
+            $signals = New-Object System.Collections.Generic.List[object]
+            $primaryMetricName = Get-PrimaryMetricName -Aggregate $currentAggregate
+            $primaryBaseline = Get-MetricMedianValue -Object $baselineAggregate -Name $primaryMetricName
+            $primaryCurrent = Get-MetricMedianValue -Object $currentAggregate -Name $primaryMetricName
+            if ($null -ne $primaryBaseline -and $null -ne $primaryCurrent) {
+                $primaryChange = Get-PercentChange -Baseline $primaryBaseline -Current $primaryCurrent
+                $primaryRegressed = [bool]($null -ne $primaryChange -and $primaryChange -le (-1.0 * $PrimaryMetricDropThresholdPercent))
+                $signal = [ordered]@{
+                    metric = $primaryMetricName
+                    direction = "higher-is-better"
+                    baseline = $primaryBaseline
+                    current = $primaryCurrent
+                    percentChange = $primaryChange
+                    thresholdPercent = (-1.0 * $PrimaryMetricDropThresholdPercent)
+                    extremeRegression = $primaryRegressed
+                }
+                $signals.Add($signal) | Out-Null
+                if ($primaryRegressed) {
+                    $extremeRegressions.Add([ordered]@{
+                        jobName = $record.Job.Name
+                        implementationId = $currentAggregate.implementationId
+                        scenarioId = $currentAggregate.scenarioId
+                        metric = $primaryMetricName
+                        reason = "$primaryMetricName dropped by $([Math]::Round([Math]::Abs($primaryChange), 2)) percent."
+                    }) | Out-Null
+                }
+            }
+
+            $latencyBaseline = Get-MetricMedianValue -Object $baselineAggregate -Name "latencyP95Ms"
+            $latencyCurrent = Get-MetricMedianValue -Object $currentAggregate -Name "latencyP95Ms"
+            if ($null -ne $latencyBaseline -and $null -ne $latencyCurrent) {
+                $latencyChange = Get-PercentChange -Baseline $latencyBaseline -Current $latencyCurrent
+                $latencyRegressed = [bool]($null -ne $latencyChange -and $latencyChange -ge $LatencyIncreaseThresholdPercent)
+                $signal = [ordered]@{
+                    metric = "latencyP95Ms"
+                    direction = "lower-is-better"
+                    baseline = $latencyBaseline
+                    current = $latencyCurrent
+                    percentChange = $latencyChange
+                    thresholdPercent = $LatencyIncreaseThresholdPercent
+                    extremeRegression = $latencyRegressed
+                }
+                $signals.Add($signal) | Out-Null
+                if ($latencyRegressed) {
+                    $extremeRegressions.Add([ordered]@{
+                        jobName = $record.Job.Name
+                        implementationId = $currentAggregate.implementationId
+                        scenarioId = $currentAggregate.scenarioId
+                        metric = "latencyP95Ms"
+                        reason = "latencyP95Ms increased by $([Math]::Round($latencyChange, 2)) percent."
+                    }) | Out-Null
+                }
+            }
+
+            $comparison.signals = @($signals.ToArray())
+            if ($signals.Count -eq 0) {
+                $comparison.status = "no-comparable-metrics"
+            }
+            $comparisons.Add($comparison) | Out-Null
+        }
+    }
+
+    $comparableComparisonCount = 0
+    foreach ($comparison in @($comparisons.ToArray())) {
+        if ($comparison.status -eq "matched") {
+            $comparableComparisonCount++
+        }
+    }
+
+    $status = if ($extremeRegressions.Count -gt 0) {
+        "extreme-regression"
+    }
+    elseif ($comparableComparisonCount -eq 0) {
+        "no-comparable-cells"
+    }
+    else {
+        "passed"
+    }
+
+    return [ordered]@{
+        enabled = $true
+        status = $status
+        reportOnly = $reportOnly
+        baselineAggregatePath = $resolvedBaselineAggregatePath
+        thresholds = $thresholds
+        unavailableReasons = @($unavailableReasons.ToArray())
+        comparisons = @($comparisons.ToArray())
+        extremeRegressions = @($extremeRegressions.ToArray())
     }
 }
 
@@ -892,6 +1158,21 @@ if ($shouldRunProtocolLab) {
     }
 }
 
+$performanceGate = New-PerformanceGateResult `
+    -RequestedBaselineAggregatePath $BaselineAggregatePath `
+    -CurrentRunRecords @($protocolLabRunRecords.ToArray()) `
+    -RepositoryRoot $repoRoot `
+    -CurrentLane $Lane `
+    -PrimaryMetricDropThresholdPercent $ExtremePrimaryMetricDropPercent `
+    -LatencyIncreaseThresholdPercent $ExtremeLatencyIncreasePercent `
+    -ExplicitFailOnPerformanceGate ([bool]$FailOnPerformanceGate)
+
+if ($performanceGate.enabled -and
+    $performanceGate.status -eq "extreme-regression" -and
+    -not $performanceGate.reportOnly) {
+    $laneStatus = "completed-with-diagnostic-failures"
+}
+
 $laneFailureCategories = New-Object System.Collections.Generic.List[string]
 if ($failureMessage) {
     $laneFailureCategories.Add("lane-command-failure") | Out-Null
@@ -913,6 +1194,10 @@ foreach ($runSummary in $protocolLabRunSummaries) {
             }
         }
     }
+}
+
+if ($performanceGate.enabled -and $performanceGate.status -eq "extreme-regression") {
+    $laneFailureCategories.Add("extreme-metric-regression") | Out-Null
 }
 
 if ($laneFailureCategories.Count -eq 0) {
@@ -962,6 +1247,7 @@ $laneSummaryDocument = [ordered]@{
         healthReasons = $protocolLabHealthReasonArray
         runs = $protocolLabRunSummaryArray
     }
+    performanceGate = $performanceGate
     commands = $commandsArray
 }
 
@@ -981,6 +1267,7 @@ Add-SummaryLine $summary "- Status: ``$laneStatus``"
 Add-SummaryLine $summary "- Failure categories: ``$((@($laneSummaryDocument.failureCategories)) -join ', ')``"
 Add-SummaryLine $summary "- Report-only confidence: ``$($Lane -eq "Confidence")``"
 Add-SummaryLine $summary "- Evidence quality: ``$(if ($Lane -eq "Confidence") { "confidence-local" } else { "diagnostic-smoke" })``"
+Add-SummaryLine $summary "- Performance gate: ``$($performanceGate.status)``"
 Add-SummaryLine $summary "- Machine summary: ``$laneSummaryJsonPath``"
 Add-SummaryLine $summary ""
 
@@ -999,9 +1286,31 @@ if ($protocolLabHealthReasons.Count -gt 0) {
 }
 
 if ($Lane -eq "Confidence") {
-    Add-SummaryLine $summary "Confidence lanes are report-only. This script records repeated evidence but does not enforce performance thresholds."
+    Add-SummaryLine $summary "Confidence lanes report performance movement. They only fail the performance gate when -FailOnPerformanceGate is supplied."
     Add-SummaryLine $summary ""
 }
+
+Add-SummaryLine $summary "## Performance Gate"
+Add-SummaryLine $summary ""
+if (-not $performanceGate.enabled) {
+    Add-SummaryLine $summary "- Not configured. Pass ``-BaselineAggregatePath`` to compare current ProtocolLab aggregates against a retained baseline."
+}
+else {
+    Add-SummaryLine $summary "- Baseline aggregate: ``$($performanceGate.baselineAggregatePath)``"
+    Add-SummaryLine $summary "- Status: ``$($performanceGate.status)``"
+    Add-SummaryLine $summary "- Report-only: ``$($performanceGate.reportOnly)``"
+    Add-SummaryLine $summary "- Extreme primary metric drop threshold: ``$ExtremePrimaryMetricDropPercent`` percent"
+    Add-SummaryLine $summary "- Extreme p95 latency increase threshold: ``$ExtremeLatencyIncreasePercent`` percent"
+
+    foreach ($reason in @($performanceGate.unavailableReasons)) {
+        Add-SummaryLine $summary "- Unavailable: ``$reason``"
+    }
+
+    foreach ($regression in @($performanceGate.extremeRegressions)) {
+        Add-SummaryLine $summary "- Extreme regression: ``$($regression.jobName)`` ``$($regression.implementationId)`` / ``$($regression.scenarioId)`` ``$($regression.metric)`` - ``$($regression.reason)``"
+    }
+}
+Add-SummaryLine $summary ""
 
 Add-SummaryLine $summary "## Commands"
 Add-SummaryLine $summary ""
@@ -1076,4 +1385,10 @@ Write-Host "Summary: $summaryPath" -ForegroundColor Green
 
 if ($failureMessage) {
     throw $failureMessage
+}
+
+if ($performanceGate.enabled -and
+    $performanceGate.status -eq "extreme-regression" -and
+    $FailOnPerformanceGate) {
+    throw "Performance gate detected an extreme metric regression. See $laneSummaryJsonPath."
 }
