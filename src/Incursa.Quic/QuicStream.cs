@@ -33,7 +33,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
 
     private TaskCompletionSource<object?> ReadsClosedTcs => readsClosed ??= new(TaskCreationOptions.RunContinuationsAsynchronously);
     private TaskCompletionSource<object?> WritesClosedTcs => writesClosed ??= new(TaskCreationOptions.RunContinuationsAsynchronously);
-    private readonly SemaphoreSlim readGate = new(0, int.MaxValue);
+    private SemaphoreSlim? readGateSignal;
     private SemaphoreSlim? writeGateSignal;
     private int writeGateTaken;
     private int writeGateWaiterCount;
@@ -511,8 +511,9 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
 
             CompleteReadsClosed();
             CompleteWritesClosed();
-            readGate.Release();
-            readGate.Dispose();
+            SemaphoreSlim? readSignal = Volatile.Read(ref readGateSignal);
+            readSignal?.Release();
+            readSignal?.Dispose();
             writeGateSignal?.Dispose();
             base.Dispose(disposing: true);
         }
@@ -530,7 +531,16 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
                 return bytesWritten;
             }
 
-            await readGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+            SemaphoreSlim signal = LazyInitializer.EnsureInitialized(
+                ref readGateSignal,
+                static () => new SemaphoreSlim(0, int.MaxValue));
+
+            if (TryCompleteReadSynchronously(buffer, cancellationToken, out bytesWritten, suppressTerminalException))
+            {
+                return bytesWritten;
+            }
+
+            await signal.WaitAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -944,7 +954,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
         {
             case QuicStreamNotificationKind.ReadAborted:
                 CompleteReadsClosed(notification.Exception!);
-                readGate.Release();
+                ReleaseReadGate();
                 runtime?.TryQueueStreamCapacityRelease(streamId);
                 break;
             case QuicStreamNotificationKind.WriteAborted:
@@ -956,7 +966,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
                 if (canRead && !IsReadsClosed)
                 {
                     CompleteReadsClosed(notification.Exception!);
-                    readGate.Release();
+                    ReleaseReadGate();
                 }
 
                 if (canWrite && !IsWritesClosed)
@@ -973,11 +983,16 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
 
                 break;
             case QuicStreamNotificationKind.DataAvailable:
-                readGate.Release();
+                ReleaseReadGate();
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(notification));
         }
+    }
+
+    private void ReleaseReadGate()
+    {
+        Volatile.Read(ref readGateSignal)?.Release();
     }
 
     private bool TryCreateReadAbortException(out Exception? exception)

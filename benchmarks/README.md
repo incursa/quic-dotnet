@@ -86,11 +86,14 @@ request/response path, run:
 
 ```powershell
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --profile-stream 200 --json .artifacts/perf/public-stream-profile/local-profile-stream.json
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --profile-stream 200 --target incursa --json .artifacts/perf/public-stream-profile/local-profile-stream-incursa.json
 ```
 
 `--profile-stream` reuses one connected pair per implementation and reports two
 passes of managed bytes, working set, private bytes, and elapsed time per
-request/response stream operation.
+request/response stream operation. Use `--target incursa`, `--target systemnet`,
+or `--target all` when tracing one implementation is more useful than the
+default comparison run.
 
 ## Black-Box External Lane
 

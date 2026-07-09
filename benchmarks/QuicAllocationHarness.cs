@@ -64,6 +64,13 @@ internal static class QuicAllocationHarness
         long RetainedPrivPerConn,
         long RetainedWsPerConn);
 
+    private enum StreamProfileTarget
+    {
+        All,
+        Incursa,
+        SystemNet,
+    }
+
     internal static int Run(string[] args)
     {
         // Strip --json flag and optional path
@@ -127,6 +134,7 @@ internal static class QuicAllocationHarness
             Console.WriteLine("  --profile-stream N    Profile established public stream request/response transfer.");
             Console.WriteLine("                        Reuses one connected pair per implementation and reports");
             Console.WriteLine("                        per-stream managed allocation and timing. Default N=2000.");
+            Console.WriteLine("                        Add --target incursa|systemnet|all to isolate one implementation.");
             Console.WriteLine();
             Console.WriteLine("  --json [path]         Write machine-readable JSON metrics to the specified file.");
             Console.WriteLine("                        If no path is given, JSON output is suppressed.");
@@ -135,11 +143,7 @@ internal static class QuicAllocationHarness
             return 0;
         }
 
-        int count = DefaultCount;
-        if (args.Length > 1 && int.TryParse(args[1], out int parsed) && parsed > 0)
-        {
-            count = parsed;
-        }
+        int count = ParseCount(args, DefaultCount);
 
         if (args is ["--leak", ..])
         {
@@ -168,7 +172,13 @@ internal static class QuicAllocationHarness
 
         if (args is ["--profile-stream", ..])
         {
-            return RunStreamTransferProfile(count);
+            if (!TryParseStreamProfileTarget(args, out StreamProfileTarget target, out string? error))
+            {
+                Console.Error.WriteLine(error);
+                return 2;
+            }
+
+            return RunStreamTransferProfile(count, target);
         }
 
         return RunAllocationHarness(count);
@@ -1105,12 +1115,13 @@ internal static class QuicAllocationHarness
         return 0;
     }
 
-    private static int RunStreamTransferProfile(int count)
+    private static int RunStreamTransferProfile(int count, StreamProfileTarget target)
     {
         Console.WriteLine();
         Console.WriteLine("=== Public Stream Transfer Allocation Profile ===");
         Console.WriteLine($"Iterations per pass: {count:N0}");
         Console.WriteLine("Passes: 2");
+        Console.WriteLine($"Target: {FormatStreamProfileTarget(target)}");
         Console.WriteLine("Workload: established-connection 1KB request/response stream transfer");
         Console.WriteLine();
 
@@ -1128,7 +1139,9 @@ internal static class QuicAllocationHarness
 
         try
         {
-            if (IncursaClientConnection.IsSupported && IncursaListener.IsSupported)
+            if (target is StreamProfileTarget.All or StreamProfileTarget.Incursa
+                && IncursaClientConnection.IsSupported
+                && IncursaListener.IsSupported)
             {
                 Console.WriteLine("--- Incursa.Quic established stream transfer ---");
                 var incursaPair = CreateIncursaConnectedPairAsync(serverAuthOptions, clientAuthOptions)
@@ -1156,7 +1169,9 @@ internal static class QuicAllocationHarness
                 Console.WriteLine();
             }
 
-            if (SystemNetClientConnection.IsSupported && SystemNetListener.IsSupported)
+            if (target is StreamProfileTarget.All or StreamProfileTarget.SystemNet
+                && SystemNetClientConnection.IsSupported
+                && SystemNetListener.IsSupported)
             {
                 Console.WriteLine("--- System.Net.Quic established stream transfer ---");
                 var systemNetPair = CreateSystemNetConnectedPairAsync(serverAuthOptions, clientAuthOptions)
@@ -1195,6 +1210,7 @@ internal static class QuicAllocationHarness
                 ["mode"] = "profile-stream",
                 ["commandName"] = "profile-stream",
                 ["count"] = count,
+                ["target"] = FormatStreamProfileTarget(target),
                 ["workload"] = "established-public-request-response",
             };
 
@@ -1217,6 +1233,114 @@ internal static class QuicAllocationHarness
 
         return 0;
     }
+
+    private static int ParseCount(string[] args, int defaultCount)
+    {
+        for (int i = 1; i < args.Length; i++)
+        {
+            if (args[i].StartsWith("--", StringComparison.Ordinal))
+            {
+                if (ArgumentHasValue(args[i])
+                    || i + 1 >= args.Length
+                    || args[i + 1].StartsWith("--", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                i++;
+                continue;
+            }
+
+            if (int.TryParse(args[i], out int parsed) && parsed > 0)
+            {
+                return parsed;
+            }
+        }
+
+        return defaultCount;
+    }
+
+    private static bool TryParseStreamProfileTarget(
+        string[] args,
+        out StreamProfileTarget target,
+        out string? error)
+    {
+        target = StreamProfileTarget.All;
+        error = null;
+
+        for (int i = 1; i < args.Length; i++)
+        {
+            string arg = args[i];
+            string? value = null;
+            if (arg.StartsWith("--target=", StringComparison.OrdinalIgnoreCase))
+            {
+                value = arg["--target=".Length..];
+            }
+            else if (string.Equals(arg, "--target", StringComparison.OrdinalIgnoreCase))
+            {
+                if (i + 1 >= args.Length || args[i + 1].StartsWith("--", StringComparison.Ordinal))
+                {
+                    error = "--target requires one of: all, incursa, systemnet.";
+                    return false;
+                }
+
+                value = args[++i];
+            }
+
+            if (value is null)
+            {
+                continue;
+            }
+
+            if (TryParseStreamProfileTargetValue(value, out target))
+            {
+                return true;
+            }
+
+            error = $"Unsupported --target value '{value}'. Use one of: all, incursa, systemnet.";
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool TryParseStreamProfileTargetValue(string value, out StreamProfileTarget target)
+    {
+        if (string.Equals(value, "all", StringComparison.OrdinalIgnoreCase))
+        {
+            target = StreamProfileTarget.All;
+            return true;
+        }
+
+        if (string.Equals(value, "incursa", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(value, "incursa-quic", StringComparison.OrdinalIgnoreCase))
+        {
+            target = StreamProfileTarget.Incursa;
+            return true;
+        }
+
+        if (string.Equals(value, "systemnet", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(value, "system-net", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(value, "system.net", StringComparison.OrdinalIgnoreCase))
+        {
+            target = StreamProfileTarget.SystemNet;
+            return true;
+        }
+
+        target = StreamProfileTarget.All;
+        return false;
+    }
+
+    private static string FormatStreamProfileTarget(StreamProfileTarget target)
+        => target switch
+        {
+            StreamProfileTarget.Incursa => "incursa",
+            StreamProfileTarget.SystemNet => "systemnet",
+            _ => "all",
+        };
+
+    private static bool ArgumentHasValue(string arg)
+        => arg.Contains('=', StringComparison.Ordinal);
 
     private static async Task<LeakBatchResult> RunLeakBatch(
         int count,
