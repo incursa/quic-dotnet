@@ -72,11 +72,11 @@ public class QuicRuntimeCollectionBenchmarks
     public int ConcurrentDictionaryObserverDirectoryLifecycle()
     {
         observed = 0;
-        ConcurrentDictionary<ulong, QuicStreamObserverSet> observersByStreamId = new();
+        ConcurrentDictionary<ulong, CopyOnWriteArrayObserverSet> observersByStreamId = new();
         for (int index = 0; index < streamIds.Length; index++)
         {
             ulong streamId = streamIds[index];
-            QuicStreamObserverSet observers = observersByStreamId.GetOrAdd(streamId, static _ => new QuicStreamObserverSet());
+            CopyOnWriteArrayObserverSet observers = observersByStreamId.GetOrAdd(streamId, static _ => new CopyOnWriteArrayObserverSet());
             observers.TryAdd(index + 1, Observe);
             observers.Notify(notification);
             observers.TryRemove(index + 1);
@@ -100,11 +100,10 @@ public class QuicRuntimeCollectionBenchmarks
         for (int index = 0; index < streamIds.Length; index++)
         {
             ulong streamId = streamIds[index];
-            QuicStreamObserverSet observers = observersByStreamId.GetOrAdd(streamId);
-            observers.TryAdd(index + 1, Observe);
-            observers.Notify(notification);
-            observers.TryRemove(index + 1);
-            observersByStreamId.TryRemoveIfEmpty(streamId, observers);
+            long observerId = index + 1;
+            observersByStreamId.TryAdd(streamId, observerId, Observe);
+            observersByStreamId.Notify(streamId, notification);
+            observersByStreamId.TryRemove(streamId, observerId);
         }
 
         return observed + (observersByStreamId.IsEmpty ? 0 : 1);
@@ -137,10 +136,12 @@ public class QuicRuntimeCollectionBenchmarks
         observed = 0;
         for (int index = 0; index < streamIds.Length; index++)
         {
-            QuicStreamObserverSet observers = new();
-            observers.TryAdd(index + 1, Observe);
-            observers.Notify(notification);
-            observers.TryRemove(index + 1);
+            QuicStreamObserverDirectory observers = new();
+            ulong streamId = streamIds[index];
+            long observerId = index + 1;
+            observers.TryAdd(streamId, observerId, Observe);
+            observers.Notify(streamId, notification);
+            observers.TryRemove(streamId, observerId);
         }
 
         return observed;
@@ -155,6 +156,8 @@ public class QuicRuntimeCollectionBenchmarks
 
         private readonly object sync = new();
         private ObserverEntry[] observers = EmptyObservers;
+
+        internal bool IsEmpty => observers.Length == 0;
 
         internal bool TryAdd(long observerId, Action<QuicStreamNotification> observer)
         {

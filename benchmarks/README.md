@@ -111,6 +111,7 @@ The benchmark project also contains the following permanent suites:
 - `DoqPaddingBenchmarks`
 - `DnsServiceBindingWireRecordBenchmarks`
 - `QuicTlsServerHelloRetryRequestBenchmarks`
+- `QuicTlsX25519Benchmarks`
 - `QuicTlsServerFinishedPublicationBenchmarks`
 - `QuicTlsClientFinishedPublicationBenchmarks`
 - `QuicApplicationPacketKeyPhaseBenchmarks`
@@ -155,6 +156,7 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*DnsServiceBindingWireRecordBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicInitialPacketOpenBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDatagramFrameBenchmarks*" --inProcess
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicTlsX25519Benchmarks*"
 ```
 
 BenchmarkDotNet writes reports under `.artifacts/bdn/results` by default.

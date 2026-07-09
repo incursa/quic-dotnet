@@ -9,11 +9,13 @@ namespace Incursa.Quic.Benchmarks;
 /// Benchmarks stream observer notification fan-out on the receive notification path.
 /// </summary>
 [MemoryDiagnoser]
-public class QuicStreamObserverSetBenchmarks
+public class QuicStreamObserverDirectoryBenchmarks
 {
+    private const ulong StreamId = 0;
+
     private readonly QuicStreamNotification notification = new(QuicStreamNotificationKind.DataAvailable, Exception: null);
     private LockedSnapshotObserverSet lockedObservers = new();
-    private QuicStreamObserverSet copyOnWriteObservers = new();
+    private QuicStreamObserverDirectory currentObservers = new();
     private int observed;
 
     /// <summary>
@@ -30,14 +32,14 @@ public class QuicStreamObserverSetBenchmarks
     {
         observed = 0;
         lockedObservers = new LockedSnapshotObserverSet();
-        copyOnWriteObservers = new QuicStreamObserverSet();
+        currentObservers = new QuicStreamObserverDirectory();
 
         Action<QuicStreamNotification> observer = Observe;
         for (int index = 0; index < ObserverCount; index++)
         {
             long observerId = index + 1;
             _ = lockedObservers.TryAdd(observerId, observer);
-            _ = copyOnWriteObservers.TryAdd(observerId, observer);
+            _ = currentObservers.TryAdd(StreamId, observerId, observer);
         }
     }
 
@@ -49,11 +51,11 @@ public class QuicStreamObserverSetBenchmarks
         => lockedObservers.Notify(notification);
 
     /// <summary>
-    /// Measures the copy-on-write notification path that reads a stable observer array without locking.
+    /// Measures the current inline-single-observer directory notification path.
     /// </summary>
     [Benchmark]
-    public void CopyOnWriteNotify()
-        => copyOnWriteObservers.Notify(notification);
+    public void CurrentDirectoryNotify()
+        => currentObservers.Notify(StreamId, notification);
 
     private void Observe(QuicStreamNotification _)
         => observed++;
