@@ -37,6 +37,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private static readonly TimeSpan RetryBootstrapTokenLifetime = TimeSpan.FromMinutes(1);
 
     private readonly Socket socket;
+    private readonly IPEndPoint boundSocketEndPoint;
     private readonly CancellationTokenSource shutdown = new();
     private readonly Channel<object> acceptQueue;
     private readonly List<SslApplicationProtocol> applicationProtocols;
@@ -130,6 +131,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         QuicSocketPacketInformationControl.TryEnablePacketInformationIfPossible(socket);
 
         socket.Bind(boundEndPoint);
+        boundSocketEndPoint = (IPEndPoint)socket.LocalEndPoint!;
     }
 
     internal bool RetryBootstrapIssued => Volatile.Read(ref retryBootstrapIssued) != 0;
@@ -415,7 +417,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 try
                 {
                     IPEndPoint localEndPoint = localEndPointCache.Resolve(
-                        (IPEndPoint)socket.LocalEndPoint!,
+                        boundSocketEndPoint,
                         receiveResult.PacketInformation.Address);
                     pathIdentity = CreatePathIdentity(receivedFrom, localEndPoint);
                 }
@@ -802,15 +804,14 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         {
             _ = QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, sendDatagramEffect.EcnMarking);
             int bytesSent;
-            IPEndPoint socketLocalEndPoint = (IPEndPoint)socket.LocalEndPoint!;
             if (OperatingSystem.IsLinux()
                 && TryResolvePacketInformationSourceAddress(
-                socketLocalEndPoint,
+                boundSocketEndPoint,
                 socket.AddressFamily,
                 sendDatagramEffect.PathIdentity,
                 out IPAddress sourceAddress)
                 && (socket.AddressFamily == AddressFamily.InterNetworkV6
-                    || !sourceAddress.Equals(socketLocalEndPoint.Address)))
+                    || !sourceAddress.Equals(boundSocketEndPoint.Address)))
             {
                 uint flowLabel = sourceAddress.AddressFamily == AddressFamily.InterNetworkV6
                     ? QuicSocketPacketInformationSender.CreateIpv6FlowLabel(flowLabelSeed, sendDatagramEffect.PathIdentity)
