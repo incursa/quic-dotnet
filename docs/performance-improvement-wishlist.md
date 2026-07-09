@@ -8,6 +8,8 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 - 2026-07-09: inspected controller publication dry-run output `codex-package-backed-raw-publication-dryrun-20260709c` for the three current package-backed raw confidence jobs. Jobs `job-bcb049b36892490ca2949dcb6d8dcc00`, `job-c1f45316b0ef4d3d85e179c794682c0c`, and `job-875a89f8926e45b6b93cf7ce806434f4` all recorded `dry-run-succeeded`, exit code 0, no stderr, and 10 would-be public objects each: `artifacts-index.json`, package provenance, run-plan provenance, JSON/Markdown evidence report, publication manifest, skipped/warnings docs, report index entry, and report index. This closes dry-run bundle inspection for these confidence jobs only; real upload/import remains intentionally gated by controller secrets, public dashboard target verification, and the existing variance/provenance blockers.
 
+- 2026-07-09: submitted fresh package-backed raw stream-throughput parity job `job-a2cedd4d2e44416e991c2f1b489abf32` on `plab-worker-sut-01` so the run would include the new `evidence-bundle.json` format. The job completed with validation passed, benchmark succeeded, attribution artifacts emitted, and local copies under `.artifacts/perf-parity/codex-source-package-raw-stream-20260709a/package`. Native ProtocolLab compare output `.artifacts/perf-parity/codex-source-package-raw-stream-20260709a/run-comparison.{json,md}` matched 0 cells because existing source-backed raw runs use implementation ID `incursa-raw-quic-adapter-v1`, while package-backed raw runs use `quic-dotnet-raw-dev`. Treat this as a real source/package parity blocker: either the local source lane needs a `quic-dotnet-raw-dev` implementation identity, or readiness policy needs an explicit reviewed mapping between the old source adapter ID and the package target. Do not claim source/package parity from the current comparison.
+
 - 2026-07-09: `QuicConnectionSendRuntime` now starts its sent-packet dictionary at 64 entries instead of 16 so normal HTTP/3 request bursts do not immediately resize packet tracking during send-path hot work. `Incursa.Quic` Release build passed; a broad send/recovery/ACK-filtered test run hit one unrelated HTTP/3 QPACK close-path flake, and the exact failed test reran cleanly. Source-mode H3 profile pack `codex-h3-1kb-sent-packet-capacity64-source-20260709a` passed ProtocolLab proof and benchmark for `http3.payload.bytes.1kb` with validation 1/1, benchmark 1/1, zero failed/timeout requests, counters captured, 5,857 req/s, p95 55.864 ms, allocation-rate median 10,285,578 B/sec, and exception-rate median 42.667/sec. Evidence quality remains diagnostic and non-publishable because this was a single local repetition with missing variance, shared-host/load-generator warnings, and no linked publishability readiness manifest. Allocation attribution `codex-h3-1kb-sent-packet-capacity64-source-allocations-20260709a` no longer shows the prior sampled `QuicConnectionSendRuntime.TrackSentPacket` dictionary-resize row from `codex-h3-1kb-receive-ring-prealloc-source-allocations-20260709a`; the new GC trace sampled only six runtime-only allocation groups and zero project-attributed/actionable groups. Treat this as targeted first-growth allocation cleanup, not a publishable throughput claim.
 
 - 2026-07-09: client and server socket hosts now opt into receive-buffer ring preallocation while `QuicReceiveBufferPool` keeps lazy allocation as the default for lower-memory/test callers. This moves the fixed ring buffer allocation out of the socket receive hot path without changing rent/return counters or fallback behavior. `Incursa.Quic` Release build passed, the focused receive-buffer/shard/endpoint/HTTP3 test slice passed 96/97 with the known 1 MB body skip, and source-mode H3 profile pack `codex-h3-1kb-receive-ring-prealloc-source-20260709a` passed ProtocolLab proof and benchmark for `http3.payload.bytes.1kb` with validation 1/1, benchmark 1/1, zero failed/timeout requests, counters captured, 4,569.8 req/s, p95 66.972 ms, allocation-rate median 8,114,828 B/sec, and exception-rate median 42/sec. Evidence quality remains diagnostic and non-publishable because this was a single local repetition with missing variance, shared-host/load-generator warnings, and no linked publishability readiness manifest. Allocation attribution `codex-h3-1kb-receive-ring-prealloc-source-allocations-20260709a` no longer shows the prior sampled `QuicReceiveBufferPool.Rent()` `System.Byte[]` row from `codex-h3-1kb-packet-workitem-source-allocations-20260709a`; remaining top rows are HTTP/3 async state machines, central `QuicBufferPool` growth, stream state, timer/send effects, packet receipt storage, and framework endpoint materialization. Treat this as a targeted receive-loop allocation cleanup, not a publishable throughput claim.
@@ -277,21 +279,24 @@ Source-backed runs are good for development, but package-backed controller jobs 
 Status: partially closed for raw stream-throughput smoke. The controller can now
 run the raw stream-throughput scenario from pinned package references without
 rebuilding or re-uploading the implementation package. The proven package-backed
-jobs used the same `quic-dotnet-raw-dev` implementation identity as local
-source-backed raw runs and recorded readable package provenance. The latest
+jobs use the `quic-dotnet-raw-dev` package implementation identity and record
+readable package provenance, but native source/package comparison currently
+blocks because local source-backed raw runs still use `incursa-raw-quic-adapter-v1`.
+The latest
 package-backed repeats passed 3/3 validation and benchmark repetitions for
 stream throughput, multiplex, and duplex, but are still blocked from publishable
 use by variance, local shared-host execution, and missing runtime counters.
 Remaining work is richer counter capture, documenting/automating the
 binary-backed component package path beyond the local generated package flow,
-and moving the same evidence onto isolated lab hardware.
+resolving the implementation-identity mismatch, and moving the same evidence
+onto isolated lab hardware.
 
 Done when:
 
-- The same scenario can run source-backed locally and package-backed on the controller with matching implementation identity.
+- The same scenario can run source-backed locally and package-backed on the controller with matching implementation identity. Open: current local raw source evidence uses `incursa-raw-quic-adapter-v1`, while package-backed raw evidence uses `quic-dotnet-raw-dev`.
 - Package manifests record the exact quic-dotnet commit, package version, build mode, and supported scenario list.
 - A package-backed run can reproduce the smoke lane on lab hardware.
-- Differences between source-backed and package-backed results are understood and documented.
+- Differences between source-backed and package-backed results are understood and documented. Open: first native compare attempt produced 0 matched cells because of the implementation identity mismatch, not because of validation or benchmark failure.
 
 ## 12. Add Public API Stream Transfer Benchmarks
 
