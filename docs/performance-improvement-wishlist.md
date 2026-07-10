@@ -4,6 +4,18 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: fresh package-backed local HTTP/3 peer cells now use the current
+  ProtocolLab evidence-bundle pipeline for the official
+  `http3.payload.bytes.1kb` scenario at c4/s4 with the same managed load tool,
+  load profile, duration, warmup, and three repetitions. All 9/9 cells passed
+  validation and benchmarking. The retained local report under
+  `.artifacts/perf-peer-matrix-20260710/report/quic-peer-matrix-confidence-20260710`
+  records medians of 8,176.11 req/s for `quic-dotnet-dev`, 3,438.05 req/s for
+  nginx, and 3,257.82 req/s for quic-go. Quic-go reached `confidence` quality
+  with 2.66% relative range; the combined Incursa/nginx bundle remained
+  `diagnostic` because nginx reached 15.16% relative range. These are local,
+  non-isolated comparison signals, not public rankings.
+
 - 2026-07-10: the public API stream-transfer benchmark surface was revalidated
   against the current runtime. Focused eight-stream Incursa loopback correctness
   proof passed 1/1. BDN Short proof retained under
@@ -630,12 +642,19 @@ Keep improving this item only if a future lab/publishable lane needs richer cros
 
 ## 3. Add Stable ProtocolLab Performance Lanes
 
-Status: partially closed. The local `Smoke` and `Confidence` lanes exist, emit `lane-summary.json`, label evidence quality, preserve failure categories, and can run HTTP/3 plus raw QUIC source-backed ProtocolLab slices. The publishable hosted lane remains open because it needs isolated lab hardware controls and stronger provenance gates outside this local wrapper.
+Status: partially closed. The local `Smoke` and `Confidence` lanes exist, emit
+`lane-summary.json`, label evidence quality, preserve failure categories, and
+can run HTTP/3 plus raw QUIC source-backed ProtocolLab slices. ProtocolLab now
+also emits evidence bundles, artifact manifests, failure reason codes,
+source/package parity gates, variance-aware quality, and publishability
+readiness blockers. The remaining gap is an actual isolated hosted run that
+satisfies those gates, not missing runner infrastructure.
 
 Remaining work:
 
-- Promote the same lane/surface vocabulary into the hosted lab runner.
-- Capture explicit CPU, memory, network, host isolation, load-generator, and package identity controls.
+- Run the same lane/surface vocabulary on an isolated hosted worker.
+- Capture and satisfy explicit CPU, memory, network, host isolation,
+  load-generator, package identity, and readiness controls in that run.
 - Keep local lanes diagnostic/report-only unless publishability gates pass.
 
 ## 4. Establish Baseline Dashboards For Key Scenarios
@@ -749,7 +768,14 @@ Done when:
 
 Performance only matters relative to known-good peers, but comparisons need matching scenarios and honest caveats.
 
-Status: partially closed for comparison plumbing and evidence classification.
+Status: closed for the current local matched peer-comparison pass; hosted
+publication remains open. Fresh package-backed local comparison cells now cover
+`quic-dotnet-dev`, `quic-go-http3`, and the C-based `nginx-http3` implementation
+for the official `http3.payload.bytes.1kb` scenario at matching c4/s4 controls
+and three repetitions. All 9/9 cells passed validation and benchmarking, and the
+retained QUIC-side report keeps the results local/non-publishable. ProtocolLab
+classified the quic-go bundle as `confidence`; the combined Incursa/nginx bundle
+remained `diagnostic` because nginx variance exceeded the publishable threshold.
 ProtocolLab now emits `evidence-bundle.json`, native run comparisons, evidence
 quality classifications, source/package parity verdicts, failure reason codes,
 artifact manifests, and hotspot trend data. The QUIC-side retained baseline
@@ -759,12 +785,11 @@ publishable rankings. Treat local peer rows as diagnostic unless the run has
 matching scenario, protocol, load profile, validation status, source/package
 provenance, resource controls, repetition/variance proof, and readiness gates.
 
-Remaining work: run fresh peer comparison cells through the current
-evidence-bundle pipeline for `quic-go-http3` plus at least one C/Rust HTTP/3
-implementation, then use the native compare output to decide which cells are
-actually comparable. Do not compare Incursa HTTP/3 managed-load results against
-raw QUIC load-tool results, and do not compare old aggregate-only external rows
-against new evidence-bundle rows as if they had the same provenance.
+Remaining work is hosted isolation, readiness review, and intentional public
+publication of only comparable cells. Do not compare Incursa HTTP/3 managed-load
+results against raw QUIC load-tool results, and do not compare old aggregate-only
+external rows against new evidence-bundle rows as if they had the same
+provenance.
 
 Done when:
 
@@ -777,7 +802,13 @@ Done when:
 
 We need automated protection from obvious regressions, but local noise makes strict thresholds risky.
 
-Status: partially closed for local lanes. `Invoke-QuicPerformanceLane.ps1` has checked-in extreme-change rules for retained aggregate baselines, reports all gate comparisons into `lane-summary.json`, and keeps confidence lanes non-blocking by default. Publishable hosted gates remain open until isolated lab variance is understood.
+Status: partially closed for local lanes. `Invoke-QuicPerformanceLane.ps1` has
+checked-in extreme-change rules for retained aggregate baselines, reports all
+gate comparisons into `lane-summary.json`, and keeps confidence lanes
+non-blocking by default. ProtocolLab now classifies repetition, variance,
+validation, isolation, load controls, source mode, and readiness in each
+evidence bundle. The remaining gap is enough isolated hosted evidence to set and
+enforce reviewed publishable thresholds.
 
 Done when:
 
