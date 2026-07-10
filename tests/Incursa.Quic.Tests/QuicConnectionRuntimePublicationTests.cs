@@ -1,0 +1,45 @@
+// Copyright (c) 2026 Incursa LLC.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+namespace Incursa.Quic.Tests;
+
+public sealed class QuicConnectionRuntimePublicationTests
+{
+    [Fact]
+    public async Task OpenOutboundStream_DoesNotReadMutableActivePathAcrossThreads()
+    {
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicConnectionPathIdentity pathIdentity = new(
+            RemoteAddress: "127.0.0.1",
+            LocalAddress: "127.0.0.1",
+            RemotePort: 443,
+            LocalPort: 50_000);
+
+        Assert.True(runtime.InitializeActivePath(pathIdentity, payloadBytes: 1200, nowTicks: 1));
+        runtime.SetPhaseForTesting(QuicConnectionPhase.Active);
+
+        using CancellationTokenSource cancellationSource = new();
+        Task publisher = Task.Run(() =>
+        {
+            long nowTicks = 2;
+            while (!cancellationSource.IsCancellationRequested)
+            {
+                Assert.True(runtime.InitializeActivePath(pathIdentity, payloadBytes: 1200, nowTicks++));
+            }
+        });
+
+        try
+        {
+            for (int iteration = 0; iteration < 25_000; iteration++)
+            {
+                Assert.Throws<ArgumentOutOfRangeException>(() =>
+                    runtime.OpenOutboundStreamAsync(unchecked((QuicStreamType)int.MaxValue)));
+            }
+        }
+        finally
+        {
+            cancellationSource.Cancel();
+            await publisher.WaitAsync(TimeSpan.FromSeconds(10));
+        }
+    }
+}

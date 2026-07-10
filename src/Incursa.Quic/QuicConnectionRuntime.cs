@@ -1619,10 +1619,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             throw CreateTerminalException(terminalStateValue);
         }
 
-        if (phase != QuicConnectionPhase.Active || activePath is null)
+        if (phase != QuicConnectionPhase.Active)
         {
             throw new InvalidOperationException(
-                $"The connection is not established. Phase={phase} ActivePath={(activePath is null ? "null" : "set")} TerminalState={(terminalState.HasValue ? terminalState.Value.ToString() : "null")}");
+                $"The connection is not established. Phase={phase} TerminalState={(terminalState.HasValue ? terminalState.Value.ToString() : "null")}");
         }
 
         if (streamType is not QuicStreamType.Unidirectional and not QuicStreamType.Bidirectional)
