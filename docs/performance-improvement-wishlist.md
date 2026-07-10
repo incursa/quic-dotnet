@@ -4,6 +4,23 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: source-backed raw QUIC multiplex attribution reopened terminal
+  exception cleanup for observer-style inbound accepts. Baseline trace
+  `codex-raw-multiplex-attribution-a6affe27-20260710a` passed 1,494/1,494
+  requests but captured three BCL AEAD authentication-tag failures and two
+  `ChannelClosedException` throws from `TryAcceptInboundStreamSlowAsync`. A
+  `WaitToReadAsync` plus `TryRead` candidate removed the channel-close throws in
+  matched trace `codex-raw-multiplex-accept-no-channelclosed-20260710a`, which
+  passed 1,397/1,397 requests. The candidate was rejected: the old implementation
+  passed `Http3MinimalServerTests` 62/62, while repeated candidate runs produced
+  varying peer-close timeout failures when multiple observer accepts were active.
+  Negative-result evidence is retained at
+  `.artifacts/perf/negative-results/inbound-accept-wait-to-read-20260710.json`;
+  exception reduction alone was not a sufficient correctness result. The
+  remaining AEAD failures pass through .NET decrypt APIs whose
+  authentication-failure contract throws; removing them requires avoiding
+  speculative decrypt attempts or changing the crypto boundary.
+
 - 2026-07-10: current package-backed raw QUIC multiplex evidence now runs
   through the upgraded ProtocolLab bundle and comparison surfaces. Controller
   job `job-2fd1f052b29b48468e7213b7ca5b925b` used clean runtime commit
