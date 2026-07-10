@@ -61,6 +61,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private readonly uint flowLabelSeed = unchecked((uint)RandomNumberGenerator.GetInt32(1, int.MaxValue));
 
     private CancellationTokenSource? listenerCancellationSource;
+    private CancellationTokenRegistration receiveLoopCancellationRegistration;
     private Task? runningTask;
     private int started;
     private int disposed;
@@ -132,6 +133,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         }
         QuicSocketFragmentationControl.TryEnableDontFragmentIfPossible(socket);
         QuicSocketPacketInformationControl.TryEnablePacketInformationIfPossible(socket);
+        QuicSocketIcmpErrorControl.TryDisablePortUnreachableReporting(socket);
 
         socket.Bind(boundEndPoint);
         boundSocketEndPoint = (IPEndPoint)socket.LocalEndPoint!;
@@ -250,6 +252,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
         listenerCancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, shutdown.Token);
         CancellationToken hostCancellation = listenerCancellationSource.Token;
+        receiveLoopCancellationRegistration = hostCancellation.UnsafeRegister(
+            static state => ((QuicListenerHost)state!).WakeReceiveLoop(),
+            this);
 
         Task endpointTask = endpoint.RunAsync(
             ObserveTransition,
@@ -294,15 +299,6 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         if (cancellationSource is not null)
         {
             await cancellationSource.CancelAsync().ConfigureAwait(false);
-        }
-
-        try
-        {
-            socket.Dispose();
-        }
-        catch
-        {
-            // Best-effort shutdown only.
         }
 
         acceptQueue.Writer.TryComplete(ExceptionDispatchInfo.SetCurrentStackTrace(new ObjectDisposedException(nameof(QuicListenerHost))));
@@ -358,6 +354,16 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
         versionNegotiationResponseCountsByRemoteAddress.Clear();
         serverResumptionTicketStore.Clear();
+        await receiveLoopCancellationRegistration.DisposeAsync().ConfigureAwait(false);
+        try
+        {
+            socket.Dispose();
+        }
+        catch
+        {
+            // Best-effort shutdown only.
+        }
+
         cancellationSource?.Dispose();
         receiveBufferPool.Dispose();
         shutdown.Dispose();
@@ -387,7 +393,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                         datagramLease.Memory,
                         SocketFlags.None,
                         remoteEndPoint,
-                        cancellationToken).ConfigureAwait(false);
+                        CancellationToken.None).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                 {
@@ -407,6 +413,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     // Treat them as per-datagram noise so one closed peer does not stop unrelated connections.
                     QuicMetrics.RecordUdpError(QuicTlsRole.Server, "receive", ex.SocketErrorCode);
                     continue;
+                }
+
+                if (cancellationToken.IsCancellationRequested || Volatile.Read(ref disposed) != 0)
+                {
+                    break;
                 }
 
                 if (receiveResult.ReceivedBytes <= 0)
@@ -777,9 +788,31 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         _ = handle;
         _ = shardIndex;
 
+        if (Volatile.Read(ref disposed) != 0 || shutdown.IsCancellationRequested)
+        {
+            return;
+        }
+
         if (effect is QuicConnectionSendDatagramEffect sendDatagramEffect)
         {
             SendDatagram(handle, sendDatagramEffect);
+        }
+    }
+
+    private void WakeReceiveLoop()
+    {
+        if (QuicSocketReceiveLoopWakeup.TryWake(socket))
+        {
+            return;
+        }
+
+        try
+        {
+            socket.Dispose();
+        }
+        catch
+        {
+            // Falling back to socket disposal only needs to unblock the receive loop.
         }
     }
 

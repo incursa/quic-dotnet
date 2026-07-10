@@ -4,6 +4,28 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-09: public socket-host shutdown no longer relies on receive cancellation
+  throwing through the listener and client endpoint loops. Both hosts register a
+  cancellation wake-up that sends a one-byte datagram to their own bound socket,
+  observe cancellation before classifying the datagram, and dispose the socket
+  after the receive loop exits. Windows UDP sockets also disable
+  `SIO_UDP_CONNRESET` reporting so peer `PORT_UNREACHABLE` messages do not become
+  first-chance `SocketException` traffic on the shared listener. Focused socket,
+  cancellation, listener, and concurrent-stream tests passed 34/34. Before the
+  change, trace `concurrent-public-stream-exceptions-20260709d` captured 589
+  exceptions across five groups and BDN reported `Exceptions: 2`; the intermediate
+  wake-up-only trace `concurrent-public-stream-exceptions-20260709e` reduced that
+  to 172 Windows UDP reset exceptions and `0.53125` exceptions/op. Final narrowed
+  trace `concurrent-public-stream-exceptions-20260709g` captured 43,932 events with zero
+  lost events and zero exceptions/groups, and dry BDN smoke
+  `public-comparison-concurrent-icmp-smoke-20260709a` completed both implementations
+  without an exception diagnostic row. The full test project passed 9,344 tests
+  with five skips and reproduced two unrelated guard failures: the existing lock
+  inventory omits `scheduledFlowControlCreditGate`, and the private-reflection
+  quarantine omits existing use in `REQ-QUIC-API-0010.cs`. These remain local
+  diagnostic measurements, but they close the identified public-stream teardown
+  exception pressure.
+
 - 2026-07-09: public API stream-transfer benchmarks now include an established-connection
   concurrent request/response stream shape, opening eight bidirectional streams
   over one loopback connection for both Incursa.Quic and `System.Net.Quic`.

@@ -40,6 +40,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
     private SocketAddress? cachedRemoteSocketAddress;
     private Task? runningTask;
     private CancellationTokenSource? linkedCancellation;
+    private CancellationTokenRegistration receiveLoopCancellationRegistration;
     private int disposed;
 
     public QuicConnectionEndpointHost(
@@ -102,6 +103,9 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
         linkedCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, shutdown.Token);
         CancellationToken hostCancellation = linkedCancellation.Token;
+        receiveLoopCancellationRegistration = hostCancellation.UnsafeRegister(
+            static state => ((QuicConnectionEndpointHost)state!).WakeReceiveLoop(),
+            this);
 
         Task runtimeTask = endpoint.RunAsync(
             (handle, shardIndex, transition) =>
@@ -139,21 +143,6 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
             await linkedCancellation.CancelAsync().ConfigureAwait(false);
         }
 
-        try
-        {
-            Socket socketToDispose;
-            lock (socketGate)
-            {
-                socketToDispose = socket;
-            }
-
-            socketToDispose.Dispose();
-        }
-        catch
-        {
-            // Best-effort shutdown only.
-        }
-
         Task? task = runningTask;
         if (task is not null)
         {
@@ -165,6 +154,19 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
             {
                 // Expected during shutdown.
             }
+        }
+
+        await receiveLoopCancellationRegistration.DisposeAsync().ConfigureAwait(false);
+        try
+        {
+            lock (socketGate)
+            {
+                socket.Dispose();
+            }
+        }
+        catch
+        {
+            // Best-effort shutdown only.
         }
 
         linkedCancellation?.Dispose();
@@ -222,7 +224,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                     datagramLease.Memory,
                     SocketFlags.None,
                     remoteEndPoint,
-                    cancellationToken).ConfigureAwait(false);
+                    CancellationToken.None).ConfigureAwait(false);
 
                 if (receiveResult.ReceivedBytes <= 0)
                 {
@@ -525,6 +527,26 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         lock (socketGate)
         {
             currentSocket = socket;
+        }
+    }
+
+    private void WakeReceiveLoop()
+    {
+        lock (socketGate)
+        {
+            if (QuicSocketReceiveLoopWakeup.TryWake(socket))
+            {
+                return;
+            }
+
+            try
+            {
+                socket.Dispose();
+            }
+            catch
+            {
+                // Falling back to socket disposal only needs to unblock the receive loop.
+            }
         }
     }
 
