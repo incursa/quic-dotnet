@@ -427,6 +427,24 @@ public sealed class REQ_QUIC_INT_0008
         Assert.Same(fallback, resolved);
     }
 
+    [Theory]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    [InlineData("0.0.0.0", true)]
+    [InlineData("::", true)]
+    [InlineData("127.0.0.1", false)]
+    [InlineData("::1", false)]
+    public void PacketInformationIsOnlyRequiredForWildcardSocketBindings(
+        string address,
+        bool expected)
+    {
+        IPEndPoint localEndPoint = new(IPAddress.Parse(address), 443);
+
+        Assert.Equal(
+            expected,
+            QuicSocketPacketInformationControl.RequiresPacketInformation(localEndPoint));
+    }
+
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

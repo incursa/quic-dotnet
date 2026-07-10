@@ -15,6 +15,14 @@ namespace Incursa.Quic;
 /// </summary>
 internal static class QuicSocketPacketInformationControl
 {
+    internal static bool RequiresPacketInformation(IPEndPoint localEndPoint)
+    {
+        ArgumentNullException.ThrowIfNull(localEndPoint);
+
+        return localEndPoint.Address.Equals(IPAddress.Any)
+            || localEndPoint.Address.Equals(IPAddress.IPv6Any);
+    }
+
     internal static bool TryEnablePacketInformationIfPossible(Socket socket)
     {
         ArgumentNullException.ThrowIfNull(socket);

@@ -379,21 +379,40 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     {
         QuicReusableReceiveEndPoint remoteEndPoint = new(socket.AddressFamily);
         QuicSocketPacketInformationControl.LocalEndPointCache localEndPointCache = new();
+        bool requiresPacketInformation =
+            QuicSocketPacketInformationControl.RequiresPacketInformation(boundSocketEndPoint);
 
         while (!cancellationToken.IsCancellationRequested)
         {
             QuicReceiveBufferLease datagramLease = receiveBufferPool.Rent();
             try
             {
-                SocketReceiveMessageFromResult receiveResult;
+                SocketReceiveMessageFromResult receiveMessageResult = default;
+                EndPoint receivedRemoteEndPoint;
+                int receivedBytes;
                 try
                 {
                     remoteEndPoint.PrepareForReceive();
-                    receiveResult = await socket.ReceiveMessageFromAsync(
-                        datagramLease.Memory,
-                        SocketFlags.None,
-                        remoteEndPoint,
-                        CancellationToken.None).ConfigureAwait(false);
+                    if (requiresPacketInformation)
+                    {
+                        receiveMessageResult = await socket.ReceiveMessageFromAsync(
+                            datagramLease.Memory,
+                            SocketFlags.None,
+                            remoteEndPoint,
+                            CancellationToken.None).ConfigureAwait(false);
+                        receivedBytes = receiveMessageResult.ReceivedBytes;
+                        receivedRemoteEndPoint = receiveMessageResult.RemoteEndPoint;
+                    }
+                    else
+                    {
+                        SocketReceiveFromResult receiveFromResult = await socket.ReceiveFromAsync(
+                            datagramLease.Memory,
+                            SocketFlags.None,
+                            remoteEndPoint,
+                            CancellationToken.None).ConfigureAwait(false);
+                        receivedBytes = receiveFromResult.ReceivedBytes;
+                        receivedRemoteEndPoint = receiveFromResult.RemoteEndPoint;
+                    }
                 }
                 catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                 {
@@ -420,19 +439,21 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     break;
                 }
 
-                if (receiveResult.ReceivedBytes <= 0)
+                if (receivedBytes <= 0)
                 {
                     continue;
                 }
 
-                QuicMetrics.RecordDatagramReceived(QuicTlsRole.Server, receiveResult.ReceivedBytes);
-                IPEndPoint receivedFrom = (IPEndPoint)receiveResult.RemoteEndPoint;
+                QuicMetrics.RecordDatagramReceived(QuicTlsRole.Server, receivedBytes);
+                IPEndPoint receivedFrom = (IPEndPoint)receivedRemoteEndPoint;
                 QuicConnectionPathIdentity pathIdentity;
                 try
                 {
-                    IPEndPoint localEndPoint = localEndPointCache.Resolve(
-                        boundSocketEndPoint,
-                        receiveResult.PacketInformation.Address);
+                    IPEndPoint localEndPoint = requiresPacketInformation
+                        ? localEndPointCache.Resolve(
+                            boundSocketEndPoint,
+                            receiveMessageResult.PacketInformation.Address)
+                        : boundSocketEndPoint;
                     pathIdentity = CreatePathIdentity(receivedFrom, localEndPoint);
                 }
                 catch (ObjectDisposedException) when (shutdown.IsCancellationRequested)
@@ -440,12 +461,13 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     break;
                 }
 
-                EmitSocketDatagramReceived(pathIdentity, receiveResult.ReceivedBytes);
+                EmitSocketDatagramReceived(pathIdentity, receivedBytes);
                 byte[] datagramBuffer = datagramLease.Buffer;
-                ReadOnlyMemory<byte> datagram = datagramBuffer.AsMemory(0, receiveResult.ReceivedBytes);
-                QuicEcnCounts? ecnCounts = QuicSocketEcnControl.TryGetReceivedEcnCounts(
-                    receiveResult,
-                    out QuicEcnCounts receivedEcnCounts)
+                ReadOnlyMemory<byte> datagram = datagramBuffer.AsMemory(0, receivedBytes);
+                QuicEcnCounts? ecnCounts = requiresPacketInformation
+                    && QuicSocketEcnControl.TryGetReceivedEcnCounts(
+                        receiveMessageResult,
+                        out QuicEcnCounts receivedEcnCounts)
                     ? receivedEcnCounts
                     : null;
                 QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(
