@@ -1597,7 +1597,7 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
-                _ = streamsBlockedFrame;
+                stateChanged |= TryReplayPeerStreamCapacity(streamsBlockedFrame, ref effects);
                 offset += streamsBlockedBytesConsumed;
                 packetAckEliciting = true;
                 continue;

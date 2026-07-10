@@ -2277,6 +2277,64 @@ internal sealed partial class QuicConnectionRuntime
         }
     }
 
+    private bool TryReplayPeerStreamCapacity(
+        QuicStreamsBlockedFrame streamsBlockedFrame,
+        ref QuicConnectionEffectAccumulator effects)
+    {
+        ulong currentLimit = streamsBlockedFrame.IsBidirectional
+            ? streamRegistry.Bookkeeping.IncomingBidirectionalStreamLimit
+            : streamRegistry.Bookkeeping.IncomingUnidirectionalStreamLimit;
+        if (streamsBlockedFrame.MaximumStreams >= currentLimit)
+        {
+            return false;
+        }
+
+        QuicMaxStreamsFrame maxStreamsFrame = new(streamsBlockedFrame.IsBidirectional, currentLimit);
+        byte[]? streamPayloadOwner = null;
+        if (!TryBuildOutboundMaxStreamsPayload(
+                maxStreamsFrame,
+                out ReadOnlyMemory<byte> streamPayload,
+                out streamPayloadOwner))
+        {
+            return false;
+        }
+
+        try
+        {
+            if (!TryProtectAndAccountApplicationPayload(
+                    streamPayload,
+                    "The connection runtime could not protect the stream capacity replay packet.",
+                    "The connection cannot send the stream capacity replay packet.",
+                    ref effects,
+                    out QuicConnectionActivePathRecord currentPath,
+                    out QuicConnectionPathAmplificationState updatedAmplificationState,
+                    out ReadOnlyMemory<byte> protectedPacket,
+                    out _,
+                    plaintextPayloadOwner: streamPayloadOwner))
+            {
+                return false;
+            }
+
+            streamPayloadOwner = null;
+            activePath = currentPath with
+            {
+                AmplificationState = updatedAmplificationState,
+            };
+
+            AppendSendDatagramEffect(ref effects,
+                currentPath.Identity,
+                protectedPacket);
+            return true;
+        }
+        finally
+        {
+            if (streamPayloadOwner is not null)
+            {
+                QuicBufferPool.ReturnBytes(streamPayloadOwner);
+            }
+        }
+    }
+
     private bool TryDeferPeerStreamCapacityRelease(ulong streamId)
     {
         if (IsDisposed

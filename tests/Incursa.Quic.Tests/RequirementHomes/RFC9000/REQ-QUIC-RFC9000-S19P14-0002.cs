@@ -50,6 +50,70 @@ public sealed class REQ_QUIC_RFC9000_S19P14_0002
     }
 
     [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0002")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ProtectedStreamsBlockedFrame_ReplaysNewerStreamCapacity(bool isBidirectional)
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        ulong currentLimit = isBidirectional
+            ? runtime.StreamRegistry.Bookkeeping.IncomingBidirectionalStreamLimit
+            : runtime.StreamRegistry.Bookkeeping.IncomingUnidirectionalStreamLimit;
+        byte[] encoded = QuicS19P14StreamsBlockedFrameTestSupport.BuildStreamsBlockedFrame(
+            isBidirectional,
+            currentLimit - 1);
+
+        QuicConnectionTransitionResult result = QuicS19P7NewTokenFrameTestSupport.ReceiveProtectedApplicationPacket(
+            runtime,
+            encoded,
+            observedAtTicks: 20);
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.Null(runtime.TerminalState);
+        Assert.Contains(
+            result.Effects.OfType<QuicConnectionSendDatagramEffect>(),
+            effect => ContainsMaxStreamsFrame(
+                QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, effect),
+                isBidirectional,
+                currentLimit));
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    [Requirement("REQ-QUIC-RFC9000-S19P14-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ProtectedStreamsBlockedFrame_DoesNotReplayCurrentStreamCapacity(bool isBidirectional)
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        ulong currentLimit = isBidirectional
+            ? runtime.StreamRegistry.Bookkeeping.IncomingBidirectionalStreamLimit
+            : runtime.StreamRegistry.Bookkeeping.IncomingUnidirectionalStreamLimit;
+        byte[] encoded = QuicS19P14StreamsBlockedFrameTestSupport.BuildStreamsBlockedFrame(
+            isBidirectional,
+            currentLimit);
+
+        QuicConnectionTransitionResult result = QuicS19P7NewTokenFrameTestSupport.ReceiveProtectedApplicationPacket(
+            runtime,
+            encoded,
+            observedAtTicks: 20);
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.Null(runtime.TerminalState);
+        Assert.DoesNotContain(
+            result.Effects.OfType<QuicConnectionSendDatagramEffect>(),
+            effect => ContainsMaxStreamsFrame(
+                QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, effect),
+                isBidirectional,
+                currentLimit));
+    }
+
+    [Theory]
     [InlineData(0x15)]
     [InlineData(0x18)]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0002")]
@@ -158,5 +222,37 @@ public sealed class REQ_QUIC_RFC9000_S19P14_0002
     public void Fuzz_StreamsBlockedFrame_RoundTripsRepresentativeShapesAndRejectsTruncation()
     {
         QuicFrameCodecPart4FuzzSupport.FuzzStreamsBlockedFrame();
+    }
+
+    private static bool ContainsMaxStreamsFrame(
+        ReadOnlySpan<byte> payload,
+        bool expectedBidirectional,
+        ulong expectedMaximumStreams)
+    {
+        while (!payload.IsEmpty)
+        {
+            if (QuicFrameCodec.TryParseMaxStreamsFrame(payload, out QuicMaxStreamsFrame frame, out int bytesConsumed))
+            {
+                return frame.IsBidirectional == expectedBidirectional
+                    && frame.MaximumStreams == expectedMaximumStreams;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(payload, out QuicAckFrame ackFrame, out bytesConsumed))
+            {
+                ackFrame.Dispose();
+                payload = payload[bytesConsumed..];
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParsePaddingFrame(payload, out bytesConsumed))
+            {
+                payload = payload[bytesConsumed..];
+                continue;
+            }
+
+            return false;
+        }
+
+        return false;
     }
 }
