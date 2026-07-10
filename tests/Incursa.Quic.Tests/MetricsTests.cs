@@ -60,6 +60,12 @@ public class MetricsTests
     public void QuicMetricTagsStayLowCardinality()
     {
         using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+        QuicMetrics.RecordDatagramReceived(QuicTlsRole.Server, 1);
+        recorder.RecordObservableInstruments();
+        double datagramsReceivedBefore = recorder.GetLatestMeasurement("incursa.quic.datagrams.received", "role", "server");
+        double datagramsSentBefore = recorder.GetLatestMeasurement("incursa.quic.datagrams.sent", "role", "server");
+        double bytesReceivedBefore = recorder.GetLatestMeasurement("incursa.quic.bytes.received", "role", "server");
+        double bytesSentBefore = recorder.GetLatestMeasurement("incursa.quic.bytes.sent", "role", "server");
 
         QuicMetrics.RecordDatagramReceived(QuicTlsRole.Server, 1200);
         QuicMetrics.RecordDatagramSent(QuicTlsRole.Server, 1180);
@@ -101,6 +107,22 @@ public class MetricsTests
             measurement.InstrumentName == "incursa.quic.udp.errors"
             && measurement.HasTag("direction", "receive")
             && measurement.HasTag("socket_error", "connection_reset"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.datagrams.received"
+            && measurement.Value == datagramsReceivedBefore + 1
+            && measurement.HasTag("role", "server"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.datagrams.sent"
+            && measurement.Value == datagramsSentBefore + 1
+            && measurement.HasTag("role", "server"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.bytes.received"
+            && measurement.Value == bytesReceivedBefore + 1200
+            && measurement.HasTag("role", "server"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.bytes.sent"
+            && measurement.Value == bytesSentBefore + 1180
+            && measurement.HasTag("role", "server"));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.rents"
             && measurement.Value == rentsBefore + 1

@@ -44,6 +44,9 @@ internal static class QuicMetrics
     private const int BufferPoolTwoHundredFiftySixKilobyteBucketIndex = 4;
     private const int BufferPoolGreaterThanTwoHundredFiftySixKilobyteBucketIndex = 5;
     private const int BufferPoolBucketCount = 6;
+    private const int ClientRoleIndex = 0;
+    private const int ServerRoleIndex = 1;
+    private const int RoleCount = 2;
 
     private static readonly Meter Meter = new(MeterName);
     private static readonly Counter<long> ConnectionsStarted = Meter.CreateCounter<long>("incursa.quic.connections.started", unit: "connections");
@@ -52,10 +55,14 @@ internal static class QuicMetrics
     private static readonly Counter<long> StreamsOpened = Meter.CreateCounter<long>("incursa.quic.streams.opened", unit: "streams");
     private static readonly UpDownCounter<long> StreamsActive = Meter.CreateUpDownCounter<long>("incursa.quic.streams.active", unit: "streams");
     private static readonly Counter<long> StreamsClosed = Meter.CreateCounter<long>("incursa.quic.streams.closed", unit: "streams");
-    private static readonly Counter<long> DatagramsReceived = Meter.CreateCounter<long>("incursa.quic.datagrams.received", unit: "datagrams");
-    private static readonly Counter<long> DatagramsSent = Meter.CreateCounter<long>("incursa.quic.datagrams.sent", unit: "datagrams");
-    private static readonly Counter<long> BytesReceived = Meter.CreateCounter<long>("incursa.quic.bytes.received", unit: "bytes");
-    private static readonly Counter<long> BytesSent = Meter.CreateCounter<long>("incursa.quic.bytes.sent", unit: "bytes");
+    private static readonly long[] DatagramReceivedCounts = new long[RoleCount];
+    private static readonly long[] DatagramSentCounts = new long[RoleCount];
+    private static readonly long[] ByteReceivedCounts = new long[RoleCount];
+    private static readonly long[] ByteSentCounts = new long[RoleCount];
+    private static readonly ObservableCounter<long> DatagramsReceived = Meter.CreateObservableCounter("incursa.quic.datagrams.received", () => ObserveRoleMetric(DatagramReceivedCounts), unit: "datagrams");
+    private static readonly ObservableCounter<long> DatagramsSent = Meter.CreateObservableCounter("incursa.quic.datagrams.sent", () => ObserveRoleMetric(DatagramSentCounts), unit: "datagrams");
+    private static readonly ObservableCounter<long> BytesReceived = Meter.CreateObservableCounter("incursa.quic.bytes.received", () => ObserveRoleMetric(ByteReceivedCounts), unit: "bytes");
+    private static readonly ObservableCounter<long> BytesSent = Meter.CreateObservableCounter("incursa.quic.bytes.sent", () => ObserveRoleMetric(ByteSentCounts), unit: "bytes");
     private static readonly Counter<long> PacketsDropped = Meter.CreateCounter<long>("incursa.quic.packets.dropped", unit: "packets");
     private static readonly Counter<long> FlowControlBlocked = Meter.CreateCounter<long>("incursa.quic.flow_control.blocked", unit: "events");
     private static readonly Counter<long> StreamLimitBlocked = Meter.CreateCounter<long>("incursa.quic.stream_limit.blocked", unit: "events");
@@ -152,10 +159,9 @@ internal static class QuicMetrics
             return;
         }
 
-        TagList tags = default;
-        tags.Add("role", GetRoleTag(role));
-        DatagramsReceived.Add(1, in tags);
-        BytesReceived.Add(datagramLength, in tags);
+        var roleIndex = GetRoleIndex(role);
+        Interlocked.Increment(ref DatagramReceivedCounts[roleIndex]);
+        Interlocked.Add(ref ByteReceivedCounts[roleIndex], datagramLength);
     }
 
     internal static void RecordDatagramSent(QuicTlsRole role, int datagramLength)
@@ -165,10 +171,9 @@ internal static class QuicMetrics
             return;
         }
 
-        TagList tags = default;
-        tags.Add("role", GetRoleTag(role));
-        DatagramsSent.Add(1, in tags);
-        BytesSent.Add(datagramLength, in tags);
+        var roleIndex = GetRoleIndex(role);
+        Interlocked.Increment(ref DatagramSentCounts[roleIndex]);
+        Interlocked.Add(ref ByteSentCounts[roleIndex], datagramLength);
     }
 
     internal static void RecordPacketDropped(QuicTlsRole role, string? packetType = null)
@@ -441,6 +446,16 @@ internal static class QuicMetrics
         }
     }
 
+    private static IEnumerable<Measurement<long>> ObserveRoleMetric(long[] values)
+    {
+        for (var i = 0; i < RoleCount; i++)
+        {
+            yield return new Measurement<long>(
+                Volatile.Read(ref values[i]),
+                new KeyValuePair<string, object?>("role", GetRoleTag(i)));
+        }
+    }
+
     private static void DecrementBufferPoolOutstanding(int bucketIndex, int bufferLength)
     {
         var buffers = Interlocked.Decrement(ref BufferPoolOutstandingBufferCounts[bucketIndex]);
@@ -467,6 +482,16 @@ internal static class QuicMetrics
             <= BufferPoolTwoHundredFiftySixKilobyteBucket => BufferPoolTwoHundredFiftySixKilobyteBucketIndex,
             _ => BufferPoolGreaterThanTwoHundredFiftySixKilobyteBucketIndex,
         };
+    }
+
+    private static int GetRoleIndex(QuicTlsRole role)
+    {
+        return role == QuicTlsRole.Server ? ServerRoleIndex : ClientRoleIndex;
+    }
+
+    private static string GetRoleTag(int roleIndex)
+    {
+        return roleIndex == ServerRoleIndex ? ServerRole : ClientRole;
     }
 
     private static string GetBufferSizeBucket(int bucketIndex)

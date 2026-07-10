@@ -4,6 +4,31 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: high-frequency datagram and byte totals now use two-slot
+  client/server atomic accumulators exposed through `ObservableCounter<long>`.
+  This preserves the four instrument names, units, and `role` tags while moving
+  synchronous listener aggregation out of every receive/send call. The
+  validated Short `QuicDatagramMetricsBenchmarks` comparison improved one
+  received-plus-sent pair from 21.467 to 15.657 nanoseconds, about 27.1 percent,
+  with no managed allocation in either run. Opposite-order three-repetition raw
+  multiplex comparisons passed validation and benchmark execution 6/6 on both
+  sides. Their median request-rate changes were +0.94 and +2.09 percent, median
+  p95 changes were +0.09 and -4.19 percent, and median allocation-rate changes
+  were -3.45 and -4.20 percent; treat timing as neutral-to-positive because one
+  repetition regressed throughput by about 6 percent in both comparisons. A
+  matched allocation trace held request rate within -0.19 percent and improved
+  p95 about 1.8 percent. Sampled allocation fell from 23,237,984 to 21,363,696
+  bytes; the baseline's 23 `RecordDatagramSent`/`RecordDatagramReceived`
+  `ObjectSequence1` events and 2,442,576 estimated bytes disappeared from the
+  candidate. Live counter output retained both role series and nonzero active
+  server rates for all four metrics. Focused metric tests passed 4/4, and the
+  full suite passed 9,358 tests with 5 intentional skips. Evidence remains
+  diagnostic because execution used a local shared host, dirty candidate
+  source, and no linked publishability-readiness manifest. BDN, native
+  comparisons, counter output, evidence bundles, and trace attribution are
+  retained under `.artifacts/bdn/datagram-metrics-*` and
+  `.artifacts/perf/datagram-observable-metrics`.
+
 - 2026-07-10: buffer-pool cumulative metrics now store per-size-bucket totals
   in atomic arrays and expose them through `ObservableCounter<long>` instead of
   constructing tags and dispatching seven synchronous counter updates on every
