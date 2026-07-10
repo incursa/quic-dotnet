@@ -22,13 +22,28 @@ public sealed class QuicConnectionRuntimeAcceptCancellationTests
     public async Task AcceptInboundStreamAsync_PublicAcceptStillThrowsWhenPendingAcceptIsCanceled()
     {
         await using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
-        using CancellationTokenSource cancellation = new();
 
-        Task<QuicStream> acceptTask = runtime.AcceptInboundStreamAsync(cancellation.Token).AsTask();
+        for (int iteration = 0; iteration < 3; iteration++)
+        {
+            using CancellationTokenSource cancellation = new();
+            Task<QuicStream> acceptTask = runtime.AcceptInboundStreamAsync(cancellation.Token).AsTask();
 
-        await cancellation.CancelAsync();
+            await cancellation.CancelAsync();
 
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(
+                () => acceptTask.WaitAsync(TimeSpan.FromSeconds(5)));
+        }
+    }
+
+    [Fact]
+    public async Task AcceptInboundStreamAsync_PendingAcceptThrowsWhenRuntimeIsDisposed()
+    {
+        QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+        Task<QuicStream> acceptTask = runtime.AcceptInboundStreamAsync().AsTask();
+
+        await runtime.DisposeAsync();
+
+        await Assert.ThrowsAsync<ObjectDisposedException>(
             () => acceptTask.WaitAsync(TimeSpan.FromSeconds(5)));
     }
 }

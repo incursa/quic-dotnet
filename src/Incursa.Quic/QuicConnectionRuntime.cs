@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Security;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Security.Cryptography.X509Certificates;
@@ -68,6 +69,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly Dictionary<long, StreamActionRequestCompletionSource> pendingStreamActionRequests = new();
     private readonly ConcurrentDictionary<long, DatagramSendRequestCompletionSource> pendingDatagramSendRequests = new();
     private readonly ConcurrentQueue<object> completionSourcePool = new();
+    private readonly ConcurrentQueue<InboundStreamAcceptCompletionSource> inboundStreamAcceptCompletionSourcePool = new();
     private readonly object pendingStreamActionRequestsGate = new();
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
     private readonly object scheduledFlowControlCreditGate = new();
@@ -505,6 +507,107 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
     }
 
+    private sealed class InboundStreamAcceptCompletionSource : IValueTaskSource<QuicStream>
+    {
+        private readonly QuicConnectionRuntime owner;
+        private readonly Action completeRead;
+        private ManualResetValueTaskSourceCore<QuicStream> source;
+        private ValueTaskAwaiter<ulong> readAwaiter;
+
+        internal InboundStreamAcceptCompletionSource(QuicConnectionRuntime owner)
+        {
+            this.owner = owner;
+            completeRead = CompleteRead;
+            source = new ManualResetValueTaskSourceCore<QuicStream>
+            {
+                RunContinuationsAsynchronously = true,
+            };
+        }
+
+        internal ValueTask<QuicStream> Task => new(this, source.Version);
+
+        internal void Prepare(ValueTask<ulong> readTask)
+        {
+            source.Reset();
+            readAwaiter = readTask.GetAwaiter();
+            readAwaiter.UnsafeOnCompleted(completeRead);
+        }
+
+        private void CompleteRead()
+        {
+            try
+            {
+                if (!readAwaiter.IsCompleted)
+                {
+                    throw new InvalidOperationException("The inbound stream read continuation ran before completion.");
+                }
+
+#pragma warning disable S5034 // The registered continuation runs only after the channel awaiter completes.
+                ulong streamId = readAwaiter.GetResult();
+#pragma warning restore S5034
+                if (owner.terminalState is QuicConnectionTerminalState terminalState)
+                {
+                    throw CreateTerminalException(terminalState);
+                }
+
+                source.SetResult(new QuicStream(owner.streamRegistry.Bookkeeping, streamId, owner));
+            }
+            catch (ChannelClosedException ex)
+            {
+                Exception mappedException;
+                if (owner.inboundStreamQueueCompletionException is Exception completionException)
+                {
+                    mappedException = completionException;
+                }
+                else if (owner.terminalState is QuicConnectionTerminalState terminalState)
+                {
+                    mappedException = CreateTerminalException(terminalState);
+                }
+                else if (owner.IsDisposed)
+                {
+                    mappedException = new ObjectDisposedException(nameof(QuicConnectionRuntime), ex);
+                }
+                else
+                {
+                    mappedException = ex;
+                }
+
+                source.SetException(mappedException);
+            }
+            catch (Exception ex)
+            {
+                source.SetException(ex);
+            }
+        }
+
+        QuicStream IValueTaskSource<QuicStream>.GetResult(short token)
+        {
+            try
+            {
+                return source.GetResult(token);
+            }
+            finally
+            {
+                readAwaiter = default;
+                owner.ReturnInboundStreamAcceptCompletionSource(this);
+            }
+        }
+
+        ValueTaskSourceStatus IValueTaskSource<QuicStream>.GetStatus(short token)
+        {
+            return source.GetStatus(token);
+        }
+
+        void IValueTaskSource<QuicStream>.OnCompleted(
+            Action<object?> continuation,
+            object? state,
+            short token,
+            ValueTaskSourceOnCompletedFlags flags)
+        {
+            source.OnCompleted(continuation, state, token, flags);
+        }
+    }
+
     private sealed class DatagramSendRequestCompletionSource : IValueTaskSource
     {
         private readonly QuicConnectionRuntime owner;
@@ -589,6 +692,22 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private void ReturnStreamOpenRequestCompletionSource(StreamOpenRequestCompletionSource completionSource)
     {
         completionSourcePool.Enqueue(completionSource);
+    }
+
+    private InboundStreamAcceptCompletionSource RentInboundStreamAcceptCompletionSource(ValueTask<ulong> readTask)
+    {
+        if (!inboundStreamAcceptCompletionSourcePool.TryDequeue(out InboundStreamAcceptCompletionSource? completionSource))
+        {
+            completionSource = new InboundStreamAcceptCompletionSource(this);
+        }
+
+        completionSource.Prepare(readTask);
+        return completionSource;
+    }
+
+    private void ReturnInboundStreamAcceptCompletionSource(InboundStreamAcceptCompletionSource completionSource)
+    {
+        inboundStreamAcceptCompletionSourcePool.Enqueue(completionSource);
     }
 
     private StreamActionRequestCompletionSource RentStreamActionRequestCompletionSource()
@@ -1504,10 +1623,27 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             return new ValueTask<QuicStream>(new QuicStream(streamRegistry.Bookkeeping, streamId, this));
         }
 
-        return AcceptInboundStreamSlowAsync(cancellationToken);
+        if (ApplicationReceiveDebugEnabled)
+        {
+            return AcceptInboundStreamDebugAsync(cancellationToken);
+        }
+
+        ValueTask<ulong> readTask = inboundStreamIds.Reader.ReadAsync(cancellationToken);
+        if (readTask.IsCompletedSuccessfully)
+        {
+            streamId = readTask.GetAwaiter().GetResult();
+            if (terminalState is QuicConnectionTerminalState completedTerminalState)
+            {
+                throw CreateTerminalException(completedTerminalState);
+            }
+
+            return new ValueTask<QuicStream>(new QuicStream(streamRegistry.Bookkeeping, streamId, this));
+        }
+
+        return RentInboundStreamAcceptCompletionSource(readTask).Task;
     }
 
-    private async ValueTask<QuicStream> AcceptInboundStreamSlowAsync(CancellationToken cancellationToken)
+    private async ValueTask<QuicStream> AcceptInboundStreamDebugAsync(CancellationToken cancellationToken)
     {
         try
         {

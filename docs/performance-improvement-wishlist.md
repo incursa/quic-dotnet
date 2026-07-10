@@ -4,6 +4,32 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: pending public inbound stream accepts now map the channel's
+  existing `ValueTask<ulong>` through a dedicated pooled
+  `IValueTaskSource<QuicStream>` instead of allocating an
+  `AcceptInboundStreamSlowAsync` state-machine box for every accepted stream.
+  Public cancellation and terminal exception behavior remains covered by the
+  existing API tests, while debug receive logging retains the readable async
+  path. The 5,000-iteration established-connection profile reduced pass-two
+  managed allocation from 7,650 to 7,582 B/op and held elapsed time at 0.330
+  versus 0.332 ms/op. Matched 40,000-transfer GC traces reduced pass-two managed
+  allocation from 7,675 to 7,617 B/op, removed the prior 154-event sampled
+  `AcceptInboundStreamSlowAsync` group, and reduced sampled actionable bytes
+  from 278,030,984 to 275,709,480. Evidence is retained under
+  `.artifacts/perf/public-stream-allocation-trace/codex-established-stream-pooled-accept-20260710a`.
+
+- 2026-07-10: sustained established-connection profiling exposed a torn
+  cross-thread read of the large nullable active-path record in the public
+  outbound stream-open readiness check. A focused concurrency regression test
+  reproduced the contradictory `Phase=Active` / active-path rejection in 45 ms.
+  Commit `f861b8a7` now uses the connection phase as the published application
+  readiness invariant, matching neighboring public APIs; focused tests passed
+  and the previously failing 40,000-transfer profile completed. A follow-up
+  single-entry path-identity cache was rejected after changing allocation only
+  from 7,650 to 7,646 B/op while elapsed time regressed from 0.332 to 0.370
+  ms/op. ProtocolLab negative-result evidence is retained at
+  `.artifacts/perf/negative-results/path-identity-cache-20260709.json`.
+
 - 2026-07-09: public socket-host shutdown no longer relies on receive cancellation
   throwing through the listener and client endpoint loops. Both hosts register a
   cancellation wake-up that sends a one-byte datagram to their own bound socket,
