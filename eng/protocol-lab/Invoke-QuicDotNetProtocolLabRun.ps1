@@ -28,6 +28,10 @@ param(
 
     [int] $Repetitions,
 
+    [switch] $CaptureCounters,
+
+    [switch] $CaptureTrace,
+
     [string[]] $RequiredCapability,
 
     [string[]] $PackageReference = @(),
@@ -462,9 +466,16 @@ $jobRequest = [ordered]@{
     maxAttempts = 1
     packages = $allPackageReferences
     requiredCapabilities = $requiredCapabilities
+    extensions = [ordered]@{}
 }
 if ($PSBoundParameters.ContainsKey("Repetitions")) {
     $jobRequest.repetitions = $Repetitions
+}
+if ($CaptureCounters) {
+    $jobRequest.extensions.captureCounters = $true
+}
+if ($CaptureTrace) {
+    $jobRequest.extensions.captureTrace = $true
 }
 
 $submittedJob = Invoke-ControllerJson -Uri "$ControllerUri/api/lab/jobs" -Method "POST" -Body $jobRequest

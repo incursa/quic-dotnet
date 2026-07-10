@@ -292,6 +292,10 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("Wait-LabJob", helperScript);
         Assert.Contains("[int] $Repetitions", helperScript);
         Assert.Contains("$jobRequest.repetitions = $Repetitions", helperScript);
+        Assert.Contains("[switch] $CaptureCounters", helperScript);
+        Assert.Contains("[switch] $CaptureTrace", helperScript);
+        Assert.Contains("$jobRequest.extensions.captureCounters = $true", helperScript);
+        Assert.Contains("$jobRequest.extensions.captureTrace = $true", helperScript);
         Assert.Contains("$allPackageReferences = @()", helperScript);
         Assert.Contains("$allPackageReferences += @($PackageReference", helperScript);
         Assert.Contains("packages = $allPackageReferences", helperScript);
