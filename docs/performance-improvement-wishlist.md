@@ -4,6 +4,28 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: current package-backed raw QUIC multiplex evidence now runs
+  through the upgraded ProtocolLab bundle and comparison surfaces. Controller
+  job `job-2fd1f052b29b48468e7213b7ca5b925b` used clean runtime commit
+  `727300a2`, passed validation and benchmark execution for all 3 repetitions,
+  and reported zero failed or timeout requests. The aggregate median was 97.10
+  requests/sec, 6.36 MB/sec, p50 8.059 ms, and p95 19.527 ms. Evidence remains
+  diagnostic: p50 relative range reached 8.24 percent against the 5 percent
+  publishability threshold, no publishability-readiness manifest was linked,
+  and allocation/exception attribution explicitly reports
+  `trace-capture-disabled`. Native comparison against the prior single-repeat
+  package run is retained under
+  `.artifacts/perf-parity/codex-package-multiplex-727300a2-20260710a`.
+  Follow-up commits `6413f500` and `d522b972` make both QUIC package builders
+  capture the exact repository URL and full source commit in
+  `protocol-lab.internal.json`, because the public v2 package schema correctly
+  rejects internal source fields. Package
+  `quic-dotnet-raw-dev.dev-20260710T062127Z-d522b972-clean` passed live
+  controller admission, and package-reference-only smoke job
+  `job-368ec5dbc9db41579c367f249778a479` passed validation and benchmark
+  execution with zero failed or timeout requests. Its retained evidence is at
+  `.artifacts/perf-parity/codex-package-multiplex-provenance-d522b972-20260710a`.
+
 - 2026-07-10: pending public inbound stream accepts now map the channel's
   existing `ValueTask<ulong>` through a dedicated pooled
   `IValueTaskSource<QuicStream>` instead of allocating an
@@ -476,6 +498,10 @@ The latest
 package-backed repeats passed 3/3 validation and benchmark repetitions for
 stream throughput, multiplex, and duplex, but are still blocked from publishable
 use by variance, local shared-host execution, and missing runtime counters.
+QUIC-owned package builders now record the exact source repository and full
+commit in `protocol-lab.internal.json`; public package v2 remains limited to its
+portable contract fields. Live controller admission and a pinned-reference
+multiplex smoke prove the resulting archive is selectable and executable.
 Remaining work is richer counter capture, documenting/automating the
 binary-backed component package path beyond the local generated package flow,
 running higher-repetition matched source/package comparisons, and moving the
@@ -484,7 +510,7 @@ same evidence onto isolated lab hardware.
 Done when:
 
 - The same scenario can run source-backed locally and package-backed on the controller with matching implementation identity. New source-backed raw performance lanes now use `quic-dotnet-raw-dev`; older retained source evidence under `incursa-raw-quic-adapter-v1` remains historical and will not match package-backed cells.
-- Package manifests record the exact quic-dotnet commit, package version, build mode, and supported scenario list.
+- Package manifests record the exact quic-dotnet commit, package version, build mode, and supported scenario list. The public manifest records portable package identity/capabilities, while `protocol-lab.internal.json` records the exact repository and commit used by the QUIC-owned builder.
 - A package-backed run can reproduce the smoke lane on lab hardware.
 - Differences between source-backed and package-backed results are understood and documented. Stream-throughput, multiplex, and duplex now have matched native smoke comparisons with source/package parity satisfied; higher-repetition and isolated-host comparisons remain open.
 
