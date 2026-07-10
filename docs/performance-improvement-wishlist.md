@@ -4,6 +4,17 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-09: public API stream-transfer benchmarks now include an established-connection
+  concurrent request/response stream shape, opening eight bidirectional streams
+  over one loopback connection for both Incursa.Quic and `System.Net.Quic`.
+  Focused correctness coverage `QuicPublicApiStreamConcurrencyTests` proves the
+  supported Incursa loopback path can complete the same eight concurrent
+  transfers. Dry BDN smoke `public-comparison-concurrent-smoke-20260709a`
+  completed both implementations: Incursa measured 370.811 ms / 1,592.9 KB with
+  BDN reporting `Exceptions: 2`, while `System.Net.Quic` measured 66.641 ms /
+  197.55 KB. Treat this as a stable diagnostic lane and follow-up signal for
+  public-stream concurrency pressure, not as a solved performance win.
+
 - 2026-07-09: `Compare-QuicProtocolLabRuns.ps1` now preserves ProtocolLab
   native evidence-bundle comparison artifacts when both retained run roots have
   `evidence-bundle.json`. The local triage report still compares aggregate rows

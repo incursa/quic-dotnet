@@ -41,6 +41,7 @@ public class QuicPublicApiStreamTransferBenchmarks
 {
     private const int PayloadBytes = 1024;
     private const int SequentialStreamCount = 8;
+    private const int ConcurrentStreamCount = 8;
 
     private X509Certificate2? serverCertificate;
     private X509Certificate2? trustAnchor;
@@ -157,6 +158,22 @@ public class QuicPublicApiStreamTransferBenchmarks
         {
             QuicPublicApiStreamTransferImplementation.IncursaQuic => RunIncursaSequentialRequestResponseStreamsDisposeAsync(clientOptions, serverOptions, request, response),
             QuicPublicApiStreamTransferImplementation.SystemNetQuic => RunSystemNetSequentialRequestResponseStreamsDisposeAsync(clientOptions, serverOptions, request, response),
+            _ => throw new ArgumentOutOfRangeException(nameof(Implementation)),
+        };
+    }
+
+    [Benchmark]
+    public Task LoopbackConcurrentRequestResponseStreamsDispose()
+    {
+        SslClientAuthenticationOptions clientOptions = clientAuthenticationOptions ?? throw new InvalidOperationException("The benchmark client authentication options have not been initialized.");
+        SslServerAuthenticationOptions serverOptions = serverAuthenticationOptions ?? throw new InvalidOperationException("The benchmark server authentication options have not been initialized.");
+        byte[] request = requestPayload ?? throw new InvalidOperationException("The benchmark request payload has not been initialized.");
+        byte[] response = responsePayload ?? throw new InvalidOperationException("The benchmark response payload has not been initialized.");
+
+        return Implementation switch
+        {
+            QuicPublicApiStreamTransferImplementation.IncursaQuic => RunIncursaConcurrentRequestResponseStreamsDisposeAsync(clientOptions, serverOptions, request, response),
+            QuicPublicApiStreamTransferImplementation.SystemNetQuic => RunSystemNetConcurrentRequestResponseStreamsDisposeAsync(clientOptions, serverOptions, request, response),
             _ => throw new ArgumentOutOfRangeException(nameof(Implementation)),
         };
     }
@@ -290,6 +307,45 @@ public class QuicPublicApiStreamTransferBenchmarks
                 responsePayload,
                 cancellationSource.Token).ConfigureAwait(false);
         }
+    }
+
+    private static async Task RunIncursaConcurrentRequestResponseStreamsDisposeAsync(
+        SslClientAuthenticationOptions clientAuthenticationOptions,
+        SslServerAuthenticationOptions serverAuthenticationOptions,
+        byte[] requestPayload,
+        byte[] responsePayload)
+    {
+        using CancellationTokenSource cancellationSource = new(TimeSpan.FromSeconds(60));
+        IPEndPoint listenEndPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
+
+        await using IncursaListener listener = await IncursaListener.ListenAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaListenerOptions(listenEndPoint, serverAuthenticationOptions),
+            cancellationSource.Token).ConfigureAwait(false);
+
+        Task<IncursaClientConnection> acceptConnectionTask = listener.AcceptConnectionAsync(cancellationSource.Token).AsTask();
+        Task<IncursaClientConnection> connectTask = IncursaClientConnection.ConnectAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaClientOptions(
+                new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
+                clientAuthenticationOptions),
+            cancellationSource.Token).AsTask();
+
+        await Task.WhenAll(acceptConnectionTask, connectTask).ConfigureAwait(false);
+
+        await using IncursaClientConnection serverConnection = await acceptConnectionTask.ConfigureAwait(false);
+        await using IncursaClientConnection clientConnection = await connectTask.ConfigureAwait(false);
+
+        Task[] transfers = new Task[ConcurrentStreamCount];
+        for (int streamIndex = 0; streamIndex < transfers.Length; streamIndex++)
+        {
+            transfers[streamIndex] = RunIncursaRequestResponseOnConnectedAsync(
+                clientConnection,
+                serverConnection,
+                requestPayload,
+                responsePayload,
+                cancellationSource.Token);
+        }
+
+        await Task.WhenAll(transfers).ConfigureAwait(false);
     }
 
     private static async Task RunIncursaRequestResponseOnConnectedAsync(
@@ -535,6 +591,45 @@ public class QuicPublicApiStreamTransferBenchmarks
                 responsePayload,
                 cancellationSource.Token).ConfigureAwait(false);
         }
+    }
+
+    private static async Task RunSystemNetConcurrentRequestResponseStreamsDisposeAsync(
+        SslClientAuthenticationOptions clientAuthenticationOptions,
+        SslServerAuthenticationOptions serverAuthenticationOptions,
+        byte[] requestPayload,
+        byte[] responsePayload)
+    {
+        using CancellationTokenSource cancellationSource = new(TimeSpan.FromSeconds(60));
+        IPEndPoint listenEndPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
+
+        await using SystemNetListener listener = await SystemNetListener.ListenAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateSystemNetListenerOptions(listenEndPoint, serverAuthenticationOptions),
+            cancellationSource.Token).ConfigureAwait(false);
+
+        Task<SystemNetClientConnection> acceptConnectionTask = listener.AcceptConnectionAsync(cancellationSource.Token).AsTask();
+        Task<SystemNetClientConnection> connectTask = SystemNetClientConnection.ConnectAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateSystemNetClientOptions(
+                new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
+                clientAuthenticationOptions),
+            cancellationSource.Token).AsTask();
+
+        await Task.WhenAll(acceptConnectionTask, connectTask).ConfigureAwait(false);
+
+        await using SystemNetClientConnection serverConnection = await acceptConnectionTask.ConfigureAwait(false);
+        await using SystemNetClientConnection clientConnection = await connectTask.ConfigureAwait(false);
+
+        Task[] transfers = new Task[ConcurrentStreamCount];
+        for (int streamIndex = 0; streamIndex < transfers.Length; streamIndex++)
+        {
+            transfers[streamIndex] = RunSystemNetRequestResponseOnConnectedAsync(
+                clientConnection,
+                serverConnection,
+                requestPayload,
+                responsePayload,
+                cancellationSource.Token);
+        }
+
+        await Task.WhenAll(transfers).ConfigureAwait(false);
     }
 
     private static async Task RunSystemNetRequestResponseOnConnectedAsync(
