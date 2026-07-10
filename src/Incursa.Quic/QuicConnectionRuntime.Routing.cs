@@ -977,7 +977,7 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        return TryDiscardExpiredRetainedOldOneRttKeyMaterial(ref effects);
+        return TryDiscardRetainedOldOneRttKeyMaterial(ref effects);
     }
 
     internal bool TrySelectRecoveryTimer(

@@ -543,7 +543,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TryDiscardExpiredRetainedOldOneRttKeyMaterial(ref QuicConnectionEffectAccumulator effects)
+    private bool TryDiscardRetainedOldOneRttKeyMaterial(ref QuicConnectionEffectAccumulator effects)
     {
         if (!tlsState.RetainedOldOneRttPacketProtectionKeyPhase.HasValue)
         {

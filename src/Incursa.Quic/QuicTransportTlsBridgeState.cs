@@ -916,7 +916,6 @@ internal sealed class QuicTransportTlsBridgeState
         if (IsTerminal
             || !KeyUpdateInstalled
             || CurrentOneRttKeyPhase == 0
-            || !CurrentOneRttKeyPhaseAcknowledged
             || oneRttKeyUpdateLifecycle.HasRetainedOldPacketProtectionMaterial
             || !oneRttOpenPacketProtectionMaterial.HasValue
             || !oneRttProtectPacketProtectionMaterial.HasValue
@@ -953,7 +952,6 @@ internal sealed class QuicTransportTlsBridgeState
         if (IsTerminal
             || (KeyUpdateInstalled
                 ? CurrentOneRttKeyPhase == 0
-                    || !CurrentOneRttKeyPhaseAcknowledged
                     || oneRttKeyUpdateLifecycle.HasRetainedOldPacketProtectionMaterial
                 : CurrentOneRttKeyPhase != 0)
             || !oneRttOpenPacketProtectionMaterial.HasValue

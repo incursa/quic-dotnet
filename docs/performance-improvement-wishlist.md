@@ -4,6 +4,27 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: repeated raw stream-throughput stalls were traced to the 1-RTT
+  key-update retention policy rather than stream capacity or FIN recovery. The
+  server retained the previous packet-protection generation until a recovery
+  PTO-derived deadline that could grow past 24 seconds, then refused a valid
+  subsequent peer update even after its current-phase packet had been
+  acknowledged. The runtime now authenticates the candidate next-phase packet
+  before discarding the obsolete retained generation and installing the
+  successor; unacknowledged or unauthenticated packets cannot force disposal.
+  Focused key-update and scheduler coverage passed 21/21, and the broader
+  RFC 9001 plus scheduler slice passed 362/362. The final uninstrumented
+  three-repetition c1/s4 run completed 700/700, 696/696, and 716/716 measured
+  1 MiB uploads with zero failures or timeouts at 46.25-47.55 MiB/s. Native
+  comparison matched all three cells and changed each from failed validation
+  and benchmark execution to passed/succeeded, removing every timeout and
+  request-failure warning. Evidence is retained under
+  `.artifacts/runs/quic-raw-stream-keytransition-repeat-20260710a-*`,
+  `.artifacts/runs/quic-raw-stream-acked-retention-final-20260710a-*`, and
+  `.artifacts/comparisons/quic-raw-stream-acked-retention-final-20260710a.json`
+  in `protocol-lab-internal`. This remains local diagnostic evidence because
+  variance and publishability-readiness gates are not satisfied.
+
 - 2026-07-10: source-backed raw stream-throughput evidence isolated a missing
   connection-level flow-control recovery path. The runtime accepted
   `STREAM_DATA_BLOCKED` but did not parse valid `DATA_BLOCKED` frames, so a peer
@@ -763,21 +784,23 @@ single-repetition smoke proof with optional counter capture for throughput,
 allocation, GC, exception-rate, CPU, and validation fields. Upload-only
 bidirectional stream measurement now uses clean FIN/EOF semantics rather than
 client-side STOP_SENDING cancellation, and current c1/s4 single-repetition
-source-backed runs pass with and without counter capture. Repeated local c1/s4
-counter confidence remains unstable on the shared host. Connection-level
+source-backed runs pass with and without counter capture. Connection-level
 partial-upload stalls caused by dropped flow-control credit now have a bounded
-`DATA_BLOCKED`/`MAX_DATA` replay fix and a clean three-repetition short stress
-proof. Longer local runs can still time out after sending the complete upload
-while waiting for the server response EOF, so FIN/stream-close recovery remains
-the active reliability gap. Package-backed
+`DATA_BLOCKED`/`MAX_DATA` replay fix. The remaining repeated long-run stall was
+caused by rejecting a valid acknowledged peer key update while older
+packet-protection material remained on a PTO-derived retention timer. The
+authenticated replacement path now discards that obsolete retained generation
+before installing the successor, and the final uninstrumented three-repetition
+c1/s4 run passed 3/3 with zero failed or timed-out requests. Package-backed
 rack-lab smoke proof validates the same stream-throughput scenario through
 admitted implementation, test-executor, and scenario-pack packages, and repeated
 package-backed proof validates 3/3 repetitions. Package-backed multiplex and
 duplex repeats also validate and benchmark 3/3 with zero failed or timeout
 requests. The package-backed repeats are still variance-blocked and lack runtime
-counters, so they are regression evidence only. A c1/s4 diagnostic shape is more
-stable for single-run throughput than c1/s1, but repeated local confidence and
-latency variance remain too noisy for publishable claims.
+counters, so they are regression evidence only. A c1/s4 diagnostic shape is
+more stable for single-run throughput than c1/s1. Repeated local correctness is
+now clean for the retained confidence sample, but latency/throughput variance
+and readiness gates remain too weak for publishable claims.
 
 Done when:
 

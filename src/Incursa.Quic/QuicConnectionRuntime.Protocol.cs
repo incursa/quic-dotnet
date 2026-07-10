@@ -1235,21 +1235,38 @@ internal sealed partial class QuicConnectionRuntime
                 else
                 {
                     // The first observed phase-1 packet may already require successor keys.
-                    if (!tlsBridgeDriver.TryEnsureNextOneRttOpenPacketProtectionMaterial(
-                            out QuicTlsPacketProtectionMaterial successorOpenMaterial,
-                            out bool retainedNextOpenMaterial))
+                    bool canReplaceAcknowledgedRetainedOldMaterial =
+                        tlsState.KeyUpdateInstalled
+                        && tlsState.CurrentOneRttKeyPhaseAcknowledged
+                        && tlsState.RetainedOldOneRttOpenPacketProtectionMaterial.HasValue;
+                    if (!tlsBridgeDriver.TryDeriveOneRttSuccessorPacketProtectionMaterial(
+                            out QuicTlsPacketProtectionMaterial derivedSuccessorOpenMaterial,
+                            out QuicTlsPacketProtectionMaterial successorProtectMaterial))
                     {
                         return false;
                     }
 
-                    stateChanged |= retainedNextOpenMaterial;
+                    QuicTlsPacketProtectionMaterial successorOpenMaterial;
+                    if (canReplaceAcknowledgedRetainedOldMaterial)
+                    {
+                        successorOpenMaterial = derivedSuccessorOpenMaterial;
+                    }
+                    else
+                    {
+                        if (!tlsBridgeDriver.TryEnsureNextOneRttOpenPacketProtectionMaterial(
+                                out successorOpenMaterial,
+                                out bool retainedNextOpenMaterial))
+                        {
+                            return false;
+                        }
+
+                        stateChanged |= retainedNextOpenMaterial;
+                    }
+
                     bool expectedSuccessorKeyPhase =
                         ((tlsState.CurrentOneRttKeyPhase + 1UL) & 1UL) == 1UL;
                     bool installedSuccessor = false;
-                    if (!tlsBridgeDriver.TryDeriveOneRttSuccessorPacketProtectionMaterial(
-                            out QuicTlsPacketProtectionMaterial derivedSuccessorOpenMaterial,
-                            out QuicTlsPacketProtectionMaterial successorProtectMaterial)
-                        || !derivedSuccessorOpenMaterial.Matches(successorOpenMaterial)
+                    if (!derivedSuccessorOpenMaterial.Matches(successorOpenMaterial)
                         || !handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacketLease(
                             packetReceivedEvent.Datagram.Span,
                             successorOpenMaterial,
@@ -1265,6 +1282,16 @@ internal sealed partial class QuicConnectionRuntime
                     }
 
                     openedPacketOwned = true;
+                    if (canReplaceAcknowledgedRetainedOldMaterial)
+                    {
+                        if (!TryDiscardRetainedOldOneRttKeyMaterial(ref effects))
+                        {
+                            return stateChanged;
+                        }
+
+                        stateChanged = true;
+                    }
+
                     if (tlsState.KeyUpdateInstalled)
                     {
                         installedSuccessor = tlsBridgeDriver.TryInstallRepeatedPeerOneRttKeyUpdate(
