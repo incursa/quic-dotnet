@@ -70,7 +70,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly ConcurrentDictionary<long, StreamOpenRequestCompletionSource> pendingStreamOpenRequests = new();
     private readonly Dictionary<long, StreamActionRequestCompletionSource> pendingStreamActionRequests = new();
     private readonly ConcurrentDictionary<long, DatagramSendRequestCompletionSource> pendingDatagramSendRequests = new();
-    private readonly ConcurrentQueue<object> completionSourcePool = new();
+    private readonly ConcurrentQueue<StreamOpenRequestCompletionSource> streamOpenRequestCompletionSourcePool = new();
+    private readonly ConcurrentQueue<StreamActionRequestCompletionSource> streamActionRequestCompletionSourcePool = new();
+    private readonly ConcurrentQueue<DatagramSendRequestCompletionSource> datagramSendRequestCompletionSourcePool = new();
     private readonly ConcurrentQueue<InboundStreamAcceptCompletionSource> inboundStreamAcceptCompletionSourcePool = new();
     private readonly object pendingStreamActionRequestsGate = new();
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
@@ -706,8 +708,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     private StreamOpenRequestCompletionSource RentStreamOpenRequestCompletionSource(QuicStreamType streamType)
     {
-        if (!completionSourcePool.TryDequeue(out object? completionSource)
-            || completionSource is not StreamOpenRequestCompletionSource typedSource)
+        if (!streamOpenRequestCompletionSourcePool.TryDequeue(out StreamOpenRequestCompletionSource? typedSource))
         {
             typedSource = new StreamOpenRequestCompletionSource(this);
         }
@@ -718,7 +719,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     private void ReturnStreamOpenRequestCompletionSource(StreamOpenRequestCompletionSource completionSource)
     {
-        completionSourcePool.Enqueue(completionSource);
+        streamOpenRequestCompletionSourcePool.Enqueue(completionSource);
     }
 
     private InboundStreamAcceptCompletionSource RentInboundStreamAcceptCompletionSource(ValueTask<ulong> readTask)
@@ -739,8 +740,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     private StreamActionRequestCompletionSource RentStreamActionRequestCompletionSource()
     {
-        if (!completionSourcePool.TryDequeue(out object? completionSource)
-            || completionSource is not StreamActionRequestCompletionSource typedSource)
+        if (!streamActionRequestCompletionSourcePool.TryDequeue(out StreamActionRequestCompletionSource? typedSource))
         {
             typedSource = new StreamActionRequestCompletionSource(this);
         }
@@ -752,13 +752,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private void ReturnStreamActionRequestCompletionSource(StreamActionRequestCompletionSource completionSource)
     {
         completionSource.ReleaseOwnedStreamData();
-        completionSourcePool.Enqueue(completionSource);
+        streamActionRequestCompletionSourcePool.Enqueue(completionSource);
     }
 
     private DatagramSendRequestCompletionSource RentDatagramSendRequestCompletionSource()
     {
-        if (!completionSourcePool.TryDequeue(out object? completionSource)
-            || completionSource is not DatagramSendRequestCompletionSource typedSource)
+        if (!datagramSendRequestCompletionSourcePool.TryDequeue(out DatagramSendRequestCompletionSource? typedSource))
         {
             typedSource = new DatagramSendRequestCompletionSource(this);
         }
@@ -769,7 +768,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     private void ReturnDatagramSendRequestCompletionSource(DatagramSendRequestCompletionSource completionSource)
     {
-        completionSourcePool.Enqueue(completionSource);
+        datagramSendRequestCompletionSourcePool.Enqueue(completionSource);
     }
 
     private bool TryAddPendingStreamActionRequest(long requestId, StreamActionRequestCompletionSource completionSource)
