@@ -2113,6 +2113,7 @@ internal sealed partial class QuicConnectionRuntime
         if (TryReleasePeerStreamCapacity(streamId, ref effects))
         {
             ClearPeerStreamCapacityReleaseScheduled(streamId);
+            AppendLifecycleTimerEffects(ref effects);
             return true;
         }
 
@@ -2127,15 +2128,14 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool HandleReleaseCapacityStreamAction(ref QuicConnectionEffectAccumulator effects)
     {
-        try
+        _ = TryDeferScheduledPeerStreamCapacityReleases();
+        bool stateChanged = TryFlushPendingPeerStreamCapacityReleases(ref effects);
+        if (stateChanged)
         {
-            _ = TryDeferScheduledPeerStreamCapacityReleases();
-            return TryFlushPendingPeerStreamCapacityReleases(ref effects);
+            AppendLifecycleTimerEffects(ref effects);
         }
-        finally
-        {
-            ClearPeerStreamCapacityReleaseEventScheduled();
-        }
+
+        return stateChanged;
     }
 
     private bool HandleFlowControlCreditUpdated(
@@ -2152,7 +2152,13 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandleScheduledFlowControlCreditUpdated(ref QuicConnectionEffectAccumulator effects)
     {
         _ = TryDeferScheduledFlowControlCreditUpdate();
-        return TryFlushPendingFlowControlCreditUpdates(ref effects);
+        bool stateChanged = TryFlushPendingFlowControlCreditUpdates(ref effects);
+        if (stateChanged)
+        {
+            AppendLifecycleTimerEffects(ref effects);
+        }
+
+        return stateChanged;
     }
 
     private bool TryValidateStreamSendBoundary(out Exception? exception)

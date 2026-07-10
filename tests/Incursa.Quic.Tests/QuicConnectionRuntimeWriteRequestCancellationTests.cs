@@ -3,6 +3,8 @@
 
 namespace Incursa.Quic.Tests;
 
+using System.Reflection;
+
 public sealed class QuicConnectionRuntimeWriteRequestCancellationTests
 {
     [Fact]
@@ -55,6 +57,67 @@ public sealed class QuicConnectionRuntimeWriteRequestCancellationTests
         runtime.TryQueueStreamCapacityRelease(streamId: 4);
 
         Assert.Equal(1, releaseEventCount);
+    }
+
+    [Fact]
+    public async Task TryQueueStreamCapacityRelease_PostsAnotherEventAfterTheScheduledSetIsDrained()
+    {
+        await using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        int releaseEventCount = 0;
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            if (connectionEvent is QuicConnectionStreamActionEvent
+                {
+                    ActionKind: QuicConnectionStreamActionKind.ReleaseCapacity,
+                })
+            {
+                releaseEventCount++;
+            }
+
+            return true;
+        });
+
+        runtime.TryQueueStreamCapacityRelease(streamId: 0);
+        Assert.Equal(1, releaseEventCount);
+
+        MethodInfo drainMethod = typeof(QuicConnectionRuntime).GetMethod(
+            "TryDeferScheduledPeerStreamCapacityReleases",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+        Assert.True((bool)drainMethod.Invoke(runtime, null)!);
+
+        runtime.TryQueueStreamCapacityRelease(streamId: 4);
+
+        Assert.Equal(2, releaseEventCount);
+    }
+
+    [Fact]
+    public async Task TransitionStreamCapacityRelease_ArmsRecoveryForTheMaxStreamsPacket()
+    {
+        await using QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
+        QuicConnectionStreamState state = runtime.StreamRegistry.Bookkeeping;
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0B, streamId: 1, streamData: []),
+            out QuicStreamFrame frame));
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.True(state.TryAbortLocalStreamWrites(1, out _, out errorCode));
+        Assert.Equal(default, errorCode);
+        ulong originalLimit = state.IncomingBidirectionalStreamLimit;
+
+        runtime.TryQueueStreamCapacityRelease(streamId: 1);
+        QuicConnectionTransitionResult result = runtime.TransitionStreamCapacityRelease(nowTicks: 10);
+
+        Assert.True(result.StateChanged);
+        Assert.Equal(originalLimit + 1, state.IncomingBidirectionalStreamLimit);
+        Assert.Contains(result.Effects, static effect => effect is QuicConnectionSendDatagramEffect);
+        Assert.Contains(
+            result.Effects,
+            static effect => effect is QuicConnectionArmTimerEffect
+            {
+                TimerKind: QuicConnectionTimerKind.Recovery,
+            });
+        Assert.True(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery).HasValue);
     }
 
     [Fact]
