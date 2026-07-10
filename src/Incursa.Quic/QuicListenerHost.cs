@@ -116,7 +116,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         this.tlsKeyLogSecretObserver = tlsKeyLogSecretObserver;
         this.addressValidationTokenProtector = addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
         this.maximumVersionNegotiationResponsesPerRemoteAddress = maximumVersionNegotiationResponsesPerRemoteAddress;
-        endpoint = new QuicConnectionRuntimeEndpoint(1);
+        endpoint = new QuicConnectionRuntimeEndpoint(1, suppressHostedTimerEffectObjects: true);
         acceptQueue = Channel.CreateBounded<object>(new BoundedChannelOptions(listenBacklog)
         {
             SingleReader = false,

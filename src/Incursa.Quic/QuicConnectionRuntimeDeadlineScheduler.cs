@@ -51,6 +51,22 @@ internal sealed class QuicConnectionRuntimeDeadlineScheduler
         }
     }
 
+    internal void Apply(
+        QuicConnectionHandle handle,
+        QuicConnectionRuntime runtime,
+        QuicConnectionTimerUpdate update)
+    {
+        ArgumentNullException.ThrowIfNull(runtime);
+
+        if (update.Priority is QuicConnectionTimerPriority priority)
+        {
+            Arm(handle, runtime, update.TimerKind, update.Generation, priority);
+            return;
+        }
+
+        Cancel(handle, update.TimerKind, update.Generation);
+    }
+
     /// <summary>
     /// Arms or replaces a timer registration for the supplied connection handle.
     /// </summary>
@@ -61,35 +77,43 @@ internal sealed class QuicConnectionRuntimeDeadlineScheduler
         QuicConnectionHandle handle,
         QuicConnectionRuntime runtime,
         QuicConnectionArmTimerEffect effect)
+        => Arm(handle, runtime, effect.TimerKind, effect.Generation, effect.Priority);
+
+    private void Arm(
+        QuicConnectionHandle handle,
+        QuicConnectionRuntime runtime,
+        QuicConnectionTimerKind timerKind,
+        ulong generation,
+        QuicConnectionTimerPriority priority)
     {
         ArgumentNullException.ThrowIfNull(runtime);
 
-        QuicConnectionRuntimeScheduledTimerKey key = new(handle, effect.TimerKind);
+        QuicConnectionRuntimeScheduledTimerKey key = new(handle, timerKind);
         if (registrations.TryGetValue(key, out QuicConnectionRuntimeScheduledTimerRegistration existingRegistration)
-            && existingRegistration.Generation > effect.Generation)
+            && existingRegistration.Generation > generation)
         {
             return;
         }
 
         QuicConnectionRuntimeScheduledTimerRegistration registration = new(
             runtime,
-            effect.Priority.DueTicks,
-            effect.Generation,
-            effect.Priority);
+            priority.DueTicks,
+            generation,
+            priority);
 
         registrations[key] = registration;
 
         QuicConnectionRuntimeScheduledTimerEntry entry = new(
             handle,
             runtime,
-            effect.TimerKind,
-            effect.Priority.DueTicks,
-            effect.Generation,
-            effect.Priority);
+            timerKind,
+            priority.DueTicks,
+            generation,
+            priority);
 
         if (!CompactStaleEntriesIfNeeded())
         {
-            timerHeap.Enqueue(entry, effect.Priority);
+            timerHeap.Enqueue(entry, priority);
         }
     }
 
@@ -97,14 +121,20 @@ internal sealed class QuicConnectionRuntimeDeadlineScheduler
     /// Cancels a timer registration when the cancellation generation is current.
     /// </summary>
     public void Cancel(QuicConnectionHandle handle, QuicConnectionCancelTimerEffect effect)
+        => Cancel(handle, effect.TimerKind, effect.Generation);
+
+    private void Cancel(
+        QuicConnectionHandle handle,
+        QuicConnectionTimerKind timerKind,
+        ulong generation)
     {
-        QuicConnectionRuntimeScheduledTimerKey key = new(handle, effect.TimerKind);
+        QuicConnectionRuntimeScheduledTimerKey key = new(handle, timerKind);
         if (!registrations.TryGetValue(key, out QuicConnectionRuntimeScheduledTimerRegistration registration))
         {
             return;
         }
 
-        if (registration.Generation > effect.Generation)
+        if (registration.Generation > generation)
         {
             return;
         }

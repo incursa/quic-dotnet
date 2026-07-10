@@ -4,6 +4,29 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: production listener and client runtime shards now carry timer
+  deadline changes as reusable value updates directly into the shard scheduler,
+  while direct runtime callers retain the existing arm/cancel effect-object
+  contract. Source-backed raw multiplex trace
+  `codex-raw-multiplex-hosted-timer-values-20260710a` passed 1,588/1,588
+  requests. Its stack attribution contained zero arm/cancel timer-effect groups;
+  the matched baseline had 156 sampled events across four groups and 16,633,192
+  estimated bytes. Three-repetition comparison
+  `hosted-timer-values-confidence-20260710a` improved median throughput 6.23
+  percent, p95 latency 4.68 percent, allocation rate 26.78 percent, and Gen0
+  collections from 7 to 5. The counter-only candidate cells recorded six
+  exceptions instead of the baseline's five, while the traced candidate retained
+  the same three AEAD authentication failures and two channel-close exceptions
+  as the traced baseline; treat that discrepancy as an unresolved diagnostic
+  caveat rather than a proven regression or improvement. Release build and the
+  full suite passed with 9,350 tests and 5 intentional skips. Evidence remains
+  diagnostic because the candidate source tree was dirty, local shared-host
+  variance exceeded the publishability threshold, and no readiness manifest was
+  linked. Retained bundles and comparison artifacts are under
+  `.artifacts/perf/raw-multiplex-attribution/codex-raw-multiplex-hosted-timer-values-20260710a`,
+  `.artifacts/perf/raw-multiplex-attribution/codex-raw-multiplex-hosted-timer-values-confidence-20260710a`,
+  and `.artifacts/perf-triage/hosted-timer-values-confidence-20260710a`.
+
 - 2026-07-10: STREAM receive buffering now keeps the first two unread segments
   inline in each stream state before spilling to `List<BufferedSegment>`. The
   existing one-slot shape allocated a list and backing array as soon as a second

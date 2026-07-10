@@ -54,6 +54,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const int ApplicationSendBatchAckHeadroomBytes = 64;
     private const int HandshakeEgressChunkBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize;
     private const int MaximumBufferedEstablishmentHandshakePackets = 8;
+    private const int InitialHostedTimerUpdateCapacity = 8;
     private const byte OutboundStreamControlFrameType = QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask;
     private const int ApplicationMinimumProtectedPayloadLength =
         QuicInitialPacketProtection.HeaderProtectionSampleOffset + QuicInitialPacketProtection.HeaderProtectionSampleLength;
@@ -129,6 +130,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private QuicConnectionTransportState transportFlags;
     private readonly QuicConnectionPathState pathState;
     private readonly QuicConnectionLifecycleTimerState lifecycleTimerState = new();
+    private List<QuicConnectionTimerUpdate>? pendingHostedTimerUpdates;
+    private bool suppressHostedTimerEffectObjects;
     private QuicConnectionTerminalState? terminalState;
     private QuicIdleTimeoutState? idleTimeoutState;
     private QuicConnectionPhase phase = QuicConnectionPhase.Establishing;

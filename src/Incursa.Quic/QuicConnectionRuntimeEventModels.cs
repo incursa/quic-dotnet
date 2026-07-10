@@ -276,6 +276,19 @@ internal sealed record QuicConnectionCancelTimerEffect(
     ulong Generation)
     : QuicConnectionEffect(QuicConnectionEffectKind.CancelTimer);
 
+internal readonly record struct QuicConnectionTimerUpdate(
+    QuicConnectionTimerKind TimerKind,
+    ulong Generation,
+    QuicConnectionTimerPriority? Priority)
+{
+    internal QuicConnectionEffect ToEffect()
+    {
+        return Priority is QuicConnectionTimerPriority priority
+            ? new QuicConnectionArmTimerEffect(TimerKind, Generation, priority)
+            : new QuicConnectionCancelTimerEffect(TimerKind, Generation);
+    }
+}
+
 internal sealed record QuicConnectionPromoteActivePathEffect(
     QuicConnectionPathIdentity PathIdentity,
     bool RestoreSavedState = false)

@@ -725,10 +725,44 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionTimerKind timerKind,
         long? dueTicks)
     {
-        if (lifecycleTimerState.TrySetTimerDeadline(timerKind, dueTicks, out QuicConnectionEffect? effect))
+        if (!lifecycleTimerState.TrySetTimerDeadline(timerKind, dueTicks, out QuicConnectionTimerUpdate update))
         {
-            AppendEffect(ref effects, effect!);
+            return;
         }
+
+        if (suppressHostedTimerEffectObjects)
+        {
+            (pendingHostedTimerUpdates ??= new List<QuicConnectionTimerUpdate>(InitialHostedTimerUpdateCapacity)).Add(update);
+            return;
+        }
+
+        AppendEffect(ref effects, update.ToEffect());
+    }
+
+    internal void ConfigureHostedTimerEffectSuppression(bool suppress)
+    {
+        suppressHostedTimerEffectObjects = suppress;
+        if (!suppress)
+        {
+            pendingHostedTimerUpdates?.Clear();
+        }
+    }
+
+    internal void ApplyPendingHostedTimerUpdates(
+        QuicConnectionHandle handle,
+        QuicConnectionRuntimeDeadlineScheduler scheduler)
+    {
+        if (pendingHostedTimerUpdates is not { Count: > 0 } updates)
+        {
+            return;
+        }
+
+        for (int index = 0; index < updates.Count; index++)
+        {
+            scheduler.Apply(handle, this, updates[index]);
+        }
+
+        updates.Clear();
     }
 
     internal bool TryMarkPeerAddressValidatedByAddressValidationToken(long nowTicks)

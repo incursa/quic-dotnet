@@ -25,6 +25,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
     private readonly QuicConnectionRuntimeDeadlineScheduler deadlineScheduler = new();
     private readonly Channel<QuicConnectionRuntimeShardWorkItem> inbox;
     private readonly int shardIndex;
+    private readonly bool suppressHostedTimerEffectObjects;
 
     private int consumerStarted;
     private int disposed;
@@ -33,7 +34,10 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
     /// <summary>
     /// Creates a shard with the supplied shard index and optional shared clock.
     /// </summary>
-    public QuicConnectionRuntimeShard(int shardIndex, IMonotonicClock? clock = null)
+    public QuicConnectionRuntimeShard(
+        int shardIndex,
+        IMonotonicClock? clock = null,
+        bool suppressHostedTimerEffectObjects = false)
     {
         if (shardIndex < 0)
         {
@@ -42,6 +46,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 
         this.shardIndex = shardIndex;
         this.clock = clock ?? new MonotonicClock();
+        this.suppressHostedTimerEffectObjects = suppressHostedTimerEffectObjects;
         inbox = Channel.CreateUnbounded<QuicConnectionRuntimeShardWorkItem>(new UnboundedChannelOptions
         {
             SingleReader = true,
@@ -389,6 +394,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 return;
             }
 
+            runtime.ConfigureHostedTimerEffectSuppression(suppressHostedTimerEffectObjects);
+
             QuicConnectionTransitionResult result = workItem.Kind switch
             {
                 QuicConnectionRuntimeShardWorkItemKind.PacketReceived
@@ -409,6 +416,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 _ => runtime.Transition(workItem.ConnectionEvent!, clock.Ticks),
             };
             transitionObserver?.Invoke(workItem.Handle, result);
+            runtime.ApplyPendingHostedTimerUpdates(workItem.Handle, deadlineScheduler);
 
             for (int index = 0; index < result.EffectCount; index++)
             {
@@ -419,6 +427,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         }
         finally
         {
+            workItem.Runtime?.ConfigureHostedTimerEffectSuppression(suppress: false);
             ReleaseWorkItemResources(workItem);
         }
     }

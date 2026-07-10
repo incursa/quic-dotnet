@@ -31,7 +31,10 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
     /// <summary>
     /// Creates a runtime host with the requested number of shards.
     /// </summary>
-    public QuicConnectionRuntimeHost(int shardCount, IMonotonicClock? clock = null)
+    public QuicConnectionRuntimeHost(
+        int shardCount,
+        IMonotonicClock? clock = null,
+        bool suppressHostedTimerEffectObjects = false)
     {
         if (shardCount <= 0)
         {
@@ -42,7 +45,10 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
         shards = new QuicConnectionRuntimeShard[shardCount];
         for (int index = 0; index < shards.Length; index++)
         {
-            shards[index] = new QuicConnectionRuntimeShard(index, sharedClock);
+            shards[index] = new QuicConnectionRuntimeShard(
+                index,
+                sharedClock,
+                suppressHostedTimerEffectObjects);
         }
     }
 

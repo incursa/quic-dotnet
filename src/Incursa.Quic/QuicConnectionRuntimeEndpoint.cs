@@ -29,7 +29,8 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
     public QuicConnectionRuntimeEndpoint(
         int shardCount,
         IMonotonicClock? clock = null,
-        int maximumStatelessResetEmissionsPerRemoteAddress = 1)
+        int maximumStatelessResetEmissionsPerRemoteAddress = 1,
+        bool suppressHostedTimerEffectObjects = false)
     {
         if (shardCount <= 0)
         {
@@ -42,7 +43,10 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         }
 
         this.clock = clock ?? new MonotonicClock();
-        host = new QuicConnectionRuntimeHost(shardCount, this.clock);
+        host = new QuicConnectionRuntimeHost(
+            shardCount,
+            this.clock,
+            suppressHostedTimerEffectObjects);
         this.maximumStatelessResetEmissionsPerRemoteAddress = maximumStatelessResetEmissionsPerRemoteAddress;
     }
 
