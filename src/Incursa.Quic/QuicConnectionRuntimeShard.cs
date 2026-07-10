@@ -219,7 +219,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
     public Task RunAsync(
         Action<QuicConnectionHandle, QuicConnectionTransitionResult>? transitionObserver = null,
         Action<QuicConnectionHandle, QuicConnectionEffect>? effectObserver = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        Action<QuicConnectionHandle, QuicConnectionSendDatagramUpdate>? sendDatagramObserver = null)
     {
         ThrowIfDisposed();
 
@@ -228,7 +229,11 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             throw new InvalidOperationException("The shard consumer can only be started once.");
         }
 
-        Task processing = ConsumeInboxAsync(transitionObserver, effectObserver, cancellationToken);
+        Task processing = ConsumeInboxAsync(
+            transitionObserver,
+            effectObserver,
+            sendDatagramObserver,
+            cancellationToken);
         processingTask = processing;
         return processing;
     }
@@ -272,6 +277,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
     private async Task ConsumeInboxAsync(
         Action<QuicConnectionHandle, QuicConnectionTransitionResult>? transitionObserver,
         Action<QuicConnectionHandle, QuicConnectionEffect>? effectObserver,
+        Action<QuicConnectionHandle, QuicConnectionSendDatagramUpdate>? sendDatagramObserver,
         CancellationToken cancellationToken)
     {
         ChannelReader<QuicConnectionRuntimeShardWorkItem> reader = inbox.Reader;
@@ -303,7 +309,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                         continue;
                     }
 
-                    ProcessWorkItem(workItem, transitionObserver, effectObserver);
+                    ProcessWorkItem(workItem, transitionObserver, effectObserver, sendDatagramObserver);
                 }
 
                 deadlineScheduler.EnqueueDueEntries(clock.Ticks, inbox.Writer);
@@ -314,7 +320,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                         continue;
                     }
 
-                    ProcessWorkItem(queuedTimerWorkItem, transitionObserver, effectObserver);
+                    ProcessWorkItem(queuedTimerWorkItem, transitionObserver, effectObserver, sendDatagramObserver);
                     continue;
                 }
 
@@ -377,7 +383,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
     private void ProcessWorkItem(
         QuicConnectionRuntimeShardWorkItem workItem,
         Action<QuicConnectionHandle, QuicConnectionTransitionResult>? transitionObserver,
-        Action<QuicConnectionHandle, QuicConnectionEffect>? effectObserver)
+        Action<QuicConnectionHandle, QuicConnectionEffect>? effectObserver,
+        Action<QuicConnectionHandle, QuicConnectionSendDatagramUpdate>? sendDatagramObserver)
     {
         try
         {
@@ -421,6 +428,26 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             for (int index = 0; index < result.EffectCount; index++)
             {
                 QuicConnectionEffect effect = result.GetEffect(index);
+                if (effect is QuicConnectionHostedSendDatagramMarkerEffect)
+                {
+                    if (!runtime.TryTakePendingHostedSendDatagramUpdate(out QuicConnectionSendDatagramUpdate update))
+                    {
+                        throw new InvalidOperationException(
+                            "The hosted send-datagram marker did not have a matching value update.");
+                    }
+
+                    if (sendDatagramObserver is not null)
+                    {
+                        sendDatagramObserver(workItem.Handle, update);
+                    }
+                    else
+                    {
+                        effectObserver?.Invoke(workItem.Handle, update.ToEffect());
+                    }
+
+                    continue;
+                }
+
                 deadlineScheduler.Apply(workItem.Handle, runtime, effect);
                 effectObserver?.Invoke(workItem.Handle, effect);
             }

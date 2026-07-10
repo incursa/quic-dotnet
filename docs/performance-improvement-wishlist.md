@@ -4,6 +4,31 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: hosted runtime shards now carry high-volume application
+  send-datagram effects as reusable value updates to the listener/client socket
+  hosts. Direct runtime transitions still publish
+  `QuicConnectionSendDatagramEffect` objects, and hosted transitions retain
+  effect order through a singleton marker with a fail-closed marker/value match
+  check. Corrected GC allocation trace
+  `codex-raw-multiplex-send-effect-baseline-gc-bc1382f1-20260710a` attributed
+  99 sampled events and 10,548,600 estimated bytes to send-datagram effect
+  records. Candidate trace `codex-raw-multiplex-send-effect-candidate-gc-20260710a`
+  contained no send-datagram effect group in its top 100; total allocation ticks
+  fell from 624 to 491, estimated bytes from 66,673,840 to 52,335,360, and
+  actionable estimated bytes from 59,268,592 to 44,958,272. Both trace runs
+  passed validation and benchmark execution with zero failed or timed-out
+  requests. The matched three-repetition native comparison retained throughput
+  at -0.76 percent while improving p95 latency 7.53 percent. Counter aggregates
+  reduced median allocation rate 35.25 percent, Gen0 collections from 5 to 3,
+  and exception rate 16.67 percent; the current native comparison still reports
+  allocation rate and exception groups as unavailable despite those
+  counter-derived bundle fields. The full suite passed 9,350 tests with 5
+  intentional skips. Evidence remains diagnostic because it is local shared-host
+  data, candidate source was dirty, variance exceeded the publishability gate,
+  and no readiness manifest was linked. Bundles, stack attribution, and native
+  comparison output are retained under
+  `.artifacts/perf/raw-multiplex-send-effect`.
+
 - 2026-07-10: pooled stream-open and datagram completion sources now use an
   interlocked completion guard instead of allocating a closure and `Action` for
   every `TrySetResult` or `TrySetException` call. The stream-open allocation

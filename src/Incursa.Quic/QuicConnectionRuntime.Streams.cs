@@ -215,9 +215,9 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+        AppendSendDatagramEffect(ref effects,
             sendPathIdentity,
-            protectedPacket));
+            protectedPacket);
         AppendLifecycleTimerEffects(ref effects);
         completion.TrySetResult();
         return true;
@@ -482,9 +482,9 @@ internal sealed partial class QuicConnectionRuntime
             return true;
         }
 
-        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+        AppendSendDatagramEffect(ref effects,
             sendPathIdentity,
-            protectedPacket));
+            protectedPacket);
         AppendLifecycleTimerEffects(ref effects);
 
         openCompletion!.TrySetResult(committedStreamId.Value);
@@ -804,9 +804,7 @@ internal sealed partial class QuicConnectionRuntime
                 exception!);
         }
 
-        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
-            sendPathIdentity,
-            protectedPacket));
+        AppendSendDatagramEffect(ref effects, sendPathIdentity, protectedPacket);
 
         LogApplicationSend(
             $"app-tx sent role={tlsState.Role} stream={streamId} packet={protectedPacket.Length} fin={finishWrites} queue={applicationSendQueue.Count}.");
@@ -905,9 +903,7 @@ internal sealed partial class QuicConnectionRuntime
             throw new InvalidOperationException("The connection runtime could not remove the completed queued stream write.");
         }
 
-        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
-            sendPathIdentity,
-            protectedPacket));
+        AppendSendDatagramEffect(ref effects, sendPathIdentity, protectedPacket);
 
         pendingApplicationSendDelayDueTicks = applicationSendQueue.Count > 0
             ? SaturatingAdd(nowTicks, ConvertMicrosToTicks(ApplicationSendDelayMicros))
@@ -1322,9 +1318,9 @@ internal sealed partial class QuicConnectionRuntime
                     ConvertMicrosToTicks(ApplicationSendDelayMicros));
             }
 
-            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            AppendSendDatagramEffect(ref effects,
                 sendPathIdentity,
-                protectedPacket));
+                protectedPacket);
             AppendLifecycleTimerEffects(ref effects);
             LogApplicationSend(
                 $"app-tx flush-sent role={tlsState.Role} packet={protectedPacket.Length} queue={applicationSendQueue.Count}.");
@@ -1738,9 +1734,9 @@ internal sealed partial class QuicConnectionRuntime
                 AmplificationState = updatedAmplificationState,
             };
 
-            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            AppendSendDatagramEffect(ref effects,
                 currentPath.Identity,
-                protectedPacket));
+                protectedPacket);
             return true;
         }
         finally
@@ -1793,9 +1789,9 @@ internal sealed partial class QuicConnectionRuntime
                 AmplificationState = updatedAmplificationState,
             };
 
-            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            AppendSendDatagramEffect(ref effects,
                 currentPath.Identity,
-                protectedPacket));
+                protectedPacket);
             return true;
         }
         finally
@@ -1843,9 +1839,9 @@ internal sealed partial class QuicConnectionRuntime
                 AmplificationState = updatedAmplificationState,
             };
 
-            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            AppendSendDatagramEffect(ref effects,
                 currentPath.Identity,
-                protectedPacket));
+                protectedPacket);
             return true;
         }
         finally
@@ -2266,9 +2262,9 @@ internal sealed partial class QuicConnectionRuntime
                 AmplificationState = updatedAmplificationState,
             };
 
-            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            AppendSendDatagramEffect(ref effects,
                 currentPath.Identity,
-                protectedPacket));
+                protectedPacket);
 
             return true;
         }

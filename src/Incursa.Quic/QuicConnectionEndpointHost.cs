@@ -123,7 +123,14 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
                 effectObserver?.Invoke(effect);
             },
-            hostCancellation);
+            hostCancellation,
+            (handle, shardIndex, update) =>
+            {
+                _ = handle;
+                _ = shardIndex;
+                TrySendDatagram(update);
+                effectObserver?.Invoke(update.ToEffect());
+            });
 
         Task receiveTask = ReceiveLoopAsync(hostCancellation);
         runningTask = Task.WhenAll(runtimeTask, receiveTask);
@@ -382,30 +389,36 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
     }
 
     private bool TrySendDatagram(QuicConnectionSendDatagramEffect sendDatagramEffect)
+        => TrySendDatagram(new QuicConnectionSendDatagramUpdate(
+            sendDatagramEffect.PathIdentity,
+            sendDatagramEffect.Datagram,
+            sendDatagramEffect.EcnMarking));
+
+    private bool TrySendDatagram(QuicConnectionSendDatagramUpdate sendDatagram)
     {
         try
         {
             lock (socketGate)
             {
-                _ = QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, sendDatagramEffect.EcnMarking);
+                _ = QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, sendDatagram.EcnMarking);
                 IPEndPoint localEndPoint = (IPEndPoint)socket.LocalEndPoint!;
-                IPEndPoint remoteEndPoint = GetRemoteEndPoint(sendDatagramEffect.PathIdentity);
+                IPEndPoint remoteEndPoint = GetRemoteEndPoint(sendDatagram.PathIdentity);
                 int bytesSent;
                 if (TryResolvePacketInformationSourceAddress(
                     localEndPoint,
                     socket.AddressFamily,
-                    sendDatagramEffect.PathIdentity,
+                    sendDatagram.PathIdentity,
                     out IPAddress sourceAddress))
                 {
                     bool usePacketInformationSender = socket.AddressFamily == AddressFamily.InterNetworkV6
                         || !sourceAddress.Equals(localEndPoint.Address);
                     uint flowLabel = sourceAddress.AddressFamily == AddressFamily.InterNetworkV6
-                        ? QuicSocketPacketInformationSender.CreateIpv6FlowLabel(flowLabelSeed, sendDatagramEffect.PathIdentity)
+                        ? QuicSocketPacketInformationSender.CreateIpv6FlowLabel(flowLabelSeed, sendDatagram.PathIdentity)
                         : 0;
 
                     if (!QuicSocketPacketInformationSender.TrySendTo(
                         socket,
-                        sendDatagramEffect.Datagram.Span,
+                        sendDatagram.Datagram.Span,
                         remoteEndPoint,
                         sourceAddress,
                         flowLabel,
@@ -424,12 +437,12 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                 if (bytesSent == 0)
                 {
                     bytesSent = socket.SendTo(
-                        sendDatagramEffect.Datagram.Span,
+                        sendDatagram.Datagram.Span,
                         SocketFlags.None,
-                        GetRemoteSocketAddress(sendDatagramEffect.PathIdentity));
+                        GetRemoteSocketAddress(sendDatagram.PathIdentity));
                 }
 
-                if (bytesSent != sendDatagramEffect.Datagram.Length)
+                if (bytesSent != sendDatagram.Datagram.Length)
                 {
                     throw new IOException("Failed to send the complete QUIC datagram.");
                 }

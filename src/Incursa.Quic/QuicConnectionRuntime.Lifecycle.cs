@@ -708,6 +708,26 @@ internal sealed partial class QuicConnectionRuntime
         effects.Add(effect);
     }
 
+    private void AppendSendDatagramEffect(
+        ref QuicConnectionEffectAccumulator effects,
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlyMemory<byte> datagram)
+    {
+        QuicConnectionSendDatagramUpdate update = new(
+            pathIdentity,
+            datagram,
+            sendRuntime.CurrentEcnMarking);
+        if (suppressHostedSendDatagramEffectObjects)
+        {
+            (pendingHostedSendDatagramUpdates ??= new List<QuicConnectionSendDatagramUpdate>(
+                InitialHostedSendDatagramUpdateCapacity)).Add(update);
+            effects.Add(QuicConnectionHostedSendDatagramMarkerEffect.Instance);
+            return;
+        }
+
+        effects.Add(update.ToEffect());
+    }
+
     private static QuicConnectionEffectAccumulator CreateEffectAccumulator(List<QuicConnectionEffect>? effects)
     {
         return effects is null ? default : QuicConnectionEffectAccumulator.FromList(effects);
@@ -742,10 +762,26 @@ internal sealed partial class QuicConnectionRuntime
     internal void ConfigureHostedTimerEffectSuppression(bool suppress)
     {
         suppressHostedTimerEffectObjects = suppress;
+        suppressHostedSendDatagramEffectObjects = suppress;
+        pendingHostedSendDatagramUpdateIndex = 0;
+        pendingHostedSendDatagramUpdates?.Clear();
         if (!suppress)
         {
             pendingHostedTimerUpdates?.Clear();
         }
+    }
+
+    internal bool TryTakePendingHostedSendDatagramUpdate(out QuicConnectionSendDatagramUpdate update)
+    {
+        if (pendingHostedSendDatagramUpdates is not { } updates
+            || (uint)pendingHostedSendDatagramUpdateIndex >= (uint)updates.Count)
+        {
+            update = default;
+            return false;
+        }
+
+        update = updates[pendingHostedSendDatagramUpdateIndex++];
+        return true;
     }
 
     internal void ApplyPendingHostedTimerUpdates(

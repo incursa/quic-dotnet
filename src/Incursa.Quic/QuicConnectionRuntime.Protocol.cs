@@ -2648,9 +2648,9 @@ internal sealed partial class QuicConnectionRuntime
                 sentAtMicros: nowMicros,
                 ackOnlyPacket: true);
 
-            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            AppendSendDatagramEffect(ref effects,
                 currentPath.Identity,
-                protectedPacket));
+                protectedPacket);
             return true;
         }
         finally

@@ -281,7 +281,8 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
     public Task RunAsync(
         Action<QuicConnectionHandle, int, QuicConnectionTransitionResult>? transitionObserver = null,
         Action<QuicConnectionHandle, int, QuicConnectionEffect>? effectObserver = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        Action<QuicConnectionHandle, int, QuicConnectionSendDatagramUpdate>? sendDatagramObserver = null)
     {
         ThrowIfDisposed();
 
@@ -297,7 +298,10 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
             processingTasks[index] = shards[index].RunAsync(
                 (handle, transition) => transitionObserver?.Invoke(handle, shardIndex, transition),
                 (handle, effect) => effectObserver?.Invoke(handle, shardIndex, effect),
-                cancellationToken);
+                cancellationToken,
+                sendDatagramObserver is null
+                    ? null
+                    : (handle, update) => sendDatagramObserver(handle, shardIndex, update));
         }
 
         Task processing = Task.WhenAll(processingTasks);

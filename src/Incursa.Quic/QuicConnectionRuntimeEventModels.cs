@@ -259,6 +259,25 @@ internal sealed record QuicConnectionSendDatagramEffect(
     QuicEcnMarking EcnMarking = QuicEcnMarking.NotEct)
     : QuicConnectionEffect(QuicConnectionEffectKind.SendDatagram);
 
+internal readonly record struct QuicConnectionSendDatagramUpdate(
+    QuicConnectionPathIdentity PathIdentity,
+    ReadOnlyMemory<byte> Datagram,
+    QuicEcnMarking EcnMarking)
+{
+    internal QuicConnectionSendDatagramEffect ToEffect()
+        => new(PathIdentity, Datagram, EcnMarking);
+}
+
+internal sealed record QuicConnectionHostedSendDatagramMarkerEffect : QuicConnectionEffect
+{
+    private QuicConnectionHostedSendDatagramMarkerEffect()
+        : base(QuicConnectionEffectKind.SendDatagram)
+    {
+    }
+
+    internal static QuicConnectionHostedSendDatagramMarkerEffect Instance { get; } = new();
+}
+
 internal sealed record QuicConnectionDeliverDatagramEffect(
     QuicConnectionPathIdentity PathIdentity,
     ReadOnlyMemory<byte> Datagram,
