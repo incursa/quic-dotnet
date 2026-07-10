@@ -4,6 +4,33 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: listener and connected-endpoint receive loops now reuse the
+  endpoint and two `SocketAddress` buffers consumed by the serial
+  `ReceiveMessageFromAsync` path. The BCL previously serialized the supplied
+  `IPEndPoint` into new address storage for every datagram and reconstructed a
+  peer endpoint when needed. The reusable carrier preserves packet-information
+  capture and updates its `IPEndPoint` state only for the first packet or an
+  actual peer change. Real-socket tests cover repeated IPv4 receives, changing
+  IPv4 peers, IPv6, and IPv4 over an IPv6 dual-mode socket. The Short
+  `QuicReceiveEndPointBenchmarks` comparison reduced steady-state endpoint
+  bookkeeping from 112 bytes and 48.89 nanoseconds per operation to zero bytes
+  and 18.58 nanoseconds. In a matched raw multiplex GC trace, the prior
+  receive-loop `SocketAddress`, backing-byte-array, and reconstructed
+  `IPEndPoint` groups disappeared; project-attributed sampled allocation fell
+  from 48,967,976 to 29,872,776 estimated bytes. The remaining receive-side
+  `IPAddress` samples come from the packet-information object retained for
+  local-path identity. A three-repetition native comparison passed validation
+  and benchmark execution 3/3 with no failed or timed-out requests. Median
+  allocation rate improved 45.74 percent and Gen0 collections fell from 3 to 1;
+  median request rate improved 0.48 percent and p95 latency improved 1.32
+  percent, which is neutral-to-positive timing evidence rather than a large
+  throughput claim. The full suite passed 9,356 tests with 5 intentional skips.
+  Evidence remains diagnostic because it is a dirty-source, local shared-host
+  run and the evidence-quality gate still reports variance/readiness blockers.
+  BDN, ProtocolLab, stack-attribution, and native-comparison artifacts are
+  retained under `.artifacts/bdn/receive-endpoint-reuse-*` and
+  `.artifacts/perf/receive-endpoint-reuse`.
+
 - 2026-07-10: STREAM reassembly scratch now uses `List<T>.EnsureCapacity`
   instead of assigning the exact next capacity. Exact assignment defeated the
   list's geometric growth and caused repeated `BufferedSegment[]` allocation

@@ -377,9 +377,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
     private async Task ReceiveLoopAsync(CancellationToken cancellationToken)
     {
-        EndPoint remoteEndPoint = socket.AddressFamily == AddressFamily.InterNetworkV6
-            ? new IPEndPoint(IPAddress.IPv6Any, 0)
-            : new IPEndPoint(IPAddress.Any, 0);
+        QuicReusableReceiveEndPoint remoteEndPoint = new(socket.AddressFamily);
         QuicSocketPacketInformationControl.LocalEndPointCache localEndPointCache = new();
 
         while (!cancellationToken.IsCancellationRequested)
@@ -390,6 +388,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 SocketReceiveMessageFromResult receiveResult;
                 try
                 {
+                    remoteEndPoint.PrepareForReceive();
                     receiveResult = await socket.ReceiveMessageFromAsync(
                         datagramLease.Memory,
                         SocketFlags.None,

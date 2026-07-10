@@ -216,17 +216,22 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
     private async Task ReceiveLoopAsync(CancellationToken cancellationToken)
     {
         QuicSocketPacketInformationControl.LocalEndPointCache localEndPointCache = new();
+        Socket? receiveSocket = null;
+        QuicReusableReceiveEndPoint? remoteEndPoint = null;
 
         while (!cancellationToken.IsCancellationRequested)
         {
             GetSocketBinding(out Socket currentSocket);
-            EndPoint remoteEndPoint = currentSocket.AddressFamily == AddressFamily.InterNetworkV6
-                ? new IPEndPoint(IPAddress.IPv6Any, 0)
-                : new IPEndPoint(IPAddress.Any, 0);
+            if (!ReferenceEquals(currentSocket, receiveSocket))
+            {
+                receiveSocket = currentSocket;
+                remoteEndPoint = new QuicReusableReceiveEndPoint(currentSocket.AddressFamily);
+            }
 
             QuicReceiveBufferLease datagramLease = receiveBufferPool.Rent();
             try
             {
+                remoteEndPoint!.PrepareForReceive();
                 SocketReceiveMessageFromResult receiveResult = await currentSocket.ReceiveMessageFromAsync(
                     datagramLease.Memory,
                     SocketFlags.None,
