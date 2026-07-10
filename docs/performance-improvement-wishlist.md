@@ -26,6 +26,17 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
   `.artifacts/perf/raw-multiplex-attribution/codex-raw-multiplex-hosted-timer-values-20260710a`,
   `.artifacts/perf/raw-multiplex-attribution/codex-raw-multiplex-hosted-timer-values-confidence-20260710a`,
   and `.artifacts/perf-triage/hosted-timer-values-confidence-20260710a`.
+  Clean post-commit run
+  `codex-raw-multiplex-hosted-timer-values-clean-62064510-20260710a`
+  retained the improvement at commit `62064510`: median throughput improved
+  5.56 percent, p95 latency 6.06 percent, allocation rate 27.04 percent, and
+  Gen0 collections from 7 to 5, with exception rate unchanged. That bundle
+  remains diagnostic because relative range reached 30.07 percent, readiness
+  was not linked, and ProtocolLab source-status capture still reported
+  `working-tree-not-clean` even though the QUIC worktree was clean. Its buffer
+  pool summary was unavailable because the expected counter signals were
+  missing. Native comparison and triage artifacts are retained under
+  `.artifacts/perf-triage/hosted-timer-values-clean-62064510-20260710a`.
 
 - 2026-07-10: STREAM receive buffering now keeps the first two unread segments
   inline in each stream state before spilling to `List<BufferedSegment>`. The
