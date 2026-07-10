@@ -176,6 +176,12 @@ pwsh ./eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1 `
   -LoadProfileId smoke
 ```
 
+Add `-CaptureCounters` and/or `-CaptureTrace` for an attribution run. These
+switches are opt-in because diagnostic collection changes runtime overhead; the
+helper forwards them as controller job extensions and a worker with diagnostic
+extension support maps them to the existing ProtocolLab runner flags. Keep
+ordinary regression evidence and diagnostic attribution runs separate.
+
 Build only:
 
 ```powershell
