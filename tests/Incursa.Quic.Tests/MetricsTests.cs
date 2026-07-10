@@ -71,6 +71,14 @@ public class MetricsTests
         QuicMetrics.RecordAeadOpenFailure(QuicAeadAlgorithm.Aes128Gcm);
         QuicMetrics.RecordUdpError(QuicTlsRole.Server, "receive", SocketError.ConnectionReset);
         QuicMetrics.RecordRtt(QuicTlsRole.Client, 12_500);
+        recorder.RecordObservableInstruments();
+        double rentsBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.rents", "size_bucket", "le_1kb");
+        double requestedRentsBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.requested_rents", "requested_size_bucket", "le_1kb");
+        double returnsBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.returns", "size_bucket", "le_1kb");
+        double requestedBytesBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.bytes.requested", "requested_size_bucket", "le_1kb");
+        double rentedBytesBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.bytes.rented", "size_bucket", "le_1kb");
+        double returnedBytesBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.bytes.returned", "size_bucket", "le_1kb");
+        double oversizedRentsBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.oversized_rents", "size_bucket", "le_1kb");
         byte[] rentedBuffer = QuicBufferPool.RentBytes(1);
         recorder.RecordObservableInstruments();
         QuicBufferPool.ReturnBytes(rentedBuffer);
@@ -95,20 +103,28 @@ public class MetricsTests
             && measurement.HasTag("socket_error", "connection_reset"));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.rents"
-            && measurement.Value == 1
+            && measurement.Value == rentsBefore + 1
             && measurement.HasTag("size_bucket", "le_1kb"));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.requested_rents"
-            && measurement.Value == 1
+            && measurement.Value == requestedRentsBefore + 1
             && measurement.HasTag("requested_size_bucket", "le_1kb"));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.returns"
-            && measurement.Value == 1
+            && measurement.Value == returnsBefore + 1
             && measurement.HasTag("size_bucket", "le_1kb"));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.bytes.requested"
-            && measurement.Value == 1
+            && measurement.Value == requestedBytesBefore + 1
             && measurement.HasTag("requested_size_bucket", "le_1kb"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.buffer_pool.bytes.rented"
+            && measurement.Value == rentedBytesBefore + rentedBuffer.Length
+            && measurement.HasTag("size_bucket", "le_1kb"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.buffer_pool.bytes.returned"
+            && measurement.Value == returnedBytesBefore + rentedBuffer.Length
+            && measurement.HasTag("size_bucket", "le_1kb"));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.outstanding.buffers"
             && measurement.Value == 1
@@ -119,7 +135,7 @@ public class MetricsTests
             && measurement.HasTag("size_bucket", "le_1kb"));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.oversized_rents"
-            && measurement.Value == 1
+            && measurement.Value == oversizedRentsBefore + 1
             && measurement.HasTag("size_bucket", "le_1kb"));
     }
 
@@ -221,6 +237,16 @@ public class MetricsTests
         public void RecordObservableInstruments()
         {
             listener.RecordObservableInstruments();
+        }
+
+        public double GetLatestMeasurement(string instrumentName, string tagName, string tagValue)
+        {
+            lock (sync)
+            {
+                return measurements.Last(measurement =>
+                    measurement.InstrumentName == instrumentName
+                    && measurement.HasTag(tagName, tagValue)).Value;
+            }
         }
 
         private void Record(Instrument instrument, long measurement, ReadOnlySpan<KeyValuePair<string, object?>> tags, object? state)

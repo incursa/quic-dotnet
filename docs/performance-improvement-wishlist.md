@@ -4,6 +4,33 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: buffer-pool cumulative metrics now store per-size-bucket totals
+  in atomic arrays and expose them through `ObservableCounter<long>` instead of
+  constructing tags and dispatching seven synchronous counter updates on every
+  rent/return. Instrument names, units, bucket tags, and the existing
+  ProtocolLab summary contract are unchanged. The Short
+  `QuicBufferPoolMetricsBenchmarks` result improved from 285.406 to 47.631
+  nanoseconds per representative rent/return, with no managed allocation
+  reported in either run. Two independent three-repetition raw multiplex
+  comparisons, run in opposite candidate/baseline order, passed validation and
+  benchmark execution 6/6 on both sides. Median request rate improved 14.14
+  percent in both comparisons, median p95 latency improved 13.27 and 11.28
+  percent, and median counter allocation rate improved 27.12 and 26.04 percent.
+  A matched sampled-allocation trace reduced estimated allocation from
+  34,708,184 to 22,919,136 bytes. The baseline attributed 106 events and
+  11,265,776 bytes to `RecordBufferRent`, plus 36 events and 3,831,648 bytes to
+  `RecordBufferReturn`; both groups disappeared from the candidate trace, with
+  zero lost events. ProtocolLab emitted all nine buffer-pool metrics, all bucket
+  groups, and no parse warnings. Focused metric tests passed 4/4. The full suite
+  reached 9,357 passes and 5 intentional skips before one unrelated DoQ
+  excessive-load lifecycle test observed an early connection termination; that
+  test then passed 11 consecutive isolated reruns. Evidence remains diagnostic
+  because the runs used a local shared host, dirty candidate source, and lacked
+  a linked publishability-readiness manifest. BDN, native comparisons, evidence
+  bundles, counter summaries, and trace attribution are retained under
+  `.artifacts/bdn/buffer-pool-metrics-*` and
+  `.artifacts/perf/buffer-pool-observable-metrics`.
+
 - 2026-07-10: STREAM reassembly now rotates the populated merge scratch list
   into active segment storage instead of copying it through `AddRange`, then
   retains the previous active list as the next scratch buffer. When list-backed

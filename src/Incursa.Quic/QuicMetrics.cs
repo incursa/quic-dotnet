@@ -64,15 +64,22 @@ internal static class QuicMetrics
     private static readonly Counter<long> AeadOpenFailures = Meter.CreateCounter<long>("incursa.quic.aead.open_failures", unit: "events");
     private static readonly Counter<long> UdpErrors = Meter.CreateCounter<long>("incursa.quic.udp.errors", unit: "events");
     private static readonly Histogram<double> Rtt = Meter.CreateHistogram<double>("incursa.quic.rtt.ms", unit: "ms");
-    private static readonly Counter<long> BufferPoolRents = Meter.CreateCounter<long>("incursa.quic.buffer_pool.rents", unit: "buffers");
-    private static readonly Counter<long> BufferPoolRequestedRents = Meter.CreateCounter<long>("incursa.quic.buffer_pool.requested_rents", unit: "buffers");
-    private static readonly Counter<long> BufferPoolReturns = Meter.CreateCounter<long>("incursa.quic.buffer_pool.returns", unit: "buffers");
-    private static readonly Counter<long> BufferPoolBytesRequested = Meter.CreateCounter<long>("incursa.quic.buffer_pool.bytes.requested", unit: "bytes");
-    private static readonly Counter<long> BufferPoolBytesRented = Meter.CreateCounter<long>("incursa.quic.buffer_pool.bytes.rented", unit: "bytes");
-    private static readonly Counter<long> BufferPoolBytesReturned = Meter.CreateCounter<long>("incursa.quic.buffer_pool.bytes.returned", unit: "bytes");
+    private static readonly long[] BufferPoolRentCounts = new long[BufferPoolBucketCount];
+    private static readonly long[] BufferPoolRequestedRentCounts = new long[BufferPoolBucketCount];
+    private static readonly long[] BufferPoolReturnCounts = new long[BufferPoolBucketCount];
+    private static readonly long[] BufferPoolRequestedByteCounts = new long[BufferPoolBucketCount];
+    private static readonly long[] BufferPoolRentedByteCounts = new long[BufferPoolBucketCount];
+    private static readonly long[] BufferPoolReturnedByteCounts = new long[BufferPoolBucketCount];
+    private static readonly long[] BufferPoolOversizedRentCounts = new long[BufferPoolBucketCount];
     private static readonly ObservableGauge<long> BufferPoolOutstandingBuffers = Meter.CreateObservableGauge("incursa.quic.buffer_pool.outstanding.buffers", ObserveBufferPoolOutstandingBuffers, unit: "buffers");
     private static readonly ObservableGauge<long> BufferPoolOutstandingBytes = Meter.CreateObservableGauge("incursa.quic.buffer_pool.outstanding.bytes", ObserveBufferPoolOutstandingBytes, unit: "bytes");
-    private static readonly Counter<long> BufferPoolOversizedRents = Meter.CreateCounter<long>("incursa.quic.buffer_pool.oversized_rents", unit: "buffers");
+    private static readonly ObservableCounter<long> BufferPoolRents = Meter.CreateObservableCounter("incursa.quic.buffer_pool.rents", () => ObserveBufferPoolMetric(BufferPoolRentCounts, "size_bucket"), unit: "buffers");
+    private static readonly ObservableCounter<long> BufferPoolRequestedRents = Meter.CreateObservableCounter("incursa.quic.buffer_pool.requested_rents", () => ObserveBufferPoolMetric(BufferPoolRequestedRentCounts, "requested_size_bucket"), unit: "buffers");
+    private static readonly ObservableCounter<long> BufferPoolReturns = Meter.CreateObservableCounter("incursa.quic.buffer_pool.returns", () => ObserveBufferPoolMetric(BufferPoolReturnCounts, "size_bucket"), unit: "buffers");
+    private static readonly ObservableCounter<long> BufferPoolBytesRequested = Meter.CreateObservableCounter("incursa.quic.buffer_pool.bytes.requested", () => ObserveBufferPoolMetric(BufferPoolRequestedByteCounts, "requested_size_bucket"), unit: "bytes");
+    private static readonly ObservableCounter<long> BufferPoolBytesRented = Meter.CreateObservableCounter("incursa.quic.buffer_pool.bytes.rented", () => ObserveBufferPoolMetric(BufferPoolRentedByteCounts, "size_bucket"), unit: "bytes");
+    private static readonly ObservableCounter<long> BufferPoolBytesReturned = Meter.CreateObservableCounter("incursa.quic.buffer_pool.bytes.returned", () => ObserveBufferPoolMetric(BufferPoolReturnedByteCounts, "size_bucket"), unit: "bytes");
+    private static readonly ObservableCounter<long> BufferPoolOversizedRents = Meter.CreateObservableCounter("incursa.quic.buffer_pool.oversized_rents", () => ObserveBufferPoolMetric(BufferPoolOversizedRentCounts, "size_bucket"), unit: "buffers");
     private static readonly long[] BufferPoolOutstandingBufferCounts = new long[BufferPoolBucketCount];
     private static readonly long[] BufferPoolOutstandingByteCounts = new long[BufferPoolBucketCount];
 
@@ -280,18 +287,16 @@ internal static class QuicMetrics
 
         var bucketIndex = GetBufferSizeBucketIndex(rentedLength);
         var requestedBucketIndex = GetBufferSizeBucketIndex(requestedLength);
-        TagList tags = CreateBufferPoolTags(bucketIndex);
-        TagList requestedTags = CreateBufferPoolRequestedTags(requestedBucketIndex);
-        BufferPoolRequestedRents.Add(1, in requestedTags);
-        BufferPoolBytesRequested.Add(requestedLength, in requestedTags);
-        BufferPoolRents.Add(1, in tags);
-        BufferPoolBytesRented.Add(rentedLength, in tags);
+        Interlocked.Increment(ref BufferPoolRequestedRentCounts[requestedBucketIndex]);
+        Interlocked.Add(ref BufferPoolRequestedByteCounts[requestedBucketIndex], requestedLength);
+        Interlocked.Increment(ref BufferPoolRentCounts[bucketIndex]);
+        Interlocked.Add(ref BufferPoolRentedByteCounts[bucketIndex], rentedLength);
         Interlocked.Increment(ref BufferPoolOutstandingBufferCounts[bucketIndex]);
         Interlocked.Add(ref BufferPoolOutstandingByteCounts[bucketIndex], rentedLength);
 
         if (rentedLength > requestedLength)
         {
-            BufferPoolOversizedRents.Add(1, in tags);
+            Interlocked.Increment(ref BufferPoolOversizedRentCounts[bucketIndex]);
         }
     }
 
@@ -306,9 +311,8 @@ internal static class QuicMetrics
         }
 
         var bucketIndex = GetBufferSizeBucketIndex(bufferLength);
-        TagList tags = CreateBufferPoolTags(bucketIndex);
-        BufferPoolReturns.Add(1, in tags);
-        BufferPoolBytesReturned.Add(bufferLength, in tags);
+        Interlocked.Increment(ref BufferPoolReturnCounts[bucketIndex]);
+        Interlocked.Add(ref BufferPoolReturnedByteCounts[bucketIndex], bufferLength);
         DecrementBufferPoolOutstanding(bucketIndex, bufferLength);
     }
 
@@ -427,6 +431,16 @@ internal static class QuicMetrics
         }
     }
 
+    private static IEnumerable<Measurement<long>> ObserveBufferPoolMetric(long[] values, string tagName)
+    {
+        for (var i = 0; i < BufferPoolBucketCount; i++)
+        {
+            yield return new Measurement<long>(
+                Volatile.Read(ref values[i]),
+                new KeyValuePair<string, object?>(tagName, GetBufferSizeBucket(i)));
+        }
+    }
+
     private static void DecrementBufferPoolOutstanding(int bucketIndex, int bufferLength)
     {
         var buffers = Interlocked.Decrement(ref BufferPoolOutstandingBufferCounts[bucketIndex]);
@@ -440,20 +454,6 @@ internal static class QuicMetrics
         {
             Interlocked.Exchange(ref BufferPoolOutstandingByteCounts[bucketIndex], 0);
         }
-    }
-
-    private static TagList CreateBufferPoolTags(int bucketIndex)
-    {
-        TagList tags = default;
-        tags.Add("size_bucket", GetBufferSizeBucket(bucketIndex));
-        return tags;
-    }
-
-    private static TagList CreateBufferPoolRequestedTags(int requestedBucketIndex)
-    {
-        TagList tags = default;
-        tags.Add("requested_size_bucket", GetBufferSizeBucket(requestedBucketIndex));
-        return tags;
     }
 
     private static int GetBufferSizeBucketIndex(int bufferLength)
