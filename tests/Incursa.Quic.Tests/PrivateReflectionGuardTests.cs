@@ -16,6 +16,7 @@ public sealed class PrivateReflectionGuardTests
         "RequirementHomes/CRT/REQ-QUIC-CRT-0051.cs",
         "RequirementHomes/CRT/REQ-QUIC-CRT-0095.cs",
         "RequirementHomes/CRT/REQ-QUIC-CRT-0096.cs",
+        "RequirementHomes/QUIC/REQ-QUIC-API-0010.cs",
     ];
 
     [Fact]
