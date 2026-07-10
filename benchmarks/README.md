@@ -61,6 +61,7 @@ The benchmark project also carries a bounded public-facade comparison suite:
 - `QuicPublicApiLoopbackBenchmarks`
 - `QuicPublicApiStreamTransferBenchmarks`
 - `QuicPublicApiSteadyStateStreamBenchmarks`
+- `QuicPublicApiLifecyclePhaseBenchmarks`
 
 Run it through the launcher when the goal is a like-for-like local comparison
 between the Incursa public facade and `System.Net.Quic`:
@@ -79,6 +80,14 @@ workloads.
 `QuicPublicApiSteadyStateStreamBenchmarks` keeps a connection established across
 iterations so per-stream request/response and queued-write costs can be separated
 from connection setup and handshake cost.
+`QuicPublicApiLifecyclePhaseBenchmarks` keeps the public-facade phase split honest
+by attributing listener setup, connect/accept/handshake, stream open/accept,
+request write/read, FIN, connection close, and disposal separately. The rows are
+still matched across Incursa.Quic and System.Net.Quic only when both public APIs
+report support.
+`System.Net.Quic` omits the standalone `StreamOpenAccept` row and the later
+stream-lifecycle rows because inbound accept does not complete in isolation in
+this benchmark surface and would otherwise hang the smoke run.
 Unsupported implementations are omitted when either public support marker
 (`QuicConnection.IsSupported` or `QuicListener.IsSupported`) is false, and the
 results must not be treated as equivalent to the repo's internal helper
@@ -180,6 +189,7 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckPiggybackPolicyBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckPiggybackPayloadBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicLongHeaderAckPiggybackPayloadBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicPublicApiLifecyclePhaseBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckFrameSentRangeStorageBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckGenerationStateRangeEnumerationBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDiagnosticsBenchmarks*"

@@ -157,6 +157,8 @@ internal static class QuicPublicApiLoopbackBenchmarkSupport
 {
     private const string LoopbackHostName = "localhost";
     private const int BenchmarkStreamLimit = 4096;
+    private static readonly TimeSpan BenchmarkIdleTimeout = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan BenchmarkKeepAliveInterval = TimeSpan.FromSeconds(30);
 
     internal static X509Certificate2 CreateServerCertificate()
     {
@@ -226,6 +228,8 @@ internal static class QuicPublicApiLoopbackBenchmarkSupport
         {
             DefaultCloseErrorCode = 0,
             DefaultStreamErrorCode = 0,
+            IdleTimeout = BenchmarkIdleTimeout,
+            KeepAliveInterval = BenchmarkKeepAliveInterval,
             RemoteEndPoint = remoteEndPoint,
             ClientAuthenticationOptions = clientAuthenticationOptions,
         };
@@ -239,6 +243,8 @@ internal static class QuicPublicApiLoopbackBenchmarkSupport
         {
             DefaultCloseErrorCode = 0,
             DefaultStreamErrorCode = 0,
+            IdleTimeout = BenchmarkIdleTimeout,
+            KeepAliveInterval = BenchmarkKeepAliveInterval,
             RemoteEndPoint = remoteEndPoint,
             ClientAuthenticationOptions = clientAuthenticationOptions,
         };
@@ -251,6 +257,8 @@ internal static class QuicPublicApiLoopbackBenchmarkSupport
         {
             DefaultCloseErrorCode = 0,
             DefaultStreamErrorCode = 0,
+            IdleTimeout = BenchmarkIdleTimeout,
+            KeepAliveInterval = BenchmarkKeepAliveInterval,
             MaxInboundBidirectionalStreams = BenchmarkStreamLimit,
             ServerAuthenticationOptions = serverAuthenticationOptions,
         };
@@ -263,6 +271,8 @@ internal static class QuicPublicApiLoopbackBenchmarkSupport
         {
             DefaultCloseErrorCode = 0,
             DefaultStreamErrorCode = 0,
+            IdleTimeout = BenchmarkIdleTimeout,
+            KeepAliveInterval = BenchmarkKeepAliveInterval,
             MaxInboundBidirectionalStreams = BenchmarkStreamLimit,
             ServerAuthenticationOptions = serverAuthenticationOptions,
         };
