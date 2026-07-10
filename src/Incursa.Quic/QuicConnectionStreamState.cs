@@ -1467,7 +1467,7 @@ internal sealed class QuicConnectionStreamState
         int expectedUpdatedCount = bufferedSegmentCount + 2;
         if (updated.Capacity < expectedUpdatedCount)
         {
-            updated.Capacity = expectedUpdatedCount;
+            updated.EnsureCapacity(expectedUpdatedCount);
         }
 
         while (currentIndex < bufferedSegmentCount && GetBufferedSegment(state, currentIndex).End <= currentOffset)

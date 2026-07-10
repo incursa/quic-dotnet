@@ -4,6 +4,32 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: STREAM reassembly scratch now uses `List<T>.EnsureCapacity`
+  instead of assigning the exact next capacity. Exact assignment defeated the
+  list's geometric growth and caused repeated `BufferedSegment[]` allocation
+  and copying as a stream accumulated segments. The Short side-by-side
+  `QuicStreamBufferedSegmentBenchmarks` run reduced the current reusable-scratch
+  row from 54.84 KB and 23.73 microseconds to 9.20 KB and 17.84 microseconds at
+  64 segments, and from 11,825.52 KB and 4,628.46 microseconds to 96.37 KB and
+  3,174.54 microseconds at 1,000 segments. The three-repetition raw multiplex
+  candidate passed validation and benchmark execution 3/3 with no failed or
+  timed-out requests; median throughput improved 7.03 percent, p95 regressed
+  1.51 percent, and counter allocation rate regressed 4.40 percent against the
+  preceding send-effect candidate while observed relative range remained 8.82
+  percent. Treat those aggregate counter deltas as noisy rather than as an
+  allocation win. A matched GC trace served 1.27 percent more requests while
+  reducing `InsertReadableBytes` scratch-array samples from 56 to 45 and
+  estimated bytes from 5,970,984 to 4,798,824, about 20.6 percent per request.
+  Total buffered-segment array samples fell from 74 to 70 and estimated bytes
+  from 7,884,184 to 7,460,816. The trace retained the same exception categories:
+  two channel-close observations and five rather than three AEAD misses. The
+  full suite passed 9,350 tests with 5 intentional skips. Evidence remains
+  diagnostic because the candidate source was dirty, execution was local and
+  shared-host, and variance exceeded the publishability threshold. BDN,
+  ProtocolLab, native comparison, and stack-attribution artifacts are retained
+  under `.artifacts/bdn/stream-scratch-geometric-*` and
+  `.artifacts/perf/stream-scratch-geometric`.
+
 - 2026-07-10: hosted runtime shards now carry high-volume application
   send-datagram effects as reusable value updates to the listener/client socket
   hosts. Direct runtime transitions still publish
@@ -20,9 +46,11 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
   requests. The matched three-repetition native comparison retained throughput
   at -0.76 percent while improving p95 latency 7.53 percent. Counter aggregates
   reduced median allocation rate 35.25 percent, Gen0 collections from 5 to 3,
-  and exception rate 16.67 percent; the current native comparison still reports
-  allocation rate and exception groups as unavailable despite those
-  counter-derived bundle fields. The full suite passed 9,350 tests with 5
+  and exception rate 16.67 percent. ProtocolLab commit `5772635` now compares
+  retained counter allocation summaries and available exception top groups
+  directly; the repaired native output reports all three allocation-rate deltas
+  and keeps non-traced exception groups explicitly unavailable. The full suite
+  passed 9,350 tests with 5
   intentional skips. Evidence remains diagnostic because it is local shared-host
   data, candidate source was dirty, variance exceeded the publishability gate,
   and no readiness manifest was linked. Bundles, stack attribution, and native

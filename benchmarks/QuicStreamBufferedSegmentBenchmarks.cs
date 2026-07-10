@@ -88,7 +88,31 @@ public class QuicStreamBufferedSegmentBenchmarks
         int readableBytes = 0;
         for (int index = 0; index < SegmentCount; index++)
         {
-            InsertPooled(segments, ref scratch, (ulong)(index * SegmentLength), payload, ref readableBytes);
+            InsertPooled(segments, ref scratch, (ulong)(index * SegmentLength), payload, ref readableBytes, useGeometricScratchGrowth: false);
+        }
+
+        try
+        {
+            return ReadPooled(segments) ^ readableBytes;
+        }
+        finally
+        {
+            ReleasePooled(segments);
+        }
+    }
+
+    /// <summary>
+    /// Measures reusable merge scratch with the list's geometric capacity growth retained.
+    /// </summary>
+    [Benchmark]
+    public int PooledBuffersAndGeometricScratchGrowth()
+    {
+        List<PooledSegment> segments = [];
+        List<PooledSegment>? scratch = null;
+        int readableBytes = 0;
+        for (int index = 0; index < SegmentCount; index++)
+        {
+            InsertPooled(segments, ref scratch, (ulong)(index * SegmentLength), payload, ref readableBytes, useGeometricScratchGrowth: true);
         }
 
         try
@@ -242,7 +266,8 @@ public class QuicStreamBufferedSegmentBenchmarks
         ref List<PooledSegment>? scratch,
         ulong offset,
         ReadOnlySpan<byte> data,
-        ref int readableBytes)
+        ref int readableBytes,
+        bool useGeometricScratchGrowth)
     {
         ulong currentOffset = offset;
         ulong endOffset = offset + (ulong)data.Length;
@@ -253,7 +278,14 @@ public class QuicStreamBufferedSegmentBenchmarks
         int expectedUpdatedCount = segments.Count + 2;
         if (updated.Capacity < expectedUpdatedCount)
         {
-            updated.Capacity = expectedUpdatedCount;
+            if (useGeometricScratchGrowth)
+            {
+                updated.EnsureCapacity(expectedUpdatedCount);
+            }
+            else
+            {
+                updated.Capacity = expectedUpdatedCount;
+            }
         }
 
         while (currentIndex < segments.Count && segments[currentIndex].End <= currentOffset)
