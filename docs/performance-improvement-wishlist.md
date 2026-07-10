@@ -4,6 +4,20 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: STREAM receive buffering now keeps the first two unread segments
+  inline in each stream state before spilling to `List<BufferedSegment>`. The
+  existing one-slot shape allocated a list and backing array as soon as a second
+  contiguous frame arrived. The focused two-frame BenchmarkDotNet row reduced
+  managed allocation from 2.66 KB to 2.57 KB per operation (about 96 bytes); its
+  short-run timing was inconclusive. Three-repetition source-backed raw multiplex
+  comparison `inline2-buffer-confidence-20260710a` matched all three cells and
+  kept median throughput effectively flat at -0.37 percent while improving p95
+  latency 6.39 percent, counter allocation rate 4.66 percent, and Gen0 collections
+  from 7 to 6. Both evidence bundles remain diagnostic: candidate request-rate
+  relative range was 9.3 percent, source was a dirty worktree, and publishability
+  readiness was not linked. Retained native comparison and triage artifacts are
+  under `.artifacts/perf-triage/inline2-buffer-confidence-20260710a`.
+
 - 2026-07-10: source-backed raw QUIC multiplex attribution reopened terminal
   exception cleanup for observer-style inbound accepts. Baseline trace
   `codex-raw-multiplex-attribution-a6affe27-20260710a` passed 1,494/1,494

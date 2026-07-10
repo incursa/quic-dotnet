@@ -58,6 +58,38 @@ public sealed class QuicStreamReceiveBufferTests
     }
 
     [Fact]
+    public void TryReceiveStreamFrame_ReadsThreeContiguousFramesAcrossInlineAndListStorage()
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState();
+        byte[][] payloads = [[0x10, 0x11], [0x20, 0x21], [0x30, 0x31]];
+
+        ulong offset = 0;
+        foreach (byte[] payload in payloads)
+        {
+            Assert.True(state.TryReceiveStreamFrame(ParseStreamFrame(streamId: 0, offset, payload, fin: false), out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+            offset += (ulong)payload.Length;
+        }
+
+        foreach (byte[] expected in payloads)
+        {
+            byte[] destination = new byte[expected.Length];
+            Assert.True(state.TryReadStreamData(
+                streamIdValue: 0,
+                destination,
+                out int bytesWritten,
+                out bool completed,
+                out _,
+                out _,
+                out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+            Assert.Equal(expected.Length, bytesWritten);
+            Assert.False(completed);
+            Assert.Equal(expected, destination);
+        }
+    }
+
+    [Fact]
     public void TryReceiveStreamFrame_PreservesUnreadTailAfterPartialRead()
     {
         QuicConnectionStreamState state = CreateServerReceiveState();

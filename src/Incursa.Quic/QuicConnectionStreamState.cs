@@ -12,6 +12,7 @@ internal sealed class QuicConnectionStreamState
     private const ulong UnidirectionalBit = 0x02;
     private const int StreamIdTypeBitCount = 2;
     private const int MaximumInitialTrackedStreamCapacity = 128;
+    private const int InlineBufferedSegmentCapacity = 2;
 
     private readonly bool isServer;
     private readonly object syncRoot = new();
@@ -1527,7 +1528,17 @@ internal sealed class QuicConnectionStreamState
 
     private static int GetBufferedSegmentCount(StreamState state)
     {
-        return state.BufferedSegmentList?.Count ?? (state.HasInlineBufferedSegment ? 1 : 0);
+        if (state.BufferedSegmentList is { } segments)
+        {
+            return segments.Count;
+        }
+
+        if (state.HasSecondInlineBufferedSegment)
+        {
+            return InlineBufferedSegmentCapacity;
+        }
+
+        return state.HasInlineBufferedSegment ? 1 : 0;
     }
 
     private static BufferedSegment GetBufferedSegment(StreamState state, int index)
@@ -1537,9 +1548,14 @@ internal sealed class QuicConnectionStreamState
             return segments[index];
         }
 
-        if (index == 0 && state.HasInlineBufferedSegment)
+        if (state.HasInlineBufferedSegment)
         {
-            return state.InlineBufferedSegment;
+            return index switch
+            {
+                0 => state.InlineBufferedSegment,
+                1 when state.HasSecondInlineBufferedSegment => state.SecondInlineBufferedSegment,
+                _ => throw new ArgumentOutOfRangeException(nameof(index)),
+            };
         }
 
         throw new ArgumentOutOfRangeException(nameof(index));
@@ -1553,10 +1569,17 @@ internal sealed class QuicConnectionStreamState
             return;
         }
 
-        if (index == 0 && state.HasInlineBufferedSegment)
+        if (state.HasInlineBufferedSegment)
         {
-            state.InlineBufferedSegment = segment;
-            return;
+            switch (index)
+            {
+                case 0:
+                    state.InlineBufferedSegment = segment;
+                    return;
+                case 1 when state.HasSecondInlineBufferedSegment:
+                    state.SecondInlineBufferedSegment = segment;
+                    return;
+            }
         }
 
         throw new ArgumentOutOfRangeException(nameof(index));
@@ -1577,13 +1600,23 @@ internal sealed class QuicConnectionStreamState
             return;
         }
 
-        state.BufferedSegmentList = new List<BufferedSegment>(capacity: 2)
+        if (!state.HasSecondInlineBufferedSegment)
+        {
+            state.SecondInlineBufferedSegment = segment;
+            state.HasSecondInlineBufferedSegment = true;
+            return;
+        }
+
+        state.BufferedSegmentList = new List<BufferedSegment>(capacity: 4)
         {
             state.InlineBufferedSegment,
+            state.SecondInlineBufferedSegment,
             segment,
         };
         state.InlineBufferedSegment = default;
+        state.SecondInlineBufferedSegment = default;
         state.HasInlineBufferedSegment = false;
+        state.HasSecondInlineBufferedSegment = false;
     }
 
     private static void ReplaceBufferedSegments(StreamState state, List<BufferedSegment> segments)
@@ -1597,6 +1630,12 @@ internal sealed class QuicConnectionStreamState
                 state.InlineBufferedSegment = segments[0];
                 state.HasInlineBufferedSegment = true;
                 return;
+            case InlineBufferedSegmentCapacity:
+                state.InlineBufferedSegment = segments[0];
+                state.SecondInlineBufferedSegment = segments[1];
+                state.HasInlineBufferedSegment = true;
+                state.HasSecondInlineBufferedSegment = true;
+                return;
         }
 
         List<BufferedSegment> destination = state.BufferedSegmentList ??= new List<BufferedSegment>(segments.Count);
@@ -1608,7 +1647,9 @@ internal sealed class QuicConnectionStreamState
         state.BufferedSegmentList?.Clear();
         state.BufferedSegmentList = null;
         state.InlineBufferedSegment = default;
+        state.SecondInlineBufferedSegment = default;
         state.HasInlineBufferedSegment = false;
+        state.HasSecondInlineBufferedSegment = false;
     }
 
     private static BufferedSegment CreateBufferedSegment(ulong offset, ReadOnlySpan<byte> data, int dataIndex, int length)
@@ -1625,10 +1666,20 @@ internal sealed class QuicConnectionStreamState
         if (state.BufferedSegmentList is { } segments)
         {
             segments.RemoveAt(index);
-            if (segments.Count == 1)
+            if (segments.Count <= InlineBufferedSegmentCapacity)
             {
-                state.InlineBufferedSegment = segments[0];
-                state.HasInlineBufferedSegment = true;
+                if (segments.Count >= 1)
+                {
+                    state.InlineBufferedSegment = segments[0];
+                    state.HasInlineBufferedSegment = true;
+                }
+
+                if (segments.Count == InlineBufferedSegmentCapacity)
+                {
+                    state.SecondInlineBufferedSegment = segments[1];
+                    state.HasSecondInlineBufferedSegment = true;
+                }
+
                 segments.Clear();
                 state.BufferedSegmentList = null;
             }
@@ -1638,8 +1689,25 @@ internal sealed class QuicConnectionStreamState
 
         if (index == 0 && state.HasInlineBufferedSegment)
         {
-            state.InlineBufferedSegment = default;
-            state.HasInlineBufferedSegment = false;
+            if (state.HasSecondInlineBufferedSegment)
+            {
+                state.InlineBufferedSegment = state.SecondInlineBufferedSegment;
+                state.SecondInlineBufferedSegment = default;
+                state.HasSecondInlineBufferedSegment = false;
+            }
+            else
+            {
+                state.InlineBufferedSegment = default;
+                state.HasInlineBufferedSegment = false;
+            }
+
+            return;
+        }
+
+        if (index == 1 && state.HasSecondInlineBufferedSegment)
+        {
+            state.SecondInlineBufferedSegment = default;
+            state.HasSecondInlineBufferedSegment = false;
             return;
         }
 
@@ -1699,7 +1767,9 @@ internal sealed class QuicConnectionStreamState
         public QuicByteRangeSet SentRanges = new();
         public QuicByteRangeSet ReceivedRanges = new();
         public BufferedSegment InlineBufferedSegment { get; set; }
+        public BufferedSegment SecondInlineBufferedSegment { get; set; }
         public bool HasInlineBufferedSegment { get; set; }
+        public bool HasSecondInlineBufferedSegment { get; set; }
         public List<BufferedSegment>? BufferedSegmentList { get; set; }
         public List<BufferedSegment>? BufferedSegmentScratch { get; set; }
         public bool ReceivedZeroRttData { get; set; }
