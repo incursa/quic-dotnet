@@ -28,6 +28,7 @@ supportedScenarios:
   - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
   - http3.payload.bytes.1mb
+  - http3.payload.stream.100x16kb
 ports:
   - name: https-h3
     containerPort: 5444
@@ -52,9 +53,10 @@ capabilities:
   - httpPlaintext
   - httpJson
   - httpBytes
+  - httpStreaming
 artifactExports:
   - server.stdout.txt
   - server.stderr.txt
 qlogSupport: false
 sslKeyLogSupport: false
-notes: Trusted lab package execution only. This package uses the TechEmpower-shaped HTTP/3 sample and supports deterministic small- and large-body HTTP application scenarios.
+notes: Trusted lab package execution only. This package uses the TechEmpower-shaped HTTP/3 sample and supports deterministic small-body, large-body, and streaming HTTP application scenarios.

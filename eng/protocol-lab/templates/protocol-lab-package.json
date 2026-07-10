@@ -17,7 +17,8 @@
       "scenarios": [
         "http3.payload.bytes.1kb",
         "http3.payload.bytes.64kb",
-        "http3.payload.bytes.1mb"
+        "http3.payload.bytes.1mb",
+        "http3.payload.stream.100x16kb"
       ]
     }
   ]

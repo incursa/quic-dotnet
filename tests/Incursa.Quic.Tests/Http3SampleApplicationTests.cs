@@ -189,6 +189,33 @@ public sealed class Http3SampleApplicationTests
         Assert.Same(firstSegment.Array, secondSegment.Array);
     }
 
+    [Fact]
+    public async Task TechEmpowerStreamRoute_ReturnsDeterministicStreamingChunks()
+    {
+        TechEmpowerHandler handler = new();
+
+        Http3ServerResponse response = await handler.HandleHeadersOnlyAsync(
+            CreateHeadersOnlyRequest("GET", "/stream/bytes?chunks=100&size=16384&delayMs=0"));
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.True(response.Body.IsEmpty);
+        Assert.NotNull(response.StreamingBody);
+        Assert.Contains(response.Headers, header => header.Name == "content-type" && header.Value == "application/octet-stream");
+
+        int chunkCount = 0;
+        int byteCount = 0;
+        await foreach (ReadOnlyMemory<byte> chunk in response.StreamingBody!)
+        {
+            chunkCount++;
+            byteCount += chunk.Length;
+            Assert.Equal(16 * 1024, chunk.Length);
+            Assert.True(chunk.Span.SequenceEqual(TechEmpowerPayloads.StreamChunk16Kb.Span));
+        }
+
+        Assert.Equal(100, chunkCount);
+        Assert.Equal(100 * 16 * 1024, byteCount);
+    }
+
     [Theory]
     [InlineData("/db")]
     [InlineData("/queries?queries=10")]

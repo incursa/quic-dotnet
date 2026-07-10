@@ -156,6 +156,10 @@ public sealed class TechEmpowerHandler : IHttp3RequestHandler, IHttp3HeadersOnly
     private const int StatusMethodNotAllowed = 405;
     private const int StatusNotImplemented = 501;
     private const int DeterministicByteModulo = 251;
+    private const int StreamChunkCount = 100;
+    private const int StreamChunkSize = 16 * 1024;
+    private const int StreamDelayMilliseconds = 0;
+    private const string StreamRoutePath = "/stream/bytes";
 
     private static readonly HashSet<string> PlaceholderRoutes = new(StringComparer.Ordinal)
     {
@@ -171,9 +175,8 @@ public sealed class TechEmpowerHandler : IHttp3RequestHandler, IHttp3HeadersOnly
         ArgumentNullException.ThrowIfNull(request);
         cancellationToken.ThrowIfCancellationRequested();
 
-        string path = StripQuery(request.Path);
         Http3ServerResponse response = request.Method == "GET"
-            ? HandleGet(path)
+            ? HandleGet(request.Path)
             : Text(StatusMethodNotAllowed, "Method Not Allowed");
         return ValueTask.FromResult(response);
     }
@@ -184,15 +187,21 @@ public sealed class TechEmpowerHandler : IHttp3RequestHandler, IHttp3HeadersOnly
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        string path = StripQuery(request.Path);
         Http3ServerResponse response = request.Method == "GET"
-            ? HandleGet(path)
+            ? HandleGet(request.Path)
             : Text(StatusMethodNotAllowed, "Method Not Allowed");
         return ValueTask.FromResult(response);
     }
 
-    private static Http3ServerResponse HandleGet(string path)
+    private static Http3ServerResponse HandleGet(string requestTarget)
     {
+        string path = StripQuery(requestTarget);
+
+        if (path == StreamRoutePath && TryCreateStreamResponse(requestTarget, out Http3ServerResponse? streamResponse))
+        {
+            return streamResponse;
+        }
+
         if (path == "/plaintext")
         {
             return Payload(TechEmpowerPayloads.Plaintext, "text/plain");
@@ -224,6 +233,98 @@ public sealed class TechEmpowerHandler : IHttp3RequestHandler, IHttp3HeadersOnly
         }
 
         return Text(StatusNotFound, "Not Found");
+    }
+
+    private static bool TryCreateStreamResponse(string requestTarget, out Http3ServerResponse response)
+    {
+        response = null!;
+        if (!TryParseQueryParameters(requestTarget, out Dictionary<string, string> queryParameters))
+        {
+            return false;
+        }
+
+        if (!TryGetQueryInt(queryParameters, "chunks", out int chunks) || chunks != StreamChunkCount)
+        {
+            return false;
+        }
+
+        if (!TryGetQueryInt(queryParameters, "size", out int size) || size != StreamChunkSize)
+        {
+            return false;
+        }
+
+        if (!TryGetQueryInt(queryParameters, "delayMs", out int delayMilliseconds) || delayMilliseconds != StreamDelayMilliseconds)
+        {
+            return false;
+        }
+
+        QPackFieldLine[] headers =
+        [
+            new QPackFieldLine("content-type", "application/octet-stream"),
+            new QPackFieldLine("server", "Incursa.Http3"),
+        ];
+
+        response = Http3ServerResponse.CreateStreaming(
+            StatusOk,
+            CreateStreamingBody(),
+            headers);
+        return true;
+    }
+
+    private static bool TryParseQueryParameters(string requestTarget, out Dictionary<string, string> queryParameters)
+    {
+        queryParameters = new Dictionary<string, string>(StringComparer.Ordinal);
+        int queryIndex = requestTarget.IndexOf('?', StringComparison.Ordinal);
+        if (queryIndex < 0 || queryIndex == requestTarget.Length - 1)
+        {
+            return false;
+        }
+
+        string[] pairs = requestTarget[(queryIndex + 1)..].Split('&', StringSplitOptions.RemoveEmptyEntries);
+        if (pairs.Length == 0)
+        {
+            return false;
+        }
+
+        foreach (string pair in pairs)
+        {
+            string[] keyValue = pair.Split('=', 2, StringSplitOptions.None);
+            if (keyValue.Length != 2 || keyValue[0].Length == 0 || keyValue[1].Length == 0)
+            {
+                return false;
+            }
+
+            string key = Uri.UnescapeDataString(keyValue[0]);
+            string value = Uri.UnescapeDataString(keyValue[1]);
+            if (!queryParameters.TryAdd(key, value))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool TryGetQueryInt(IReadOnlyDictionary<string, string> queryParameters, string key, out int value)
+    {
+        value = default;
+        return queryParameters.TryGetValue(key, out string? rawValue)
+            && int.TryParse(rawValue, NumberStyles.None, CultureInfo.InvariantCulture, out value);
+    }
+
+    private static async IAsyncEnumerable<ReadOnlyMemory<byte>> CreateStreamingBody(
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        for (int index = 0; index < StreamChunkCount; index++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            yield return TechEmpowerPayloads.StreamChunk16Kb;
+
+            if (StreamDelayMilliseconds > 0 && index + 1 < StreamChunkCount)
+            {
+                await Task.Delay(StreamDelayMilliseconds, cancellationToken).ConfigureAwait(false);
+            }
+        }
     }
 
     private static Http3ServerResponse Payload(ReadOnlyMemory<byte> body, string contentType)
@@ -288,6 +389,8 @@ public static class TechEmpowerPayloads
 
     private static readonly byte[] Bytes1MbBytes = TechEmpowerHandler.CreateDeterministicBytes(1024 * 1024);
 
+    private static readonly byte[] StreamChunk16KbBytes = TechEmpowerHandler.CreateDeterministicBytes(16 * 1024);
+
     public static ReadOnlyMemory<byte> Plaintext => PlaintextBytes;
 
     public static ReadOnlyMemory<byte> Json => JsonBytes;
@@ -297,4 +400,6 @@ public static class TechEmpowerPayloads
     public static ReadOnlyMemory<byte> Bytes64Kb => Bytes64KbBytes;
 
     public static ReadOnlyMemory<byte> Bytes1Mb => Bytes1MbBytes;
+
+    public static ReadOnlyMemory<byte> StreamChunk16Kb => StreamChunk16KbBytes;
 }

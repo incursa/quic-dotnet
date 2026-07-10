@@ -25,6 +25,7 @@ Detailed guide: [HTTP/3 sample app](../docs/samples/http3-sample-app.md).
 - `GET /bytes/1024`
 - `GET /bytes/65536`
 - `GET /bytes/1048576`
+- `GET /stream/bytes?chunks=100&size=16384&delayMs=0`
 
 The database-oriented TechEmpower routes are placeholders in this pass and return `501 Not Implemented`.
 
