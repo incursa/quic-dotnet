@@ -4,6 +4,22 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: pooled stream-open and datagram completion sources now use an
+  interlocked completion guard instead of allocating a closure and `Action` for
+  every `TrySetResult` or `TrySetException` call. The stream-open allocation
+  trace had identified both objects in the successful public stream-open path.
+  A matched 400-iteration established-stream profile reduced pass-two managed
+  allocation from 7,000 to 6,949 B/op, while the stream-open await phase fell
+  from 1,041 to 935 B/op. A 2,000-iteration confirmation measured 6,932 B/op in
+  pass two. The Short public comparison completed both stream suites; the
+  established Incursa request/response row measured 9,832 B/op and the small
+  queued-write row measured 1,585 B/op. Focused completion, cancellation,
+  concurrency, and datagram tests passed 714/714, and the full suite passed
+  9,350 tests with 5 intentional skips. Local diagnostic artifacts are retained
+  under `.artifacts/perf/public-stream-profile/codex-profile-stream-interlocked-completion-20260710a.json`,
+  `.artifacts/perf/public-stream-profile/codex-profile-stream-interlocked-completion-2000-20260710a.json`,
+  and `.artifacts/bdn/public-comparison/codex-interlocked-completion-20260710a`.
+
 - 2026-07-10: production listener and client runtime shards now carry timer
   deadline changes as reusable value updates directly into the shard scheduler,
   while direct runtime callers retain the existing arm/cancel effect-object

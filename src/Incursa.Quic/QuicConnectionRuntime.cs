@@ -425,6 +425,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         private readonly QuicConnectionRuntime owner;
         private ManualResetValueTaskSourceCore<ulong> source;
         private CancellationTokenRegistration cancellationRegistration;
+        private int completed;
 
         internal StreamOpenRequestCompletionSource(QuicConnectionRuntime owner)
         {
@@ -444,6 +445,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             cancellationRegistration.Dispose();
             cancellationRegistration = default;
             StreamType = streamType;
+            completed = 0;
             source.Reset();
         }
 
@@ -468,10 +470,24 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         internal void TrySetResult(ulong streamId)
-            => TryComplete(() => source.SetResult(streamId));
+        {
+            if (Interlocked.Exchange(ref completed, 1) != 0)
+            {
+                return;
+            }
+
+            source.SetResult(streamId);
+        }
 
         internal void TrySetException(Exception exception)
-            => TryComplete(() => source.SetException(exception));
+        {
+            if (Interlocked.Exchange(ref completed, 1) != 0)
+            {
+                return;
+            }
+
+            source.SetException(exception);
+        }
 
         internal void TrySetCanceled(CancellationToken cancellationToken)
             => TrySetException(new OperationCanceledException(cancellationToken));
@@ -615,6 +631,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     {
         private readonly QuicConnectionRuntime owner;
         private ManualResetValueTaskSourceCore<bool> source;
+        private int completed;
 
         internal DatagramSendRequestCompletionSource(QuicConnectionRuntime owner)
         {
@@ -629,14 +646,29 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         internal void Prepare()
         {
+            completed = 0;
             source.Reset();
         }
 
         internal void TrySetResult()
-            => TryComplete(() => source.SetResult(true));
+        {
+            if (Interlocked.Exchange(ref completed, 1) != 0)
+            {
+                return;
+            }
+
+            source.SetResult(true);
+        }
 
         internal void TrySetException(Exception exception)
-            => TryComplete(() => source.SetException(exception));
+        {
+            if (Interlocked.Exchange(ref completed, 1) != 0)
+            {
+                return;
+            }
+
+            source.SetException(exception);
+        }
 
         internal void TrySetCanceled(CancellationToken cancellationToken)
             => TrySetException(new OperationCanceledException(cancellationToken));
@@ -665,18 +697,6 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             ValueTaskSourceOnCompletedFlags flags)
         {
             source.OnCompleted(continuation, state, token, flags);
-        }
-    }
-
-    private static void TryComplete(Action complete)
-    {
-        try
-        {
-            complete();
-        }
-        catch (InvalidOperationException)
-        {
-            // Match TaskCompletionSource.TrySet* behavior when cancellation wins a completion race.
         }
     }
 
