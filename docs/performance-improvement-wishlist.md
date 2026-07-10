@@ -16,7 +16,16 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
   from 7 to 6. Both evidence bundles remain diagnostic: candidate request-rate
   relative range was 9.3 percent, source was a dirty worktree, and publishability
   readiness was not linked. Retained native comparison and triage artifacts are
-  under `.artifacts/perf-triage/inline2-buffer-confidence-20260710a`.
+  under `.artifacts/perf-triage/inline2-buffer-confidence-20260710a`. A clean
+  post-commit run at `a94acfb2`,
+  `codex-raw-multiplex-inline2-clean-a94acfb2-20260710a`, improved median
+  throughput 2.28 percent, p95 latency 5.87 percent, and allocation rate 4.42
+  percent against the matched baseline while leaving exception rate unchanged.
+  That comparison remains diagnostic because relative range reached 11.47
+  percent, publishability readiness was not linked, and ProtocolLab's source
+  status capture still emitted `working-tree-not-clean` even though the QUIC
+  worktree was clean. Retained native artifacts are under
+  `.artifacts/perf-triage/inline2-buffer-clean-a94acfb2-20260710a`.
 
 - 2026-07-10: source-backed raw QUIC multiplex attribution reopened terminal
   exception cleanup for observer-style inbound accepts. Baseline trace
