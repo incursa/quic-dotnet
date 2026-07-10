@@ -105,12 +105,12 @@ function Get-PackageTargetConfig {
                 SuiteId = "h3-local-v1"
                 ScenarioIds = @("http3.payload.bytes.1kb")
                 SupportedSuiteIds = @("h3-local-v1", "h3-large-body-v1")
-                SupportedScenarioIds = @("http3.payload.bytes.1kb", "http3.payload.bytes.64kb", "http3.payload.bytes.1mb")
+                SupportedScenarioIds = @("http3.payload.bytes.1kb", "http3.payload.bytes.64kb", "http3.payload.bytes.1mb", "http3.payload.stream.100x16kb")
                 SupportedLoadProfileIds = @("smoke", "local-regression", "local-comparison", "h3-small-payload-c32", "h3-small-payload-c128")
                 Protocol = "h3"
                 TestExecutorId = "managed-httpclient-h3-load"
                 RequiredCapabilities = @()
-                SupportedCapabilities = @("httpPlaintext", "httpJson", "httpBytes")
+                SupportedCapabilities = @("httpPlaintext", "httpJson", "httpBytes", "httpStreaming")
             }
         }
         "RawQuic" {

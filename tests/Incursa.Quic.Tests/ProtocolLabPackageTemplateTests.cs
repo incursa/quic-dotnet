@@ -22,6 +22,7 @@ public sealed class ProtocolLabPackageTemplateTests
         "http3.payload.bytes.1kb",
         "http3.payload.bytes.64kb",
         "http3.payload.bytes.1mb",
+        "http3.payload.stream.100x16kb",
     ];
 
     private static readonly string[] Http3LoadProfileIds =
@@ -148,6 +149,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("httpPlaintext", ReadYamlList(implementationYaml, "capabilities"));
         Assert.Contains("httpJson", ReadYamlList(implementationYaml, "capabilities"));
         Assert.Contains("httpBytes", ReadYamlList(implementationYaml, "capabilities"));
+        Assert.Contains("httpStreaming", ReadYamlList(implementationYaml, "capabilities"));
         Assert.Contains("type: processStarted", implementationYaml);
         Assert.Contains("startupDelayMilliseconds: 2000", implementationYaml);
         Assert.DoesNotContain("quic", ReadYamlList(implementationYaml, "supportedProtocols"));
@@ -280,8 +282,10 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("http3.payload.bytes.1kb", helperScript);
         Assert.Contains("http3.payload.bytes.64kb", helperScript);
         Assert.Contains("http3.payload.bytes.1mb", helperScript);
+        Assert.Contains("http3.payload.stream.100x16kb", helperScript);
         Assert.Contains("h3-small-payload-c32", helperScript);
         Assert.Contains("h3-small-payload-c128", helperScript);
+        Assert.Contains("httpStreaming", helperScript);
         Assert.Contains("($ScenarioId -join \",\")", helperScript);
         Assert.Contains("SourceBackedTestExecutor", helperScript);
         Assert.Contains("packageReferences", helperScript);
@@ -355,7 +359,6 @@ public sealed class ProtocolLabPackageTemplateTests
     }
 
     [Theory]
-    [InlineData("h3-large-body-v1", "http3.payload.stream.100x16kb", "scenario(s) are not declared by the package template")]
     [InlineData("h3-large-body-v1", "quic.transport.multiplex.100x64kb", "scenario(s) are not declared by the package template")]
     [InlineData("quic-transport-v1-comparison", "http3.payload.bytes.1kb", "only supports suite(s): h3-local-v1, h3-large-body-v1")]
     public void Run_helper_rejects_http3_undeclared_package_arguments(string suiteId, string scenarioId, string expectedError)
