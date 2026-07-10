@@ -4,6 +4,19 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: current source-backed raw multiplex and H3 1 KiB c32 CPU
+  sampling traces found no dominant project-owned scheduler, timer, send-queue,
+  or crypto method. Runtime-shard inbox processing accounted for about 4.5 and
+  4.6 percent inclusive time, synchronous UDP `Socket.SendTo` for about 1.8 and
+  2.0 percent exclusive time, packet protection for less than 0.2 percent
+  exclusive time, and async state-machine box creation for at most 0.22
+  percent. Most samples were expected thread-pool waits, I/O completion waits,
+  and monitor waits; metrics/counter startup also occupied about 6 percent of
+  each short diagnostic trace. No scheduler or queue rewrite is justified by
+  this evidence. The validated bundles, raw traces, and top-method reports are
+  retained under `.artifacts/perf/cpu-attribution` and remain non-publishable
+  local shared-host diagnostics.
+
 - 2026-07-10: two trace-driven caching/allocation experiments were rejected and
   fully reverted. Replacing `Array.Sort`'s cached reference comparer with the
   generic span-sort struct comparer increased the existing per-sort allocation
@@ -843,14 +856,17 @@ Done when:
 
 ## 13. Profile Scheduler, Timers, And Send Queue Hot Paths
 
-Status: partially closed for timer/send microbenchmark coverage. 2026-07-09
-added stale-entry wait/dequeue coverage to `QuicDeadlineSchedulerBenchmarks`
-and wired the deadline scheduler suite into the `RawQuicSendCore` lane beside
+Status: closed for the current local trace-driven pass. 2026-07-09 added
+stale-entry wait/dequeue coverage to `QuicDeadlineSchedulerBenchmarks` and
+wired the deadline scheduler suite into the `RawQuicSendCore` lane beside
 send-priority, queue-sorting, batch-payload, distinct-stream-id, and congestion
 control. Smoke proof `codex-sendcore-deadline-scheduler-smoke-20260709a`
 passed locally and produced the expected `QuicDeadlineSchedulerBenchmarks`
-slice with re-arm, wait, and dequeue rows. Treat this as repeatable local
-diagnostic coverage only; it does not claim an end-to-end runtime improvement.
+slice with re-arm, wait, and dequeue rows. Fresh raw multiplex and H3 c32 CPU
+samples found no dominant project-owned scheduler, timer, or queue method; the
+largest project execution surface was runtime-shard processing at less than 5
+percent inclusive time. Reopen when an isolated or higher-concurrency trace
+identifies a project-owned hot method rather than general wait/I/O pressure.
 
 If throughput stalls under concurrency, likely culprits include send queue ordering, timer processing, ACK/loss effects, and packet assembly.
 
@@ -863,7 +879,7 @@ Done when:
 
 ## 14. Improve Buffer Pool Diagnostics And Tuning
 
-Status: partially closed for first-pass pool visibility. 2026-07-09 added
+Status: closed for the current local diagnostics and tuning pass. 2026-07-09 added
 `System.Diagnostics.Metrics` instruments to the central `QuicBufferPool` wrapper
 for rents, returns, rented/returned bytes, outstanding buffers/bytes, and
 oversized rents using bounded `size_bucket` tags. This gives ProtocolLab counter
@@ -890,7 +906,12 @@ non-negative outstanding gauge values.
 Follow-up smoke `codex-buffer-pool-tuning-smoke-20260709a-h3-local-v1` found no
 outstanding retained pool pressure in the sampled H3 1KB c4-s4 run; apparent
 oversized rents were small-bucket ArrayPool rounding, so default pool-size
-tuning remains unproven.
+tuning remained unproven. A later dedicated-pool experiment retained 128
+arrays per bucket through 64 KiB and was rejected: rent/return cost rose about
+25 percent, median raw allocation rate regressed about 2 percent, and traced
+pool-miss bytes per request rose about 11 percent. `ArrayPool<byte>.Shared`
+therefore remains the evidence-backed local default. Reopen only when an
+isolated workload shows a different miss/retention balance.
 
 Buffer reuse is central to reducing allocations, but pool behavior needs better visibility.
 
@@ -898,8 +919,12 @@ Done when:
 
 - Buffer pool diagnostics can be enabled per ProtocolLab run without code changes. Central-wrapper metrics are now emitted through `Incursa.Quic`.
 - Reports show rent/return counts, misses, peak outstanding buffers, oversized rents, and retained memory. Rent/return counts, bytes, oversized rents, and non-negative outstanding gauge summaries are now available through the dedicated pool summary artifact and evidence-bundle diagnostics; true misses and retained memory remain open because `ArrayPool<byte>.Shared` does not expose them directly.
-- The default pool sizes are justified by scenario evidence.
-- Pool tuning improves allocation rate without increasing retained memory unreasonably.
+- The default pool choice is justified by scenario evidence: the bounded
+  dedicated-pool candidate was slower and missed more per request than
+  `ArrayPool<byte>.Shared`.
+- Pool tuning improves allocation rate without increasing retained memory
+  unreasonably. No tested tuning candidate met this condition; the rejected
+  candidate and its reason are preserved rather than committed.
 
 ## 15. Keep Requirement Trace And Performance Evidence Connected
 
