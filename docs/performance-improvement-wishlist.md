@@ -4,6 +4,23 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: two trace-driven caching/allocation experiments were rejected and
+  fully reverted. Replacing `Array.Sort`'s cached reference comparer with the
+  generic span-sort struct comparer increased the existing per-sort allocation
+  from 64 to 88 bytes and slowed the 8/128/512-entry rows from 195.8
+  nanoseconds/4.470 microseconds/23.829 microseconds to 244.1
+  nanoseconds/6.593 microseconds/40.242 microseconds. A dedicated byte-array
+  pool through 64 KiB with 128 retained arrays per bucket increased the
+  representative rent/return row from 47.63 to 59.77 nanoseconds. Its
+  three-repetition raw multiplex comparison regressed median allocation rate
+  about 2 percent, and matched traces increased sampled pool-miss bytes per
+  request about 11 percent without materially reducing peak outstanding pool
+  pressure. The existing comparer and `ArrayPool<byte>.Shared` remain the
+  evidence-backed defaults. Negative-result records and benchmark/trace
+  artifacts are retained under `.artifacts/perf/negative-results`,
+  `.artifacts/bdn/send-queue-sort-comparer-*`, and
+  `.artifacts/perf/dedicated-buffer-pool`.
+
 - 2026-07-10: contiguous substantial STREAM receive chunks now reserve a 4 KiB
   pooled block and append later contiguous bytes into unused owned capacity.
   The policy starts at 1 KiB, leaves smaller control fragments and chunks of
