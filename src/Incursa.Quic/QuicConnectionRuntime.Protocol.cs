@@ -1525,6 +1525,41 @@ internal sealed partial class QuicConnectionRuntime
                     ref effects);
             }
 
+            if (QuicFrameCodec.TryParseDataBlockedFrame(
+                remaining,
+                out QuicDataBlockedFrame dataBlockedFrame,
+                out int dataBlockedBytesConsumed))
+            {
+                if (dataBlockedBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                ulong currentConnectionReceiveLimit = streamRegistry.Bookkeeping.ConnectionReceiveLimit;
+                if (dataBlockedFrame.MaximumData < currentConnectionReceiveLimit)
+                {
+                    _ = TryDeferFlowControlCreditUpdate(
+                        new QuicMaxDataFrame(currentConnectionReceiveLimit),
+                        null);
+                    stateChanged |= TryFlushPendingFlowControlCreditUpdates(ref effects);
+                }
+
+                offset += dataBlockedBytesConsumed;
+                packetAckEliciting = true;
+                continue;
+            }
+
+            if (QuicPacketFrameLegality.TryReadApplicationFrameType(remaining, out ulong malformedDataBlockedFrameType)
+                && malformedDataBlockedFrameType == QuicPacketFrameLegality.HandshakePacketDataBlockedFrameType)
+            {
+                return TryHandleApplicationDataFrameError(
+                    nowTicks,
+                    malformedDataBlockedFrameType,
+                    QuicTransportErrorCode.FrameEncodingError,
+                    "The peer sent an invalid DATA_BLOCKED frame.",
+                    ref effects);
+            }
+
             if (QuicFrameCodec.TryParseStreamDataBlockedFrame(
                 remaining,
                 out QuicStreamDataBlockedFrame streamDataBlockedFrame,

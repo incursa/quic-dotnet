@@ -4,6 +4,24 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: source-backed raw stream-throughput evidence isolated a missing
+  connection-level flow-control recovery path. The runtime accepted
+  `STREAM_DATA_BLOCKED` but did not parse valid `DATA_BLOCKED` frames, so a peer
+  stalled behind a lost `MAX_DATA` grant could not trigger a replay. The
+  runtime now acknowledges `DATA_BLOCKED` and replays the current `MAX_DATA`
+  only when the peer reports an older connection limit. Focused RFC 9000 flow
+  control tests passed 32/32. A three-repetition 5-second c1/s4 stress run then
+  completed 628/628 measured uploads with 652/652 server stream summaries
+  reaching full payload and write completion. A longer 15-second sample
+  improved from predominantly partial-upload timeouts to 2/3 successful
+  repetitions; its remaining failed repetition sent all 272 MiB and timed out
+  waiting for response EOF, isolating the next issue to FIN/stream-close
+  recovery rather than receive credit. Evidence is retained under
+  `.artifacts/runs/quic-raw-stream-summary-20260710a-*`,
+  `.artifacts/runs/quic-raw-stream-datablocked-fix-20260710a-*`, and
+  `.artifacts/runs/quic-raw-stream-fin-summary-20260710a-*` in the
+  `protocol-lab-internal` worktree. These remain local diagnostic runs.
+
 - 2026-07-10: fresh package-backed local HTTP/3 peer cells now use the current
   ProtocolLab evidence-bundle pipeline for the official
   `http3.payload.bytes.1kb` scenario at c4/s4 with the same managed load tool,
@@ -746,8 +764,12 @@ allocation, GC, exception-rate, CPU, and validation fields. Upload-only
 bidirectional stream measurement now uses clean FIN/EOF semantics rather than
 client-side STOP_SENDING cancellation, and current c1/s4 single-repetition
 source-backed runs pass with and without counter capture. Repeated local c1/s4
-counter confidence remains unstable on the shared host, with intermittent
-final-batch timeouts recorded as negative-result evidence. Package-backed
+counter confidence remains unstable on the shared host. Connection-level
+partial-upload stalls caused by dropped flow-control credit now have a bounded
+`DATA_BLOCKED`/`MAX_DATA` replay fix and a clean three-repetition short stress
+proof. Longer local runs can still time out after sending the complete upload
+while waiting for the server response EOF, so FIN/stream-close recovery remains
+the active reliability gap. Package-backed
 rack-lab smoke proof validates the same stream-throughput scenario through
 admitted implementation, test-executor, and scenario-pack packages, and repeated
 package-backed proof validates 3/3 repetitions. Package-backed multiplex and
