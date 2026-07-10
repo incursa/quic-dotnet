@@ -4,6 +4,15 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: the public API stream-transfer benchmark surface was revalidated
+  against the current runtime. Focused eight-stream Incursa loopback correctness
+  proof passed 1/1. BDN Short proof retained under
+  `.artifacts/bdn/public-concurrent-closeout-20260710` completed both matched
+  public implementations: Incursa measured 29.59 ms / 1,537.31 KB and
+  `System.Net.Quic` measured 18.08 ms / 145.94 KB per eight-stream concurrent
+  request/response operation. This closes the benchmark-coverage item while
+  retaining the latency and allocation differences as optimization signals.
+
 - 2026-07-10: current source-backed raw multiplex and H3 1 KiB c32 CPU
   sampling traces found no dominant project-owned scheduler, timer, send-queue,
   or crypto method. Runtime-shard inbox processing accounted for about 4.5 and
@@ -833,23 +842,28 @@ Done when:
 
 ## 12. Add Public API Stream Transfer Benchmarks
 
-Status: partially closed. `QuicPublicApiStreamTransferBenchmarks` and the
+Status: closed for the current public comparison surface.
+`QuicPublicApiStreamTransferBenchmarks` and the
 `QuicPublicApiSteadyStateStreamBenchmarks` suites now give the `PublicApiStream`
 performance-lane surface bounded public-facade upload-only, download-only,
-bidirectional request/response, sequential many-stream request/response, and
-established-connection stream comparisons between Incursa.Quic and
-`System.Net.Quic`. Smoke proof `codex-public-api-stream-smoke-20260709a` passed,
-expanded smoke proof `codex-public-api-stream-expanded-smoke-20260709a`
-documents current Incursa latency/allocation gaps, and the lane now includes the
-steady-state suite for follow-up runtime work. The current public stream profile
-has narrowed the Incursa managed allocation gap from 17,135 B/op at initial
-diagnosis to 7,849 B/op in the latest 400-iteration Incursa-only local run.
+bidirectional request/response, sequential and concurrent many-stream
+request/response, and established-connection stream comparisons between
+Incursa.Quic and `System.Net.Quic`. Smoke proof
+`codex-public-api-stream-smoke-20260709a` passed, expanded smoke proof
+`codex-public-api-stream-expanded-smoke-20260709a` documents current Incursa
+latency/allocation gaps, and focused BDN Short proof under
+`.artifacts/bdn/public-concurrent-closeout-20260710` revalidated the concurrent
+row against the current runtime. The current public stream profile has narrowed
+the Incursa managed allocation gap from 17,135 B/op at initial diagnosis to
+7,849 B/op in the latest 400-iteration Incursa-only local run.
 
 Existing public comparison work is mostly connection establishment. We need public stream transfer workloads that compare real user-facing APIs.
 
 Done when:
 
-- BenchmarkDotNet includes public facade stream upload, download, bidirectional echo, and many-stream workloads. Upload-only, download-only, bidirectional request/response, sequential many-stream request/response, and established-connection stream workloads now exist; concurrent many-stream and richer echo variants remain optional follow-up.
+- BenchmarkDotNet includes public facade stream upload, download,
+  bidirectional echo/request-response, and sequential and concurrent
+  many-stream workloads.
 - Incursa and `System.Net.Quic` are compared only where both can run the same public workload honestly.
 - The benchmark does not use internal runtime helpers.
 - Results are documented separately from HTTP/3 and raw internal transport benchmarks.

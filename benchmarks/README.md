@@ -74,7 +74,8 @@ These suites are intentionally narrow. The current proven floor for
 `QuicPublicApiLoopbackBenchmarks` compares only public-facade loopback
 connection establishment plus disposal. `QuicPublicApiStreamTransferBenchmarks`
 compares bounded public-facade loopback upload-only, download-only,
-request/response, and sequential many-stream request/response workloads.
+request/response, and sequential and concurrent many-stream request/response
+workloads.
 `QuicPublicApiSteadyStateStreamBenchmarks` keeps a connection established across
 iterations so per-stream request/response and queued-write costs can be separated
 from connection setup and handshake cost.
