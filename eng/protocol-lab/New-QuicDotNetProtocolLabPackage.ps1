@@ -304,8 +304,6 @@ if (Test-Path -LiteralPath $scriptsRoot -PathType Container) {
 $manifestPath = Join-Path $stageRoot "protocol-lab-package.json"
 $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
 $manifest.packageVersion = $PackageVersion
-$manifest.sourceRepository = $sourceRepository
-$manifest.sourceCommit = $sourceCommit
 $manifest | ConvertTo-Json -Depth 16 | Set-Content -LiteralPath $manifestPath
 $executionManifestPath = Join-Path $stageRoot "protocol-lab.internal.json"
 
@@ -314,6 +312,8 @@ $requestedEnvironmentKeys = foreach ($rid in $RuntimeIdentifier) {
 }
 
 $executionManifest = Get-Content -LiteralPath $executionManifestPath -Raw | ConvertFrom-Json
+$executionManifest.sourceRepository = $sourceRepository
+$executionManifest.sourceCommit = $sourceCommit
 $executionManifest.environments = @(
     $executionManifest.environments | Where-Object {
         $requestedEnvironmentKeys -contains "$($_.os)/$($_.arch)"

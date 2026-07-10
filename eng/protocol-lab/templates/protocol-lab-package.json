@@ -4,8 +4,6 @@
   "packageVersion": "__PACKAGE_VERSION__",
   "kind": "implementation",
   "displayName": "QUIC.NET development HTTP/3 sample",
-  "sourceRepository": "__SOURCE_REPOSITORY__",
-  "sourceCommit": "__SOURCE_COMMIT__",
   "entryManifests": [
     "implementations/quic-dotnet-dev.yaml"
   ],

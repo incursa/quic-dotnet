@@ -1,5 +1,7 @@
 {
   "schemaVersion": "protocol-lab-internal-execution-v1",
+  "sourceRepository": "__SOURCE_REPOSITORY__",
+  "sourceCommit": "__SOURCE_COMMIT__",
   "environments": [
     {
       "os": "linux",

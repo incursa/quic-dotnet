@@ -4,8 +4,6 @@
   "packageVersion": "__PACKAGE_VERSION__",
   "kind": "implementation",
   "displayName": "QUIC.NET development raw QUIC adapter",
-  "sourceRepository": "__SOURCE_REPOSITORY__",
-  "sourceCommit": "__SOURCE_COMMIT__",
   "entryManifests": [
     "implementations/quic-dotnet-raw-dev.yaml"
   ],

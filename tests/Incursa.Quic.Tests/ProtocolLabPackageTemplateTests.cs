@@ -45,8 +45,8 @@ public sealed class ProtocolLabPackageTemplateTests
         var packageRoot = packageDocument.RootElement;
         Assert.Equal("protocol-lab-package-v2", packageRoot.GetProperty("schemaVersion").GetString());
         Assert.Equal("quic-dotnet-raw-dev", packageRoot.GetProperty("packageId").GetString());
-        Assert.Equal("__SOURCE_REPOSITORY__", packageRoot.GetProperty("sourceRepository").GetString());
-        Assert.Equal("__SOURCE_COMMIT__", packageRoot.GetProperty("sourceCommit").GetString());
+        Assert.False(packageRoot.TryGetProperty("sourceRepository", out _));
+        Assert.False(packageRoot.TryGetProperty("sourceCommit", out _));
         var providedImplementation = Assert.Single(packageRoot.GetProperty("providedImplementations").EnumerateArray());
         Assert.Equal("quic-dotnet-raw-dev", providedImplementation.GetProperty("implementationId").GetString());
         Assert.Equal(["quic"], ReadJsonStringArray(providedImplementation, "protocols"));
@@ -70,6 +70,8 @@ public sealed class ProtocolLabPackageTemplateTests
         using var internalDocument = JsonDocument.Parse(File.ReadAllText(internalTemplatePath));
         var internalRoot = internalDocument.RootElement;
         Assert.Equal("protocol-lab-internal-execution-v1", internalRoot.GetProperty("schemaVersion").GetString());
+        Assert.Equal("__SOURCE_REPOSITORY__", internalRoot.GetProperty("sourceRepository").GetString());
+        Assert.Equal("__SOURCE_COMMIT__", internalRoot.GetProperty("sourceCommit").GetString());
         var environments = internalRoot.GetProperty("environments").EnumerateArray().ToArray();
         Assert.Equal(2, environments.Length);
         AssertPackageEnvironment(environments, "linux", "x64");
@@ -119,8 +121,8 @@ public sealed class ProtocolLabPackageTemplateTests
         using var packageDocument = JsonDocument.Parse(File.ReadAllText(packageTemplatePath));
         Assert.Equal("protocol-lab-package-v2", packageDocument.RootElement.GetProperty("schemaVersion").GetString());
         Assert.Equal("quic-dotnet-dev", packageDocument.RootElement.GetProperty("packageId").GetString());
-        Assert.Equal("__SOURCE_REPOSITORY__", packageDocument.RootElement.GetProperty("sourceRepository").GetString());
-        Assert.Equal("__SOURCE_COMMIT__", packageDocument.RootElement.GetProperty("sourceCommit").GetString());
+        Assert.False(packageDocument.RootElement.TryGetProperty("sourceRepository", out _));
+        Assert.False(packageDocument.RootElement.TryGetProperty("sourceCommit", out _));
         var providedImplementation = Assert.Single(packageDocument.RootElement.GetProperty("providedImplementations").EnumerateArray());
         Assert.Equal("quic-dotnet-dev", providedImplementation.GetProperty("implementationId").GetString());
         Assert.Equal(["h3"], ReadJsonStringArray(providedImplementation, "protocols"));
@@ -130,6 +132,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.False(providedImplementation.TryGetProperty("loadProfileIds", out _));
 
         using var internalDocument = JsonDocument.Parse(File.ReadAllText(internalTemplatePath));
+        Assert.Equal("__SOURCE_REPOSITORY__", internalDocument.RootElement.GetProperty("sourceRepository").GetString());
+        Assert.Equal("__SOURCE_COMMIT__", internalDocument.RootElement.GetProperty("sourceCommit").GetString());
         var internalImplementation = Assert.Single(internalDocument.RootElement.GetProperty("providedImplementations").EnumerateArray());
         Assert.Equal("quic-dotnet-dev", internalImplementation.GetProperty("implementationId").GetString());
         Assert.Equal(["h3"], ReadJsonStringArray(internalImplementation, "protocols"));
@@ -165,8 +169,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("Test-NoRestoreRuntimeAssetFailure", builderScript);
         Assert.Contains("Rerun the package build once without -NoRestore", builderScript);
         Assert.Contains("Invoke-GitValue", builderScript);
-        Assert.Contains("$manifest.sourceRepository = $sourceRepository", builderScript);
-        Assert.Contains("$manifest.sourceCommit = $sourceCommit", builderScript);
+        Assert.Contains("$executionManifest.sourceRepository = $sourceRepository", builderScript);
+        Assert.Contains("$executionManifest.sourceCommit = $sourceCommit", builderScript);
         Assert.Contains("Remove-Item -LiteralPath $publishRoot", builderScript);
         Assert.Contains("Join-Path $PSScriptRoot \"..\\..\"", builderScript);
         Assert.DoesNotContain("(Get-Location).Path", builderScript, StringComparison.Ordinal);
