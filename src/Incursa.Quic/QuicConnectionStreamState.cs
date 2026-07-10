@@ -13,6 +13,7 @@ internal sealed class QuicConnectionStreamState
     private const int StreamIdTypeBitCount = 2;
     private const int MaximumInitialTrackedStreamCapacity = 128;
     private const int InlineBufferedSegmentCapacity = 2;
+    private const int SpilledBufferedSegmentInitialCapacity = InlineBufferedSegmentCapacity * 2;
 
     private readonly bool isServer;
     private readonly object syncRoot = new();
@@ -1523,7 +1524,6 @@ internal sealed class QuicConnectionStreamState
         }
 
         ReplaceBufferedSegments(state, updated);
-        updated.Clear();
     }
 
     private static int GetBufferedSegmentCount(StreamState state)
@@ -1607,12 +1607,23 @@ internal sealed class QuicConnectionStreamState
             return;
         }
 
-        state.BufferedSegmentList = new List<BufferedSegment>(capacity: 4)
+        List<BufferedSegment> promotedSegments;
+        if (state.BufferedSegmentScratch is { } scratch)
         {
-            state.InlineBufferedSegment,
-            state.SecondInlineBufferedSegment,
-            segment,
-        };
+            state.BufferedSegmentScratch = null;
+            scratch.Clear();
+            scratch.EnsureCapacity(SpilledBufferedSegmentInitialCapacity);
+            promotedSegments = scratch;
+        }
+        else
+        {
+            promotedSegments = new List<BufferedSegment>(capacity: SpilledBufferedSegmentInitialCapacity);
+        }
+
+        promotedSegments.Add(state.InlineBufferedSegment);
+        promotedSegments.Add(state.SecondInlineBufferedSegment);
+        promotedSegments.Add(segment);
+        state.BufferedSegmentList = promotedSegments;
         state.InlineBufferedSegment = default;
         state.SecondInlineBufferedSegment = default;
         state.HasInlineBufferedSegment = false;
@@ -1621,25 +1632,44 @@ internal sealed class QuicConnectionStreamState
 
     private static void ReplaceBufferedSegments(StreamState state, List<BufferedSegment> segments)
     {
-        ClearBufferedSegmentStorage(state);
+        List<BufferedSegment>? previousActiveSegments = state.BufferedSegmentList;
+        state.BufferedSegmentList = null;
+        state.InlineBufferedSegment = default;
+        state.SecondInlineBufferedSegment = default;
+        state.HasInlineBufferedSegment = false;
+        state.HasSecondInlineBufferedSegment = false;
+
         switch (segments.Count)
         {
             case 0:
-                return;
+                break;
             case 1:
                 state.InlineBufferedSegment = segments[0];
                 state.HasInlineBufferedSegment = true;
-                return;
+                break;
             case InlineBufferedSegmentCapacity:
                 state.InlineBufferedSegment = segments[0];
                 state.SecondInlineBufferedSegment = segments[1];
                 state.HasInlineBufferedSegment = true;
                 state.HasSecondInlineBufferedSegment = true;
+                break;
+            default:
+                previousActiveSegments?.Clear();
+                state.BufferedSegmentList = segments;
+                state.BufferedSegmentScratch = previousActiveSegments;
                 return;
         }
 
-        List<BufferedSegment> destination = state.BufferedSegmentList ??= new List<BufferedSegment>(segments.Count);
-        destination.AddRange(segments);
+        segments.Clear();
+        if (previousActiveSegments is not null
+            && previousActiveSegments.Capacity > segments.Capacity)
+        {
+            previousActiveSegments.Clear();
+            state.BufferedSegmentScratch = previousActiveSegments;
+            return;
+        }
+
+        state.BufferedSegmentScratch = segments;
     }
 
     private static void ClearBufferedSegmentStorage(StreamState state)
@@ -1680,8 +1710,8 @@ internal sealed class QuicConnectionStreamState
                     state.HasSecondInlineBufferedSegment = true;
                 }
 
-                segments.Clear();
                 state.BufferedSegmentList = null;
+                RetainBufferedSegmentScratch(state, segments);
             }
 
             return;
@@ -1712,6 +1742,21 @@ internal sealed class QuicConnectionStreamState
         }
 
         throw new ArgumentOutOfRangeException(nameof(index));
+    }
+
+    private static void RetainBufferedSegmentScratch(StreamState state, List<BufferedSegment> candidate)
+    {
+        candidate.Clear();
+        if (ReferenceEquals(state.BufferedSegmentScratch, candidate))
+        {
+            return;
+        }
+
+        if (state.BufferedSegmentScratch is null
+            || candidate.Capacity > state.BufferedSegmentScratch.Capacity)
+        {
+            state.BufferedSegmentScratch = candidate;
+        }
     }
 
     private static void ReleaseBufferedSegments(StreamState state)

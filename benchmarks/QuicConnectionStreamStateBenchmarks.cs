@@ -11,11 +11,16 @@ public class QuicConnectionStreamStateBenchmarks
     private const int HoleSegmentLength = 32;
     private const int HoleSegmentCount = 16;
     private const int HoleFillLength = ((HoleSegmentCount * 2) + 1) * HoleSegmentLength;
+    private const int BurstSegmentLength = 32;
+    private const int BurstSegmentCount = 4;
+    private const int BurstCount = 8;
+    private const int BurstLength = BurstSegmentLength * BurstSegmentCount;
 
     private byte[] tailFrame = [];
     private byte[] streamData = [];
     private byte[] holeSegmentData = [];
     private byte[] holeFillingData = [];
+    private byte[] burstSegmentData = [];
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -30,6 +35,7 @@ public class QuicConnectionStreamStateBenchmarks
         streamData = new byte[64];
         holeSegmentData = new byte[HoleSegmentLength];
         holeFillingData = new byte[HoleFillLength];
+        burstSegmentData = new byte[BurstSegmentLength];
     }
 
     [Benchmark]
@@ -129,6 +135,57 @@ public class QuicConnectionStreamStateBenchmarks
             + (ulong)snapshot.BufferedReadableBytes
             + (ulong)bytesWritten
             + (completed ? 1UL : 0UL);
+    }
+
+    [Benchmark]
+    public ulong ReceiveAndDrainRepeatedFourSegmentBursts()
+    {
+        QuicConnectionStreamState state = CreateState(
+            connectionReceiveLimit: BurstLength * BurstCount * 2,
+            peerBidirectionalReceiveLimit: BurstLength * BurstCount * 2);
+        ulong total = 0;
+        Span<byte> destination = stackalloc byte[BurstLength];
+
+        for (int burstIndex = 0; burstIndex < BurstCount; burstIndex++)
+        {
+            ulong burstOffset = (ulong)(burstIndex * BurstLength);
+            for (int segmentIndex = 0; segmentIndex < BurstSegmentCount; segmentIndex++)
+            {
+                ulong offset = burstOffset + (ulong)(segmentIndex * BurstSegmentLength);
+                QuicStreamFrame frame = new(
+                    0x0E,
+                    new QuicStreamId(1),
+                    hasOffset: true,
+                    offset,
+                    hasLength: true,
+                    length: BurstSegmentLength,
+                    fin: false,
+                    burstSegmentData,
+                    BurstSegmentLength);
+                if (!state.TryReceiveStreamFrame(frame, out _))
+                {
+                    throw new InvalidOperationException("Failed to receive a repeated STREAM burst segment.");
+                }
+            }
+
+            if (!state.TryReadStreamData(
+                    1,
+                    destination,
+                    out int bytesWritten,
+                    out _,
+                    out _,
+                    out _,
+                    out _)
+                || bytesWritten != BurstLength)
+            {
+                throw new InvalidOperationException("Failed to drain a repeated STREAM burst.");
+            }
+
+            total += (ulong)bytesWritten;
+        }
+
+        state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot);
+        return total + (ulong)snapshot.BufferedReadableBytes;
     }
 
     [Benchmark]

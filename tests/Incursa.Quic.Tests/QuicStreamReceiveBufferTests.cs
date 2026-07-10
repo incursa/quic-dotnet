@@ -227,6 +227,51 @@ public sealed class QuicStreamReceiveBufferTests
         Assert.Equal(0, afterRead.BufferedReadableBytes);
     }
 
+    [Fact]
+    public void TryReceiveStreamFrame_PreservesDataAcrossRepeatedHoleFillingMerges()
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState();
+        byte[] expected = Enumerable.Repeat((byte)0x20, 36).ToArray();
+
+        for (int offset = 4; offset < expected.Length; offset += 8)
+        {
+            byte[] payload = Enumerable.Repeat((byte)(0x80 + offset), 4).ToArray();
+            payload.CopyTo(expected, offset);
+            Assert.True(state.TryReceiveStreamFrame(
+                ParseStreamFrame(streamId: 0, (ulong)offset, payload, fin: false),
+                out QuicTransportErrorCode seedErrorCode));
+            Assert.Equal(default, seedErrorCode);
+        }
+
+        for (int offset = 0; offset < expected.Length; offset += 8)
+        {
+            int length = Math.Min(8, expected.Length - offset);
+            byte[] payload = Enumerable.Repeat((byte)0x20, length).ToArray();
+            Assert.True(state.TryReceiveStreamFrame(
+                ParseStreamFrame(streamId: 0, (ulong)offset, payload, fin: offset + length == expected.Length),
+                out QuicTransportErrorCode fillErrorCode));
+            Assert.Equal(default, fillErrorCode);
+        }
+
+        Assert.True(state.TryGetStreamSnapshot(0, out QuicConnectionStreamSnapshot beforeRead));
+        Assert.Equal((ulong)expected.Length, beforeRead.UniqueBytesReceived);
+        Assert.Equal(expected.Length, beforeRead.BufferedReadableBytes);
+
+        byte[] destination = new byte[expected.Length];
+        Assert.True(state.TryReadStreamData(
+            0,
+            destination,
+            out int bytesWritten,
+            out bool completed,
+            out _,
+            out _,
+            out QuicTransportErrorCode readErrorCode));
+        Assert.Equal(default, readErrorCode);
+        Assert.Equal(expected.Length, bytesWritten);
+        Assert.True(completed);
+        Assert.Equal(expected, destination);
+    }
+
     private static QuicConnectionStreamState CreateServerReceiveState()
     {
         return new QuicConnectionStreamState(new QuicConnectionStreamStateOptions(

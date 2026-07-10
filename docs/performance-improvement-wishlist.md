@@ -4,6 +4,32 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: STREAM reassembly now rotates the populated merge scratch list
+  into active segment storage instead of copying it through `AddRange`, then
+  retains the previous active list as the next scratch buffer. When list-backed
+  storage drains back to the two inline slots, the emptied list is retained and
+  promoted on the next spill instead of allocating a replacement. The Short
+  actual-state hole-fill benchmark reduced allocation from 5.52 KB to 4.43 KB
+  per operation. A new repeated four-segment burst benchmark reduced allocation
+  from 2.53 KB to 1.27 KB and mean time from 4.327 to 4.102 microseconds. In an
+  isolated matched GC trace against correctness baseline `1285ff56`, requests
+  were nearly identical at 1,602 versus 1,606 while combined
+  `BufferedSegment[]` samples fell from 58 events and 6,188,072 estimated bytes
+  to 35 events and 3,717,200 estimated bytes, about 39.9 percent. Both the
+  `InsertReadableBytes` and `AddBufferedSegment` groups fell by roughly 40
+  percent. A back-to-back three-repetition ProtocolLab comparison passed
+  validation and benchmark execution 3/3 on both sides with no failed or
+  timed-out requests; candidate medians improved request rate 3.34 percent, p95
+  latency 1.99 percent, and allocation rate 18.63 percent. Counter-only
+  exception deltas varied from a baseline 5/5/5 to candidate 7/6/5, while the
+  traced baseline and candidate both reported five; retain that as a diagnostic
+  caveat rather than an exception claim. The full suite passed 9,358 tests with
+  5 intentional skips. Evidence remains diagnostic because the runs used a
+  local shared host, dirty candidate source, and exceeded publishability
+  variance/readiness gates. BDN, trace attribution, failed setup evidence,
+  native comparisons, and completed run bundles are retained under
+  `.artifacts/bdn/stream-*` and `.artifacts/perf/stream-list-reuse`.
+
 - 2026-07-10: overlapping STREAM-frame reassembly now advances the merge
   cursor through an existing segment even when the incoming frame begins at
   exactly the same offset. The prior strict-offset check preserved payload
