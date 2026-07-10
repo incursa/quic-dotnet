@@ -511,13 +511,13 @@ function Get-PerformanceGateCellKey {
     }
 
     $parts = @(
-        $Aggregate.implementationId,
-        $Aggregate.scenarioId,
-        $Aggregate.protocol,
-        $Aggregate.loadTool,
-        $Aggregate.loadToolMode,
-        $Aggregate.connections,
-        $Aggregate.streamsPerConnection
+        (Get-ObjectPropertyValue -Object $Aggregate -Name "implementationId"),
+        (Get-ObjectPropertyValue -Object $Aggregate -Name "scenarioId"),
+        (Get-ObjectPropertyValue -Object $Aggregate -Name "protocol"),
+        (Get-ObjectPropertyValue -Object $Aggregate -Name "loadTool"),
+        (Get-ObjectPropertyValue -Object $Aggregate -Name "loadToolMode"),
+        (Get-ObjectPropertyValue -Object $Aggregate -Name "connections"),
+        (Get-ObjectPropertyValue -Object $Aggregate -Name "streamsPerConnection")
     )
 
     return ($parts | ForEach-Object { if ($null -eq $_) { "" } else { [string]$_ } }) -join "|"
@@ -786,11 +786,11 @@ function ConvertTo-AggregateCellSummary {
     $evidence = Get-ObjectPropertyValue -Object $Aggregate -Name "evidence"
 
     return [ordered]@{
-        implementationId = $Aggregate.implementationId
-        scenarioId = $Aggregate.scenarioId
-        protocol = $Aggregate.protocol
-        loadTool = $Aggregate.loadTool
-        loadToolMode = $Aggregate.loadToolMode
+        implementationId = Get-ObjectPropertyValue -Object $Aggregate -Name "implementationId"
+        scenarioId = Get-ObjectPropertyValue -Object $Aggregate -Name "scenarioId"
+        protocol = Get-ObjectPropertyValue -Object $Aggregate -Name "protocol"
+        loadTool = Get-ObjectPropertyValue -Object $Aggregate -Name "loadTool"
+        loadToolMode = Get-ObjectPropertyValue -Object $Aggregate -Name "loadToolMode"
         connections = $Aggregate.connections
         streamsPerConnection = $Aggregate.streamsPerConnection
         durationSeconds = $Aggregate.durationSeconds

@@ -787,6 +787,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("extreme-metric-regression", script);
         Assert.Contains("performanceGate", script);
         Assert.Contains("FailOnPerformanceGate", script);
+        Assert.Contains("Get-ObjectPropertyValue -Object $Aggregate -Name \"loadTool\"", script);
+        Assert.DoesNotContain("loadTool = $Aggregate.loadTool", script);
     }
 
     [Fact]
