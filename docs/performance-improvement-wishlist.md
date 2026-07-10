@@ -20,7 +20,8 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
   and benchmark execution to passed/succeeded, removing every timeout and
   request-failure warning. Evidence is retained under
   `.artifacts/runs/quic-raw-stream-keytransition-repeat-20260710a-*`,
-  `.artifacts/runs/quic-raw-stream-acked-retention-final-20260710a-*`, and
+  `.artifacts/runs/quic-raw-stream-acked-retention-final-20260710a-*`,
+  `.artifacts/runs/quic-raw-stream-acked-retention-committed-20260710a-*`, and
   `.artifacts/comparisons/quic-raw-stream-acked-retention-final-20260710a.json`
   in `protocol-lab-internal`. This remains local diagnostic evidence because
   variance and publishability-readiness gates are not satisfied.
