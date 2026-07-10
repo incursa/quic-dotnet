@@ -114,6 +114,39 @@ public sealed class QuicStreamReceiveBufferTests
     }
 
     [Fact]
+    public void TryReceiveStreamFrame_AppendsContiguousBytesAfterPartialRead()
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState();
+        byte[] firstPayload = Enumerable.Repeat((byte)0x10, 1024).ToArray();
+        byte[] secondPayload = Enumerable.Repeat((byte)0x20, 1024).ToArray();
+
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(streamId: 0, offset: 0, firstPayload, fin: false),
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        byte[] firstRead = new byte[256];
+        Assert.True(state.TryReadStreamData(0, firstRead, out int firstBytesWritten, out bool firstCompleted, out _, out _, out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(firstRead.Length, firstBytesWritten);
+        Assert.False(firstCompleted);
+        Assert.Equal(firstPayload.AsSpan(0, firstRead.Length).ToArray(), firstRead);
+
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(streamId: 0, offset: (ulong)firstPayload.Length, secondPayload, fin: true),
+            out errorCode));
+        Assert.Equal(default, errorCode);
+
+        byte[] secondRead = new byte[firstPayload.Length - firstRead.Length + secondPayload.Length];
+        Assert.True(state.TryReadStreamData(0, secondRead, out int secondBytesWritten, out bool secondCompleted, out _, out _, out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(secondRead.Length, secondBytesWritten);
+        Assert.True(secondCompleted);
+        Assert.Equal(firstPayload.AsSpan(firstRead.Length).ToArray(), secondRead.AsSpan(0, firstPayload.Length - firstRead.Length).ToArray());
+        Assert.Equal(secondPayload, secondRead.AsSpan(firstPayload.Length - firstRead.Length).ToArray());
+    }
+
+    [Fact]
     public void TryReceiveStreamFrame_PreservesFirstPayloadForConflictingDuplicate()
     {
         QuicConnectionStreamState state = CreateServerReceiveState();

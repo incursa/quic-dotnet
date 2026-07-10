@@ -15,6 +15,8 @@ public class QuicByteBufferAllocationBenchmarks
     private byte[] firstStreamFrame = [];
     private byte[] secondStreamFrame = [];
     private byte[] readBuffer = [];
+    private byte[][] oneKilobyteStreamFrames = [];
+    private byte[] fourKilobyteReadBuffer = [];
 
     /// <summary>
     /// Prepares representative STREAM payloads and read buffers.
@@ -29,6 +31,20 @@ public class QuicByteBufferAllocationBenchmarks
         firstStreamFrame = FormatStreamFrame(streamId: 0, offset: 0, firstPayload, fin: false);
         secondStreamFrame = FormatStreamFrame(streamId: 0, offset: (ulong)firstPayload.Length, secondPayload, fin: false);
         readBuffer = new byte[firstPayload.Length + secondPayload.Length];
+
+        byte[] oneKilobytePayload = new byte[1024];
+        oneKilobyteStreamFrames = new byte[4][];
+        for (int index = 0; index < oneKilobyteStreamFrames.Length; index++)
+        {
+            oneKilobytePayload.AsSpan().Fill((byte)(index + 1));
+            oneKilobyteStreamFrames[index] = FormatStreamFrame(
+                streamId: 0,
+                offset: (ulong)(index * oneKilobytePayload.Length),
+                oneKilobytePayload,
+                fin: index == oneKilobyteStreamFrames.Length - 1);
+        }
+
+        fourKilobyteReadBuffer = new byte[oneKilobytePayload.Length * oneKilobyteStreamFrames.Length];
     }
 
     /// <summary>
@@ -91,6 +107,41 @@ public class QuicByteBufferAllocationBenchmarks
                 out _,
                 out errorCode)
             || errorCode != default)
+        {
+            return -1;
+        }
+
+        return bytesWritten ^ (completed ? 1 : 0) ^ destination[0] ^ destination[^1];
+    }
+
+    /// <summary>
+    /// Measures four contiguous 1KB STREAM frames, matching packet-sized receive chunks.
+    /// </summary>
+    [Benchmark]
+    public int StreamReceive_FourContiguousOneKilobyteFrames()
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState();
+
+        for (int index = 0; index < oneKilobyteStreamFrames.Length; index++)
+        {
+            if (!QuicStreamParser.TryParseStreamFrame(oneKilobyteStreamFrames[index], out QuicStreamFrame frame)
+                || !state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode)
+                || errorCode != default)
+            {
+                return -1;
+            }
+        }
+
+        Span<byte> destination = fourKilobyteReadBuffer;
+        if (!state.TryReadStreamData(
+                streamIdValue: 0,
+                destination,
+                out int bytesWritten,
+                out bool completed,
+                out _,
+                out _,
+                out QuicTransportErrorCode readErrorCode)
+            || readErrorCode != default)
         {
             return -1;
         }
@@ -214,7 +265,7 @@ public class QuicByteBufferAllocationBenchmarks
             frameType |= QuicStreamFrameBits.FinBitMask;
         }
 
-        byte[] buffer = new byte[64];
+        byte[] buffer = new byte[payload.Length + 32];
         if (!QuicFrameCodec.TryFormatStreamFrame(frameType, streamId, offset, payload, buffer, out int bytesWritten))
         {
             throw new InvalidOperationException("Failed to format STREAM frame benchmark payload.");

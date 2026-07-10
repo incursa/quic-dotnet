@@ -4,6 +4,32 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: contiguous substantial STREAM receive chunks now reserve a 4 KiB
+  pooled block and append later contiguous bytes into unused owned capacity.
+  The policy starts at 1 KiB, leaves smaller control fragments and chunks of
+  4 KiB or larger unchanged, and preserves exact logical lengths through
+  partial reads, overlaps, and FIN processing. The Short four-contiguous-1-KiB
+  benchmark improved from 1.111 microseconds and 2.75 KiB to 850.9 nanoseconds
+  and 2.57 KiB. Opposite-order three-repetition raw multiplex comparisons
+  passed validation and benchmark execution 6/6 on both sides. Median
+  allocation-rate changes were -11.66 and -11.09 percent; median request-rate
+  changes were +1.39 and +0.08 percent, and median p95 changes were -1.40 and
+  -1.22 percent. A matched allocation trace reduced total sampled allocation
+  from 20,698,776 to 19,049,288 bytes and receive-segment list allocation from
+  3,726,576 to 2,018,344 bytes, about 45.8 percent. Sampled pool-rent bytes rose
+  from 2,568,104 to 2,975,384 because fewer logical chunks use larger backing
+  blocks; live combined `le_1kb` plus `le_4kb` peak pooled bytes were flat in
+  one run order and 3.7 percent higher in the other. Opposite-order H3 1 KiB
+  c32 comparisons passed 6/6 on both sides and kept normalized allocation per
+  request effectively unchanged, while timing remained neutral-to-positive
+  within shared-host variance. Focused stream tests passed 37/37 and the full
+  suite passed 9,359 tests with 5 intentional skips. Evidence remains
+  diagnostic because execution used a local shared host, dirty candidate
+  source, and no linked publishability-readiness manifest. BDN, native
+  comparisons, pool summaries, evidence bundles, and trace attribution are
+  retained under `.artifacts/bdn/stream-receive-block-*` and
+  `.artifacts/perf/stream-receive-block`.
+
 - 2026-07-10: high-frequency datagram and byte totals now use two-slot
   client/server atomic accumulators exposed through `ObservableCounter<long>`.
   This preserves the four instrument names, units, and `role` tags while moving

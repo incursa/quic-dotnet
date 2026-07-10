@@ -7,6 +7,8 @@ namespace Incursa.Quic;
 
 internal sealed class QuicConnectionStreamState
 {
+    private const int StreamReceiveCoalescingThreshold = 1024;
+    private const int StreamReceiveBlockSize = 4 * 1024;
     private const ulong MaximumFlowControlLimit = QuicVariableLengthInteger.MaxValue;
     private const ulong MaximumStreamCount = 1UL << 60;
     private const ulong UnidirectionalBit = 0x02;
@@ -1444,6 +1446,12 @@ internal sealed class QuicConnectionStreamState
         }
 
         BufferedSegment lastSegment = GetBufferedSegment(state, bufferedSegmentCount - 1);
+        if (TryAppendBufferedSegment(state, bufferedSegmentCount - 1, lastSegment, currentOffset, data))
+        {
+            state.BufferedReadableBytes += data.Length;
+            return;
+        }
+
         if (lastSegment.End <= currentOffset)
         {
             AddBufferedSegment(state, CreateBufferedSegment(currentOffset, data, dataIndex, data.Length));
@@ -1458,6 +1466,17 @@ internal sealed class QuicConnectionStreamState
         {
             int tailDataIndex = (int)(tailSegment.End - offset);
             int tailLength = (int)(endOffset - tailSegment.End);
+            if (TryAppendBufferedSegment(
+                    state,
+                    bufferedSegmentCount - 1,
+                    tailSegment,
+                    tailSegment.End,
+                    data.Slice(tailDataIndex, tailLength)))
+            {
+                state.BufferedReadableBytes += tailLength;
+                return;
+            }
+
             AddBufferedSegment(state, CreateBufferedSegment(tailSegment.End, data, tailDataIndex, tailLength));
             state.BufferedReadableBytes += tailLength;
             return;
@@ -1630,6 +1649,26 @@ internal sealed class QuicConnectionStreamState
         state.HasSecondInlineBufferedSegment = false;
     }
 
+    private static bool TryAppendBufferedSegment(
+        StreamState state,
+        int index,
+        BufferedSegment segment,
+        ulong offset,
+        ReadOnlySpan<byte> data)
+    {
+        int appendOffset = segment.DataOffset + segment.Length;
+        if (segment.End != offset
+            || !segment.OwnsData
+            || data.Length > segment.Data.Length - appendOffset)
+        {
+            return false;
+        }
+
+        data.CopyTo(segment.Data.AsSpan(appendOffset));
+        SetBufferedSegment(state, index, segment with { Length = segment.Length + data.Length });
+        return true;
+    }
+
     private static void ReplaceBufferedSegments(StreamState state, List<BufferedSegment> segments)
     {
         List<BufferedSegment>? previousActiveSegments = state.BufferedSegmentList;
@@ -1684,7 +1723,10 @@ internal sealed class QuicConnectionStreamState
 
     private static BufferedSegment CreateBufferedSegment(ulong offset, ReadOnlySpan<byte> data, int dataIndex, int length)
     {
-        byte[] segmentData = QuicBufferPool.RentBytes(length);
+        int minimumCapacity = length >= StreamReceiveCoalescingThreshold && length < StreamReceiveBlockSize
+            ? StreamReceiveBlockSize
+            : length;
+        byte[] segmentData = QuicBufferPool.RentBytes(minimumCapacity);
         data.Slice(dataIndex, length).CopyTo(segmentData);
         return new BufferedSegment(offset, segmentData, DataOffset: 0, Length: length, OwnsData: true);
     }
