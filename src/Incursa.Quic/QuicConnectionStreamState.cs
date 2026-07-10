@@ -15,7 +15,7 @@ internal sealed class QuicConnectionStreamState
     private const int StreamIdTypeBitCount = 2;
     private const int MaximumInitialTrackedStreamCapacity = 128;
     private const int InlineBufferedSegmentCapacity = 2;
-    private const int SpilledBufferedSegmentInitialCapacity = InlineBufferedSegmentCapacity * 2;
+    private const int SpilledBufferedSegmentInitialCapacity = InlineBufferedSegmentCapacity * 4;
 
     private readonly bool isServer;
     private readonly object syncRoot = new();

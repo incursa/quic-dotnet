@@ -4,6 +4,31 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: STREAM receive storage now reserves eight backing slots on its
+  first spill from the two inline segments, avoiding the immediate four-to-eight
+  `BufferedSegment[]` growth observed in the retained duplex allocation trace.
+  The focused receive-buffer, read-lifecycle, public stream-concurrency, and
+  requirement-home slices passed 42/42 tests. In BDN Short, the 16-hole workload
+  improved from 6.784 to 6.238 microseconds and from 4.43 to 4.28 KB per
+  operation. The repeated four-segment workload improved from 5.707 to 5.595
+  microseconds but increased from 1.27 to 1.40 KB, explicitly retaining the
+  bounded 128-byte over-reservation tradeoff for streams that spill but never
+  exceed four segments. A source-backed five-repetition raw duplex run passed
+  validation and benchmark execution 5/5 with no failed or timed-out requests;
+  its median improved from 135.50 to 189.11 operations per second and p95 from
+  42.994 to 31.690 milliseconds against the retained receive-path run, but high
+  local variance makes this no-regression evidence rather than a throughput
+  claim. In a matched-shape GC trace, the candidate served 412 requests versus
+  268 while `BufferedSegment[]` samples fell from 10 events and 1,072,760
+  estimated bytes to 3 events and 325,224 estimated bytes, about 80 percent
+  lower per request. Total sampled allocation per request fell about 23.5
+  percent. Evidence is retained under
+  `.artifacts/bdn/stream-first-spill-*`,
+  `.artifacts/perf/stream-first-spill8-20260710`, and ProtocolLab runs
+  `raw-incursa-duplex-first-spill8-source-20260710a` and
+  `raw-incursa-duplex-first-spill8-gc-20260710a`. It remains local diagnostic,
+  source-backed evidence with variance and publishability-readiness blockers.
+
 - 2026-07-10: repeated raw stream-throughput stalls were traced to the 1-RTT
   key-update retention policy rather than stream capacity or FIN recovery. The
   server retained the previous packet-protection generation until a recovery
