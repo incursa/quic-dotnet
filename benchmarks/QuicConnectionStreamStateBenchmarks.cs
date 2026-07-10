@@ -8,8 +8,14 @@ namespace Incursa.Quic.Benchmarks;
 [MemoryDiagnoser]
 public class QuicConnectionStreamStateBenchmarks
 {
+    private const int HoleSegmentLength = 32;
+    private const int HoleSegmentCount = 16;
+    private const int HoleFillLength = ((HoleSegmentCount * 2) + 1) * HoleSegmentLength;
+
     private byte[] tailFrame = [];
     private byte[] streamData = [];
+    private byte[] holeSegmentData = [];
+    private byte[] holeFillingData = [];
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -22,6 +28,8 @@ public class QuicConnectionStreamStateBenchmarks
             includeLength: true,
             streamData: new byte[32]);
         streamData = new byte[64];
+        holeSegmentData = new byte[HoleSegmentLength];
+        holeFillingData = new byte[HoleFillLength];
     }
 
     [Benchmark]
@@ -63,6 +71,63 @@ public class QuicConnectionStreamStateBenchmarks
         return (ulong)bytesWritten
             + maxDataFrame.MaximumData
             + maxStreamDataFrame.MaximumStreamData
+            + (completed ? 1UL : 0UL);
+    }
+
+    [Benchmark]
+    public ulong ReceiveInterleavedSegmentsThenFillHoles()
+    {
+        QuicConnectionStreamState state = CreateState(
+            connectionReceiveLimit: HoleFillLength * 2,
+            peerBidirectionalReceiveLimit: HoleFillLength * 2);
+
+        for (int index = 0; index < HoleSegmentCount; index++)
+        {
+            ulong offset = (ulong)(((index * 2) + 1) * HoleSegmentLength);
+            QuicStreamFrame frame = new(
+                0x0E,
+                new QuicStreamId(1),
+                hasOffset: true,
+                offset,
+                hasLength: true,
+                length: HoleSegmentLength,
+                fin: false,
+                holeSegmentData,
+                HoleSegmentLength);
+            if (!state.TryReceiveStreamFrame(frame, out _))
+            {
+                throw new InvalidOperationException("Failed to seed an interleaved STREAM segment.");
+            }
+        }
+
+        QuicStreamFrame fillingFrame = new(
+            0x0F,
+            new QuicStreamId(1),
+            hasOffset: true,
+            offset: 0,
+            hasLength: true,
+            length: HoleFillLength,
+            fin: true,
+            holeFillingData,
+            HoleFillLength);
+        if (!state.TryReceiveStreamFrame(fillingFrame, out _))
+        {
+            throw new InvalidOperationException("Failed to fill the interleaved STREAM holes.");
+        }
+
+        Span<byte> destination = stackalloc byte[HoleFillLength];
+        state.TryReadStreamData(
+            1,
+            destination,
+            out int bytesWritten,
+            out bool completed,
+            out _,
+            out _,
+            out _);
+        state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot);
+        return snapshot.UniqueBytesReceived
+            + (ulong)snapshot.BufferedReadableBytes
+            + (ulong)bytesWritten
             + (completed ? 1UL : 0UL);
     }
 

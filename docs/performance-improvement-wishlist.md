@@ -4,6 +4,19 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-10: overlapping STREAM-frame reassembly now advances the merge
+  cursor through an existing segment even when the incoming frame begins at
+  exactly the same offset. The prior strict-offset check preserved payload
+  ordering but could insert the already-buffered prefix again when one frame
+  filled several later holes, inflating `BufferedReadableBytes` independently
+  of the unique-byte range accounting. A focused regression seeds eight
+  disjoint segments, fills every hole with one frame, verifies the exact
+  first-arrival payload, and proves buffered-byte accounting returns to zero
+  after the read. The actual-state `ReceiveInterleavedSegmentsThenFillHoles`
+  benchmark records the previously uncovered workload; the correctness-only
+  Short run measured 5.216 microseconds and 5.52 KB per operation. Baseline and
+  corrected artifacts are retained under `.artifacts/bdn/stream-hole-fill-*`.
+
 - 2026-07-10: listener and connected-endpoint receive loops now reuse the
   endpoint and two `SocketAddress` buffers consumed by the serial
   `ReceiveMessageFromAsync` path. The BCL previously serialized the supplied

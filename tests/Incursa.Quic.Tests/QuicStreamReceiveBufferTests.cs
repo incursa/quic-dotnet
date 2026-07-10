@@ -175,6 +175,58 @@ public sealed class QuicStreamReceiveBufferTests
         Assert.True(((ReadOnlySpan<byte>)[0x11, 0x22, 0x33, 0x44, 0x55]).SequenceEqual(destination));
     }
 
+    [Fact]
+    public void TryReceiveStreamFrame_FillsManyHolesWithoutDoubleCountingBufferedBytes()
+    {
+        const int segmentLength = 4;
+        const int segmentCount = 8;
+        const int totalLength = ((segmentCount * 2) + 1) * segmentLength;
+        QuicConnectionStreamState state = CreateServerReceiveState();
+        byte[] expected = new byte[totalLength];
+
+        for (int index = 0; index < segmentCount; index++)
+        {
+            byte[] payload = Enumerable.Repeat((byte)(0x80 + index), segmentLength).ToArray();
+            int offset = ((index * 2) + 1) * segmentLength;
+            payload.CopyTo(expected, offset);
+            Assert.True(state.TryReceiveStreamFrame(
+                ParseStreamFrame(streamId: 0, (ulong)offset, payload, fin: false),
+                out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+        }
+
+        byte[] fillingPayload = Enumerable.Repeat((byte)0x20, totalLength).ToArray();
+        for (int offset = 0; offset < totalLength; offset += segmentLength * 2)
+        {
+            fillingPayload.AsSpan(offset, Math.Min(segmentLength, totalLength - offset))
+                .CopyTo(expected.AsSpan(offset));
+        }
+
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(streamId: 0, offset: 0, fillingPayload, fin: true),
+            out QuicTransportErrorCode fillErrorCode));
+        Assert.Equal(default, fillErrorCode);
+        Assert.True(state.TryGetStreamSnapshot(0, out QuicConnectionStreamSnapshot beforeRead));
+        Assert.Equal((ulong)totalLength, beforeRead.UniqueBytesReceived);
+        Assert.Equal(totalLength, beforeRead.BufferedReadableBytes);
+
+        byte[] destination = new byte[totalLength];
+        Assert.True(state.TryReadStreamData(
+            0,
+            destination,
+            out int bytesWritten,
+            out bool completed,
+            out _,
+            out _,
+            out QuicTransportErrorCode readErrorCode));
+        Assert.Equal(default, readErrorCode);
+        Assert.Equal(totalLength, bytesWritten);
+        Assert.True(completed);
+        Assert.Equal(expected, destination);
+        Assert.True(state.TryGetStreamSnapshot(0, out QuicConnectionStreamSnapshot afterRead));
+        Assert.Equal(0, afterRead.BufferedReadableBytes);
+    }
+
     private static QuicConnectionStreamState CreateServerReceiveState()
     {
         return new QuicConnectionStreamState(new QuicConnectionStreamStateOptions(
@@ -206,7 +258,7 @@ public sealed class QuicStreamReceiveBufferTests
             frameType |= QuicStreamFrameBits.FinBitMask;
         }
 
-        byte[] buffer = new byte[64];
+        byte[] buffer = new byte[payload.Length + 32];
         Assert.True(QuicFrameCodec.TryFormatStreamFrame(frameType, streamId, offset, payload, buffer, out int bytesWritten));
         Assert.True(QuicStreamParser.TryParseStreamFrame(buffer.AsSpan(0, bytesWritten), out QuicStreamFrame frame));
         Assert.Equal(streamId, frame.StreamId.Value);

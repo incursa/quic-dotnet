@@ -1496,7 +1496,7 @@ internal sealed class QuicConnectionStreamState
                 break;
             }
 
-            if (existing.Offset < currentOffset)
+            if (existing.End > currentOffset)
             {
                 ulong skipEnd = Math.Min(existing.End, endOffset);
                 if (skipEnd > currentOffset)
