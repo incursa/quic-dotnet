@@ -11,6 +11,8 @@ namespace Incursa.Quic;
 /// </summary>
 public sealed class QuicListener : IAsyncDisposable
 {
+    internal const int MaximumDefaultRuntimeShardCount = 16;
+
     private readonly QuicListenerHost host;
     private int disposed;
 
@@ -51,7 +53,8 @@ public sealed class QuicListener : IAsyncDisposable
             options.ListenBacklog,
             retryBootstrapEnabled: false,
             diagnosticsSinkFactory: diagnosticsSinkFactory,
-            tlsKeyLogSecretObserver: tlsKeyLogSecretObserver);
+            tlsKeyLogSecretObserver: tlsKeyLogSecretObserver,
+            runtimeShardCount: SelectDefaultRuntimeShardCount(Environment.ProcessorCount));
 
         try
         {
@@ -63,6 +66,12 @@ public sealed class QuicListener : IAsyncDisposable
             host.Dispose();
             throw;
         }
+    }
+
+    internal static int SelectDefaultRuntimeShardCount(int processorCount)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(processorCount);
+        return Math.Min(processorCount, MaximumDefaultRuntimeShardCount);
     }
 
     /// <summary>

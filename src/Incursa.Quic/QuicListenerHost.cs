@@ -92,7 +92,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory = null,
         Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null,
         QuicAddressValidationTokenProtector? addressValidationTokenProtector = null,
-        int maximumVersionNegotiationResponsesPerRemoteAddress = int.MaxValue)
+        int maximumVersionNegotiationResponsesPerRemoteAddress = int.MaxValue,
+        int runtimeShardCount = 1)
     {
         ArgumentNullException.ThrowIfNull(listenEndPoint);
         ArgumentNullException.ThrowIfNull(applicationProtocols);
@@ -108,6 +109,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             throw new ArgumentOutOfRangeException(nameof(maximumVersionNegotiationResponsesPerRemoteAddress));
         }
 
+        if (runtimeShardCount <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(runtimeShardCount));
+        }
+
         this.applicationProtocols = [.. applicationProtocols];
         this.connectionOptionsCallback = connectionOptionsCallback;
         this.retryBootstrapEnabled = retryBootstrapEnabled;
@@ -116,7 +122,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         this.tlsKeyLogSecretObserver = tlsKeyLogSecretObserver;
         this.addressValidationTokenProtector = addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
         this.maximumVersionNegotiationResponsesPerRemoteAddress = maximumVersionNegotiationResponsesPerRemoteAddress;
-        endpoint = new QuicConnectionRuntimeEndpoint(1, suppressHostedTimerEffectObjects: true);
+        endpoint = new QuicConnectionRuntimeEndpoint(runtimeShardCount, suppressHostedTimerEffectObjects: true);
         acceptQueue = Channel.CreateBounded<object>(new BoundedChannelOptions(listenBacklog)
         {
             SingleReader = false,
@@ -138,6 +144,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         socket.Bind(boundEndPoint);
         boundSocketEndPoint = (IPEndPoint)socket.LocalEndPoint!;
     }
+
+    internal int RuntimeShardCount => endpoint.ShardCount;
 
     internal bool RetryBootstrapIssued => Volatile.Read(ref retryBootstrapIssued) != 0;
 
