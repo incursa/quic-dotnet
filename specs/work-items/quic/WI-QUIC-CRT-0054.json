@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0054",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC internal congestion-controller selector work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add the internal construction-time congestion-controller selector per path, keep NewReno as the default proof home, and allow CUBIC only as a private implementation choice under the existing RFC 9002 and RFC 8085 invariants.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "SPEC-QUIC-RFC9002",
+    "ARC-QUIC-CRT-0054"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0054"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0054"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0156",
+    "REQ-QUIC-CRT-0157",
+    "REQ-QUIC-CRT-0158",
+    "REQ-QUIC-CRT-0159",
+    "REQ-QUIC-CRT-0160",
+    "REQ-QUIC-CRT-0161"
+  ],
+  "planned_changes": "- Add an internal controller-choice field to each path record and choose the controller at path construction time.\n- Keep NewReno as the default path and preserve the current RFC 9002 NewReno proof homes as the baseline behavior.\n- Add the private CUBIC path only as an internal implementation choice that still honors the RFC 9002 and RFC 8085 invariants.\n- Thread deterministic monotonic time through the path controller so elapsed-time decisions can be replayed in tests.\n- Preserve per-path ACK, loss, ECN, persistent-congestion, and PMTU-normalized congestion math.\n- Keep the controller choice below the public API boundary and avoid caller-selectable controller options.",
+  "verification_plan": "Run focused requirement-home tests for REQ-QUIC-CRT-0156 through REQ-QUIC-CRT-0161, then run SpecTrace validation and git diff whitespace checks.",
+  "out_of_scope": [
+    "Public controller-selection API",
+    "Runtime controller hot-swapping",
+    "A CUBIC-only default",
+    "Changing the existing RFC 9002 NewReno requirement homes",
+    "HTTP/3 or adapter-layer congestion policy changes",
+    "Public support-promise widening"
+  ]
+}

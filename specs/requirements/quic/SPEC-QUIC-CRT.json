@@ -64,6 +64,10 @@
     {
       "heading": "Migration-Core Decomposition Boundary",
       "content": "The `9000-11-migration-core` gap decomposes first through the connection-runtime path-state owner rather than by minting new RFC 9000 artifact families. `ARC/WI/VER-QUIC-CRT-0005` owns the runtime prerequisites under `REQ-QUIC-CRT-0059` through `REQ-QUIC-CRT-0070`: explicit path identity, last-validated remote address state, bounded recently validated paths, complete per-path validation/amplification/recovery/RTT/ECN state, address-change classification, handshake-gated promotion, validation requirements, per-path anti-amplification, challenge state, promotion gates, and path-local reset/restore semantics.\n\nExisting RFC 9000 leaf owners remain the execution proof homes for already isolated behavior: `ARC/WI/VER-QUIC-RFC9000-0002` for server `NEW_TOKEN` emission after new-address validation, `ARC/WI/VER-QUIC-RFC9000-0005` for new-local-address probing and migration recovery reset, `ARC/WI/VER-QUIC-RFC9000-0010` for `PATH_CHALLENGE` retry and `PATH_RESPONSE` behavior, and `ARC/WI/VER-QUIC-RFC9000-0011` for sender-side ECN ACK-count validation. New RFC 9000 artifact IDs should be introduced only when a concrete matrix cell cannot be executed under these existing owners, such as a separately decided recently-validated-cache eviction policy or close-versus-reset policy."
+    },
+    {
+      "heading": "Congestion Controller Selection",
+      "content": "The transport core now needs an internal, construction-time congestion-controller selector on each path. The selector is immutable after path creation, defaults to NewReno, may use an internal CUBIC implementation only while the RFC 9002 and RFC 8085 invariants remain satisfied, and stays below the public API boundary. The RFC 9002 NewReno requirement homes remain the default proof home; CUBIC is only a private implementation choice above those same invariants."
     }
   ],
   "requirements": [
@@ -2487,6 +2491,145 @@
         "The reset boundary is narrower than Retry ownership in REQ-QUIC-CRT-0122, is explicitly opt-in, and does not widen into a general multi-attempt handshake engine.",
         "The discriminant is the combination of a changed peer Initial source connection ID and a changed offset-zero Initial CRYPTO prefix; source-connection-ID drift alone can still be a same-attempt retransmission.",
         "The slice only covers the client-side pre-transcript reset and rederive path when enabled by internal test or harness configuration; default RFC 9000 Section 7.2 behavior discards conflicting server Source Connection IDs. Server-role behavior, broader interop claims, and public API widening remain out of scope."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0156",
+      "title": "Choose one immutable congestion controller per path at construction time",
+      "statement": "Each path MUST choose exactly one congestion controller at construction time, MUST keep that choice immutable for the life of the path, MUST default to NewReno, and MUST keep the choice internal rather than exposing it as a public API, caller-selectable option, or support promise.",
+      "trace": {
+        "upstream_refs": [
+          "REQ-QUIC-RFC9002-S7-0005",
+          "REQ-QUIC-RFC9002-S7P3P1-0002",
+          "REQ-QUIC-RFC9002-S7P3P3-0001",
+          "REQ-QUIC-RFC9002-S7P6-0001",
+          "REQ-QUIC-RFC9002-S7P6P1-0001",
+          "REQ-QUIC-RFC9002-S7P6P2-0001",
+          "RFC 8085 Section 3.1",
+          "src/Incursa.Quic/QuicConnectionPathState.cs",
+          "src/Incursa.Quic/QuicCongestionControlState.cs"
+        ]
+      },
+      "notes": [
+        "The selector is a construction-time policy gate, not a runtime API surface.",
+        "Default NewReno remains the behavioral baseline for the current RFC 9002 proof homes.",
+        "The internal selector may choose CUBIC only as a private implementation detail."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0157",
+      "title": "Keep default NewReno behavior equivalent to the existing RFC 9002 NewReno homes",
+      "statement": "When the selected controller is the default NewReno controller, the runtime MUST behave equivalently to the existing RFC 9002 NewReno requirement homes for the same per-path inputs, including slow start, congestion avoidance, recovery entry, ECN, and persistent-congestion decisions.",
+      "trace": {
+        "upstream_refs": [
+          "REQ-QUIC-RFC9002-S7P3P1-0002",
+          "REQ-QUIC-RFC9002-S7P3P3-0001",
+          "REQ-QUIC-RFC9002-SBP7-0001",
+          "REQ-QUIC-RFC9002-SBP7-0002",
+          "REQ-QUIC-RFC9002-S7P6-0001",
+          "REQ-QUIC-RFC9002-S7P6P1-0001",
+          "REQ-QUIC-RFC9002-S7P6P2-0001",
+          "REQ-QUIC-RFC9002-SBP5-0003",
+          "REQ-QUIC-RFC9002-SBP5-0004"
+        ]
+      },
+      "notes": [
+        "This requirement preserves the current NewReno proof homes instead of introducing a new default controller behavior class.",
+        "The selector must not change the meaning of the existing RFC 9002 NewReno requirements.",
+        "Default NewReno equivalence is the baseline that CUBIC must not weaken."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0158",
+      "title": "Allow internal CUBIC only while RFC 9002 and RFC 8085 invariants remain satisfied",
+      "statement": "If a path is constructed with the internal CUBIC controller, the runtime MUST keep that controller path-local and immutable, MUST continue to satisfy the existing RFC 9002 congestion-control and loss-recovery invariants, and MUST allow that controller only while the RFC 8085 Section 3.1 congestion-control guidelines remain satisfied.",
+      "trace": {
+        "upstream_refs": [
+          "REQ-QUIC-RFC9002-S7-0005",
+          "REQ-QUIC-RFC9002-SBP5-0003",
+          "REQ-QUIC-RFC9002-SBP5-0004",
+          "REQ-QUIC-RFC9002-SBP7-0001",
+          "REQ-QUIC-RFC9002-SBP7-0002",
+          "REQ-QUIC-RFC9002-S7P6-0001",
+          "REQ-QUIC-RFC9002-S7P6P1-0001",
+          "REQ-QUIC-RFC9002-S7P6P2-0001",
+          "RFC 8085 Section 3.1",
+          "src/Incursa.Quic/QuicCongestionControlState.cs",
+          "src/Incursa.Quic/QuicSenderRecoveryRuntime.cs"
+        ]
+      },
+      "notes": [
+        "CUBIC is a private implementation choice and does not widen the public API or support promise.",
+        "The CUBIC path must not bypass the existing RFC 9002 recovery and congestion invariants.",
+        "The selector remains internal even when the CUBIC path is active."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0159",
+      "title": "Keep controller state per path and advance it with deterministic monotonic time",
+      "statement": "Each path controller MUST own its own congestion-control and recovery state, MUST initialize that state when the path is created, MUST reset or restore that state only under the existing path-promotion and migration semantics, and MUST use a deterministic monotonic clock for all elapsed-time decisions.",
+      "trace": {
+        "upstream_refs": [
+          "REQ-QUIC-CRT-0062",
+          "REQ-QUIC-CRT-0070",
+          "REQ-QUIC-RFC9002-SAP4-0001",
+          "src/Incursa.Quic/IMonotonicClock.cs",
+          "src/Incursa.Quic/MonotonicClock.cs",
+          "src/Incursa.Quic/QuicConnectionPathState.cs",
+          "src/Incursa.Quic/QuicRecoveryTiming.cs"
+        ]
+      },
+      "notes": [
+        "The controller's elapsed-time comparisons must not depend on wall-clock time.",
+        "Path promotion may reset or restore controller state only as part of the existing path semantics.",
+        "Per-path state separation keeps one path's history from contaminating another path's controller."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0160",
+      "title": "Keep ACK, loss, ECN, and persistent congestion behavior path-local and RFC 9002 conformant",
+      "statement": "Every path controller MUST process ACK, loss, ECN, and persistent-congestion inputs using the existing RFC 9002 rules for that path, and packets on one path MUST NOT change another path's controller state.",
+      "trace": {
+        "upstream_refs": [
+          "REQ-QUIC-RFC9002-S7-0005",
+          "REQ-QUIC-RFC9002-SBP5-0003",
+          "REQ-QUIC-RFC9002-SBP5-0004",
+          "REQ-QUIC-RFC9002-SBP7-0001",
+          "REQ-QUIC-RFC9002-SBP7-0002",
+          "REQ-QUIC-RFC9002-S7P6-0001",
+          "REQ-QUIC-RFC9002-S7P6P1-0001",
+          "REQ-QUIC-RFC9002-S7P6P2-0001",
+          "REQ-QUIC-RFC9002-SBP8-0003",
+          "REQ-QUIC-RFC9002-SBP8-0004",
+          "REQ-QUIC-RFC9002-SBP8-0005"
+        ]
+      },
+      "notes": [
+        "This requirement preserves the current ACK, loss, ECN, and persistent-congestion behavior floor under either controller choice.",
+        "Per-path controller state is the only allowed scope for congestion response.",
+        "A controller switch is not a reason to relax RFC 9002 reaction rules."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0161",
+      "title": "Normalize congestion math from path MTU and suppress growth when application or flow control is limiting",
+      "statement": "The controller MUST normalize its congestion-window math from the current per-path maximum datagram size and any derived MSS or PMTU limit, and MUST suppress growth when the path is application-limited or flow-control-limited.",
+      "trace": {
+        "upstream_refs": [
+          "REQ-QUIC-RFC9002-S7P2-0002",
+          "RFC9002-S7-2-P2-S1-R01",
+          "RFC9002-S7-2-P2-S2-R01",
+          "REQ-QUIC-RFC9002-SBP2-0001",
+          "REQ-QUIC-RFC9002-SBP5-0003",
+          "REQ-QUIC-RFC9002-S7P3P1-0002",
+          "REQ-QUIC-RFC9002-S7P3P3-0001",
+          "RFC9002-S7-3-3-P2-S1-R01"
+        ]
+      },
+      "notes": [
+        "The controller must use the path's normalized datagram size rather than raw transport overhead.",
+        "Application-limited and flow-control-limited periods do not authorize artificial window growth.",
+        "PMTU or MSS changes must feed the same normalized math for both NewReno and CUBIC."
       ]
     }
   ]

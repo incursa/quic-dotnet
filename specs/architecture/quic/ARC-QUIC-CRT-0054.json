@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0054",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC internal congestion-controller selector architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how the transport core can keep an internal construction-time congestion-controller selector per path, default to NewReno, permit CUBIC only under the existing RFC 9002 and RFC 8085 invariants, and preserve deterministic path-local recovery state and monotonic timing.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "SPEC-QUIC-RFC9002",
+    "ARC-QUIC-CRT-0051"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0156",
+    "REQ-QUIC-CRT-0157",
+    "REQ-QUIC-CRT-0158",
+    "REQ-QUIC-CRT-0159",
+    "REQ-QUIC-CRT-0160",
+    "REQ-QUIC-CRT-0161"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "src/Incursa.Quic/QuicConnectionPathState.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "src/Incursa.Quic/QuicSenderRecoveryRuntime.cs",
+    "src/Incursa.Quic/QuicRecoveryTiming.cs",
+    "src/Incursa.Quic/QuicRttEstimator.cs",
+    "src/Incursa.Quic/IMonotonicClock.cs",
+    "src/Incursa.Quic/MonotonicClock.cs",
+    "tests/Incursa.Quic.Tests/QuicConnectionPathStateTests.cs",
+    "tests/Incursa.Quic.Tests/QuicRttEstimatorUnitTests.cs"
+  ],
+  "design_summary": "Each path owns its own congestion-controller selection and controller state. The selector runs at path construction time, stores a private controller kind in the path state, and never exposes that choice as a public API or a caller-selectable transport option. Default paths instantiate the NewReno controller and must remain observationally equivalent to the existing RFC 9002 NewReno homes. An internal CUBIC implementation is allowed only as a private path-local choice that still satisfies the RFC 9002 recovery and congestion invariants plus the RFC 8085 congestion-control guidelines. The controller state uses the existing monotonic clock seam so every elapsed-time decision stays deterministic and replayable in tests. Path promotion and migration may reset or restore controller state only through the existing path-state semantics, and ACK, loss, ECN, persistent congestion, and PMTU-normalized window math all stay inside the same per-path controller boundary.",
+  "alternatives_considered": [
+    "Expose a public controller-selection API. Rejected because the selector is an internal construction-time policy and must not become part of the supported surface.",
+    "Hot-swap the controller after path creation. Rejected because the choice must remain immutable for the life of the path and the state machine becomes harder to reason about.",
+    "Use a single connection-wide controller shared across all paths. Rejected because RFC 9002 congestion control is per path and migration resets/restores are path-local.",
+    "Make CUBIC the default controller. Rejected because the existing NewReno requirement homes are the canonical baseline and must remain the default proof home."
+  ],
+  "edge_cases_and_constraints": [
+    "Path construction is the only time the selector may choose NewReno versus CUBIC.",
+    "Path promotion and migration may reset or restore controller state, but they may not create a new public controller choice.",
+    "Monotonic clock reads must not depend on wall-clock time or on local system adjustments.",
+    "ACK-only packets, loss signals, ECN signals, and persistent congestion remain path-local recovery inputs.",
+    "PMTU or MSS normalization must feed the same controller math for both controller choices."
+  ],
+  "data_and_state_considerations": "The controller choice can live as a small immutable field on each path record, while the mutable congestion-control and recovery state stays with the same path record or a nested controller state object. The selector must not reach endpoint-shared state, and it must not cache a public-facing notion of supported controllers. Time comparisons should use the monotonic-clock abstraction so tests can replay controller transitions deterministically. When a path is discarded, its controller state is discarded with it; when a path is revalidated or promoted, only the existing path-state semantics may decide whether state is reset or restored.",
+  "risks": [
+    "If the selector leaks into public API or support text, the internal-only boundary is lost.",
+    "If the default NewReno path diverges from the current RFC 9002 homes, the selector will look correct while silently changing the shipped baseline.",
+    "If the monotonic time seam is replaced with wall-clock time, controller behavior will become nondeterministic under test and load.",
+    "If CUBIC is allowed to bypass the RFC 9002 and RFC 8085 invariants, the selector will widen support beyond the intended proof boundary."
+  ]
+}

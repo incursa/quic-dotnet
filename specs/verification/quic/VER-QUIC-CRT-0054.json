@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0054",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC internal congestion-controller selector verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests for the selector and controller invariants, deterministic monotonic-clock tests, SpecTrace validation, and diff checks.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "SPEC-QUIC-RFC9002",
+    "ARC-QUIC-CRT-0054",
+    "WI-QUIC-CRT-0054"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0156",
+    "REQ-QUIC-CRT-0157",
+    "REQ-QUIC-CRT-0158",
+    "REQ-QUIC-CRT-0159",
+    "REQ-QUIC-CRT-0160",
+    "REQ-QUIC-CRT-0161"
+  ],
+  "preconditions": [
+    "The six CRT selector requirements are present in SPEC-QUIC-CRT.",
+    "The current path-state, congestion-control, recovery-timing, RTT, and monotonic-clock helpers remain available.",
+    "No public API widening is included in this slice."
+  ],
+  "scope": "This artifact verifies the internal congestion-controller selector prerequisite only: default NewReno equivalence, internal CUBIC gating, immutable per-path controller choice, deterministic monotonic timing, path-local ACK/loss/ECN/persistent-congestion behavior, and PMTU/MSS-normalized congestion math. It does not verify unrelated HTTP/3, TLS, or public API work.",
+  "expected_result": "Focused requirement-home tests pass for the six selector requirements, monotonic-time checks confirm deterministic controller transitions, and SpecTrace validation plus diff checks stay clean without any public API or support-promise widening.",
+  "procedure": [
+    "Run the focused requirement-home tests for REQ-QUIC-CRT-0156 through REQ-QUIC-CRT-0161.",
+    "Run the selector and monotonic-clock unit tests that cover the path-local controller state and deterministic time seam.",
+    "Run the repo-local SpecTrace validation profile.",
+    "Run `git diff --check`."
+  ],
+  "evidence": [
+    "specs/requirements/quic/SPEC-QUIC-CRT.json",
+    "specs/architecture/quic/ARC-QUIC-CRT-0054.json",
+    "specs/work-items/quic/WI-QUIC-CRT-0054.json",
+    "specs/requirements/quic/REQUIREMENT-GAPS.md",
+    "pwsh -File scripts/Test-SpecTraceRepository.ps1 -Profile core",
+    "git diff --check"
+  ]
+}
