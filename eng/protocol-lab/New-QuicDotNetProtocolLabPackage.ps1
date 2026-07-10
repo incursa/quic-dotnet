@@ -23,14 +23,44 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+function Invoke-GitValue {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $RepositoryRoot,
+
+        [Parameter(Mandatory = $true)]
+        [string[]] $Arguments,
+
+        [Parameter(Mandatory = $true)]
+        [string] $Description
+    )
+
+    $output = & git -C $RepositoryRoot @Arguments 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to read $Description from the quic-dotnet repository."
+    }
+
+    $value = ($output | Out-String).Trim()
+    if ([string]::IsNullOrWhiteSpace($value)) {
+        throw "Git returned an empty $Description for the quic-dotnet repository."
+    }
+
+    return $value
+}
+
 function Get-DefaultPackageVersion {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $RepositoryRoot
+    )
+
     $timestamp = Get-Date -AsUTC -Format "yyyyMMddTHHmmssZ"
     $shortSha = "nogit"
     $dirty = "unknown"
 
     try {
-        $shortSha = (git rev-parse --short HEAD 2>$null).Trim()
-        $status = @(git status --porcelain 2>$null)
+        $shortSha = (git -C $RepositoryRoot rev-parse --short HEAD 2>$null).Trim()
+        $status = @(git -C $RepositoryRoot status --porcelain 2>$null)
         $dirty = if ($status.Count -gt 0) { "dirty" } else { "clean" }
     }
     catch {
@@ -241,9 +271,11 @@ $projectFullPath = Resolve-ProjectPathOrThrow -Path $Project -Description "Proto
 Assert-PathUnderRoot -Path $projectFullPath -Root $repoRoot -Description "ProtocolLab package project"
 
 $protocolLabRootFullPath = Resolve-PathOrThrow -Path $ProtocolLabRoot -Description "ProtocolLab root"
+$sourceRepository = Invoke-GitValue -RepositoryRoot $repoRoot -Arguments @("remote", "get-url", "origin") -Description "source repository"
+$sourceCommit = Invoke-GitValue -RepositoryRoot $repoRoot -Arguments @("rev-parse", "HEAD") -Description "source commit"
 
 if ([string]::IsNullOrWhiteSpace($PackageVersion)) {
-    $PackageVersion = Get-DefaultPackageVersion
+    $PackageVersion = Get-DefaultPackageVersion -RepositoryRoot $repoRoot
 }
 
 $stageRoot = Join-Path $repoRoot "artifacts/protocol-lab/package-source/$($targetConfig.PackageId)/$PackageVersion"
@@ -270,8 +302,11 @@ if (Test-Path -LiteralPath $scriptsRoot -PathType Container) {
 }
 
 $manifestPath = Join-Path $stageRoot "protocol-lab-package.json"
-(Get-Content -LiteralPath $manifestPath -Raw).Replace("__PACKAGE_VERSION__", $PackageVersion) |
-    Set-Content -LiteralPath $manifestPath -NoNewline
+$manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+$manifest.packageVersion = $PackageVersion
+$manifest.sourceRepository = $sourceRepository
+$manifest.sourceCommit = $sourceCommit
+$manifest | ConvertTo-Json -Depth 16 | Set-Content -LiteralPath $manifestPath
 $executionManifestPath = Join-Path $stageRoot "protocol-lab.internal.json"
 
 $requestedEnvironmentKeys = foreach ($rid in $RuntimeIdentifier) {
