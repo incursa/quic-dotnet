@@ -42,6 +42,9 @@ These metrics are diagnostic signals for live behavior and operational visibilit
 | `incursa.quic.buffer_pool.outstanding.buffers` | UpDownCounter | Net outstanding buffers observed while the metrics listener is active. | `size_bucket` |
 | `incursa.quic.buffer_pool.outstanding.bytes` | UpDownCounter | Net outstanding rented bytes observed while the metrics listener is active. | `size_bucket` |
 | `incursa.quic.buffer_pool.oversized_rents` | Counter | Rents where the actual array length is larger than the requested length. | `size_bucket` |
+| `incursa.quic.runtime.shard.inbox.depth` | UpDownCounter | Work items currently queued for a runtime shard. | `shard_index` |
+| `incursa.quic.runtime.shard.work_items.enqueued` | Counter | Work items successfully admitted to a runtime shard inbox. | `shard_index`, `work_item_kind` |
+| `incursa.quic.runtime.shard.work_items.dequeued` | Counter | Work items removed from a runtime shard inbox for processing or shutdown cleanup. | `shard_index`, `work_item_kind` |
 
 ## HTTP/3 Instruments
 
@@ -65,6 +68,8 @@ Metrics only use bounded, low-cardinality tags:
 - `status_class`: `1xx`, `2xx`, `3xx`, `4xx`, `5xx`, `unknown`
 - `size_bucket`: `le_1kb`, `le_4kb`, `le_16kb`, `le_64kb`, `le_256kb`, `gt_256kb`
 - `requested_size_bucket`: `le_1kb`, `le_4kb`, `le_16kb`, `le_64kb`, `le_256kb`, `gt_256kb`
+- `shard_index`: zero-based index within the bounded runtime-shard set
+- `work_item_kind`: `event`, `packet_received`, `stream_capacity_release`, `flow_control_credit_update`, `stream_open`, `stream_write`, `deadline_wake`
 
 The metrics surface must not tag by connection ID, stream ID, endpoint, peer address, URL path, exception message, or raw error text.
 

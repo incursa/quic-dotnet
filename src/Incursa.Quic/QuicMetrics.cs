@@ -20,6 +20,11 @@ internal static class QuicMetrics
     internal const string ClientRole = "client";
     internal const string ServerRole = "server";
     internal const string UnknownPacketType = "unknown";
+    private const string RuntimeShardInboxDepthMetricName = "incursa.quic.runtime.shard.inbox.depth";
+    private const string RuntimeShardWorkItemsEnqueuedMetricName = "incursa.quic.runtime.shard.work_items.enqueued";
+    private const string RuntimeShardWorkItemsDequeuedMetricName = "incursa.quic.runtime.shard.work_items.dequeued";
+    private const string RuntimeShardIndexTagName = "shard_index";
+    private const string RuntimeShardWorkItemKindTagName = "work_item_kind";
     private const double MicrosecondsPerMillisecond = 1000.0;
     private const int HttpStatusInformationalMin = 100;
     private const int HttpStatusInformationalMax = 199;
@@ -71,6 +76,9 @@ internal static class QuicMetrics
     private static readonly Counter<long> AeadOpenFailures = Meter.CreateCounter<long>("incursa.quic.aead.open_failures", unit: "events");
     private static readonly Counter<long> UdpErrors = Meter.CreateCounter<long>("incursa.quic.udp.errors", unit: "events");
     private static readonly Histogram<double> Rtt = Meter.CreateHistogram<double>("incursa.quic.rtt.ms", unit: "ms");
+    private static readonly UpDownCounter<long> RuntimeShardInboxDepth = Meter.CreateUpDownCounter<long>(RuntimeShardInboxDepthMetricName, unit: "work_items");
+    private static readonly Counter<long> RuntimeShardWorkItemsEnqueued = Meter.CreateCounter<long>(RuntimeShardWorkItemsEnqueuedMetricName, unit: "work_items");
+    private static readonly Counter<long> RuntimeShardWorkItemsDequeued = Meter.CreateCounter<long>(RuntimeShardWorkItemsDequeuedMetricName, unit: "work_items");
     private static readonly long[] BufferPoolRentCounts = new long[BufferPoolBucketCount];
     private static readonly long[] BufferPoolRequestedRentCounts = new long[BufferPoolBucketCount];
     private static readonly long[] BufferPoolReturnCounts = new long[BufferPoolBucketCount];
@@ -275,6 +283,58 @@ internal static class QuicMetrics
         TagList tags = default;
         tags.Add("role", GetRoleTag(role));
         Rtt.Record(rttMicros / MicrosecondsPerMillisecond, in tags);
+    }
+
+    internal static void RecordRuntimeShardWorkItemEnqueued(int shardIndex, in QuicConnectionRuntimeShardWorkItem workItem)
+    {
+        if (!RuntimeShardInboxDepth.Enabled && !RuntimeShardWorkItemsEnqueued.Enabled)
+        {
+            return;
+        }
+
+        if (RuntimeShardInboxDepth.Enabled)
+        {
+            TagList depthTags = default;
+            depthTags.Add(RuntimeShardIndexTagName, shardIndex);
+            RuntimeShardInboxDepth.Add(1, in depthTags);
+        }
+
+        if (RuntimeShardWorkItemsEnqueued.Enabled)
+        {
+            TagList workItemTags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
+            RuntimeShardWorkItemsEnqueued.Add(1, in workItemTags);
+        }
+    }
+
+    internal static void RecordRuntimeShardWorkItemDequeued(int shardIndex, in QuicConnectionRuntimeShardWorkItem workItem)
+    {
+        if (!RuntimeShardInboxDepth.Enabled && !RuntimeShardWorkItemsDequeued.Enabled)
+        {
+            return;
+        }
+
+        if (RuntimeShardInboxDepth.Enabled)
+        {
+            TagList depthTags = default;
+            depthTags.Add(RuntimeShardIndexTagName, shardIndex);
+            RuntimeShardInboxDepth.Add(-1, in depthTags);
+        }
+
+        if (RuntimeShardWorkItemsDequeued.Enabled)
+        {
+            TagList workItemTags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
+            RuntimeShardWorkItemsDequeued.Add(1, in workItemTags);
+        }
+    }
+
+    private static TagList CreateRuntimeShardWorkItemTags(
+        int shardIndex,
+        in QuicConnectionRuntimeShardWorkItem workItem)
+    {
+        TagList tags = default;
+        tags.Add(RuntimeShardIndexTagName, shardIndex);
+        tags.Add(RuntimeShardWorkItemKindTagName, NormalizeRuntimeShardWorkItemKind(in workItem));
+        return tags;
     }
 
     internal static void RecordBufferRent(int requestedLength, int rentedLength)
@@ -516,6 +576,32 @@ internal static class QuicMetrics
             QuicPacketNumberSpace.ApplicationData => "1rtt",
             _ => UnknownPacketType,
         };
+    }
+
+    internal static string NormalizeRuntimeShardWorkItemKind(in QuicConnectionRuntimeShardWorkItem workItem)
+    {
+        if (IsDeadlineWakeWorkItem(in workItem))
+        {
+            return "deadline_wake";
+        }
+
+        return workItem.Kind switch
+        {
+            QuicConnectionRuntimeShardWorkItemKind.Event => "event",
+            QuicConnectionRuntimeShardWorkItemKind.PacketReceived => "packet_received",
+            QuicConnectionRuntimeShardWorkItemKind.StreamCapacityRelease => "stream_capacity_release",
+            QuicConnectionRuntimeShardWorkItemKind.FlowControlCreditUpdate => "flow_control_credit_update",
+            QuicConnectionRuntimeShardWorkItemKind.StreamOpen => "stream_open",
+            QuicConnectionRuntimeShardWorkItemKind.StreamWrite => "stream_write",
+            _ => "unknown",
+        };
+    }
+
+    private static bool IsDeadlineWakeWorkItem(in QuicConnectionRuntimeShardWorkItem workItem)
+    {
+        return workItem.Runtime is null
+            && workItem.ConnectionEvent is null
+            && workItem.Kind == QuicConnectionRuntimeShardWorkItemKind.Event;
     }
 
     private static string FormatCloseReason(QuicConnectionCloseOrigin closeOrigin)

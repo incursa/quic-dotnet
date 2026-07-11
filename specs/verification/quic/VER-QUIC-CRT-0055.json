@@ -1,0 +1,43 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0055",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Bounded runtime-shard metrics verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "MeterListener tests, shard scheduler and disposal regression tests, full QUIC tests, SpecTrace validation, and a source-backed ProtocolLab counter capture.",
+  "scope": "Verify paired per-shard queue depth, bounded enqueue/dequeue dimensions, disabled-listener behavior, actual due-timer processing, and diagnostic artifact generation without protocol or scheduling changes.",
+  "preconditions": [
+    "The existing Incursa.Quic Meter remains the only transport metrics surface.",
+    "Runtime-shard tags are bounded to shard_index and work_item_kind.",
+    "ProtocolLab diagnostics attach to the measured target process."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicMetrics.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeShard.cs",
+    "tests/Incursa.Quic.Tests/MetricsTests.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter FullyQualifiedName~QuicRuntimeShardMetrics",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "ProtocolLab quic-runtime-shard-summary.json"
+  ],
+  "procedure": [
+    "Observe one successful enqueue and dequeue and confirm depth returns to zero for the shard.",
+    "Confirm depth is tagged only by shard_index while work counters add bounded work_item_kind values.",
+    "Exercise timer wake and actual due-timer work through the shard consumer.",
+    "Confirm disposed or rejected enqueue attempts do not emit measurements.",
+    "Run the complete test and SpecTrace validation suites.",
+    "Capture and inspect a ProtocolLab runtime-shard summary from the target process."
+  ],
+  "expected_result": "Shard diagnostics are balanced, bounded, attributable by shard and work kind, and observational only; ProtocolLab retains them as diagnostic evidence.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0052",
+    "WI-QUIC-CRT-0055"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0098",
+    "REQ-QUIC-CRT-0155"
+  ]
+}

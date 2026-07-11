@@ -3,6 +3,7 @@
 
 using System.Diagnostics.Metrics;
 using System.Net.Sockets;
+using System.Threading;
 using Incursa.Quic.Http3;
 
 namespace Incursa.Quic.Tests;
@@ -10,6 +11,7 @@ namespace Incursa.Quic.Tests;
 public class MetricsTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-CRT-0098")]
     [Requirement("REQ-QUIC-CRT-0155")]
     public async Task QuicConnectionAndStreamPathsEmitActiveCounterDeltas()
     {
@@ -201,6 +203,171 @@ public class MetricsTests
         Http3Metrics.RecordRequestFailed("server", "http3", started);
 
         Assert.False(QuicDiagnostics.ResolveConnectionSink().IsEnabled);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public async Task QuicRuntimeShardMetricsEmitBoundedTagsForEnqueueAndDequeue()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+        FakeMonotonicClock clock = new(0);
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState(), clock);
+        await using QuicConnectionRuntimeShard shard = new(2, clock);
+        using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(5));
+        TaskCompletionSource firstTransitionProcessed = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        Task consumer = shard.RunAsync(
+            (_, _) => firstTransitionProcessed.TrySetResult(),
+            cancellationToken: timeout.Token);
+
+        Assert.True(shard.TryPostFlowControlCreditUpdate(new QuicConnectionHandle(1), runtime));
+        await firstTransitionProcessed.Task.WaitAsync(timeout.Token);
+        await WaitForMeasurementAsync(
+            recorder,
+            "incursa.quic.runtime.shard.work_items.dequeued",
+            "work_item_kind",
+            "flow_control_credit_update");
+
+        await shard.DisposeAsync();
+        await consumer;
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.inbox.depth"
+            && measurement.Value == 1
+            && measurement.HasTag("shard_index", "2")
+            && !measurement.Tags.Any(tag => tag.Key == "work_item_kind"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.work_items.enqueued"
+            && measurement.Value == 1
+            && measurement.HasTag("shard_index", "2")
+            && measurement.HasTag("work_item_kind", "flow_control_credit_update"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.inbox.depth"
+            && measurement.Value == -1
+            && measurement.HasTag("shard_index", "2")
+            && !measurement.Tags.Any(tag => tag.Key == "work_item_kind"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.work_items.dequeued"
+            && measurement.Value == 1
+            && measurement.HasTag("shard_index", "2")
+            && measurement.HasTag("work_item_kind", "flow_control_credit_update"));
+        Assert.Equal(0d, recorder.Measurements
+            .Where(measurement => measurement.InstrumentName == "incursa.quic.runtime.shard.inbox.depth")
+            .Sum(measurement => measurement.Value));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0098")]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public async Task QuicRuntimeShardMetricsIgnoreDisposedEnqueueAttempts()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+        FakeMonotonicClock clock = new(0);
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState(), clock);
+        await using QuicConnectionRuntimeShard shard = new(3, clock);
+
+        await shard.DisposeAsync();
+
+        Assert.False(shard.TryPostFlowControlCreditUpdate(new QuicConnectionHandle(1), runtime));
+        Assert.DoesNotContain(
+            recorder.Measurements,
+            measurement => measurement.InstrumentName.StartsWith("incursa.quic.runtime.shard", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0098")]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public async Task QuicRuntimeShardMetricsAccountForActualDueTimerWork()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+        FakeMonotonicClock clock = new(0);
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState(), clock);
+        await using QuicConnectionRuntimeShard shard = new(4, clock);
+        QuicConnectionHandle handle = new(55);
+        QuicConnectionArmTimerEffect arm = Assert.IsType<QuicConnectionArmTimerEffect>(
+            Assert.Single(runtime.SetTimerDeadline(QuicConnectionTimerKind.IdleTimeout, 10)));
+        shard.DeadlineScheduler.Apply(handle, runtime, arm);
+        clock.Advance(10);
+
+        using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(5));
+        Task consumer = shard.RunAsync(cancellationToken: timeout.Token);
+
+        await WaitForMeasurementAsync(
+            recorder,
+            "incursa.quic.runtime.shard.work_items.dequeued",
+            "work_item_kind",
+            "event");
+        await shard.DisposeAsync();
+        await consumer;
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.work_items.enqueued"
+            && measurement.Value == 1
+            && measurement.HasTag("shard_index", "4")
+            && measurement.HasTag("work_item_kind", "event"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.work_items.dequeued"
+            && measurement.Value == 1
+            && measurement.HasTag("shard_index", "4")
+            && measurement.HasTag("work_item_kind", "event"));
+        Assert.Equal(0d, recorder.Measurements
+            .Where(measurement => measurement.InstrumentName == "incursa.quic.runtime.shard.inbox.depth")
+            .Sum(measurement => measurement.Value));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0098")]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void QuicRuntimeShardMetricsUseTheDocumentedBoundedWorkItemKinds()
+    {
+        FakeMonotonicClock clock = new(0);
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState(), clock);
+        QuicConnectionHandle handle = new(56);
+        QuicConnectionRuntimeShardWorkItem[] workItems =
+        [
+            new(handle, runtime, new QuicConnectionTimerExpiredEvent(0, QuicConnectionTimerKind.IdleTimeout, 1)),
+            new(
+                handle,
+                runtime,
+                new QuicConnectionPacketReceivedContext(
+                    0,
+                    new QuicConnectionPathIdentity("127.0.0.1", "127.0.0.1", 443, 50000),
+                    new byte[] { 0 }),
+                ownedDatagramBuffer: null,
+                ownedDatagramBufferOwnership: default),
+            new(handle, runtime, QuicConnectionRuntimeShardWorkItemKind.StreamCapacityRelease),
+            new(handle, runtime, QuicConnectionRuntimeShardWorkItemKind.FlowControlCreditUpdate),
+            new(handle, runtime, requestId: 1, QuicStreamType.Bidirectional),
+            new(handle, runtime, requestId: 2, QuicConnectionStreamActionKind.Write, streamId: 0, ReadOnlyMemory<byte>.Empty),
+            default,
+        ];
+
+        Assert.Equal(
+            [
+                "event",
+                "packet_received",
+                "stream_capacity_release",
+                "flow_control_credit_update",
+                "stream_open",
+                "stream_write",
+                "deadline_wake",
+            ],
+            workItems.Select(workItem => QuicMetrics.NormalizeRuntimeShardWorkItemKind(in workItem)));
+    }
+
+    private static async Task WaitForMeasurementAsync(
+        MetricsRecorder recorder,
+        string instrumentName,
+        string tagName,
+        string tagValue)
+    {
+        using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(5));
+        while (!recorder.Measurements.Any(measurement =>
+            measurement.InstrumentName == instrumentName
+            && measurement.HasTag(tagName, tagValue)))
+        {
+            await Task.Delay(10, timeout.Token).ConfigureAwait(false);
+        }
     }
 
     private sealed class MetricsRecorder : IDisposable

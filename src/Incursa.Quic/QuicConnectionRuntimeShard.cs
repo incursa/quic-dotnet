@@ -16,9 +16,26 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 {
     private static readonly TimerCallback DeadlineWakeTimerCallback = static state =>
     {
-        ChannelWriter<QuicConnectionRuntimeShardWorkItem> writer = (ChannelWriter<QuicConnectionRuntimeShardWorkItem>)state!;
-        _ = writer.TryWrite(default);
+        DeadlineWakeTimerState timerState = (DeadlineWakeTimerState)state!;
+        QuicConnectionRuntimeShardWorkItem workItem = default;
+        if (timerState.Writer.TryWrite(workItem))
+        {
+            QuicMetrics.RecordRuntimeShardWorkItemEnqueued(timerState.ShardIndex, in workItem);
+        }
     };
+
+    private sealed class DeadlineWakeTimerState
+    {
+        internal DeadlineWakeTimerState(ChannelWriter<QuicConnectionRuntimeShardWorkItem> writer, int shardIndex)
+        {
+            Writer = writer;
+            ShardIndex = shardIndex;
+        }
+
+        internal ChannelWriter<QuicConnectionRuntimeShardWorkItem> Writer { get; }
+
+        internal int ShardIndex { get; }
+    }
 
     private readonly IMonotonicClock clock;
     private readonly Timer deadlineWakeTimer;
@@ -56,7 +73,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 
         deadlineWakeTimer = new Timer(
             DeadlineWakeTimerCallback,
-            inbox.Writer,
+            new DeadlineWakeTimerState(inbox.Writer, shardIndex),
             Timeout.InfiniteTimeSpan,
             Timeout.InfiniteTimeSpan);
     }
@@ -89,7 +106,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             return false;
         }
 
-        return inbox.Writer.TryWrite(new QuicConnectionRuntimeShardWorkItem(handle, runtime, connectionEvent));
+        return TryWriteWorkItem(new QuicConnectionRuntimeShardWorkItem(handle, runtime, connectionEvent));
     }
 
     public bool TryPostPacketReceived(
@@ -111,7 +128,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             return false;
         }
 
-        return inbox.Writer.TryWrite(new QuicConnectionRuntimeShardWorkItem(
+        return TryWriteWorkItem(new QuicConnectionRuntimeShardWorkItem(
             handle,
             runtime,
             packetReceived,
@@ -133,7 +150,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             return false;
         }
 
-        return inbox.Writer.TryWrite(new QuicConnectionRuntimeShardWorkItem(
+        return TryWriteWorkItem(new QuicConnectionRuntimeShardWorkItem(
             handle,
             runtime,
             QuicConnectionRuntimeShardWorkItemKind.StreamCapacityRelease));
@@ -153,7 +170,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             return false;
         }
 
-        return inbox.Writer.TryWrite(new QuicConnectionRuntimeShardWorkItem(
+        return TryWriteWorkItem(new QuicConnectionRuntimeShardWorkItem(
             handle,
             runtime,
             QuicConnectionRuntimeShardWorkItemKind.FlowControlCreditUpdate));
@@ -177,7 +194,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             return false;
         }
 
-        return inbox.Writer.TryWrite(new QuicConnectionRuntimeShardWorkItem(
+        return TryWriteWorkItem(new QuicConnectionRuntimeShardWorkItem(
             handle,
             runtime,
             requestId,
@@ -204,7 +221,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             return false;
         }
 
-        return inbox.Writer.TryWrite(new QuicConnectionRuntimeShardWorkItem(
+        return TryWriteWorkItem(new QuicConnectionRuntimeShardWorkItem(
             handle,
             runtime,
             requestId,
@@ -300,10 +317,11 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 // SEE: code:src/Incursa.Quic/QuicConnectionRuntimeDeadlineScheduler.cs#EnqueueDueEntries
                 // Drain any timer expirations into the inbox before and after reading so deadlines do not wait for
                 // a separate wake-up when the shard is already active.
-                deadlineScheduler.EnqueueDueEntries(clock.Ticks, inbox.Writer);
+                EnqueueDueEntries(clock.Ticks);
 
                 while (reader.TryRead(out QuicConnectionRuntimeShardWorkItem workItem))
                 {
+                    QuicMetrics.RecordRuntimeShardWorkItemDequeued(shardIndex, in workItem);
                     if (IsDeadlineWakeWorkItem(workItem))
                     {
                         continue;
@@ -312,9 +330,10 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     ProcessWorkItem(workItem, transitionObserver, effectObserver, sendDatagramObserver);
                 }
 
-                deadlineScheduler.EnqueueDueEntries(clock.Ticks, inbox.Writer);
+                EnqueueDueEntries(clock.Ticks);
                 if (reader.TryRead(out QuicConnectionRuntimeShardWorkItem queuedTimerWorkItem))
                 {
+                    QuicMetrics.RecordRuntimeShardWorkItemDequeued(shardIndex, in queuedTimerWorkItem);
                     if (IsDeadlineWakeWorkItem(queuedTimerWorkItem))
                     {
                         continue;
@@ -354,6 +373,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             await cancellationRegistration.DisposeAsync().ConfigureAwait(false);
             while (reader.TryRead(out QuicConnectionRuntimeShardWorkItem workItem))
             {
+                QuicMetrics.RecordRuntimeShardWorkItemDequeued(shardIndex, in workItem);
                 if (IsDeadlineWakeWorkItem(workItem))
                 {
                     continue;
@@ -370,6 +390,32 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
     internal void ApplyEffect(QuicConnectionHandle handle, QuicConnectionRuntime runtime, QuicConnectionEffect effect)
     {
         deadlineScheduler.Apply(handle, runtime, effect);
+    }
+
+    private bool TryWriteWorkItem(in QuicConnectionRuntimeShardWorkItem workItem)
+    {
+        if (!inbox.Writer.TryWrite(workItem))
+        {
+            return false;
+        }
+
+        QuicMetrics.RecordRuntimeShardWorkItemEnqueued(shardIndex, in workItem);
+        return true;
+    }
+
+    private void EnqueueDueEntries(long nowTicks)
+    {
+        while (deadlineScheduler.TryDequeueDueEntry(nowTicks, out QuicConnectionRuntimeScheduledTimerEntry entry))
+        {
+            QuicConnectionRuntimeShardWorkItem workItem = new(
+                entry.Handle,
+                entry.Runtime,
+                new QuicConnectionTimerExpiredEvent(nowTicks, entry.TimerKind, entry.Generation));
+            if (!TryWriteWorkItem(in workItem))
+            {
+                break;
+            }
+        }
     }
 
     private void ThrowIfDisposed()

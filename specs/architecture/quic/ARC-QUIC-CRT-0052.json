@@ -13,12 +13,14 @@
     "ARC-QUIC-CRT-0032"
   ],
   "satisfies": [
+    "REQ-QUIC-CRT-0098",
     "REQ-QUIC-CRT-0155"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicMetrics.cs",
     "src/Incursa.Quic.Http3/Http3Metrics.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeShard.cs",
     "src/Incursa.Quic/QuicStream.cs",
     "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
     "src/Incursa.Quic/QuicListenerHost.cs",
@@ -26,7 +28,7 @@
     "src/Incursa.Quic.Http3/Http3Client.cs",
     "docs/metrics.md"
   ],
-  "design_summary": "The QUIC transport owns one internal Meter helper with meter name Incursa.Quic and the HTTP/3 layer owns one internal Meter helper with meter name Incursa.Quic.Http3. The helpers create standard counters, up-down counters, and histograms only; they do not reference OpenTelemetry packages, qlog packages, serializers, or diagnostics sinks. Runtime, stream, socket, recovery, and HTTP/3 request code calls the helpers at existing observation points so the emitted measurements are diagnostic side effects only. Hot packet, datagram, byte, and recovery paths check Instrument.Enabled before constructing tag lists, and every tag value is selected from a bounded string set.",
+  "design_summary": "The QUIC transport owns one internal Meter helper with meter name Incursa.Quic and the HTTP/3 layer owns one internal Meter helper with meter name Incursa.Quic.Http3. The helpers create standard counters, up-down counters, and histograms only; they do not reference OpenTelemetry packages, qlog packages, serializers, or diagnostics sinks. Runtime, stream, socket, recovery, shard scheduling, and HTTP/3 request code calls the helpers at existing observation points so the emitted measurements are diagnostic side effects only. Runtime-shard inbox depth is partitioned only by bounded shard index, while enqueue and dequeue observations add a bounded work-item kind. Hot packet, datagram, byte, recovery, and shard paths check Instrument.Enabled before constructing tag lists, and every tag value is selected from a bounded set.",
   "alternatives_considered": [
     "Add OpenTelemetry package references and exporters directly. Rejected because the package should expose standard Meter instruments and leave collection policy to callers.",
     "Map metrics through the existing qlog adapter. Rejected because metrics are live diagnostic signals and must not move qlog concerns into the transport core.",
@@ -35,6 +37,7 @@
   ],
   "edge_cases_and_constraints": [
     "Metrics emission must not alter wire behavior, scheduling, recovery semantics, qlog serialization, ProtocolLab behavior, or benchmark behavior outside the added metrics benchmark.",
+    "Runtime-shard depth measurements must balance successful enqueue and dequeue operations, and rejected writes must not emit queue measurements.",
     "Active connection and stream instruments are up-down counters and must emit matching decrement measurements when the runtime or stream facade is disposed.",
     "HTTP/3 request metrics must classify status by status class and failures by bounded reason categories instead of method, path, exception message, or raw error text.",
     "The metrics helpers remain internal implementation details; callers subscribe through the public Meter names."

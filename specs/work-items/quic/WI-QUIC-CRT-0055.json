@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0055",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Bounded runtime-shard metrics work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Expose bounded shard queue depth and work distribution metrics for high-concurrency diagnosis without changing scheduling behavior.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0052"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0052"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0055"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0098",
+    "REQ-QUIC-CRT-0155"
+  ],
+  "planned_changes": "Add shard-scoped inbox depth and bounded per-kind enqueue/dequeue instruments to the existing Incursa.Quic Meter. Preserve disabled-listener guards and existing runtime scheduling semantics.",
+  "verification_plan": "Run focused MeterListener, shard scheduler, disposal, and timer tests; run the complete QUIC test project; validate SpecTrace JSON; and confirm a ProtocolLab counter capture produces the shard summary artifact.",
+  "completion_notes": "Added shard-only queue depth and bounded shard_index/work_item_kind enqueue/dequeue measurements. Timer wakes and due timer work use the same paired accounting as other shard work, and failed enqueue attempts emit no measurements.",
+  "out_of_scope": [
+    "Connection, stream, endpoint, address, or raw-error metric tags",
+    "Changing shard count or routing policy",
+    "Changing timer or scheduling semantics",
+    "Treating diagnostics as benchmark or publishability evidence"
+  ]
+}
