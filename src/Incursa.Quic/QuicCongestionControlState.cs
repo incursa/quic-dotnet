@@ -130,6 +130,10 @@ internal sealed class QuicCongestionControlState
     /// </summary>
     internal QuicCongestionControlAlgorithm CongestionControlAlgorithm => congestionControlAlgorithm;
 
+    internal ulong CubicWindowMaxBytes => cubicWindowMaxBytes;
+
+    internal ulong? CubicEpochStartMicros => cubicHasEpochStart ? cubicEpochStartMicros : null;
+
     /// <summary>
     /// Gets the max_datagram_size value used by RFC 9002 recovery formulas.
     /// </summary>
@@ -434,6 +438,7 @@ internal sealed class QuicCongestionControlState
             return false;
         }
 
+        ulong congestionEventFlightSizeBytes = BytesInFlightBytes;
         if (packetInFlight)
         {
             BytesInFlightBytes = SubtractSaturating(BytesInFlightBytes, sentBytes);
@@ -444,7 +449,7 @@ internal sealed class QuicCongestionControlState
             return true;
         }
 
-        EnterRecovery(sentAtMicros);
+        EnterRecovery(sentAtMicros, congestionEventFlightSizeBytes, ecnCongestionEvent: false);
         return true;
     }
 
@@ -488,7 +493,10 @@ internal sealed class QuicCongestionControlState
             return false;
         }
 
-        EnterRecovery(largestAcknowledgedPacketSentAtMicros);
+        EnterRecovery(
+            largestAcknowledgedPacketSentAtMicros,
+            BytesInFlightBytes,
+            ecnCongestionEvent: true);
         return true;
     }
 
@@ -543,6 +551,7 @@ internal sealed class QuicCongestionControlState
             return false;
         }
 
+        ulong congestionEventFlightSizeBytes = BytesInFlightBytes;
         ulong latestLossSentAtMicros = 0;
         foreach (QuicPersistentCongestionPacket packet in packets)
         {
@@ -606,7 +615,10 @@ internal sealed class QuicCongestionControlState
 
         if (latestLossSentAtMicros != 0 && !IsInRecovery(latestLossSentAtMicros))
         {
-            EnterRecovery(latestLossSentAtMicros);
+            EnterRecovery(
+                latestLossSentAtMicros,
+                congestionEventFlightSizeBytes,
+                ecnCongestionEvent: false);
         }
 
         foreach (QuicPersistentCongestionPacket packet in packets)
@@ -641,7 +653,10 @@ internal sealed class QuicCongestionControlState
         return RecoveryStartTimeMicros.HasValue && sentAtMicros <= RecoveryStartTimeMicros.Value;
     }
 
-    private void EnterRecovery(ulong sentAtMicros)
+    private void EnterRecovery(
+        ulong sentAtMicros,
+        ulong congestionEventFlightSizeBytes,
+        bool ecnCongestionEvent)
     {
         if (IsInRecovery(sentAtMicros))
         {
@@ -650,31 +665,44 @@ internal sealed class QuicCongestionControlState
 
         if (congestionControlAlgorithm == QuicCongestionControlAlgorithm.Cubic)
         {
-            ulong previousWindowMaxBytes = cubicWindowMaxBytes == 0
-                ? CongestionWindowBytes
-                : cubicWindowMaxBytes;
-
             if (cubicWindowMaxBytes > 0 && CongestionWindowBytes < cubicWindowMaxBytes)
             {
-                previousWindowMaxBytes = ComputeReducedCongestionWindowBytes(
-                    previousWindowMaxBytes,
+                cubicWindowMaxBytes = ComputeReducedCongestionWindowBytes(
+                    CongestionWindowBytes,
                     reductionNumerator: CubicFastConvergenceNumerator,
                     reductionDenominator: CubicFastConvergenceDenominator,
                     minimumCongestionWindowBytes: MinimumCongestionWindowBytes);
             }
-
-            cubicWindowMaxBytes = previousWindowMaxBytes;
+            else
+            {
+                cubicWindowMaxBytes = CongestionWindowBytes;
+            }
             cubicEpochStartMicros = sentAtMicros;
             cubicHasEpochStart = true;
         }
 
         RecoveryStartTimeMicros = sentAtMicros;
+        if (congestionControlAlgorithm == QuicCongestionControlAlgorithm.Cubic)
+        {
+            ulong reducedFlightSizeBytes = ComputeReducedCongestionWindowBytes(
+                congestionEventFlightSizeBytes,
+                CubicLossReductionNumerator,
+                CubicLossReductionDenominator);
+
+            SlowStartThresholdBytes = Math.Max(reducedFlightSizeBytes, MinimumCongestionWindowBytes);
+            ulong congestionWindowFloorBytes = ecnCongestionEvent
+                ? RecoveryMaxDatagramSizeBytes
+                : MinimumCongestionWindowBytes;
+            CongestionWindowBytes = Math.Max(reducedFlightSizeBytes, congestionWindowFloorBytes);
+            return;
+        }
+
         SlowStartThresholdBytes = ComputeReducedCongestionWindowBytes(
             CongestionWindowBytes,
-            congestionControlAlgorithm == QuicCongestionControlAlgorithm.Cubic ? CubicLossReductionNumerator : RecommendedLossReductionNumerator,
-            congestionControlAlgorithm == QuicCongestionControlAlgorithm.Cubic ? CubicLossReductionDenominator : RecommendedLossReductionDenominator,
+            RecommendedLossReductionNumerator,
+            RecommendedLossReductionDenominator,
             MinimumCongestionWindowBytes);
-        CongestionWindowBytes = Math.Max(SlowStartThresholdBytes, MinimumCongestionWindowBytes);
+        CongestionWindowBytes = SlowStartThresholdBytes;
     }
 
     private ulong ComputeCubicCongestionWindowBytes(

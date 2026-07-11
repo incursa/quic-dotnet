@@ -816,11 +816,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         QuicServerResumptionTicketStore? serverResumptionTicketStore = null,
         Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null,
         int maximumInboundDatagramQueueSize = 1024,
-        bool enableInitialPeerUsableConnectionId = true)
+        bool enableInitialPeerUsableConnectionId = true,
+        QuicCongestionControlAlgorithm congestionControlAlgorithm = QuicCongestionControlAlgorithm.NewReno)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
-        sendRuntime = new QuicConnectionSendRuntime();
+        sendRuntime = new QuicConnectionSendRuntime(congestionControlAlgorithm: congestionControlAlgorithm);
         recoveryController = new QuicRecoveryController();
         streamRegistry = new QuicConnectionStreamRegistry(bookkeeping);
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;

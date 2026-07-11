@@ -30,7 +30,8 @@ internal sealed class QuicSenderRecoveryRuntime
         ulong maxDatagramSizeBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize,
         ulong initialRttMicros = QuicRttEstimator.DefaultInitialRttMicros,
         int maximumRetainedAckRanges = 32,
-        int minimumAckElicitingPacketsBeforeDelayedAck = 2)
+        int minimumAckElicitingPacketsBeforeDelayedAck = 2,
+        QuicCongestionControlAlgorithm congestionControlAlgorithm = QuicCongestionControlAlgorithm.NewReno)
     {
         if (maxDatagramSizeBytes == 0)
         {
@@ -40,7 +41,8 @@ internal sealed class QuicSenderRecoveryRuntime
         SenderFlowController = new QuicSenderFlowController(
             maxDatagramSizeBytes,
             maximumRetainedAckRanges,
-            minimumAckElicitingPacketsBeforeDelayedAck);
+            minimumAckElicitingPacketsBeforeDelayedAck,
+            congestionControlAlgorithm);
         RecoveryController = new QuicRecoveryController(initialRttMicros);
     }
 

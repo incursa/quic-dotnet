@@ -12,6 +12,8 @@ public sealed class REQ_QUIC_CRT_0156
     public void DefaultSendRuntimeConstructsTheNewRenoControllerByDefault()
     {
         QuicConnectionSendRuntime runtime = new();
+        using QuicConnectionRuntime connectionRuntime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicSenderRecoveryRuntime recoveryRuntime = new();
 
         Assert.Equal(
             QuicCongestionControlAlgorithm.NewReno,
@@ -19,6 +21,12 @@ public sealed class REQ_QUIC_CRT_0156
         Assert.Equal(
             QuicCongestionControlAlgorithm.NewReno,
             new QuicSenderFlowController().CongestionControlState.CongestionControlAlgorithm);
+        Assert.Equal(
+            QuicCongestionControlAlgorithm.NewReno,
+            connectionRuntime.SendRuntime.FlowController.CongestionControlState.CongestionControlAlgorithm);
+        Assert.Equal(
+            QuicCongestionControlAlgorithm.NewReno,
+            recoveryRuntime.SenderFlowController.CongestionControlState.CongestionControlAlgorithm);
     }
 
     [Fact]
@@ -27,10 +35,21 @@ public sealed class REQ_QUIC_CRT_0156
     public void ExplicitCubicSelectionIsChosenAtConstructionTimeAndRemainsImmutable()
     {
         QuicConnectionSendRuntime runtime = new(congestionControlAlgorithm: QuicCongestionControlAlgorithm.Cubic);
+        using QuicConnectionRuntime connectionRuntime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            congestionControlAlgorithm: QuicCongestionControlAlgorithm.Cubic);
+        QuicSenderRecoveryRuntime recoveryRuntime = new(
+            congestionControlAlgorithm: QuicCongestionControlAlgorithm.Cubic);
 
         Assert.Equal(
             QuicCongestionControlAlgorithm.Cubic,
             runtime.FlowController.CongestionControlState.CongestionControlAlgorithm);
+        Assert.Equal(
+            QuicCongestionControlAlgorithm.Cubic,
+            connectionRuntime.SendRuntime.FlowController.CongestionControlState.CongestionControlAlgorithm);
+        Assert.Equal(
+            QuicCongestionControlAlgorithm.Cubic,
+            recoveryRuntime.SenderFlowController.CongestionControlState.CongestionControlAlgorithm);
 
         runtime.FlowController.CongestionControlState.UpdateMaxDatagramSize(1_400, resetToInitialWindow: true);
 
@@ -202,5 +221,108 @@ public sealed class REQ_QUIC_CRT_0156
             Assert.Equal(12_000UL, limitedState.CongestionWindowBytes);
             Assert.Equal(10_800UL, limitedState.BytesInFlightBytes);
         }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-CRT-0158")]
+    public void ProductionRuntimeCubicLossUsesTheApplicationLimitedFlightSize()
+    {
+        using QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            congestionControlAlgorithm: QuicCongestionControlAlgorithm.Cubic);
+
+        for (ulong packetNumber = 1; packetNumber <= 4; packetNumber++)
+        {
+            runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber,
+                PayloadBytes: 1_200,
+                SentAtMicros: packetNumber * 100));
+        }
+
+        Assert.True(runtime.SendRuntime.TryRegisterLoss(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 4));
+
+        QuicCongestionControlState state = runtime.SendRuntime.FlowController.CongestionControlState;
+        Assert.Equal(3_360UL, state.CongestionWindowBytes);
+        Assert.Equal(3_360UL, state.SlowStartThresholdBytes);
+        Assert.Equal(3_600UL, state.BytesInFlightBytes);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-CRT-0158")]
+    public void CubicEcnUsesFlightSizeAndContinuesReducingToOneDatagram()
+    {
+        QuicCongestionControlState state = new(congestionControlAlgorithm: QuicCongestionControlAlgorithm.Cubic);
+        state.RegisterPacketSent(12_000);
+
+        Assert.True(state.TryProcessEcn(
+            QuicPacketNumberSpace.ApplicationData,
+            reportedEcnCeCount: 1,
+            largestAcknowledgedPacketSentAtMicros: 1_000,
+            pathValidated: true));
+        Assert.Equal(8_400UL, state.CongestionWindowBytes);
+
+        Assert.True(state.TryDiscardPacket(sentBytes: 6_000, packetInFlight: true));
+        Assert.True(state.TryProcessEcn(
+            QuicPacketNumberSpace.ApplicationData,
+            reportedEcnCeCount: 2,
+            largestAcknowledgedPacketSentAtMicros: 2_000,
+            pathValidated: true));
+        Assert.Equal(4_200UL, state.CongestionWindowBytes);
+
+        Assert.True(state.TryDiscardPacket(sentBytes: 3_600, packetInFlight: true));
+        Assert.True(state.TryProcessEcn(
+            QuicPacketNumberSpace.ApplicationData,
+            reportedEcnCeCount: 3,
+            largestAcknowledgedPacketSentAtMicros: 3_000,
+            pathValidated: true));
+        Assert.Equal(1_680UL, state.CongestionWindowBytes);
+        Assert.Equal(2_400UL, state.SlowStartThresholdBytes);
+
+        Assert.True(state.TryDiscardPacket(sentBytes: 1_200, packetInFlight: true));
+        Assert.True(state.TryProcessEcn(
+            QuicPacketNumberSpace.ApplicationData,
+            reportedEcnCeCount: 4,
+            largestAcknowledgedPacketSentAtMicros: 4_000,
+            pathValidated: true));
+        Assert.Equal(1_200UL, state.CongestionWindowBytes);
+        Assert.Equal(2_400UL, state.SlowStartThresholdBytes);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-CRT-0158")]
+    public void RepeatedCubicLossStartsANewEpochAndAppliesFastConvergence()
+    {
+        QuicCongestionControlState state = new(congestionControlAlgorithm: QuicCongestionControlAlgorithm.Cubic);
+        state.RegisterPacketSent(12_000);
+
+        Assert.True(state.TryRegisterLoss(
+            sentBytes: 1_200,
+            sentAtMicros: 1_000,
+            packetInFlight: true));
+        Assert.Equal(12_000UL, state.CubicWindowMaxBytes);
+        Assert.Equal(1_000UL, state.CubicEpochStartMicros);
+
+        Assert.True(state.TryRegisterAcknowledgedPacket(
+            sentBytes: 7_200,
+            sentAtMicros: 500,
+            packetInFlight: true));
+        state.RegisterPacketSent(1_200);
+
+        Assert.True(state.TryRegisterLoss(
+            sentBytes: 1_200,
+            sentAtMicros: 2_000,
+            packetInFlight: true));
+        Assert.Equal(3_360UL, state.CongestionWindowBytes);
+        Assert.Equal(7_140UL, state.CubicWindowMaxBytes);
+        Assert.Equal(2_000UL, state.CubicEpochStartMicros);
     }
 }
