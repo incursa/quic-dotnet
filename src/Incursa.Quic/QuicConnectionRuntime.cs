@@ -1103,6 +1103,41 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal int PendingRetransmissionCount => sendRuntime.PendingRetransmissionCount;
 
+    private int runtimeWorkItemFlushedApplicationSends;
+    private int runtimeWorkItemFlushedFlowControlUpdates;
+    private int runtimeWorkItemFlushedStreamCapacityReleases;
+    private bool runtimeWorkItemFlushMeasurementEnabled;
+
+    internal bool BeginRuntimeWorkItemFlushMeasurement()
+    {
+        runtimeWorkItemFlushMeasurementEnabled = QuicMetrics.RuntimeFollowOnFlushMetricsEnabled;
+        if (!runtimeWorkItemFlushMeasurementEnabled)
+        {
+            return false;
+        }
+
+        runtimeWorkItemFlushedApplicationSends = 0;
+        runtimeWorkItemFlushedFlowControlUpdates = 0;
+        runtimeWorkItemFlushedStreamCapacityReleases = 0;
+        return true;
+    }
+
+    internal bool RuntimeWorkItemFlushMeasurementEnabled => runtimeWorkItemFlushMeasurementEnabled;
+
+    internal void TakeRuntimeWorkItemFlushMeasurement(
+        out int applicationSendCount,
+        out int flowControlCount,
+        out int streamCapacityCount)
+    {
+        applicationSendCount = runtimeWorkItemFlushedApplicationSends;
+        flowControlCount = runtimeWorkItemFlushedFlowControlUpdates;
+        streamCapacityCount = runtimeWorkItemFlushedStreamCapacityReleases;
+        runtimeWorkItemFlushedApplicationSends = 0;
+        runtimeWorkItemFlushedFlowControlUpdates = 0;
+        runtimeWorkItemFlushedStreamCapacityReleases = 0;
+        runtimeWorkItemFlushMeasurementEnabled = false;
+    }
+
     internal bool HasProcessingTask => processingTask is not null;
 
     internal void SetPhaseForTesting(QuicConnectionPhase phase)

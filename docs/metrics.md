@@ -46,6 +46,8 @@ These metrics are diagnostic signals for live behavior and operational visibilit
 | `incursa.quic.runtime.shard.work_items.enqueued` | Counter | Work items successfully admitted to a runtime shard inbox. | `shard_index`, `work_item_kind` |
 | `incursa.quic.runtime.shard.work_items.dequeued` | Counter | Work items removed from a runtime shard inbox for processing or shutdown cleanup. | `shard_index`, `work_item_kind` |
 | `incursa.quic.runtime.shard.queue_delay.ms` | Histogram | Time from successful shard-inbox admission until dequeue, in milliseconds. | `shard_index`, `work_item_kind` |
+| `incursa.quic.runtime.shard.service_time.ms` | Histogram | Time spent processing one dequeued shard work item, including inline effects, in milliseconds. | `shard_index`, `work_item_kind` |
+| `incursa.quic.runtime.follow_on_flush.items` | Counter | Pending application sends, flow-control updates, or stream-capacity releases flushed inline while processing a shard work item. | `shard_index`, `work_item_kind`, `flush_kind` |
 | `incursa.quic.runtime.delayed_application_sends` | Histogram | Sampled application-send queue length for the connection being processed on a shard. Values are per connection, not aggregate shard totals. | `shard_index` |
 | `incursa.quic.runtime.sent_packets.retained` | Histogram | Sampled recovery-ledger packet count for the connection being processed on a shard. Values are per connection, not aggregate shard totals. | `shard_index` |
 | `incursa.quic.runtime.retransmissions.pending` | Histogram | Sampled pending retransmission count for the connection being processed on a shard. Values are per connection, not aggregate shard totals. | `shard_index` |
@@ -77,6 +79,7 @@ Metrics only use bounded, low-cardinality tags:
 - `work_item_kind`: `event`, `packet_received`, `stream_capacity_release`, `flow_control_credit_update`, `stream_open`, `stream_write`, `deadline_wake`
 - `action`: `write`, `finish`
 - `outcome`: `succeeded`, `failed`, `terminal`, `canceled`
+- `flush_kind`: `application_send`, `flow_control`, `stream_capacity`
 
 The metrics surface must not tag by connection ID, stream ID, endpoint, peer address, URL path, exception message, or raw error text.
 

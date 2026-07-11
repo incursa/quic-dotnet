@@ -80,14 +80,16 @@ public class MetricsTests
         QuicMetrics.RecordUdpError(QuicTlsRole.Server, "receive", SocketError.ConnectionReset);
         QuicMetrics.RecordRtt(QuicTlsRole.Client, 12_500);
         recorder.RecordObservableInstruments();
-        double rentsBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.rents", "size_bucket", "le_1kb");
         double requestedRentsBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.requested_rents", "requested_size_bucket", "le_1kb");
-        double returnsBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.returns", "size_bucket", "le_1kb");
         double requestedBytesBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.bytes.requested", "requested_size_bucket", "le_1kb");
-        double rentedBytesBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.bytes.rented", "size_bucket", "le_1kb");
-        double returnedBytesBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.bytes.returned", "size_bucket", "le_1kb");
-        double oversizedRentsBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.oversized_rents", "size_bucket", "le_1kb");
         byte[] rentedBuffer = QuicBufferPool.RentBytes(1);
+        string rentedSizeBucket = GetBufferSizeBucket(rentedBuffer.Length);
+        double rentsBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.rents", "size_bucket", rentedSizeBucket);
+        double returnsBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.returns", "size_bucket", rentedSizeBucket);
+        double rentedBytesBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.bytes.rented", "size_bucket", rentedSizeBucket);
+        double returnedBytesBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.bytes.returned", "size_bucket", rentedSizeBucket);
+        double oversizedRentsBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.oversized_rents", "size_bucket", rentedSizeBucket);
+        double outstandingBuffersBefore = recorder.GetLatestMeasurement("incursa.quic.buffer_pool.outstanding.buffers", "size_bucket", rentedSizeBucket);
         recorder.RecordObservableInstruments();
         QuicBufferPool.ReturnBytes(rentedBuffer);
         recorder.RecordObservableInstruments();
@@ -128,7 +130,7 @@ public class MetricsTests
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.rents"
             && measurement.Value == rentsBefore + 1
-            && measurement.HasTag("size_bucket", "le_1kb"));
+            && measurement.HasTag("size_bucket", rentedSizeBucket));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.requested_rents"
             && measurement.Value == requestedRentsBefore + 1
@@ -136,7 +138,7 @@ public class MetricsTests
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.returns"
             && measurement.Value == returnsBefore + 1
-            && measurement.HasTag("size_bucket", "le_1kb"));
+            && measurement.HasTag("size_bucket", rentedSizeBucket));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.bytes.requested"
             && measurement.Value == requestedBytesBefore + 1
@@ -144,23 +146,23 @@ public class MetricsTests
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.bytes.rented"
             && measurement.Value == rentedBytesBefore + rentedBuffer.Length
-            && measurement.HasTag("size_bucket", "le_1kb"));
+            && measurement.HasTag("size_bucket", rentedSizeBucket));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.bytes.returned"
             && measurement.Value == returnedBytesBefore + rentedBuffer.Length
-            && measurement.HasTag("size_bucket", "le_1kb"));
+            && measurement.HasTag("size_bucket", rentedSizeBucket));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.outstanding.buffers"
-            && measurement.Value == 1
-            && measurement.HasTag("size_bucket", "le_1kb"));
+            && measurement.Value == outstandingBuffersBefore + 1
+            && measurement.HasTag("size_bucket", rentedSizeBucket));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.outstanding.buffers"
-            && measurement.Value == 0
-            && measurement.HasTag("size_bucket", "le_1kb"));
+            && measurement.Value == outstandingBuffersBefore
+            && measurement.HasTag("size_bucket", rentedSizeBucket));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.buffer_pool.oversized_rents"
             && measurement.Value == oversizedRentsBefore + 1
-            && measurement.HasTag("size_bucket", "le_1kb"));
+            && measurement.HasTag("size_bucket", rentedSizeBucket));
     }
 
     [Fact]
@@ -257,6 +259,11 @@ public class MetricsTests
             && measurement.HasTag("shard_index", "2")
             && measurement.HasTag("work_item_kind", "flow_control_credit_update"));
         Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.service_time.ms"
+            && measurement.Value >= 0
+            && measurement.HasTag("shard_index", "2")
+            && measurement.HasTag("work_item_kind", "flow_control_credit_update"));
+        Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.delayed_application_sends"
             && measurement.HasTag("shard_index", "2"));
         Assert.Contains(recorder.Measurements, measurement =>
@@ -268,6 +275,94 @@ public class MetricsTests
         Assert.Equal(0d, recorder.Measurements
             .Where(measurement => measurement.InstrumentName == "incursa.quic.runtime.shard.inbox.depth")
             .Sum(measurement => measurement.Value));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void RuntimeFollowOnFlushMetricsUseBoundedWorkAndFlushKinds()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicConnectionRuntimeShardWorkItem workItem = new(
+            new QuicConnectionHandle(1),
+            runtime,
+            QuicConnectionRuntimeShardWorkItemKind.FlowControlCreditUpdate);
+
+        QuicMetrics.RecordRuntimeFollowOnFlushItems(
+            3,
+            in workItem,
+            applicationSendCount: 4,
+            flowControlCount: 2,
+            streamCapacityCount: 1);
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.follow_on_flush.items"
+            && measurement.Value == 4
+            && measurement.HasTag("shard_index", "3")
+            && measurement.HasTag("work_item_kind", "flow_control_credit_update")
+            && measurement.HasTag("flush_kind", "application_send"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.follow_on_flush.items"
+            && measurement.Value == 2
+            && measurement.HasTag("flush_kind", "flow_control"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.follow_on_flush.items"
+            && measurement.Value == 1
+            && measurement.HasTag("flush_kind", "stream_capacity"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public async Task RuntimeFollowOnFlushMeasurementCoversDirectFlowControlFlush()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+        await using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
+
+        runtime.BeginRuntimeWorkItemFlushMeasurement();
+        _ = runtime.Transition(
+            new QuicConnectionFlowControlCreditUpdatedEvent(
+                ObservedAtTicks: 10,
+                new QuicMaxDataFrame(128),
+                new QuicMaxStreamDataFrame(1, 64)),
+            nowTicks: 10);
+        runtime.TakeRuntimeWorkItemFlushMeasurement(
+            out int applicationSendCount,
+            out int flowControlCount,
+            out int streamCapacityCount);
+
+        Assert.Equal(0, applicationSendCount);
+        Assert.Equal(2, flowControlCount);
+        Assert.Equal(0, streamCapacityCount);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public async Task RuntimeFollowOnFlushMeasurementCoversDirectStreamCapacityFlush()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+        await using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
+        QuicConnectionStreamState state = runtime.StreamRegistry.Bookkeeping;
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0B, streamId: 1, streamData: []),
+            out QuicStreamFrame frame));
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.True(state.TryAbortLocalStreamWrites(1, out _, out errorCode));
+        Assert.Equal(default, errorCode);
+        runtime.TryQueueStreamCapacityRelease(streamId: 1);
+
+        runtime.BeginRuntimeWorkItemFlushMeasurement();
+        _ = runtime.TransitionStreamCapacityRelease(nowTicks: 10);
+        runtime.TakeRuntimeWorkItemFlushMeasurement(
+            out int applicationSendCount,
+            out int flowControlCount,
+            out int streamCapacityCount);
+
+        Assert.Equal(0, applicationSendCount);
+        Assert.Equal(0, flowControlCount);
+        Assert.Equal(1, streamCapacityCount);
     }
 
     [Fact]
@@ -436,6 +531,17 @@ public class MetricsTests
             ],
             workItems.Select(workItem => QuicMetrics.NormalizeRuntimeShardWorkItemKind(in workItem)));
     }
+
+    private static string GetBufferSizeBucket(int length)
+        => length switch
+        {
+            <= 1024 => "le_1kb",
+            <= 4 * 1024 => "le_4kb",
+            <= 16 * 1024 => "le_16kb",
+            <= 64 * 1024 => "le_64kb",
+            <= 256 * 1024 => "le_256kb",
+            _ => "gt_256kb",
+        };
 
     private static async Task WaitForMeasurementAsync(
         MetricsRecorder recorder,

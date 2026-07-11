@@ -437,9 +437,11 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         Action<QuicConnectionHandle, QuicConnectionEffect>? effectObserver,
         Action<QuicConnectionHandle, QuicConnectionSendDatagramUpdate>? sendDatagramObserver)
     {
+        long serviceStartedTimestamp = QuicMetrics.GetRuntimeShardServiceStartTimestamp();
+        QuicConnectionRuntime? runtime = workItem.Runtime;
+        bool flushMeasurementStarted = false;
         try
         {
-            QuicConnectionRuntime? runtime = workItem.Runtime;
             if (runtime is null)
             {
                 return;
@@ -453,6 +455,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             }
 
             runtime.ConfigureHostedTimerEffectSuppression(suppressHostedTimerEffectObjects);
+            flushMeasurementStarted = runtime.BeginRuntimeWorkItemFlushMeasurement();
 
             QuicConnectionTransitionResult result = workItem.Kind switch
             {
@@ -507,7 +510,22 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         }
         finally
         {
-            workItem.Runtime?.ConfigureHostedTimerEffectSuppression(suppress: false);
+            if (flushMeasurementStarted)
+            {
+                runtime!.TakeRuntimeWorkItemFlushMeasurement(
+                    out int applicationSendCount,
+                    out int flowControlCount,
+                    out int streamCapacityCount);
+                QuicMetrics.RecordRuntimeFollowOnFlushItems(
+                    shardIndex,
+                    in workItem,
+                    applicationSendCount,
+                    flowControlCount,
+                    streamCapacityCount);
+            }
+
+            QuicMetrics.RecordRuntimeShardServiceTime(shardIndex, in workItem, serviceStartedTimestamp);
+            runtime?.ConfigureHostedTimerEffectSuppression(suppress: false);
             ReleaseWorkItemResources(workItem);
         }
     }

@@ -24,6 +24,8 @@ internal static class QuicMetrics
     private const string RuntimeShardWorkItemsEnqueuedMetricName = "incursa.quic.runtime.shard.work_items.enqueued";
     private const string RuntimeShardWorkItemsDequeuedMetricName = "incursa.quic.runtime.shard.work_items.dequeued";
     private const string RuntimeShardQueueDelayMetricName = "incursa.quic.runtime.shard.queue_delay.ms";
+    private const string RuntimeShardServiceTimeMetricName = "incursa.quic.runtime.shard.service_time.ms";
+    private const string RuntimeFollowOnFlushItemsMetricName = "incursa.quic.runtime.follow_on_flush.items";
     private const string RuntimeShardIndexTagName = "shard_index";
     private const string RuntimeShardWorkItemKindTagName = "work_item_kind";
     private const double MicrosecondsPerMillisecond = 1000.0;
@@ -81,6 +83,8 @@ internal static class QuicMetrics
     private static readonly Counter<long> RuntimeShardWorkItemsEnqueued = Meter.CreateCounter<long>(RuntimeShardWorkItemsEnqueuedMetricName, unit: "work_items");
     private static readonly Counter<long> RuntimeShardWorkItemsDequeued = Meter.CreateCounter<long>(RuntimeShardWorkItemsDequeuedMetricName, unit: "work_items");
     private static readonly Histogram<double> RuntimeShardQueueDelay = Meter.CreateHistogram<double>(RuntimeShardQueueDelayMetricName, unit: "ms");
+    private static readonly Histogram<double> RuntimeShardServiceTime = Meter.CreateHistogram<double>(RuntimeShardServiceTimeMetricName, unit: "ms");
+    private static readonly Counter<long> RuntimeFollowOnFlushItems = Meter.CreateCounter<long>(RuntimeFollowOnFlushItemsMetricName, unit: "items");
     private static readonly Histogram<long> DelayedApplicationSends = Meter.CreateHistogram<long>("incursa.quic.runtime.delayed_application_sends", unit: "writes");
     private static readonly Histogram<long> RetainedSentPackets = Meter.CreateHistogram<long>("incursa.quic.runtime.sent_packets.retained", unit: "packets");
     private static readonly Histogram<long> PendingRetransmissions = Meter.CreateHistogram<long>("incursa.quic.runtime.retransmissions.pending", unit: "retransmissions");
@@ -343,6 +347,58 @@ internal static class QuicMetrics
 
     internal static long GetRuntimeShardEnqueueTimestamp()
         => RuntimeShardQueueDelay.Enabled ? Stopwatch.GetTimestamp() : 0;
+
+    internal static long GetRuntimeShardServiceStartTimestamp()
+        => RuntimeShardServiceTime.Enabled ? Stopwatch.GetTimestamp() : 0;
+
+    internal static void RecordRuntimeShardServiceTime(
+        int shardIndex,
+        in QuicConnectionRuntimeShardWorkItem workItem,
+        long startedTimestamp)
+    {
+        if (!RuntimeShardServiceTime.Enabled || startedTimestamp == 0)
+        {
+            return;
+        }
+
+        TagList tags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
+        RuntimeShardServiceTime.Record(Stopwatch.GetElapsedTime(startedTimestamp).TotalMilliseconds, in tags);
+    }
+
+    internal static bool RuntimeFollowOnFlushMetricsEnabled => RuntimeFollowOnFlushItems.Enabled;
+
+    internal static void RecordRuntimeFollowOnFlushItems(
+        int shardIndex,
+        in QuicConnectionRuntimeShardWorkItem workItem,
+        int applicationSendCount,
+        int flowControlCount,
+        int streamCapacityCount)
+    {
+        if (!RuntimeFollowOnFlushItems.Enabled)
+        {
+            return;
+        }
+
+        RecordRuntimeFollowOnFlushItems(shardIndex, in workItem, "application_send", applicationSendCount);
+        RecordRuntimeFollowOnFlushItems(shardIndex, in workItem, "flow_control", flowControlCount);
+        RecordRuntimeFollowOnFlushItems(shardIndex, in workItem, "stream_capacity", streamCapacityCount);
+    }
+
+    private static void RecordRuntimeFollowOnFlushItems(
+        int shardIndex,
+        in QuicConnectionRuntimeShardWorkItem workItem,
+        string flushKind,
+        int count)
+    {
+        if (count <= 0)
+        {
+            return;
+        }
+
+        TagList tags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
+        tags.Add("flush_kind", flushKind);
+        RuntimeFollowOnFlushItems.Add(count, in tags);
+    }
 
     internal static void RecordRuntimePressureSnapshot(int shardIndex, QuicConnectionRuntime runtime)
     {

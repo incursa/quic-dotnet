@@ -1097,6 +1097,8 @@ internal sealed partial class QuicConnectionRuntime
         ref QuicConnectionEffectAccumulator effects,
         out Exception? exception)
     {
+        bool measureFlushes = RuntimeWorkItemFlushMeasurementEnabled;
+        int applicationSendCountBefore = measureFlushes ? applicationSendQueue.Count : 0;
         if (applicationSendQueue.Count == 0)
         {
             pendingApplicationSendDelayDueTicks = null;
@@ -1329,6 +1331,13 @@ internal sealed partial class QuicConnectionRuntime
         }
         finally
         {
+            if (measureFlushes)
+            {
+                runtimeWorkItemFlushedApplicationSends += Math.Max(
+                    0,
+                    applicationSendCountBefore - applicationSendQueue.Count);
+            }
+
             if (combinedPayloadOwner is not null)
             {
                 QuicBufferPool.ReturnBytes(combinedPayloadOwner);
@@ -1620,6 +1629,37 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryFlushPendingFlowControlCreditUpdates(ref QuicConnectionEffectAccumulator effects)
+    {
+        bool measureFlushes = RuntimeWorkItemFlushMeasurementEnabled;
+        int countBefore = 0;
+        if (measureFlushes)
+        {
+            countBefore = pendingFlowControlStreamCreditFrames.Count;
+            if (pendingFlowControlConnectionCreditFrame.HasValue)
+            {
+                countBefore++;
+            }
+        }
+        try
+        {
+            return TryFlushPendingFlowControlCreditUpdatesCore(ref effects);
+        }
+        finally
+        {
+            if (measureFlushes)
+            {
+                int countAfter = pendingFlowControlStreamCreditFrames.Count;
+                if (pendingFlowControlConnectionCreditFrame.HasValue)
+                {
+                    countAfter++;
+                }
+
+                runtimeWorkItemFlushedFlowControlUpdates += Math.Max(0, countBefore - countAfter);
+            }
+        }
+    }
+
+    private bool TryFlushPendingFlowControlCreditUpdatesCore(ref QuicConnectionEffectAccumulator effects)
     {
         if (!pendingFlowControlConnectionCreditFrame.HasValue
             && pendingFlowControlStreamCreditFrames.Count == 0)
@@ -2362,6 +2402,25 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryFlushPendingPeerStreamCapacityReleases(ref QuicConnectionEffectAccumulator effects)
+    {
+        bool measureFlushes = RuntimeWorkItemFlushMeasurementEnabled;
+        int countBefore = measureFlushes ? pendingPeerStreamCapacityReleaseStreamIds.Count : 0;
+        try
+        {
+            return TryFlushPendingPeerStreamCapacityReleasesCore(ref effects);
+        }
+        finally
+        {
+            if (measureFlushes)
+            {
+                runtimeWorkItemFlushedStreamCapacityReleases += Math.Max(
+                    0,
+                    countBefore - pendingPeerStreamCapacityReleaseStreamIds.Count);
+            }
+        }
+    }
+
+    private bool TryFlushPendingPeerStreamCapacityReleasesCore(ref QuicConnectionEffectAccumulator effects)
     {
         if (pendingPeerStreamCapacityReleaseStreamIds.Count == 0)
         {

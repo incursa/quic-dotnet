@@ -980,7 +980,7 @@
         ]
       },
       "notes": [
-        "Allowed tag keys are limited to role, direction, initiator, packet_type, close_reason, failure_reason, status_class, size_bucket, requested_size_bucket, shard_index, work_item_kind, action, and outcome. The shard_index key is reserved for a bounded zero-based runtime-shard index. The work_item_kind key is reserved for the bounded values event, packet_received, stream_capacity_release, flow_control_credit_update, stream_open, stream_write, and deadline_wake. The action key is reserved for write and finish. The outcome key is reserved for succeeded, failed, terminal, and canceled.",
+        "Allowed tag keys are limited to role, direction, initiator, packet_type, close_reason, failure_reason, status_class, size_bucket, requested_size_bucket, shard_index, work_item_kind, action, outcome, and flush_kind. The shard_index key is reserved for a bounded zero-based runtime-shard index. The work_item_kind key is reserved for the bounded values event, packet_received, stream_capacity_release, flow_control_credit_update, stream_open, stream_write, and deadline_wake. The action key is reserved for write and finish. The outcome key is reserved for succeeded, failed, terminal, and canceled. The flush_kind key is reserved for application_send, flow_control, and stream_capacity.",
         "The metrics surface must not tag by connection ID, stream ID, endpoint, peer address, URL path, exception message, or raw error text.",
         "The metrics surface uses stable meter names, bounded low-cardinality tags, and disabled-listener guards on packet, datagram, byte, and recovery hot paths.",
         "The core transport remains qlog-free; qlog mapping and serialization stay in the sibling adapter boundary.",
