@@ -4,6 +4,7 @@
 namespace Incursa.Quic.Tests;
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.ExceptionServices;
 
 public sealed class QuicStreamReadLifecycleTests
 {
@@ -204,11 +205,30 @@ public sealed class QuicStreamReadLifecycleTests
         Task<int> readTask = stream.ReadAsync(destination.AsMemory()).AsTask();
         await AssertPendingAsync(readTask);
 
-        for (int index = 0; index < 16; index++)
+        int notificationThreadId = Environment.CurrentManagedThreadId;
+        int semaphoreFullExceptions = 0;
+        EventHandler<FirstChanceExceptionEventArgs> handler = (_, eventArgs) =>
         {
-            stream.HandleRuntimeNotification(new QuicStreamNotification(QuicStreamNotificationKind.DataAvailable, null));
+            if (Environment.CurrentManagedThreadId == notificationThreadId
+                && eventArgs.Exception is SemaphoreFullException)
+            {
+                Interlocked.Increment(ref semaphoreFullExceptions);
+            }
+        };
+        AppDomain.CurrentDomain.FirstChanceException += handler;
+        try
+        {
+            for (int index = 0; index < 16; index++)
+            {
+                stream.HandleRuntimeNotification(new QuicStreamNotification(QuicStreamNotificationKind.DataAvailable, null));
+            }
+        }
+        finally
+        {
+            AppDomain.CurrentDomain.FirstChanceException -= handler;
         }
 
+        Assert.Equal(0, Volatile.Read(ref semaphoreFullExceptions));
         await AssertPendingAsync(readTask);
         InjectStreamData(stream, [0x5A], offset: 0, fin: false);
 
@@ -254,6 +274,25 @@ public sealed class QuicStreamReadLifecycleTests
     }
 
     [Fact]
+    public async Task ReadAsync_AbortReleasesAllWaitingReadsWithTheSameException()
+    {
+        using QuicStream stream = CreateReadableStream();
+
+        Task<int> firstRead = stream.ReadAsync(new byte[1].AsMemory()).AsTask();
+        Task<int> secondRead = stream.ReadAsync(new byte[1].AsMemory()).AsTask();
+        await AssertPendingAsync(firstRead);
+        await AssertPendingAsync(secondRead);
+
+        QuicException abortException = new(QuicError.StreamAborted, 0x52, "test read abort");
+        stream.HandleRuntimeNotification(new QuicStreamNotification(QuicStreamNotificationKind.ReadAborted, abortException));
+
+        QuicException firstActual = await Assert.ThrowsAsync<QuicException>(async () => await firstRead);
+        QuicException secondActual = await Assert.ThrowsAsync<QuicException>(async () => await secondRead);
+        Assert.Same(abortException, firstActual);
+        Assert.Same(abortException, secondActual);
+    }
+
+    [Fact]
     public async Task TryReadTerminalAsync_StreamAbortReturnsEndOfStreamForObserverDrain()
     {
         using QuicStream stream = CreateReadableStream();
@@ -284,6 +323,52 @@ public sealed class QuicStreamReadLifecycleTests
     }
 
     [Fact]
+    public async Task DisposeAsync_ReleasesAllPendingReadsWithObjectDisposedException()
+    {
+        QuicStream stream = CreateReadableStream();
+
+        Task<int> firstRead = stream.ReadAsync(new byte[1].AsMemory()).AsTask();
+        Task<int> secondRead = stream.ReadAsync(new byte[1].AsMemory()).AsTask();
+        await AssertPendingAsync(firstRead);
+        await AssertPendingAsync(secondRead);
+
+        await stream.DisposeAsync();
+
+        await Assert.ThrowsAsync<ObjectDisposedException>(async () => await firstRead);
+        await Assert.ThrowsAsync<ObjectDisposedException>(async () => await secondRead);
+    }
+
+    [Fact]
+    public async Task ReadAsync_ConcurrentCancellationNotificationAndDisposalDoNotStrandWaiters()
+    {
+        for (int iteration = 0; iteration < 100; iteration++)
+        {
+            QuicStream stream = CreateReadableStream();
+            using CancellationTokenSource cancellation = new();
+            Task<int> cancellableRead = stream.ReadAsync(new byte[1].AsMemory(), cancellation.Token).AsTask();
+            Task<int> terminalRead = stream.ReadAsync(new byte[1].AsMemory()).AsTask();
+            await AssertPendingAsync(cancellableRead);
+            await AssertPendingAsync(terminalRead);
+
+            await Task.WhenAll(
+                Task.Run(cancellation.Cancel),
+                Task.Run(() => stream.HandleRuntimeNotification(
+                    new QuicStreamNotification(QuicStreamNotificationKind.DataAvailable, null))),
+                Task.Run(stream.Dispose));
+
+            Exception? cancellationOutcome = await Record.ExceptionAsync(
+                    async () => await cancellableRead)
+                .WaitAsync(TimeSpan.FromSeconds(2));
+            Exception? terminalOutcome = await Record.ExceptionAsync(
+                    async () => await terminalRead)
+                .WaitAsync(TimeSpan.FromSeconds(2));
+
+            Assert.True(cancellationOutcome is OperationCanceledException or ObjectDisposedException);
+            Assert.IsType<ObjectDisposedException>(terminalOutcome);
+        }
+    }
+
+    [Fact]
     public async Task ReadAsync_FinWhileWaitingCompletesWithZeroAndClosesReads()
     {
         using QuicStream stream = CreateReadableStream();
@@ -295,6 +380,23 @@ public sealed class QuicStreamReadLifecycleTests
         InjectStreamData(stream, [], offset: 0, fin: true);
 
         Assert.Equal(0, await readTask);
+        Assert.True(stream.ReadsClosed.IsCompletedSuccessfully);
+    }
+
+    [Fact]
+    public async Task ReadAsync_FinReleasesAllWaitingReadsWithEndOfStream()
+    {
+        using QuicStream stream = CreateReadableStream();
+
+        Task<int> firstRead = stream.ReadAsync(new byte[1].AsMemory()).AsTask();
+        Task<int> secondRead = stream.ReadAsync(new byte[1].AsMemory()).AsTask();
+        await AssertPendingAsync(firstRead);
+        await AssertPendingAsync(secondRead);
+
+        InjectStreamData(stream, [], offset: 0, fin: true);
+
+        Assert.Equal(0, await firstRead);
+        Assert.Equal(0, await secondRead);
         Assert.True(stream.ReadsClosed.IsCompletedSuccessfully);
     }
 

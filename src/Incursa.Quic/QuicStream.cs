@@ -34,6 +34,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
     private TaskCompletionSource<object?> ReadsClosedTcs => readsClosed ??= new(TaskCreationOptions.RunContinuationsAsynchronously);
     private TaskCompletionSource<object?> WritesClosedTcs => writesClosed ??= new(TaskCreationOptions.RunContinuationsAsynchronously);
     private SemaphoreSlim? readGateSignal;
+    private int readGateWaiterCount;
     private SemaphoreSlim? writeGateSignal;
     private int writeGateTaken;
     private int writeGateWaiterCount;
@@ -554,9 +555,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
 
             CompleteReadsClosed();
             CompleteWritesClosed();
-            SemaphoreSlim? readSignal = Volatile.Read(ref readGateSignal);
-            ReleaseReadGate();
-            readSignal?.Dispose();
+            ReleaseAllReadGateWaiters();
             writeGateSignal?.Dispose();
             base.Dispose(disposing: true);
         }
@@ -575,13 +574,20 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
             }
 
             SemaphoreSlim signal = GetOrCreateReadGateSignal();
-
-            if (TryCompleteReadSynchronously(buffer, cancellationToken, out bytesWritten, suppressTerminalException))
+            Interlocked.Increment(ref readGateWaiterCount);
+            try
             {
-                return bytesWritten;
-            }
+                if (TryCompleteReadSynchronously(buffer, cancellationToken, out bytesWritten, suppressTerminalException))
+                {
+                    return bytesWritten;
+                }
 
-            await signal.WaitAsync(cancellationToken).ConfigureAwait(false);
+                await signal.WaitAsync(cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                Interlocked.Decrement(ref readGateWaiterCount);
+            }
         }
     }
 
@@ -662,6 +668,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
             if (completed)
             {
                 CompleteReadsClosed();
+                ReleaseAllReadGateWaiters();
                 runtime?.TryQueueStreamCapacityRelease(streamId);
             }
 
@@ -672,6 +679,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
         if (completed)
         {
             CompleteReadsClosed();
+            ReleaseAllReadGateWaiters();
             runtime?.TryQueueStreamCapacityRelease(streamId);
             return true;
         }
@@ -1077,7 +1085,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
     }
 
     private SemaphoreSlim GetOrCreateReadGateSignal()
-        => GetOrCreateGateSignal(ref readGateSignal, 1);
+        => GetOrCreateGateSignal(ref readGateSignal, int.MaxValue);
 
     private SemaphoreSlim GetOrCreateWriteGateSignal()
         => GetOrCreateGateSignal(ref writeGateSignal, 1);
@@ -1107,7 +1115,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
         {
             case QuicStreamNotificationKind.ReadAborted:
                 CompleteReadsClosed(notification.Exception!);
-                ReleaseReadGate();
+                ReleaseAllReadGateWaiters();
                 runtime?.TryQueueStreamCapacityRelease(streamId);
                 break;
             case QuicStreamNotificationKind.WriteAborted:
@@ -1119,7 +1127,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
                 if (canRead && !IsReadsClosed)
                 {
                     CompleteReadsClosed(notification.Exception!);
-                    ReleaseReadGate();
+                    ReleaseAllReadGateWaiters();
                 }
 
                 if (canWrite && !IsWritesClosed)
@@ -1151,13 +1159,30 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
             return;
         }
 
-        try
+        lock (signal)
         {
-            signal.Release();
+            if (signal.CurrentCount == 0)
+            {
+                signal.Release();
+            }
         }
-        catch (SemaphoreFullException)
+    }
+
+    private void ReleaseAllReadGateWaiters()
+    {
+        SemaphoreSlim? signal = Volatile.Read(ref readGateSignal);
+        if (signal is null)
         {
-            // Read notifications are level-triggered. One pending wake-up is sufficient.
+            return;
+        }
+
+        lock (signal)
+        {
+            int releases = Volatile.Read(ref readGateWaiterCount) - signal.CurrentCount;
+            if (releases > 0)
+            {
+                signal.Release(releases);
+            }
         }
     }
 
