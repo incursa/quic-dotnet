@@ -88,6 +88,7 @@ internal static class QuicMetrics
     private static readonly Histogram<long> DelayedApplicationSends = Meter.CreateHistogram<long>("incursa.quic.runtime.delayed_application_sends", unit: "writes");
     private static readonly Histogram<long> RetainedSentPackets = Meter.CreateHistogram<long>("incursa.quic.runtime.sent_packets.retained", unit: "packets");
     private static readonly Histogram<long> PendingRetransmissions = Meter.CreateHistogram<long>("incursa.quic.runtime.retransmissions.pending", unit: "retransmissions");
+    private static readonly Histogram<long> ApplicationSendBatchStreams = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.batch_streams", unit: "streams");
     private static readonly Histogram<double> StreamWriteCompletion = Meter.CreateHistogram<double>("incursa.quic.runtime.stream_write.completion.ms", unit: "ms");
     private static readonly long[] BufferPoolRentCounts = new long[BufferPoolBucketCount];
     private static readonly long[] BufferPoolRequestedRentCounts = new long[BufferPoolBucketCount];
@@ -366,6 +367,19 @@ internal static class QuicMetrics
     }
 
     internal static bool RuntimeFollowOnFlushMetricsEnabled => RuntimeFollowOnFlushItems.Enabled;
+
+    internal static void RecordApplicationSendBatchStreams(QuicTlsRole role, int streamCount, bool combinedWrite)
+    {
+        if (!ApplicationSendBatchStreams.Enabled || streamCount <= 0)
+        {
+            return;
+        }
+
+        TagList tags = default;
+        tags.Add("role", GetRoleTag(role));
+        tags.Add("batch_kind", combinedWrite ? "combined_write" : "single_write");
+        ApplicationSendBatchStreams.Record(streamCount, in tags);
+    }
 
     internal static void RecordRuntimeFollowOnFlushItems(
         int shardIndex,

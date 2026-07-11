@@ -313,6 +313,27 @@ public class MetricsTests
 
     [Fact]
     [Requirement("REQ-QUIC-CRT-0155")]
+    public void ApplicationSendBatchMetricsUseBoundedRoleAndKindTags()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+
+        QuicMetrics.RecordApplicationSendBatchStreams(QuicTlsRole.Server, streamCount: 3, combinedWrite: true);
+        QuicMetrics.RecordApplicationSendBatchStreams(QuicTlsRole.Client, streamCount: 1, combinedWrite: false);
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.batch_streams"
+            && measurement.Value == 3
+            && measurement.HasTag("role", "server")
+            && measurement.HasTag("batch_kind", "combined_write"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.batch_streams"
+            && measurement.Value == 1
+            && measurement.HasTag("role", "client")
+            && measurement.HasTag("batch_kind", "single_write"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
     public async Task RuntimeFollowOnFlushMeasurementCoversDirectFlowControlFlush()
     {
         using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);

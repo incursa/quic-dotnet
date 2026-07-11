@@ -1273,6 +1273,11 @@ internal sealed partial class QuicConnectionRuntime
                 streamIds = QuicApplicationSendQueue.BuildDistinctStreamIds(selectedWrites);
             }
 
+            QuicMetrics.RecordApplicationSendBatchStreams(
+                tlsState.Role,
+                hasOnlyQueuedWrite ? 1 : streamIds?.Length ?? 0,
+                combinedWrite: !hasOnlyQueuedWrite);
+
             if (!TryProtectAndAccountStreamApplicationPayload(
                 combinedPayload,
                 hasOnlyQueuedWrite ? onlyQueuedWrite.StreamPayload : combinedPayloadOwner,
