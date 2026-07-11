@@ -15,6 +15,19 @@ public sealed class QuicSocketSendBatchTests
         Assert.Equal(OperatingSystem.IsLinux(), QuicSocketSendBatch.IsNativeSendMmsgSupported);
     }
 
+    [Fact]
+    public void Linux64NativeLayoutsMatchTheSendMmsgAbi()
+    {
+        if (!OperatingSystem.IsLinux() || IntPtr.Size != 8)
+        {
+            return;
+        }
+
+        Assert.Equal(16, QuicSocketSendBatch.NativeIovecSize);
+        Assert.Equal(56, QuicSocketSendBatch.NativeMsghdrSize);
+        Assert.Equal(64, QuicSocketSendBatch.NativeMmsghdrSize);
+    }
+
     [Theory]
     [InlineData(AddressFamily.InterNetwork)]
     [InlineData(AddressFamily.InterNetworkV6)]
@@ -67,6 +80,23 @@ public sealed class QuicSocketSendBatchTests
 
         Assert.Equal(0, result.SentMessages);
         Assert.Equal(0, result.SentBytes);
+    }
+
+    [Fact]
+    public async Task SendBatchDoesNotUseARecycledDescriptorWhenSocketIsDisposedConcurrently()
+    {
+        using Socket receiver = CreateReceiver(AddressFamily.InterNetwork, out IPEndPoint receiverEndPoint);
+        Socket sender = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        QuicSocketSendBatchMessage[] messages = Enumerable.Range(0, 64)
+            .Select(index => new QuicSocketSendBatchMessage(new byte[] { (byte)index }, receiverEndPoint.Serialize()))
+            .ToArray();
+
+        Task<QuicSocketSendBatchResult> send = Task.Run(() => QuicSocketSendBatch.Send(sender, messages));
+        sender.Dispose();
+        QuicSocketSendBatchResult result = await send;
+
+        Assert.InRange(result.SentMessages, 0, messages.Length);
+        Assert.InRange(result.SentBytes, 0, messages.Length);
     }
 
     private static Socket CreateReceiver(AddressFamily addressFamily, out IPEndPoint localEndPoint)

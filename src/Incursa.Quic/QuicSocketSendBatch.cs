@@ -14,15 +14,24 @@ namespace Incursa.Quic;
 /// </summary>
 internal static partial class QuicSocketSendBatch
 {
-    private const string LinuxLibC = "libc.so.6";
+    private const string LinuxLibC = "libc";
+    private const int LinuxErrnoInterrupted = 4;
+    private const int LinuxErrnoTryAgain = 11;
+    private const int LinuxErrnoNotImplemented = 38;
 
-    private static readonly bool s_isNativeSendMmsgSupported = OperatingSystem.IsLinux()
-        && TryDetectNativeSendMmsgSupport();
+    private static int s_nativeSendMmsgAvailability = OperatingSystem.IsLinux()
+        && TryDetectNativeSendMmsgSupport() ? 1 : 0;
 
     /// <summary>
     /// Gets whether the current process can call the Linux native batch send primitive.
     /// </summary>
-    internal static bool IsNativeSendMmsgSupported => s_isNativeSendMmsgSupported;
+    internal static bool IsNativeSendMmsgSupported => Volatile.Read(ref s_nativeSendMmsgAvailability) == 1;
+
+    internal static int NativeIovecSize => Marshal.SizeOf<NativeIovec>();
+
+    internal static int NativeMsghdrSize => Marshal.SizeOf<NativeMsghdr>();
+
+    internal static int NativeMmsghdrSize => Marshal.SizeOf<NativeMmsghdr>();
 
     /// <summary>
     /// Sends a batch of UDP datagrams while preserving each datagram payload, destination, and
@@ -37,7 +46,7 @@ internal static partial class QuicSocketSendBatch
             return new QuicSocketSendBatchResult(sentMessages: 0, sentBytes: 0, usedNativeSendMmsg: false);
         }
 
-        if (!s_isNativeSendMmsgSupported)
+        if (!IsNativeSendMmsgSupported)
         {
             return SendWithRepeatedSendTo(socket, messages);
         }
@@ -48,10 +57,12 @@ internal static partial class QuicSocketSendBatch
         }
         catch (DllNotFoundException)
         {
+            Interlocked.Exchange(ref s_nativeSendMmsgAvailability, 0);
             return SendWithRepeatedSendTo(socket, messages);
         }
         catch (EntryPointNotFoundException)
         {
+            Interlocked.Exchange(ref s_nativeSendMmsgAvailability, 0);
             return SendWithRepeatedSendTo(socket, messages);
         }
     }
@@ -113,7 +124,7 @@ internal static partial class QuicSocketSendBatch
         Socket socket,
         ReadOnlySpan<QuicSocketSendBatchMessage> messages)
     {
-        nint socketHandle = socket.Handle;
+        SafeSocketHandle socketHandle = socket.SafeHandle;
         int messageCount = messages.Length;
         NativeMmsghdr[] nativeMessages = new NativeMmsghdr[messageCount];
         NativeIovec[] nativeIovecs = new NativeIovec[messageCount];
@@ -122,6 +133,11 @@ internal static partial class QuicSocketSendBatch
 
         try
         {
+            if (socketHandle.IsClosed || socketHandle.IsInvalid)
+            {
+                return new QuicSocketSendBatchResult(sentMessages: 0, sentBytes: 0, usedNativeSendMmsg: true);
+            }
+
             for (int index = 0; index < messageCount; index++)
             {
                 ReadOnlySpan<byte> payload = messages[index].Payload.Span;
@@ -187,9 +203,20 @@ internal static partial class QuicSocketSendBatch
                     }
 
                     int error = Marshal.GetLastPInvokeError();
-                    if (error == (int)SocketError.Interrupted)
+                    if (error == LinuxErrnoInterrupted)
                     {
                         continue;
+                    }
+
+                    if (error == LinuxErrnoNotImplemented)
+                    {
+                        Interlocked.Exchange(ref s_nativeSendMmsgAvailability, 0);
+                        throw new EntryPointNotFoundException("The current Linux kernel does not implement sendmmsg.");
+                    }
+
+                    if (error == LinuxErrnoTryAgain)
+                    {
+                        break;
                     }
 
                     break;
@@ -209,12 +236,13 @@ internal static partial class QuicSocketSendBatch
                 FreeIfAllocated(destinationBuffers[index]);
                 FreeIfAllocated(payloadBuffers[index]);
             }
+
         }
     }
 
     private static bool TryDetectNativeSendMmsgSupport()
     {
-        foreach (string libraryName in new[] { LinuxLibC, "libc.so" })
+        foreach (string libraryName in new[] { LinuxLibC, "libc.so.6", "libc.so" })
         {
             if (!NativeLibrary.TryLoad(libraryName, out nint libraryHandle))
             {
@@ -276,7 +304,7 @@ internal static partial class QuicSocketSendBatch
     }
 
     [LibraryImport(LinuxLibC, EntryPoint = "sendmmsg", SetLastError = true)]
-    private static unsafe partial int SendMMsg(nint socket, NativeMmsghdr* messageVector, uint vectorLength, int flags);
+    private static unsafe partial int SendMMsg(SafeSocketHandle socket, NativeMmsghdr* messageVector, uint vectorLength, int flags);
 
     [StructLayout(LayoutKind.Sequential)]
     private struct NativeIovec
