@@ -18,6 +18,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
     {
         DeadlineWakeTimerState timerState = (DeadlineWakeTimerState)state!;
         QuicConnectionRuntimeShardWorkItem workItem = default;
+        workItem = workItem with { EnqueuedTimestamp = QuicMetrics.GetRuntimeShardEnqueueTimestamp() };
         if (timerState.Writer.TryWrite(workItem))
         {
             QuicMetrics.RecordRuntimeShardWorkItemEnqueued(timerState.ShardIndex, in workItem);
@@ -394,12 +395,16 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 
     private bool TryWriteWorkItem(in QuicConnectionRuntimeShardWorkItem workItem)
     {
-        if (!inbox.Writer.TryWrite(workItem))
+        QuicConnectionRuntimeShardWorkItem queuedWorkItem = workItem with
+        {
+            EnqueuedTimestamp = QuicMetrics.GetRuntimeShardEnqueueTimestamp(),
+        };
+        if (!inbox.Writer.TryWrite(queuedWorkItem))
         {
             return false;
         }
 
-        QuicMetrics.RecordRuntimeShardWorkItemEnqueued(shardIndex, in workItem);
+        QuicMetrics.RecordRuntimeShardWorkItemEnqueued(shardIndex, in queuedWorkItem);
         return true;
     }
 
@@ -497,6 +502,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 deadlineScheduler.Apply(workItem.Handle, runtime, effect);
                 effectObserver?.Invoke(workItem.Handle, effect);
             }
+
+            QuicMetrics.RecordRuntimePressureSnapshot(shardIndex, runtime);
         }
         finally
         {

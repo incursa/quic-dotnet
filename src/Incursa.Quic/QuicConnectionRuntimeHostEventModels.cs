@@ -130,4 +130,6 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
     internal ulong StreamId { get; }
 
     internal ReadOnlyMemory<byte> StreamData { get; }
+
+    internal long EnqueuedTimestamp { get; init; }
 }

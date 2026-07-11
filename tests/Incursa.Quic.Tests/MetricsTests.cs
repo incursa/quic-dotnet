@@ -251,9 +251,91 @@ public class MetricsTests
             && measurement.Value == 1
             && measurement.HasTag("shard_index", "2")
             && measurement.HasTag("work_item_kind", "flow_control_credit_update"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.queue_delay.ms"
+            && measurement.Value >= 0
+            && measurement.HasTag("shard_index", "2")
+            && measurement.HasTag("work_item_kind", "flow_control_credit_update"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.delayed_application_sends"
+            && measurement.HasTag("shard_index", "2"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.sent_packets.retained"
+            && measurement.HasTag("shard_index", "2"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.retransmissions.pending"
+            && measurement.HasTag("shard_index", "2"));
         Assert.Equal(0d, recorder.Measurements
             .Where(measurement => measurement.InstrumentName == "incursa.quic.runtime.shard.inbox.depth")
             .Sum(measurement => measurement.Value));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public async Task StreamWriteCompletionMetricCapturesBoundedActionAndOutcomeTags()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+        await using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 8,
+                new QuicConnectionPathIdentity("203.0.113.10", RemotePort: 443),
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: 8).StateChanged);
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryPeekLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            _ = runtime.Transition(connectionEvent);
+            return true;
+        });
+
+        await runtime.WriteStreamAsync(streamId.Value, new byte[] { 0x01 });
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.stream_write.completion.ms"
+            && measurement.Value >= 0
+            && measurement.HasTag("role", "client")
+            && measurement.HasTag("action", "write")
+            && measurement.HasTag("outcome", "succeeded"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public async Task StreamWriteCompletionMetricReportsCompletionActionFailure()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+        await using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 8,
+                new QuicConnectionPathIdentity("203.0.113.10", RemotePort: 443),
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: 8).StateChanged);
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryPeekLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            _ = runtime.Transition(connectionEvent);
+            return true;
+        });
+
+        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await runtime.WriteStreamAsync(
+                streamId.Value,
+                new byte[] { 0x01 },
+                () => throw new InvalidOperationException("completion-action-fault")));
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.stream_write.completion.ms"
+            && measurement.HasTag("outcome", "failed"));
+        Assert.DoesNotContain(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.stream_write.completion.ms"
+            && measurement.HasTag("outcome", "succeeded"));
     }
 
     [Fact]

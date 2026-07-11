@@ -224,6 +224,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         private CancellationTokenRegistration cancellationRegistration;
         private byte[]? ownedStreamData;
         private Action? completionAction;
+        private long writeStartedTimestamp;
         private int completed;
 
         internal StreamActionRequestCompletionSource(QuicConnectionRuntime owner)
@@ -249,6 +250,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             StreamDataLength = 0;
             SuppressTerminalException = false;
             completionAction = null;
+            writeStartedTimestamp = 0;
             completed = 0;
             source.Reset();
         }
@@ -269,6 +271,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             ActionKind = actionKind;
             StreamId = streamId;
             StreamDataLength = streamDataLength;
+            writeStartedTimestamp = QuicMetrics.GetStreamWriteStartTimestamp();
         }
 
         internal void ConfigureCompletionAction(Action completionAction)
@@ -345,10 +348,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
             if (TryInvokeCompletionAction(out Exception? completionException))
             {
+                RecordWriteCompletion("failed");
                 source.SetException(completionException!);
                 return;
             }
 
+            RecordWriteCompletion("succeeded");
             source.SetResult(true);
         }
 
@@ -361,10 +366,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
             if (TryInvokeCompletionAction(out Exception? completionException))
             {
+                RecordWriteCompletion("failed");
                 source.SetException(completionException!);
                 return;
             }
 
+            RecordWriteCompletion("failed");
             source.SetException(exception);
         }
 
@@ -377,10 +384,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
             if (TryInvokeCompletionAction(out Exception? completionException))
             {
+                RecordWriteCompletion("failed");
                 source.SetException(completionException!);
                 return;
             }
 
+            RecordWriteCompletion("terminal");
             if (SuppressTerminalException)
             {
                 source.SetResult(false);
@@ -399,10 +408,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
             if (TryInvokeCompletionAction(out Exception? completionException))
             {
+                RecordWriteCompletion("failed");
                 source.SetException(completionException!);
                 return;
             }
 
+            RecordWriteCompletion("canceled");
             source.SetException(new OperationCanceledException(cancellationToken));
         }
 
@@ -421,6 +432,17 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 exception = completionException;
                 return true;
             }
+        }
+
+        private void RecordWriteCompletion(string outcome)
+        {
+            long startedTimestamp = writeStartedTimestamp;
+            writeStartedTimestamp = 0;
+            QuicMetrics.RecordStreamWriteCompletion(
+                startedTimestamp,
+                owner.tlsState.Role,
+                ActionKind,
+                outcome);
         }
 
         bool IValueTaskSource<bool>.GetResult(short token)
@@ -1074,6 +1096,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     internal bool IsDisposed => Volatile.Read(ref disposed) != 0;
 
     internal bool HasTerminalStreamOperation => IsDisposed || terminalState is not null;
+
+    internal int DelayedApplicationSendCount => applicationSendQueue.Count;
+
+    internal int RetainedSentPacketCount => sendRuntime.SentPackets.Count;
+
+    internal int PendingRetransmissionCount => sendRuntime.PendingRetransmissionCount;
 
     internal bool HasProcessingTask => processingTask is not null;
 

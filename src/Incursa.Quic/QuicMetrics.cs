@@ -23,6 +23,7 @@ internal static class QuicMetrics
     private const string RuntimeShardInboxDepthMetricName = "incursa.quic.runtime.shard.inbox.depth";
     private const string RuntimeShardWorkItemsEnqueuedMetricName = "incursa.quic.runtime.shard.work_items.enqueued";
     private const string RuntimeShardWorkItemsDequeuedMetricName = "incursa.quic.runtime.shard.work_items.dequeued";
+    private const string RuntimeShardQueueDelayMetricName = "incursa.quic.runtime.shard.queue_delay.ms";
     private const string RuntimeShardIndexTagName = "shard_index";
     private const string RuntimeShardWorkItemKindTagName = "work_item_kind";
     private const double MicrosecondsPerMillisecond = 1000.0;
@@ -79,6 +80,11 @@ internal static class QuicMetrics
     private static readonly UpDownCounter<long> RuntimeShardInboxDepth = Meter.CreateUpDownCounter<long>(RuntimeShardInboxDepthMetricName, unit: "work_items");
     private static readonly Counter<long> RuntimeShardWorkItemsEnqueued = Meter.CreateCounter<long>(RuntimeShardWorkItemsEnqueuedMetricName, unit: "work_items");
     private static readonly Counter<long> RuntimeShardWorkItemsDequeued = Meter.CreateCounter<long>(RuntimeShardWorkItemsDequeuedMetricName, unit: "work_items");
+    private static readonly Histogram<double> RuntimeShardQueueDelay = Meter.CreateHistogram<double>(RuntimeShardQueueDelayMetricName, unit: "ms");
+    private static readonly Histogram<long> DelayedApplicationSends = Meter.CreateHistogram<long>("incursa.quic.runtime.delayed_application_sends", unit: "writes");
+    private static readonly Histogram<long> RetainedSentPackets = Meter.CreateHistogram<long>("incursa.quic.runtime.sent_packets.retained", unit: "packets");
+    private static readonly Histogram<long> PendingRetransmissions = Meter.CreateHistogram<long>("incursa.quic.runtime.retransmissions.pending", unit: "retransmissions");
+    private static readonly Histogram<double> StreamWriteCompletion = Meter.CreateHistogram<double>("incursa.quic.runtime.stream_write.completion.ms", unit: "ms");
     private static readonly long[] BufferPoolRentCounts = new long[BufferPoolBucketCount];
     private static readonly long[] BufferPoolRequestedRentCounts = new long[BufferPoolBucketCount];
     private static readonly long[] BufferPoolReturnCounts = new long[BufferPoolBucketCount];
@@ -308,7 +314,7 @@ internal static class QuicMetrics
 
     internal static void RecordRuntimeShardWorkItemDequeued(int shardIndex, in QuicConnectionRuntimeShardWorkItem workItem)
     {
-        if (!RuntimeShardInboxDepth.Enabled && !RuntimeShardWorkItemsDequeued.Enabled)
+        if (!RuntimeShardInboxDepth.Enabled && !RuntimeShardWorkItemsDequeued.Enabled && !RuntimeShardQueueDelay.Enabled)
         {
             return;
         }
@@ -325,6 +331,63 @@ internal static class QuicMetrics
             TagList workItemTags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
             RuntimeShardWorkItemsDequeued.Add(1, in workItemTags);
         }
+
+        if (RuntimeShardQueueDelay.Enabled && workItem.EnqueuedTimestamp != 0)
+        {
+            TagList queueDelayTags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
+            RuntimeShardQueueDelay.Record(
+                Stopwatch.GetElapsedTime(workItem.EnqueuedTimestamp).TotalMilliseconds,
+                in queueDelayTags);
+        }
+    }
+
+    internal static long GetRuntimeShardEnqueueTimestamp()
+        => RuntimeShardQueueDelay.Enabled ? Stopwatch.GetTimestamp() : 0;
+
+    internal static void RecordRuntimePressureSnapshot(int shardIndex, QuicConnectionRuntime runtime)
+    {
+        if (!DelayedApplicationSends.Enabled && !RetainedSentPackets.Enabled && !PendingRetransmissions.Enabled)
+        {
+            return;
+        }
+
+        TagList tags = default;
+        tags.Add(RuntimeShardIndexTagName, shardIndex);
+        if (DelayedApplicationSends.Enabled)
+        {
+            DelayedApplicationSends.Record(runtime.DelayedApplicationSendCount, in tags);
+        }
+
+        if (RetainedSentPackets.Enabled)
+        {
+            RetainedSentPackets.Record(runtime.RetainedSentPacketCount, in tags);
+        }
+
+        if (PendingRetransmissions.Enabled)
+        {
+            PendingRetransmissions.Record(runtime.PendingRetransmissionCount, in tags);
+        }
+    }
+
+    internal static long GetStreamWriteStartTimestamp()
+        => StreamWriteCompletion.Enabled ? Stopwatch.GetTimestamp() : 0;
+
+    internal static void RecordStreamWriteCompletion(
+        long startedTimestamp,
+        QuicTlsRole role,
+        QuicConnectionStreamActionKind actionKind,
+        string outcome)
+    {
+        if (!StreamWriteCompletion.Enabled || startedTimestamp == 0)
+        {
+            return;
+        }
+
+        TagList tags = default;
+        tags.Add("role", GetRoleTag(role));
+        tags.Add("action", actionKind == QuicConnectionStreamActionKind.Finish ? "finish" : "write");
+        tags.Add("outcome", outcome);
+        StreamWriteCompletion.Record(Stopwatch.GetElapsedTime(startedTimestamp).TotalMilliseconds, in tags);
     }
 
     private static TagList CreateRuntimeShardWorkItemTags(

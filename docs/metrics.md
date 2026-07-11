@@ -45,6 +45,11 @@ These metrics are diagnostic signals for live behavior and operational visibilit
 | `incursa.quic.runtime.shard.inbox.depth` | UpDownCounter | Work items currently queued for a runtime shard. | `shard_index` |
 | `incursa.quic.runtime.shard.work_items.enqueued` | Counter | Work items successfully admitted to a runtime shard inbox. | `shard_index`, `work_item_kind` |
 | `incursa.quic.runtime.shard.work_items.dequeued` | Counter | Work items removed from a runtime shard inbox for processing or shutdown cleanup. | `shard_index`, `work_item_kind` |
+| `incursa.quic.runtime.shard.queue_delay.ms` | Histogram | Time from successful shard-inbox admission until dequeue, in milliseconds. | `shard_index`, `work_item_kind` |
+| `incursa.quic.runtime.delayed_application_sends` | Histogram | Sampled application-send queue length for the connection being processed on a shard. Values are per connection, not aggregate shard totals. | `shard_index` |
+| `incursa.quic.runtime.sent_packets.retained` | Histogram | Sampled recovery-ledger packet count for the connection being processed on a shard. Values are per connection, not aggregate shard totals. | `shard_index` |
+| `incursa.quic.runtime.retransmissions.pending` | Histogram | Sampled pending retransmission count for the connection being processed on a shard. Values are per connection, not aggregate shard totals. | `shard_index` |
+| `incursa.quic.runtime.stream_write.completion.ms` | Histogram | Runtime stream-action completion latency, in milliseconds. A large write can produce multiple `write` samples because the runtime processes bounded chunks. | `role`, `action`, `outcome` |
 
 ## HTTP/3 Instruments
 
@@ -70,6 +75,8 @@ Metrics only use bounded, low-cardinality tags:
 - `requested_size_bucket`: `le_1kb`, `le_4kb`, `le_16kb`, `le_64kb`, `le_256kb`, `gt_256kb`
 - `shard_index`: zero-based index within the bounded runtime-shard set
 - `work_item_kind`: `event`, `packet_received`, `stream_capacity_release`, `flow_control_credit_update`, `stream_open`, `stream_write`, `deadline_wake`
+- `action`: `write`, `finish`
+- `outcome`: `succeeded`, `failed`, `terminal`, `canceled`
 
 The metrics surface must not tag by connection ID, stream ID, endpoint, peer address, URL path, exception message, or raw error text.
 
