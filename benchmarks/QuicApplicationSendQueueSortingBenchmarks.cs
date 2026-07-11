@@ -65,4 +65,34 @@ public class QuicApplicationSendQueueSortingBenchmarks
             ? queuedWrite.Sequence + (long)queuedWrite.StreamId
             : 0;
     }
+
+    /// <summary>
+    /// Measures queue insertion and sorted materialization together so ordering
+    /// work moved from dequeue to enqueue remains visible.
+    /// </summary>
+    [Benchmark]
+    public long EnqueueAndGetSortedQueuedWritesByPriorityThenSequence()
+    {
+        QuicApplicationSendQueue candidateQueue = new();
+        byte[] payload = [0x01];
+        for (int index = 0; index < QueuedWriteCount; index++)
+        {
+            candidateQueue.Enqueue(
+                (ulong)index * 4,
+                index % 7,
+                payload,
+                streamPayloadLength: 1);
+        }
+
+        PendingApplicationSendRequest[] queuedWrites = candidateQueue.RentSortedQueuedWrites(out int queuedWriteCount);
+        try
+        {
+            ReadOnlySpan<PendingApplicationSendRequest> sortedWrites = queuedWrites.AsSpan(0, queuedWriteCount);
+            return sortedWrites[0].Sequence + sortedWrites[^1].Sequence;
+        }
+        finally
+        {
+            QuicApplicationSendQueue.ReturnRentedQueuedWrites(queuedWrites);
+        }
+    }
 }
