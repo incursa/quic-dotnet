@@ -14,10 +14,6 @@ namespace Incursa.Quic;
 /// </remarks>
 internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
 {
-    private const int HashShift = 33;
-    private const ulong HashConstant1 = 0xff51afd7ed558ccdUL;
-    private const ulong HashConstant2 = 0xc4ceb9fe1a85ec53UL;
-
     private readonly ConcurrentDictionary<QuicConnectionHandle, QuicConnectionRuntimeRoute> routes = new();
     private readonly ConcurrentDictionary<QuicConnectionRuntime, QuicConnectionHandle> runtimeOwnership =
         new(ReferenceEqualityComparer.Instance);
@@ -350,14 +346,9 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
 
     private static int SelectShardIndex(QuicConnectionHandle handle, int shardCount)
     {
-        ulong mixed = handle.Value;
-        mixed ^= mixed >> HashShift;
-        mixed *= HashConstant1;
-        mixed ^= mixed >> HashShift;
-        mixed *= HashConstant2;
-        mixed ^= mixed >> HashShift;
-
-        return (int)(mixed % (ulong)shardCount);
+        // Handles are allocated sequentially by this host. Direct modulo preserves stable
+        // ownership while keeping every contiguous allocation window evenly distributed.
+        return (int)(handle.Value % (ulong)shardCount);
     }
 
     private void ThrowIfDisposed()
