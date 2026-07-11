@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0055",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "Bounded runtime-shard metrics verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -20,7 +20,9 @@
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter FullyQualifiedName~QuicRuntimeShardMetrics",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
     "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
-    "ProtocolLab quic-runtime-shard-summary.json"
+    "ProtocolLab run raw-incursa-shard-diagnostics-20260711a",
+    "protocol-lab-internal/.artifacts/runs/raw-incursa-shard-diagnostics-20260711a/evidence-bundle.json",
+    "protocol-lab-internal/.artifacts/runs/raw-incursa-shard-diagnostics-20260711a/implementations/incursa-raw-quic-adapter-v1/quic.transport.multiplex.100x64kb/quic/local-process/clean/local-comparison/c32-s16-r1/quic-runtime-shard-summary.json"
   ],
   "procedure": [
     "Observe one successful enqueue and dequeue and confirm depth returns to zero for the shard.",
@@ -31,6 +33,7 @@
     "Capture and inspect a ProtocolLab runtime-shard summary from the target process."
   ],
   "expected_result": "Shard diagnostics are balanced, bounded, attributable by shard and work kind, and observational only; ProtocolLab retains them as diagnostic evidence.",
+  "status_summary": "Focused metrics and reflection-guard tests passed 9/9. The complete QUIC suite passed 9,443 tests with five skips and one unrelated DoQ lifecycle stress failure that passed immediately in isolation. Source-backed ProtocolLab run raw-incursa-shard-diagnostics-20260711a passed validation and benchmark execution, captured 1,044 shard samples without parse warnings, balanced enqueue/dequeue observations on all four shards, and retained the populated summary in the evidence bundle. The repository-wide SpecTrace validator remains baseline-blocked by 2,633 pre-existing errors; this artifact, its work item, and the updated architecture validate individually.",
   "related_artifacts": [
     "SPEC-QUIC-CRT",
     "ARC-QUIC-CRT-0052",
