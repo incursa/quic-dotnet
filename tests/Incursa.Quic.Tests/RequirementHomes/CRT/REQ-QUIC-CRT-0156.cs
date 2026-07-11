@@ -325,4 +325,95 @@ public sealed class REQ_QUIC_CRT_0156
         Assert.Equal(7_140UL, state.CubicWindowMaxBytes);
         Assert.Equal(2_000UL, state.CubicEpochStartMicros);
     }
+
+    [Theory]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(false, false)]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-CRT-0161")]
+    public void CubicLongLimitedPeriodIsExcludedFromElapsedEpochTime(
+        bool applicationLimited,
+        bool flowControlLimited)
+    {
+        QuicCongestionControlState state = new(congestionControlAlgorithm: QuicCongestionControlAlgorithm.Cubic);
+        state.RegisterPacketSent(12_000);
+        Assert.True(state.TryRegisterLoss(
+            sentBytes: 1_200,
+            sentAtMicros: 1_000,
+            packetInFlight: true));
+        Assert.True(state.TryRegisterAcknowledgedPacket(
+            sentBytes: 7_200,
+            sentAtMicros: 500,
+            packetInFlight: true));
+
+        state.RegisterPacketSent(1_200);
+        Assert.True(state.TryRegisterAcknowledgedPacket(
+            sentBytes: 1_200,
+            sentAtMicros: 1_100,
+            packetInFlight: true,
+            applicationLimited: applicationLimited,
+            flowControlLimited: flowControlLimited,
+            ackReceivedAtMicros: 2_000));
+        Assert.True(state.CubicEpochPaused);
+        Assert.Equal(1_000UL, state.CubicEpochStartMicros);
+        Assert.Equal(8_400UL, state.CongestionWindowBytes);
+
+        state.RegisterPacketSent(1_200);
+        Assert.True(state.TryRegisterAcknowledgedPacket(
+            sentBytes: 1_200,
+            sentAtMicros: 10_001_000,
+            packetInFlight: true,
+            applicationLimited: applicationLimited,
+            flowControlLimited: flowControlLimited,
+            ackReceivedAtMicros: 10_002_000));
+        Assert.True(state.CubicEpochPaused);
+        Assert.Equal(1_000UL, state.CubicEpochStartMicros);
+
+        state.RegisterPacketSent(1_200);
+        Assert.True(state.TryRegisterAcknowledgedPacket(
+            sentBytes: 1_200,
+            sentAtMicros: 20_001_000,
+            packetInFlight: true,
+            pacingLimited: true,
+            ackReceivedAtMicros: 20_002_000));
+
+        Assert.False(state.CubicEpochPaused);
+        Assert.Equal(20_001_000UL, state.CubicEpochStartMicros);
+        Assert.Equal(9_600UL, state.CongestionWindowBytes);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-CRT-0157")]
+    public void NewRenoResumeAfterLongLimitedPeriodKeepsLinearGrowth()
+    {
+        QuicCongestionControlState state = new();
+        state.RegisterPacketSent(12_000);
+        Assert.True(state.TryRegisterLoss(
+            sentBytes: 1_200,
+            sentAtMicros: 1_000,
+            packetInFlight: true));
+
+        state.RegisterPacketSent(1_200);
+        Assert.True(state.TryRegisterAcknowledgedPacket(
+            sentBytes: 1_200,
+            sentAtMicros: 1_100,
+            packetInFlight: true,
+            applicationLimited: true,
+            ackReceivedAtMicros: 10_000_000));
+
+        state.RegisterPacketSent(1_200);
+        Assert.True(state.TryRegisterAcknowledgedPacket(
+            sentBytes: 1_200,
+            sentAtMicros: 10_001_000,
+            packetInFlight: true,
+            pacingLimited: true,
+            ackReceivedAtMicros: 10_002_000));
+
+        Assert.Equal(6_240UL, state.CongestionWindowBytes);
+        Assert.False(state.CubicEpochPaused);
+    }
 }

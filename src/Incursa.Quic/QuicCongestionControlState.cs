@@ -98,7 +98,9 @@ internal sealed class QuicCongestionControlState
     private readonly QuicCongestionControlAlgorithm congestionControlAlgorithm;
     private ulong cubicWindowMaxBytes;
     private ulong cubicEpochStartMicros;
+    private ulong cubicPauseStartedMicros;
     private bool cubicHasEpochStart;
+    private bool cubicEpochPaused;
 
     /// <summary>
     /// Initializes a new congestion-control state using the RFC 9002 default maximum datagram size.
@@ -133,6 +135,8 @@ internal sealed class QuicCongestionControlState
     internal ulong CubicWindowMaxBytes => cubicWindowMaxBytes;
 
     internal ulong? CubicEpochStartMicros => cubicHasEpochStart ? cubicEpochStartMicros : null;
+
+    internal bool CubicEpochPaused => cubicEpochPaused;
 
     /// <summary>
     /// Gets the max_datagram_size value used by RFC 9002 recovery formulas.
@@ -385,12 +389,11 @@ internal sealed class QuicCongestionControlState
             RecoveryStartTimeMicros = null;
         }
 
-        if (applicationLimited || flowControlLimited)
-        {
-            return true;
-        }
-
-        if (!pacingLimited && BytesInFlightBytes < CongestionWindowBytes)
+        bool congestionWindowGrowthLimited = applicationLimited
+            || flowControlLimited
+            || (!pacingLimited && BytesInFlightBytes < CongestionWindowBytes);
+        UpdateCubicEpochPause(effectiveAckReceivedAtMicros, congestionWindowGrowthLimited);
+        if (congestionWindowGrowthLimited)
         {
             return true;
         }
@@ -679,6 +682,8 @@ internal sealed class QuicCongestionControlState
             }
             cubicEpochStartMicros = sentAtMicros;
             cubicHasEpochStart = true;
+            cubicPauseStartedMicros = 0;
+            cubicEpochPaused = false;
         }
 
         RecoveryStartTimeMicros = sentAtMicros;
@@ -743,11 +748,44 @@ internal sealed class QuicCongestionControlState
         cubicHasEpochStart = true;
     }
 
+    private void UpdateCubicEpochPause(ulong ackReceivedAtMicros, bool congestionWindowGrowthLimited)
+    {
+        if (congestionControlAlgorithm != QuicCongestionControlAlgorithm.Cubic || !cubicHasEpochStart)
+        {
+            return;
+        }
+
+        if (congestionWindowGrowthLimited)
+        {
+            if (!cubicEpochPaused)
+            {
+                cubicPauseStartedMicros = ackReceivedAtMicros;
+                cubicEpochPaused = true;
+            }
+
+            return;
+        }
+
+        if (!cubicEpochPaused)
+        {
+            return;
+        }
+
+        ulong pausedDurationMicros = ackReceivedAtMicros <= cubicPauseStartedMicros
+            ? 0
+            : ackReceivedAtMicros - cubicPauseStartedMicros;
+        cubicEpochStartMicros = SaturatingAdd(cubicEpochStartMicros, pausedDurationMicros);
+        cubicPauseStartedMicros = 0;
+        cubicEpochPaused = false;
+    }
+
     private void ResetCongestionControlAlgorithmState()
     {
         cubicWindowMaxBytes = 0;
         cubicEpochStartMicros = 0;
+        cubicPauseStartedMicros = 0;
         cubicHasEpochStart = false;
+        cubicEpochPaused = false;
     }
 
     /// <summary>
