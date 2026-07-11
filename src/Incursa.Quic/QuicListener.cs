@@ -11,7 +11,7 @@ namespace Incursa.Quic;
 /// </summary>
 public sealed class QuicListener : IAsyncDisposable
 {
-    internal const int MaximumDefaultRuntimeShardCount = 4;
+    internal const int MaximumDefaultRuntimeShardCount = 8;
 
     private readonly QuicListenerHost host;
     private int disposed;

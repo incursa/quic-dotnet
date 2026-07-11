@@ -12,6 +12,9 @@ public sealed class QuicListenerRuntimeShardingTests
     [InlineData(1, 1)]
     [InlineData(2, 2)]
     [InlineData(4, 4)]
+    [InlineData(5, 5)]
+    [InlineData(8, 8)]
+    [InlineData(9, QuicListener.MaximumDefaultRuntimeShardCount)]
     [InlineData(32, QuicListener.MaximumDefaultRuntimeShardCount)]
     public void Default_runtime_shard_count_is_bounded_by_processor_count(int processorCount, int expected)
     {
