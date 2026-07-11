@@ -43,6 +43,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private readonly List<SslApplicationProtocol> applicationProtocols;
     private readonly Func<QuicConnection, SslClientHelloInfo, CancellationToken, ValueTask<QuicServerConnectionOptions>> connectionOptionsCallback;
     private readonly Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory;
+    private readonly Func<ReadOnlyMemory<byte>, SocketAddress, int>? datagramSender;
     private readonly IQuicDiagnosticsSink listenerDiagnosticsSink;
     private readonly Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver;
     private readonly QuicConnectionRuntimeEndpoint endpoint;
@@ -93,7 +94,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null,
         QuicAddressValidationTokenProtector? addressValidationTokenProtector = null,
         int maximumVersionNegotiationResponsesPerRemoteAddress = int.MaxValue,
-        int runtimeShardCount = 1)
+        int runtimeShardCount = 1,
+        Func<ReadOnlyMemory<byte>, SocketAddress, int>? datagramSender = null)
     {
         ArgumentNullException.ThrowIfNull(listenEndPoint);
         ArgumentNullException.ThrowIfNull(applicationProtocols);
@@ -118,6 +120,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         this.connectionOptionsCallback = connectionOptionsCallback;
         this.retryBootstrapEnabled = retryBootstrapEnabled;
         this.diagnosticsSinkFactory = diagnosticsSinkFactory;
+        this.datagramSender = datagramSender;
         listenerDiagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSinkFactory?.Invoke());
         this.tlsKeyLogSecretObserver = tlsKeyLogSecretObserver;
         this.addressValidationTokenProtector = addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
@@ -271,8 +274,27 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             ObserveSendDatagram);
 
         Task receiveTask = ReceiveLoopAsync(hostCancellation);
+        ObserveBackgroundTaskFault(endpointTask);
+        ObserveBackgroundTaskFault(receiveTask);
         runningTask = Task.WhenAll(endpointTask, receiveTask);
         return runningTask;
+    }
+
+    private void ObserveBackgroundTaskFault(Task task)
+    {
+        _ = task.ContinueWith(
+            static (faultedTask, state) =>
+            {
+                QuicListenerHost host = (QuicListenerHost)state!;
+                Exception exception = faultedTask.Exception?.GetBaseException()
+                    ?? new InvalidOperationException("A QUIC listener background task failed without an exception.");
+                host.acceptQueue.Writer.TryComplete(exception);
+                host.shutdown.Cancel();
+            },
+            this,
+            CancellationToken.None,
+            TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted,
+            TaskScheduler.Default);
     }
 
     public async ValueTask<QuicConnection> AcceptConnectionAsync(CancellationToken cancellationToken = default)
@@ -924,15 +946,16 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             }
             else
             {
-                bytesSent = socket.SendTo(
-                    sendDatagram.Datagram.Span,
-                    SocketFlags.None,
-                    remoteSocketAddress ?? CreateRemoteSocketAddress(sendDatagram.PathIdentity));
+                SocketAddress destination = remoteSocketAddress ?? CreateRemoteSocketAddress(sendDatagram.PathIdentity);
+                bytesSent = datagramSender is null
+                    ? socket.SendTo(sendDatagram.Datagram.Span, SocketFlags.None, destination)
+                    : datagramSender(sendDatagram.Datagram, destination);
             }
 
             if (bytesSent != sendDatagram.Datagram.Length)
             {
-                throw new IOException("Failed to send the complete QUIC datagram.");
+                QuicMetrics.RecordPacketDropped(QuicTlsRole.Server);
+                return;
             }
 
             QuicMetrics.RecordDatagramSent(QuicTlsRole.Server, bytesSent);
@@ -946,13 +969,47 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         {
             // Expected during shutdown.
         }
-        catch (SocketException ex) when (ex.SocketErrorCode is SocketError.ConnectionReset or SocketError.ConnectionAborted or SocketError.ConnectionRefused)
+        catch (SocketException ex) when (IsPeerPathSendSocketError(ex.SocketErrorCode))
         {
             // A shared UDP listener cannot reliably map these ICMP errors back to a live managed
             // connection. Keep the endpoint alive so unrelated sequential accepts can finish.
-            QuicMetrics.RecordUdpError(QuicTlsRole.Server, "send", ex.SocketErrorCode);
+            RecordUdpSendFailure(ex);
+        }
+        catch (SocketException ex) when (IsTransientSendSocketError(ex.SocketErrorCode))
+        {
+            // The runtime already tracks this packet for recovery. Treat transient local UDP
+            // pressure as a dropped datagram so PTO can retry without terminating the shard.
+            RecordUdpSendFailure(ex);
         }
     }
+
+    private void RecordUdpSendFailure(SocketException exception)
+    {
+        QuicMetrics.RecordUdpError(QuicTlsRole.Server, "send", exception.SocketErrorCode);
+        QuicMetrics.RecordPacketDropped(QuicTlsRole.Server);
+
+        if (listenerDiagnosticsSink.IsEnabled)
+        {
+            listenerDiagnosticsSink.Emit(QuicDiagnostics.UdpSendError(
+                exception.SocketErrorCode.ToString(),
+                exception.ErrorCode));
+        }
+    }
+
+    internal static bool IsTransientSendSocketError(SocketError socketError)
+        => socketError is SocketError.Interrupted
+            or SocketError.WouldBlock
+            or SocketError.TryAgain
+            or SocketError.NoBufferSpaceAvailable;
+
+    internal static bool IsPeerPathSendSocketError(SocketError socketError)
+        => socketError is SocketError.ConnectionReset
+            or SocketError.ConnectionAborted
+            or SocketError.ConnectionRefused
+            or SocketError.HostUnreachable
+            or SocketError.NetworkUnreachable
+            or SocketError.NetworkReset
+            or SocketError.TimedOut;
 
     private static bool TryResolvePacketInformationSourceAddress(
         IPEndPoint socketLocalEndPoint,
