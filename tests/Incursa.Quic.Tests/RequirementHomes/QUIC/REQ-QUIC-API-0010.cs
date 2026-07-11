@@ -396,6 +396,133 @@ public sealed class REQ_QUIC_API_0010
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-API-0010")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task CompletedWriteReleasesGateBeforeItsValueTaskIsConsumed()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
+            connectionSendLimit: 4096,
+            localBidirectionalSendLimit: 4096);
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            _ = runtime.Transition(connectionEvent);
+            return true;
+        });
+
+        await using QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        AcknowledgeTrackedPackets(runtime);
+
+        Queue<QuicConnectionStreamActionEvent> postedWrites = new();
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            if (connectionEvent is QuicConnectionStreamActionEvent
+                {
+                    ActionKind: QuicConnectionStreamActionKind.Write,
+                } writeEvent)
+            {
+                postedWrites.Enqueue(writeEvent);
+            }
+
+            return true;
+        });
+
+        ValueTask firstWrite = stream.WriteAsync(new byte[] { 0x51 });
+        Assert.False(firstWrite.IsCompleted);
+        _ = runtime.Transition(postedWrites.Dequeue());
+
+        ValueTask secondWrite = stream.WriteAsync(new byte[] { 0x52 });
+        Assert.False(secondWrite.IsCompleted);
+        _ = runtime.Transition(postedWrites.Dequeue());
+
+        await secondWrite;
+        await firstWrite;
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            _ = runtime.Transition(connectionEvent);
+            return true;
+        });
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-API-0010")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task CanceledWriteReleasesGateBeforeItsValueTaskIsConsumed()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
+            connectionSendLimit: 4096,
+            localBidirectionalSendLimit: 4096);
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            _ = runtime.Transition(connectionEvent);
+            return true;
+        });
+
+        await using QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        AcknowledgeTrackedPackets(runtime);
+
+        Queue<QuicConnectionStreamActionEvent> postedWrites = new();
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            if (connectionEvent is QuicConnectionStreamActionEvent
+                {
+                    ActionKind: QuicConnectionStreamActionKind.Write,
+                } writeEvent)
+            {
+                postedWrites.Enqueue(writeEvent);
+            }
+
+            return true;
+        });
+
+        using CancellationTokenSource cancellation = new();
+        ValueTask firstWrite = stream.WriteAsync(new byte[] { 0x61 }, cancellation.Token);
+        Assert.False(firstWrite.IsCompleted);
+        await cancellation.CancelAsync();
+        _ = postedWrites.Dequeue();
+
+        ValueTask secondWrite = stream.WriteAsync(new byte[] { 0x62 });
+        Assert.False(secondWrite.IsCompleted);
+        _ = runtime.Transition(postedWrites.Dequeue());
+
+        await secondWrite;
+        await Assert.ThrowsAsync<OperationCanceledException>(() => firstWrite.AsTask());
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            _ = runtime.Transition(connectionEvent);
+            return true;
+        });
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-API-0010")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task OversizedWriteCompletionReleasesGateForFollowupWrite()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
+            connectionSendLimit: 65_536,
+            localBidirectionalSendLimit: 65_536);
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            _ = runtime.Transition(connectionEvent);
+            return true;
+        });
+
+        await using QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        AcknowledgeTrackedPackets(runtime);
+
+        byte[] oversizedPayload = new byte[(32 * 1024) + 1];
+        await stream.WriteAsync(oversizedPayload).AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+        await stream.WriteAsync(new byte[] { 0x71 }).AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+
+        Assert.Null(GetSlowWriteGateSignal(stream));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0003")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

@@ -223,6 +223,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         private ManualResetValueTaskSourceCore<bool> source;
         private CancellationTokenRegistration cancellationRegistration;
         private byte[]? ownedStreamData;
+        private Action? completionAction;
         private int completed;
 
         internal StreamActionRequestCompletionSource(QuicConnectionRuntime owner)
@@ -247,6 +248,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             StreamId = default;
             StreamDataLength = 0;
             SuppressTerminalException = false;
+            completionAction = null;
             completed = 0;
             source.Reset();
         }
@@ -268,6 +270,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             StreamId = streamId;
             StreamDataLength = streamDataLength;
         }
+
+        internal void ConfigureCompletionAction(Action completionAction)
+            => this.completionAction = completionAction;
+
+        internal void ClearCompletionAction()
+            => completionAction = null;
 
         internal void RegisterCancellation(long requestId, CancellationToken cancellationToken)
         {
@@ -335,6 +343,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 return;
             }
 
+            if (TryInvokeCompletionAction(out Exception? completionException))
+            {
+                source.SetException(completionException!);
+                return;
+            }
+
             source.SetResult(true);
         }
 
@@ -345,6 +359,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 return;
             }
 
+            if (TryInvokeCompletionAction(out Exception? completionException))
+            {
+                source.SetException(completionException!);
+                return;
+            }
+
             source.SetException(exception);
         }
 
@@ -352,6 +372,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         {
             if (Interlocked.Exchange(ref completed, 1) != 0)
             {
+                return;
+            }
+
+            if (TryInvokeCompletionAction(out Exception? completionException))
+            {
+                source.SetException(completionException!);
                 return;
             }
 
@@ -371,7 +397,30 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 return;
             }
 
+            if (TryInvokeCompletionAction(out Exception? completionException))
+            {
+                source.SetException(completionException!);
+                return;
+            }
+
             source.SetException(new OperationCanceledException(cancellationToken));
+        }
+
+        private bool TryInvokeCompletionAction(out Exception? exception)
+        {
+            try
+            {
+                Action? action = completionAction;
+                completionAction = null;
+                action?.Invoke();
+                exception = null;
+                return false;
+            }
+            catch (Exception completionException)
+            {
+                exception = completionException;
+                return true;
+            }
         }
 
         bool IValueTaskSource<bool>.GetResult(short token)
@@ -754,6 +803,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     private void ReturnStreamActionRequestCompletionSource(StreamActionRequestCompletionSource completionSource)
     {
+        completionSource.ClearCompletionAction();
         completionSource.ReleaseOwnedStreamData();
         streamActionRequestCompletionSourcePool.Enqueue(completionSource);
     }
@@ -1858,7 +1908,14 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         ulong streamId,
         ReadOnlyMemory<byte> buffer,
         CancellationToken cancellationToken = default)
-        => WriteStreamVoidAsyncCore(streamId, buffer, finishWrites: false, cancellationToken);
+        => WriteStreamVoidAsyncCore(streamId, buffer, finishWrites: false, completionAction: null, cancellationToken);
+
+    internal ValueTask WriteStreamAsync(
+        ulong streamId,
+        ReadOnlyMemory<byte> buffer,
+        Action completionAction,
+        CancellationToken cancellationToken = default)
+        => WriteStreamVoidAsyncCore(streamId, buffer, finishWrites: false, completionAction, cancellationToken);
 
     internal ValueTask<bool> TryWriteStreamAsync(
         ulong streamId,
@@ -1870,7 +1927,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         ulong streamId,
         ReadOnlyMemory<byte> buffer,
         CancellationToken cancellationToken = default)
-        => WriteStreamVoidAsyncCore(streamId, buffer, finishWrites: true, cancellationToken);
+        => WriteStreamVoidAsyncCore(streamId, buffer, finishWrites: true, completionAction: null, cancellationToken);
 
     internal ValueTask<bool> TryWriteFinalStreamAsync(
         ulong streamId,
@@ -1887,6 +1944,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         ulong streamId,
         ReadOnlyMemory<byte> buffer,
         bool finishWrites,
+        Action? completionAction,
         CancellationToken cancellationToken)
     {
         ThrowIfDisposed();
@@ -1905,12 +1963,15 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         if (buffer.Length > MaximumStreamWriteChunkBytes)
         {
-            return AwaitWriteStreamResultAsync(WriteStreamChunksAsync(
+            ValueTask<bool> chunkWriteTask = WriteStreamChunksAsync(
                 streamId,
                 buffer,
                 finishWrites,
                 suppressTerminalException: false,
-                cancellationToken));
+                cancellationToken);
+            return completionAction is null
+                ? AwaitWriteStreamResultAsync(chunkWriteTask)
+                : AwaitWriteStreamResultAndCompleteAsync(chunkWriteTask, completionAction);
         }
 
         LogApplicationSend(
@@ -1922,6 +1983,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             finishWrites ? QuicConnectionStreamActionKind.Finish : QuicConnectionStreamActionKind.Write,
             streamId,
             buffer.Length);
+        if (completionAction is not null)
+        {
+            completion.ConfigureCompletionAction(completionAction);
+        }
         completion.SuppressTerminalException = false;
         if (!TryAddPendingStreamActionRequest(requestId, completion))
         {
@@ -1953,6 +2018,20 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         return completion.UntypedTask;
+    }
+
+    private static async ValueTask AwaitWriteStreamResultAndCompleteAsync(
+        ValueTask<bool> writeTask,
+        Action completionAction)
+    {
+        try
+        {
+            _ = await writeTask.ConfigureAwait(false);
+        }
+        finally
+        {
+            completionAction();
+        }
     }
 
     private ValueTask<bool> WriteStreamAsyncCore(

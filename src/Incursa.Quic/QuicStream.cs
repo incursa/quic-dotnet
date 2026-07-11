@@ -21,6 +21,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
 
     private readonly QuicConnectionStreamState bookkeeping;
     private readonly QuicConnectionRuntime? runtime;
+    private readonly Action releaseWriteGateAction;
     private readonly ulong streamId;
     private readonly QuicStreamType type;
     private readonly bool canRead;
@@ -47,6 +48,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
     {
         this.bookkeeping = bookkeeping ?? throw new ArgumentNullException(nameof(bookkeeping));
         this.runtime = runtime;
+        releaseWriteGateAction = ReleaseWriteGate;
         this.streamId = streamId;
 
         if (!bookkeeping.TryGetStreamSnapshot(streamId, out QuicConnectionStreamSnapshot snapshot))
@@ -782,32 +784,12 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
                 throw completedWriteException;
             }
 
-            ValueTask writeTask = currentRuntime.WriteStreamAsync(streamId, buffer, cancellationToken);
-            if (!writeTask.IsCompletedSuccessfully)
-            {
-                return WriteCoreAfterRuntimeWriteAsync(writeTask);
-            }
-
-            writeTask.GetAwaiter().GetResult();
-            ReleaseWriteGate();
-            return ValueTask.CompletedTask;
+            return currentRuntime.WriteStreamAsync(streamId, buffer, releaseWriteGateAction, cancellationToken);
         }
         catch
         {
             ReleaseWriteGate();
             throw;
-        }
-    }
-
-    private async ValueTask WriteCoreAfterRuntimeWriteAsync(ValueTask writeTask)
-    {
-        try
-        {
-            await writeTask.ConfigureAwait(false);
-        }
-        finally
-        {
-            ReleaseWriteGate();
         }
     }
 

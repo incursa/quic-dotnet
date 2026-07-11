@@ -192,6 +192,106 @@ public sealed class QuicConnectionRuntimeWriteRequestCancellationTests
     }
 
     [Fact]
+    public async Task WriteStreamAsync_CompletionActionRunsBeforeDelayedValueTaskConsumption()
+    {
+        await using QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
+
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryPeekLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+
+        Queue<QuicConnectionStreamActionEvent> postedWrites = new();
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            if (connectionEvent is QuicConnectionStreamActionEvent
+                {
+                    ActionKind: QuicConnectionStreamActionKind.Write,
+                } writeEvent)
+            {
+                postedWrites.Enqueue(writeEvent);
+            }
+
+            return true;
+        });
+
+        int completionCount = 0;
+        ValueTask firstWrite = runtime.WriteStreamAsync(
+            streamId.Value,
+            new byte[] { 0x21 },
+            () => completionCount++);
+        Assert.False(firstWrite.IsCompleted);
+
+        _ = runtime.Transition(postedWrites.Dequeue());
+        Assert.Equal(1, completionCount);
+
+        ValueTask secondWrite = runtime.WriteStreamAsync(
+            streamId.Value,
+            new byte[] { 0x22 },
+            () => completionCount++);
+        _ = runtime.Transition(postedWrites.Dequeue());
+        await secondWrite;
+
+        ValueTask thirdWrite = runtime.WriteStreamAsync(
+            streamId.Value,
+            new byte[] { 0x23 },
+            () => completionCount++);
+        _ = runtime.Transition(postedWrites.Dequeue());
+        await thirdWrite;
+
+        Assert.Equal(3, completionCount);
+        await firstWrite;
+    }
+
+    [Fact]
+    public async Task WriteStreamAsync_CompletionActionRunsBeforeCancellationIsObserved()
+    {
+        await using QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
+
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryPeekLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+
+        runtime.SetLocalApiEventDispatcher(_ => true);
+        using CancellationTokenSource cancellation = new();
+        int completionCount = 0;
+        ValueTask writeTask = runtime.WriteStreamAsync(
+            streamId.Value,
+            new byte[] { 0x31 },
+            () => completionCount++,
+            cancellation.Token);
+
+        await cancellation.CancelAsync();
+
+        Assert.Equal(1, completionCount);
+        await Assert.ThrowsAsync<OperationCanceledException>(() => writeTask.AsTask());
+    }
+
+    [Fact]
+    public async Task WriteStreamAsync_CompletionActionRunsBeforeDisposalIsObserved()
+    {
+        QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
+
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryPeekLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+
+        runtime.SetLocalApiEventDispatcher(_ => true);
+        int completionCount = 0;
+        ValueTask writeTask = runtime.WriteStreamAsync(
+            streamId.Value,
+            new byte[] { 0x41 },
+            () => completionCount++);
+
+        await runtime.DisposeAsync();
+
+        Assert.Equal(1, completionCount);
+        await Assert.ThrowsAsync<ObjectDisposedException>(() => writeTask.AsTask());
+    }
+
+    [Fact]
     public async Task WriteStreamAsync_PublicWriteStillThrowsWhenPendingWriteIsCompletedByRuntimeDisposal()
     {
         QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
