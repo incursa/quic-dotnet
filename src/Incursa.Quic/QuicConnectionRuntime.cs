@@ -59,7 +59,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const byte OutboundStreamControlFrameType = QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask;
     private const int ApplicationMinimumProtectedPayloadLength =
         QuicInitialPacketProtection.HeaderProtectionSampleOffset + QuicInitialPacketProtection.HeaderProtectionSampleLength;
-    private const int MaximumStreamWriteChunkBytes = 16 * 1024;
+    private const int MaximumStreamWriteChunkBytes = 32 * 1024;
     private readonly IMonotonicClock clock;
     private readonly QuicConnectionSendRuntime sendRuntime;
     private readonly QuicRecoveryController recoveryController;
