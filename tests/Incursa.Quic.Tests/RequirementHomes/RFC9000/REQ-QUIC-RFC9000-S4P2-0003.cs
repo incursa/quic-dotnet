@@ -237,6 +237,129 @@ public sealed class REQ_QUIC_RFC9000_S4P2_0003
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S4P2-0003")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void FlowControlCreditUpdate_BatchesPendingStreamCreditsAfterCongestionClears()
+    {
+        using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
+
+        QuicCongestionControlState congestion = runtime.SendRuntime.FlowController.CongestionControlState;
+        congestion.RegisterPacketSent(congestion.CongestionWindowBytes);
+
+        const int creditCount = 16;
+        for (int index = 0; index < creditCount; index++)
+        {
+            QuicConnectionTransitionResult blockedResult = runtime.Transition(
+                new QuicConnectionFlowControlCreditUpdatedEvent(
+                    ObservedAtTicks: 10 + index,
+                    MaxStreamDataFrame: new QuicMaxStreamDataFrame((ulong)index, (ulong)(1024 + index))),
+                nowTicks: 10 + index);
+            Assert.Empty(blockedResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        }
+
+        congestion.Reset();
+        QuicConnectionTransitionResult retryResult = runtime.Transition(
+            new QuicConnectionFlowControlCreditUpdatedEvent(ObservedAtTicks: 100),
+            nowTicks: 100);
+
+        QuicConnectionSendDatagramEffect sendEffect =
+            Assert.Single(retryResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        Assert.True(sendEffect.Datagram.Length <= QuicVersionNegotiation.Version1MinimumDatagramPayloadSize);
+
+        byte[] payload = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
+        ReadOnlySpan<byte> creditPayload = SkipAckAndPadding(payload);
+        List<QuicMaxStreamDataFrame> parsedFrames = [];
+        while (QuicFrameCodec.TryParseMaxStreamDataFrame(
+            creditPayload,
+            out QuicMaxStreamDataFrame parsedFrame,
+            out int bytesConsumed))
+        {
+            parsedFrames.Add(parsedFrame);
+            creditPayload = creditPayload[bytesConsumed..];
+        }
+
+        Assert.True(QuicS13AckPiggybackTestSupport.SkipPadding(creditPayload).IsEmpty);
+        Assert.Equal(
+            Enumerable.Range(0, creditCount)
+                .Select(static index => new QuicMaxStreamDataFrame((ulong)index, (ulong)(1024 + index))),
+            parsedFrames.OrderBy(static frame => frame.StreamId));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S4P2-0003")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void FlowControlCreditUpdate_SplitsLargePendingSetAcrossBoundedPackets()
+    {
+        using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
+
+        for (ulong packetNumber = 0; packetNumber < 192; packetNumber += 2)
+        {
+            QuicS13AckPiggybackTestSupport.RecordPendingApplicationAck(
+                runtime,
+                packetNumber,
+                receivedAtMicros: packetNumber);
+        }
+
+        QuicCongestionControlState congestion = runtime.SendRuntime.FlowController.CongestionControlState;
+        congestion.RegisterPacketSent(congestion.CongestionWindowBytes);
+
+        const int creditCount = 256;
+        for (int index = 0; index < creditCount; index++)
+        {
+            QuicConnectionTransitionResult blockedResult = runtime.Transition(
+                new QuicConnectionFlowControlCreditUpdatedEvent(
+                    ObservedAtTicks: 10 + index,
+                    MaxStreamDataFrame: new QuicMaxStreamDataFrame((ulong)index, (1UL << 61) + (ulong)index)),
+                nowTicks: 10 + index);
+            Assert.Empty(blockedResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        }
+
+        congestion.Reset();
+        QuicConnectionTransitionResult retryResult = runtime.Transition(
+            new QuicConnectionFlowControlCreditUpdatedEvent(ObservedAtTicks: 1000),
+            nowTicks: 1000);
+        QuicConnectionSendDatagramEffect[] sendEffects =
+            retryResult.Effects.OfType<QuicConnectionSendDatagramEffect>().ToArray();
+
+        Assert.True(sendEffects.Length > 1);
+        List<QuicMaxStreamDataFrame> parsedFrames = [];
+        bool observedLargeAck = false;
+        foreach (QuicConnectionSendDatagramEffect sendEffect in sendEffects)
+        {
+            Assert.True(sendEffect.Datagram.Length <= QuicVersionNegotiation.Version1MinimumDatagramPayloadSize);
+            byte[] payload = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
+            if (QuicFrameCodec.TryParseAckFrame(payload, out QuicAckFrame ackFrame, out int ackBytesConsumed))
+            {
+                ackFrame.Dispose();
+                Assert.True(ackBytesConsumed > 64);
+                observedLargeAck = true;
+            }
+
+            ReadOnlySpan<byte> creditPayload = SkipAckAndPadding(payload);
+            while (QuicFrameCodec.TryParseMaxStreamDataFrame(
+                creditPayload,
+                out QuicMaxStreamDataFrame parsedFrame,
+                out int bytesConsumed))
+            {
+                parsedFrames.Add(parsedFrame);
+                creditPayload = creditPayload[bytesConsumed..];
+            }
+
+            Assert.True(QuicS13AckPiggybackTestSupport.SkipPadding(creditPayload).IsEmpty);
+        }
+
+        Assert.Equal(
+            Enumerable.Range(0, creditCount)
+                .Select(static index => new QuicMaxStreamDataFrame((ulong)index, (1UL << 61) + (ulong)index)),
+            parsedFrames.OrderBy(static frame => frame.StreamId));
+        Assert.True(observedLargeAck);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S4P2-0003")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReadStreamData_DoesNotCreateCreditFramesWhenNoApplicationBytesAreRead()

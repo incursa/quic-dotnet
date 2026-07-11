@@ -1527,6 +1527,37 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private int GetMaximumQueuedApplicationPayloadBytes()
+        => GetMaximumApplicationPayloadBytes(ApplicationSendBatchAckHeadroomBytes);
+
+    private int GetMaximumFlowControlCreditPayloadBytes()
+    {
+        int ackHeadroomBytes = 0;
+        QuicAckFrame? ackFrame = null;
+        try
+        {
+            ulong nowMicros = GetElapsedMicros(lastTransitionTicks);
+            if (sendRuntime.FlowController.ShouldIncludeAckFrameWithOutgoingPacket(
+                    QuicPacketNumberSpace.ApplicationData,
+                    nowMicros,
+                    maxAckDelayMicros: 0)
+                && sendRuntime.FlowController.TryBuildAckFrame(
+                    QuicPacketNumberSpace.ApplicationData,
+                    nowMicros,
+                    out ackFrame)
+                && QuicFrameCodec.TryGetAckFramePayloadLength(ackFrame, out int ackPayloadLength))
+            {
+                ackHeadroomBytes = ackPayloadLength;
+            }
+        }
+        finally
+        {
+            ackFrame?.Dispose();
+        }
+
+        return GetMaximumApplicationPayloadBytes(ackHeadroomBytes);
+    }
+
+    private int GetMaximumApplicationPayloadBytes(int ackHeadroomBytes)
     {
         if (!activePath.HasValue)
         {
@@ -1539,7 +1570,7 @@ internal sealed partial class QuicConnectionRuntime
             + CurrentPeerDestinationConnectionId.Length
             + ApplicationPacketNumberLengthBytes
             + QuicInitialPacketProtection.AuthenticationTagLength;
-        ulong reservedBytes = (ulong)(shortHeaderOverheadBytes + ApplicationSendBatchAckHeadroomBytes);
+        ulong reservedBytes = (ulong)(shortHeaderOverheadBytes + ackHeadroomBytes);
         if (maximumDatagramSizeBytes <= reservedBytes)
         {
             return ApplicationMinimumProtectedPayloadLength;
@@ -1716,21 +1747,25 @@ internal sealed partial class QuicConnectionRuntime
                 streamCredits[index++] = streamCredit;
             }
 
+            index = 0;
             try
             {
-                for (index = 0; index < streamCreditCount; index++)
+                while (index < streamCreditCount)
                 {
-                    KeyValuePair<ulong, QuicMaxStreamDataFrame> streamCredit = streamCredits[index];
-                    if (!TrySendFlowControlCreditUpdate(
-                            streamCredit.Value,
-                            "The connection runtime could not protect the MAX_STREAM_DATA packet.",
-                            "The connection cannot send the MAX_STREAM_DATA packet.",
+                    if (!TrySendFlowControlCreditUpdates(
+                            streamCredits.AsSpan(index, streamCreditCount - index),
+                            out int sentCreditCount,
                             ref effects))
                     {
                         break;
                     }
 
-                    pendingFlowControlStreamCreditFrames.Remove(streamCredit.Key);
+                    for (int sentIndex = 0; sentIndex < sentCreditCount; sentIndex++)
+                    {
+                        pendingFlowControlStreamCreditFrames.Remove(streamCredits[index + sentIndex].Key);
+                    }
+
+                    index += sentCreditCount;
                     stateChanged = true;
                 }
             }
@@ -1743,6 +1778,58 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return stateChanged;
+    }
+
+    private bool TrySendFlowControlCreditUpdates(
+        ReadOnlySpan<KeyValuePair<ulong, QuicMaxStreamDataFrame>> streamCredits,
+        out int sentCreditCount,
+        ref QuicConnectionEffectAccumulator effects)
+    {
+        sentCreditCount = 0;
+        byte[]? payloadOwner = null;
+        if (!TryBuildOutboundMaxStreamDataPayload(
+                streamCredits,
+                out ReadOnlyMemory<byte> payload,
+                out payloadOwner,
+                out int payloadCreditCount))
+        {
+            return false;
+        }
+
+        try
+        {
+            if (!TryProtectAndAccountApplicationPayload(
+                payload,
+                "The connection runtime could not protect the MAX_STREAM_DATA packet.",
+                "The connection cannot send the MAX_STREAM_DATA packet.",
+                ref effects,
+                out QuicConnectionActivePathRecord currentPath,
+                out QuicConnectionPathAmplificationState updatedAmplificationState,
+                out ReadOnlyMemory<byte> protectedPacket,
+                out Exception? exception,
+                plaintextPayloadOwner: payloadOwner))
+            {
+                _ = exception;
+                return false;
+            }
+
+            payloadOwner = null;
+            activePath = currentPath with
+            {
+                AmplificationState = updatedAmplificationState,
+            };
+
+            AppendSendDatagramEffect(ref effects, currentPath.Identity, protectedPacket);
+            sentCreditCount = payloadCreditCount;
+            return true;
+        }
+        finally
+        {
+            if (payloadOwner is not null)
+            {
+                QuicBufferPool.ReturnBytes(payloadOwner);
+            }
+        }
     }
 
     private bool TrySendFlowControlCreditUpdate(
@@ -1808,56 +1895,6 @@ internal sealed partial class QuicConnectionRuntime
                 maxStreamDataFrame,
                 out ReadOnlyMemory<byte> payload,
                 out payloadOwner))
-        {
-            return false;
-        }
-
-        try
-        {
-            if (!TryProtectAndAccountApplicationPayload(
-                payload,
-                protectFailureMessage,
-                amplificationFailureMessage,
-                ref effects,
-                out QuicConnectionActivePathRecord currentPath,
-                out QuicConnectionPathAmplificationState updatedAmplificationState,
-                out ReadOnlyMemory<byte> protectedPacket,
-                out Exception? exception,
-                plaintextPayloadOwner: payloadOwner))
-            {
-                _ = exception;
-                return false;
-            }
-
-            payloadOwner = null;
-
-            activePath = currentPath with
-            {
-                AmplificationState = updatedAmplificationState,
-            };
-
-            AppendSendDatagramEffect(ref effects,
-                currentPath.Identity,
-                protectedPacket);
-            return true;
-        }
-        finally
-        {
-            if (payloadOwner is not null)
-            {
-                QuicBufferPool.ReturnBytes(payloadOwner);
-            }
-        }
-    }
-
-    private bool TrySendFlowControlCreditUpdate(
-        QuicMaxStreamDataFrame frame,
-        string protectFailureMessage,
-        string amplificationFailureMessage,
-        ref QuicConnectionEffectAccumulator effects)
-    {
-        byte[]? payloadOwner = null;
-        if (!TryBuildOutboundMaxStreamDataPayload(frame, out ReadOnlyMemory<byte> payload, out payloadOwner))
         {
             return false;
         }
@@ -5275,20 +5312,43 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryBuildOutboundMaxStreamDataPayload(
-        QuicMaxStreamDataFrame frame,
+        ReadOnlySpan<KeyValuePair<ulong, QuicMaxStreamDataFrame>> streamCredits,
         out ReadOnlyMemory<byte> payload,
-        out byte[]? payloadOwner)
+        out byte[]? payloadOwner,
+        out int payloadCreditCount)
     {
         payload = default;
         payloadOwner = null;
-
-        Span<byte> frameBuffer = stackalloc byte[64];
-        if (!QuicFrameCodec.TryFormatMaxStreamDataFrame(frame, frameBuffer, out int frameBytesWritten))
+        payloadCreditCount = 0;
+        if (streamCredits.IsEmpty)
         {
             return false;
         }
 
-        return TryCreatePaddedApplicationPayload(frameBuffer[..frameBytesWritten], out payload, out payloadOwner);
+        int maximumPayloadBytes = GetMaximumFlowControlCreditPayloadBytes();
+        byte[] buffer = QuicBufferPool.RentBytes(maximumPayloadBytes);
+        int bytesWritten = 0;
+        while (payloadCreditCount < streamCredits.Length
+            && QuicFrameCodec.TryFormatMaxStreamDataFrame(
+                streamCredits[payloadCreditCount].Value,
+                buffer.AsSpan(bytesWritten, maximumPayloadBytes - bytesWritten),
+                out int frameBytesWritten))
+        {
+            bytesWritten += frameBytesWritten;
+            payloadCreditCount++;
+        }
+
+        if (payloadCreditCount == 0)
+        {
+            QuicBufferPool.ReturnBytes(buffer);
+            return false;
+        }
+
+        int payloadLength = Math.Max(ApplicationMinimumProtectedPayloadLength, bytesWritten);
+        buffer.AsSpan(bytesWritten, payloadLength - bytesWritten).Clear();
+        payload = buffer.AsMemory(0, payloadLength);
+        payloadOwner = buffer;
+        return true;
     }
 
     private bool TryBuildOutboundFlowControlCreditPayload(
