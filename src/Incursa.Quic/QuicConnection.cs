@@ -19,6 +19,7 @@ public sealed class QuicConnection : IAsyncDisposable
     private readonly QuicConnectionOptions options;
     private readonly IAsyncDisposable? lifetimeOwner;
     private Action<QuicConnection, QuicStreamCapacityChangedArgs>? streamCapacityCallback;
+    private int resumptionOutcome = (int)QuicResumptionOutcome.NotAttempted;
     private int disposed;
 
     internal QuicConnection(QuicConnectionRuntime runtime, QuicConnectionOptions options, IAsyncDisposable? lifetimeOwner = null)
@@ -41,8 +42,9 @@ public sealed class QuicConnection : IAsyncDisposable
     /// Creates and starts a client-side connection shell and completes only when the supported establishment boundary is reached.
     /// </summary>
     /// <remarks>
-    /// This public entry point does not expose application 0-RTT. Applications that later enable early data must
-    /// define replay-safe request semantics before sending application bytes before handshake completion.
+    /// Applications can provide an opaque resumption ticket on <see cref="QuicClientConnectionOptions.ResumptionTicket"/>
+    /// to attempt transport resumption on the next connection, but this public entry point does not expose
+    /// application 0-RTT or any early-data toggle.
     /// </remarks>
     public static ValueTask<QuicConnection> ConnectAsync(QuicClientConnectionOptions options, CancellationToken cancellationToken = default)
     {
@@ -52,6 +54,11 @@ public sealed class QuicConnection : IAsyncDisposable
             cancellationToken: cancellationToken,
             diagnosticsSink: null);
     }
+
+    /// <summary>
+    /// Gets the public outcome of the connection's resumption attempt.
+    /// </summary>
+    public QuicResumptionOutcome ResumptionOutcome => (QuicResumptionOutcome)Volatile.Read(ref resumptionOutcome);
 
     internal static ValueTask<QuicConnection> ConnectAsync(
         QuicClientConnectionOptions options,
@@ -79,6 +86,24 @@ public sealed class QuicConnection : IAsyncDisposable
             settings,
             diagnosticsSink is null ? null : () => diagnosticsSink,
             tlsKeyLogSecretObserver).ConnectAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Exports an opaque resumption ticket for later import.
+    /// </summary>
+    public bool TryExportResumptionTicket(out QuicResumptionTicket? ticket)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+
+        if (!runtime.TryExportDetachedResumptionTicketSnapshot(out QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot)
+            || detachedResumptionTicketSnapshot is null)
+        {
+            ticket = null;
+            return false;
+        }
+
+        ticket = new QuicResumptionTicket(detachedResumptionTicketSnapshot);
+        return true;
     }
 
     /// <summary>
@@ -171,6 +196,16 @@ public sealed class QuicConnection : IAsyncDisposable
         }
     }
 
+    internal static QuicResumptionOutcome MapResumptionOutcome(QuicTlsResumptionAttemptDisposition disposition)
+    {
+        return disposition switch
+        {
+            QuicTlsResumptionAttemptDisposition.Accepted => QuicResumptionOutcome.Resumed,
+            QuicTlsResumptionAttemptDisposition.Rejected => QuicResumptionOutcome.Rejected,
+            _ => QuicResumptionOutcome.NotAttempted,
+        };
+    }
+
     /// <summary>
     /// Closes the connection with the provided application error code.
     /// </summary>
@@ -249,6 +284,11 @@ public sealed class QuicConnection : IAsyncDisposable
     internal void UpdateStreamCapacityCallback(Action<QuicConnection, QuicStreamCapacityChangedArgs>? callback)
     {
         streamCapacityCallback = callback;
+    }
+
+    internal void SetResumptionOutcome(QuicResumptionOutcome outcome)
+    {
+        Volatile.Write(ref resumptionOutcome, (int)outcome);
     }
 
     private async void OnRuntimeStreamCapacityIncreased(int bidirectionalIncrement, int unidirectionalIncrement)

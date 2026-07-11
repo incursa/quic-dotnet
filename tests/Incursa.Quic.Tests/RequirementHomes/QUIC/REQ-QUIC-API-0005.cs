@@ -90,6 +90,7 @@ public sealed class REQ_QUIC_API_0005
 
         Assert.Equal(100, options.MaxInboundBidirectionalStreams);
         Assert.Equal(10, options.MaxInboundUnidirectionalStreams);
+        Assert.False(options.EnableResumptionTickets);
 
         string[] propertyNames = typeof(QuicServerConnectionOptions)
             .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
@@ -99,6 +100,7 @@ public sealed class REQ_QUIC_API_0005
 
         Assert.Equal(new[]
         {
+            "EnableResumptionTickets",
             "ServerAuthenticationOptions",
         }, propertyNames);
 
@@ -124,12 +126,14 @@ public sealed class REQ_QUIC_API_0005
             "LocalEndPoint",
             "PeerCertificatePolicy",
             "RemoteEndPoint",
+            "ResumptionTicket",
         }, propertyNames);
 
         QuicClientConnectionOptions options = new();
         Assert.Null(options.LocalEndPoint);
         Assert.Null(options.ClientAuthenticationOptions);
         Assert.Null(options.PeerCertificatePolicy);
+        Assert.Null(options.ResumptionTicket);
         Assert.Null(options.RemoteEndPoint);
     }
 

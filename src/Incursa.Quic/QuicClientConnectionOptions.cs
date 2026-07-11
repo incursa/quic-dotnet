@@ -30,6 +30,11 @@ public sealed class QuicClientConnectionOptions : QuicConnectionOptions
     public QuicPeerCertificatePolicy? PeerCertificatePolicy { get; set; }
 
     /// <summary>
+    /// Gets or sets an opaque resumption ticket previously exported from another connection.
+    /// </summary>
+    public QuicResumptionTicket? ResumptionTicket { get; set; }
+
+    /// <summary>
     /// Gets or sets the TLS cipher suite selected for the managed client handshake slice.
     /// </summary>
     internal QuicTlsCipherSuite? SelectedCipherSuite { get; set; }

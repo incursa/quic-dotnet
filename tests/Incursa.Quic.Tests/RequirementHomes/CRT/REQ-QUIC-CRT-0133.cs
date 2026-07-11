@@ -220,7 +220,7 @@ public sealed class REQ_QUIC_CRT_0133
     [Trait("Category", "Negative")]
     public void PublicSurfaceStillDoesNotExposeResumptionOrEarlyDataPromises()
     {
-        string[] forbiddenFragments = ["Resum", "EarlyData", "Psk", "Binder"];
+        string[] forbiddenFragments = ["EarlyData", "Psk", "Binder"];
 
         string[] publicMembers = typeof(QuicConnection).Assembly
             .GetExportedTypes()

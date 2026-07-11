@@ -1,0 +1,31 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-API-0008",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Incursa.Quic Public Resumption-Only Transport API Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add the opaque public resumption ticket carrier, the public resumption outcome surface, and the minimal server ticket-issuance switch without exposing any public early-data toggle.",
+  "related_artifacts": [
+    "SPEC-QUIC-API"
+  ],
+  "design_links": [
+    "ARC-QUIC-API-0008"
+  ],
+  "verification_links": [
+    "VER-QUIC-API-0008"
+  ],
+  "addresses": [
+    "REQ-QUIC-API-0017"
+  ],
+  "planned_changes": "- Add `QuicResumptionOutcome` and `QuicResumptionTicket` as public types.\n- Add `QuicConnection.ResumptionOutcome` and `QuicConnection.TryExportResumptionTicket(...)`.\n- Add `QuicClientConnectionOptions.ResumptionTicket` and the minimal public `QuicServerConnectionOptions.EnableResumptionTickets` switch.\n- Reuse the existing detached resumption snapshot, PSK validation, and server ticket store paths instead of adding a new early-data admission surface.\n- Keep the ticket carrier opaque, immutable from the caller's point of view, and non-secret in `ToString()`.",
+  "verification_plan": "Run focused API requirement-home tests that prove the public members exist, the ticket carrier copies input bytes, exported tickets survive source disposal, valid resumption resumes, invalid or rejected tickets surface the public outcome, and the public API still has no early-data switch. Follow that with the relevant API/CRT filters and the normal public-surface compatibility checks.",
+  "completion_notes": "Completed the public resumption-only transport API surface with opaque ticket import/export, a public outcome enum, and the minimal server ticket-issuance switch while keeping public early-data inaccessible.",
+  "out_of_scope": [
+    "Public 0-RTT or early-data toggle exposure.",
+    "Application send chunking changes.",
+    "Congestion-control state exposure or runtime helper promotion.",
+    "Changing the default handshake behavior for callers that do not supply a ticket."
+  ]
+}

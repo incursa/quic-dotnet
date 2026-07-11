@@ -255,7 +255,7 @@ public sealed class REQ_QUIC_CRT_0130
     [Trait("Category", "Negative")]
     public void PublicSurfaceDoesNotExposeTicketHandoffResumptionOrEarlyDataPromises()
     {
-        string[] forbiddenFragments = ["Ownership", "Resum", "Ticket", "EarlyData", "Handoff", "Detached", "Dormant"];
+        string[] forbiddenFragments = ["Ownership", "EarlyData", "Handoff", "Detached", "Dormant"];
 
         string[] publicMembers = typeof(QuicConnection).Assembly
             .GetExportedTypes()

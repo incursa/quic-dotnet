@@ -5,7 +5,9 @@ Incursa.Quic.QuicAbortDirection.Write = 2 -> Incursa.Quic.QuicAbortDirection
 Incursa.Quic.QuicAbortDirection.Both = Incursa.Quic.QuicAbortDirection.Read | Incursa.Quic.QuicAbortDirection.Write -> Incursa.Quic.QuicAbortDirection
 Incursa.Quic.QuicConnection
 Incursa.Quic.QuicConnection.IsSupported.get -> bool
+Incursa.Quic.QuicConnection.ResumptionOutcome.get -> Incursa.Quic.QuicResumptionOutcome
 Incursa.Quic.QuicConnection.ConnectAsync(Incursa.Quic.QuicClientConnectionOptions! options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicConnection!>
+Incursa.Quic.QuicConnection.TryExportResumptionTicket(out Incursa.Quic.QuicResumptionTicket? ticket) -> bool
 Incursa.Quic.QuicConnection.AcceptInboundStreamAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicStream!>
 Incursa.Quic.QuicConnection.OpenOutboundStreamAsync(Incursa.Quic.QuicStreamType streamType, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask<Incursa.Quic.QuicStream!>
 Incursa.Quic.QuicConnection.SendDatagramAsync(System.ReadOnlyMemory<byte> datagram, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.ValueTask
@@ -20,6 +22,8 @@ Incursa.Quic.QuicClientConnectionOptions.LocalEndPoint.get -> System.Net.IPEndPo
 Incursa.Quic.QuicClientConnectionOptions.LocalEndPoint.set -> void
 Incursa.Quic.QuicClientConnectionOptions.PeerCertificatePolicy.get -> Incursa.Quic.QuicPeerCertificatePolicy?
 Incursa.Quic.QuicClientConnectionOptions.PeerCertificatePolicy.set -> void
+Incursa.Quic.QuicClientConnectionOptions.ResumptionTicket.get -> Incursa.Quic.QuicResumptionTicket?
+Incursa.Quic.QuicClientConnectionOptions.ResumptionTicket.set -> void
 Incursa.Quic.QuicClientConnectionOptions.RemoteEndPoint.get -> System.Net.EndPoint!
 Incursa.Quic.QuicClientConnectionOptions.RemoteEndPoint.set -> void
 Incursa.Quic.QuicConnectionOptions
@@ -67,6 +71,8 @@ Incursa.Quic.QuicServerConnectionOptions
 Incursa.Quic.QuicServerConnectionOptions.QuicServerConnectionOptions() -> void
 Incursa.Quic.QuicServerConnectionOptions.ServerAuthenticationOptions.get -> System.Net.Security.SslServerAuthenticationOptions!
 Incursa.Quic.QuicServerConnectionOptions.ServerAuthenticationOptions.set -> void
+Incursa.Quic.QuicServerConnectionOptions.EnableResumptionTickets.get -> bool
+Incursa.Quic.QuicServerConnectionOptions.EnableResumptionTickets.set -> void
 Incursa.Quic.QuicListenerOptions
 Incursa.Quic.QuicListenerOptions.QuicListenerOptions() -> void
 Incursa.Quic.QuicListenerOptions.ApplicationProtocols.get -> System.Collections.Generic.List<System.Net.Security.SslApplicationProtocol>!
@@ -98,6 +104,14 @@ Incursa.Quic.QuicReceiveWindowSizes.RemotelyInitiatedBidirectionalStream.get -> 
 Incursa.Quic.QuicReceiveWindowSizes.RemotelyInitiatedBidirectionalStream.set -> void
 Incursa.Quic.QuicReceiveWindowSizes.UnidirectionalStream.get -> int
 Incursa.Quic.QuicReceiveWindowSizes.UnidirectionalStream.set -> void
+Incursa.Quic.QuicResumptionOutcome = NotAttempted -> Incursa.Quic.QuicResumptionOutcome
+Incursa.Quic.QuicResumptionOutcome = Resumed -> Incursa.Quic.QuicResumptionOutcome
+Incursa.Quic.QuicResumptionOutcome = Rejected -> Incursa.Quic.QuicResumptionOutcome
+Incursa.Quic.QuicResumptionOutcome = InvalidTicket -> Incursa.Quic.QuicResumptionOutcome
+Incursa.Quic.QuicResumptionTicket
+Incursa.Quic.QuicResumptionTicket.QuicResumptionTicket(System.ReadOnlyMemory<byte> ticketBytes) -> void
+Incursa.Quic.QuicResumptionTicket.TicketBytes.get -> System.ReadOnlyMemory<byte>
+override System.String Incursa.Quic.QuicResumptionTicket.ToString() -> string
 Incursa.Quic.QuicStream
 Incursa.Quic.QuicStream.Abort(Incursa.Quic.QuicAbortDirection abortDirection, long errorCode) -> void
 Incursa.Quic.QuicStream.Id.get -> long

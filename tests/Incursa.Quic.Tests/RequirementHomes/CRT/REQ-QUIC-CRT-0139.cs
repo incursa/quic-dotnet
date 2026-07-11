@@ -151,7 +151,7 @@ public sealed class REQ_QUIC_CRT_0139
     [Trait("Category", "Negative")]
     public void PublicSurfaceStillDoesNotExpose0RttOrBroaderResumptionPromises()
     {
-        string[] forbiddenFragments = ["0Rtt", "EarlyData", "Resum", "Psk", "Binder", "AntiReplay"];
+        string[] forbiddenFragments = ["0Rtt", "EarlyData", "Psk", "Binder", "AntiReplay"];
 
         string[] publicMembers = typeof(QuicConnection).Assembly
             .GetExportedTypes()

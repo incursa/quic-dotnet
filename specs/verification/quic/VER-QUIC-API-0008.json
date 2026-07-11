@@ -1,0 +1,48 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-API-0008",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Incursa.Quic Public Resumption-Only Transport API Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused API requirement-home execution, resumption-path loopback checks, and public-surface inspection for the opaque ticket carrier and resumption outcome.",
+  "related_artifacts": [
+    "SPEC-QUIC-API",
+    "ARC-QUIC-API-0008",
+    "WI-QUIC-API-0008"
+  ],
+  "verifies": [
+    "REQ-QUIC-API-0017"
+  ],
+  "preconditions": [
+    "The supported public listener/connect loopback path exists.",
+    "The internal ticket export and import path can emit a detached resumption snapshot.",
+    "The server-side ticket issuance path can be enabled without exposing any public early-data toggle.",
+    "The public API surface can be inspected through the analyzer and requirement-home tests."
+  ],
+  "scope": "This artifact covers only the bounded public resumption-only transport API slice: opaque ticket import/export, public resumption outcome, and the minimal server issuance switch. It does not claim public early-data support, 0-RTT admission, or broader transport behavior changes.",
+  "expected_result": "The trace shows a public ticket carrier that copies caller input, a public outcome enum that reports resumed/rejected/invalid/full-handshake states, a connection API that can export a ticket and accept an imported ticket, a public server issuance switch, and no public early-data toggle.",
+  "procedure": [
+    "Inspect `SPEC-QUIC-API`, `ARC-QUIC-API-0008`, `WI-QUIC-API-0008`, `VER-QUIC-API-0008`, and the current public API docs to confirm the resumption slice is transport-only.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_API_0017\"` and preserve the output for the public resumption slice.",
+    "Run the relevant public API compatibility filter(s) that cover `REQ-QUIC-API-0001`, `REQ-QUIC-API-0003`, and `REQ-QUIC-API-0005` to confirm the new members are present and the option defaults remain unchanged.",
+    "Confirm the new public surface does not add any early-data switch and that exported tickets survive source disposal.",
+    "Run `git diff --check` and the repo's usual focused public-surface verification checks before closing the slice."
+  ],
+  "evidence": [
+    "specs/requirements/quic/SPEC-QUIC-API.json",
+    "docs/design/quic-public-api.md",
+    "docs/design/quic-public-api-gap-matrix.md",
+    "src/Incursa.Quic/QuicConnection.cs",
+    "src/Incursa.Quic/QuicClientConnectionOptions.cs",
+    "src/Incursa.Quic/QuicServerConnectionOptions.cs",
+    "src/Incursa.Quic/QuicResumptionOutcome.cs",
+    "src/Incursa.Quic/QuicResumptionTicket.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0017.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0005.cs"
+  ],
+  "status_summary": "Passed on 2026-07-10 through implementation and targeted requirement-home checks for the public resumption-only transport API slice. The public surface now exposes opaque ticket import/export, the resumption outcome enum/property, and the minimal server issuance switch, while keeping early-data inaccessible."
+}

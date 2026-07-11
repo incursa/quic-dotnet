@@ -118,6 +118,7 @@ internal static class QuicClientConnectionOptionsValidator
             throw new NotSupportedException("RSA padding overrides are not supported by this slice.");
         }
 
+        bool resumptionTicketProvided = detachedResumptionTicketSnapshot is not null;
         ReadOnlyMemory<byte> initialAddressValidationToken = default;
         if (addressValidationToken is not null)
         {
@@ -127,12 +128,19 @@ internal static class QuicClientConnectionOptionsValidator
                 out initialAddressValidationToken);
         }
 
+        if (!resumptionTicketProvided && options.ResumptionTicket is not null)
+        {
+            resumptionTicketProvided = true;
+            _ = options.ResumptionTicket.TryGetDetachedResumptionTicketSnapshot(out detachedResumptionTicketSnapshot);
+        }
+
         return new QuicClientConnectionSettings(
             CaptureOptions(options, authenticationOptions, capturedCipherSuitesPolicy),
             CloneEndPoint(remoteEndPoint),
             options.LocalEndPoint is null ? null : CloneEndPoint(options.LocalEndPoint),
             capturedCertificatePolicySnapshot,
             detachedResumptionTicketSnapshot,
+            resumptionTicketProvided,
             localHandshakePrivateKey,
             initialAddressValidationToken,
             options.SelectedCipherSuite,
@@ -161,6 +169,7 @@ internal static class QuicClientConnectionOptionsValidator
             MaxInboundBidirectionalStreams = source.MaxInboundBidirectionalStreams,
             MaxInboundUnidirectionalStreams = source.MaxInboundUnidirectionalStreams,
             StreamCapacityCallback = source.StreamCapacityCallback,
+            ResumptionTicket = source.ResumptionTicket,
             InitialReceiveWindowSizes = new QuicReceiveWindowSizes
             {
                 Connection = windows.Connection,
@@ -245,6 +254,7 @@ internal sealed record QuicClientConnectionSettings(
     IPEndPoint? LocalEndPoint,
     QuicClientCertificatePolicySnapshot? ClientCertificatePolicySnapshot = null,
     QuicDetachedResumptionTicketSnapshot? DetachedResumptionTicketSnapshot = null,
+    bool ResumptionTicketProvided = false,
     ReadOnlyMemory<byte> LocalHandshakePrivateKey = default,
     ReadOnlyMemory<byte> InitialAddressValidationToken = default,
     QuicTlsCipherSuite? SelectedCipherSuite = null,

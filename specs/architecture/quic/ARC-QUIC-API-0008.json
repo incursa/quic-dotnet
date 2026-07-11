@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-API-0008",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Incursa.Quic Public Resumption-Only Transport API Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the public resumption-only transport surface that exports an opaque ticket carrier, accepts imported tickets on the client path, reports the public resumption outcome, and keeps early-data controls out of the public API.",
+  "related_artifacts": [
+    "SPEC-QUIC-API",
+    "WI-QUIC-API-0008",
+    "VER-QUIC-API-0008"
+  ],
+  "satisfies": [
+    "REQ-QUIC-API-0017"
+  ],
+  "key_components": [
+    "specs/requirements/quic/SPEC-QUIC-API.json",
+    "docs/design/quic-public-api.md",
+    "docs/design/quic-public-api-gap-matrix.md",
+    "src/Incursa.Quic/QuicConnection.cs",
+    "src/Incursa.Quic/QuicClientConnectionOptions.cs",
+    "src/Incursa.Quic/QuicServerConnectionOptions.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0017.cs"
+  ],
+  "design_summary": "The public resumption slice stays transport-only and opaque: callers can import and export ticket material, observe whether a connection resumed, and optionally ask the server path to emit tickets, but they cannot toggle public early-data or 0-RTT admission. Ticket material must be immutable from the caller's point of view, survive source disposal once exported, and remain non-secret in any string representation. The client path should reuse the existing detached resumption snapshot and PSK validation path, while the server path should continue using the existing internal ticket store and validation logic behind the minimal issuance switch.",
+  "alternatives_considered": [
+    "Expose a public early-data or 0-RTT admission toggle: rejected because that widens the supported contract beyond this slice and makes replay-sensitive behavior part of the public surface.",
+    "Expose the internal detached ticket snapshot directly: rejected because that would leak secret-bearing state and internal validation metadata into the consumer API.",
+    "Add a new transport wrapper type for tickets: rejected because the existing BCL-shaped options and the opaque ticket carrier are sufficient for this bounded slice."
+  ],
+  "edge_cases_and_constraints": [
+    "A ticket created from raw bytes must defensively copy those bytes and remain safe if the source array is later mutated.",
+    "A ticket exported from a disposed connection must remain usable because the exported carrier is detached from the source runtime.",
+    "A ticket that cannot be validated by the existing resumption path must map to the public invalid-ticket outcome rather than silently falling back to a resumption toggle.",
+    "The public API must not introduce any property or method that exposes early-data admission controls."
+  ],
+  "data_and_state_considerations": "The only public data carried by this slice is opaque ticket bytes and a resumption outcome enum. The implementation must continue to bind ticket validation to the existing runtime, PSK, and server-ticket store state, while keeping the caller-facing carrier detached from mutable internal structures.",
+  "risks": [
+    "If the ticket carrier ever leaks ticket bytes through diagnostics or ToString, it can expose sensitive material.",
+    "If the public API later adds early-data knobs, the transport-only promise becomes replay-sensitive and materially broader.",
+    "If exported tickets stop being detached from the source runtime, disposal and copy-safety regressions will break the supported resumption flow."
+  ]
+}

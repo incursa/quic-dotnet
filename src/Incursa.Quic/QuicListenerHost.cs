@@ -798,6 +798,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         if (ShouldQueueAcceptedConnection(transition, state.Runtime)
             && state.TryMarkAccepted())
         {
+            state.Connection.SetResumptionOutcome(QuicConnection.MapResumptionOutcome(state.Runtime.ResumptionAttemptDisposition));
             _ = QueueAcceptedConnectionAsync(state.Connection);
         }
     }

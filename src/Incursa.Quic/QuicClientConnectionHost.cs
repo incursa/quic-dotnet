@@ -241,9 +241,21 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
         if (transition.CurrentPhase == QuicConnectionPhase.Active
             && runtime.PeerHandshakeTranscriptCompleted)
         {
+            UpdateResumptionOutcome();
             Interlocked.Exchange(ref transitionHistoryClosed, 1);
             establishedConnection.TrySetResult(connection);
         }
+    }
+
+    private void UpdateResumptionOutcome()
+    {
+        if (settings.ResumptionTicketProvided && settings.DetachedResumptionTicketSnapshot is null)
+        {
+            connection.SetResumptionOutcome(QuicResumptionOutcome.InvalidTicket);
+            return;
+        }
+
+        connection.SetResumptionOutcome(QuicConnection.MapResumptionOutcome(runtime.ResumptionAttemptDisposition));
     }
 
     private void ObserveIngressDatagram(ReadOnlyMemory<byte> datagram, QuicConnectionIngressResult ingressResult)

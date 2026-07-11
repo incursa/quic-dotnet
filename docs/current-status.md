@@ -1916,3 +1916,7 @@ before editing code.
 ## 2026-05-15 INT Major Peer Evidence
 
 The advisory major-peer inventory now has both the generated inventory report `interop-major-peer-matrix-inventory` and the dedicated evidence report `interop-major-peer-matrix-evidence-25904716076`. That completed hosted `major-peer-matrix` run covered the full `REQ-QUIC-INT-0019` cell set with mixed advisory results: 11 cells passed and 9 failed. The inspected failures still split across peers instead of converging on one Incursa-side symptom, with the only credible local candidate being the quic-go client `transfer`/`keyupdate` drain path that stalls after partial body reads while the server logs `MaxStreamDataFrame`, `StreamDataBlockedFrame`, and then idle timeout. The `msquic` client-handshake, retry, transfer, keyupdate, and resumption failures still read as peer-side `TLS alert 50` / termination noise. The matrix remains advisory characterization evidence rather than support evidence.
+
+## 2026-07-10 Public Resumption Slice
+
+`REQ-QUIC-API-0017` now owns the transport-only resumption API slice. The public surface exposes opaque ticket import/export, `QuicConnection.ResumptionOutcome`, and the minimal `QuicServerConnectionOptions.EnableResumptionTickets` switch, while keeping public early-data and 0-RTT toggles inaccessible by design. The implementation reuses the existing detached resumption snapshot, PSK, and server-ticket validation paths and keeps the default full-handshake behavior unchanged when no ticket is supplied.

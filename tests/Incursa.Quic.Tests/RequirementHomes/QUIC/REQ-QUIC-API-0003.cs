@@ -32,6 +32,7 @@ public sealed class REQ_QUIC_API_0003
             "OpenOutboundStreamAsync",
             "ReceiveDatagramAsync",
             "SendDatagramAsync",
+            "TryExportResumptionTicket",
         }, methodNames);
 
         MethodInfo? acceptMethod = typeof(QuicConnection).GetMethod(

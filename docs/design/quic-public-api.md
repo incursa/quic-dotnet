@@ -33,14 +33,20 @@ This pass promotes the consumer-lifetime facade that is already backed by the ex
 - `QuicListenerOptions`
 - `QuicClientConnectionOptions`
 - `QuicPeerCertificatePolicy`
+- `QuicResumptionOutcome`
+- `QuicResumptionTicket`
 - `QuicServerConnectionOptions`
 - `QuicStreamCapacityChangedArgs`
 - `QuicConnectionOptions.StreamCapacityCallback`
 - `QuicConnection.IsSupported`
 - `QuicListener.IsSupported`
 - `QuicConnection.ConnectAsync(...)`
+- `QuicConnection.TryExportResumptionTicket(...)`
+- `QuicConnection.ResumptionOutcome`
 - `QuicConnection.AcceptInboundStreamAsync(...)`
 - `QuicConnection.OpenOutboundStreamAsync(...)`
+- `QuicClientConnectionOptions.ResumptionTicket`
+- `QuicServerConnectionOptions.EnableResumptionTickets`
 - `QuicStreamType` with the direction-only `Bidirectional` and `Unidirectional` values
 
 ### Still Deferred Outside This Slice
@@ -49,6 +55,7 @@ The following remain intentionally out of scope for this public API slice:
 
 - broader server-side client-auth beyond the callback-driven `ClientCertificateRequired` plus `CertificateChainPolicy` and standalone `CertificateRevocationCheckMode` floors on the existing `SslServerAuthenticationOptions` carrier
 - broader stream-management parity beyond the supported abort, capacity, close-driven release, and stream-data-loss suppression subset
+- transport-only resumption is supported, but public early-data and 0-RTT toggles remain out of scope
 - `0-RTT`
 - key update
 - interop-runner enablement
@@ -93,6 +100,7 @@ This pass promotes the connection/stream facade, the listener/server entry surfa
 - `REQ-QUIC-API-0011` covers the shared runtime capability marker on `QuicConnection` and `QuicListener`.
 - `REQ-QUIC-API-0012` defines and now lands the narrow public client-policy carrier `QuicClientConnectionOptions.PeerCertificatePolicy` with the `QuicPeerCertificatePolicy` payload for exact pinned peer identity and explicit trust material, and it keeps that carrier separate from the mainstream BCL-shaped validation path.
 - `REQ-QUIC-API-0013` now lands the mainstream standard client-validation path on the existing `SslClientAuthenticationOptions` carrier, honoring `TargetHost`, `CertificateChainPolicy`, `CertificateRevocationCheckMode`, and callback overrides while keeping `QuicPeerCertificatePolicy` as the separate exact-pinning floor.
+- `REQ-QUIC-API-0017` now lands the transport-only public resumption surface with opaque ticket import/export and the minimal server ticket-issuance switch.
 - `REQ-QUIC-CRT-0124` now lands the narrow server-side `ClientCertificateRequired` floor on the existing `SslServerAuthenticationOptions` carrier, with callback-driven acceptance on that path and the narrow chain/revocation follow-ons traced separately.
 - `REQ-QUIC-CRT-0125` now lands the narrow server-side `CertificateChainPolicy` follow-on on that same callback-driven `ClientCertificateRequired` path.
 - `REQ-QUIC-CRT-0126` now lands the standalone server-side `CertificateRevocationCheckMode` floor on that same callback-driven `ClientCertificateRequired` path when `CertificateChainPolicy` is absent.
@@ -103,6 +111,7 @@ The first slice keeps the consumer contract intentionally narrow:
 
 - `QuicConnection` is the connection-lifetime facade over the runtime seam and exposes the client connect entry point.
 - `QuicConnection` now also exposes the narrow inbound-stream accept and outbound-stream open entry points on the established loopback path.
+- `QuicConnection` now also exposes the public resumption outcome and opaque ticket export entry point.
 - `QuicStream` is the stream-lifetime facade over the stream-state seam.
 - `QuicStream` now exposes a narrow read/write-side capability, `ReadsClosed` and `WritesClosed`, and the corresponding write/completion plus `Abort(QuicAbortDirection.Read, ...)` / `Abort(QuicAbortDirection.Write, ...)` behavior on send-capable streams.
 - `QuicConnectionOptions` is the shared bag for connection close/error defaults, timeouts, and receive-window knobs.
@@ -112,6 +121,9 @@ The first slice keeps the consumer contract intentionally narrow:
 - `QuicAbortDirection`, `QuicError`, `QuicStreamType`, and `QuicStreamCapacityChangedArgs` are the public classification/payload types used by the facade.
 - `QuicConnection.IsSupported` and `QuicListener.IsSupported` are shared runtime capability markers for the supported managed loopback slice.
 - The current client-input slice uses `QuicClientConnectionOptions.PeerCertificatePolicy` plus `QuicPeerCertificatePolicy` for the exact-pinning floor, while the mainstream `SslClientAuthenticationOptions` validation path honors `TargetHost`, `CertificateChainPolicy`, `CertificateRevocationCheckMode`, and `RemoteCertificateValidationCallback` on the same client carrier.
+- `QuicClientConnectionOptions.ResumptionTicket` carries opaque detached resumption-ticket material.
+- `QuicConnection.ResumptionOutcome` reports whether the current connection resumed, was rejected, had an invalid ticket, or did not attempt resumption.
+- `QuicServerConnectionOptions.EnableResumptionTickets` is the minimal server-side issuance switch for the resumption slice.
 
 The public types do not introduce new endpoint or TLS wrapper abstractions in this slice. `QuicListener`, `QuicListenerOptions`, `QuicServerConnectionOptions`, `QuicClientConnectionOptions`, `QuicPeerCertificatePolicy`, `QuicStreamCapacityChangedArgs`, and `QuicConnectionOptions.StreamCapacityCallback` are now part of the approved facade.
 
@@ -122,6 +134,7 @@ The listener entry points are now part of this slice.
 - The connection/listener/client slice reuses `QuicConnectionRuntime`, `QuicConnectionStreamState`, `QuicListenerHost`, `QuicConnectionRuntimeEndpoint`, `QuicConnectionEndpointHost`, and `QuicClientConnectionHost` directly.
 - Listener startup and listener acceptance are honest and backed by the internal listener host.
 - Client connect now starts a real client host/runtime shell and completes on the supported positive loopback boundary through the existing host seams, with Initial/DCID bootstrap, inbound Initial handling, listener-side datagram admission, and a captured `HandshakeTimeout` budget that turns a stalled pending establishment into `QuicError.ConnectionTimeout`.
+- The resumption surface reuses the existing detached snapshot, PSK, and server-ticket store paths, exposes only opaque import/export plus `QuicConnection.ResumptionOutcome`, and deliberately omits any public early-data toggle.
 - The shared `IsSupported` marker is backed by one cached internal capability probe that checks the runtime prerequisites the supported managed slice already needs.
 - Stream entry now reuses the same runtime and stream-state seams, plus a minimal 1-RTT short-header stream-control path, so the supported loopback connection can open and accept a real `QuicStream` facade and publish bytes plus EOF on the supported writable side while honoring the narrow read/write abort pair without surfacing the broader abort-heavy pipeline.
 - The stream-capacity callback now reuses the same runtime and stream-state seams by projecting the initial peer stream-limit increments committed from transport parameters, later real peer `MAX_STREAMS` growth on the supported active loopback path, and the narrow close-driven release path where the runtime emits one real `MAX_STREAMS` increment only after a peer-initiated stream reaches the supported locally closed state.
@@ -199,7 +212,7 @@ The remainder of the packet, frame, transport-parameter, recovery, congestion, a
 
 ## Intentional Deviations
 
-The intentional deviation in this slice is that `IsSupported` is defined as a narrower managed capability marker rather than a native MsQuic availability flag. Supported bidirectional-loopback `Abort(Both, ...)` composition is now landed, but broader abort-heavy behavior remains outside this public promise.
+The intentional deviation in this slice is that `IsSupported` is defined as a narrower managed capability marker rather than a native MsQuic availability flag. Supported bidirectional-loopback `Abort(Both, ...)` composition is now landed, but broader abort-heavy behavior remains outside this public promise. The resumption surface is transport-only, and no public early-data or 0-RTT toggle is exposed.
 
 The repo-specific rule is that the richer internal transport engine stays hidden behind the consumer facade, the supported client TLS/auth subset is explicit and reject-first, and the public surface does not grow into a general middleware model.
 

@@ -24,6 +24,8 @@ This is a planning artifact only. It does not change code.
 - `QuicConnectionOptions`
 - `QuicClientConnectionOptions`
 - `QuicPeerCertificatePolicy`
+- `QuicResumptionOutcome`
+- `QuicResumptionTicket`
 - `QuicServerConnectionOptions`
 - `QuicListenerOptions`
 - `QuicReceiveWindowSizes`
@@ -33,6 +35,8 @@ This is a planning artifact only. It does not change code.
 - `QuicStreamType`
 - `QuicStreamCapacityChangedArgs`
 - `QuicConnection.ConnectAsync(...)`
+- `QuicConnection.TryExportResumptionTicket(...)`
+- `QuicConnection.ResumptionOutcome`
 - `QuicListener.ListenAsync(...)`
 - `QuicListener.AcceptConnectionAsync(...)`
 - `QuicConnection.AcceptInboundStreamAsync(...)`
@@ -42,10 +46,12 @@ This is a planning artifact only. It does not change code.
 - `QuicStream` read/write/EOF/close/dispose/cancellation semantics
 - `QuicConnectionOptions.StreamCapacityCallback`
 - `QuicListenerOptions.ConnectionOptionsCallback`
+- `QuicClientConnectionOptions.ResumptionTicket`
+- `QuicServerConnectionOptions.EnableResumptionTickets`
 
 ## Cross-Cutting Finding
 
-The approved public facade is now in place, and the current slice includes narrow but real client-entry establishment, stream-entry, write/completion, a `RESET_STREAM` / `STOP_SENDING` abort pair, supported `Abort(Both, ...)` composition on the bidirectional loopback path, supported stream-data-loss suppression on the reset/stop-sending path, outbound-open disposal terminalization, the shared `IsSupported` capability marker, the stream-capacity callback boundary, the exact-pinning floor, the mainstream BCL client-validation path, and the callback-driven server-side client-auth floors. The remaining gaps are behavioral rather than boundary-shape gaps and require a new traced requirement before public support widens.
+The approved public facade is now in place, and the current slice includes narrow but real client-entry establishment, stream-entry, write/completion, a `RESET_STREAM` / `STOP_SENDING` abort pair, supported `Abort(Both, ...)` composition on the bidirectional loopback path, supported stream-data-loss suppression on the reset/stop-sending path, outbound-open disposal terminalization, the shared `IsSupported` capability marker, the stream-capacity callback boundary, the exact-pinning floor, the mainstream BCL client-validation path, the callback-driven server-side client-auth floors, and the transport-only resumption slice with opaque ticket import/export and a public resumption outcome. The remaining gaps are behavioral rather than boundary-shape gaps and require a new traced requirement before public support widens.
 
 - `src/Incursa.Quic/PublicAPI.Unshipped.txt` now matches the approved public facade instead of leaking helper, frame, runtime, and transport types.
 - `QuicStreamType` is now the approved direction-only `Bidirectional` / `Unidirectional` model.
@@ -65,6 +71,7 @@ That boundary trim is complete for this slice. Remaining work is about future be
 | `QuicConnectionOptions` / `QuicReceiveWindowSizes` | 1. Implemented at the approved boundary | Internal state already carries the numerical flow-control and idle-timeout knobs through `QuicConnectionStreamStateOptions`, `QuicIdleTimeoutState`, and `QuicConnectionRuntime`. | The remaining work is not the option bags themselves but the follow-on stream and establishment features. |
 | `QuicClientConnectionOptions` | 1. Implemented at the approved boundary | `QuicConnectionRuntimeEndpoint`, `QuicConnectionEndpointHost`, and the managed TLS bridge already provide the client shell, the supported positive loopback establishment boundary, and a peer-certificate acceptance seam. The supported client input now includes `QuicClientConnectionOptions.PeerCertificatePolicy` with `QuicPeerCertificatePolicy.ExactPeerLeafCertificateDer` and `ExplicitTrustMaterialSha256` for the exact-pinning floor, and the mainstream `SslClientAuthenticationOptions` path now honors `TargetHost`, `CertificateChainPolicy`, `CertificateRevocationCheckMode`, and callback overrides on the existing client carrier. | The standard BCL validation path is now on the existing client carrier; the exact-pinning floor remains separate, and broader client-auth, transfer, or retry support is still out of scope. |
 | `QuicPeerCertificatePolicy` | 1. Implemented at the approved boundary | `QuicPeerCertificatePolicy` is the narrow bytes-only carrier for exact pinned peer identity and explicit trust material, and `QuicClientConnectionOptions.PeerCertificatePolicy` feeds it into the existing internal snapshot/fail-closed seam. The exact-pinning floor stays mutually exclusive with the mainstream BCL validation path. | It stays narrower than the mainstream validation path's `TargetHost` / `CertificateChainPolicy` inputs plus broader client-auth, transfer, and retry. |
+| `QuicResumptionOutcome` / `QuicResumptionTicket` | 1. Implemented at the approved boundary | `QuicConnection` now exports a public resumption outcome enum plus an opaque ticket carrier that can be imported through `QuicClientConnectionOptions.ResumptionTicket` and exported through `QuicConnection.TryExportResumptionTicket(...)`. The server-side ticket issuance switch is surfaced only as the minimal `QuicServerConnectionOptions.EnableResumptionTickets` boolean. | The surface stays transport-only, keeps the ticket carrier detached and opaque, and does not expose any public early-data or 0-RTT toggle. |
 | `QuicServerConnectionOptions` | 1. Implemented at the approved boundary | `QuicServerConnectionOptions` now exposes `ServerAuthenticationOptions` plus the server-side stream defaults consumed by the listener callback, and the managed server path now honors `ClientCertificateRequired` on the live path through the existing callback-driven acceptance seam plus server-side `CertificateChainPolicy` delegation and standalone `CertificateRevocationCheckMode` delegation on that same path when `CertificateChainPolicy` is absent. | The carrier exists, the narrow server-side client-auth floor now lands on that same carrier, and broader PKI behavior or mixed policy configuration remain deferred without widening the public surface. |
 | `QuicListenerOptions` | 1. Implemented at the approved boundary | `QuicListenerOptions` now carries the endpoint, backlog, ALPN list, and narrow server connection-options callback, and `ListenAsync(...)` validates them before binding. | Listener configuration is now live. |
 | `QuicError` / `QuicException` / `QuicAbortDirection` | 1. Implemented at the approved boundary | The runtime already has `QuicTransportErrorCode`, internal close metadata, and terminal state, and the public error/abort surface is now present. | The remaining work is in the stream and establishment paths, not the error vocabulary. |
@@ -82,6 +89,7 @@ That boundary trim is complete for this slice. Remaining work is about future be
 
 - The public boundary is trimmed; there is no known exposed-helper cleanup blocker in the current local baseline.
 - `QuicConnection` now has the supported positive establishment path, the narrow active-loopback stream-entry path, and the narrow stream-capacity callback path.
+- `QuicConnection` also now has the public resumption outcome and opaque ticket export/import path, but no public early-data knob.
 - `QuicStream` now has a real supported write/completion lane and a narrow `RESET_STREAM` / `STOP_SENDING`-backed abort pair, and the supported bidirectional path already composes those lanes for `Abort(Both, ...)`; later stream-contract widening stays separate.
 - The stream-capacity callback surface is now present on the supported loopback and active-loopback paths, including real stream-close-driven capacity release on the supported active-loopback path.
 - The client TLS/auth subset now includes the mainstream standard validation path on the existing carrier, while the exact-pinning floor remains separate and mixed-mode configuration is rejected.

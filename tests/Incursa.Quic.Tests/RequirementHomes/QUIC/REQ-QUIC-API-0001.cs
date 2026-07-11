@@ -34,6 +34,8 @@ public sealed class REQ_QUIC_API_0001
             "Incursa.Quic.QuicListenerOptions",
             "Incursa.Quic.QuicPeerCertificatePolicy",
             "Incursa.Quic.QuicReceiveWindowSizes",
+            "Incursa.Quic.QuicResumptionOutcome",
+            "Incursa.Quic.QuicResumptionTicket",
             "Incursa.Quic.QuicServerConnectionOptions",
             "Incursa.Quic.QuicStream",
             "Incursa.Quic.QuicStreamCapacityChangedArgs",
@@ -102,6 +104,14 @@ public sealed class REQ_QUIC_API_0001
             QuicError.TransportError,
             QuicError.CallbackError,
         }, Enum.GetValues<QuicError>());
+
+        Assert.Equal(new[]
+        {
+            QuicResumptionOutcome.NotAttempted,
+            QuicResumptionOutcome.Resumed,
+            QuicResumptionOutcome.Rejected,
+            QuicResumptionOutcome.InvalidTicket,
+        }, Enum.GetValues<QuicResumptionOutcome>());
 
         Assert.Equal(new[]
         {

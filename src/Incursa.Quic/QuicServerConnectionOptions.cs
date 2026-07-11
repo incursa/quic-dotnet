@@ -36,9 +36,9 @@ public sealed class QuicServerConnectionOptions : QuicConnectionOptions
     internal QuicTlsCipherSuite? SelectedCipherSuite { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the internal managed server path may emit post-handshake resumption tickets.
+    /// Gets or sets whether the managed server path may emit post-handshake resumption tickets.
     /// </summary>
-    internal bool EnableResumptionTickets { get; set; }
+    public bool EnableResumptionTickets { get; set; }
 
     /// <summary>
     /// Gets or sets whether the internal managed server path may advertise and accept QUIC early data.
