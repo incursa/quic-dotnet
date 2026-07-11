@@ -1482,6 +1482,13 @@ internal sealed partial class QuicConnectionRuntime
                 StringComparison.Ordinal);
     }
 
+    private static Exception MaterializeApplicationSendException(Exception exception)
+    {
+        return ReferenceEquals(exception, CongestionControllerExhaustedException)
+            ? new InvalidOperationException(CongestionControllerExhaustedMessage)
+            : exception;
+    }
+
     private static bool IsTransientApplicationSendPathBlocked(Exception? exception)
     {
         return IsTransientCongestionExhaustion(exception)
@@ -2014,7 +2021,7 @@ internal sealed partial class QuicConnectionRuntime
             out ReadOnlyMemory<byte> protectedPacket,
             out exception))
         {
-            completion.TrySetException(exception!);
+            completion.TrySetException(MaterializeApplicationSendException(exception!));
             return false;
         }
 
@@ -2079,7 +2086,7 @@ internal sealed partial class QuicConnectionRuntime
             out ReadOnlyMemory<byte> protectedPacket,
             out exception))
         {
-            completion.TrySetException(exception!);
+            completion.TrySetException(MaterializeApplicationSendException(exception!));
             return false;
         }
 
@@ -2596,7 +2603,7 @@ internal sealed partial class QuicConnectionRuntime
                 isProbePacket: probePacket))
             {
                 QuicBufferPool.ReturnBytes(protectedPacketOwner);
-                exception = new InvalidOperationException(CongestionControllerExhaustedMessage);
+                exception = CongestionControllerExhaustedException;
                 return false;
             }
 
@@ -2819,7 +2826,7 @@ internal sealed partial class QuicConnectionRuntime
                     isProbePacket: probePacket))
             {
                 QuicBufferPool.ReturnBytes(protectedPacketOwner);
-                exception = new InvalidOperationException(CongestionControllerExhaustedMessage);
+                exception = CongestionControllerExhaustedException;
                 LogApplicationSend($"app-tx protect-blocked role={tlsState.Role} reason={exception.Message} packet={protectedPacket.Length}.");
                 return false;
             }
@@ -2948,7 +2955,7 @@ internal sealed partial class QuicConnectionRuntime
     {
         if (packetPayloadLength < 0)
         {
-            exception = new InvalidOperationException(CongestionControllerExhaustedMessage);
+            exception = CongestionControllerExhaustedException;
             return false;
         }
 
@@ -2959,7 +2966,7 @@ internal sealed partial class QuicConnectionRuntime
                 isAckOnlyPacket: ackOnlyPacket,
                 isProbePacket: probePacket))
         {
-            exception = new InvalidOperationException(CongestionControllerExhaustedMessage);
+            exception = CongestionControllerExhaustedException;
             return false;
         }
 
