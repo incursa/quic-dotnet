@@ -29,7 +29,7 @@ internal static class QuicStreamPayloadSizer
     {
         fragmentDataLength = default;
 
-        if (maximumPayloadBytes <= 0 || frame.StreamDataLength <= 0)
+        if (maximumPayloadBytes <= 0)
         {
             return false;
         }

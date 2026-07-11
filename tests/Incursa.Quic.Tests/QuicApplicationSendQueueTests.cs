@@ -264,6 +264,30 @@ public sealed class QuicApplicationSendQueueTests
     }
 
     [Fact]
+    public void TryGetFragmentDataLength_AcceptsAStandaloneFinFrame()
+    {
+        byte[] queuedPayload = new byte[32];
+
+        Assert.True(QuicFrameCodec.TryFormatStreamFrame(
+            (byte)(QuicStreamFrameBits.StreamFrameTypeMinimum
+                | QuicStreamFrameBits.OffsetBitMask
+                | QuicStreamFrameBits.LengthBitMask
+                | QuicStreamFrameBits.FinBitMask),
+            streamId: 7,
+            offset: 24,
+            streamData: [],
+            queuedPayload,
+            out int queuedPayloadLength));
+
+        Assert.True(QuicStreamPayloadSizer.TryGetFragmentDataLength(
+            queuedPayload.AsSpan(0, queuedPayloadLength),
+            maximumPayloadBytes: 32,
+            out int fragmentDataLength));
+
+        Assert.Equal(0, fragmentDataLength);
+    }
+
+    [Fact]
     public void TryGetFragmentDataLength_SplitsProtocolLab64KbQueuedStreamPayload()
     {
         byte[] streamData = Enumerable.Range(0, 65_536).Select(value => (byte)value).ToArray();

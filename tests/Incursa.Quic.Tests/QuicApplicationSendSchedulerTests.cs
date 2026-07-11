@@ -129,9 +129,37 @@ public sealed class QuicApplicationSendSchedulerTests
         Assert.Equal(2, plan.SelectedWriteCount);
     }
 
-    private static PendingApplicationSendRequest CreateQueuedWrite(long sequence, ulong streamId, int dataLength)
+    [Fact]
+    public void SelectQueuedApplicationSendPlan_SelectsStandaloneFinAsASingleWrite()
     {
-        byte[] streamPayload = CreateQueuedWritePayload(streamId, dataLength);
+        PendingApplicationSendRequest queuedWrite = CreateQueuedWrite(
+            sequence: 0,
+            streamId: 4,
+            dataLength: 0,
+            fin: true);
+
+        QuicApplicationSendPlan plan = QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
+            queuedWrite,
+            QuicQueuedApplicationSendBudget.AllowSingleDatagram(maxPayloadBytes: 32),
+            out QuicStreamFrame frame,
+            out Exception? exception);
+
+        Assert.Null(exception);
+        Assert.Equal(QuicApplicationSendPlanKind.SingleWrite, plan.Kind);
+        Assert.Equal(1, plan.SelectedWriteCount);
+        Assert.Equal(0, plan.FragmentDataLength);
+        Assert.False(plan.HasMoreQueuedData);
+        Assert.Equal(0, frame.StreamDataLength);
+        Assert.True(frame.IsFin);
+    }
+
+    private static PendingApplicationSendRequest CreateQueuedWrite(
+        long sequence,
+        ulong streamId,
+        int dataLength,
+        bool fin = false)
+    {
+        byte[] streamPayload = CreateQueuedWritePayload(streamId, dataLength, fin);
         return new PendingApplicationSendRequest(
             sequence,
             streamId,
@@ -140,13 +168,15 @@ public sealed class QuicApplicationSendSchedulerTests
             streamPayload.Length);
     }
 
-    private static byte[] CreateQueuedWritePayload(ulong streamId, int dataLength)
+    private static byte[] CreateQueuedWritePayload(ulong streamId, int dataLength, bool fin = false)
     {
         byte[] streamData = Enumerable.Range(0, dataLength).Select(value => (byte)value).ToArray();
         byte[] streamPayload = new byte[dataLength + 32];
 
         Assert.True(QuicFrameCodec.TryFormatStreamFrame(
-            (byte)(QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask),
+            (byte)(QuicStreamFrameBits.StreamFrameTypeMinimum
+                | QuicStreamFrameBits.LengthBitMask
+                | (fin ? QuicStreamFrameBits.FinBitMask : 0)),
             streamId,
             offset: 0,
             streamData,
