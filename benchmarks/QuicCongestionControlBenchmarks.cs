@@ -76,6 +76,29 @@ public class QuicCongestionControlBenchmarks
     }
 
     /// <summary>
+    /// Measures CUBIC growth after entering congestion avoidance.
+    /// </summary>
+    [Benchmark]
+    public ulong GrowInCubicCongestionAvoidance()
+    {
+        QuicCongestionControlState state = new(congestionControlAlgorithm: QuicCongestionControlAlgorithm.Cubic);
+        state.RegisterPacketSent(12_000);
+        state.TryRegisterLoss(
+            sentBytes: 1_200,
+            sentAtMicros: 2_000,
+            packetInFlight: true);
+        state.RegisterPacketSent(12_000);
+        state.TryRegisterAcknowledgedPacket(
+            sentBytes: 1_200,
+            sentAtMicros: 3_000,
+            packetInFlight: true,
+            pacingLimited: true,
+            ackReceivedAtMicros: 25_000);
+
+        return state.CongestionWindowBytes;
+    }
+
+    /// <summary>
     /// Measures recovery entry on a loss signal.
     /// </summary>
     [Benchmark]
@@ -92,12 +115,44 @@ public class QuicCongestionControlBenchmarks
     }
 
     /// <summary>
+    /// Measures CUBIC recovery entry on a loss signal.
+    /// </summary>
+    [Benchmark]
+    public ulong EnterCubicRecoveryOnLoss()
+    {
+        QuicCongestionControlState state = new(congestionControlAlgorithm: QuicCongestionControlAlgorithm.Cubic);
+        state.RegisterPacketSent(12_000);
+        state.TryRegisterLoss(
+            sentBytes: 1_200,
+            sentAtMicros: 2_000,
+            packetInFlight: true);
+
+        return state.CongestionWindowBytes;
+    }
+
+    /// <summary>
     /// Measures ECN-triggered recovery on a validated path.
     /// </summary>
     [Benchmark]
     public ulong ProcessValidatedEcn()
     {
         QuicCongestionControlState state = new();
+        state.TryProcessEcn(
+            QuicPacketNumberSpace.ApplicationData,
+            reportedEcnCeCount: 1,
+            largestAcknowledgedPacketSentAtMicros: 1_500,
+            pathValidated: true);
+
+        return state.CongestionWindowBytes;
+    }
+
+    /// <summary>
+    /// Measures CUBIC ECN-triggered recovery on a validated path.
+    /// </summary>
+    [Benchmark]
+    public ulong ProcessValidatedCubicEcn()
+    {
+        QuicCongestionControlState state = new(congestionControlAlgorithm: QuicCongestionControlAlgorithm.Cubic);
         state.TryProcessEcn(
             QuicPacketNumberSpace.ApplicationData,
             reportedEcnCeCount: 1,

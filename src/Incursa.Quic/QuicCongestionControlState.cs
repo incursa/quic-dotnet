@@ -6,6 +6,12 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Incursa.Quic;
 
+internal enum QuicCongestionControlAlgorithm
+{
+    NewReno = 0,
+    Cubic = 1,
+}
+
 /// <summary>
 /// Tracks the RFC 9002 congestion-control state that can be modeled without a full sender or pacer.
 /// </summary>
@@ -38,6 +44,15 @@ internal sealed class QuicCongestionControlState
     /// RFC 9002's pacing gain is 5/4.
     /// </summary>
     internal const ulong RecommendedPacingGainDenominator = 4;
+
+    private const double CubicBeta = 0.7d;
+    private const double CubicC = 0.4d;
+    private const double CubicMicrosecondsPerSecond = 1_000_000d;
+    private const double CubicTcpFriendlyAlpha = 3d * (1d - CubicBeta) / (1d + CubicBeta);
+    private const ulong CubicLossReductionNumerator = 7;
+    private const ulong CubicLossReductionDenominator = 10;
+    private const ulong CubicFastConvergenceNumerator = 17;
+    private const ulong CubicFastConvergenceDenominator = 20;
 
     /// <summary>
     /// QUIC tracks three packet number spaces: Initial, Handshake, and Application Data.
@@ -80,27 +95,40 @@ internal sealed class QuicCongestionControlState
     private const int ApplicationDataPacketNumberSpaceIndex = 2;
 
     private readonly ulong[] ecnCeCounters = new ulong[PacketNumberSpaceCount];
+    private readonly QuicCongestionControlAlgorithm congestionControlAlgorithm;
+    private ulong cubicWindowMaxBytes;
+    private ulong cubicEpochStartMicros;
+    private bool cubicHasEpochStart;
 
     /// <summary>
     /// Initializes a new congestion-control state using the RFC 9002 default maximum datagram size.
     /// </summary>
-    internal QuicCongestionControlState(ulong maxDatagramSizeBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize)
+    internal QuicCongestionControlState(
+        ulong maxDatagramSizeBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize,
+        QuicCongestionControlAlgorithm congestionControlAlgorithm = QuicCongestionControlAlgorithm.NewReno)
     {
         if (maxDatagramSizeBytes == 0)
         {
             throw new ArgumentOutOfRangeException(nameof(maxDatagramSizeBytes));
         }
 
+        this.congestionControlAlgorithm = congestionControlAlgorithm;
         MaxDatagramSizeBytes = maxDatagramSizeBytes;
         MinimumCongestionWindowBytes = ComputeMinimumCongestionWindowBytes(maxDatagramSizeBytes);
         CongestionWindowBytes = ComputeInitialCongestionWindowBytes(maxDatagramSizeBytes);
         SlowStartThresholdBytes = ulong.MaxValue;
+        ResetCongestionControlAlgorithmState();
     }
 
     /// <summary>
     /// Gets the current maximum datagram size used for congestion-window computations.
     /// </summary>
     internal ulong MaxDatagramSizeBytes { get; private set; }
+
+    /// <summary>
+    /// Gets the congestion-control algorithm selected for this state.
+    /// </summary>
+    internal QuicCongestionControlAlgorithm CongestionControlAlgorithm => congestionControlAlgorithm;
 
     /// <summary>
     /// Gets the max_datagram_size value used by RFC 9002 recovery formulas.
@@ -280,6 +308,7 @@ internal sealed class QuicCongestionControlState
             CongestionWindowBytes = ComputeInitialCongestionWindowBytes(maxDatagramSizeBytes);
             SlowStartThresholdBytes = ulong.MaxValue;
             RecoveryStartTimeMicros = null;
+            ResetCongestionControlAlgorithmState();
         }
     }
 
@@ -329,13 +358,15 @@ internal sealed class QuicCongestionControlState
         bool packetInFlight = true,
         bool applicationLimited = false,
         bool flowControlLimited = false,
-        bool pacingLimited = false)
+        bool pacingLimited = false,
+        ulong? ackReceivedAtMicros = null)
     {
         if (!packetInFlight)
         {
             return false;
         }
 
+        ulong effectiveAckReceivedAtMicros = ackReceivedAtMicros ?? sentAtMicros;
         BytesInFlightBytes = SubtractSaturating(BytesInFlightBytes, sentBytes);
         bool packetWasSentDuringRecovery = RecoveryStartTimeMicros.HasValue
             && sentAtMicros > RecoveryStartTimeMicros.Value;
@@ -363,6 +394,15 @@ internal sealed class QuicCongestionControlState
         if (CongestionWindowBytes < SlowStartThresholdBytes)
         {
             CongestionWindowBytes = SaturatingAdd(CongestionWindowBytes, sentBytes);
+            return true;
+        }
+
+        if (congestionControlAlgorithm == QuicCongestionControlAlgorithm.Cubic)
+        {
+            CongestionWindowBytes = ComputeCubicCongestionWindowBytes(
+                currentCongestionWindowBytes: CongestionWindowBytes,
+                ackReceivedAtMicros: effectiveAckReceivedAtMicros,
+                sentAtMicros: sentAtMicros);
             return true;
         }
 
@@ -590,6 +630,7 @@ internal sealed class QuicCongestionControlState
             CongestionWindowBytes = MinimumCongestionWindowBytes;
             SlowStartThresholdBytes = ulong.MaxValue;
             RecoveryStartTimeMicros = null;
+            ResetCongestionControlAlgorithmState();
         }
 
         return true;
@@ -607,13 +648,78 @@ internal sealed class QuicCongestionControlState
             return;
         }
 
+        if (congestionControlAlgorithm == QuicCongestionControlAlgorithm.Cubic)
+        {
+            ulong previousWindowMaxBytes = cubicWindowMaxBytes == 0
+                ? CongestionWindowBytes
+                : cubicWindowMaxBytes;
+
+            if (cubicWindowMaxBytes > 0 && CongestionWindowBytes < cubicWindowMaxBytes)
+            {
+                previousWindowMaxBytes = ComputeReducedCongestionWindowBytes(
+                    previousWindowMaxBytes,
+                    reductionNumerator: CubicFastConvergenceNumerator,
+                    reductionDenominator: CubicFastConvergenceDenominator,
+                    minimumCongestionWindowBytes: MinimumCongestionWindowBytes);
+            }
+
+            cubicWindowMaxBytes = previousWindowMaxBytes;
+            cubicEpochStartMicros = sentAtMicros;
+            cubicHasEpochStart = true;
+        }
+
         RecoveryStartTimeMicros = sentAtMicros;
         SlowStartThresholdBytes = ComputeReducedCongestionWindowBytes(
             CongestionWindowBytes,
-            RecommendedLossReductionNumerator,
-            RecommendedLossReductionDenominator,
+            congestionControlAlgorithm == QuicCongestionControlAlgorithm.Cubic ? CubicLossReductionNumerator : RecommendedLossReductionNumerator,
+            congestionControlAlgorithm == QuicCongestionControlAlgorithm.Cubic ? CubicLossReductionDenominator : RecommendedLossReductionDenominator,
             MinimumCongestionWindowBytes);
         CongestionWindowBytes = Math.Max(SlowStartThresholdBytes, MinimumCongestionWindowBytes);
+    }
+
+    private ulong ComputeCubicCongestionWindowBytes(
+        ulong currentCongestionWindowBytes,
+        ulong ackReceivedAtMicros,
+        ulong sentAtMicros)
+    {
+        if (!cubicHasEpochStart)
+        {
+            InitializeCubicEpoch(ackReceivedAtMicros, currentCongestionWindowBytes);
+        }
+
+        double currentMssBytes = RecoveryMaxDatagramSizeBytes;
+        double wMaxPackets = Math.Max(1d, cubicWindowMaxBytes / currentMssBytes);
+        double elapsedSeconds = ackReceivedAtMicros <= cubicEpochStartMicros
+            ? 0d
+            : (ackReceivedAtMicros - cubicEpochStartMicros) / CubicMicrosecondsPerSecond;
+        double roundTripSeconds = ackReceivedAtMicros <= sentAtMicros
+            ? 0.000001d
+            : (ackReceivedAtMicros - sentAtMicros) / CubicMicrosecondsPerSecond;
+        double cubicKSeconds = Math.Cbrt(wMaxPackets * (1d - CubicBeta) / CubicC);
+        double cubicPackets = CubicC * Math.Pow(elapsedSeconds - cubicKSeconds, 3d) + wMaxPackets;
+        double tcpFriendlyPackets = wMaxPackets * CubicBeta + CubicTcpFriendlyAlpha * (elapsedSeconds / roundTripSeconds);
+        double targetPackets = Math.Max(cubicPackets, tcpFriendlyPackets);
+        if (double.IsNaN(targetPackets) || double.IsInfinity(targetPackets))
+        {
+            return currentCongestionWindowBytes;
+        }
+
+        ulong targetBytes = MultiplySaturating((ulong)Math.Ceiling(targetPackets), (ulong)currentMssBytes);
+        return Math.Max(currentCongestionWindowBytes, targetBytes);
+    }
+
+    private void InitializeCubicEpoch(ulong ackReceivedAtMicros, ulong currentCongestionWindowBytes)
+    {
+        cubicWindowMaxBytes = Math.Max(cubicWindowMaxBytes, currentCongestionWindowBytes);
+        cubicEpochStartMicros = ackReceivedAtMicros;
+        cubicHasEpochStart = true;
+    }
+
+    private void ResetCongestionControlAlgorithmState()
+    {
+        cubicWindowMaxBytes = 0;
+        cubicEpochStartMicros = 0;
+        cubicHasEpochStart = false;
     }
 
     /// <summary>
@@ -784,14 +890,15 @@ internal sealed class QuicSenderFlowController
     internal QuicSenderFlowController(
         ulong maxDatagramSizeBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize,
         int maximumRetainedAckRanges = 32,
-        int minimumAckElicitingPacketsBeforeDelayedAck = 2)
+        int minimumAckElicitingPacketsBeforeDelayedAck = 2,
+        QuicCongestionControlAlgorithm congestionControlAlgorithm = QuicCongestionControlAlgorithm.NewReno)
     {
         if (maxDatagramSizeBytes == 0)
         {
             throw new ArgumentOutOfRangeException(nameof(maxDatagramSizeBytes));
         }
 
-        CongestionControlState = new QuicCongestionControlState(maxDatagramSizeBytes);
+        CongestionControlState = new QuicCongestionControlState(maxDatagramSizeBytes, congestionControlAlgorithm);
         AckGenerationState = new QuicAckGenerationState(maximumRetainedAckRanges, minimumAckElicitingPacketsBeforeDelayedAck);
     }
 
@@ -883,7 +990,8 @@ internal sealed class QuicSenderFlowController
                     packetInFlight: sentPacket.InFlight,
                     applicationLimited: applicationLimited,
                     flowControlLimited: flowControlLimited,
-                    pacingLimited: pacingLimited) || updated;
+                    pacingLimited: pacingLimited,
+                    ackReceivedAtMicros: ackReceivedAtMicros) || updated;
 
                 largestAcknowledgedPacketSentAtMicros = Math.Max(largestAcknowledgedPacketSentAtMicros, sentPacket.SentAtMicros);
                 sentPackets.RemoveAt(index);

@@ -62,9 +62,11 @@ internal sealed class QuicConnectionSendRuntime
     private readonly QuicRttEstimator rttEstimator;
     private QuicEcnValidationState ecnValidationState;
 
-    public QuicConnectionSendRuntime(QuicSenderFlowController? flowController = null)
+    public QuicConnectionSendRuntime(
+        QuicSenderFlowController? flowController = null,
+        QuicCongestionControlAlgorithm congestionControlAlgorithm = QuicCongestionControlAlgorithm.NewReno)
     {
-        this.flowController = flowController ?? new QuicSenderFlowController();
+        this.flowController = flowController ?? new QuicSenderFlowController(congestionControlAlgorithm: congestionControlAlgorithm);
         rttEstimator = new QuicRttEstimator();
         ecnValidationState = new QuicEcnValidationState();
     }
