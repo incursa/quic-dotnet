@@ -113,6 +113,25 @@ internal static class QuicS13AckPiggybackTestSupport
         return openedPacket.AsSpan(payloadOffset, payloadLength).ToArray();
     }
 
+    internal static ulong ReadOutgoingApplicationPacketNumber(
+        QuicConnectionRuntime runtime,
+        QuicConnectionSendDatagramEffect sendEffect)
+    {
+        Assert.False(runtime.CurrentPeerDestinationConnectionId.IsEmpty);
+        QuicHandshakeFlowCoordinator coordinator = new(runtime.CurrentPeerDestinationConnectionId);
+        Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+            sendEffect.Datagram.Span,
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out _,
+            out _));
+
+        int packetNumberLength = (openedPacket[0] & 0x03) + 1;
+        return QuicS17P1TestSupport.ReadPacketNumber(
+            openedPacket.AsSpan(payloadOffset - packetNumberLength, packetNumberLength));
+    }
+
     internal static QuicConnectionSendDatagramEffect FindNewTokenSendEffect(
         QuicConnectionRuntime runtime,
         IEnumerable<QuicConnectionSendDatagramEffect> sendEffects)

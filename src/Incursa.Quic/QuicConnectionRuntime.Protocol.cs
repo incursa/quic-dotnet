@@ -1930,9 +1930,6 @@ internal sealed partial class QuicConnectionRuntime
                 Console.Error.WriteLine(
                     $"app-rx stream role={tlsState.Role} packet={packetNumber} stream={streamFrame.StreamId.Value} offset={streamFrame.Offset} length={streamFrame.StreamDataLength} fin={streamFrame.IsFin}.");
             }
-            _ = streamRegistry.Bookkeeping.TryGetStreamSnapshot(
-                streamFrame.StreamId.Value,
-                out QuicConnectionStreamSnapshot previousStreamSnapshot);
             if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode, QuicApplicationDataEpoch.OneRtt))
             {
                 if (ApplicationReceiveRejectDiagnosticsEnabled)
@@ -1976,7 +1973,6 @@ internal sealed partial class QuicConnectionRuntime
                 if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(
                         streamFrame.StreamId.Value,
                         out QuicConnectionStreamSnapshot updatedReadableSnapshot)
-                    && !previousStreamSnapshot.HasContiguousReadableBytes
                     && (updatedReadableSnapshot.HasContiguousReadableBytes
                         || updatedReadableSnapshot.ReceiveState == QuicStreamReceiveState.DataRecvd
                         || updatedReadableSnapshot.ReceiveState == QuicStreamReceiveState.DataRead))
@@ -2272,9 +2268,6 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
-                _ = streamRegistry.Bookkeeping.TryGetStreamSnapshot(
-                    streamFrame.StreamId.Value,
-                    out QuicConnectionStreamSnapshot previousStreamSnapshot);
                 if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode, QuicApplicationDataEpoch.ZeroRtt))
                 {
                     return TryHandleApplicationDataFrameError(
@@ -2296,7 +2289,6 @@ internal sealed partial class QuicConnectionRuntime
                 if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(
                         streamFrame.StreamId.Value,
                         out QuicConnectionStreamSnapshot updatedReadableSnapshot)
-                    && !previousStreamSnapshot.HasContiguousReadableBytes
                     && (updatedReadableSnapshot.HasContiguousReadableBytes
                         || updatedReadableSnapshot.ReceiveState == QuicStreamReceiveState.DataRecvd
                         || updatedReadableSnapshot.ReceiveState == QuicStreamReceiveState.DataRead))

@@ -555,7 +555,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
             CompleteReadsClosed();
             CompleteWritesClosed();
             SemaphoreSlim? readSignal = Volatile.Read(ref readGateSignal);
-            readSignal?.Release();
+            ReleaseReadGate();
             readSignal?.Dispose();
             writeGateSignal?.Dispose();
             base.Dispose(disposing: true);
@@ -1077,7 +1077,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
     }
 
     private SemaphoreSlim GetOrCreateReadGateSignal()
-        => GetOrCreateGateSignal(ref readGateSignal, int.MaxValue);
+        => GetOrCreateGateSignal(ref readGateSignal, 1);
 
     private SemaphoreSlim GetOrCreateWriteGateSignal()
         => GetOrCreateGateSignal(ref writeGateSignal, 1);
@@ -1145,7 +1145,20 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
 
     private void ReleaseReadGate()
     {
-        Volatile.Read(ref readGateSignal)?.Release();
+        SemaphoreSlim? signal = Volatile.Read(ref readGateSignal);
+        if (signal is null)
+        {
+            return;
+        }
+
+        try
+        {
+            signal.Release();
+        }
+        catch (SemaphoreFullException)
+        {
+            // Read notifications are level-triggered. One pending wake-up is sufficient.
+        }
     }
 
     private bool TryCreateReadAbortException(out Exception? exception)

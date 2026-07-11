@@ -17,6 +17,13 @@ public sealed class REQ_QUIC_RFC9002_SAP5_DeferredFuzzClosure
 
             runtime.TrackSentPacket(packet);
 
+            if (packet.AckOnlyPacket)
+            {
+                Assert.Empty(runtime.SentPackets);
+                Assert.Equal(0UL, runtime.FlowController.CongestionControlState.BytesInFlightBytes);
+                continue;
+            }
+
             QuicConnectionSentPacket stored = Assert.Single(runtime.SentPackets).Value;
             Assert.Equal(packet.PacketNumberSpace, stored.PacketNumberSpace);
             Assert.Equal(packet.PacketNumber, stored.PacketNumber);
@@ -25,10 +32,7 @@ public sealed class REQ_QUIC_RFC9002_SAP5_DeferredFuzzClosure
             Assert.Equal(packet.AckEliciting, stored.AckEliciting);
             Assert.Equal(packet.AckOnlyPacket, stored.AckOnlyPacket);
 
-            ulong expectedBytesInFlight = packet.AckOnlyPacket ? 0UL : packet.PayloadBytes;
-            Assert.Equal(
-                expectedBytesInFlight,
-                runtime.FlowController.CongestionControlState.BytesInFlightBytes);
+            Assert.Equal(packet.PayloadBytes, runtime.FlowController.CongestionControlState.BytesInFlightBytes);
         }
     }
 

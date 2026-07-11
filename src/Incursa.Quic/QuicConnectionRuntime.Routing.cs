@@ -1501,6 +1501,23 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref QuicConnectionEffectAccumulator effects)
     {
+        if (firstPacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+            && IsInitialAndHandshakePair(secondPacketNumberSpace, thirdPacketNumberSpace))
+        {
+            bool sentCryptoProbe = TrySendCoalescedCryptoRecoveryProbeDatagram(
+                    secondPacketNumberSpace,
+                    thirdPacketNumberSpace,
+                    nowTicks,
+                    ref effects)
+                || TrySendRecoveryProbeDatagram(secondPacketNumberSpace, nowTicks, ref effects)
+                || TrySendRecoveryProbeDatagram(thirdPacketNumberSpace, nowTicks, ref effects);
+            if (sentCryptoProbe)
+            {
+                _ = TrySendRecoveryProbeDatagram(firstPacketNumberSpace, nowTicks, ref effects);
+                return true;
+            }
+        }
+
         if (TrySendCoalescedCryptoRecoveryProbeDatagram(
             firstPacketNumberSpace,
             secondPacketNumberSpace,

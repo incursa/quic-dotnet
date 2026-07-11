@@ -439,12 +439,11 @@ internal sealed partial class QuicConnectionRuntime
 
     private void RefreshCurrentProbeTimeoutMicros(long nowTicks)
     {
-        ulong nowMicros = GetElapsedMicros(nowTicks);
+        _ = nowTicks;
         ulong maxAckDelayMicros = tlsState.PeerTransportParameters?.MaxAckDelay ?? 0;
         bool isHandshakeConfirmed = HandshakeConfirmed;
 
-        if (!recoveryController.TrySelectPtoTimeAndSpace(
-                nowMicros,
+        if (!recoveryController.TrySelectPtoDurationAndSpace(
                 maxAckDelayMicros,
                 isHandshakeConfirmed,
                 tlsState.HandshakeKeysAvailable,
@@ -454,9 +453,7 @@ internal sealed partial class QuicConnectionRuntime
             return;
         }
 
-        ulong updatedProbeTimeoutMicros = selectedProbeTimeoutMicros <= nowMicros
-            ? 1UL
-            : selectedProbeTimeoutMicros - nowMicros;
+        ulong updatedProbeTimeoutMicros = Math.Max(selectedProbeTimeoutMicros, 1UL);
         if (currentProbeTimeoutMicros == updatedProbeTimeoutMicros)
         {
             return;

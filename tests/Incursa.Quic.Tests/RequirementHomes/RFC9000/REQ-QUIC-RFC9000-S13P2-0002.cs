@@ -44,10 +44,7 @@ public sealed class REQ_QUIC_RFC9000_S13P2_0002
         Assert.Equal(1UL, ackFrame.LargestAcknowledged);
         Assert.True(QuicS13AckPiggybackTestSupport.SkipPadding(payloadBytes.AsSpan(ackBytesConsumed)).IsEmpty);
 
-        QuicConnectionSentPacket sentPacket = Assert.Single(runtime.SendRuntime.SentPackets.Values);
-        Assert.True(sentPacket.AckOnlyPacket);
-        Assert.False(sentPacket.AckEliciting);
-        Assert.False(sentPacket.Retransmittable);
+        Assert.Empty(runtime.SendRuntime.SentPackets);
         Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
     }
 

@@ -196,6 +196,27 @@ public sealed class QuicStreamReadLifecycleTests
     }
 
     [Fact]
+    public async Task ReadAsync_RepeatedDataAvailableNotificationsCoalesceAndPreserveTheNextWakeup()
+    {
+        using QuicStream stream = CreateReadableStream();
+
+        byte[] destination = new byte[1];
+        Task<int> readTask = stream.ReadAsync(destination.AsMemory()).AsTask();
+        await AssertPendingAsync(readTask);
+
+        for (int index = 0; index < 16; index++)
+        {
+            stream.HandleRuntimeNotification(new QuicStreamNotification(QuicStreamNotificationKind.DataAvailable, null));
+        }
+
+        await AssertPendingAsync(readTask);
+        InjectStreamData(stream, [0x5A], offset: 0, fin: false);
+
+        Assert.Equal(1, await readTask);
+        Assert.Equal(0x5A, destination[0]);
+    }
+
+    [Fact]
     public async Task ReadAsync_CancellationAfterDataArrivesBeforeWakePreservesCancellationAndBytes()
     {
         using QuicStream stream = CreateReadableStream();

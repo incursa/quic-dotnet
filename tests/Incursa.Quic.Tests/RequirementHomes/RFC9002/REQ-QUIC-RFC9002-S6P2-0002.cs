@@ -86,7 +86,18 @@ public sealed class REQ_QUIC_RFC9002_S6P2_0002
             out QuicPacketNumberSpace selectedPacketNumberSpace));
 
         Assert.Equal(QuicPacketNumberSpace.Handshake, selectedPacketNumberSpace);
-        Assert.Equal(260_000UL, selectedProbeTimeoutMicros);
+        Assert.Equal(220_000UL, selectedProbeTimeoutMicros);
+
+        Assert.True(controller.TrySelectPtoTimeAndSpace(
+            nowMicros: 180_000,
+            maxAckDelayMicros: 0,
+            handshakeConfirmed: false,
+            handshakeKeysAvailable: true,
+            out ulong recomputedProbeTimeoutMicros,
+            out QuicPacketNumberSpace recomputedPacketNumberSpace));
+
+        Assert.Equal(QuicPacketNumberSpace.Handshake, recomputedPacketNumberSpace);
+        Assert.Equal(selectedProbeTimeoutMicros, recomputedProbeTimeoutMicros);
     }
 
     internal sealed record ProbeTimeoutSpaceCase(

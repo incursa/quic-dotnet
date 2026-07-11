@@ -70,10 +70,7 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0012
         ReadOnlySpan<byte> tail = QuicS13AckPiggybackTestSupport.SkipPadding(payload[ackBytesConsumed..]);
         Assert.True(tail.IsEmpty);
 
-        QuicConnectionSentPacket sentPacket = Assert.Single(runtime.SendRuntime.SentPackets.Values);
-        Assert.True(sentPacket.AckOnlyPacket);
-        Assert.False(sentPacket.AckEliciting);
-        Assert.False(sentPacket.Retransmittable);
+        Assert.Empty(runtime.SendRuntime.SentPackets);
         Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
     }
 

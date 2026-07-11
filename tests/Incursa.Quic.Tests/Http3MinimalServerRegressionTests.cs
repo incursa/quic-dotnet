@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Diagnostics;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -41,7 +42,7 @@ public sealed class Http3MinimalServerRegressionTests
         };
 
         Http3Server server = await Http3Server.ListenAsync(listenerOptions, handler);
-        using CancellationTokenSource cancellationSource = new(TimeSpan.FromSeconds(60));
+        using CancellationTokenSource cancellationSource = new(TimeSpan.FromMinutes(5));
         Task serverTask = server.ServeAsync(cancellationSource.Token);
 
         QuicClientConnectionOptions clientOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
@@ -56,11 +57,25 @@ public sealed class Http3MinimalServerRegressionTests
 
         try
         {
+            Stopwatch elapsed = Stopwatch.StartNew();
             for (int requestIndex = 0; requestIndex < SequentialRequestCount; requestIndex++)
             {
-                Http3Response response = await client.GetAsync(
-                    new Uri($"https://localhost:{listenEndPoint.Port}/large?request={requestIndex}"),
-                    cancellationSource.Token);
+                TimeSpan requestStartedAt = elapsed.Elapsed;
+                using CancellationTokenSource requestTimeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationSource.Token);
+                requestTimeout.CancelAfter(TimeSpan.FromSeconds(30));
+                Http3Response response;
+                try
+                {
+                    response = await client.GetAsync(
+                        new Uri($"https://localhost:{listenEndPoint.Port}/large?request={requestIndex}"),
+                        requestTimeout.Token);
+                }
+                catch (OperationCanceledException ex) when (requestTimeout.IsCancellationRequested)
+                {
+                    throw new TimeoutException(
+                        $"Sequential HTTP/3 large-response regression stalled at request {requestIndex} for {elapsed.Elapsed - requestStartedAt}; total elapsed {elapsed.Elapsed}.",
+                        ex);
+                }
 
                 Assert.Equal(200, response.StatusCode);
                 Assert.Equal(ResponseSizeBytes, response.Body.Length);

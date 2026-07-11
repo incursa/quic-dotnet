@@ -41,7 +41,7 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
 
         QuicTlsPacketProtectionMaterial currentOpenMaterial =
             runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value;
-        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> oldKeyPacket = ReceiveApplicationPacketAndGetTrackedResponsePacket(
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> oldKeyPacket = ReceiveApplicationPacketsAndSeedTrackedPacket(
             runtime,
             peerCoordinator,
             currentOpenMaterial,
@@ -53,7 +53,7 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
         Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeOneRttKeyUpdate(runtime));
         QuicTlsPacketProtectionMaterial retainedOldOpenMaterial =
             runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial!.Value;
-        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> newerKeyPacket = ReceiveApplicationPacketAndGetTrackedResponsePacket(
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> newerKeyPacket = ReceiveApplicationPacketsAndSeedTrackedPacket(
             runtime,
             peerCoordinator,
             retainedOldOpenMaterial,
@@ -351,7 +351,7 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
 
             QuicTlsPacketProtectionMaterial currentOpenMaterial =
                 runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value;
-            _ = ReceiveApplicationPacketAndGetTrackedResponsePacket(
+            _ = ReceiveApplicationPacketsAndSeedTrackedPacket(
                 runtime,
                 peerCoordinator,
                 currentOpenMaterial,
@@ -362,7 +362,7 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
             Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeOneRttKeyUpdate(runtime));
             QuicTlsPacketProtectionMaterial retainedOldOpenMaterial =
                 runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial!.Value;
-            KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> newerKeyPacket = ReceiveApplicationPacketAndGetTrackedResponsePacket(
+            KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> newerKeyPacket = ReceiveApplicationPacketsAndSeedTrackedPacket(
                 runtime,
                 peerCoordinator,
                 retainedOldOpenMaterial,
@@ -571,7 +571,7 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
         Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeOneRttKeyUpdate(runtime));
         QuicTlsPacketProtectionMaterial retainedOldOpenMaterial =
             runtime.TlsState.RetainedOldOneRttOpenPacketProtectionMaterial!.Value;
-        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> newerKeyPacket = ReceiveApplicationPacketAndGetTrackedResponsePacket(
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> newerKeyPacket = ReceiveApplicationPacketsAndSeedTrackedPacket(
             runtime,
             peerCoordinator,
             retainedOldOpenMaterial,
@@ -602,7 +602,7 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
         Assert.False(runtime.SendRuntime.SentPackets.ContainsKey(newerKeyPacket.Key));
     }
 
-    private static KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> ReceiveApplicationPacketAndGetTrackedResponsePacket(
+    private static KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> ReceiveApplicationPacketsAndSeedTrackedPacket(
         QuicConnectionRuntime runtime,
         QuicHandshakeFlowCoordinator peerCoordinator,
         QuicTlsPacketProtectionMaterial material,
@@ -624,15 +624,25 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
             sendEffects.AddRange(result.Effects.OfType<QuicConnectionSendDatagramEffect>());
         }
 
-        if (sendEffects.Count == 0)
-        {
-            return SeedTrackedOneRttPacketForCurrentPhase(runtime, checked((ulong)Math.Max(0, observedAtTicks)));
-        }
-
+        Assert.NotEmpty(sendEffects);
         QuicConnectionSendDatagramEffect responseEffect = sendEffects[^1];
-        return Assert.Single(
-            runtime.SendRuntime.SentPackets,
-            entry => entry.Value.PacketBytes.Span.SequenceEqual(responseEffect.Datagram.Span));
+        QuicHandshakeFlowCoordinator responseCoordinator = new(runtime.CurrentPeerDestinationConnectionId);
+        Assert.True(responseCoordinator.TryOpenProtectedApplicationDataPacket(
+            responseEffect.Datagram.Span,
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            out byte[] openedResponse,
+            out int payloadOffset,
+            out int payloadLength,
+            out bool responseKeyPhase));
+        Assert.Equal(runtime.TlsState.CurrentOneRttKeyPhaseBit, responseKeyPhase);
+        Assert.True(QuicFrameCodec.TryParseAckFrame(
+            openedResponse.AsSpan(payloadOffset, payloadLength),
+            out _,
+            out _));
+
+        return SeedTrackedOneRttPacketForCurrentPhase(
+            runtime,
+            checked((ulong)Math.Max(0, observedAtTicks)));
     }
 
     private static KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> SeedTrackedOneRttPacketForCurrentPhase(

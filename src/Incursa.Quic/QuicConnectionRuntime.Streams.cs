@@ -2616,6 +2616,14 @@ internal sealed partial class QuicConnectionRuntime
                 return false;
             }
 
+            if (ackOnlyPacket)
+            {
+                byte[] ackOnlyPacketBytes = protectedPacket.ToArray();
+                QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                protectedPacketOwner = null;
+                protectedPacket = ackOnlyPacketBytes;
+            }
+
             TrackApplicationPacket(
                 packetNumber,
                 protectedPacket,

@@ -753,6 +753,40 @@ internal sealed class QuicRecoveryController
         return hasSelection;
     }
 
+    internal bool TrySelectPtoDurationAndSpace(
+        ulong maxAckDelayMicros,
+        bool handshakeConfirmed,
+        bool handshakeKeysAvailable,
+        out ulong selectedProbeTimeoutMicros,
+        out QuicPacketNumberSpace selectedPacketNumberSpace)
+    {
+        selectedProbeTimeoutMicros = default;
+        selectedPacketNumberSpace = default;
+        bool hasSelection = false;
+
+        foreach (QuicRecoveryPacketNumberSpaceState state in states.Values)
+        {
+            if (!state.TryComputeProbeTimeoutDuration(
+                    maxAckDelayMicros,
+                    handshakeConfirmed,
+                    ProbeTimeoutBackoffCount,
+                    handshakeKeysAvailable,
+                    out ulong probeTimeoutMicros))
+            {
+                continue;
+            }
+
+            if (!hasSelection || probeTimeoutMicros < selectedProbeTimeoutMicros)
+            {
+                selectedProbeTimeoutMicros = probeTimeoutMicros;
+                selectedPacketNumberSpace = state.PacketNumberSpace;
+                hasSelection = true;
+            }
+        }
+
+        return hasSelection;
+    }
+
     /// <summary>
     /// Computes the next recovery timer considering loss and PTO timers for all packet number spaces.
     /// </summary>
@@ -839,6 +873,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
     private const int InitialPacketNumberSpaceCapacity = 32;
 
     private readonly SortedList<ulong, QuicRecoverySentPacketState> ackElicitingPacketsInFlight;
+    private ulong? lastAckElicitingPacketSentAtMicros;
 
     /// <summary>
     /// Initializes a new per-space recovery state.
@@ -892,6 +927,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
             sentAtMicros,
             packetProtectionLevel,
             oneRttKeyPhase);
+        lastAckElicitingPacketSentAtMicros = sentAtMicros;
     }
 
     /// <summary>
@@ -1170,6 +1206,32 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
     {
         probeTimeoutMicros = default;
 
+        if (!lastAckElicitingPacketSentAtMicros.HasValue
+            || !TryComputeProbeTimeoutDuration(
+                maxAckDelayMicros,
+                handshakeConfirmed,
+                probeTimeoutBackoffCount,
+                handshakeKeysAvailable,
+                out ulong backedOffProbeTimeoutMicros))
+        {
+            return false;
+        }
+
+        probeTimeoutMicros = SaturatingAdd(
+            lastAckElicitingPacketSentAtMicros.Value,
+            backedOffProbeTimeoutMicros);
+        return true;
+    }
+
+    internal bool TryComputeProbeTimeoutDuration(
+        ulong maxAckDelayMicros,
+        bool handshakeConfirmed,
+        int probeTimeoutBackoffCount,
+        bool handshakeKeysAvailable,
+        out ulong probeTimeoutMicros)
+    {
+        probeTimeoutMicros = default;
+
         if (!HasAckElicitingPacketsInFlight)
         {
             return false;
@@ -1191,10 +1253,9 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
             return false;
         }
 
-        ulong backedOffProbeTimeoutMicros = QuicRecoveryTiming.ComputeProbeTimeoutWithBackoffMicros(
+        probeTimeoutMicros = QuicRecoveryTiming.ComputeProbeTimeoutWithBackoffMicros(
             probeTimeoutMicrosValue,
             probeTimeoutBackoffCount);
-        probeTimeoutMicros = SaturatingAdd(nowMicros, backedOffProbeTimeoutMicros);
         return true;
     }
 

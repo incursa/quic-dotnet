@@ -173,7 +173,10 @@ internal sealed class QuicConnectionSendRuntime
             ReleasePacketOwners(replacedPacket);
         }
 
-        sentPackets[key] = packet;
+        if (!packet.AckOnlyPacket)
+        {
+            sentPackets[key] = packet;
+        }
         flowController.RecordPacketSent(
             packet.PacketNumberSpace,
             packet.PacketNumber,
@@ -184,6 +187,12 @@ internal sealed class QuicConnectionSendRuntime
             packet.ProbePacket,
             packet.PacketProtectionLevel,
             packet.OneRttKeyPhase);
+        if (packet.AckOnlyPacket)
+        {
+            ReleasePacketOwners(packet);
+            return;
+        }
+
         if (packet.AckEliciting && !packet.ProbePacket)
         {
             ProbeTimeoutCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(

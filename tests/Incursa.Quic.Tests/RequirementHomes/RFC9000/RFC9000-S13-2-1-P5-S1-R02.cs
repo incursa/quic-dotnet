@@ -108,17 +108,16 @@ public sealed class RFC9000_S13_2_1_P5_S1_R02
 
         QuicConnectionSendDatagramEffect ackOnlySend = Assert.Single(
             ackOnlySendResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
-        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedAckOnlyPacket =
-            QuicS13AckPiggybackTestSupport.FindTrackedPacket(runtime, ackOnlySend.Datagram);
-        Assert.True(trackedAckOnlyPacket.Value.AckOnlyPacket);
-        Assert.False(trackedAckOnlyPacket.Value.AckEliciting);
-        Assert.False(trackedAckOnlyPacket.Value.Retransmittable);
+        ulong ackOnlyPacketNumber = QuicS13AckPiggybackTestSupport.ReadOutgoingApplicationPacketNumber(
+            runtime,
+            ackOnlySend);
+        Assert.Empty(runtime.SendRuntime.SentPackets);
 
         QuicConnectionTransitionResult peerAckOnlyResult = QuicS13AckPiggybackTestSupport.ReceiveOneRttAckOnly(
             runtime,
             observedAtTicks: ackDelayDueTicks + 1,
             packetNumber: 2,
-            largestAcknowledged: trackedAckOnlyPacket.Key.PacketNumber);
+            largestAcknowledged: ackOnlyPacketNumber);
 
         Assert.Empty(peerAckOnlyResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
         Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
