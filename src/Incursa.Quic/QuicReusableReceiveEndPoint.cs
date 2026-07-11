@@ -11,10 +11,13 @@ namespace Incursa.Quic;
 /// </summary>
 internal sealed class QuicReusableReceiveEndPoint : IPEndPoint
 {
+    private const int MaxCachedPeers = 4096;
+
     // Socket.ReceiveMessageFromAsync asks for a receive buffer first. Its completion path then
     // serializes the endpoint again to compare the received peer with the previous peer.
     private readonly SocketAddress receiveAddress;
     private readonly SocketAddress comparisonAddress;
+    private readonly Dictionary<SocketAddress, IPEndPoint> receivedPeers = [];
     private bool serializeReceiveAddress = true;
 
     internal QuicReusableReceiveEndPoint(AddressFamily addressFamily)
@@ -30,6 +33,26 @@ internal sealed class QuicReusableReceiveEndPoint : IPEndPoint
     internal void PrepareForReceive()
     {
         serializeReceiveAddress = true;
+    }
+
+    internal SocketAddress ReceiveAddress => receiveAddress;
+
+    internal int CachedPeerCount => receivedPeers.Count;
+
+    internal IPEndPoint ResolveReceivedEndPoint()
+    {
+        if (receivedPeers.TryGetValue(receiveAddress, out IPEndPoint? receivedEndPoint))
+        {
+            return receivedEndPoint;
+        }
+
+        receivedEndPoint = (IPEndPoint)base.Create(receiveAddress);
+        if (receivedPeers.Count < MaxCachedPeers)
+        {
+            receivedPeers.Add(CloneSocketAddress(receiveAddress), receivedEndPoint);
+        }
+
+        return receivedEndPoint;
     }
 
     /// <inheritdoc />
@@ -75,5 +98,12 @@ internal sealed class QuicReusableReceiveEndPoint : IPEndPoint
         {
             destination[index] = source[index];
         }
+    }
+
+    private static SocketAddress CloneSocketAddress(SocketAddress source)
+    {
+        SocketAddress clone = new(source.Family, source.Size);
+        CopySocketAddress(source, clone);
+        return clone;
     }
 }

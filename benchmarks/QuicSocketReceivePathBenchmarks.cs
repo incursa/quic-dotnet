@@ -21,6 +21,7 @@ public class QuicSocketReceivePathBenchmarks
     private EndPoint receiverEndPoint = null!;
     private QuicReusableReceiveEndPoint messageRemoteEndPoint = null!;
     private QuicReusableReceiveEndPoint remoteEndPoint = null!;
+    private QuicReusableReceiveEndPoint socketAddressRemoteEndPoint = null!;
 
     /// <summary>
     /// Creates one concrete-bound loopback UDP path shared by both cases.
@@ -35,6 +36,7 @@ public class QuicSocketReceivePathBenchmarks
         QuicSocketPacketInformationControl.TryEnablePacketInformationIfPossible(receiver);
         messageRemoteEndPoint = new QuicReusableReceiveEndPoint(AddressFamily.InterNetwork);
         remoteEndPoint = new QuicReusableReceiveEndPoint(AddressFamily.InterNetwork);
+        socketAddressRemoteEndPoint = new QuicReusableReceiveEndPoint(AddressFamily.InterNetwork);
     }
 
     /// <summary>
@@ -75,5 +77,20 @@ public class QuicSocketReceivePathBenchmarks
             SocketFlags.None,
             remoteEndPoint);
         return result.ReceivedBytes;
+    }
+
+    /// <summary>
+    /// Measures the reusable socket-address receive path used by concrete bindings.
+    /// </summary>
+    [Benchmark]
+    public async ValueTask<int> ReceiveFromSocketAddressAsync()
+    {
+        sender.SendTo(sendBuffer, SocketFlags.None, receiverEndPoint);
+        int receivedBytes = await receiver.ReceiveFromAsync(
+            receiveBuffer,
+            SocketFlags.None,
+            socketAddressRemoteEndPoint.ReceiveAddress);
+        GC.KeepAlive(socketAddressRemoteEndPoint.ResolveReceivedEndPoint());
+        return receivedBytes;
     }
 }

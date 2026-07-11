@@ -435,13 +435,12 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     }
                     else
                     {
-                        SocketReceiveFromResult receiveFromResult = await socket.ReceiveFromAsync(
+                        receivedBytes = await socket.ReceiveFromAsync(
                             datagramLease.Memory,
                             SocketFlags.None,
-                            remoteEndPoint,
+                            remoteEndPoint.ReceiveAddress,
                             CancellationToken.None).ConfigureAwait(false);
-                        receivedBytes = receiveFromResult.ReceivedBytes;
-                        receivedRemoteEndPoint = receiveFromResult.RemoteEndPoint;
+                        receivedRemoteEndPoint = remoteEndPoint.ResolveReceivedEndPoint();
                     }
                 }
                 catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)

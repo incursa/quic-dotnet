@@ -252,13 +252,12 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                 }
                 else
                 {
-                    SocketReceiveFromResult receiveFromResult = await currentSocket.ReceiveFromAsync(
+                    receivedBytes = await currentSocket.ReceiveFromAsync(
                         datagramLease.Memory,
                         SocketFlags.None,
-                        remoteEndPoint,
+                        remoteEndPoint.ReceiveAddress,
                         CancellationToken.None).ConfigureAwait(false);
-                    receivedBytes = receiveFromResult.ReceivedBytes;
-                    receivedRemoteEndPoint = receiveFromResult.RemoteEndPoint;
+                    receivedRemoteEndPoint = remoteEndPoint.ResolveReceivedEndPoint();
                 }
 
                 if (receivedBytes <= 0)
