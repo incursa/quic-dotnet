@@ -97,6 +97,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
     private readonly Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver;
     private readonly bool enableInitialPeerUsableConnectionId;
+    private readonly QuicConnectionStreamActionEvent streamCapacityReleaseEvent;
     private QuicMaxDataFrame? pendingFlowControlConnectionCreditFrame;
     private QuicMaxDataFrame? scheduledFlowControlConnectionCreditFrame;
     private QuicConnectionVersionProfile versionProfile;
@@ -821,6 +822,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
+        streamCapacityReleaseEvent = new QuicConnectionStreamActionEvent(
+            timeOriginTicks,
+            RequestId: 0,
+            QuicConnectionStreamActionKind.ReleaseCapacity);
         sendRuntime = new QuicConnectionSendRuntime(congestionControlAlgorithm: congestionControlAlgorithm);
         recoveryController = new QuicRecoveryController();
         streamRegistry = new QuicConnectionStreamRegistry(bookkeeping);
@@ -1404,10 +1409,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         bool posted = streamCapacityReleaseDispatcher?.Invoke()
-            ?? TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
-                    clock.Ticks,
-                    RequestId: 0,
-                    QuicConnectionStreamActionKind.ReleaseCapacity));
+            ?? TryPostLocalApiEvent(streamCapacityReleaseEvent);
         if (!posted)
         {
             ClearPeerStreamCapacityReleaseEventScheduled();
