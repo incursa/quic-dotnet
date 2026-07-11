@@ -26,12 +26,19 @@ internal sealed class QuicApplicationSendQueue
     // threshold and hash constants are tuned for the send hot path and should
     // not be replaced with a general-purpose collection without re-benchmarking.
     private const int LinearDistinctStreamIdThreshold = 16;
+    private const int MaintainedOrderThreshold = 32;
     private const int PooledDistinctStreamIdSetMinimumCapacity = 32;
     private const int StreamIdHashShift = 33;
     private const ulong StreamIdHashMultiplier = 0xff51afd7ed558ccdUL;
 
     private readonly List<PendingApplicationSendRequest> pendingRequests = [];
     private long nextSequence;
+    private bool pendingRequestsOrdered = true;
+
+    internal QuicApplicationSendQueue(long initialSequence = 0)
+    {
+        nextSequence = initialSequence;
+    }
 
     public int Count => pendingRequests.Count;
 
@@ -50,27 +57,39 @@ internal sealed class QuicApplicationSendQueue
 
     public void Enqueue(ulong streamId, int priority, byte[] streamPayload, int streamPayloadLength)
     {
-        pendingRequests.Add(new PendingApplicationSendRequest(
-            nextSequence++,
+        PendingApplicationSendRequest request = new(
+            TakeNextSequence(),
             streamId,
             priority,
             streamPayload,
-            streamPayloadLength));
+            streamPayloadLength);
+
+        if (pendingRequestsOrdered && pendingRequests.Count < MaintainedOrderThreshold)
+        {
+            pendingRequests.Insert(FindInsertionIndex(request), request);
+        }
+        else
+        {
+            pendingRequests.Add(request);
+            pendingRequestsOrdered = false;
+        }
     }
 
     public bool TryGetLatestQueuedWriteForStream(ulong streamId, out PendingApplicationSendRequest queuedWrite)
     {
-        for (int index = pendingRequests.Count - 1; index >= 0; index--)
+        queuedWrite = default;
+        bool found = false;
+        foreach (PendingApplicationSendRequest pendingWrite in pendingRequests)
         {
-            queuedWrite = pendingRequests[index];
-            if (queuedWrite.StreamId == streamId)
+            if (pendingWrite.StreamId == streamId
+                && (!found || pendingWrite.Sequence > queuedWrite.Sequence))
             {
-                return true;
+                queuedWrite = pendingWrite;
+                found = true;
             }
         }
 
-        queuedWrite = default;
-        return false;
+        return found;
     }
 
     internal bool TryGetOnlyQueuedWrite(out PendingApplicationSendRequest queuedWrite)
@@ -94,12 +113,15 @@ internal sealed class QuicApplicationSendQueue
         }
 
         queuedWrite = pendingRequests[0];
-        for (int index = 1; index < pendingRequests.Count; index++)
+        if (!pendingRequestsOrdered)
         {
-            PendingApplicationSendRequest candidate = pendingRequests[index];
-            if (ComparePendingApplicationSendRequests(candidate, queuedWrite) < 0)
+            for (int index = 1; index < pendingRequests.Count; index++)
             {
-                queuedWrite = candidate;
+                PendingApplicationSendRequest candidate = pendingRequests[index];
+                if (ComparePendingApplicationSendRequests(candidate, queuedWrite) < 0)
+                {
+                    queuedWrite = candidate;
+                }
             }
         }
 
@@ -140,11 +162,14 @@ internal sealed class QuicApplicationSendQueue
             ArrayPool<PendingApplicationSendRequest>.Shared.Rent(queuedWriteCount);
 
         pendingRequests.CopyTo(queuedWrites);
-        Array.Sort(
-            queuedWrites,
-            index: 0,
-            length: queuedWriteCount,
-            PendingApplicationSendRequestComparer.Instance);
+        if (!pendingRequestsOrdered)
+        {
+            Array.Sort(
+                queuedWrites,
+                index: 0,
+                length: queuedWriteCount,
+                PendingApplicationSendRequestComparer.Instance);
+        }
 
         return queuedWrites;
     }
@@ -176,6 +201,7 @@ internal sealed class QuicApplicationSendQueue
             }
 
             pendingRequests.RemoveAt(index);
+            ResetOrderWhenEmpty();
             removedAny = true;
         }
 
@@ -198,6 +224,7 @@ internal sealed class QuicApplicationSendQueue
             }
 
             pendingRequests.RemoveAt(index);
+            ResetOrderWhenEmpty();
             return true;
         }
 
@@ -217,6 +244,7 @@ internal sealed class QuicApplicationSendQueue
                 }
 
                 pendingRequests.RemoveAt(index);
+                ResetOrderWhenEmpty();
                 removedAny = true;
                 break;
             }
@@ -233,6 +261,7 @@ internal sealed class QuicApplicationSendQueue
         }
 
         pendingRequests.Clear();
+        pendingRequestsOrdered = true;
     }
 
     internal static int SelectQueuedApplicationSendBatchCount(
@@ -407,6 +436,44 @@ internal sealed class QuicApplicationSendQueue
         }
 
         return left.Sequence.CompareTo(right.Sequence);
+    }
+
+    private int FindInsertionIndex(PendingApplicationSendRequest request)
+    {
+        int lower = 0;
+        int upper = pendingRequests.Count;
+        while (lower < upper)
+        {
+            int middle = lower + ((upper - lower) / 2);
+            if (ComparePendingApplicationSendRequests(request, pendingRequests[middle]) < 0)
+            {
+                upper = middle;
+            }
+            else
+            {
+                lower = middle + 1;
+            }
+        }
+
+        return lower;
+    }
+
+    private long TakeNextSequence()
+    {
+        if (nextSequence == long.MaxValue)
+        {
+            throw new InvalidOperationException("The application-send sequence space is exhausted.");
+        }
+
+        return nextSequence++;
+    }
+
+    private void ResetOrderWhenEmpty()
+    {
+        if (pendingRequests.Count == 0)
+        {
+            pendingRequestsOrdered = true;
+        }
     }
 
     private sealed class PendingApplicationSendRequestComparer : IComparer<PendingApplicationSendRequest>

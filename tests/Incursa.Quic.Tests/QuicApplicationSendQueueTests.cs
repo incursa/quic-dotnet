@@ -22,6 +22,43 @@ public sealed class QuicApplicationSendQueueTests
     }
 
     [Fact]
+    public void RentSortedQueuedWrites_MatchesReferenceOrderForLargeMixedQueue()
+    {
+        QuicApplicationSendQueue queue = new();
+        Random random = new(0x51A7);
+        List<(long Sequence, int Priority)> expected = [];
+
+        for (int index = 0; index < 1_000; index++)
+        {
+            int priority = random.Next(-8, 9);
+            queue.Enqueue((ulong)index * 4, priority, [0x10], 1);
+            expected.Add((index, priority));
+        }
+
+        PendingApplicationSendRequest[] actual = CopySortedQueuedWrites(queue);
+        (long Sequence, int Priority)[] expectedOrder = expected
+            .OrderByDescending(item => item.Priority)
+            .ThenBy(item => item.Sequence)
+            .ToArray();
+
+        Assert.Equal(
+            expectedOrder,
+            actual.Select(item => (item.Sequence, item.Priority)).ToArray());
+    }
+
+    [Fact]
+    public void Enqueue_RejectsSequenceExhaustionBeforeOrderingCanWrap()
+    {
+        QuicApplicationSendQueue queue = new(initialSequence: long.MaxValue);
+
+        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+            () => queue.Enqueue(4, priority: 0, [0x10], 1));
+
+        Assert.Contains("sequence space is exhausted", exception.Message, StringComparison.Ordinal);
+        Assert.Equal(0, queue.Count);
+    }
+
+    [Fact]
     public void TryGetLatestQueuedWriteForStream_ReturnsTheMostRecentQueuedWriteForThatStream()
     {
         QuicApplicationSendQueue queue = new();
