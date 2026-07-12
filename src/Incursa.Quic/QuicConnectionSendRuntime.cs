@@ -3,9 +3,35 @@
 
 namespace Incursa.Quic;
 
-internal readonly record struct QuicConnectionSentPacketKey(
-    QuicPacketNumberSpace PacketNumberSpace,
-    ulong PacketNumber);
+internal readonly record struct QuicConnectionSentPacketKey
+{
+    private const int PacketNumberSpaceShift = 62;
+    private const ulong PacketNumberMask = QuicVariableLengthInteger.MaxValue;
+
+    private readonly ulong packedValue;
+
+    internal QuicConnectionSentPacketKey(
+        QuicPacketNumberSpace PacketNumberSpace,
+        ulong PacketNumber)
+    {
+        if ((uint)PacketNumberSpace > (uint)QuicPacketNumberSpace.ApplicationData)
+        {
+            throw new ArgumentOutOfRangeException(nameof(PacketNumberSpace));
+        }
+
+        if (PacketNumber > PacketNumberMask)
+        {
+            throw new ArgumentOutOfRangeException(nameof(PacketNumber));
+        }
+
+        packedValue = PacketNumber | ((ulong)PacketNumberSpace << PacketNumberSpaceShift);
+    }
+
+    internal QuicPacketNumberSpace PacketNumberSpace =>
+        (QuicPacketNumberSpace)(packedValue >> PacketNumberSpaceShift);
+
+    internal ulong PacketNumber => packedValue & PacketNumberMask;
+}
 
 /// <summary>
 /// Captures the TLS encryption level associated with a CRYPTO send effect.
