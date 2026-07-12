@@ -6,6 +6,56 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Incursa.Quic;
 
+internal readonly record struct QuicPacketReceipt
+{
+    private const byte AckElicitingFlag = 1 << 0;
+    private const byte CongestionExperiencedFlag = 1 << 1;
+    private const byte HasEcnCountsFlag = 1 << 2;
+
+    private readonly byte flags;
+    private readonly QuicEcnCounts ecnCounts;
+
+    internal QuicPacketReceipt(
+        ulong ReceivedAtMicros,
+        ulong BufferingDelayMicros,
+        bool AckEliciting,
+        bool CongestionExperienced,
+        QuicEcnCounts? EcnCounts)
+    {
+        this.ReceivedAtMicros = ReceivedAtMicros;
+        this.BufferingDelayMicros = BufferingDelayMicros;
+        flags = (byte)(
+            (AckEliciting ? AckElicitingFlag : 0)
+            | (CongestionExperienced ? CongestionExperiencedFlag : 0)
+            | (EcnCounts.HasValue ? HasEcnCountsFlag : 0));
+        ecnCounts = EcnCounts.GetValueOrDefault();
+    }
+
+    public ulong ReceivedAtMicros { get; }
+
+    public ulong BufferingDelayMicros { get; }
+
+    public bool AckEliciting => (flags & AckElicitingFlag) != 0;
+
+    public bool CongestionExperienced => (flags & CongestionExperiencedFlag) != 0;
+
+    public QuicEcnCounts? EcnCounts => (flags & HasEcnCountsFlag) != 0 ? ecnCounts : null;
+
+    public void Deconstruct(
+        out ulong ReceivedAtMicros,
+        out ulong BufferingDelayMicros,
+        out bool AckEliciting,
+        out bool CongestionExperienced,
+        out QuicEcnCounts? EcnCounts)
+    {
+        ReceivedAtMicros = this.ReceivedAtMicros;
+        BufferingDelayMicros = this.BufferingDelayMicros;
+        AckEliciting = this.AckEliciting;
+        CongestionExperienced = this.CongestionExperienced;
+        EcnCounts = this.EcnCounts;
+    }
+}
+
 /// <summary>
 /// Tracks processed packets and derives ACK frames plus ACK scheduling hints.
 /// </summary>
@@ -90,7 +140,7 @@ internal sealed class QuicAckGenerationState
             }
         }
 
-        state.Receipts[packetNumber] = new PacketReceipt(
+        state.Receipts[packetNumber] = new QuicPacketReceipt(
             receivedAtMicros,
             bufferingDelayMicros,
             ackEliciting,
@@ -188,11 +238,11 @@ internal sealed class QuicAckGenerationState
 
         bool found = false;
         IList<ulong> packetNumbers = state.Receipts.Keys;
-        IList<PacketReceipt> receipts = state.Receipts.Values;
+        IList<QuicPacketReceipt> receipts = state.Receipts.Values;
         for (int index = 0; index < state.Receipts.Count; index++)
         {
             ulong packetNumber = packetNumbers[index];
-            PacketReceipt receipt = receipts[index];
+            QuicPacketReceipt receipt = receipts[index];
             if (!receipt.AckEliciting
                 || (state.LastAckFrameTriggerPacketNumber.HasValue
                     && packetNumber <= state.LastAckFrameTriggerPacketNumber.Value))
@@ -261,7 +311,7 @@ internal sealed class QuicAckGenerationState
             }
 
             QuicEcnCounts? ecnCounts = null;
-            IList<PacketReceipt> receipts = state.Receipts.Values;
+            IList<QuicPacketReceipt> receipts = state.Receipts.Values;
             for (int index = 0; index < receipts.Count; index++)
             {
                 if (receipts[index].EcnCounts.HasValue)
@@ -447,7 +497,7 @@ internal sealed class QuicAckGenerationState
         }
     }
 
-    private static int BuildRanges(SortedList<ulong, PacketReceipt> receipts, Span<PacketRange> ranges)
+    private static int BuildRanges(SortedList<ulong, QuicPacketReceipt> receipts, Span<PacketRange> ranges)
     {
         if (receipts.Count == 0)
         {
@@ -547,7 +597,7 @@ internal sealed class QuicAckGenerationState
         }
     }
 
-    private static void RemoveRange(SortedList<ulong, PacketReceipt> receipts, PacketRange range)
+    private static void RemoveRange(SortedList<ulong, QuicPacketReceipt> receipts, PacketRange range)
     {
         for (ulong packetNumber = range.Smallest; ; packetNumber++)
         {
@@ -587,10 +637,10 @@ internal sealed class QuicAckGenerationState
 
         bool found = false;
         IList<ulong> packetNumbers = state.Receipts.Keys;
-        IList<PacketReceipt> receipts = state.Receipts.Values;
+        IList<QuicPacketReceipt> receipts = state.Receipts.Values;
         for (int index = 0; index < state.Receipts.Count; index++)
         {
-            PacketReceipt receipt = receipts[index];
+            QuicPacketReceipt receipt = receipts[index];
             if (!receipt.AckEliciting)
             {
                 continue;
@@ -610,7 +660,7 @@ internal sealed class QuicAckGenerationState
         return laterMicros >= earlierMicros ? laterMicros - earlierMicros : 0;
     }
 
-    private static ulong GetAckDelayMicros(ulong nowMicros, PacketReceipt receipt)
+    private static ulong GetAckDelayMicros(ulong nowMicros, QuicPacketReceipt receipt)
     {
         ulong elapsedMicros = GetElapsedMicros(nowMicros, receipt.ReceivedAtMicros);
         return receipt.BufferingDelayMicros == 0
@@ -628,22 +678,15 @@ internal sealed class QuicAckGenerationState
 
     private readonly record struct SentAckFrameState(PacketRange[] AckedRanges, int AckedRangeCount);
 
-    private readonly record struct PacketReceipt(
-        ulong ReceivedAtMicros,
-        ulong BufferingDelayMicros,
-        bool AckEliciting,
-        bool CongestionExperienced,
-        QuicEcnCounts? EcnCounts);
-
     private sealed class SpaceState
     {
         internal SpaceState(int initialCapacity)
         {
-            Receipts = new SortedList<ulong, PacketReceipt>(initialCapacity);
+            Receipts = new SortedList<ulong, QuicPacketReceipt>(initialCapacity);
             SentAckFrames = new Dictionary<ulong, SentAckFrameState>(initialCapacity);
         }
 
-        internal SortedList<ulong, PacketReceipt> Receipts { get; }
+        internal SortedList<ulong, QuicPacketReceipt> Receipts { get; }
         internal Dictionary<ulong, SentAckFrameState> SentAckFrames { get; }
 
         internal bool ImmediateAckRequired { get; set; }
