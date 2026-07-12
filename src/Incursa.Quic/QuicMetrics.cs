@@ -21,6 +21,7 @@ internal static class QuicMetrics
     internal const string ServerRole = "server";
     internal const string UnknownPacketType = "unknown";
     private const string RuntimeShardInboxDepthMetricName = "incursa.quic.runtime.shard.inbox.depth";
+    private const string RuntimeShardWorkItemDepthMetricName = "incursa.quic.runtime.shard.work_item.depth";
     private const string RuntimeShardWorkItemsEnqueuedMetricName = "incursa.quic.runtime.shard.work_items.enqueued";
     private const string RuntimeShardWorkItemsDequeuedMetricName = "incursa.quic.runtime.shard.work_items.dequeued";
     private const string RuntimeShardQueueDelayMetricName = "incursa.quic.runtime.shard.queue_delay.ms";
@@ -80,6 +81,7 @@ internal static class QuicMetrics
     private static readonly Counter<long> UdpErrors = Meter.CreateCounter<long>("incursa.quic.udp.errors", unit: "events");
     private static readonly Histogram<double> Rtt = Meter.CreateHistogram<double>("incursa.quic.rtt.ms", unit: "ms");
     private static readonly UpDownCounter<long> RuntimeShardInboxDepth = Meter.CreateUpDownCounter<long>(RuntimeShardInboxDepthMetricName, unit: "work_items");
+    private static readonly UpDownCounter<long> RuntimeShardWorkItemDepth = Meter.CreateUpDownCounter<long>(RuntimeShardWorkItemDepthMetricName, unit: "work_items");
     private static readonly Counter<long> RuntimeShardWorkItemsEnqueued = Meter.CreateCounter<long>(RuntimeShardWorkItemsEnqueuedMetricName, unit: "work_items");
     private static readonly Counter<long> RuntimeShardWorkItemsDequeued = Meter.CreateCounter<long>(RuntimeShardWorkItemsDequeuedMetricName, unit: "work_items");
     private static readonly Histogram<double> RuntimeShardQueueDelay = Meter.CreateHistogram<double>(RuntimeShardQueueDelayMetricName, unit: "ms");
@@ -298,7 +300,9 @@ internal static class QuicMetrics
 
     internal static void RecordRuntimeShardWorkItemEnqueued(int shardIndex, in QuicConnectionRuntimeShardWorkItem workItem)
     {
-        if (!RuntimeShardInboxDepth.Enabled && !RuntimeShardWorkItemsEnqueued.Enabled)
+        if (!RuntimeShardInboxDepth.Enabled
+            && !RuntimeShardWorkItemDepth.Enabled
+            && !RuntimeShardWorkItemsEnqueued.Enabled)
         {
             return;
         }
@@ -310,6 +314,12 @@ internal static class QuicMetrics
             RuntimeShardInboxDepth.Add(1, in depthTags);
         }
 
+        if (RuntimeShardWorkItemDepth.Enabled)
+        {
+            TagList workItemDepthTags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
+            RuntimeShardWorkItemDepth.Add(1, in workItemDepthTags);
+        }
+
         if (RuntimeShardWorkItemsEnqueued.Enabled)
         {
             TagList workItemTags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
@@ -319,7 +329,10 @@ internal static class QuicMetrics
 
     internal static void RecordRuntimeShardWorkItemDequeued(int shardIndex, in QuicConnectionRuntimeShardWorkItem workItem)
     {
-        if (!RuntimeShardInboxDepth.Enabled && !RuntimeShardWorkItemsDequeued.Enabled && !RuntimeShardQueueDelay.Enabled)
+        if (!RuntimeShardInboxDepth.Enabled
+            && !RuntimeShardWorkItemDepth.Enabled
+            && !RuntimeShardWorkItemsDequeued.Enabled
+            && !RuntimeShardQueueDelay.Enabled)
         {
             return;
         }
@@ -329,6 +342,12 @@ internal static class QuicMetrics
             TagList depthTags = default;
             depthTags.Add(RuntimeShardIndexTagName, shardIndex);
             RuntimeShardInboxDepth.Add(-1, in depthTags);
+        }
+
+        if (RuntimeShardWorkItemDepth.Enabled)
+        {
+            TagList workItemDepthTags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
+            RuntimeShardWorkItemDepth.Add(-1, in workItemDepthTags);
         }
 
         if (RuntimeShardWorkItemsDequeued.Enabled)
