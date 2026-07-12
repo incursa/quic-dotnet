@@ -39,24 +39,195 @@ internal readonly record struct QuicConnectionSentPacketKey
 internal readonly record struct QuicConnectionCryptoSendMetadata(
     QuicTlsEncryptionLevel EncryptionLevel);
 
-internal readonly record struct QuicConnectionSentPacket(
-    QuicPacketNumberSpace PacketNumberSpace,
-    ulong PacketNumber,
-    ulong PayloadBytes,
-    ulong SentAtMicros,
-    bool AckEliciting = true,
-    bool AckOnlyPacket = false,
-    bool ProbePacket = false,
-    bool Retransmittable = true,
-    QuicConnectionCryptoSendMetadata? CryptoMetadata = null,
-    ReadOnlyMemory<byte> PacketBytes = default,
-    QuicTlsEncryptionLevel? PacketProtectionLevel = null,
-    ulong? StreamId = null,
-    ulong[]? StreamIds = null,
-    ReadOnlyMemory<byte> PlaintextPayload = default,
-    ulong? OneRttKeyPhase = null,
-    byte[]? PlaintextPayloadOwner = null,
-    byte[]? PacketBytesOwner = null);
+internal record struct QuicConnectionSentPacket
+{
+    private const byte AckElicitingFlag = 1 << 0;
+    private const byte AckOnlyPacketFlag = 1 << 1;
+    private const byte ProbePacketFlag = 1 << 2;
+    private const byte RetransmittableFlag = 1 << 3;
+    private const byte HasCryptoMetadataFlag = 1 << 4;
+    private const byte HasPacketProtectionLevelFlag = 1 << 5;
+    private const byte HasStreamIdFlag = 1 << 6;
+    private const byte HasOneRttKeyPhaseFlag = 1 << 7;
+
+    private byte flags;
+    private QuicTlsEncryptionLevel cryptoEncryptionLevel;
+    private QuicTlsEncryptionLevel packetProtectionLevel;
+    private ulong streamId;
+    private ulong oneRttKeyPhase;
+
+    internal QuicConnectionSentPacket(
+        QuicPacketNumberSpace PacketNumberSpace,
+        ulong PacketNumber,
+        ulong PayloadBytes,
+        ulong SentAtMicros,
+        bool AckEliciting = true,
+        bool AckOnlyPacket = false,
+        bool ProbePacket = false,
+        bool Retransmittable = true,
+        QuicConnectionCryptoSendMetadata? CryptoMetadata = null,
+        ReadOnlyMemory<byte> PacketBytes = default,
+        QuicTlsEncryptionLevel? PacketProtectionLevel = null,
+        ulong? StreamId = null,
+        ulong[]? StreamIds = null,
+        ReadOnlyMemory<byte> PlaintextPayload = default,
+        ulong? OneRttKeyPhase = null,
+        byte[]? PlaintextPayloadOwner = null,
+        byte[]? PacketBytesOwner = null)
+    {
+        this.PacketNumberSpace = PacketNumberSpace;
+        this.PacketNumber = PacketNumber;
+        this.PayloadBytes = PayloadBytes;
+        this.SentAtMicros = SentAtMicros;
+        flags = (byte)(
+            (AckEliciting ? AckElicitingFlag : 0)
+            | (AckOnlyPacket ? AckOnlyPacketFlag : 0)
+            | (ProbePacket ? ProbePacketFlag : 0)
+            | (Retransmittable ? RetransmittableFlag : 0)
+            | (CryptoMetadata.HasValue ? HasCryptoMetadataFlag : 0)
+            | (PacketProtectionLevel.HasValue ? HasPacketProtectionLevelFlag : 0)
+            | (StreamId.HasValue ? HasStreamIdFlag : 0)
+            | (OneRttKeyPhase.HasValue ? HasOneRttKeyPhaseFlag : 0));
+        cryptoEncryptionLevel = CryptoMetadata.GetValueOrDefault().EncryptionLevel;
+        packetProtectionLevel = PacketProtectionLevel.GetValueOrDefault();
+        streamId = StreamId.GetValueOrDefault();
+        oneRttKeyPhase = OneRttKeyPhase.GetValueOrDefault();
+        this.PacketBytes = PacketBytes;
+        this.StreamIds = StreamIds;
+        this.PlaintextPayload = PlaintextPayload;
+        this.PlaintextPayloadOwner = PlaintextPayloadOwner;
+        this.PacketBytesOwner = PacketBytesOwner;
+    }
+
+    public QuicPacketNumberSpace PacketNumberSpace { readonly get; init; }
+
+    public ulong PacketNumber { readonly get; init; }
+
+    public ulong PayloadBytes { readonly get; init; }
+
+    public ulong SentAtMicros { readonly get; init; }
+
+    public bool AckEliciting
+    {
+        readonly get => HasFlag(AckElicitingFlag);
+        init => SetFlag(AckElicitingFlag, value);
+    }
+
+    public bool AckOnlyPacket
+    {
+        readonly get => HasFlag(AckOnlyPacketFlag);
+        init => SetFlag(AckOnlyPacketFlag, value);
+    }
+
+    public bool ProbePacket
+    {
+        readonly get => HasFlag(ProbePacketFlag);
+        init => SetFlag(ProbePacketFlag, value);
+    }
+
+    public bool Retransmittable
+    {
+        readonly get => HasFlag(RetransmittableFlag);
+        init => SetFlag(RetransmittableFlag, value);
+    }
+
+    public QuicConnectionCryptoSendMetadata? CryptoMetadata
+    {
+        readonly get => HasFlag(HasCryptoMetadataFlag)
+            ? new QuicConnectionCryptoSendMetadata(cryptoEncryptionLevel)
+            : null;
+        init
+        {
+            cryptoEncryptionLevel = value.GetValueOrDefault().EncryptionLevel;
+            SetFlag(HasCryptoMetadataFlag, value.HasValue);
+        }
+    }
+
+    public ReadOnlyMemory<byte> PacketBytes { readonly get; init; }
+
+    public QuicTlsEncryptionLevel? PacketProtectionLevel
+    {
+        readonly get => HasFlag(HasPacketProtectionLevelFlag) ? packetProtectionLevel : null;
+        init
+        {
+            packetProtectionLevel = value.GetValueOrDefault();
+            SetFlag(HasPacketProtectionLevelFlag, value.HasValue);
+        }
+    }
+
+    public ulong? StreamId
+    {
+        readonly get => HasFlag(HasStreamIdFlag) ? streamId : null;
+        init
+        {
+            streamId = value.GetValueOrDefault();
+            SetFlag(HasStreamIdFlag, value.HasValue);
+        }
+    }
+
+    public ulong[]? StreamIds { readonly get; init; }
+
+    public ReadOnlyMemory<byte> PlaintextPayload { readonly get; init; }
+
+    public ulong? OneRttKeyPhase
+    {
+        readonly get => HasFlag(HasOneRttKeyPhaseFlag) ? oneRttKeyPhase : null;
+        init
+        {
+            oneRttKeyPhase = value.GetValueOrDefault();
+            SetFlag(HasOneRttKeyPhaseFlag, value.HasValue);
+        }
+    }
+
+    public byte[]? PlaintextPayloadOwner { readonly get; init; }
+
+    public byte[]? PacketBytesOwner { readonly get; init; }
+
+    public readonly void Deconstruct(
+        out QuicPacketNumberSpace PacketNumberSpace,
+        out ulong PacketNumber,
+        out ulong PayloadBytes,
+        out ulong SentAtMicros,
+        out bool AckEliciting,
+        out bool AckOnlyPacket,
+        out bool ProbePacket,
+        out bool Retransmittable,
+        out QuicConnectionCryptoSendMetadata? CryptoMetadata,
+        out ReadOnlyMemory<byte> PacketBytes,
+        out QuicTlsEncryptionLevel? PacketProtectionLevel,
+        out ulong? StreamId,
+        out ulong[]? StreamIds,
+        out ReadOnlyMemory<byte> PlaintextPayload,
+        out ulong? OneRttKeyPhase,
+        out byte[]? PlaintextPayloadOwner,
+        out byte[]? PacketBytesOwner)
+    {
+        PacketNumberSpace = this.PacketNumberSpace;
+        PacketNumber = this.PacketNumber;
+        PayloadBytes = this.PayloadBytes;
+        SentAtMicros = this.SentAtMicros;
+        AckEliciting = this.AckEliciting;
+        AckOnlyPacket = this.AckOnlyPacket;
+        ProbePacket = this.ProbePacket;
+        Retransmittable = this.Retransmittable;
+        CryptoMetadata = this.CryptoMetadata;
+        PacketBytes = this.PacketBytes;
+        PacketProtectionLevel = this.PacketProtectionLevel;
+        StreamId = this.StreamId;
+        StreamIds = this.StreamIds;
+        PlaintextPayload = this.PlaintextPayload;
+        OneRttKeyPhase = this.OneRttKeyPhase;
+        PlaintextPayloadOwner = this.PlaintextPayloadOwner;
+        PacketBytesOwner = this.PacketBytesOwner;
+    }
+
+    private readonly bool HasFlag(byte flag) => (flags & flag) != 0;
+
+    private void SetFlag(byte flag, bool value)
+    {
+        flags = value ? (byte)(flags | flag) : (byte)(flags & ~flag);
+    }
+}
 
 internal readonly record struct QuicConnectionRetransmissionPlan(
     QuicPacketNumberSpace PacketNumberSpace,
