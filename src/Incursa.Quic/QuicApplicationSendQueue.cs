@@ -292,10 +292,9 @@ internal sealed class QuicApplicationSendQueue
             return [];
         }
 
-        ulong firstStreamId = queuedWrites[0].StreamId;
-        if (HasOnlyStreamId(queuedWrites, firstStreamId))
+        if (TryGetOnlyDistinctStreamId(queuedWrites, out ulong onlyStreamId))
         {
-            return [firstStreamId];
+            return [onlyStreamId];
         }
 
         if (queuedWrites.Length <= LinearDistinctStreamIdThreshold)
@@ -334,6 +333,20 @@ internal sealed class QuicApplicationSendQueue
         }
 
         return streamIds;
+    }
+
+    internal static bool TryGetOnlyDistinctStreamId(
+        ReadOnlySpan<PendingApplicationSendRequest> queuedWrites,
+        out ulong streamId)
+    {
+        if (queuedWrites.IsEmpty)
+        {
+            streamId = default;
+            return false;
+        }
+
+        streamId = queuedWrites[0].StreamId;
+        return HasOnlyStreamId(queuedWrites, streamId);
     }
 
     private static bool HasOnlyStreamId(ReadOnlySpan<PendingApplicationSendRequest> queuedWrites, ulong streamId)

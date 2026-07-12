@@ -160,6 +160,26 @@ public sealed class QuicApplicationSendQueueTests
     }
 
     [Fact]
+    public void TryGetOnlyDistinctStreamId_IdentifiesOnlySameStreamBatches()
+    {
+        PendingApplicationSendRequest[] sameStreamWrites =
+        [
+            new PendingApplicationSendRequest(0, 7, 0, [0x10], 1),
+            new PendingApplicationSendRequest(1, 7, 1, [0x20], 1),
+        ];
+        PendingApplicationSendRequest[] mixedStreamWrites =
+        [
+            sameStreamWrites[0],
+            new PendingApplicationSendRequest(2, 11, 0, [0x30], 1),
+        ];
+
+        Assert.True(QuicApplicationSendQueue.TryGetOnlyDistinctStreamId(sameStreamWrites, out ulong streamId));
+        Assert.Equal(7UL, streamId);
+        Assert.False(QuicApplicationSendQueue.TryGetOnlyDistinctStreamId(mixedStreamWrites, out _));
+        Assert.False(QuicApplicationSendQueue.TryGetOnlyDistinctStreamId([], out _));
+    }
+
+    [Fact]
     public void BuildDistinctStreamIds_PreservesFirstOccurrencesInOrderForLargeBatches()
     {
         PendingApplicationSendRequest[] queuedWrites = new PendingApplicationSendRequest[40];

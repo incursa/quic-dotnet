@@ -206,6 +206,10 @@ public sealed class REQ_QUIC_RFC9000_S13_0002
         QuicConnectionSendDatagramEffect firstBatch = Assert.Single(
             firstTimerResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
         Assert.True((ulong)firstBatch.Datagram.Length <= runtime.ActivePath!.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes);
+        QuicConnectionSentPacket firstBatchPacket =
+            QuicS13AckPiggybackTestSupport.FindTrackedPacket(runtime, firstBatch.Datagram).Value;
+        Assert.Equal((ulong)stream.Id, firstBatchPacket.StreamId);
+        Assert.Null(firstBatchPacket.StreamIds);
         byte[] firstBatchPayload = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, firstBatch);
         ReadOnlySpan<byte> remainingFirstBatch = SkipPadding(firstBatchPayload);
 

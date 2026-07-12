@@ -1110,6 +1110,7 @@ internal sealed partial class QuicConnectionRuntime
             $"app-tx flush-start role={tlsState.Role} queue={applicationSendQueue.Count} probe={probePacket} hasOnlyQueuedWrite={applicationSendQueue.Count == 1}.");
 
         ReadOnlyMemory<byte> combinedPayload = default;
+        ulong? payloadStreamId = null;
         ulong[]? streamIds = null;
         PendingApplicationSendRequest onlyQueuedWrite = default;
         PendingApplicationSendRequest[]? queuedWrites = null;
@@ -1161,6 +1162,7 @@ internal sealed partial class QuicConnectionRuntime
                 }
 
                 combinedPayload = onlyQueuedWrite.StreamPayload.AsMemory(0, onlyQueuedWrite.StreamPayloadLength);
+                payloadStreamId = onlyQueuedWrite.StreamId;
             }
             else
             {
@@ -1270,12 +1272,19 @@ internal sealed partial class QuicConnectionRuntime
                 }
 
                 combinedPayload = combinedPayloadOwner.AsMemory(0, combinedPayloadLength);
-                streamIds = QuicApplicationSendQueue.BuildDistinctStreamIds(selectedWrites);
+                if (QuicApplicationSendQueue.TryGetOnlyDistinctStreamId(selectedWrites, out ulong onlyStreamId))
+                {
+                    payloadStreamId = onlyStreamId;
+                }
+                else
+                {
+                    streamIds = QuicApplicationSendQueue.BuildDistinctStreamIds(selectedWrites);
+                }
             }
 
             QuicMetrics.RecordApplicationSendBatchStreams(
                 tlsState.Role,
-                hasOnlyQueuedWrite ? 1 : streamIds?.Length ?? 0,
+                payloadStreamId.HasValue ? 1 : streamIds?.Length ?? 0,
                 combinedWrite: !hasOnlyQueuedWrite);
 
             if (!TryProtectAndAccountStreamApplicationPayload(
@@ -1284,7 +1293,7 @@ internal sealed partial class QuicConnectionRuntime
                 "The connection runtime could not protect the queued stream write packet.",
                 QueuedStreamWriteSendBlockedMessage,
                 probePacket,
-                streamId: hasOnlyQueuedWrite ? onlyQueuedWrite.StreamId : null,
+                streamId: payloadStreamId,
                 streamIds: streamIds,
                 ref effects,
                 out QuicConnectionPathIdentity sendPathIdentity,
