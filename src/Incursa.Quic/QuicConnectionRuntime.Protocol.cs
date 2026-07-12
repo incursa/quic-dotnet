@@ -2504,16 +2504,21 @@ internal sealed partial class QuicConnectionRuntime
         ulong[]? rentedNewlyAcknowledgedAckElicitingPacketNumbers = null;
         int newlyAcknowledgedAckElicitingPacketNumberCount = 0;
         bool acknowledgedCurrentOneRttKeyPhasePacket = false;
+        ulong largestAcknowledgedPacketSentAtMicros = 0;
 
-        bool stateChanged = sendRuntime.FlowController.TryProcessAckFrame(
-            packetNumberSpace,
-            ackFrame,
-            ackReceivedAtMicros,
-            pacingLimited: applicationSendQueue.Count > 0,
-            pathValidated: HasValidatedPath);
+        bool stateChanged = false;
 
         try
         {
+            // ACK ranges are encoded newest to oldest. Congestion recovery is sensitive to
+            // sent-time order, so preserve the former sorted-ledger behavior by applying the
+            // oldest ranges first and ascending within each range.
+            for (int rangeIndex = ackFrame.AdditionalRangeCount - 1; rangeIndex >= 0; rangeIndex--)
+            {
+                QuicAckRange range = ackFrame.GetAdditionalRange(rangeIndex);
+                ProcessAcknowledgedPacketRange(range.SmallestAcknowledged, range.LargestAcknowledged);
+            }
+
             if (ackFrame.LargestAcknowledged >= ackFrame.FirstAckRange)
             {
                 ulong largestAcknowledged = ackFrame.LargestAcknowledged;
@@ -2521,11 +2526,12 @@ internal sealed partial class QuicConnectionRuntime
                 ProcessAcknowledgedPacketRange(smallestAcknowledged, largestAcknowledged);
             }
 
-            for (int rangeIndex = 0; rangeIndex < ackFrame.AdditionalRangeCount; rangeIndex++)
-            {
-                QuicAckRange range = ackFrame.GetAdditionalRange(rangeIndex);
-                ProcessAcknowledgedPacketRange(range.SmallestAcknowledged, range.LargestAcknowledged);
-            }
+            stateChanged |= sendRuntime.FlowController.TryFinalizeExternallyRetainedAckFrame(
+                packetNumberSpace,
+                ackFrame,
+                ackReceivedAtMicros,
+                largestAcknowledgedPacketSentAtMicros,
+                pathValidated: HasValidatedPath);
 
             bool rttSampleUpdated = recoveryController.RecordAcknowledgment(
                 packetNumberSpace,
@@ -2578,6 +2584,14 @@ internal sealed partial class QuicConnectionRuntime
                         new QuicConnectionSentPacketKey(packetNumberSpace, packetNumber),
                         out QuicConnectionSentPacket sentPacket))
                 {
+                    stateChanged |= sendRuntime.FlowController.TryRegisterExternallyRetainedAcknowledgment(
+                        sentPacket,
+                        ackReceivedAtMicros,
+                        pacingLimited: applicationSendQueue.Count > 0);
+                    largestAcknowledgedPacketSentAtMicros = Math.Max(
+                        largestAcknowledgedPacketSentAtMicros,
+                        sentPacket.SentAtMicros);
+
                     if (packetNumberSpace == QuicPacketNumberSpace.ApplicationData
                         && tlsState.KeyUpdateInstalled
                         && sentPacket.OneRttKeyPhase == tlsState.CurrentOneRttKeyPhase)

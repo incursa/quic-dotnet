@@ -186,7 +186,8 @@ internal sealed class QuicConnectionSendRuntime
             packet.AckOnlyPacket,
             packet.ProbePacket,
             packet.PacketProtectionLevel,
-            packet.OneRttKeyPhase);
+            packet.OneRttKeyPhase,
+            retainPacketState: false);
         if (packet.AckOnlyPacket)
         {
             ReleasePacketOwners(packet);
@@ -248,13 +249,14 @@ internal sealed class QuicConnectionSendRuntime
         // by packet number space rather than partitioned into separate tables.
         // SEE: code:src/Incursa.Quic/QuicConnectionSendRuntime.cs#TrackSentPacket
         // SEE: code:src/Incursa.Quic/QuicConnectionSendRuntime.cs#TryDiscardPacketProtectionLevel
-        bool updated = flowController.TryDiscardPacketNumberSpace(packetNumberSpace, discardAckGenerationState);
+        bool updated = flowController.TryDiscardAckGenerationState(packetNumberSpace, discardAckGenerationState);
 
         List<QuicConnectionSentPacketKey>? removedKeys = null;
         foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sentPackets)
         {
             if (entry.Key.PacketNumberSpace == packetNumberSpace)
             {
+                updated = flowController.TryDiscardExternallyRetainedPacket(entry.Value) || updated;
                 (removedKeys ??= []).Add(entry.Key);
             }
         }
@@ -326,7 +328,7 @@ internal sealed class QuicConnectionSendRuntime
         // recovery state from surviving a handshake or key-discard transition.
         // SEE: code:src/Incursa.Quic/QuicConnectionSendRuntime.cs#TryDiscardPacketNumberSpace
         // SEE: code:src/Incursa.Quic/QuicConnectionSendRuntime.cs#TryDiscardOneRttKeyPhase
-        bool updated = flowController.TryDiscardPacketProtectionLevel(packetProtectionLevel);
+        bool updated = false;
 
         List<QuicConnectionSentPacketKey>? removedKeys = null;
         foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sentPackets)
@@ -336,6 +338,7 @@ internal sealed class QuicConnectionSendRuntime
                 continue;
             }
 
+            updated = flowController.TryDiscardExternallyRetainedPacket(entry.Value) || updated;
             (removedKeys ??= []).Add(entry.Key);
         }
 
@@ -366,7 +369,7 @@ internal sealed class QuicConnectionSendRuntime
     /// </summary>
     internal bool TryDiscardOneRttKeyPhase(ulong keyPhase)
     {
-        bool updated = flowController.TryDiscardOneRttKeyPhase(keyPhase);
+        bool updated = false;
 
         List<QuicConnectionSentPacketKey>? removedKeys = null;
         foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sentPackets)
@@ -377,6 +380,7 @@ internal sealed class QuicConnectionSendRuntime
                 continue;
             }
 
+            updated = flowController.TryDiscardExternallyRetainedPacket(entry.Value) || updated;
             (removedKeys ??= []).Add(entry.Key);
         }
 
@@ -433,11 +437,7 @@ internal sealed class QuicConnectionSendRuntime
             return false;
         }
 
-        _ = flowController.TryRegisterLoss(
-            packet.PacketNumberSpace,
-            packet.PacketNumber,
-            packet.SentAtMicros,
-            allowAckOnlyLossSignal: packet.AckOnlyPacket);
+        _ = flowController.TryRegisterExternallyRetainedLoss(packet);
 
         if (scheduleRetransmission && packet.Retransmittable)
         {

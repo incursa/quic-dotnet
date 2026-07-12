@@ -978,6 +978,20 @@ internal sealed class QuicSenderFlowController
     /// </summary>
     internal QuicAckGenerationState AckGenerationState { get; }
 
+    internal int RetainedSentPacketStateCount
+    {
+        get
+        {
+            int count = 0;
+            foreach (SortedList<ulong, SentPacketState> sentPackets in sentPacketsBySpace.Values)
+            {
+                count += sentPackets.Count;
+            }
+
+            return count;
+        }
+    }
+
     /// <summary>
     /// Checks congestion-window limits before sending.
     /// </summary>
@@ -1003,10 +1017,11 @@ internal sealed class QuicSenderFlowController
         bool isAckOnlyPacket = false,
         bool isProbePacket = false,
         QuicTlsEncryptionLevel? packetProtectionLevel = null,
-        ulong? oneRttKeyPhase = null)
+        ulong? oneRttKeyPhase = null,
+        bool retainPacketState = true)
     {
         CongestionControlState.RegisterPacketSent(sentBytes, isAckOnlyPacket, isProbePacket);
-        if (isAckOnlyPacket)
+        if (isAckOnlyPacket || !retainPacketState)
         {
             return;
         }
@@ -1082,6 +1097,46 @@ internal sealed class QuicSenderFlowController
         return updated;
     }
 
+    internal bool TryRegisterExternallyRetainedAcknowledgment(
+        QuicConnectionSentPacket packet,
+        ulong ackReceivedAtMicros,
+        bool applicationLimited = false,
+        bool flowControlLimited = false,
+        bool pacingLimited = false)
+    {
+        return CongestionControlState.TryRegisterAcknowledgedPacket(
+            packet.PayloadBytes,
+            packet.SentAtMicros,
+            packetInFlight: true,
+            applicationLimited: applicationLimited,
+            flowControlLimited: flowControlLimited,
+            pacingLimited: pacingLimited,
+            ackReceivedAtMicros: ackReceivedAtMicros);
+    }
+
+    internal bool TryFinalizeExternallyRetainedAckFrame(
+        QuicPacketNumberSpace packetNumberSpace,
+        QuicAckFrame ackFrame,
+        ulong ackReceivedAtMicros,
+        ulong largestAcknowledgedPacketSentAtMicros,
+        bool pathValidated = false)
+    {
+        bool updated = AckGenerationState.TryRetireAcknowledgedAckRanges(packetNumberSpace, ackFrame);
+        if (!ackFrame.EcnCounts.HasValue)
+        {
+            return updated;
+        }
+
+        ulong largestSentAtMicros = largestAcknowledgedPacketSentAtMicros == 0
+            ? ackReceivedAtMicros
+            : largestAcknowledgedPacketSentAtMicros;
+        return CongestionControlState.TryProcessEcn(
+            packetNumberSpace,
+            ackFrame.EcnCounts.Value.EcnCeCount,
+            largestSentAtMicros,
+            pathValidated: pathValidated) || updated;
+    }
+
     /// <summary>
     /// Processes a loss signal for a specific sent packet number.
     /// </summary>
@@ -1111,6 +1166,25 @@ internal sealed class QuicSenderFlowController
             isProbePacket: sentPacket.IsProbePacket,
             allowAckOnlyLossSignal: allowAckOnlyLossSignal);
     }
+
+    internal bool TryRegisterExternallyRetainedLoss(QuicConnectionSentPacket packet)
+    {
+        return CongestionControlState.TryRegisterLoss(
+            packet.PayloadBytes,
+            packet.SentAtMicros,
+            packetInFlight: true,
+            packetCanBeDecrypted: true,
+            keysAvailable: true,
+            sentAfterEarliestAcknowledgedPacket: true,
+            isProbePacket: packet.ProbePacket,
+            allowAckOnlyLossSignal: packet.AckOnlyPacket);
+    }
+
+    internal bool TryDiscardExternallyRetainedPacket(QuicConnectionSentPacket packet)
+        => CongestionControlState.TryDiscardPacket(packet.PayloadBytes, packetInFlight: true);
+
+    internal bool TryDiscardAckGenerationState(QuicPacketNumberSpace packetNumberSpace, bool discardAckGenerationState)
+        => discardAckGenerationState && AckGenerationState.TryDiscardPacketNumberSpace(packetNumberSpace);
 
     /// <summary>
     /// Discards all retained packets in the specified packet number space.
