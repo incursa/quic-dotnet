@@ -1623,6 +1623,218 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task StreamingPost_EchoesDataBeforeRequestFin_AndPreservesFallbackHandler()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        DuplexStreamingHandler handler = new();
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler, diagnostics);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using (QuicStream fallbackStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10)))
+        {
+            await WritePostRequestAsync(fallbackStream, "/buffered", "fallback"u8.ToArray(), includeContentLength: true);
+            Http3Response fallbackResponse = await ReadResponseAsync(fallbackStream);
+            Assert.Equal(200, fallbackResponse.StatusCode);
+            Assert.Equal("buffered:fallback", System.Text.Encoding.UTF8.GetString(fallbackResponse.Body));
+        }
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        byte[] first = "first "u8.ToArray();
+        byte[] second = "second"u8.ToArray();
+        QPackFieldLine[] fields =
+        [
+            new QPackFieldLine(":method", "POST"),
+            new QPackFieldLine(":scheme", "https"),
+            new QPackFieldLine(":authority", "localhost"),
+            new QPackFieldLine(":path", "/duplex"),
+            new QPackFieldLine("content-length", (first.Length + second.Length).ToString(System.Globalization.CultureInfo.InvariantCulture)),
+            new QPackFieldLine("content-type", "application/octet-stream"),
+        ];
+        byte[] headersFrame = Http3FrameWriter.WriteHeaders(QPackEncoder.EncodeFieldSection(fields));
+        byte[] firstDataFrame = Http3FrameWriter.WriteData(first);
+        await requestStream.WriteAsync(headersFrame, 0, headersFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await requestStream.WriteAsync(firstDataFrame, 0, firstDataFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+
+        Http3FrameReader responseReader = new();
+        List<byte> responseBody = [];
+        bool responseHeadersSeen = false;
+        byte[] readBuffer = new byte[4096];
+        using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(10));
+        while (responseBody.Count < first.Length)
+        {
+            int bytesRead = await requestStream.ReadAsync(readBuffer, 0, readBuffer.Length, timeout.Token);
+            Assert.True(
+                bytesRead != 0,
+                string.Join(" | ", diagnostics.Events.Select(static diagnostic => $"{diagnostic.Kind}:{diagnostic.ErrorCode}:{diagnostic.Message}")));
+            foreach (Http3Frame frame in responseReader.Read(readBuffer.AsSpan(0, bytesRead)))
+            {
+                responseHeadersSeen |= frame is Http3HeadersFrame;
+                if (frame is Http3DataFrame dataFrame)
+                {
+                    responseBody.AddRange(dataFrame.Data.ToArray());
+                }
+            }
+        }
+
+        Assert.True(responseHeadersSeen);
+        Assert.Equal(first, responseBody);
+        Assert.False(requestStream.WritesClosed.IsCompleted);
+
+        byte[] secondDataFrame = Http3FrameWriter.WriteData(second);
+        await requestStream.WriteAsync(secondDataFrame, 0, secondDataFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        while (true)
+        {
+            int bytesRead = await requestStream.ReadAsync(readBuffer, 0, readBuffer.Length, timeout.Token);
+            if (bytesRead == 0)
+            {
+                foreach (Http3Frame frame in responseReader.Complete())
+                {
+                    if (frame is Http3DataFrame dataFrame)
+                    {
+                        responseBody.AddRange(dataFrame.Data.ToArray());
+                    }
+                }
+
+                break;
+            }
+
+            foreach (Http3Frame frame in responseReader.Read(readBuffer.AsSpan(0, bytesRead)))
+            {
+                if (frame is Http3DataFrame dataFrame)
+                {
+                    responseBody.AddRange(dataFrame.Data.ToArray());
+                }
+            }
+        }
+
+        Assert.Equal([.. first, .. second], responseBody);
+        Assert.Equal(1, handler.StreamingCalls);
+        Assert.Equal(1, handler.BufferedCalls);
+    }
+
+    [Theory]
+    [InlineData(4 * 1024)]
+    [InlineData(16 * 1024)]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task StreamingPost_EchoesFrameBoundaryDataBeforeRequestFin(int payloadLength)
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        DuplexStreamingHandler handler = new();
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler, diagnostics);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        byte[] payload = new byte[payloadLength];
+        for (int index = 0; index < payload.Length; index++)
+        {
+            payload[index] = (byte)(index % 251);
+        }
+        QPackFieldLine[] fields =
+        [
+            new QPackFieldLine(":method", "POST"),
+            new QPackFieldLine(":scheme", "https"),
+            new QPackFieldLine(":authority", "localhost"),
+            new QPackFieldLine(":path", "/duplex"),
+            new QPackFieldLine("content-length", payloadLength.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+            new QPackFieldLine("content-type", "application/octet-stream"),
+        ];
+        byte[] headersFrame = Http3FrameWriter.WriteHeaders(QPackEncoder.EncodeFieldSection(fields));
+        byte[] dataFrame = Http3FrameWriter.WriteData(payload);
+        await requestStream.WriteAsync(headersFrame, 0, headersFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await requestStream.WriteAsync(dataFrame, 0, dataFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+
+        Http3FrameReader responseReader = new();
+        List<byte> responseBody = [];
+        byte[] readBuffer = new byte[16 * 1024];
+        using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(10));
+        while (responseBody.Count < payload.Length)
+        {
+            int bytesRead = await requestStream.ReadAsync(readBuffer, 0, readBuffer.Length, timeout.Token);
+            Assert.True(
+                bytesRead != 0,
+                string.Join(" | ", diagnostics.Events.Select(static diagnostic => $"{diagnostic.Kind}:{diagnostic.ErrorCode}:{diagnostic.Message}")));
+            foreach (Http3Frame frame in responseReader.Read(readBuffer.AsSpan(0, bytesRead)))
+            {
+                if (frame is Http3DataFrame responseData)
+                {
+                    responseBody.AddRange(responseData.Data.ToArray());
+                }
+            }
+        }
+
+        Assert.Equal(payload, responseBody);
+        Assert.False(requestStream.WritesClosed.IsCompleted);
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        while (await requestStream.ReadAsync(readBuffer, 0, readBuffer.Length, timeout.Token) != 0)
+        {
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task StreamingPost_ContentLengthMismatch_ClosesConnectionWithMessageError()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(new DuplexStreamingHandler(), diagnostics);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        QPackFieldLine[] fields =
+        [
+            new QPackFieldLine(":method", "POST"),
+            new QPackFieldLine(":scheme", "https"),
+            new QPackFieldLine(":authority", "localhost"),
+            new QPackFieldLine(":path", "/duplex"),
+            new QPackFieldLine("content-length", "12"),
+            new QPackFieldLine("content-type", "application/octet-stream"),
+        ];
+        byte[] headersFrame = Http3FrameWriter.WriteHeaders(QPackEncoder.EncodeFieldSection(fields));
+        byte[] shortDataFrame = Http3FrameWriter.WriteData("short"u8);
+        await requestStream.WriteAsync(headersFrame, 0, headersFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await requestStream.WriteAsync(shortDataFrame, 0, shortDataFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(10);
+        while (DateTimeOffset.UtcNow < deadline
+            && !diagnostics.Events.Any(static diagnostic => diagnostic.Kind == Http3DiagnosticKind.ConnectionClosed))
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(25));
+        }
+
+        Assert.Contains(
+            diagnostics.Events,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.Error
+                && diagnostic.ErrorCode == Http3ErrorCode.MessageError.ToString());
+        Assert.Contains(diagnostics.Events, static diagnostic => diagnostic.Kind == Http3DiagnosticKind.ConnectionClosed);
+    }
+
+    [Fact]
     public async Task PostDataRequest_WithFragmentedFrames_PreservesBody()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -2856,6 +3068,50 @@ public sealed class Http3MinimalServerTests
         {
             Body = request.Body.ToArray();
             return ValueTask.FromResult(new Http3ServerResponse(200, "ok"u8.ToArray()));
+        }
+    }
+
+    private sealed class DuplexStreamingHandler : IHttp3RequestHandler, IHttp3StreamingRequestHandler
+    {
+        public int BufferedCalls { get; private set; }
+
+        public int StreamingCalls { get; private set; }
+
+        public bool CanHandleStreaming(Http3StreamingRequest request)
+            => request.Path == "/duplex";
+
+        public ValueTask<Http3ServerResponse> HandleAsync(Http3Request request, CancellationToken cancellationToken = default)
+        {
+            BufferedCalls++;
+            byte[] body = System.Text.Encoding.UTF8.GetBytes("buffered:" + System.Text.Encoding.UTF8.GetString(request.Body.Span));
+            return ValueTask.FromResult(new Http3ServerResponse(200, body));
+        }
+
+        public ValueTask<Http3ServerResponse> HandleStreamingAsync(
+            Http3StreamingRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            StreamingCalls++;
+            string contentLength = request.Headers
+                .First(static header => header.Name == "content-length")
+                .Value;
+            return ValueTask.FromResult(Http3ServerResponse.CreateStreaming(
+                200,
+                EchoAsync(request.Body, cancellationToken),
+                [
+                    new QPackFieldLine("content-type", "application/octet-stream"),
+                    new QPackFieldLine("content-length", contentLength),
+                ]));
+        }
+
+        private static async IAsyncEnumerable<ReadOnlyMemory<byte>> EchoAsync(
+            IAsyncEnumerable<ReadOnlyMemory<byte>> requestBody,
+            [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            await foreach (ReadOnlyMemory<byte> chunk in requestBody.WithCancellation(cancellationToken))
+            {
+                yield return chunk;
+            }
         }
     }
 
