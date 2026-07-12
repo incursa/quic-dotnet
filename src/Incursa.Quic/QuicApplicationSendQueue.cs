@@ -42,6 +42,17 @@ internal sealed class QuicApplicationSendQueue
 
     public int Count => pendingRequests.Count;
 
+    internal QuicRetentionSnapshot CaptureRetentionSnapshot()
+    {
+        long retainedBytes = 0;
+        foreach (PendingApplicationSendRequest pendingRequest in pendingRequests)
+        {
+            retainedBytes += pendingRequest.StreamPayload.Length;
+        }
+
+        return new QuicRetentionSnapshot(pendingRequests.Count, retainedBytes, OldestAgeMilliseconds: null);
+    }
+
     public bool HasPendingWritesForStream(ulong streamId)
     {
         foreach (PendingApplicationSendRequest pendingWrite in pendingRequests)

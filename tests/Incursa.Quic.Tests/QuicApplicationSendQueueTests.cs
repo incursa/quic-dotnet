@@ -6,6 +6,20 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicApplicationSendQueueTests
 {
     [Fact]
+    public void CaptureRetentionSnapshotCountsActualPayloadOwnerCapacity()
+    {
+        QuicApplicationSendQueue queue = new();
+        queue.Enqueue(1, priority: 0, new byte[16], streamPayloadLength: 3);
+        queue.Enqueue(2, priority: 0, new byte[64], streamPayloadLength: 5);
+
+        QuicRetentionSnapshot snapshot = queue.CaptureRetentionSnapshot();
+
+        Assert.Equal(2, snapshot.RetainedBufferCount);
+        Assert.Equal(80, snapshot.RetainedByteCount);
+        Assert.Null(snapshot.OldestAgeMilliseconds);
+    }
+
+    [Fact]
     public void RentSortedQueuedWrites_SortsByPriorityDescendingAndPreservesFifoForEqualPriority()
     {
         QuicApplicationSendQueue queue = new();

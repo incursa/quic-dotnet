@@ -88,8 +88,16 @@ internal static class QuicMetrics
     private static readonly Histogram<double> RuntimeShardServiceTime = Meter.CreateHistogram<double>(RuntimeShardServiceTimeMetricName, unit: "ms");
     private static readonly Counter<long> RuntimeFollowOnFlushItems = Meter.CreateCounter<long>(RuntimeFollowOnFlushItemsMetricName, unit: "items");
     private static readonly Histogram<long> DelayedApplicationSends = Meter.CreateHistogram<long>("incursa.quic.runtime.delayed_application_sends", unit: "writes");
+    private static readonly Histogram<long> ApplicationSendRetainedBuffers = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.retained_buffers", unit: "buffers");
+    private static readonly Histogram<long> ApplicationSendRetainedBytes = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.retained_bytes", unit: "bytes");
     private static readonly Histogram<long> RetainedSentPackets = Meter.CreateHistogram<long>("incursa.quic.runtime.sent_packets.retained", unit: "packets");
+    private static readonly Histogram<long> RetainedSentPacketBuffers = Meter.CreateHistogram<long>("incursa.quic.runtime.sent_packets.retained_buffers", unit: "buffers");
+    private static readonly Histogram<long> RetainedSentPacketBytes = Meter.CreateHistogram<long>("incursa.quic.runtime.sent_packets.retained_bytes", unit: "bytes");
+    private static readonly Histogram<double> RetainedSentPacketOldestAge = Meter.CreateHistogram<double>("incursa.quic.runtime.sent_packets.oldest_age.ms", unit: "ms");
     private static readonly Histogram<long> PendingRetransmissions = Meter.CreateHistogram<long>("incursa.quic.runtime.retransmissions.pending", unit: "retransmissions");
+    private static readonly Histogram<long> PendingRetransmissionBuffers = Meter.CreateHistogram<long>("incursa.quic.runtime.retransmissions.retained_buffers", unit: "buffers");
+    private static readonly Histogram<long> PendingRetransmissionBytes = Meter.CreateHistogram<long>("incursa.quic.runtime.retransmissions.retained_bytes", unit: "bytes");
+    private static readonly Histogram<double> PendingRetransmissionOldestAge = Meter.CreateHistogram<double>("incursa.quic.runtime.retransmissions.oldest_age.ms", unit: "ms");
     private static readonly Histogram<long> ApplicationSendBatchStreams = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.batch_streams", unit: "streams");
     private static readonly Histogram<double> StreamWriteCompletion = Meter.CreateHistogram<double>("incursa.quic.runtime.stream_write.completion.ms", unit: "ms");
     private static readonly long[] BufferPoolRentCounts = new long[BufferPoolBucketCount];
@@ -435,7 +443,18 @@ internal static class QuicMetrics
 
     internal static void RecordRuntimePressureSnapshot(int shardIndex, QuicConnectionRuntime runtime)
     {
-        if (!DelayedApplicationSends.Enabled && !RetainedSentPackets.Enabled && !PendingRetransmissions.Enabled)
+        bool applicationSendRetentionEnabled =
+            ApplicationSendRetainedBuffers.Enabled || ApplicationSendRetainedBytes.Enabled;
+        bool sentPacketRetentionEnabled =
+            RetainedSentPacketBuffers.Enabled || RetainedSentPacketBytes.Enabled || RetainedSentPacketOldestAge.Enabled;
+        bool retransmissionRetentionEnabled =
+            PendingRetransmissionBuffers.Enabled || PendingRetransmissionBytes.Enabled || PendingRetransmissionOldestAge.Enabled;
+        if (!DelayedApplicationSends.Enabled
+            && !RetainedSentPackets.Enabled
+            && !PendingRetransmissions.Enabled
+            && !applicationSendRetentionEnabled
+            && !sentPacketRetentionEnabled
+            && !retransmissionRetentionEnabled)
         {
             return;
         }
@@ -447,14 +466,66 @@ internal static class QuicMetrics
             DelayedApplicationSends.Record(runtime.DelayedApplicationSendCount, in tags);
         }
 
+        if (applicationSendRetentionEnabled)
+        {
+            QuicRetentionSnapshot snapshot = runtime.CaptureApplicationSendRetentionSnapshot();
+            if (ApplicationSendRetainedBuffers.Enabled)
+            {
+                ApplicationSendRetainedBuffers.Record(snapshot.RetainedBufferCount, in tags);
+            }
+
+            if (ApplicationSendRetainedBytes.Enabled)
+            {
+                ApplicationSendRetainedBytes.Record(snapshot.RetainedByteCount, in tags);
+            }
+        }
+
         if (RetainedSentPackets.Enabled)
         {
             RetainedSentPackets.Record(runtime.RetainedSentPacketCount, in tags);
         }
 
+        if (sentPacketRetentionEnabled)
+        {
+            QuicRetentionSnapshot snapshot = runtime.CaptureSentPacketRetentionSnapshot();
+            if (RetainedSentPacketBuffers.Enabled)
+            {
+                RetainedSentPacketBuffers.Record(snapshot.RetainedBufferCount, in tags);
+            }
+
+            if (RetainedSentPacketBytes.Enabled)
+            {
+                RetainedSentPacketBytes.Record(snapshot.RetainedByteCount, in tags);
+            }
+
+            if (RetainedSentPacketOldestAge.Enabled && snapshot.OldestAgeMilliseconds.HasValue)
+            {
+                RetainedSentPacketOldestAge.Record(snapshot.OldestAgeMilliseconds.Value, in tags);
+            }
+        }
+
         if (PendingRetransmissions.Enabled)
         {
             PendingRetransmissions.Record(runtime.PendingRetransmissionCount, in tags);
+        }
+
+        if (retransmissionRetentionEnabled)
+        {
+            QuicRetentionSnapshot snapshot = runtime.CaptureRetransmissionRetentionSnapshot();
+            if (PendingRetransmissionBuffers.Enabled)
+            {
+                PendingRetransmissionBuffers.Record(snapshot.RetainedBufferCount, in tags);
+            }
+
+            if (PendingRetransmissionBytes.Enabled)
+            {
+                PendingRetransmissionBytes.Record(snapshot.RetainedByteCount, in tags);
+            }
+
+            if (PendingRetransmissionOldestAge.Enabled && snapshot.OldestAgeMilliseconds.HasValue)
+            {
+                PendingRetransmissionOldestAge.Record(snapshot.OldestAgeMilliseconds.Value, in tags);
+            }
         }
     }
 

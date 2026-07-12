@@ -335,10 +335,28 @@ public class MetricsTests
             measurement.InstrumentName == "incursa.quic.runtime.delayed_application_sends"
             && measurement.HasTag("shard_index", "2"));
         Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.retained_buffers"
+            && measurement.HasTag("shard_index", "2"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.retained_bytes"
+            && measurement.HasTag("shard_index", "2"));
+        Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.sent_packets.retained"
             && measurement.HasTag("shard_index", "2"));
         Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.sent_packets.retained_buffers"
+            && measurement.HasTag("shard_index", "2"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.sent_packets.retained_bytes"
+            && measurement.HasTag("shard_index", "2"));
+        Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.retransmissions.pending"
+            && measurement.HasTag("shard_index", "2"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.retransmissions.retained_buffers"
+            && measurement.HasTag("shard_index", "2"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.retransmissions.retained_bytes"
             && measurement.HasTag("shard_index", "2"));
         Assert.Equal(0d, recorder.Measurements
             .Where(measurement => measurement.InstrumentName == "incursa.quic.runtime.shard.inbox.depth")

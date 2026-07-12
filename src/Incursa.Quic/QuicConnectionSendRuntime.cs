@@ -115,6 +115,34 @@ internal sealed class QuicConnectionSendRuntime
 
     public int PendingRetransmissionCount => retransmissionQueue.Count;
 
+    internal QuicRetentionSnapshot CaptureSentPacketRetentionSnapshot(ulong nowMicros)
+    {
+        long retainedBufferCount = 0;
+        long retainedByteCount = 0;
+        ulong? oldestSentAtMicros = null;
+
+        foreach (QuicConnectionSentPacket packet in sentPackets.Values)
+        {
+            QuicRetentionSnapshot.AddOwners(
+                packet.PlaintextPayloadOwner,
+                packet.PacketBytesOwner,
+                ref retainedBufferCount,
+                ref retainedByteCount);
+            oldestSentAtMicros = !oldestSentAtMicros.HasValue
+                || packet.SentAtMicros < oldestSentAtMicros.Value
+                ? packet.SentAtMicros
+                : oldestSentAtMicros;
+        }
+
+        return new QuicRetentionSnapshot(
+            retainedBufferCount,
+            retainedByteCount,
+            QuicRetentionSnapshot.GetOldestAgeMilliseconds(nowMicros, oldestSentAtMicros));
+    }
+
+    internal QuicRetentionSnapshot CaptureRetransmissionRetentionSnapshot(ulong nowMicros)
+        => retransmissionQueue.CaptureRetentionSnapshot(nowMicros);
+
     internal bool HasPendingRetransmission(QuicPacketNumberSpace packetNumberSpace)
     {
         return retransmissionQueue.HasPendingRetransmission(packetNumberSpace);

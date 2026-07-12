@@ -6,6 +6,66 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicConnectionSendRuntimePacketOwnershipTests
 {
     [Fact]
+    public void RetentionSnapshotHelpersDeduplicateAliasedOwnersAndClampClockSkew()
+    {
+        byte[] owner = new byte[32];
+        long retainedBufferCount = 0;
+        long retainedByteCount = 0;
+
+        QuicRetentionSnapshot.AddOwners(
+            owner,
+            owner,
+            ref retainedBufferCount,
+            ref retainedByteCount);
+
+        Assert.Equal(1, retainedBufferCount);
+        Assert.Equal(owner.Length, retainedByteCount);
+        Assert.Equal(0, QuicRetentionSnapshot.GetOldestAgeMilliseconds(
+            nowMicros: 500,
+            oldestSentAtMicros: 1_000));
+    }
+
+    [Fact]
+    public void RetentionSnapshotsCountOwnersBytesAndOldestAge()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        byte[] sentPlaintextOwner = QuicBufferPool.RentBytes(3);
+        byte[] sentPacketOwner = QuicBufferPool.RentBytes(17);
+        byte[] retransmissionOwner = QuicBufferPool.RentBytes(5);
+
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 1,
+            PayloadBytes: 17,
+            SentAtMicros: 500,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PlaintextPayload: sentPlaintextOwner.AsMemory(0, 3),
+            PlaintextPayloadOwner: sentPlaintextOwner,
+            PacketBytes: sentPacketOwner.AsMemory(0, 17),
+            PacketBytesOwner: sentPacketOwner));
+        runtime.QueueRetransmission(new QuicConnectionRetransmissionPlan(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 2,
+            PayloadBytes: 5,
+            SentAtMicros: 1_000,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PlaintextPayload: retransmissionOwner.AsMemory(0, 5),
+            PlaintextPayloadOwner: retransmissionOwner));
+
+        QuicRetentionSnapshot sent = runtime.CaptureSentPacketRetentionSnapshot(nowMicros: 2_500);
+        QuicRetentionSnapshot retransmission = runtime.CaptureRetransmissionRetentionSnapshot(nowMicros: 3_000);
+
+        Assert.Equal(2, sent.RetainedBufferCount);
+        Assert.Equal(sentPlaintextOwner.Length + sentPacketOwner.Length, sent.RetainedByteCount);
+        Assert.Equal(2.0, sent.OldestAgeMilliseconds);
+        Assert.Equal(1, retransmission.RetainedBufferCount);
+        Assert.Equal(retransmissionOwner.Length, retransmission.RetainedByteCount);
+        Assert.Equal(2.0, retransmission.OldestAgeMilliseconds);
+
+        Assert.True(runtime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.ApplicationData));
+    }
+
+    [Fact]
     public void TrackAndAcknowledgePacket_UsesAuthoritativeLedgerForCongestionState()
     {
         QuicConnectionSendRuntime runtime = new();
