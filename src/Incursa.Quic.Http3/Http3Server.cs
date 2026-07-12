@@ -835,7 +835,8 @@ public sealed class Http3Server : IAsyncDisposable
                     break;
                 }
 
-                if (!IsDiagnosticEnabled(diagnosticsSink, Http3DiagnosticKind.FrameReceived)
+                if (frameReader is null
+                    && !IsDiagnosticEnabled(diagnosticsSink, Http3DiagnosticKind.FrameReceived)
                     && await TryReadHeadersOnlyRequestFastPathAsync(
                         buffer.AsMemory(0, bytesRead),
                         stream.Id,

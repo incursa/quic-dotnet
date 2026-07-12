@@ -187,7 +187,7 @@ public sealed class REQ_QUIC_API_0009
             QuicStreamCapacityChangedArgs[] callbacks = observedArgs.ToArray();
             Assert.Equal(2, callbacks.Length);
             Assert.Equal(0, callbacks[1].BidirectionalIncrement);
-            Assert.Equal(10, callbacks[1].UnidirectionalIncrement);
+            Assert.Equal(1, callbacks[1].UnidirectionalIncrement);
 
             QuicStream reopenedStream = await clientConnection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional);
             await reopenedStream.DisposeAsync();
@@ -301,7 +301,7 @@ public sealed class REQ_QUIC_API_0009
             Assert.Equal(2, callbackCount);
             QuicStreamCapacityChangedArgs[] callbacks = observedArgs.ToArray();
             Assert.Equal(2, callbacks.Length);
-            Assert.Equal(100, callbacks[1].BidirectionalIncrement);
+            Assert.Equal(1, callbacks[1].BidirectionalIncrement);
             Assert.Equal(0, callbacks[1].UnidirectionalIncrement);
 
             QuicStream reopenedStream = await clientConnection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
@@ -418,7 +418,7 @@ public sealed class REQ_QUIC_API_0009
             Assert.Equal(2, callbackCount);
             QuicStreamCapacityChangedArgs[] callbacks = observedArgs.ToArray();
             Assert.Equal(2, callbacks.Length);
-            Assert.Equal(100, callbacks[1].BidirectionalIncrement);
+            Assert.Equal(1, callbacks[1].BidirectionalIncrement);
             Assert.Equal(0, callbacks[1].UnidirectionalIncrement);
 
             QuicStream reopenedStream = await clientConnection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
@@ -543,7 +543,7 @@ public sealed class REQ_QUIC_API_0009
             Assert.Equal(2, callbackCount);
             QuicStreamCapacityChangedArgs[] callbacks = observedArgs.ToArray();
             Assert.Equal(2, callbacks.Length);
-            Assert.Equal(100, callbacks[1].BidirectionalIncrement);
+            Assert.Equal(1, callbacks[1].BidirectionalIncrement);
             Assert.Equal(0, callbacks[1].UnidirectionalIncrement);
 
             QuicStream reopenedStream = await clientConnection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
@@ -660,7 +660,7 @@ public sealed class REQ_QUIC_API_0009
             Assert.Equal(2, callbackCount);
             QuicStreamCapacityChangedArgs[] callbacks = observedArgs.ToArray();
             Assert.Equal(2, callbacks.Length);
-            Assert.Equal(100, callbacks[1].BidirectionalIncrement);
+            Assert.Equal(1, callbacks[1].BidirectionalIncrement);
             Assert.Equal(0, callbacks[1].UnidirectionalIncrement);
 
             QuicStream reopenedStream = await clientConnection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);

@@ -402,6 +402,32 @@ internal sealed class QuicConnectionStreamState
         }
     }
 
+    public bool TryApplyInitialIncomingStreamLimits(
+        ulong bidirectionalStreamLimit,
+        ulong unidirectionalStreamLimit)
+    {
+        lock (syncRoot)
+        {
+            ValidateStreamCount(bidirectionalStreamLimit);
+            ValidateStreamCount(unidirectionalStreamLimit);
+            if (hasCreatedIncomingBidirectionalStream || hasCreatedIncomingUnidirectionalStream)
+            {
+                throw new InvalidOperationException("Initial incoming stream limits cannot change after a peer stream is created.");
+            }
+
+            if (incomingBidirectionalStreamLimit == bidirectionalStreamLimit
+                && incomingUnidirectionalStreamLimit == unidirectionalStreamLimit)
+            {
+                return false;
+            }
+
+            incomingBidirectionalStreamLimit = bidirectionalStreamLimit;
+            incomingUnidirectionalStreamLimit = unidirectionalStreamLimit;
+            EnsureTrackedStreamCapacity();
+            return true;
+        }
+    }
+
     public bool TryReserveSendCapacity(
         ulong streamIdValue,
         ulong offset,
