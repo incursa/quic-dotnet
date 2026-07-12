@@ -26,6 +26,18 @@ internal enum QuicConnectionRuntimeShardWorkItemKind
 
 internal readonly record struct QuicConnectionRuntimeShardWorkItem
 {
+    private const byte HasRoutedConnectionIdFlag = 1 << 0;
+    private const byte HasEcnCountsFlag = 1 << 1;
+
+    private readonly object? connectionEventOrOwnedDatagramBuffer;
+    private readonly QuicConnectionPathIdentity packetPathIdentity;
+    private readonly QuicEcnCounts packetEcnCounts;
+    private readonly ReadOnlyMemory<byte> packetDatagramOrStreamData;
+    private readonly long observedAtTicksOrRequestId;
+    private readonly ulong routedConnectionIdOrStreamId;
+    private readonly int streamTypeOrActionKind;
+    private readonly byte flags;
+
     internal QuicConnectionRuntimeShardWorkItem(
         QuicConnectionHandle handle,
         QuicConnectionRuntime runtime,
@@ -33,7 +45,7 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
     {
         Handle = handle;
         Runtime = runtime;
-        ConnectionEvent = connectionEvent;
+        connectionEventOrOwnedDatagramBuffer = connectionEvent;
         Kind = QuicConnectionRuntimeShardWorkItemKind.Event;
     }
 
@@ -46,10 +58,16 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
     {
         Handle = handle;
         Runtime = runtime;
-        ConnectionEvent = null;
+        connectionEventOrOwnedDatagramBuffer = ownedDatagramBuffer;
         Kind = QuicConnectionRuntimeShardWorkItemKind.PacketReceived;
-        PacketReceived = packetReceived;
-        OwnedDatagramBuffer = ownedDatagramBuffer;
+        packetPathIdentity = packetReceived.PathIdentity;
+        packetEcnCounts = packetReceived.EcnCounts.GetValueOrDefault();
+        packetDatagramOrStreamData = packetReceived.Datagram;
+        observedAtTicksOrRequestId = packetReceived.ObservedAtTicks;
+        routedConnectionIdOrStreamId = packetReceived.RoutedLocallyIssuedConnectionId.GetValueOrDefault();
+        flags = (byte)(
+            (packetReceived.RoutedLocallyIssuedConnectionId.HasValue ? HasRoutedConnectionIdFlag : 0)
+            | (packetReceived.EcnCounts.HasValue ? HasEcnCountsFlag : 0));
         OwnedDatagramBufferOwnership = ownedDatagramBufferOwnership;
     }
 
@@ -66,7 +84,6 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
 
         Handle = handle;
         Runtime = runtime;
-        ConnectionEvent = null;
         Kind = kind;
     }
 
@@ -78,10 +95,9 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
     {
         Handle = handle;
         Runtime = runtime;
-        ConnectionEvent = null;
         Kind = QuicConnectionRuntimeShardWorkItemKind.StreamOpen;
-        RequestId = requestId;
-        StreamType = streamType;
+        observedAtTicksOrRequestId = requestId;
+        streamTypeOrActionKind = (int)streamType;
     }
 
     internal QuicConnectionRuntimeShardWorkItem(
@@ -99,12 +115,11 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
 
         Handle = handle;
         Runtime = runtime;
-        ConnectionEvent = null;
         Kind = QuicConnectionRuntimeShardWorkItemKind.StreamWrite;
-        RequestId = requestId;
-        StreamActionKind = actionKind;
-        StreamId = streamId;
-        StreamData = streamData;
+        observedAtTicksOrRequestId = requestId;
+        streamTypeOrActionKind = (int)actionKind;
+        routedConnectionIdOrStreamId = streamId;
+        packetDatagramOrStreamData = streamData;
     }
 
     internal QuicConnectionRuntimeShardWorkItemKind Kind { get; }
@@ -113,23 +128,61 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
 
     internal QuicConnectionRuntime? Runtime { get; }
 
-    internal QuicConnectionEvent? ConnectionEvent { get; }
+    internal QuicConnectionEvent? ConnectionEvent => Kind == QuicConnectionRuntimeShardWorkItemKind.Event
+        ? connectionEventOrOwnedDatagramBuffer as QuicConnectionEvent
+        : null;
 
-    internal QuicConnectionPacketReceivedContext PacketReceived { get; }
+    internal QuicConnectionPacketReceivedContext PacketReceived => GetPacketReceived();
 
-    internal byte[]? OwnedDatagramBuffer { get; }
+    internal byte[]? OwnedDatagramBuffer => Kind == QuicConnectionRuntimeShardWorkItemKind.PacketReceived
+        ? connectionEventOrOwnedDatagramBuffer as byte[]
+        : null;
 
     internal QuicReceiveBufferOwnership OwnedDatagramBufferOwnership { get; }
 
-    internal long RequestId { get; }
+    internal long RequestId => Kind is QuicConnectionRuntimeShardWorkItemKind.StreamOpen
+        or QuicConnectionRuntimeShardWorkItemKind.StreamWrite
+        ? observedAtTicksOrRequestId
+        : 0;
 
-    internal QuicStreamType StreamType { get; }
+    internal QuicStreamType StreamType => Kind == QuicConnectionRuntimeShardWorkItemKind.StreamOpen
+        ? (QuicStreamType)streamTypeOrActionKind
+        : default;
 
-    internal QuicConnectionStreamActionKind StreamActionKind { get; }
+    internal QuicConnectionStreamActionKind StreamActionKind => Kind == QuicConnectionRuntimeShardWorkItemKind.StreamWrite
+        ? (QuicConnectionStreamActionKind)streamTypeOrActionKind
+        : default;
 
-    internal ulong StreamId { get; }
+    internal ulong StreamId => Kind == QuicConnectionRuntimeShardWorkItemKind.StreamWrite
+        ? routedConnectionIdOrStreamId
+        : 0;
 
-    internal ReadOnlyMemory<byte> StreamData { get; }
+    internal ReadOnlyMemory<byte> StreamData => Kind == QuicConnectionRuntimeShardWorkItemKind.StreamWrite
+        ? packetDatagramOrStreamData
+        : default;
 
     internal long EnqueuedTimestamp { get; init; }
+
+    private bool HasFlag(byte flag) => (flags & flag) != 0;
+
+    private QuicConnectionPacketReceivedContext GetPacketReceived()
+    {
+        if (Kind != QuicConnectionRuntimeShardWorkItemKind.PacketReceived)
+        {
+            return default;
+        }
+
+        ulong? routedConnectionId = HasFlag(HasRoutedConnectionIdFlag)
+            ? routedConnectionIdOrStreamId
+            : null;
+        QuicEcnCounts? ecnCounts = HasFlag(HasEcnCountsFlag)
+            ? packetEcnCounts
+            : null;
+        return new QuicConnectionPacketReceivedContext(
+            observedAtTicksOrRequestId,
+            packetPathIdentity,
+            packetDatagramOrStreamData,
+            routedConnectionId,
+            ecnCounts);
+    }
 }
