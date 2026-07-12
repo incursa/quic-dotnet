@@ -231,7 +231,9 @@ internal sealed class QuicApplicationSendQueue
         return false;
     }
 
-    public bool TryRemoveQueuedWrites(ReadOnlySpan<PendingApplicationSendRequest> selectedWrites)
+    public bool TryRemoveQueuedWrites(
+        ReadOnlySpan<PendingApplicationSendRequest> selectedWrites,
+        bool returnPayloads = false)
     {
         bool removedAny = false;
         foreach (PendingApplicationSendRequest selectedWrite in selectedWrites)
@@ -241,6 +243,11 @@ internal sealed class QuicApplicationSendQueue
                 if (pendingRequests[index].Sequence != selectedWrite.Sequence)
                 {
                     continue;
+                }
+
+                if (returnPayloads)
+                {
+                    QuicBufferPool.ReturnBytes(pendingRequests[index].StreamPayload);
                 }
 
                 pendingRequests.RemoveAt(index);

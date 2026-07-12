@@ -11,6 +11,64 @@ namespace Incursa.Quic.Tests;
 public class MetricsTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void RemovingCombinedApplicationSendInputsReturnsTheirPayloadOwners()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+        QuicApplicationSendQueue queue = new();
+        byte[] firstPayload = QuicBufferPool.RentBytes(1);
+        byte[] secondPayload = QuicBufferPool.RentBytes(2_000);
+        string firstSizeBucket = GetBufferSizeBucket(firstPayload.Length);
+        string secondSizeBucket = GetBufferSizeBucket(secondPayload.Length);
+        Assert.NotEqual(firstSizeBucket, secondSizeBucket);
+
+        queue.Enqueue(7, priority: 0, firstPayload, 1);
+        queue.Enqueue(8, priority: 0, secondPayload, 2);
+        PendingApplicationSendRequest[] selectedWrites = queue.RentSortedQueuedWrites(out int selectedWriteCount);
+        bool removed = false;
+        try
+        {
+            recorder.RecordObservableInstruments();
+            double firstReturnsBefore = recorder.GetLatestMeasurement(
+                "incursa.quic.buffer_pool.returns",
+                "size_bucket",
+                firstSizeBucket);
+            double secondReturnsBefore = recorder.GetLatestMeasurement(
+                "incursa.quic.buffer_pool.returns",
+                "size_bucket",
+                secondSizeBucket);
+
+            removed = queue.TryRemoveQueuedWrites(
+                selectedWrites.AsSpan(0, selectedWriteCount),
+                returnPayloads: true);
+            recorder.RecordObservableInstruments();
+
+            Assert.True(removed);
+            Assert.Equal(0, queue.Count);
+            Assert.Equal(
+                firstReturnsBefore + 1,
+                recorder.GetLatestMeasurement(
+                    "incursa.quic.buffer_pool.returns",
+                    "size_bucket",
+                    firstSizeBucket));
+            Assert.Equal(
+                secondReturnsBefore + 1,
+                recorder.GetLatestMeasurement(
+                    "incursa.quic.buffer_pool.returns",
+                    "size_bucket",
+                    secondSizeBucket));
+        }
+        finally
+        {
+            QuicApplicationSendQueue.ReturnRentedQueuedWrites(selectedWrites);
+            if (!removed)
+            {
+                queue.Clear();
+            }
+        }
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-CRT-0098")]
     [Requirement("REQ-QUIC-CRT-0155")]
     public async Task QuicConnectionAndStreamPathsEmitActiveCounterDeltas()

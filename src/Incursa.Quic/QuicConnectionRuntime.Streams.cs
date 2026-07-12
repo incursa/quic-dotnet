@@ -1320,7 +1320,7 @@ internal sealed partial class QuicConnectionRuntime
             else
             {
                 combinedPayloadOwner = null;
-                applicationSendQueue.TryRemoveQueuedWrites(selectedWrites);
+                applicationSendQueue.TryRemoveQueuedWrites(selectedWrites, returnPayloads: true);
             }
 
             if (applicationSendQueue.Count == 0)
