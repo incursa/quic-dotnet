@@ -49,6 +49,11 @@ These metrics are diagnostic signals for live behavior and operational visibilit
 | `incursa.quic.runtime.shard.service_time.ms` | Histogram | Time spent processing one dequeued shard work item, including inline effects, in milliseconds. | `shard_index`, `work_item_kind` |
 | `incursa.quic.runtime.follow_on_flush.items` | Counter | Pending application sends, flow-control updates, or stream-capacity releases flushed inline while processing a shard work item. | `shard_index`, `work_item_kind`, `flush_kind` |
 | `incursa.quic.runtime.delayed_application_sends` | Histogram | Sampled application-send queue length for the connection being processed on a shard. Values are per connection, not aggregate shard totals. | `shard_index` |
+| `incursa.quic.runtime.application_send.retained_buffers` | Histogram | Sampled queued application-send owner count for the connection being processed on a shard. | `shard_index` |
+| `incursa.quic.runtime.application_send.retained_bytes` | Histogram | Sampled queued application-send owner array capacity for the connection being processed on a shard. | `shard_index` |
+| `incursa.quic.runtime.application_send.cause.retained_buffers` | Histogram | Sampled queued application-send owner count grouped by the bounded initial queue cause. | `shard_index`, `queue_cause` |
+| `incursa.quic.runtime.application_send.cause.retained_bytes` | Histogram | Sampled queued application-send owner array capacity grouped by the bounded initial queue cause. | `shard_index`, `queue_cause` |
+| `incursa.quic.runtime.application_send.cause.oldest_age.ms` | Histogram | Oldest first-enqueue age for queued application sends in one bounded initial-cause group. Empty groups emit no age sample. | `shard_index`, `queue_cause` |
 | `incursa.quic.runtime.sent_packets.retained` | Histogram | Sampled recovery-ledger packet count for the connection being processed on a shard. Values are per connection, not aggregate shard totals. | `shard_index` |
 | `incursa.quic.runtime.retransmissions.pending` | Histogram | Sampled pending retransmission count for the connection being processed on a shard. Values are per connection, not aggregate shard totals. | `shard_index` |
 | `incursa.quic.runtime.stream_write.completion.ms` | Histogram | Runtime stream-action completion latency, in milliseconds. A large write can produce multiple `write` samples because the runtime processes bounded chunks. | `role`, `action`, `outcome` |
@@ -80,6 +85,7 @@ Metrics only use bounded, low-cardinality tags:
 - `action`: `write`, `finish`
 - `outcome`: `succeeded`, `failed`, `terminal`, `canceled`
 - `flush_kind`: `application_send`, `flow_control`, `stream_capacity`
+- `queue_cause`: `pending_retransmission`, `oversized_write`, `small_write_delay`, `direct_send_blocked`
 
 The metrics surface must not tag by connection ID, stream ID, endpoint, peer address, URL path, exception message, or raw error text.
 

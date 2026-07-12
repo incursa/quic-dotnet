@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0055",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Queued application-send residence diagnostics architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how queued application sends retain a trustworthy first-enqueue time and bounded initial cause so queue pressure can be localized without changing scheduling, flow control, congestion control, or packet behavior.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0052"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0098",
+    "REQ-QUIC-CRT-0155"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicApplicationSendQueue.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicMetrics.cs",
+    "tests/Incursa.Quic.Tests/QuicApplicationSendQueueTests.cs",
+    "tests/Incursa.Quic.Tests/MetricsTests.cs"
+  ],
+  "design_summary": "Each pending application-send record stores the monotonic elapsed microsecond value already available at its first queue insertion and one bounded initial queue cause. Payload replacement, fragmentation, FIN promotion, sorting, and retries preserve both fields. Disabled metrics do not scan the queue. When cause-retention instruments are enabled, one synchronous pass over the connection-owned queue builds the aggregate and four per-cause snapshots; aggregate-only listeners retain the prior cheaper aggregate scan. Measurements report per-shard owner count, array-capacity bytes, and oldest first-enqueue age. The queue_cause tag has exactly four values: pending_retransmission, oversized_write, small_write_delay, and direct_send_blocked.",
+  "alternatives_considered": [
+    "Use the mutable application-send delay deadline as age. Rejected because retries reset that deadline and would understate residence time.",
+    "Read the clock separately for every enqueue. Rejected because the transition already has a deterministic monotonic timestamp.",
+    "Change batching or backpressure in the same slice. Rejected because the cause distribution is needed before selecting a scheduling policy.",
+    "Log stream IDs or exception messages. Rejected because they are high-cardinality and can expose peer or application data."
+  ],
+  "edge_cases_and_constraints": [
+    "Age is clamped to zero if a synthetic test supplies a current time earlier than first enqueue.",
+    "Replacing a queued payload or promoting it to FIN must preserve first-enqueue time and initial cause.",
+    "Fragmenting a queued payload must preserve first-enqueue time and initial cause on the retained remainder.",
+    "Removing, canceling, disposing, or successfully sending a queued request must remove its diagnostic metadata with the request.",
+    "The diagnostic path must not change queue ordering, selection, batching, congestion, flow control, retransmission, or packet protection."
+  ],
+  "data_and_state_considerations": "The pending request value gains one unsigned elapsed-microsecond field and one small bounded enum. No new collection, per-request object, clock read, string, or exception is added. The single-pass cause breakdown executes only while one of the cause-retention instruments is enabled.",
+  "risks": [
+    "Resetting first-enqueue time during payload replacement would hide long-lived queue entries.",
+    "Using an unbounded or text-derived cause would violate metrics cardinality requirements.",
+    "Scanning the queue with metrics disabled would create an avoidable hot-path regression.",
+    "Treating diagnostic timing as clean benchmark evidence would overstate the result."
+  ]
+}

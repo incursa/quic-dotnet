@@ -394,6 +394,29 @@ public class MetricsTests
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.application_send.retained_bytes"
             && measurement.HasTag("shard_index", "2"));
+        string[] queueCauses =
+        [
+            "pending_retransmission",
+            "oversized_write",
+            "small_write_delay",
+            "direct_send_blocked",
+        ];
+        foreach (string queueCause in queueCauses)
+        {
+            Assert.Contains(recorder.Measurements, measurement =>
+                measurement.InstrumentName == "incursa.quic.runtime.application_send.cause.retained_buffers"
+                && measurement.Value == 0
+                && measurement.HasTag("shard_index", "2")
+                && measurement.HasTag("queue_cause", queueCause));
+            Assert.Contains(recorder.Measurements, measurement =>
+                measurement.InstrumentName == "incursa.quic.runtime.application_send.cause.retained_bytes"
+                && measurement.Value == 0
+                && measurement.HasTag("shard_index", "2")
+                && measurement.HasTag("queue_cause", queueCause));
+        }
+
+        Assert.DoesNotContain(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.cause.oldest_age.ms");
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.sent_packets.retained"
             && measurement.HasTag("shard_index", "2"));
@@ -455,6 +478,37 @@ public class MetricsTests
         Assert.Equal(2, depth.Count(measurement => measurement.Value == 1));
         Assert.Equal(2, depth.Count(measurement => measurement.Value == -1));
         Assert.Equal(0d, depth.Sum(measurement => measurement.Value));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void ApplicationSendCauseRetentionRecordsPositiveAgeAndBoundedCause()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+
+        QuicMetrics.RecordApplicationSendCauseRetention(
+            shardIndex: 3,
+            QuicApplicationSendQueueCause.OversizedWrite,
+            new QuicRetentionSnapshot(
+                RetainedBufferCount: 7,
+                RetainedByteCount: 28_672,
+                OldestAgeMilliseconds: 12.5));
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.cause.retained_buffers"
+            && measurement.Value == 7
+            && measurement.HasTag("shard_index", "3")
+            && measurement.HasTag("queue_cause", "oversized_write"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.cause.retained_bytes"
+            && measurement.Value == 28_672
+            && measurement.HasTag("shard_index", "3")
+            && measurement.HasTag("queue_cause", "oversized_write"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.cause.oldest_age.ms"
+            && measurement.Value == 12.5
+            && measurement.HasTag("shard_index", "3")
+            && measurement.HasTag("queue_cause", "oversized_write"));
     }
 
     [Fact]

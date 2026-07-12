@@ -10,13 +10,25 @@ internal readonly record struct PendingApplicationSendRequest(
     ulong StreamId,
     int Priority,
     byte[] StreamPayload,
-    int StreamPayloadLength);
+    int StreamPayloadLength,
+    ulong FirstEnqueuedAtMicros = 0,
+    QuicApplicationSendQueueCause QueueCause = QuicApplicationSendQueueCause.SmallWriteDelay);
+
+internal enum QuicApplicationSendQueueCause
+{
+    PendingRetransmission,
+    OversizedWrite,
+    SmallWriteDelay,
+    DirectSendBlocked,
+}
 
 /// <summary>
 /// Owns the pending application-send queue and its selection/bookkeeping rules.
 /// </summary>
 internal sealed class QuicApplicationSendQueue
 {
+    internal const int QueueCauseCount = 4;
+
     // CONTEXT: distinct stream-id selection hot path
     // SEE: code:src/Incursa.Quic/QuicApplicationSendQueue.cs#BuildDistinctStreamIds
     // SEE: code:src/Incursa.Quic/QuicApplicationSendQueue.cs#GetDistinctStreamIdSetCapacity
@@ -42,15 +54,94 @@ internal sealed class QuicApplicationSendQueue
 
     public int Count => pendingRequests.Count;
 
-    internal QuicRetentionSnapshot CaptureRetentionSnapshot()
+    internal QuicRetentionSnapshot CaptureRetentionSnapshot(
+        ulong? nowMicros = null,
+        QuicApplicationSendQueueCause? queueCause = null)
     {
         long retainedBytes = 0;
+        long retainedBuffers = 0;
+        ulong? oldestEnqueuedAtMicros = null;
         foreach (PendingApplicationSendRequest pendingRequest in pendingRequests)
         {
+            if (queueCause.HasValue && pendingRequest.QueueCause != queueCause.Value)
+            {
+                continue;
+            }
+
+            retainedBuffers++;
             retainedBytes += pendingRequest.StreamPayload.Length;
+            oldestEnqueuedAtMicros = !oldestEnqueuedAtMicros.HasValue
+                || pendingRequest.FirstEnqueuedAtMicros < oldestEnqueuedAtMicros.Value
+                ? pendingRequest.FirstEnqueuedAtMicros
+                : oldestEnqueuedAtMicros;
         }
 
-        return new QuicRetentionSnapshot(pendingRequests.Count, retainedBytes, OldestAgeMilliseconds: null);
+        return new QuicRetentionSnapshot(
+            retainedBuffers,
+            retainedBytes,
+            nowMicros.HasValue
+                ? QuicRetentionSnapshot.GetOldestAgeMilliseconds(nowMicros.Value, oldestEnqueuedAtMicros)
+                : null);
+    }
+
+    internal QuicRetentionSnapshot CaptureRetentionSnapshots(
+        ulong nowMicros,
+        Span<QuicRetentionSnapshot> causeSnapshots)
+    {
+        if (causeSnapshots.Length < QueueCauseCount)
+        {
+            throw new ArgumentException("A snapshot slot is required for every queue cause.", nameof(causeSnapshots));
+        }
+
+        Span<long> retainedBuffersByCause = stackalloc long[QueueCauseCount];
+        Span<long> retainedBytesByCause = stackalloc long[QueueCauseCount];
+        Span<ulong> oldestEnqueuedAtMicrosByCause = stackalloc ulong[QueueCauseCount];
+        Span<bool> hasOldestEnqueuedAtMicrosByCause = stackalloc bool[QueueCauseCount];
+        long retainedBuffers = 0;
+        long retainedBytes = 0;
+        ulong? oldestEnqueuedAtMicros = null;
+
+        foreach (PendingApplicationSendRequest pendingRequest in pendingRequests)
+        {
+            int causeIndex = (int)pendingRequest.QueueCause;
+            if ((uint)causeIndex >= QueueCauseCount)
+            {
+                throw new InvalidOperationException($"Unknown application-send queue cause: {pendingRequest.QueueCause}.");
+            }
+
+            retainedBuffers++;
+            retainedBytes += pendingRequest.StreamPayload.Length;
+            oldestEnqueuedAtMicros = !oldestEnqueuedAtMicros.HasValue
+                || pendingRequest.FirstEnqueuedAtMicros < oldestEnqueuedAtMicros.Value
+                ? pendingRequest.FirstEnqueuedAtMicros
+                : oldestEnqueuedAtMicros;
+
+            retainedBuffersByCause[causeIndex]++;
+            retainedBytesByCause[causeIndex] += pendingRequest.StreamPayload.Length;
+            if (!hasOldestEnqueuedAtMicrosByCause[causeIndex]
+                || pendingRequest.FirstEnqueuedAtMicros < oldestEnqueuedAtMicrosByCause[causeIndex])
+            {
+                oldestEnqueuedAtMicrosByCause[causeIndex] = pendingRequest.FirstEnqueuedAtMicros;
+                hasOldestEnqueuedAtMicrosByCause[causeIndex] = true;
+            }
+        }
+
+        for (int causeIndex = 0; causeIndex < QueueCauseCount; causeIndex++)
+        {
+            causeSnapshots[causeIndex] = new QuicRetentionSnapshot(
+                retainedBuffersByCause[causeIndex],
+                retainedBytesByCause[causeIndex],
+                hasOldestEnqueuedAtMicrosByCause[causeIndex]
+                    ? QuicRetentionSnapshot.GetOldestAgeMilliseconds(
+                        nowMicros,
+                        oldestEnqueuedAtMicrosByCause[causeIndex])
+                    : null);
+        }
+
+        return new QuicRetentionSnapshot(
+            retainedBuffers,
+            retainedBytes,
+            QuicRetentionSnapshot.GetOldestAgeMilliseconds(nowMicros, oldestEnqueuedAtMicros));
     }
 
     public bool HasPendingWritesForStream(ulong streamId)
@@ -66,14 +157,22 @@ internal sealed class QuicApplicationSendQueue
         return false;
     }
 
-    public void Enqueue(ulong streamId, int priority, byte[] streamPayload, int streamPayloadLength)
+    public void Enqueue(
+        ulong streamId,
+        int priority,
+        byte[] streamPayload,
+        int streamPayloadLength,
+        ulong firstEnqueuedAtMicros = 0,
+        QuicApplicationSendQueueCause queueCause = QuicApplicationSendQueueCause.SmallWriteDelay)
     {
         PendingApplicationSendRequest request = new(
             TakeNextSequence(),
             streamId,
             priority,
             streamPayload,
-            streamPayloadLength);
+            streamPayloadLength,
+            firstEnqueuedAtMicros,
+            queueCause);
 
         if (pendingRequestsOrdered && pendingRequests.Count < MaintainedOrderThreshold)
         {

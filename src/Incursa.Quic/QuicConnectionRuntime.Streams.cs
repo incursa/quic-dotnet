@@ -703,6 +703,7 @@ internal sealed partial class QuicConnectionRuntime
                 streamPriority,
                 streamPayload,
                 streamPayloadLength,
+                QuicApplicationSendQueueCause.PendingRetransmission,
                 nowTicks,
                 tryFlushPendingApplicationSendsAfterEnqueue: true,
                 ref effects);
@@ -727,6 +728,7 @@ internal sealed partial class QuicConnectionRuntime
                 streamPriority,
                 streamPayload,
                 streamPayloadLength,
+                QuicApplicationSendQueueCause.OversizedWrite,
                 nowTicks,
                 tryFlushPendingApplicationSendsAfterEnqueue: true,
                 ref effects);
@@ -748,6 +750,7 @@ internal sealed partial class QuicConnectionRuntime
                 streamPriority,
                 streamPayload,
                 streamPayloadLength,
+                QuicApplicationSendQueueCause.SmallWriteDelay,
                 nowTicks,
                 tryFlushPendingApplicationSendsAfterEnqueue: false,
                 ref effects);
@@ -782,6 +785,7 @@ internal sealed partial class QuicConnectionRuntime
                     streamPriority,
                     streamPayload,
                     streamPayloadLength,
+                    QuicApplicationSendQueueCause.DirectSendBlocked,
                     nowTicks,
                     tryFlushPendingApplicationSendsAfterEnqueue: true,
                     ref effects,
@@ -981,6 +985,7 @@ internal sealed partial class QuicConnectionRuntime
         int priority,
         byte[] streamPayload,
         int streamPayloadLength,
+        QuicApplicationSendQueueCause queueCause,
         long nowTicks,
         bool tryFlushPendingApplicationSendsAfterEnqueue,
         ref QuicConnectionEffectAccumulator effects)
@@ -989,6 +994,7 @@ internal sealed partial class QuicConnectionRuntime
             priority,
             streamPayload,
             streamPayloadLength,
+            queueCause,
             nowTicks,
             tryFlushPendingApplicationSendsAfterEnqueue,
             ref effects,
@@ -999,13 +1005,20 @@ internal sealed partial class QuicConnectionRuntime
         int priority,
         byte[] streamPayload,
         int streamPayloadLength,
+        QuicApplicationSendQueueCause queueCause,
         long nowTicks,
         bool tryFlushPendingApplicationSendsAfterEnqueue,
         ref QuicConnectionEffectAccumulator effects,
         out Exception? flushException)
     {
         flushException = null;
-        applicationSendQueue.Enqueue(streamId, priority, streamPayload, streamPayloadLength);
+        applicationSendQueue.Enqueue(
+            streamId,
+            priority,
+            streamPayload,
+            streamPayloadLength,
+            GetElapsedMicros(nowTicks),
+            queueCause);
 
         if (applicationSendQueue.Count == 1)
         {

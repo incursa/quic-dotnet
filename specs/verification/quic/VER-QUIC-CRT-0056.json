@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0056",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Queued application-send residence diagnostics verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused queue and metrics tests, full regression tests, SpecTrace validation, source-backed diagnostic counters, clean repeated ProtocolLab evidence, and independent review.",
+  "scope": "Verify exact first-enqueue age, bounded cause preservation, enabled-only per-cause retention measurements, cleanup behavior, and scheduling neutrality.",
+  "preconditions": [
+    "Queue causes remain bounded to the four values defined by ARC-QUIC-CRT-0055.",
+    "The transition timestamp is the only source of first-enqueue time.",
+    "No scheduling or protocol behavior changes are included."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicApplicationSendQueue.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicMetrics.cs",
+    "tests/Incursa.Quic.Tests/QuicApplicationSendQueueTests.cs",
+    "tests/Incursa.Quic.Tests/MetricsTests.cs",
+    "tests/Incursa.Quic.Tests/TestResults/queued-send-causes-full.trx",
+    "ProtocolLab run raw-incursa-application-send-causes-counters-20260712a",
+    "ProtocolLab run raw-incursa-application-send-causes-clean-20260712d"
+  ],
+  "procedure": [
+    "Queue one request for each cause and verify per-cause owner count, bytes, and oldest age.",
+    "Replace and fragment queued payloads and verify first-enqueue time and cause remain unchanged.",
+    "Remove, clear, cancel, dispose, and successfully flush queued requests and verify ownership remains balanced.",
+    "Confirm disabled retention instruments avoid queue scans and preserve clean c16/c32 performance.",
+    "Run the complete QUIC suite and SpecTrace validation.",
+    "Capture and parse a source-backed c16/c32 cause distribution without using its throughput as a claim."
+  ],
+  "expected_result": "Cause and first-enqueue residence diagnostics are exact, bounded, cleanup-safe, disabled-cost guarded, and observational only.",
+  "status_summary": "Passed. Focused queue and metrics tests passed 41/41, including a synthetic positive-age measurement. The complete QUIC suite passed 9,498 tests with five intentional skips. ProtocolLab runtime diagnostics passed 42/42; the full ProtocolLab project retained seven unrelated baseline failures in architecture and MsQuic adapter tests. The diagnostic counter run passed c16/c32 validation with zero failures/timeouts and identified oversized_write as the dominant initial cause; observed queue ages were zero within the transition samples, so no age histogram was emitted by dotnet-counters. The clean repeated d campaign passed all ten cells with zero failures/timeouts and stable local medians of 98.88 MiB/s at c16 and 96.06 MiB/s at c32. The first two clean attempts are retained infrastructure failures caused by parallel source builds and Windows compiler file mappings and are not performance evidence. SpecTrace validation remains blocked by the repository-wide invalid/unresolved SPEC-QUIC-CRT baseline. Independent final review found no defects.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0055",
+    "WI-QUIC-CRT-0056"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0098",
+    "REQ-QUIC-CRT-0155"
+  ]
+}

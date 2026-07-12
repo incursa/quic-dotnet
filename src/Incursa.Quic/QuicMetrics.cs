@@ -29,6 +29,7 @@ internal static class QuicMetrics
     private const string RuntimeFollowOnFlushItemsMetricName = "incursa.quic.runtime.follow_on_flush.items";
     private const string RuntimeShardIndexTagName = "shard_index";
     private const string RuntimeShardWorkItemKindTagName = "work_item_kind";
+    private const string QueueCauseTagName = "queue_cause";
     private const double MicrosecondsPerMillisecond = 1000.0;
     private const int HttpStatusInformationalMin = 100;
     private const int HttpStatusInformationalMax = 199;
@@ -58,6 +59,13 @@ internal static class QuicMetrics
     private const int RoleCount = 2;
 
     private static readonly Meter Meter = new(MeterName);
+    private static readonly QuicApplicationSendQueueCause[] ApplicationSendQueueCauses =
+    [
+        QuicApplicationSendQueueCause.PendingRetransmission,
+        QuicApplicationSendQueueCause.OversizedWrite,
+        QuicApplicationSendQueueCause.SmallWriteDelay,
+        QuicApplicationSendQueueCause.DirectSendBlocked,
+    ];
     private static readonly Counter<long> ConnectionsStarted = Meter.CreateCounter<long>("incursa.quic.connections.started", unit: "connections");
     private static readonly UpDownCounter<long> ConnectionsActive = Meter.CreateUpDownCounter<long>("incursa.quic.connections.active", unit: "connections");
     private static readonly Counter<long> ConnectionsClosed = Meter.CreateCounter<long>("incursa.quic.connections.closed", unit: "connections");
@@ -90,6 +98,9 @@ internal static class QuicMetrics
     private static readonly Histogram<long> DelayedApplicationSends = Meter.CreateHistogram<long>("incursa.quic.runtime.delayed_application_sends", unit: "writes");
     private static readonly Histogram<long> ApplicationSendRetainedBuffers = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.retained_buffers", unit: "buffers");
     private static readonly Histogram<long> ApplicationSendRetainedBytes = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.retained_bytes", unit: "bytes");
+    private static readonly Histogram<long> ApplicationSendCauseRetainedBuffers = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.cause.retained_buffers", unit: "buffers");
+    private static readonly Histogram<long> ApplicationSendCauseRetainedBytes = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.cause.retained_bytes", unit: "bytes");
+    private static readonly Histogram<double> ApplicationSendCauseOldestAge = Meter.CreateHistogram<double>("incursa.quic.runtime.application_send.cause.oldest_age.ms", unit: "ms");
     private static readonly Histogram<long> RetainedSentPackets = Meter.CreateHistogram<long>("incursa.quic.runtime.sent_packets.retained", unit: "packets");
     private static readonly Histogram<long> RetainedSentPacketBuffers = Meter.CreateHistogram<long>("incursa.quic.runtime.sent_packets.retained_buffers", unit: "buffers");
     private static readonly Histogram<long> RetainedSentPacketBytes = Meter.CreateHistogram<long>("incursa.quic.runtime.sent_packets.retained_bytes", unit: "bytes");
@@ -445,6 +456,10 @@ internal static class QuicMetrics
     {
         bool applicationSendRetentionEnabled =
             ApplicationSendRetainedBuffers.Enabled || ApplicationSendRetainedBytes.Enabled;
+        bool applicationSendCauseRetentionEnabled =
+            ApplicationSendCauseRetainedBuffers.Enabled
+            || ApplicationSendCauseRetainedBytes.Enabled
+            || ApplicationSendCauseOldestAge.Enabled;
         bool sentPacketRetentionEnabled =
             RetainedSentPacketBuffers.Enabled || RetainedSentPacketBytes.Enabled || RetainedSentPacketOldestAge.Enabled;
         bool retransmissionRetentionEnabled =
@@ -453,6 +468,7 @@ internal static class QuicMetrics
             && !RetainedSentPackets.Enabled
             && !PendingRetransmissions.Enabled
             && !applicationSendRetentionEnabled
+            && !applicationSendCauseRetentionEnabled
             && !sentPacketRetentionEnabled
             && !retransmissionRetentionEnabled)
         {
@@ -466,7 +482,27 @@ internal static class QuicMetrics
             DelayedApplicationSends.Record(runtime.DelayedApplicationSendCount, in tags);
         }
 
-        if (applicationSendRetentionEnabled)
+        if (applicationSendCauseRetentionEnabled)
+        {
+            Span<QuicRetentionSnapshot> causeSnapshots =
+                stackalloc QuicRetentionSnapshot[QuicApplicationSendQueue.QueueCauseCount];
+            QuicRetentionSnapshot snapshot = runtime.CaptureApplicationSendRetentionSnapshots(causeSnapshots);
+            if (applicationSendRetentionEnabled)
+            {
+                if (ApplicationSendRetainedBuffers.Enabled)
+                {
+                    ApplicationSendRetainedBuffers.Record(snapshot.RetainedBufferCount, in tags);
+                }
+
+                if (ApplicationSendRetainedBytes.Enabled)
+                {
+                    ApplicationSendRetainedBytes.Record(snapshot.RetainedByteCount, in tags);
+                }
+            }
+
+            RecordApplicationSendCauseRetention(shardIndex, causeSnapshots);
+        }
+        else if (applicationSendRetentionEnabled)
         {
             QuicRetentionSnapshot snapshot = runtime.CaptureApplicationSendRetentionSnapshot();
             if (ApplicationSendRetainedBuffers.Enabled)
@@ -528,6 +564,53 @@ internal static class QuicMetrics
             }
         }
     }
+
+    private static void RecordApplicationSendCauseRetention(
+        int shardIndex,
+        ReadOnlySpan<QuicRetentionSnapshot> causeSnapshots)
+    {
+        for (int causeIndex = 0; causeIndex < ApplicationSendQueueCauses.Length; causeIndex++)
+        {
+            RecordApplicationSendCauseRetention(
+                shardIndex,
+                ApplicationSendQueueCauses[causeIndex],
+                causeSnapshots[causeIndex]);
+        }
+    }
+
+    internal static void RecordApplicationSendCauseRetention(
+        int shardIndex,
+        QuicApplicationSendQueueCause queueCause,
+        QuicRetentionSnapshot snapshot)
+    {
+        TagList tags = default;
+        tags.Add(RuntimeShardIndexTagName, shardIndex);
+        tags.Add(QueueCauseTagName, FormatApplicationSendQueueCause(queueCause));
+        if (ApplicationSendCauseRetainedBuffers.Enabled)
+        {
+            ApplicationSendCauseRetainedBuffers.Record(snapshot.RetainedBufferCount, in tags);
+        }
+
+        if (ApplicationSendCauseRetainedBytes.Enabled)
+        {
+            ApplicationSendCauseRetainedBytes.Record(snapshot.RetainedByteCount, in tags);
+        }
+
+        if (ApplicationSendCauseOldestAge.Enabled && snapshot.OldestAgeMilliseconds.HasValue)
+        {
+            ApplicationSendCauseOldestAge.Record(snapshot.OldestAgeMilliseconds.Value, in tags);
+        }
+    }
+
+    internal static string FormatApplicationSendQueueCause(QuicApplicationSendQueueCause queueCause)
+        => queueCause switch
+        {
+            QuicApplicationSendQueueCause.PendingRetransmission => "pending_retransmission",
+            QuicApplicationSendQueueCause.OversizedWrite => "oversized_write",
+            QuicApplicationSendQueueCause.SmallWriteDelay => "small_write_delay",
+            QuicApplicationSendQueueCause.DirectSendBlocked => "direct_send_blocked",
+            _ => throw new ArgumentOutOfRangeException(nameof(queueCause)),
+        };
 
     internal static long GetStreamWriteStartTimestamp()
         => StreamWriteCompletion.Enabled ? Stopwatch.GetTimestamp() : 0;

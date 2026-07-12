@@ -20,6 +20,87 @@ public sealed class QuicApplicationSendQueueTests
     }
 
     [Fact]
+    public void CaptureRetentionSnapshotFiltersCauseAndReportsFirstEnqueueAge()
+    {
+        QuicApplicationSendQueue queue = new();
+        queue.Enqueue(
+            1,
+            priority: 0,
+            new byte[16],
+            streamPayloadLength: 3,
+            firstEnqueuedAtMicros: 100,
+            QuicApplicationSendQueueCause.SmallWriteDelay);
+        queue.Enqueue(
+            2,
+            priority: 0,
+            new byte[64],
+            streamPayloadLength: 5,
+            firstEnqueuedAtMicros: 175,
+            QuicApplicationSendQueueCause.DirectSendBlocked);
+
+        QuicRetentionSnapshot smallWrite = queue.CaptureRetentionSnapshot(
+            nowMicros: 350,
+            QuicApplicationSendQueueCause.SmallWriteDelay);
+        QuicRetentionSnapshot blocked = queue.CaptureRetentionSnapshot(
+            nowMicros: 350,
+            QuicApplicationSendQueueCause.DirectSendBlocked);
+        QuicRetentionSnapshot absent = queue.CaptureRetentionSnapshot(
+            nowMicros: 350,
+            QuicApplicationSendQueueCause.PendingRetransmission);
+
+        Assert.Equal(new QuicRetentionSnapshot(1, 16, 0.25), smallWrite);
+        Assert.Equal(new QuicRetentionSnapshot(1, 64, 0.175), blocked);
+        Assert.Equal(new QuicRetentionSnapshot(0, 0, null), absent);
+    }
+
+    [Fact]
+    public void CaptureRetentionSnapshotsBuildsAggregateAndCauseBreakdownInOnePass()
+    {
+        QuicApplicationSendQueue queue = new();
+        queue.Enqueue(1, 0, new byte[16], 3, 100, QuicApplicationSendQueueCause.OversizedWrite);
+        queue.Enqueue(2, 0, new byte[64], 5, 175, QuicApplicationSendQueueCause.DirectSendBlocked);
+        queue.Enqueue(3, 0, new byte[32], 7, 200, QuicApplicationSendQueueCause.OversizedWrite);
+        Span<QuicRetentionSnapshot> causeSnapshots =
+            stackalloc QuicRetentionSnapshot[QuicApplicationSendQueue.QueueCauseCount];
+
+        QuicRetentionSnapshot aggregate = queue.CaptureRetentionSnapshots(350, causeSnapshots);
+
+        Assert.Equal(new QuicRetentionSnapshot(3, 112, 0.25), aggregate);
+        Assert.Equal(new QuicRetentionSnapshot(0, 0, null), causeSnapshots[(int)QuicApplicationSendQueueCause.PendingRetransmission]);
+        Assert.Equal(new QuicRetentionSnapshot(2, 48, 0.25), causeSnapshots[(int)QuicApplicationSendQueueCause.OversizedWrite]);
+        Assert.Equal(new QuicRetentionSnapshot(0, 0, null), causeSnapshots[(int)QuicApplicationSendQueueCause.SmallWriteDelay]);
+        Assert.Equal(new QuicRetentionSnapshot(1, 64, 0.175), causeSnapshots[(int)QuicApplicationSendQueueCause.DirectSendBlocked]);
+    }
+
+    [Fact]
+    public void ReplacingPayloadPreservesFirstEnqueueTimeAndCause()
+    {
+        QuicApplicationSendQueue queue = new();
+        byte[] originalPayload = QuicBufferPool.RentBytes(1);
+        originalPayload[0] = 0x10;
+        byte[] replacementPayload = QuicBufferPool.RentBytes(2);
+        replacementPayload[0] = 0x20;
+        replacementPayload[1] = 0x21;
+        queue.Enqueue(
+            7,
+            priority: 2,
+            originalPayload,
+            streamPayloadLength: 1,
+            firstEnqueuedAtMicros: 125,
+            QuicApplicationSendQueueCause.OversizedWrite);
+        Assert.True(queue.TryGetLatestQueuedWriteForStream(7, out PendingApplicationSendRequest before));
+
+        Assert.True(queue.TryReplaceQueuedWritePayload(before.Sequence, replacementPayload, 2));
+        Assert.True(queue.TryGetLatestQueuedWriteForStream(7, out PendingApplicationSendRequest after));
+
+        Assert.Equal(125UL, after.FirstEnqueuedAtMicros);
+        Assert.Equal(QuicApplicationSendQueueCause.OversizedWrite, after.QueueCause);
+        Assert.Equal([0x20, 0x21], after.StreamPayload.AsSpan(0, 2).ToArray());
+        Assert.Equal(2, after.StreamPayloadLength);
+        queue.Clear();
+    }
+
+    [Fact]
     public void RentSortedQueuedWrites_SortsByPriorityDescendingAndPreservesFifoForEqualPriority()
     {
         QuicApplicationSendQueue queue = new();

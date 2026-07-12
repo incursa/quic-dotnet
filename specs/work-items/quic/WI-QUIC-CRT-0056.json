@@ -1,0 +1,32 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0056",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Queued application-send residence diagnostics work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Preserve first-enqueue age and bounded initial cause for queued application sends, and expose per-cause retention diagnostics without changing runtime scheduling.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0055"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0055"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0056"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0098",
+    "REQ-QUIC-CRT-0155"
+  ],
+  "planned_changes": "Add first-enqueue elapsed time and bounded cause to pending application sends, preserve them through replacement and fragmentation, emit enabled-only per-cause retention measurements, add focused ownership/age/metrics tests, and extend ProtocolLab parsing only after the transport shape is proven.",
+  "verification_plan": "Run focused queue and MeterListener tests, the complete QUIC suite, SpecTrace validation, one source-backed c16/c32 counter run, and a clean repeated source-backed campaign to prove disabled-instrument neutrality.",
+  "completion_notes": "Implemented first-enqueue and bounded-cause preservation, a disabled-cost-guarded single-pass cause breakdown, positive-age MeterListener proof, and strict ProtocolLab parser validation. Focused QUIC tests passed 41/41; the complete QUIC suite passed 9,498 with five intentional skips. Diagnostic run raw-incursa-application-send-causes-counters-20260712a localized retained application-send owners to transient oversized_write entries. Clean campaign raw-incursa-application-send-causes-clean-20260712d passed all ten c16/c32 cells with zero failures or timeouts and medians of 98.88/96.06 MiB/s. Independent final review reported no findings.",
+  "out_of_scope": [
+    "Changing receive-buffer ring size, runtime shard count, queue bounds, send batching, or backpressure policy",
+    "Changing congestion, flow control, retransmission, packet protection, or application completion behavior",
+    "Using trace-instrumented throughput as a performance claim"
+  ]
+}
