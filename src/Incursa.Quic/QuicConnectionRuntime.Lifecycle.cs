@@ -716,9 +716,17 @@ internal sealed partial class QuicConnectionRuntime
             sendRuntime.CurrentEcnMarking);
         if (suppressHostedSendDatagramEffectObjects)
         {
-            (pendingHostedSendDatagramUpdates ??= new List<QuicConnectionSendDatagramUpdate>(
-                InitialHostedSendDatagramUpdateCapacity)).Add(update);
+            // Grow both collections before transferring ownership out of sent-packet state. Once
+            // the transfer succeeds, replacing the just-added value cannot allocate or throw.
             effects.Add(QuicConnectionHostedSendDatagramMarkerEffect.Instance);
+            List<QuicConnectionSendDatagramUpdate> updates = pendingHostedSendDatagramUpdates
+                ??= new List<QuicConnectionSendDatagramUpdate>(InitialHostedSendDatagramUpdateCapacity);
+            updates.Add(update);
+            if (sendRuntime.TryDetachLatestRebuildablePacketBytes(datagram, out byte[]? datagramOwner))
+            {
+                updates[^1] = update with { DatagramOwner = datagramOwner };
+            }
+
             return;
         }
 
@@ -756,15 +764,31 @@ internal sealed partial class QuicConnectionRuntime
         AppendEffect(ref effects, update.ToEffect());
     }
 
-    internal void ConfigureHostedTimerEffectSuppression(bool suppress)
+    internal void ConfigureHostedTimerEffectSuppression(
+        bool suppress,
+        bool? suppressSendDatagramEffects = null)
     {
         suppressHostedTimerEffectObjects = suppress;
-        suppressHostedSendDatagramEffectObjects = suppress;
+        suppressHostedSendDatagramEffectObjects = suppressSendDatagramEffects ?? suppress;
+        ReleasePendingHostedSendDatagramOwners();
         pendingHostedSendDatagramUpdateIndex = 0;
         pendingHostedSendDatagramUpdates?.Clear();
         if (!suppress)
         {
             pendingHostedTimerUpdates?.Clear();
+        }
+    }
+
+    private void ReleasePendingHostedSendDatagramOwners()
+    {
+        if (pendingHostedSendDatagramUpdates is not { } updates)
+        {
+            return;
+        }
+
+        for (int index = pendingHostedSendDatagramUpdateIndex; index < updates.Count; index++)
+        {
+            updates[index].ReleaseDatagramOwner();
         }
     }
 

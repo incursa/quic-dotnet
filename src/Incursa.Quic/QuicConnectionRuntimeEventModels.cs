@@ -262,10 +262,14 @@ internal sealed record QuicConnectionSendDatagramEffect(
 internal readonly record struct QuicConnectionSendDatagramUpdate(
     QuicConnectionPathIdentity PathIdentity,
     ReadOnlyMemory<byte> Datagram,
-    QuicEcnMarking EcnMarking)
+    QuicEcnMarking EcnMarking,
+    byte[]? DatagramOwner = null)
 {
     internal QuicConnectionSendDatagramEffect ToEffect()
         => new(PathIdentity, Datagram, EcnMarking);
+
+    internal void ReleaseDatagramOwner()
+        => QuicBufferPool.ReturnBytes(DatagramOwner);
 }
 
 internal sealed record QuicConnectionHostedSendDatagramMarkerEffect : QuicConnectionEffect

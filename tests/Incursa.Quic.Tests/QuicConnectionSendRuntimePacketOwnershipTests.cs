@@ -6,6 +6,59 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicConnectionSendRuntimePacketOwnershipTests
 {
     [Fact]
+    public void HostedSendCanDetachLatestRebuildableProtectedPacketOwner()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        byte[] plaintextOwner = QuicBufferPool.RentBytes(3);
+        byte[] packetOwner = QuicBufferPool.RentBytes(17);
+        ReadOnlyMemory<byte> packetBytes = packetOwner.AsMemory(0, 17);
+        QuicConnectionSentPacketKey key = new(QuicPacketNumberSpace.ApplicationData, 7);
+
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 7,
+            PayloadBytes: 17,
+            SentAtMicros: 100,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PacketBytes: packetBytes,
+            PlaintextPayload: plaintextOwner.AsMemory(0, 3),
+            PlaintextPayloadOwner: plaintextOwner,
+            PacketBytesOwner: packetOwner));
+
+        Assert.True(runtime.TryDetachLatestRebuildablePacketBytes(packetBytes, out byte[]? detachedOwner));
+        Assert.Same(packetOwner, detachedOwner);
+        Assert.True(runtime.SentPackets[key].PacketBytes.IsEmpty);
+        Assert.Null(runtime.SentPackets[key].PacketBytesOwner);
+        Assert.Same(plaintextOwner, runtime.SentPackets[key].PlaintextPayloadOwner);
+
+        QuicBufferPool.ReturnBytes(detachedOwner);
+        Assert.True(runtime.TryDiscardPacketNumberSpace(QuicPacketNumberSpace.ApplicationData));
+    }
+
+    [Fact]
+    public void HostedSendDoesNotDetachWhenPlaintextAliasesProtectedPacketOwner()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        byte[] sharedOwner = new byte[32];
+        ReadOnlyMemory<byte> packetBytes = sharedOwner.AsMemory(0, 17);
+
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 7,
+            PayloadBytes: 17,
+            SentAtMicros: 100,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PacketBytes: packetBytes,
+            PlaintextPayload: sharedOwner.AsMemory(17, 3),
+            PlaintextPayloadOwner: sharedOwner,
+            PacketBytesOwner: sharedOwner));
+
+        Assert.False(runtime.TryDetachLatestRebuildablePacketBytes(packetBytes, out byte[]? detachedOwner));
+        Assert.Null(detachedOwner);
+        Assert.Same(sharedOwner, runtime.SentPackets.Single().Value.PacketBytesOwner);
+    }
+
+    [Fact]
     public void RetentionSnapshotHelpersDeduplicateAliasedOwnersAndClampClockSkew()
     {
         byte[] owner = new byte[32];

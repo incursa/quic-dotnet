@@ -12,6 +12,60 @@ public class MetricsTests
 {
     [Fact]
     [Requirement("REQ-QUIC-CRT-0155")]
+    public async Task HostedSendReturnsDetachedOwnerWhenObserverThrows()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+        await using QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
+        QuicConnectionRuntimeShard shard = new(
+            shardIndex: 0,
+            suppressHostedTimerEffectObjects: true);
+        QuicConnectionStreamState state = runtime.StreamRegistry.Bookkeeping;
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0B, streamId: 1, streamData: []),
+            out QuicStreamFrame frame));
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.True(state.TryAbortLocalStreamWrites(1, out _, out errorCode));
+        Assert.Equal(default, errorCode);
+        runtime.TryQueueStreamCapacityRelease(streamId: 1);
+
+        recorder.RecordObservableInstruments();
+        TaskCompletionSource<QuicConnectionSendDatagramUpdate> observed = new(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        InvalidOperationException observerFailure = new("send observer failure");
+        Task consumer = shard.RunAsync(
+            sendDatagramObserver: (_, update) =>
+            {
+                observed.TrySetResult(update);
+                throw observerFailure;
+            });
+
+        Assert.True(shard.TryPostStreamCapacityRelease(new QuicConnectionHandle(1), runtime));
+
+        QuicConnectionSendDatagramUpdate update = await observed.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        byte[] detachedOwner = Assert.IsType<byte[]>(update.DatagramOwner);
+        string sizeBucket = GetBufferSizeBucket(detachedOwner.Length);
+        double returnsBefore = recorder.GetLatestMeasurement(
+            "incursa.quic.buffer_pool.returns",
+            "size_bucket",
+            sizeBucket);
+
+        InvalidOperationException actual = await Assert.ThrowsAsync<InvalidOperationException>(() => consumer);
+        Assert.Same(observerFailure, actual);
+        recorder.RecordObservableInstruments();
+        Assert.True(
+            recorder.GetLatestMeasurement(
+                "incursa.quic.buffer_pool.returns",
+                "size_bucket",
+                sizeBucket) >= returnsBefore + 1);
+
+        InvalidOperationException disposeFailure = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => shard.DisposeAsync().AsTask());
+        Assert.Same(observerFailure, disposeFailure);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
     public void RemovingCombinedApplicationSendInputsReturnsTheirPayloadOwners()
     {
         using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
@@ -677,6 +731,18 @@ public class MetricsTests
                 "deadline_wake",
             ],
             workItems.Select(workItem => QuicMetrics.NormalizeRuntimeShardWorkItemKind(in workItem)));
+    }
+
+    private static QuicConnectionRuntime CreateRuntimeWithActivePath()
+    {
+        QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 8,
+                new QuicConnectionPathIdentity("203.0.113.10", RemotePort: 443),
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: 8).StateChanged);
+        return runtime;
     }
 
     private static string GetBufferSizeBucket(int length)

@@ -454,7 +454,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 return;
             }
 
-            runtime.ConfigureHostedTimerEffectSuppression(suppressHostedTimerEffectObjects);
+            runtime.ConfigureHostedTimerEffectSuppression(
+                suppressHostedTimerEffectObjects,
+                suppressSendDatagramEffects: suppressHostedTimerEffectObjects && sendDatagramObserver is not null);
             flushMeasurementStarted = runtime.BeginRuntimeWorkItemFlushMeasurement();
 
             QuicConnectionTransitionResult result = workItem.Kind switch
@@ -490,13 +492,20 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                             "The hosted send-datagram marker did not have a matching value update.");
                     }
 
-                    if (sendDatagramObserver is not null)
+                    try
                     {
-                        sendDatagramObserver(workItem.Handle, update);
+                        if (sendDatagramObserver is not null)
+                        {
+                            sendDatagramObserver(workItem.Handle, update);
+                        }
+                        else
+                        {
+                            effectObserver?.Invoke(workItem.Handle, update.ToEffect());
+                        }
                     }
-                    else
+                    finally
                     {
-                        effectObserver?.Invoke(workItem.Handle, update.ToEffect());
+                        update.ReleaseDatagramOwner();
                     }
 
                     continue;

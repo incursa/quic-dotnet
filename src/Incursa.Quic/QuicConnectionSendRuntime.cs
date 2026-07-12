@@ -87,6 +87,7 @@ internal sealed class QuicConnectionSendRuntime
     private readonly QuicSenderFlowController flowController;
     private readonly QuicRttEstimator rttEstimator;
     private QuicEcnValidationState ecnValidationState;
+    private QuicConnectionSentPacketKey? latestTrackedPacketKey;
 
     public QuicConnectionSendRuntime(
         QuicSenderFlowController? flowController = null,
@@ -230,6 +231,7 @@ internal sealed class QuicConnectionSendRuntime
         if (!packet.AckOnlyPacket)
         {
             sentPackets[key] = packet;
+            latestTrackedPacketKey = key;
         }
         flowController.RecordPacketSent(
             packet.PacketNumberSpace,
@@ -255,6 +257,32 @@ internal sealed class QuicConnectionSendRuntime
                 ackElicitingPacketSent: true);
             LossDetectionDeadlineMicros = null;
         }
+    }
+
+    internal bool TryDetachLatestRebuildablePacketBytes(
+        ReadOnlyMemory<byte> packetBytes,
+        out byte[]? packetBytesOwner)
+    {
+        packetBytesOwner = null;
+        if (!latestTrackedPacketKey.HasValue
+            || !sentPackets.TryGetValue(latestTrackedPacketKey.Value, out QuicConnectionSentPacket packet)
+            || packet.PacketNumberSpace != QuicPacketNumberSpace.ApplicationData
+            || !packet.Retransmittable
+            || packet.PlaintextPayload.IsEmpty
+            || packet.PacketBytesOwner is null
+            || ReferenceEquals(packet.PlaintextPayloadOwner, packet.PacketBytesOwner)
+            || !packet.PacketBytes.Equals(packetBytes))
+        {
+            return false;
+        }
+
+        packetBytesOwner = packet.PacketBytesOwner;
+        sentPackets[latestTrackedPacketKey.Value] = packet with
+        {
+            PacketBytes = default,
+            PacketBytesOwner = null,
+        };
+        return true;
     }
 
     public bool TryAcknowledgePacket(
