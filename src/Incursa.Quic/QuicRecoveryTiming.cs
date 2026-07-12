@@ -487,10 +487,51 @@ internal readonly struct QuicLostPacket
 /// <summary>
 /// Captures the recovery facts retained for one ack-eliciting packet.
 /// </summary>
-internal readonly record struct QuicRecoverySentPacketState(
-    ulong SentAtMicros,
-    QuicTlsEncryptionLevel? PacketProtectionLevel,
-    ulong? OneRttKeyPhase = null);
+internal readonly record struct QuicRecoverySentPacketState
+{
+    private const byte HasPacketProtectionLevelFlag = 1 << 0;
+    private const byte HasOneRttKeyPhaseFlag = 1 << 1;
+
+    private readonly ulong sentAtMicros;
+    private readonly ulong oneRttKeyPhase;
+    private readonly QuicTlsEncryptionLevel packetProtectionLevel;
+    private readonly byte flags;
+
+    internal QuicRecoverySentPacketState(
+        ulong SentAtMicros,
+        QuicTlsEncryptionLevel? PacketProtectionLevel,
+        ulong? OneRttKeyPhase = null)
+    {
+        sentAtMicros = SentAtMicros;
+        packetProtectionLevel = PacketProtectionLevel.GetValueOrDefault();
+        oneRttKeyPhase = OneRttKeyPhase.GetValueOrDefault();
+        flags = (byte)(
+            (PacketProtectionLevel.HasValue ? HasPacketProtectionLevelFlag : 0)
+            | (OneRttKeyPhase.HasValue ? HasOneRttKeyPhaseFlag : 0));
+    }
+
+    internal ulong SentAtMicros => sentAtMicros;
+
+    internal QuicTlsEncryptionLevel? PacketProtectionLevel => HasFlag(HasPacketProtectionLevelFlag)
+        ? packetProtectionLevel
+        : null;
+
+    internal ulong? OneRttKeyPhase => HasFlag(HasOneRttKeyPhaseFlag)
+        ? oneRttKeyPhase
+        : null;
+
+    internal void Deconstruct(
+        out ulong SentAtMicros,
+        out QuicTlsEncryptionLevel? PacketProtectionLevel,
+        out ulong? OneRttKeyPhase)
+    {
+        SentAtMicros = this.SentAtMicros;
+        PacketProtectionLevel = this.PacketProtectionLevel;
+        OneRttKeyPhase = this.OneRttKeyPhase;
+    }
+
+    private bool HasFlag(byte flag) => (flags & flag) != 0;
+}
 
 /// <summary>
 /// Minimal RFC 9002 runtime for loss and PTO timing decisions on a per-space basis.
