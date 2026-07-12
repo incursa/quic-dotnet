@@ -289,7 +289,7 @@ internal sealed class QuicRetransmissionQueue
                 continue;
             }
 
-            (retainedRetransmissions ??= []).Add(new QuicConnectionRetransmissionPlan(
+            QuicConnectionRetransmissionPlan retained = new(
                 packet.PacketNumberSpace,
                 packet.PacketNumber,
                 packet.PayloadBytes,
@@ -302,7 +302,9 @@ internal sealed class QuicRetransmissionQueue
                 packet.StreamIds,
                 packet.PlaintextPayload,
                 packet.OneRttKeyPhase,
-                packet.PlaintextPayloadOwner));
+                PlaintextPayloadOwner: packet.PlaintextPayloadOwner,
+                PacketBytesOwner: packet.PacketBytesOwner);
+            AddClonedRetainedPlan(retained, ref retainedRetransmissions);
         }
 
         foreach (QuicConnectionRetransmissionPlan retransmission in pendingRetransmissions)
@@ -313,13 +315,50 @@ internal sealed class QuicRetransmissionQueue
                 continue;
             }
 
-            (retainedRetransmissions ??= []).Add(retransmission with
+            AddClonedRetainedPlan(retransmission, ref retainedRetransmissions);
+        }
+    }
+
+    private static void AddClonedRetainedPlan(
+        QuicConnectionRetransmissionPlan retransmission,
+        ref List<QuicConnectionRetransmissionPlan>? retainedRetransmissions)
+    {
+        retainedRetransmissions ??= [];
+        QuicConnectionRetransmissionPlan retained = CloneOwnedPlaintext(retransmission);
+        try
+        {
+            retainedRetransmissions.Add(retained);
+        }
+        catch
+        {
+            QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retained);
+            throw;
+        }
+    }
+
+    private static QuicConnectionRetransmissionPlan CloneOwnedPlaintext(
+        QuicConnectionRetransmissionPlan retransmission)
+    {
+        if (retransmission.PlaintextPayloadOwner is null
+            && retransmission.PacketBytesOwner is null)
+        {
+            return retransmission with
             {
                 PacketBytes = default,
-                PlaintextPayloadOwner = retransmission.PlaintextPayloadOwner,
                 PacketBytesOwner = null,
-            });
+            };
         }
+
+        int payloadLength = retransmission.PlaintextPayload.Length;
+        byte[] payloadOwner = QuicBufferPool.RentBytes(payloadLength);
+        retransmission.PlaintextPayload.CopyTo(payloadOwner);
+        return retransmission with
+        {
+            PacketBytes = default,
+            PlaintextPayload = payloadOwner.AsMemory(0, payloadLength),
+            PlaintextPayloadOwner = payloadOwner,
+            PacketBytesOwner = null,
+        };
     }
 
     internal bool ContainsStreamDataForStream(ulong streamId)

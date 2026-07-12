@@ -4877,6 +4877,7 @@ internal sealed partial class QuicConnectionRuntime
             StreamId: retransmission.StreamId,
             StreamIds: retransmission.StreamIds,
             PlaintextPayload: retransmission.PlaintextPayload,
+            PlaintextPayloadOwner: retransmission.PlaintextPayloadOwner,
             PacketBytesOwner: retransmission.PacketBytesOwner,
             OneRttKeyPhase: retransmission.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
                 && packetProtectionLevel == QuicTlsEncryptionLevel.OneRtt

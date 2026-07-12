@@ -118,6 +118,52 @@ public sealed class QuicConnectionSendRuntimePacketOwnershipTests
         Assert.Equal(0, runtime.FlowController.RetainedSentPacketStateCount);
     }
 
+    [Fact]
+    public void PathMigrationRequeuesOwnedPlaintextWithoutAliasingDiscardedOwners()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        byte[] sentOwner = QuicBufferPool.RentBytes(3);
+        byte[] retransmissionOwner = QuicBufferPool.RentBytes(2);
+        new byte[] { 0x11, 0x22, 0x33 }.CopyTo(sentOwner, 0);
+        new byte[] { 0x44, 0x55 }.CopyTo(retransmissionOwner, 0);
+
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 7,
+            PayloadBytes: 3,
+            SentAtMicros: 100,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PacketBytes: sentOwner.AsMemory(0, 3),
+            PlaintextPayload: sentOwner.AsMemory(0, 3),
+            PacketBytesOwner: sentOwner));
+        runtime.QueueRetransmission(new QuicConnectionRetransmissionPlan(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 8,
+            PayloadBytes: 2,
+            SentAtMicros: 200,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PlaintextPayload: retransmissionOwner.AsMemory(0, 2),
+            PlaintextPayloadOwner: retransmissionOwner));
+
+        Assert.True(runtime.TryDiscardPacketNumberSpaceForPathMigration(
+            QuicPacketNumberSpace.ApplicationData));
+        Assert.Empty(runtime.SentPackets);
+        Assert.Equal(2, runtime.PendingRetransmissionCount);
+
+        Assert.True(runtime.TryDequeueRetransmission(out QuicConnectionRetransmissionPlan sentPlan));
+        Assert.NotNull(sentPlan.PlaintextPayloadOwner);
+        Assert.NotSame(sentOwner, sentPlan.PlaintextPayloadOwner);
+        Assert.Equal(new byte[] { 0x11, 0x22, 0x33 }, sentPlan.PlaintextPayload.ToArray());
+
+        Assert.True(runtime.TryDequeueRetransmission(out QuicConnectionRetransmissionPlan queuedPlan));
+        Assert.NotNull(queuedPlan.PlaintextPayloadOwner);
+        Assert.NotSame(retransmissionOwner, queuedPlan.PlaintextPayloadOwner);
+        Assert.Equal(new byte[] { 0x44, 0x55 }, queuedPlan.PlaintextPayload.ToArray());
+
+        QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(sentPlan);
+        QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(queuedPlan);
+    }
+
     private static QuicConnectionSentPacket CreatePacket(
         ulong packetNumber,
         ulong payloadBytes,

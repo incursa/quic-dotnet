@@ -322,25 +322,44 @@ internal sealed class QuicConnectionSendRuntime
         bool discardAckGenerationState = false)
     {
         List<QuicConnectionRetransmissionPlan>? retainedRetransmissions = null;
-        if (packetNumberSpace == QuicPacketNumberSpace.ApplicationData)
+        try
         {
-            retransmissionQueue.CaptureBuildableApplicationRetransmissions(sentPackets.Values, ref retainedRetransmissions);
+            if (packetNumberSpace == QuicPacketNumberSpace.ApplicationData)
+            {
+                retransmissionQueue.CaptureBuildableApplicationRetransmissions(sentPackets.Values, ref retainedRetransmissions);
+            }
+
+            bool updated = TryDiscardPacketNumberSpace(packetNumberSpace, discardAckGenerationState);
+
+            if (retainedRetransmissions is null || retainedRetransmissions.Count == 0)
+            {
+                return updated;
+            }
+
+            retainedRetransmissions.Sort(static (left, right) => left.PacketNumber.CompareTo(right.PacketNumber));
+            for (int index = 0; index < retainedRetransmissions.Count; index++)
+            {
+                QuicConnectionRetransmissionPlan retransmission = retainedRetransmissions[index];
+                retransmissionQueue.QueueRetransmission(retransmission);
+                retainedRetransmissions[index] = retransmission with
+                {
+                    PlaintextPayloadOwner = null,
+                    PacketBytesOwner = null,
+                };
+            }
+
+            return true;
         }
-
-        bool updated = TryDiscardPacketNumberSpace(packetNumberSpace, discardAckGenerationState);
-
-        if (retainedRetransmissions is null || retainedRetransmissions.Count == 0)
+        finally
         {
-            return updated;
+            if (retainedRetransmissions is not null)
+            {
+                foreach (QuicConnectionRetransmissionPlan retransmission in retainedRetransmissions)
+                {
+                    ReleaseRetransmissionPlanResources(retransmission);
+                }
+            }
         }
-
-        retainedRetransmissions.Sort(static (left, right) => left.PacketNumber.CompareTo(right.PacketNumber));
-        foreach (QuicConnectionRetransmissionPlan retransmission in retainedRetransmissions)
-        {
-            retransmissionQueue.QueueRetransmission(retransmission);
-        }
-
-        return true;
     }
 
     /// <summary>
