@@ -74,7 +74,8 @@ public sealed class QuicConnectionRuntimeShardReceiveBufferOwnershipTests
         QuicConnectionPacketReceivedContext packetReceived = new(
             clock.Ticks,
             new QuicConnectionPathIdentity("203.0.113.10", RemotePort: 443),
-            buffer.AsMemory(0, 1));
+            buffer.AsMemory(0, 1),
+            EcnCounts: new QuicEcnCounts(ulong.MaxValue, ulong.MaxValue - 1, ulong.MaxValue - 2));
 
         Assert.True(shard.TryPostPacketReceived(
             new QuicConnectionHandle(1),

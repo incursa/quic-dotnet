@@ -27,11 +27,14 @@ internal enum QuicConnectionRuntimeShardWorkItemKind
 internal readonly record struct QuicConnectionRuntimeShardWorkItem
 {
     private const byte HasRoutedConnectionIdFlag = 1 << 0;
-    private const byte HasEcnCountsFlag = 1 << 1;
+    private const byte EcnCountsEncodingMask = 0b0000_1110;
+    private const byte Ect0EcnCountsEncoding = 1 << 1;
+    private const byte Ect1EcnCountsEncoding = 2 << 1;
+    private const byte EcnCeCountsEncoding = 3 << 1;
+    private const byte ExtendedEcnCountsEncoding = 4 << 1;
 
     private readonly object? connectionEventOrOwnedDatagramBuffer;
     private readonly QuicConnectionPathIdentity packetPathIdentity;
-    private readonly QuicEcnCounts packetEcnCounts;
     private readonly ReadOnlyMemory<byte> packetDatagramOrStreamData;
     private readonly long observedAtTicksOrRequestId;
     private readonly ulong routedConnectionIdOrStreamId;
@@ -58,16 +61,18 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
     {
         Handle = handle;
         Runtime = runtime;
-        connectionEventOrOwnedDatagramBuffer = ownedDatagramBuffer;
         Kind = QuicConnectionRuntimeShardWorkItemKind.PacketReceived;
         packetPathIdentity = packetReceived.PathIdentity;
-        packetEcnCounts = packetReceived.EcnCounts.GetValueOrDefault();
         packetDatagramOrStreamData = packetReceived.Datagram;
         observedAtTicksOrRequestId = packetReceived.ObservedAtTicks;
         routedConnectionIdOrStreamId = packetReceived.RoutedLocallyIssuedConnectionId.GetValueOrDefault();
+        byte ecnCountsEncoding = EncodeEcnCounts(packetReceived.EcnCounts, out QuicEcnCounts? extendedEcnCounts);
+        connectionEventOrOwnedDatagramBuffer = extendedEcnCounts.HasValue
+            ? new ExtendedPacketState(ownedDatagramBuffer, extendedEcnCounts.Value)
+            : ownedDatagramBuffer;
         flags = (byte)(
             (packetReceived.RoutedLocallyIssuedConnectionId.HasValue ? HasRoutedConnectionIdFlag : 0)
-            | (packetReceived.EcnCounts.HasValue ? HasEcnCountsFlag : 0));
+            | ecnCountsEncoding);
         OwnedDatagramBufferOwnership = ownedDatagramBufferOwnership;
     }
 
@@ -135,7 +140,12 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
     internal QuicConnectionPacketReceivedContext PacketReceived => GetPacketReceived();
 
     internal byte[]? OwnedDatagramBuffer => Kind == QuicConnectionRuntimeShardWorkItemKind.PacketReceived
-        ? connectionEventOrOwnedDatagramBuffer as byte[]
+        ? connectionEventOrOwnedDatagramBuffer switch
+        {
+            byte[] buffer => buffer,
+            ExtendedPacketState state => state.OwnedDatagramBuffer,
+            _ => null,
+        }
         : null;
 
     internal QuicReceiveBufferOwnership OwnedDatagramBufferOwnership { get; }
@@ -165,6 +175,36 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
 
     private bool HasFlag(byte flag) => (flags & flag) != 0;
 
+    private static byte EncodeEcnCounts(
+        QuicEcnCounts? ecnCounts,
+        out QuicEcnCounts? extendedEcnCounts)
+    {
+        extendedEcnCounts = null;
+        if (!ecnCounts.HasValue)
+        {
+            return 0;
+        }
+
+        QuicEcnCounts counts = ecnCounts.Value;
+        if (counts.Ect0Count == 1 && counts.Ect1Count == 0 && counts.EcnCeCount == 0)
+        {
+            return Ect0EcnCountsEncoding;
+        }
+
+        if (counts.Ect0Count == 0 && counts.Ect1Count == 1 && counts.EcnCeCount == 0)
+        {
+            return Ect1EcnCountsEncoding;
+        }
+
+        if (counts.Ect0Count == 0 && counts.Ect1Count == 0 && counts.EcnCeCount == 1)
+        {
+            return EcnCeCountsEncoding;
+        }
+
+        extendedEcnCounts = counts;
+        return ExtendedEcnCountsEncoding;
+    }
+
     private QuicConnectionPacketReceivedContext GetPacketReceived()
     {
         if (Kind != QuicConnectionRuntimeShardWorkItemKind.PacketReceived)
@@ -175,14 +215,33 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
         ulong? routedConnectionId = HasFlag(HasRoutedConnectionIdFlag)
             ? routedConnectionIdOrStreamId
             : null;
-        QuicEcnCounts? ecnCounts = HasFlag(HasEcnCountsFlag)
-            ? packetEcnCounts
-            : null;
+        QuicEcnCounts? ecnCounts = (flags & EcnCountsEncodingMask) switch
+        {
+            0 => null,
+            Ect0EcnCountsEncoding => new QuicEcnCounts(1, 0, 0),
+            Ect1EcnCountsEncoding => new QuicEcnCounts(0, 1, 0),
+            EcnCeCountsEncoding => new QuicEcnCounts(0, 0, 1),
+            ExtendedEcnCountsEncoding => ((ExtendedPacketState)connectionEventOrOwnedDatagramBuffer!).EcnCounts,
+            _ => throw new InvalidOperationException("The runtime shard work item has an invalid ECN encoding."),
+        };
         return new QuicConnectionPacketReceivedContext(
             observedAtTicksOrRequestId,
             packetPathIdentity,
             packetDatagramOrStreamData,
             routedConnectionId,
             ecnCounts);
+    }
+
+    private sealed class ExtendedPacketState
+    {
+        internal ExtendedPacketState(byte[]? ownedDatagramBuffer, QuicEcnCounts ecnCounts)
+        {
+            OwnedDatagramBuffer = ownedDatagramBuffer;
+            EcnCounts = ecnCounts;
+        }
+
+        internal byte[]? OwnedDatagramBuffer { get; }
+
+        internal QuicEcnCounts EcnCounts { get; }
     }
 }

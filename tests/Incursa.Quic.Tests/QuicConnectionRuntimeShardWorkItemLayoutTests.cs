@@ -10,7 +10,54 @@ public sealed class QuicConnectionRuntimeShardWorkItemLayoutTests
     [Fact]
     public void LayoutRemainsCompact()
     {
-        Assert.Equal(152, Unsafe.SizeOf<QuicConnectionRuntimeShardWorkItem>());
+        Assert.Equal(128, Unsafe.SizeOf<QuicConnectionRuntimeShardWorkItem>());
+    }
+
+    [Theory]
+    [InlineData(1UL, 0UL, 0UL)]
+    [InlineData(0UL, 1UL, 0UL)]
+    [InlineData(0UL, 0UL, 1UL)]
+    public void PacketVariantRoundTripsCompactEcnCounts(
+        ulong ect0Count,
+        ulong ect1Count,
+        ulong ecnCeCount)
+    {
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicEcnCounts ecnCounts = new(ect0Count, ect1Count, ecnCeCount);
+        QuicConnectionPacketReceivedContext packet = new(
+            1,
+            new QuicConnectionPathIdentity("remote"),
+            new byte[] { 1 },
+            EcnCounts: ecnCounts);
+        QuicConnectionRuntimeShardWorkItem item = new(
+            new QuicConnectionHandle(6),
+            runtime,
+            packet,
+            ownedDatagramBuffer: null,
+            ownedDatagramBufferOwnership: default);
+
+        Assert.Equal(ecnCounts.Ect0Count, item.PacketReceived.EcnCounts?.Ect0Count);
+        Assert.Equal(ecnCounts.Ect1Count, item.PacketReceived.EcnCounts?.Ect1Count);
+        Assert.Equal(ecnCounts.EcnCeCount, item.PacketReceived.EcnCounts?.EcnCeCount);
+    }
+
+    [Fact]
+    public void PacketVariantPreservesNullEcnCounts()
+    {
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicConnectionPacketReceivedContext packet = new(
+            1,
+            new QuicConnectionPathIdentity("remote"),
+            new byte[] { 1 });
+        QuicConnectionRuntimeShardWorkItem item = new(
+            new QuicConnectionHandle(6),
+            runtime,
+            packet,
+            ownedDatagramBuffer: null,
+            ownedDatagramBufferOwnership: default);
+
+        Assert.Null(item.PacketReceived.EcnCounts);
+        Assert.Null(item.OwnedDatagramBuffer);
     }
 
     [Fact]
