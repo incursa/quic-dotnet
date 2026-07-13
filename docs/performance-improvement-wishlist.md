@@ -4,6 +4,22 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: replacing the sent-packet dictionary's remove-then-insert path
+  with a single `CollectionsMarshal.GetValueRefOrAddDefault` probe was
+  rejected. The candidate was motivated by the c64 GC trace
+  `quic-next-postread-c64-gc-20260713a-quic-transport-v1-comparison`, which
+  sampled 50.3 MiB of sent-packet dictionary entry arrays, and the paired CPU
+  trace showing insertion work on the send path. Focused send-ledger and
+  retransmission tests passed 21/21, and concurrency/sharding tests passed
+  14/14. Three alternating source-backed c64 baseline/candidate pairs all
+  passed exact validation with zero failures or timeouts. Median throughput
+  fell from 54.546 to 53.645 MiB/s (-1.65 percent), while median p95 latency
+  rose from 6,715.066 to 7,018.287 ms (+4.52 percent). The implementation and
+  its candidate-only tests were reverted. Do not repeat this single-probe
+  design without a materially different ledger representation or stronger
+  evidence that removes the observed latency cost. These are local shared-host
+  diagnostics, not publishable throughput claims.
+
 - 2026-07-13: internal terminal stream reads now use one reusable
   `IValueTaskSource<int>` completion per stream instead of allocating a
   `QuicStream.ReadCoreAsync` state machine plus `SemaphoreSlim` task node for
