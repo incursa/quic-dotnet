@@ -38,6 +38,10 @@ internal sealed class QuicConnectionStreamState
     private ulong connectionUniqueBytesSent;
     private ulong highestCreatedIncomingBidirectionalStreamIndex;
     private ulong highestCreatedIncomingUnidirectionalStreamIndex;
+    private long retainedReceiveBufferCount;
+    private long retainedReceiveBufferBytes;
+    private long bufferedReadableBytes;
+    private long bufferedReadableStreamCount;
     private bool hasCreatedIncomingBidirectionalStream;
     private bool hasCreatedIncomingUnidirectionalStream;
 
@@ -702,7 +706,7 @@ internal sealed class QuicConnectionStreamState
             }
 
             ReleaseBufferedSegments(state);
-            state.BufferedReadableBytes = 0;
+            DecreaseBufferedReadableBytes(state, state.BufferedReadableBytes);
             state.ReceiveFinalSize = frame.FinalSize;
             state.HighestReceivedOffset = Math.Max(state.HighestReceivedOffset, frame.FinalSize);
             state.AccountedBytes = newAccountedBytes;
@@ -855,7 +859,7 @@ internal sealed class QuicConnectionStreamState
                     int skip = (int)(expectedOffset - entry.Offset);
                     if (skip >= entry.Length)
                     {
-                        state.BufferedReadableBytes -= entry.Length;
+                        DecreaseBufferedReadableBytes(state, entry.Length);
                         RemoveBufferedSegmentAt(state, 0);
                         continue;
                     }
@@ -867,7 +871,7 @@ internal sealed class QuicConnectionStreamState
                 entry.DataSpan[..bytesToCopy].CopyTo(destination[destinationIndex..]);
                 destinationIndex += bytesToCopy;
                 expectedOffset += (ulong)bytesToCopy;
-                state.BufferedReadableBytes -= bytesToCopy;
+                DecreaseBufferedReadableBytes(state, bytesToCopy);
 
                 if (bytesToCopy == entry.Length)
                 {
@@ -1040,6 +1044,18 @@ internal sealed class QuicConnectionStreamState
                 state.ReceivedZeroRttData,
                 state.ReceivedOneRttData);
             return true;
+        }
+    }
+
+    internal QuicReceiveRetentionSnapshot CaptureReceiveRetentionSnapshot()
+    {
+        lock (syncRoot)
+        {
+            return new QuicReceiveRetentionSnapshot(
+                retainedReceiveBufferCount,
+                retainedReceiveBufferBytes,
+                bufferedReadableBytes,
+                bufferedReadableStreamCount);
         }
     }
 
@@ -1440,7 +1456,7 @@ internal sealed class QuicConnectionStreamState
         return (streamIndex << StreamIdTypeBitCount) | initiatorBit | directionBit;
     }
 
-    private static void InsertReadableBytes(StreamState state, ulong offset, ReadOnlySpan<byte> data)
+    private void InsertReadableBytes(StreamState state, ulong offset, ReadOnlySpan<byte> data)
     {
         if (data.Length == 0)
         {
@@ -1467,21 +1483,21 @@ internal sealed class QuicConnectionStreamState
         if (bufferedSegmentCount == 0)
         {
             AddBufferedSegment(state, CreateBufferedSegment(currentOffset, data, dataIndex, data.Length));
-            state.BufferedReadableBytes += data.Length;
+            IncreaseBufferedReadableBytes(state, data.Length);
             return;
         }
 
         BufferedSegment lastSegment = GetBufferedSegment(state, bufferedSegmentCount - 1);
         if (TryAppendBufferedSegment(state, bufferedSegmentCount - 1, lastSegment, currentOffset, data))
         {
-            state.BufferedReadableBytes += data.Length;
+            IncreaseBufferedReadableBytes(state, data.Length);
             return;
         }
 
         if (lastSegment.End <= currentOffset)
         {
             AddBufferedSegment(state, CreateBufferedSegment(currentOffset, data, dataIndex, data.Length));
-            state.BufferedReadableBytes += data.Length;
+            IncreaseBufferedReadableBytes(state, data.Length);
             return;
         }
 
@@ -1499,12 +1515,12 @@ internal sealed class QuicConnectionStreamState
                     tailSegment.End,
                     data.Slice(tailDataIndex, tailLength)))
             {
-                state.BufferedReadableBytes += tailLength;
+                IncreaseBufferedReadableBytes(state, tailLength);
                 return;
             }
 
             AddBufferedSegment(state, CreateBufferedSegment(tailSegment.End, data, tailDataIndex, tailLength));
-            state.BufferedReadableBytes += tailLength;
+            IncreaseBufferedReadableBytes(state, tailLength);
             return;
         }
 
@@ -1531,7 +1547,7 @@ internal sealed class QuicConnectionStreamState
                 if (gapLength > 0)
                 {
                     updated.Add(CreateBufferedSegment(currentOffset, data, dataIndex, gapLength));
-                    state.BufferedReadableBytes += gapLength;
+                    IncreaseBufferedReadableBytes(state, gapLength);
                     dataIndex += gapLength;
                     currentOffset += (ulong)gapLength;
                 }
@@ -1560,7 +1576,7 @@ internal sealed class QuicConnectionStreamState
         {
             int tailLength = (int)(endOffset - currentOffset);
             updated.Add(CreateBufferedSegment(currentOffset, data, dataIndex, tailLength));
-            state.BufferedReadableBytes += tailLength;
+            IncreaseBufferedReadableBytes(state, tailLength);
         }
 
         while (currentIndex < bufferedSegmentCount)
@@ -1747,19 +1763,22 @@ internal sealed class QuicConnectionStreamState
         state.HasSecondInlineBufferedSegment = false;
     }
 
-    private static BufferedSegment CreateBufferedSegment(ulong offset, ReadOnlySpan<byte> data, int dataIndex, int length)
+    private BufferedSegment CreateBufferedSegment(ulong offset, ReadOnlySpan<byte> data, int dataIndex, int length)
     {
         int minimumCapacity = length >= StreamReceiveCoalescingThreshold && length < StreamReceiveBlockSize
             ? StreamReceiveBlockSize
             : length;
         byte[] segmentData = QuicBufferPool.RentBytes(minimumCapacity);
         data.Slice(dataIndex, length).CopyTo(segmentData);
+        retainedReceiveBufferCount++;
+        retainedReceiveBufferBytes += segmentData.Length;
         return new BufferedSegment(offset, segmentData, DataOffset: 0, Length: length, OwnsData: true);
     }
 
-    private static void RemoveBufferedSegmentAt(StreamState state, int index)
+    private void RemoveBufferedSegmentAt(StreamState state, int index)
     {
         BufferedSegment segment = GetBufferedSegment(state, index);
+        DecreaseRetainedReceiveBuffers(segment);
         segment.Release();
         if (state.BufferedSegmentList is { } segments)
         {
@@ -1827,15 +1846,59 @@ internal sealed class QuicConnectionStreamState
         }
     }
 
-    private static void ReleaseBufferedSegments(StreamState state)
+    private void ReleaseBufferedSegments(StreamState state)
     {
         int count = GetBufferedSegmentCount(state);
         for (int index = 0; index < count; index++)
         {
-            GetBufferedSegment(state, index).Release();
+            BufferedSegment segment = GetBufferedSegment(state, index);
+            DecreaseRetainedReceiveBuffers(segment);
+            segment.Release();
         }
 
         ClearBufferedSegmentStorage(state);
+    }
+
+    private void IncreaseBufferedReadableBytes(StreamState state, int count)
+    {
+        if (count <= 0)
+        {
+            return;
+        }
+
+        if (state.BufferedReadableBytes == 0)
+        {
+            bufferedReadableStreamCount++;
+        }
+
+        state.BufferedReadableBytes += count;
+        bufferedReadableBytes += count;
+    }
+
+    private void DecreaseBufferedReadableBytes(StreamState state, int count)
+    {
+        if (count <= 0)
+        {
+            return;
+        }
+
+        state.BufferedReadableBytes -= count;
+        bufferedReadableBytes -= count;
+        if (state.BufferedReadableBytes == 0)
+        {
+            bufferedReadableStreamCount--;
+        }
+    }
+
+    private void DecreaseRetainedReceiveBuffers(BufferedSegment segment)
+    {
+        if (!segment.OwnsData)
+        {
+            return;
+        }
+
+        retainedReceiveBufferCount--;
+        retainedReceiveBufferBytes -= segment.Data.Length;
     }
 
     private static bool HasContiguousReadableBytes(StreamState state)

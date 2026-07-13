@@ -6,6 +6,116 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicStreamReceiveBufferTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void ReceiveRetentionSnapshotTracksBufferCapacityAndUnreadBytes()
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState();
+        byte[] payload = Enumerable.Repeat((byte)0x5A, 1024).ToArray();
+
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(streamId: 0, offset: 0, payload, fin: true),
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        QuicReceiveRetentionSnapshot initial = state.CaptureReceiveRetentionSnapshot();
+        Assert.Equal(1, initial.RetainedBufferCount);
+        Assert.Equal(4 * 1024, initial.RetainedBufferBytes);
+        Assert.Equal(payload.Length, initial.BufferedBytes);
+        Assert.Equal(1, initial.BufferedStreamCount);
+
+        byte[] firstRead = new byte[512];
+        Assert.True(state.TryReadStreamData(0, firstRead, out int bytesWritten, out _, out _, out _, out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(firstRead.Length, bytesWritten);
+
+        QuicReceiveRetentionSnapshot partial = state.CaptureReceiveRetentionSnapshot();
+        Assert.Equal(1, partial.RetainedBufferCount);
+        Assert.Equal(4 * 1024, partial.RetainedBufferBytes);
+        Assert.Equal(payload.Length - firstRead.Length, partial.BufferedBytes);
+        Assert.Equal(1, partial.BufferedStreamCount);
+
+        byte[] secondRead = new byte[payload.Length - firstRead.Length];
+        Assert.True(state.TryReadStreamData(0, secondRead, out bytesWritten, out bool completed, out _, out _, out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(secondRead.Length, bytesWritten);
+        Assert.True(completed);
+        Assert.Equal(default, state.CaptureReceiveRetentionSnapshot());
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void ReceiveRetentionSnapshotTracksMultipleStreamsWithoutDoubleCountingDuplicates()
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState();
+        byte[] firstPayload = Enumerable.Repeat((byte)0x11, 1024).ToArray();
+        byte[] secondPayload = Enumerable.Repeat((byte)0x22, 1024).ToArray();
+
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(streamId: 0, offset: 0, firstPayload, fin: false),
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(streamId: 4, offset: 0, secondPayload, fin: false),
+            out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(streamId: 0, offset: 0, firstPayload, fin: false),
+            out errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.Equal(
+            new QuicReceiveRetentionSnapshot(2, 8 * 1024, 2 * 1024, 2),
+            state.CaptureReceiveRetentionSnapshot());
+
+        Assert.True(state.TryReceiveResetStreamFrame(
+            new QuicResetStreamFrame(streamId: 0, applicationProtocolErrorCode: 42, finalSize: (ulong)firstPayload.Length),
+            out _,
+            out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(
+            new QuicReceiveRetentionSnapshot(1, 4 * 1024, secondPayload.Length, 1),
+            state.CaptureReceiveRetentionSnapshot());
+
+        byte[] destination = new byte[secondPayload.Length];
+        Assert.True(state.TryReadStreamData(4, destination, out int bytesWritten, out _, out _, out _, out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(destination.Length, bytesWritten);
+        Assert.Equal(secondPayload, destination);
+        Assert.Equal(default, state.CaptureReceiveRetentionSnapshot());
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void ReceiveRetentionSnapshotClearsPartiallyReadSpilledSegmentsOnReset()
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState();
+        byte[] payload = Enumerable.Repeat((byte)0x33, 1024).ToArray();
+
+        foreach (ulong offset in new ulong[] { 0, 1536, 3072 })
+        {
+            Assert.True(state.TryReceiveStreamFrame(
+                ParseStreamFrame(streamId: 0, offset, payload, fin: false),
+                out QuicTransportErrorCode receiveErrorCode));
+            Assert.Equal(default, receiveErrorCode);
+        }
+
+        byte[] partialRead = new byte[512];
+        Assert.True(state.TryReadStreamData(0, partialRead, out int bytesWritten, out _, out _, out _, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(partialRead.Length, bytesWritten);
+        Assert.Equal(
+            new QuicReceiveRetentionSnapshot(3, 12 * 1024, (3 * payload.Length) - partialRead.Length, 1),
+            state.CaptureReceiveRetentionSnapshot());
+
+        Assert.True(state.TryReceiveResetStreamFrame(
+            new QuicResetStreamFrame(streamId: 0, applicationProtocolErrorCode: 42, finalSize: 4096),
+            out _,
+            out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(default, state.CaptureReceiveRetentionSnapshot());
+    }
+
+    [Fact]
     public void TryReceiveStreamFrame_ReadsSinglePayloadBytesExactly()
     {
         QuicConnectionStreamState state = CreateServerReceiveState();

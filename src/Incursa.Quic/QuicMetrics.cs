@@ -163,6 +163,10 @@ internal static class QuicMetrics
     private static readonly Histogram<long> PendingRetransmissionBuffers = Meter.CreateHistogram<long>("incursa.quic.runtime.retransmissions.retained_buffers", unit: "buffers");
     private static readonly Histogram<long> PendingRetransmissionBytes = Meter.CreateHistogram<long>("incursa.quic.runtime.retransmissions.retained_bytes", unit: "bytes");
     private static readonly Histogram<double> PendingRetransmissionOldestAge = Meter.CreateHistogram<double>("incursa.quic.runtime.retransmissions.oldest_age.ms", unit: "ms");
+    private static readonly Histogram<long> ReceiveRetainedBuffers = Meter.CreateHistogram<long>("incursa.quic.runtime.receive.retained_buffers", unit: "buffers");
+    private static readonly Histogram<long> ReceiveRetainedBytes = Meter.CreateHistogram<long>("incursa.quic.runtime.receive.retained_bytes", unit: "bytes");
+    private static readonly Histogram<long> ReceiveBufferedBytes = Meter.CreateHistogram<long>("incursa.quic.runtime.receive.buffered_bytes", unit: "bytes");
+    private static readonly Histogram<long> ReceiveBufferedStreams = Meter.CreateHistogram<long>("incursa.quic.runtime.receive.buffered_streams", unit: "streams");
     private static readonly Histogram<long> ApplicationSendBatchStreams = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.batch_streams", unit: "streams");
     private static readonly Histogram<double> StreamWriteCompletion = Meter.CreateHistogram<double>("incursa.quic.runtime.stream_write.completion.ms", unit: "ms");
     private static readonly long[] BufferPoolRentCounts = new long[BufferPoolBucketCount];
@@ -529,13 +533,19 @@ internal static class QuicMetrics
             RetainedSentPacketBuffers.Enabled || RetainedSentPacketBytes.Enabled || RetainedSentPacketOldestAge.Enabled;
         bool retransmissionRetentionEnabled =
             PendingRetransmissionBuffers.Enabled || PendingRetransmissionBytes.Enabled || PendingRetransmissionOldestAge.Enabled;
+        bool receiveRetentionEnabled =
+            ReceiveRetainedBuffers.Enabled
+            || ReceiveRetainedBytes.Enabled
+            || ReceiveBufferedBytes.Enabled
+            || ReceiveBufferedStreams.Enabled;
         if (!DelayedApplicationSends.Enabled
             && !RetainedSentPackets.Enabled
             && !PendingRetransmissions.Enabled
             && !applicationSendRetentionEnabled
             && !applicationSendCauseRetentionEnabled
             && !sentPacketRetentionEnabled
-            && !retransmissionRetentionEnabled)
+            && !retransmissionRetentionEnabled
+            && !receiveRetentionEnabled)
         {
             return;
         }
@@ -626,6 +636,30 @@ internal static class QuicMetrics
             if (PendingRetransmissionOldestAge.Enabled && snapshot.OldestAgeMilliseconds.HasValue)
             {
                 PendingRetransmissionOldestAge.Record(snapshot.OldestAgeMilliseconds.Value, in tags);
+            }
+        }
+
+        if (receiveRetentionEnabled)
+        {
+            QuicReceiveRetentionSnapshot snapshot = runtime.CaptureReceiveRetentionSnapshot();
+            if (ReceiveRetainedBuffers.Enabled)
+            {
+                ReceiveRetainedBuffers.Record(snapshot.RetainedBufferCount, in tags);
+            }
+
+            if (ReceiveRetainedBytes.Enabled)
+            {
+                ReceiveRetainedBytes.Record(snapshot.RetainedBufferBytes, in tags);
+            }
+
+            if (ReceiveBufferedBytes.Enabled)
+            {
+                ReceiveBufferedBytes.Record(snapshot.BufferedBytes, in tags);
+            }
+
+            if (ReceiveBufferedStreams.Enabled)
+            {
+                ReceiveBufferedStreams.Record(snapshot.BufferedStreamCount, in tags);
             }
         }
     }
