@@ -6,6 +6,27 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicConnectionSendRuntimePacketOwnershipTests
 {
     [Fact]
+    public void StorageSnapshotReportsCapacityOccupancyAndPerSpaceSpan()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(QuicPacketNumberSpace.Initial, 5, 1, 10));
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(QuicPacketNumberSpace.Initial, 9, 1, 11));
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(QuicPacketNumberSpace.Handshake, 10, 1, 12));
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(QuicPacketNumberSpace.ApplicationData, 100, 1, 13));
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(QuicPacketNumberSpace.ApplicationData, 103, 1, 14));
+
+        QuicSentPacketStorageSnapshot storageOnlySnapshot = runtime.CaptureSentPacketStorageSnapshot();
+        _ = runtime.CaptureSentPacketRetentionSnapshot(20, out QuicSentPacketStorageSnapshot snapshot);
+
+        Assert.Equal(snapshot, storageOnlySnapshot);
+        Assert.Equal(5, snapshot.RetainedPacketCount);
+        Assert.True(snapshot.Capacity >= 64);
+        Assert.Equal(new QuicSentPacketNumberSpaceStorageSnapshot(2, 5), snapshot.Initial);
+        Assert.Equal(new QuicSentPacketNumberSpaceStorageSnapshot(1, 1), snapshot.Handshake);
+        Assert.Equal(new QuicSentPacketNumberSpaceStorageSnapshot(2, 4), snapshot.ApplicationData);
+    }
+
+    [Fact]
     public void HostedSendCanDetachLatestRebuildableProtectedPacketOwner()
     {
         QuicConnectionSendRuntime runtime = new();

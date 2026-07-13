@@ -159,6 +159,8 @@ internal static class QuicMetrics
     private static readonly Histogram<long> RetainedSentPacketBuffers = Meter.CreateHistogram<long>("incursa.quic.runtime.sent_packets.retained_buffers", unit: "buffers");
     private static readonly Histogram<long> RetainedSentPacketBytes = Meter.CreateHistogram<long>("incursa.quic.runtime.sent_packets.retained_bytes", unit: "bytes");
     private static readonly Histogram<double> RetainedSentPacketOldestAge = Meter.CreateHistogram<double>("incursa.quic.runtime.sent_packets.oldest_age.ms", unit: "ms");
+    private static readonly Histogram<long> SentPacketNumberSpan = Meter.CreateHistogram<long>("incursa.quic.runtime.sent_packets.application_packet_number_span", unit: "packet_numbers");
+    private static readonly Histogram<long> SentPacketStorageCapacity = Meter.CreateHistogram<long>("incursa.quic.runtime.sent_packets.storage.capacity", unit: "entries");
     private static readonly Histogram<long> PendingRetransmissions = Meter.CreateHistogram<long>("incursa.quic.runtime.retransmissions.pending", unit: "retransmissions");
     private static readonly Histogram<long> PendingRetransmissionBuffers = Meter.CreateHistogram<long>("incursa.quic.runtime.retransmissions.retained_buffers", unit: "buffers");
     private static readonly Histogram<long> PendingRetransmissionBytes = Meter.CreateHistogram<long>("incursa.quic.runtime.retransmissions.retained_bytes", unit: "bytes");
@@ -531,6 +533,10 @@ internal static class QuicMetrics
             || ApplicationSendCauseOldestAge.Enabled;
         bool sentPacketRetentionEnabled =
             RetainedSentPacketBuffers.Enabled || RetainedSentPacketBytes.Enabled || RetainedSentPacketOldestAge.Enabled;
+        bool sentPacketStorageEnabled =
+            SentPacketStorageCapacity.Enabled
+            || SentPacketNumberSpan.Enabled;
+        bool sentPacketNumberSpanEnabled = SentPacketNumberSpan.Enabled;
         bool retransmissionRetentionEnabled =
             PendingRetransmissionBuffers.Enabled || PendingRetransmissionBytes.Enabled || PendingRetransmissionOldestAge.Enabled;
         bool receiveRetentionEnabled =
@@ -544,6 +550,7 @@ internal static class QuicMetrics
             && !applicationSendRetentionEnabled
             && !applicationSendCauseRetentionEnabled
             && !sentPacketRetentionEnabled
+            && !sentPacketStorageEnabled
             && !retransmissionRetentionEnabled
             && !receiveRetentionEnabled)
         {
@@ -596,22 +603,27 @@ internal static class QuicMetrics
             RetainedSentPackets.Record(runtime.RetainedSentPacketCount, in tags);
         }
 
-        if (sentPacketRetentionEnabled)
+        if (sentPacketRetentionEnabled && sentPacketNumberSpanEnabled)
         {
-            QuicRetentionSnapshot snapshot = runtime.CaptureSentPacketRetentionSnapshot();
-            if (RetainedSentPacketBuffers.Enabled)
+            QuicRetentionSnapshot snapshot = runtime.CaptureSentPacketRetentionSnapshot(
+                out QuicSentPacketStorageSnapshot storageSnapshot);
+            RecordSentPacketRetentionSnapshot(in tags, snapshot);
+            RecordSentPacketStorageSnapshot(in tags, storageSnapshot);
+        }
+        else
+        {
+            if (sentPacketRetentionEnabled)
             {
-                RetainedSentPacketBuffers.Record(snapshot.RetainedBufferCount, in tags);
+                RecordSentPacketRetentionSnapshot(in tags, runtime.CaptureSentPacketRetentionSnapshot());
             }
 
-            if (RetainedSentPacketBytes.Enabled)
+            if (sentPacketNumberSpanEnabled)
             {
-                RetainedSentPacketBytes.Record(snapshot.RetainedByteCount, in tags);
+                RecordSentPacketStorageSnapshot(in tags, runtime.CaptureSentPacketStorageSnapshot());
             }
-
-            if (RetainedSentPacketOldestAge.Enabled && snapshot.OldestAgeMilliseconds.HasValue)
+            else if (SentPacketStorageCapacity.Enabled)
             {
-                RetainedSentPacketOldestAge.Record(snapshot.OldestAgeMilliseconds.Value, in tags);
+                SentPacketStorageCapacity.Record(runtime.SentPacketStorageCapacity, in tags);
             }
         }
 
@@ -661,6 +673,46 @@ internal static class QuicMetrics
             {
                 ReceiveBufferedStreams.Record(snapshot.BufferedStreamCount, in tags);
             }
+        }
+    }
+
+    private static void RecordSentPacketStorageSnapshot(
+        in TagList shardTags,
+        QuicSentPacketStorageSnapshot snapshot)
+    {
+        if (SentPacketNumberSpan.Enabled)
+        {
+            QuicSentPacketNumberSpaceStorageSnapshot applicationData =
+                snapshot.GetPacketNumberSpace(QuicPacketNumberSpace.ApplicationData);
+            if (applicationData.RetainedPacketCount > 0)
+            {
+                SentPacketNumberSpan.Record((long)applicationData.PacketNumberSpan, in shardTags);
+            }
+        }
+
+        if (SentPacketStorageCapacity.Enabled)
+        {
+            SentPacketStorageCapacity.Record(snapshot.Capacity, in shardTags);
+        }
+    }
+
+    private static void RecordSentPacketRetentionSnapshot(
+        in TagList shardTags,
+        QuicRetentionSnapshot snapshot)
+    {
+        if (RetainedSentPacketBuffers.Enabled)
+        {
+            RetainedSentPacketBuffers.Record(snapshot.RetainedBufferCount, in shardTags);
+        }
+
+        if (RetainedSentPacketBytes.Enabled)
+        {
+            RetainedSentPacketBytes.Record(snapshot.RetainedByteCount, in shardTags);
+        }
+
+        if (RetainedSentPacketOldestAge.Enabled && snapshot.OldestAgeMilliseconds.HasValue)
+        {
+            RetainedSentPacketOldestAge.Record(snapshot.OldestAgeMilliseconds.Value, in shardTags);
         }
     }
 

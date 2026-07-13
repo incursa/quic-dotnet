@@ -1121,6 +1121,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal int RetainedSentPacketCount => sendRuntime.SentPackets.Count;
 
+    internal int SentPacketStorageCapacity => sendRuntime.SentPacketStorageCapacity;
+
     internal int PendingRetransmissionCount => sendRuntime.PendingRetransmissionCount;
 
     internal QuicRetentionSnapshot CaptureApplicationSendRetentionSnapshot(
@@ -1137,6 +1139,15 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal QuicRetentionSnapshot CaptureSentPacketRetentionSnapshot()
         => sendRuntime.CaptureSentPacketRetentionSnapshot(GetElapsedMicros(lastTransitionTicks));
+
+    internal QuicRetentionSnapshot CaptureSentPacketRetentionSnapshot(
+        out QuicSentPacketStorageSnapshot storageSnapshot)
+        => sendRuntime.CaptureSentPacketRetentionSnapshot(
+            GetElapsedMicros(lastTransitionTicks),
+            out storageSnapshot);
+
+    internal QuicSentPacketStorageSnapshot CaptureSentPacketStorageSnapshot()
+        => sendRuntime.CaptureSentPacketStorageSnapshot();
 
     internal QuicRetentionSnapshot CaptureRetransmissionRetentionSnapshot()
         => sendRuntime.CaptureRetransmissionRetentionSnapshot(GetElapsedMicros(lastTransitionTicks));
