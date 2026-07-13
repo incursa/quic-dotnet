@@ -4,6 +4,39 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: a hybrid sent-packet store that kept the first 256 application
+  packets in a dictionary and then migrated to recyclable 256-entry
+  `ArrayPool` segments was rejected. This was materially different from the
+  earlier fixed segmented store because retired segment arrays were returned
+  and reused across monotonically advancing packet ranges. Short
+  BenchmarkDotNet evidence showed the intended high-retention benefit: at a
+  2,304-packet live window, mean lifecycle time improved from 395.5 to 350.6
+  us and allocation fell from 814.7 to 80.04 KiB. The 128-packet path was
+  still worse, moving from 191.9 to 252.9 us and from 30.34 to 33.3 KiB. A
+  source-backed c32/s100 GC trace passed exact validation for 12,800 streams
+  with zero failures/timeouts and reduced sampled sent-packet storage from
+  43.62 MiB of dictionary entries to 2.80 MiB of transition dictionary
+  entries plus 2.04 MiB of pooled packet arrays, about 88.9 percent. The
+  trace-instrumented request rate was neutral (+0.16 percent), peak working
+  set fell 4.8 percent, p95 regressed 8.1 percent, and target CPU time rose
+  2.5 percent. The decisive uninstrumented c1 guardrail used fresh baseline
+  and candidate servers with three repetitions each: median request rate fell
+  from 210.65 to 183.03 requests/s (-13.1 percent) and median p95 rose from
+  543.37 to 614.61 ms (+13.1 percent), with no failures or timeouts. The
+  candidate is rejected and reverted because it violates the low-concurrency
+  non-regression gate; c4 and higher uninstrumented campaigns were not run.
+  Benchmark evidence is under
+  `.artifacts/bdn/sent-packet-hybrid-pooled-segments-candidate-20260713c`;
+  ProtocolLab evidence is under
+  `quic-sent-packet-hybrid-c32-gc-20260713a-quic-transport-v1-comparison`,
+  `quic-sent-packet-hybrid-baseline-c1-repeat3-20260713a-quic-transport-v1-comparison`,
+  and
+  `quic-sent-packet-hybrid-candidate-c1-repeat3-20260713a-quic-transport-v1-comparison`.
+  The negative-result record is retained under ProtocolLab `.artifacts`.
+  Do not repeat a whole-ledger storage wrapper unless the ordinary small
+  dictionary path remains direct and allocation reduction is introduced
+  without adding per-packet dispatch overhead at low retention.
+
 - 2026-07-13: sent-packet storage diagnostics now report application-data
   packet-number span and backing dictionary capacity alongside the existing
   retained packet, buffer, byte, and age measurements. A source-backed
