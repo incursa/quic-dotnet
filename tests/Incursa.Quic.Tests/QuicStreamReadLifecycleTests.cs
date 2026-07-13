@@ -307,6 +307,68 @@ public sealed class QuicStreamReadLifecycleTests
     }
 
     [Fact]
+    public async Task TryReadTerminalAsync_ReusesPendingCompletionAcrossDataAndCancellation()
+    {
+        using QuicStream stream = CreateReadableStream();
+
+        byte[] firstDestination = new byte[1];
+        ValueTask<int> firstRead = stream.TryReadTerminalAsync(firstDestination.AsMemory(), CancellationToken.None);
+        Assert.False(firstRead.IsCompleted);
+
+        InjectStreamData(stream, [0x61], offset: 0, fin: false);
+
+        Assert.Equal(1, await firstRead);
+        Assert.Equal(0x61, firstDestination[0]);
+
+        using CancellationTokenSource cancellation = new();
+        ValueTask<int> canceledRead = stream.TryReadTerminalAsync(new byte[1].AsMemory(), cancellation.Token);
+        Assert.False(canceledRead.IsCompleted);
+        cancellation.Cancel();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await canceledRead);
+
+        byte[] finalDestination = new byte[1];
+        ValueTask<int> finalRead = stream.TryReadTerminalAsync(finalDestination.AsMemory(), CancellationToken.None);
+        InjectStreamData(stream, [0x62], offset: 1, fin: false);
+
+        Assert.Equal(1, await finalRead);
+        Assert.Equal(0x62, finalDestination[0]);
+    }
+
+    [Fact]
+    public async Task TryReadTerminalAsync_DelayedConsumptionPreservesPriorValueTaskToken()
+    {
+        using QuicStream stream = CreateReadableStream();
+
+        byte[] firstDestination = new byte[1];
+        ValueTask<int> firstRead = stream.TryReadTerminalAsync(firstDestination.AsMemory(), CancellationToken.None);
+        InjectStreamData(stream, [0x71], offset: 0, fin: false);
+        Assert.True(firstRead.IsCompleted);
+
+        byte[] secondDestination = new byte[1];
+        ValueTask<int> secondRead = stream.TryReadTerminalAsync(secondDestination.AsMemory(), CancellationToken.None);
+        Assert.False(secondRead.IsCompleted);
+        InjectStreamData(stream, [0x72], offset: 1, fin: false);
+
+        Assert.Equal(1, await secondRead);
+        Assert.Equal(0x72, secondDestination[0]);
+        Assert.Equal(1, await firstRead);
+        Assert.Equal(0x71, firstDestination[0]);
+    }
+
+    [Fact]
+    public async Task TryReadTerminalAsync_DisposalCompletesPendingReadAsEndOfStream()
+    {
+        QuicStream stream = CreateReadableStream();
+        ValueTask<int> pendingRead = stream.TryReadTerminalAsync(new byte[1].AsMemory(), CancellationToken.None);
+        Assert.False(pendingRead.IsCompleted);
+
+        stream.Dispose();
+
+        Assert.Equal(0, await pendingRead);
+    }
+
+    [Fact]
     public async Task DisposeAsync_ReleasesPendingReadWithObjectDisposedException()
     {
         QuicStream stream = CreateReadableStream();

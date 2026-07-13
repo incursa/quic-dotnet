@@ -4,6 +4,31 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: internal terminal stream reads now use one reusable
+  `IValueTaskSource<int>` completion per stream instead of allocating a
+  `QuicStream.ReadCoreAsync` state machine plus `SemaphoreSlim` task node for
+  every wait. The source remains busy until `GetResult`, so delayed consumption
+  cannot reset the `ValueTask` token; overlapping or abandoned terminal reads
+  conservatively fall back to the existing async path. Cancellation,
+  disposal, expected terminal suppression, exception propagation, and public
+  concurrent-read behavior remain unchanged. Focused read-lifecycle tests
+  passed 30/30, the broader `QuicStream` filter passed 64/64, and the known
+  incomplete-content HTTP/3 close-notification timeout passed five exact
+  reruns. Two all-up Release runs each passed 9,554 tests with five intentional
+  skips and reproduced only that existing full-suite-load close timeout; this
+  is recorded as a residual suite flake rather than described as a fully green
+  all-up result. In matched c1/c4/c16 source-backed raw upload campaigns, all 15
+  baseline and 15 candidate cells passed exact validation with zero failures or
+  timeouts. Candidate median throughput improved 11.57, 8.18, and 5.81 percent,
+  while median p95 improved 14.48, 10.24, and 5.75 percent respectively. A
+  separate c1 GC trace removed the prior 40.39 MB sampled
+  `ReadCoreAsync` state-machine group and 27.39 MB `TaskNode` group; counter
+  allocation rate fell from 11.78 to 10.28 MB/s (-12.75 percent). Matched run
+  IDs are `quic-terminal-read-{baseline,candidate}-c{1,4,16}-r5-20260713*`;
+  trace IDs are `quic-next-lowc-c1-gc-quic1035151b-20260713a` and
+  `quic-terminal-read-source-c1-gc-quic1035151b-20260713a`. These are local
+  shared-host diagnostics, not publishable throughput claims.
+
 - 2026-07-13: the final current-source raw QUIC peer rerun completed against
   Incursa commit `1035151b`, ProtocolLab commit `fe44a78`, quic-go, and MsQuic.
   The diagnostic campaign covered stream throughput, duplex streams, and
