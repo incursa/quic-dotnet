@@ -4,6 +4,31 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: the final current-source raw QUIC peer rerun completed against
+  Incursa commit `1035151b`, ProtocolLab commit `fe44a78`, quic-go, and MsQuic.
+  The diagnostic campaign covered stream throughput, duplex streams, and
+  100-by-64-KiB multiplexing at c1/c4/c16/c32/c64/c128 with identical compiled
+  `quic-go-raw-load`, Release targets, clean network profile, deterministic
+  round-robin ordering, and five selected observations per implementation and
+  shape. The selected ledger contains 270 rows in 54 groups with zero failed or
+  timed-out requests. Duplex completed all 90 planned cells without repair.
+  Transient empty load-tool results in the throughput and multiplex campaigns
+  were handled conservatively: the affected repetition was discarded for all
+  three implementations and replaced by one fresh matched round-robin
+  observation for all three, never only for the failed peer. On stream
+  throughput Incursa was roughly level with quic-go at c32 and within about
+  3-10 percent at c16/c64/c128, but remained slower at c1/c4 and behind MsQuic
+  at every shape. On duplex Incursa exceeded quic-go from c4 through c128 but
+  remained behind MsQuic. On multiplex Incursa trailed quic-go at c1/c4,
+  exceeded it by roughly 10-15 percent from c16 through c128, and remained
+  materially behind MsQuic. Day-over-day absolute movement affected all peers,
+  so old/new deltas are environment-sensitive and are not attributed to the
+  Incursa source change. The provenance-rich summary is retained at
+  `.artifacts/comparisons/raw-peer-current-quic1035151b-20260713a/peer-summary.{json,md}`;
+  every constituent run retains its own evidence bundle under ProtocolLab
+  `.artifacts/runs`. This is shared-host diagnostic evidence, not a publishable
+  ranking or throughput claim.
+
 - 2026-07-13: raising the HTTP/3 response QUIC write cap from 4 KiB to 8 KiB
   was rejected after exact large-payload and deterministic paired proof. All 30
   c16 cells across five baseline/candidate AB/BA pairs passed exact HTTP/3 and
