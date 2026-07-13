@@ -44,6 +44,52 @@ public sealed class QuicStreamReceiveBufferTests
 
     [Fact]
     [Requirement("REQ-QUIC-CRT-0155")]
+    public void ReceiveRetentionSnapshotUsesLargerContinuationBlocksForSustainedFrames()
+    {
+        const int payloadLength = 64 * 1024;
+        const int framePayloadLength = 1152;
+        QuicConnectionStreamState state = CreateServerReceiveState(receiveLimit: 128 * 1024);
+        byte[] payload = Enumerable.Repeat((byte)0x6A, payloadLength).ToArray();
+
+        for (int offset = 0; offset < payload.Length; offset += framePayloadLength)
+        {
+            int length = Math.Min(framePayloadLength, payload.Length - offset);
+            Assert.True(state.TryReceiveStreamFrame(
+                ParseStreamFrame(
+                    streamId: 0,
+                    offset: (ulong)offset,
+                    payload.AsSpan(offset, length),
+                    fin: offset + length == payload.Length),
+                out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+        }
+
+        Assert.Equal(
+            new QuicReceiveRetentionSnapshot(
+                RetainedBufferCount: 9,
+                RetainedBufferBytes: 68 * 1024,
+                BufferedBytes: payloadLength,
+                BufferedStreamCount: 1),
+            state.CaptureReceiveRetentionSnapshot());
+
+        byte[] destination = new byte[payload.Length];
+        Assert.True(state.TryReadStreamData(
+            0,
+            destination,
+            out int bytesWritten,
+            out bool completed,
+            out _,
+            out _,
+            out QuicTransportErrorCode readErrorCode));
+        Assert.Equal(default, readErrorCode);
+        Assert.Equal(payload.Length, bytesWritten);
+        Assert.True(completed);
+        Assert.Equal(payload, destination);
+        Assert.Equal(default, state.CaptureReceiveRetentionSnapshot());
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
     public void ReceiveRetentionSnapshotTracksMultipleStreamsWithoutDoubleCountingDuplicates()
     {
         QuicConnectionStreamState state = CreateServerReceiveState();
@@ -86,7 +132,7 @@ public sealed class QuicStreamReceiveBufferTests
 
     [Fact]
     [Requirement("REQ-QUIC-CRT-0155")]
-    public void ReceiveRetentionSnapshotClearsPartiallyReadSpilledSegmentsOnReset()
+    public void ReceiveRetentionSnapshotKeepsSparseBlocksSmallAndClearsPartiallyReadSpillOnReset()
     {
         QuicConnectionStreamState state = CreateServerReceiveState();
         byte[] payload = Enumerable.Repeat((byte)0x33, 1024).ToArray();
@@ -415,19 +461,19 @@ public sealed class QuicStreamReceiveBufferTests
         Assert.Equal(expected, destination);
     }
 
-    private static QuicConnectionStreamState CreateServerReceiveState()
+    private static QuicConnectionStreamState CreateServerReceiveState(ulong receiveLimit = 4096)
     {
         return new QuicConnectionStreamState(new QuicConnectionStreamStateOptions(
             IsServer: true,
-            InitialConnectionReceiveLimit: 4096,
+            InitialConnectionReceiveLimit: receiveLimit,
             InitialConnectionSendLimit: 4096,
             InitialIncomingBidirectionalStreamLimit: 16,
             InitialIncomingUnidirectionalStreamLimit: 16,
             InitialPeerBidirectionalStreamLimit: 16,
             InitialPeerUnidirectionalStreamLimit: 16,
-            InitialLocalBidirectionalReceiveLimit: 4096,
-            InitialPeerBidirectionalReceiveLimit: 4096,
-            InitialPeerUnidirectionalReceiveLimit: 4096,
+            InitialLocalBidirectionalReceiveLimit: receiveLimit,
+            InitialPeerBidirectionalReceiveLimit: receiveLimit,
+            InitialPeerUnidirectionalReceiveLimit: receiveLimit,
             InitialLocalBidirectionalSendLimit: 4096,
             InitialLocalUnidirectionalSendLimit: 4096,
             InitialPeerBidirectionalSendLimit: 4096));
