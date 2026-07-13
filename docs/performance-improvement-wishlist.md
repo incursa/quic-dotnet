@@ -4,6 +4,23 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: a bounded cooperative-fairness candidate yielded each runtime
+  shard after 64 processed work items so asynchronously scheduled application
+  reads could run before the shard drained its entire packet backlog. Focused
+  FIFO, timer, metrics, and runtime-shard tests passed 39/39. The first c64
+  ProtocolLab run is retained as inconclusive because the development alias
+  launched a stale source-server binary; the source server was then rebuilt
+  explicitly before the valid rerun. The rebuilt candidate passed exact
+  c64/s100 validation and emitted roughly 14,900 cooperative yields across
+  eight shards, but active-connection receive ownership remained about
+  1,918-1,936 buffers with 5.30-5.36 MiB unread payload, while packet queue
+  peaks remained 800-1,702. Those signals did not improve over the retained
+  baseline of 1,882-1,898 buffers, roughly 5.25 MiB unread payload, and
+  524-1,645 queued packets. The candidate is rejected and reverted; negative
+  records are retained under ProtocolLab `.artifacts/negative-results/`. Do not
+  repeat a generic shard `Task.Yield` budget without a materially different
+  scheduling design.
+
 - 2026-07-12: receive-retention diagnostics now distinguish owned STREAM
   receive segments, retained segment capacity, unread payload bytes, and
   streams with unread data. The counters use constant-time aggregates updated
