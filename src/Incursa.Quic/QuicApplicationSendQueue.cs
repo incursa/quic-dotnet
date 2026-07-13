@@ -39,6 +39,7 @@ internal sealed class QuicApplicationSendQueue
     // not be replaced with a general-purpose collection without re-benchmarking.
     private const int LinearDistinctStreamIdThreshold = 16;
     private const int MaintainedOrderThreshold = 32;
+    private const int MaximumDistributedPriorityRange = 64;
     private const int PooledDistinctStreamIdSetMinimumCapacity = 32;
     private const int StreamIdHashShift = 33;
     private const ulong StreamIdHashMultiplier = 0xff51afd7ed558ccdUL;
@@ -271,9 +272,13 @@ internal sealed class QuicApplicationSendQueue
         PendingApplicationSendRequest[] queuedWrites =
             ArrayPool<PendingApplicationSendRequest>.Shared.Rent(queuedWriteCount);
 
-        pendingRequests.CopyTo(queuedWrites);
-        if (!pendingRequestsOrdered)
+        if (pendingRequestsOrdered)
         {
+            pendingRequests.CopyTo(queuedWrites);
+        }
+        else if (!TryCopyInPriorityOrder(queuedWrites))
+        {
+            pendingRequests.CopyTo(queuedWrites);
             Array.Sort(
                 queuedWrites,
                 index: 0,
@@ -282,6 +287,49 @@ internal sealed class QuicApplicationSendQueue
         }
 
         return queuedWrites;
+    }
+
+    private bool TryCopyInPriorityOrder(PendingApplicationSendRequest[] destination)
+    {
+        int minimumPriority = pendingRequests[0].Priority;
+        int maximumPriority = minimumPriority;
+        for (int index = 1; index < pendingRequests.Count; index++)
+        {
+            int priority = pendingRequests[index].Priority;
+            minimumPriority = Math.Min(minimumPriority, priority);
+            maximumPriority = Math.Max(maximumPriority, priority);
+        }
+
+        long priorityRange = (long)maximumPriority - minimumPriority + 1;
+        if (priorityRange > MaximumDistributedPriorityRange)
+        {
+            return false;
+        }
+
+        Span<int> nextIndexes = stackalloc int[(int)priorityRange];
+        nextIndexes.Clear();
+        foreach (PendingApplicationSendRequest pendingRequest in pendingRequests)
+        {
+            nextIndexes[pendingRequest.Priority - minimumPriority]++;
+        }
+
+        int nextIndex = 0;
+        for (int priorityOffset = nextIndexes.Length - 1; priorityOffset >= 0; priorityOffset--)
+        {
+            int count = nextIndexes[priorityOffset];
+            nextIndexes[priorityOffset] = nextIndex;
+            nextIndex += count;
+        }
+
+        // The queue preserves sequence order within each priority while ordered,
+        // after it switches to append-only insertion, and through removals.
+        foreach (PendingApplicationSendRequest pendingRequest in pendingRequests)
+        {
+            int priorityOffset = pendingRequest.Priority - minimumPriority;
+            destination[nextIndexes[priorityOffset]++] = pendingRequest;
+        }
+
+        return true;
     }
 
     public static void ReturnRentedQueuedWrites(PendingApplicationSendRequest[] queuedWrites)

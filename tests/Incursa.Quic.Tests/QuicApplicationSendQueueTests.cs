@@ -142,6 +142,81 @@ public sealed class QuicApplicationSendQueueTests
     }
 
     [Fact]
+    public void RentSortedQueuedWrites_FallsBackForExtremePriorityRange()
+    {
+        QuicApplicationSendQueue queue = new();
+        for (int index = 0; index < 40; index++)
+        {
+            int priority = index switch
+            {
+                0 => int.MinValue,
+                1 => int.MaxValue,
+                _ => index % 3,
+            };
+            queue.Enqueue((ulong)index * 4, priority, [0x10], 1);
+        }
+
+        PendingApplicationSendRequest[] actual = CopySortedQueuedWrites(queue);
+
+        Assert.Equal(int.MaxValue, actual[0].Priority);
+        Assert.Equal(int.MinValue, actual[^1].Priority);
+        Assert.Equal(
+            Enumerable.Range(0, 40)
+                .Select(index => (Sequence: (long)index, Priority: index switch
+                {
+                    0 => int.MinValue,
+                    1 => int.MaxValue,
+                    _ => index % 3,
+                }))
+                .OrderByDescending(item => item.Priority)
+                .ThenBy(item => item.Sequence),
+            actual.Select(item => (item.Sequence, item.Priority)));
+    }
+
+    [Fact]
+    public void RentSortedQueuedWrites_PreservesOrderAfterUnorderedQueueMutations()
+    {
+        QuicApplicationSendQueue queue = new();
+        try
+        {
+            for (int index = 0; index < 48; index++)
+            {
+                byte[] payload = QuicBufferPool.RentBytes(1);
+                payload[0] = (byte)index;
+                queue.Enqueue((ulong)index * 4, index % 5, payload, 1);
+            }
+
+            Assert.True(queue.TryRemoveQueuedWrite(sequence: 7, returnPayloads: true));
+            Assert.True(queue.TryRemoveQueuedWritesForStream(streamId: 80, returnPayloads: true));
+
+            byte[] replacementPayload = QuicBufferPool.RentBytes(2);
+            replacementPayload[0] = 0xAA;
+            replacementPayload[1] = 0xBB;
+            Assert.True(queue.TryReplaceQueuedWritePayload(sequence: 33, replacementPayload, 2));
+
+            byte[] appendedPayload = QuicBufferPool.RentBytes(1);
+            appendedPayload[0] = 0xCC;
+            queue.Enqueue(streamId: 400, priority: 4, appendedPayload, 1);
+
+            PendingApplicationSendRequest[] actual = CopySortedQueuedWrites(queue);
+
+            Assert.Equal(
+                actual.OrderByDescending(item => item.Priority).ThenBy(item => item.Sequence),
+                actual);
+            Assert.DoesNotContain(actual, item => item.Sequence is 7 or 20);
+            PendingApplicationSendRequest replaced = Assert.Single(actual, item => item.Sequence == 33);
+            Assert.Equal([0xAA, 0xBB], replaced.StreamPayload[..replaced.StreamPayloadLength]);
+            Assert.Equal(
+                [4, 9, 14, 19, 24, 29, 34, 39, 44, 48],
+                actual.Where(item => item.Priority == 4).Select(item => item.Sequence));
+        }
+        finally
+        {
+            queue.Clear();
+        }
+    }
+
+    [Fact]
     public void Enqueue_RejectsSequenceExhaustionBeforeOrderingCanWrap()
     {
         QuicApplicationSendQueue queue = new(initialSequence: long.MaxValue);

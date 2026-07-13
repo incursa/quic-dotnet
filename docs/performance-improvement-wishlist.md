@@ -4,6 +4,39 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: unordered application-send queues with a compact priority range
+  now materialize directly into their rented output array using a stable linear
+  priority distribution. The queue's existing per-priority sequence order
+  preserves FIFO without comparison sorting; arbitrary priority ranges still
+  fall back to the proven `Array.Sort` path. This is materially different from
+  the retained rejected generic-comparer and `Span.Sort` experiments. In a
+  fresh baseline and two repeated Short BenchmarkDotNet candidate runs,
+  128-entry materialization improved from 8.95 us and 64 B to 2.11-2.22 us
+  and 0 B, while 512 entries improved from 44.15 us and 64 B to 8.51-9.31 us
+  and 0 B. End-to-end enqueue plus materialization improved from 13.38 us to
+  5.70-6.14 us at 128 entries and from 63.79 us to 18.99-20.96 us at 512.
+  Focused queue, scheduler, and metrics tests passed 52/52; a queue-only
+  run passed 25/25 after adding extreme-priority fallback and unordered
+  remove/replace/append ownership coverage. Independent review found no
+  correctness defect. The full Release suite passed 9,534 tests with five
+  intentional skips and one failure in
+  `DoqFatalProtocolErrorTests.ClientWithMaxUnsolicitedResets_ClosesConnectionWhenLimitExceeded`;
+  the exact test fails identically on clean `main` after a fresh restore, so it
+  is retained as a pre-existing regression rather than attributed to this
+  candidate. A matched source-backed c32/s100 GC trace rebuilt the
+  candidate server from this worktree, passed exact validation for all 9,600
+  completed streams with zero failures/timeouts, and removed the baseline
+  `System.Comparison<PendingApplicationSendRequest>` allocation group that
+  represented 17,515,312 estimated bytes. Trace-instrumented request rate was
+  neutral within shared-host noise at 887.6 versus 878.8 requests/s, while p95
+  moved from 3542 to 3522 ms. Those values are diagnostic only and are not
+  accepted as throughput claims. BDN evidence
+  is retained under `.artifacts/bdn/send-queue-priority-distribution-*`; the
+  ProtocolLab runs are `quic-sent-packet-c32-gc-20260713a-quic-transport-v1-comparison`
+  and `quic-send-queue-priority-distribution-final-c32-gc-20260713a-quic-transport-v1-comparison`.
+  All ProtocolLab evidence is local shared-host trace evidence and is not
+  publishable.
+
 - 2026-07-13: contiguous STREAM receive spill segments now reserve 8 KiB
   after the initial 4 KiB block fills, while first, sparse, and out-of-order
   fragments retain the existing 4 KiB policy. A 64 KiB stream arriving in
