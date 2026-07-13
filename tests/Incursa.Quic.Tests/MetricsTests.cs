@@ -431,6 +431,10 @@ public class MetricsTests
             measurement.InstrumentName == "incursa.quic.runtime.sent_packets.retained_bytes"
             && measurement.HasTag("shard_index", "2"));
         Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.sent_packets.storage.capacity"
+            && measurement.Value >= 64
+            && measurement.HasTag("shard_index", "2"));
+        Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.retransmissions.pending"
             && measurement.HasTag("shard_index", "2"));
         Assert.Contains(recorder.Measurements, measurement =>
@@ -450,6 +454,100 @@ public class MetricsTests
             && measurement.HasTag("shard_index", "2"));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.receive.buffered_streams"
+            && measurement.HasTag("shard_index", "2"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void SentPacketStorageMetricsReportApplicationDataSpanAndCapacity()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(
+            QuicMetrics.MeterName,
+            "incursa.quic.runtime.sent_packets.application_packet_number_span",
+            "incursa.quic.runtime.sent_packets.storage.capacity");
+        FakeMonotonicClock clock = new(0);
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState(), clock);
+
+        runtime.TrackApplicationPacket(10, new byte[1_200]);
+        runtime.TrackApplicationPacket(14, new byte[1_200]);
+
+        QuicMetrics.RecordRuntimePressureSnapshot(2, runtime);
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.sent_packets.application_packet_number_span"
+            && measurement.Value == 5
+            && measurement.HasTag("shard_index", "2"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.sent_packets.storage.capacity"
+            && measurement.Value >= 64
+            && measurement.HasTag("shard_index", "2"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void SentPacketRetentionMetricsCanBeCollectedWithoutStorageMetrics()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(
+            QuicMetrics.MeterName,
+            "incursa.quic.runtime.sent_packets.retained_buffers");
+        FakeMonotonicClock clock = new(0);
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState(), clock);
+
+        runtime.TrackApplicationPacket(10, new byte[1_200]);
+
+        QuicMetrics.RecordRuntimePressureSnapshot(2, runtime);
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.sent_packets.retained_buffers"
+            && measurement.HasTag("shard_index", "2"));
+        Assert.DoesNotContain(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.sent_packets.storage.capacity");
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void SentPacketStorageCapacityCanBeCollectedWithoutSpanMetrics()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(
+            QuicMetrics.MeterName,
+            "incursa.quic.runtime.sent_packets.storage.capacity");
+        FakeMonotonicClock clock = new(0);
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState(), clock);
+
+        runtime.TrackApplicationPacket(10, new byte[1_200]);
+
+        QuicMetrics.RecordRuntimePressureSnapshot(2, runtime);
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.sent_packets.storage.capacity"
+            && measurement.Value >= 64
+            && measurement.HasTag("shard_index", "2"));
+        Assert.DoesNotContain(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.sent_packets.application_packet_number_span");
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void SentPacketRetentionAndSpanMetricsCanBeCollectedTogether()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(
+            QuicMetrics.MeterName,
+            "incursa.quic.runtime.sent_packets.retained_buffers",
+            "incursa.quic.runtime.sent_packets.application_packet_number_span");
+        FakeMonotonicClock clock = new(0);
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState(), clock);
+
+        runtime.TrackApplicationPacket(10, new byte[1_200]);
+        runtime.TrackApplicationPacket(14, new byte[1_200]);
+
+        QuicMetrics.RecordRuntimePressureSnapshot(2, runtime);
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.sent_packets.retained_buffers"
+            && measurement.HasTag("shard_index", "2"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.sent_packets.application_packet_number_span"
+            && measurement.Value == 5
             && measurement.HasTag("shard_index", "2"));
     }
 
@@ -940,11 +1038,12 @@ public class MetricsTests
         private readonly object sync = new();
         private readonly List<MeasurementRecord> measurements = [];
 
-        private MetricsRecorder(string meterName)
+        private MetricsRecorder(string meterName, IReadOnlySet<string>? enabledInstrumentNames)
         {
             listener.InstrumentPublished = (instrument, meterListener) =>
             {
-                if (instrument.Meter.Name == meterName)
+                if (instrument.Meter.Name == meterName
+                    && (enabledInstrumentNames is null || enabledInstrumentNames.Contains(instrument.Name)))
                 {
                     meterListener.EnableMeasurementEvents(instrument);
                 }
@@ -965,9 +1064,12 @@ public class MetricsTests
             }
         }
 
-        public static MetricsRecorder Start(string meterName)
+        public static MetricsRecorder Start(string meterName, params string[] enabledInstrumentNames)
         {
-            return new MetricsRecorder(meterName);
+            IReadOnlySet<string>? enabledInstrumentNameSet = enabledInstrumentNames.Length == 0
+                ? null
+                : enabledInstrumentNames.ToHashSet(StringComparer.Ordinal);
+            return new MetricsRecorder(meterName, enabledInstrumentNameSet);
         }
 
         public void Dispose()

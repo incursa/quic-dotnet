@@ -39,6 +39,28 @@ internal readonly record struct QuicConnectionSentPacketKey
 internal readonly record struct QuicConnectionCryptoSendMetadata(
     QuicTlsEncryptionLevel EncryptionLevel);
 
+internal readonly record struct QuicSentPacketNumberSpaceStorageSnapshot(
+    int RetainedPacketCount,
+    ulong PacketNumberSpan);
+
+internal readonly record struct QuicSentPacketStorageSnapshot(
+    int RetainedPacketCount,
+    int Capacity,
+    QuicSentPacketNumberSpaceStorageSnapshot Initial,
+    QuicSentPacketNumberSpaceStorageSnapshot Handshake,
+    QuicSentPacketNumberSpaceStorageSnapshot ApplicationData)
+{
+    internal QuicSentPacketNumberSpaceStorageSnapshot GetPacketNumberSpace(
+        QuicPacketNumberSpace packetNumberSpace)
+        => packetNumberSpace switch
+        {
+            QuicPacketNumberSpace.Initial => Initial,
+            QuicPacketNumberSpace.Handshake => Handshake,
+            QuicPacketNumberSpace.ApplicationData => ApplicationData,
+            _ => throw new ArgumentOutOfRangeException(nameof(packetNumberSpace)),
+        };
+}
+
 internal record struct QuicConnectionSentPacket
 {
     private const byte AckElicitingFlag = 1 << 0;
@@ -287,6 +309,8 @@ internal sealed class QuicConnectionSendRuntime
 
     public int PendingRetransmissionCount => retransmissionQueue.Count;
 
+    internal int SentPacketStorageCapacity => sentPackets.EnsureCapacity(0);
+
     internal QuicRetentionSnapshot CaptureSentPacketRetentionSnapshot(ulong nowMicros)
     {
         long retainedBufferCount = 0;
@@ -310,6 +334,140 @@ internal sealed class QuicConnectionSendRuntime
             retainedBufferCount,
             retainedByteCount,
             QuicRetentionSnapshot.GetOldestAgeMilliseconds(nowMicros, oldestSentAtMicros));
+    }
+
+    internal QuicRetentionSnapshot CaptureSentPacketRetentionSnapshot(
+        ulong nowMicros,
+        out QuicSentPacketStorageSnapshot storageSnapshot)
+    {
+        long retainedBufferCount = 0;
+        long retainedByteCount = 0;
+        ulong? oldestSentAtMicros = null;
+        Span<int> retainedPacketCounts = stackalloc int[3];
+        Span<ulong> minimumPacketNumbers = stackalloc ulong[3];
+        Span<ulong> maximumPacketNumbers = stackalloc ulong[3];
+
+        foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sentPackets)
+        {
+            QuicConnectionSentPacket packet = entry.Value;
+            QuicRetentionSnapshot.AddOwners(
+                packet.PlaintextPayloadOwner,
+                packet.PacketBytesOwner,
+                ref retainedBufferCount,
+                ref retainedByteCount);
+            oldestSentAtMicros = !oldestSentAtMicros.HasValue
+                || packet.SentAtMicros < oldestSentAtMicros.Value
+                ? packet.SentAtMicros
+                : oldestSentAtMicros;
+
+            AddPacketNumberToStorageSnapshot(
+                entry.Key,
+                retainedPacketCounts,
+                minimumPacketNumbers,
+                maximumPacketNumbers);
+        }
+
+        storageSnapshot = CreateSentPacketStorageSnapshot(
+            retainedPacketCounts,
+            minimumPacketNumbers,
+            maximumPacketNumbers);
+
+        return new QuicRetentionSnapshot(
+            retainedBufferCount,
+            retainedByteCount,
+            QuicRetentionSnapshot.GetOldestAgeMilliseconds(nowMicros, oldestSentAtMicros));
+    }
+
+    internal QuicSentPacketStorageSnapshot CaptureSentPacketStorageSnapshot()
+    {
+        Span<int> retainedPacketCounts = stackalloc int[3];
+        Span<ulong> minimumPacketNumbers = stackalloc ulong[3];
+        Span<ulong> maximumPacketNumbers = stackalloc ulong[3];
+
+        foreach (QuicConnectionSentPacketKey key in sentPackets.Keys)
+        {
+            AddPacketNumberToStorageSnapshot(
+                key,
+                retainedPacketCounts,
+                minimumPacketNumbers,
+                maximumPacketNumbers);
+        }
+
+        return CreateSentPacketStorageSnapshot(
+            retainedPacketCounts,
+            minimumPacketNumbers,
+            maximumPacketNumbers);
+    }
+
+    private QuicSentPacketStorageSnapshot CreateSentPacketStorageSnapshot(
+        ReadOnlySpan<int> retainedPacketCounts,
+        ReadOnlySpan<ulong> minimumPacketNumbers,
+        ReadOnlySpan<ulong> maximumPacketNumbers)
+    {
+        int initialIndex = (int)QuicPacketNumberSpace.Initial;
+        int handshakeIndex = (int)QuicPacketNumberSpace.Handshake;
+        int applicationDataIndex = (int)QuicPacketNumberSpace.ApplicationData;
+        return new QuicSentPacketStorageSnapshot(
+            sentPackets.Count,
+            SentPacketStorageCapacity,
+            CreatePacketNumberSpaceStorageSnapshot(
+                retainedPacketCounts[initialIndex],
+                minimumPacketNumbers[initialIndex],
+                maximumPacketNumbers[initialIndex]),
+            CreatePacketNumberSpaceStorageSnapshot(
+                retainedPacketCounts[handshakeIndex],
+                minimumPacketNumbers[handshakeIndex],
+                maximumPacketNumbers[handshakeIndex]),
+            CreatePacketNumberSpaceStorageSnapshot(
+                retainedPacketCounts[applicationDataIndex],
+                minimumPacketNumbers[applicationDataIndex],
+                maximumPacketNumbers[applicationDataIndex]));
+    }
+
+    private static void AddPacketNumberToStorageSnapshot(
+        QuicConnectionSentPacketKey key,
+        Span<int> retainedPacketCounts,
+        Span<ulong> minimumPacketNumbers,
+        Span<ulong> maximumPacketNumbers)
+    {
+        int packetNumberSpaceIndex = GetPacketNumberSpaceIndex(key.PacketNumberSpace);
+        ulong packetNumber = key.PacketNumber;
+        if (retainedPacketCounts[packetNumberSpaceIndex] == 0)
+        {
+            minimumPacketNumbers[packetNumberSpaceIndex] = packetNumber;
+            maximumPacketNumbers[packetNumberSpaceIndex] = packetNumber;
+        }
+        else
+        {
+            minimumPacketNumbers[packetNumberSpaceIndex] = Math.Min(
+                minimumPacketNumbers[packetNumberSpaceIndex],
+                packetNumber);
+            maximumPacketNumbers[packetNumberSpaceIndex] = Math.Max(
+                maximumPacketNumbers[packetNumberSpaceIndex],
+                packetNumber);
+        }
+
+        retainedPacketCounts[packetNumberSpaceIndex]++;
+    }
+
+    private static int GetPacketNumberSpaceIndex(QuicPacketNumberSpace packetNumberSpace)
+        => packetNumberSpace switch
+        {
+            QuicPacketNumberSpace.Initial => (int)QuicPacketNumberSpace.Initial,
+            QuicPacketNumberSpace.Handshake => (int)QuicPacketNumberSpace.Handshake,
+            QuicPacketNumberSpace.ApplicationData => (int)QuicPacketNumberSpace.ApplicationData,
+            _ => throw new ArgumentOutOfRangeException(nameof(packetNumberSpace)),
+        };
+
+    private static QuicSentPacketNumberSpaceStorageSnapshot CreatePacketNumberSpaceStorageSnapshot(
+        int retainedPacketCount,
+        ulong minimumPacketNumber,
+        ulong maximumPacketNumber)
+    {
+        ulong packetNumberSpan = retainedPacketCount == 0
+            ? 0
+            : maximumPacketNumber - minimumPacketNumber + 1;
+        return new QuicSentPacketNumberSpaceStorageSnapshot(retainedPacketCount, packetNumberSpan);
     }
 
     internal QuicRetentionSnapshot CaptureRetransmissionRetentionSnapshot(ulong nowMicros)

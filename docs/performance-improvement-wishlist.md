@@ -4,6 +4,23 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: sent-packet storage diagnostics now report application-data
+  packet-number span and backing dictionary capacity alongside the existing
+  retained packet, buffer, byte, and age measurements. A source-backed
+  c32/s100 multiplex run passed exact validation for all 9,600 streams with no
+  failures or timeouts. At the high-retention end, application packet-number
+  span and retained packet count were nearly identical (P95 2,276 versus
+  2,252; maxima 2,424 versus 2,400), showing that the live ledger is dense
+  rather than sparse. Dictionary capacity still reached 3,368 entries for a
+  2,400-packet maximum and remained elevated after bursts. The first capture
+  exposed ProtocolLab's 100-histogram collection ceiling; a diagnostic rerun
+  at 200 histograms captured the new series without the ceiling warning, and
+  the collector default was raised accordingly. Evidence is retained under
+  `quic-sent-packet-storage-h200-c32-counters-20260713c-quic-transport-v1-comparison`.
+  This is local shared-host counter evidence and is not a throughput claim. It
+  supports investigating recyclable sliding storage, but does not justify
+  repeating the rejected fixed 256-slot segmented store.
+
 - 2026-07-13: recovery packet-number-space ledgers now retain sent timestamps
   in their ordered value arrays and keep packet-protection level plus the full
   64-bit 1-RTT key-update epoch once as the current metadata default. Exact
