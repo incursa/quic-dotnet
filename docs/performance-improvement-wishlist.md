@@ -4,6 +4,24 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: externalizing packet number and packet-number space from the
+  packed sent-packet value into the existing packed dictionary key was
+  rejected as insufficient leverage. A corrected like-for-like packed
+  prototype reduced dictionary allocation versus the current value from 45.42
+  to 42.69 KiB at 128 packets, 468.55 to 440.18 KiB at 1,024, and 2,075.98 to
+  1,950.29 KiB at 8,192, about six percent. At the observed 43.5 MiB c32 entry
+  allocation this would save only about 2.6 MiB, roughly 0.15 percent of total
+  sampled allocation, while requiring packet reconstruction across ACK, loss,
+  retransmission, discard, routing, and diagnostic paths. High-retention
+  population time was neutral and the 128-packet ShortRun was noisy and slower
+  than the direct packed value. The production candidate was not implemented;
+  benchmark-only code was reverted. Evidence is retained under
+  `.artifacts/bdn/sent-packet-externalized-identity-prototype-20260713a` and
+  `.artifacts/bdn/sent-packet-externalized-identity-packed-prototype-20260713b`.
+  Do not revisit identity externalization without a design that removes more
+  retained state or a trace showing the reconstruction cost is independently
+  useful.
+
 - 2026-07-13: runtime shard packet work items now encode null and the three
   common one-hot ECN observations in the existing flags byte. Arbitrary
   full-width cumulative `QuicEcnCounts` values remain exact in a rare extended
