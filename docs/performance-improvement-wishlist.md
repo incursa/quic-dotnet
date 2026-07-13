@@ -4,6 +4,35 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: runtime shard packet work items now encode null and the three
+  common one-hot ECN observations in the existing flags byte. Arbitrary
+  full-width cumulative `QuicEcnCounts` values remain exact in a rare extended
+  packet-state wrapper that also preserves owned-buffer release. This removes
+  the always-inline 24-byte ECN field and reduces the work-item layout from 152
+  to 128 bytes (-15.8 percent). Short BenchmarkDotNet evidence at 1,024 items
+  reduced array allocation from 152.04 to 128.04 KiB and mean allocation time
+  from 6.664 to 6.198 us. Focused shard, ECN, endpoint, listener, metrics, and
+  ownership tests passed 184/184; explicit null and extended-wrapper buffer
+  return guardrails passed 11/11. The full Release suite before those final
+  guardrails passed 9,551 tests with five intentional skips, and the definitive
+  suite after them passed 9,552 with the same five intentional skips.
+  Independent review found no correctness defect and its residual null/release
+  coverage concern was addressed by the final guardrails. A matched c32 GC trace passed exact
+  validation with zero failures/timeouts and reduced sampled work-item array
+  allocation from 5.22 to 3.51 MiB despite completing 12,800 streams versus
+  9,600 in the baseline. Fresh uninstrumented shared-host guardrails were
+  neutral at c1 (-0.74 percent request rate, -8.1 percent p95) and c4 (-0.50
+  percent request rate, -0.81 percent p95). Five-pair deterministic
+  round-robin runs were neutral at c16 (median request rate -0.94 percent,
+  median p95 +0.53 percent) and positive at c32 (median request rate +2.8
+  percent, median p95 -2.83 percent); every c16/c32 cell completed its exact
+  stream count with zero failures/timeouts. BDN evidence is under
+  `.artifacts/bdn/runtime-work-item-ecn-compact-candidate-20260713a`.
+  ProtocolLab evidence is retained under the
+  `quic-runtime-workitem-ecn-*-20260713a-quic-transport-v1-comparison` run
+  families. All ProtocolLab results are local shared-host diagnostic evidence,
+  not publishable peer-comparison claims.
+
 - 2026-07-13: a hybrid sent-packet store that kept the first 256 application
   packets in a dictionary and then migrated to recyclable 256-entry
   `ArrayPool` segments was rejected. This was materially different from the
