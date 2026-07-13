@@ -4,6 +4,26 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: raising the HTTP/3 response QUIC write cap from 4 KiB to 8 KiB
+  was rejected after exact large-payload and deterministic paired proof. All 30
+  c16 cells across five baseline/candidate AB/BA pairs passed exact HTTP/3 and
+  payload validation for 1 KiB, 64 KiB, and 1 MiB responses with zero failures
+  or timeouts. The candidate's median paired request-rate deltas were +2.61
+  percent at 1 KiB, +7.62 percent at 64 KiB, and only +0.95 percent at 1 MiB.
+  Median paired p95 improved 6.47 and 9.11 percent at 1 KiB and 64 KiB, but
+  regressed 3.86 percent at 1 MiB; the final pair also reversed at 1 KiB and
+  64 KiB. The first baseline run showed a large cold-start artifact, reinforcing
+  that the earlier block-order +1.75 percent signal was not decisive. Because
+  the primary 1 MiB lane was effectively flat with worse latency, the candidate
+  failed the broad large-response acceptance gate and was reverted. Evidence is
+  retained under the
+  `quic-h3-chunk8k-paired-p01b-*-20260713a-h3-local-v1` and
+  `quic-h3-chunk8k-paired-p02-*-20260713a-h3-local-v1` through
+  `quic-h3-chunk8k-paired-p05-*-20260713a-h3-local-v1` run families. Do not
+  revisit a global response-write-cap increase without a materially different
+  adaptive or workload-aware design. This is shared-host diagnostic evidence,
+  not a publishable throughput claim.
+
 - 2026-07-13: narrowing `pendingStreamActionRequestsGate` around stream-write
   processing was rejected after concurrency review and full-suite proof. The
   motivating c64 sampled-thread-time trace
