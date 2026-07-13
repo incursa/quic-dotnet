@@ -4,6 +4,16 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: staged sent-packet dictionary growth at 64, 256, and 1,024
+  tracked packets was rejected after a matched source-backed c32/s100 GC trace.
+  The candidate reduced sampled dictionary growth events from roughly 171 to
+  135, but sampled sent-ledger resize allocation increased from about 42.9 MiB
+  to 44.1 MiB and total sampled allocation also increased slightly. The code
+  and focused capacity tests were reverted, and the ProtocolLab run plus
+  negative-result record remain under `.artifacts/`. Do not repeat capacity
+  staging without a materially different sent-packet storage design and a
+  demonstrated byte-allocation reduction.
+
 - 2026-07-13: a bounded cooperative-fairness candidate yielded each runtime
   shard after 64 processed work items so asynchronously scheduled application
   reads could run before the shard drained its entire packet backlog. Focused
