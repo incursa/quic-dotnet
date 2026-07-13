@@ -21,6 +21,17 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
   repeat a generic shard `Task.Yield` budget without a materially different
   scheduling design.
 
+- 2026-07-13: the remaining simple receive-window midpoint was also rejected.
+  A source-backed 32 KiB per-stream window passed the one-shot protocol proof
+  but the uninstrumented c64/s100 benchmark load exited nonzero, matching the
+  previously retained 16 KiB failure. Together with the valid 64 KiB run that
+  completed but did not reduce retained receive ownership, this closes
+  arbitrary receive-window tuning as the current remedy: 16/32 KiB do not
+  sustain the workload, while a 64 KiB window permits the complete 64 KiB
+  request burst. The source server is restored to its original configuration,
+  and the failed candidate is retained under ProtocolLab
+  `.artifacts/negative-results/`.
+
 - 2026-07-12: receive-retention diagnostics now distinguish owned STREAM
   receive segments, retained segment capacity, unread payload bytes, and
   streams with unread data. The counters use constant-time aggregates updated
