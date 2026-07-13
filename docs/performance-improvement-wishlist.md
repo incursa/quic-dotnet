@@ -4,6 +4,27 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: contiguous STREAM receive spill segments now reserve 8 KiB
+  after the initial 4 KiB block fills, while first, sparse, and out-of-order
+  fragments retain the existing 4 KiB policy. A 64 KiB stream arriving in
+  1,152-byte frames now retains 9 mixed blocks and 68 KiB of capacity instead
+  of roughly 19 small blocks, without changing logical bytes, flow control,
+  duplicate handling, FIN, reset, or pool ownership. Same-duration c64/s100
+  counter evidence passed with zero failures/timeouts and reduced peak pooled
+  buffers from 102,575 to 33,984, peak outstanding bytes from 403,283,968 to
+  278,396,928, and maximum managed heap from 1,568.6 MiB to 1,098.8 MiB.
+  Three-repeat c64 medians were neutral within shared-host variance: request
+  rate -1.0 percent and p95 +0.35 percent. A three-repeat c1/c4/c16/c32 matrix
+  passed all 24 baseline and candidate cells; median request-rate changes were
+  +7.5, +6.1, +4.1, and -1.9 percent, while p95 changes were -2.3, +4.9,
+  -0.9, and -1.4 percent. Focused receive/metrics tests passed 34/34, broader
+  stream-read/flow-control tests passed 163/163, and the full suite passed
+  9,533 tests with five intentional skips. Runtime packet queue peaks remained
+  noisy and did not improve in the single counter pair, so queue scheduling
+  remains open; this slice is accepted for the durable retention reduction.
+  All ProtocolLab evidence is local shared-host diagnostic evidence and is not
+  a publishable benchmark claim.
+
 - 2026-07-13: staged sent-packet dictionary growth at 64, 256, and 1,024
   tracked packets was rejected after a matched source-backed c32/s100 GC trace.
   The candidate reduced sampled dictionary growth events from roughly 171 to

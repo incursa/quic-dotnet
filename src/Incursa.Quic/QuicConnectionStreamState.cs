@@ -8,7 +8,8 @@ namespace Incursa.Quic;
 internal sealed class QuicConnectionStreamState
 {
     private const int StreamReceiveCoalescingThreshold = 1024;
-    private const int StreamReceiveBlockSize = 4 * 1024;
+    private const int InitialStreamReceiveBlockSize = 4 * 1024;
+    private const int ContinuationStreamReceiveBlockSize = 8 * 1024;
     private const ulong MaximumFlowControlLimit = QuicVariableLengthInteger.MaxValue;
     private const ulong MaximumStreamCount = 1UL << 60;
     private const ulong UnidirectionalBit = 0x02;
@@ -1482,7 +1483,9 @@ internal sealed class QuicConnectionStreamState
         int bufferedSegmentCount = GetBufferedSegmentCount(state);
         if (bufferedSegmentCount == 0)
         {
-            AddBufferedSegment(state, CreateBufferedSegment(currentOffset, data, dataIndex, data.Length));
+            AddBufferedSegment(
+                state,
+                CreateBufferedSegment(currentOffset, data, dataIndex, data.Length, useContinuationBlock: false));
             IncreaseBufferedReadableBytes(state, data.Length);
             return;
         }
@@ -1496,7 +1499,14 @@ internal sealed class QuicConnectionStreamState
 
         if (lastSegment.End <= currentOffset)
         {
-            AddBufferedSegment(state, CreateBufferedSegment(currentOffset, data, dataIndex, data.Length));
+            AddBufferedSegment(
+                state,
+                CreateBufferedSegment(
+                    currentOffset,
+                    data,
+                    dataIndex,
+                    data.Length,
+                    useContinuationBlock: lastSegment.End == currentOffset));
             IncreaseBufferedReadableBytes(state, data.Length);
             return;
         }
@@ -1519,7 +1529,14 @@ internal sealed class QuicConnectionStreamState
                 return;
             }
 
-            AddBufferedSegment(state, CreateBufferedSegment(tailSegment.End, data, tailDataIndex, tailLength));
+            AddBufferedSegment(
+                state,
+                CreateBufferedSegment(
+                    tailSegment.End,
+                    data,
+                    tailDataIndex,
+                    tailLength,
+                    useContinuationBlock: true));
             IncreaseBufferedReadableBytes(state, tailLength);
             return;
         }
@@ -1546,7 +1563,12 @@ internal sealed class QuicConnectionStreamState
                 int gapLength = (int)(gapEnd - currentOffset);
                 if (gapLength > 0)
                 {
-                    updated.Add(CreateBufferedSegment(currentOffset, data, dataIndex, gapLength));
+                    updated.Add(CreateBufferedSegment(
+                        currentOffset,
+                        data,
+                        dataIndex,
+                        gapLength,
+                        useContinuationBlock: false));
                     IncreaseBufferedReadableBytes(state, gapLength);
                     dataIndex += gapLength;
                     currentOffset += (ulong)gapLength;
@@ -1575,7 +1597,12 @@ internal sealed class QuicConnectionStreamState
         if (currentOffset < endOffset)
         {
             int tailLength = (int)(endOffset - currentOffset);
-            updated.Add(CreateBufferedSegment(currentOffset, data, dataIndex, tailLength));
+            updated.Add(CreateBufferedSegment(
+                currentOffset,
+                data,
+                dataIndex,
+                tailLength,
+                useContinuationBlock: false));
             IncreaseBufferedReadableBytes(state, tailLength);
         }
 
@@ -1763,10 +1790,18 @@ internal sealed class QuicConnectionStreamState
         state.HasSecondInlineBufferedSegment = false;
     }
 
-    private BufferedSegment CreateBufferedSegment(ulong offset, ReadOnlySpan<byte> data, int dataIndex, int length)
+    private BufferedSegment CreateBufferedSegment(
+        ulong offset,
+        ReadOnlySpan<byte> data,
+        int dataIndex,
+        int length,
+        bool useContinuationBlock)
     {
-        int minimumCapacity = length >= StreamReceiveCoalescingThreshold && length < StreamReceiveBlockSize
-            ? StreamReceiveBlockSize
+        int receiveBlockSize = useContinuationBlock
+            ? ContinuationStreamReceiveBlockSize
+            : InitialStreamReceiveBlockSize;
+        int minimumCapacity = length >= StreamReceiveCoalescingThreshold && length < receiveBlockSize
+            ? receiveBlockSize
             : length;
         byte[] segmentData = QuicBufferPool.RentBytes(minimumCapacity);
         data.Slice(dataIndex, length).CopyTo(segmentData);
