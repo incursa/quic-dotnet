@@ -6,7 +6,7 @@ using BenchmarkDotNet.Attributes;
 namespace Incursa.Quic.Benchmarks;
 
 /// <summary>
-/// Compares fixed ACK receipt map populations using the former and packed value layouts.
+/// Compares fixed ACK receipt map populations using the former per-receipt ECN snapshot and compact value layouts.
 /// </summary>
 [MemoryDiagnoser]
 public class QuicPacketReceiptValueBenchmarks
@@ -18,7 +18,7 @@ public class QuicPacketReceiptValueBenchmarks
     public int ReceiptCount { get; set; }
 
     /// <summary>
-    /// Populates a sorted map using the former 56-byte nullable record shape.
+    /// Populates a sorted map using the former 48-byte per-receipt ECN snapshot shape.
     /// </summary>
     [Benchmark(Baseline = true)]
     public int PopulateSortedListWithFormerValue()
@@ -28,7 +28,7 @@ public class QuicPacketReceiptValueBenchmarks
         {
             receipts.Add(
                 (ulong)index,
-                new FormerPacketReceipt((ulong)index, 0, AckEliciting: true, CongestionExperienced: false, EcnCounts: null));
+                new FormerPacketReceipt((ulong)index, 0, AckEliciting: true, EcnCounts: default));
         }
 
         return receipts.Count;
@@ -45,7 +45,7 @@ public class QuicPacketReceiptValueBenchmarks
         {
             receipts.Add(
                 (ulong)index,
-                new QuicPacketReceipt((ulong)index, 0, AckEliciting: true, CongestionExperienced: false, EcnCounts: null));
+                new QuicPacketReceipt((ulong)index, 0, AckEliciting: true));
         }
 
         return receipts.Count;
@@ -55,6 +55,5 @@ public class QuicPacketReceiptValueBenchmarks
         ulong ReceivedAtMicros,
         ulong BufferingDelayMicros,
         bool AckEliciting,
-        bool CongestionExperienced,
-        QuicEcnCounts? EcnCounts);
+        QuicEcnCounts EcnCounts);
 }
