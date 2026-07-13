@@ -487,30 +487,25 @@ internal readonly struct QuicLostPacket
 /// <summary>
 /// Captures the recovery facts retained for one ack-eliciting packet.
 /// </summary>
-internal readonly record struct QuicRecoverySentPacketState
+internal readonly record struct QuicRecoverySentPacketMetadata
 {
     private const byte HasPacketProtectionLevelFlag = 1 << 0;
     private const byte HasOneRttKeyPhaseFlag = 1 << 1;
 
-    private readonly ulong sentAtMicros;
     private readonly ulong oneRttKeyPhase;
     private readonly QuicTlsEncryptionLevel packetProtectionLevel;
     private readonly byte flags;
 
-    internal QuicRecoverySentPacketState(
-        ulong SentAtMicros,
+    internal QuicRecoverySentPacketMetadata(
         QuicTlsEncryptionLevel? PacketProtectionLevel,
         ulong? OneRttKeyPhase = null)
     {
-        sentAtMicros = SentAtMicros;
         packetProtectionLevel = PacketProtectionLevel.GetValueOrDefault();
         oneRttKeyPhase = OneRttKeyPhase.GetValueOrDefault();
         flags = (byte)(
             (PacketProtectionLevel.HasValue ? HasPacketProtectionLevelFlag : 0)
             | (OneRttKeyPhase.HasValue ? HasOneRttKeyPhaseFlag : 0));
     }
-
-    internal ulong SentAtMicros => sentAtMicros;
 
     internal QuicTlsEncryptionLevel? PacketProtectionLevel => HasFlag(HasPacketProtectionLevelFlag)
         ? packetProtectionLevel
@@ -521,11 +516,9 @@ internal readonly record struct QuicRecoverySentPacketState
         : null;
 
     internal void Deconstruct(
-        out ulong SentAtMicros,
         out QuicTlsEncryptionLevel? PacketProtectionLevel,
         out ulong? OneRttKeyPhase)
     {
-        SentAtMicros = this.SentAtMicros;
         PacketProtectionLevel = this.PacketProtectionLevel;
         OneRttKeyPhase = this.OneRttKeyPhase;
     }
@@ -913,7 +906,9 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
 {
     private const int InitialPacketNumberSpaceCapacity = 32;
 
-    private readonly SortedList<ulong, QuicRecoverySentPacketState> ackElicitingPacketsInFlight;
+    private readonly SortedList<ulong, ulong> ackElicitingPacketsInFlight;
+    private Dictionary<ulong, QuicRecoverySentPacketMetadata>? nonDefaultPacketMetadata;
+    private QuicRecoverySentPacketMetadata defaultPacketMetadata;
     private ulong? lastAckElicitingPacketSentAtMicros;
 
     /// <summary>
@@ -925,7 +920,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
     {
         PacketNumberSpace = packetNumberSpace;
         RttEstimator = rttEstimator ?? throw new ArgumentNullException(nameof(rttEstimator));
-        ackElicitingPacketsInFlight = new SortedList<ulong, QuicRecoverySentPacketState>(InitialPacketNumberSpaceCapacity);
+        ackElicitingPacketsInFlight = new SortedList<ulong, ulong>(InitialPacketNumberSpaceCapacity);
         LargestAcknowledgedPacketNumber = 0;
     }
 
@@ -964,10 +959,24 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
             return;
         }
 
-        ackElicitingPacketsInFlight[packetNumber] = new QuicRecoverySentPacketState(
-            sentAtMicros,
-            packetProtectionLevel,
-            oneRttKeyPhase);
+        QuicRecoverySentPacketMetadata metadata = new(packetProtectionLevel, oneRttKeyPhase);
+        if (ackElicitingPacketsInFlight.Count == 0)
+        {
+            defaultPacketMetadata = metadata;
+            nonDefaultPacketMetadata?.Clear();
+        }
+
+        ackElicitingPacketsInFlight[packetNumber] = sentAtMicros;
+        if (metadata == defaultPacketMetadata)
+        {
+            nonDefaultPacketMetadata?.Remove(packetNumber);
+        }
+        else
+        {
+            (nonDefaultPacketMetadata ??= new Dictionary<ulong, QuicRecoverySentPacketMetadata>())[packetNumber] = metadata;
+        }
+
+        RebasePacketMetadataIfNeeded();
         lastAckElicitingPacketSentAtMicros = sentAtMicros;
     }
 
@@ -993,12 +1002,12 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         for (int index = 0; index < newlyAcknowledgedAckElicitingPacketNumbers.Length; index++)
         {
             ulong packetNumber = newlyAcknowledgedAckElicitingPacketNumbers[index];
-            if (ackElicitingPacketsInFlight.Remove(packetNumber, out QuicRecoverySentPacketState sentPacket))
+            if (RemovePacket(packetNumber, out ulong sentAtMicros))
             {
                 hasNewlyAcknowledgedAckElicitingPacket = true;
                 if (packetNumber == largestAcknowledgedPacketNumber && largestAcknowledgedPacketSentAtMicros is null)
                 {
-                    largestAcknowledgedPacketSentAtMicros = sentPacket.SentAtMicros;
+                    largestAcknowledgedPacketSentAtMicros = sentAtMicros;
                 }
             }
         }
@@ -1039,11 +1048,11 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         ulong? nextLossDelayMicros = null;
 
         IList<ulong> packetNumbersInFlight = ackElicitingPacketsInFlight.Keys;
-        IList<QuicRecoverySentPacketState> packetsInFlight = ackElicitingPacketsInFlight.Values;
+        IList<ulong> sentTimesMicros = ackElicitingPacketsInFlight.Values;
         for (int index = 0; index < ackElicitingPacketsInFlight.Count; index++)
         {
             ulong packetNumber = packetNumbersInFlight[index];
-            QuicRecoverySentPacketState packet = packetsInFlight[index];
+            ulong sentAtMicros = sentTimesMicros[index];
             if (!QuicRecoveryTiming.CanDeclarePacketLost(
                 packetAcknowledged: false,
                 packetInFlight: true,
@@ -1058,7 +1067,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
                 LargestAcknowledgedPacketNumber);
 
             QuicRecoveryTiming.TryComputeRemainingLossDelayMicros(
-                packet.SentAtMicros,
+                sentAtMicros,
                 nowMicros,
                 RttEstimator.LatestRttMicros,
                 RttEstimator.SmoothedRttMicros,
@@ -1080,7 +1089,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         {
             foreach (ulong lostPacketNumber in lostPacketNumbers)
             {
-                ackElicitingPacketsInFlight.Remove(lostPacketNumber);
+                RemovePacket(lostPacketNumber, out _);
             }
         }
 
@@ -1107,11 +1116,11 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         ulong? nextLossDelayMicros = null;
 
         IList<ulong> packetNumbersInFlight = ackElicitingPacketsInFlight.Keys;
-        IList<QuicRecoverySentPacketState> packetsInFlight = ackElicitingPacketsInFlight.Values;
+        IList<ulong> sentTimesMicros = ackElicitingPacketsInFlight.Values;
         for (int index = 0; index < ackElicitingPacketsInFlight.Count; index++)
         {
             ulong packetNumber = packetNumbersInFlight[index];
-            QuicRecoverySentPacketState packet = packetsInFlight[index];
+            ulong sentAtMicros = sentTimesMicros[index];
             if (!QuicRecoveryTiming.CanDeclarePacketLost(
                 packetAcknowledged: false,
                 packetInFlight: true,
@@ -1126,7 +1135,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
                 LargestAcknowledgedPacketNumber);
 
             QuicRecoveryTiming.TryComputeRemainingLossDelayMicros(
-                packet.SentAtMicros,
+                sentAtMicros,
                 nowMicros,
                 RttEstimator.LatestRttMicros,
                 RttEstimator.SmoothedRttMicros,
@@ -1171,16 +1180,16 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
 
         List<ulong>? removedPacketNumbers = null;
         IList<ulong> packetNumbersInFlight = ackElicitingPacketsInFlight.Keys;
-        IList<QuicRecoverySentPacketState> packetsInFlight = ackElicitingPacketsInFlight.Values;
         for (int index = 0; index < ackElicitingPacketsInFlight.Count; index++)
         {
-            QuicRecoverySentPacketState packet = packetsInFlight[index];
+            ulong packetNumber = packetNumbersInFlight[index];
+            QuicRecoverySentPacketMetadata packet = MetadataFor(packetNumber);
             if (packet.PacketProtectionLevel != packetProtectionLevel)
             {
                 continue;
             }
 
-            (removedPacketNumbers ??= []).Add(packetNumbersInFlight[index]);
+            (removedPacketNumbers ??= []).Add(packetNumber);
         }
 
         if (removedPacketNumbers is null)
@@ -1190,7 +1199,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
 
         foreach (ulong packetNumber in removedPacketNumbers)
         {
-            ackElicitingPacketsInFlight.Remove(packetNumber);
+            RemovePacket(packetNumber, out _);
         }
 
         return true;
@@ -1208,17 +1217,17 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
 
         List<ulong>? removedPacketNumbers = null;
         IList<ulong> packetNumbersInFlight = ackElicitingPacketsInFlight.Keys;
-        IList<QuicRecoverySentPacketState> packetsInFlight = ackElicitingPacketsInFlight.Values;
         for (int index = 0; index < ackElicitingPacketsInFlight.Count; index++)
         {
-            QuicRecoverySentPacketState packet = packetsInFlight[index];
+            ulong packetNumber = packetNumbersInFlight[index];
+            QuicRecoverySentPacketMetadata packet = MetadataFor(packetNumber);
             if (packet.PacketProtectionLevel != QuicTlsEncryptionLevel.OneRtt
                 || packet.OneRttKeyPhase != keyPhase)
             {
                 continue;
             }
 
-            (removedPacketNumbers ??= []).Add(packetNumbersInFlight[index]);
+            (removedPacketNumbers ??= []).Add(packetNumber);
         }
 
         if (removedPacketNumbers is null)
@@ -1228,10 +1237,64 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
 
         foreach (ulong packetNumber in removedPacketNumbers)
         {
-            ackElicitingPacketsInFlight.Remove(packetNumber);
+            RemovePacket(packetNumber, out _);
         }
 
         return true;
+    }
+
+    private QuicRecoverySentPacketMetadata MetadataFor(ulong packetNumber) =>
+        nonDefaultPacketMetadata is not null
+            && nonDefaultPacketMetadata.TryGetValue(packetNumber, out QuicRecoverySentPacketMetadata metadata)
+                ? metadata
+                : defaultPacketMetadata;
+
+    private bool RemovePacket(ulong packetNumber, out ulong sentAtMicros)
+    {
+        if (!ackElicitingPacketsInFlight.Remove(packetNumber, out sentAtMicros))
+        {
+            return false;
+        }
+
+        nonDefaultPacketMetadata?.Remove(packetNumber);
+        if (ackElicitingPacketsInFlight.Count == 0)
+        {
+            defaultPacketMetadata = default;
+            nonDefaultPacketMetadata?.Clear();
+        }
+        else
+        {
+            RebasePacketMetadataIfNeeded();
+        }
+
+        return true;
+    }
+
+    private void RebasePacketMetadataIfNeeded()
+    {
+        if (nonDefaultPacketMetadata is null
+            || nonDefaultPacketMetadata.Count != ackElicitingPacketsInFlight.Count)
+        {
+            return;
+        }
+
+        QuicRecoverySentPacketMetadata replacement =
+            nonDefaultPacketMetadata[ackElicitingPacketsInFlight.Keys[0]];
+        defaultPacketMetadata = replacement;
+
+        List<ulong>? promotedPacketNumbers = null;
+        foreach ((ulong packetNumber, QuicRecoverySentPacketMetadata metadata) in nonDefaultPacketMetadata)
+        {
+            if (metadata == replacement)
+            {
+                (promotedPacketNumbers ??= []).Add(packetNumber);
+            }
+        }
+
+        foreach (ulong packetNumber in promotedPacketNumbers!)
+        {
+            nonDefaultPacketMetadata.Remove(packetNumber);
+        }
     }
 
     /// <summary>

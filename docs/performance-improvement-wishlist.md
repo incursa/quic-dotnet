@@ -4,6 +4,40 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: recovery packet-number-space ledgers now retain sent timestamps
+  in their ordered value arrays and keep packet-protection level plus the full
+  64-bit 1-RTT key-update epoch once as the current metadata default. Exact
+  metadata for 0-RTT/1-RTT or key-update transitions is retained in a lazy
+  side map, and the default is rebased when the prior phase drains. This
+  preserves nullable and arbitrary internal values, duplicate updates,
+  protection-level discard, full-width key epochs, ACK removal, loss removal,
+  and packet-number ordering while replacing the common 24-byte value array
+  with an 8-byte timestamp array. Short BenchmarkDotNet evidence at 1,024
+  entries reduced allocation from 79.03 to 31.78 KiB and mean population time
+  from 23.90 to 18.49 us; at 8,192 entries allocation fell from 639.28 to
+  255.98 KiB and time from 329.62 to 172.52 us. A single metadata transition
+  remained near the common result, while the deliberately adverse
+  half-old/half-new transition allocated 16-29 percent more than the combined
+  ledger; that uncommon transition cost is retained rather than hidden.
+  Focused recovery/RFC tests passed 1,161/1,161, including a new interleaved
+  ACK/loss guardrail after repeated metadata rebases. The full Release suite
+  passed 9,541 tests with five intentional skips and one multiconnect failure
+  caused by an overlapping Debug suite reaching the same temporary server;
+  the exact failed test passed 1/1 after the competing run was stopped.
+  Independent review found no actionable defect. The matched source-backed
+  c32/s100 trace passed exact validation for 12,800 streams with zero
+  failures/timeouts and removed the old recovery state array. Detailed stack
+  attribution reduced the recovery ledger's sampled key/value arrays from
+  11.68 MiB to 5.77 MiB, about 50.6 percent, with no recovery metadata side
+  dictionary observed. Trace-instrumented throughput moved +1.58 percent and
+  p95 moved -1.72 percent, both within the retained 2 percent neutral band.
+  BDN evidence is under `.artifacts/bdn/recovery-split-metadata-candidate-20260713a`;
+  trace and comparison evidence is under
+  `quic-recovery-split-metadata-c32-gc-20260713a-quic-transport-v1-comparison`,
+  `.artifacts/perf-analysis/quic-recovery-split-metadata-c32-gc-20260713a`,
+  and `.artifacts/perf-triage/quic-recovery-split-metadata-c32-gc-20260713a`.
+  This is local shared-host trace evidence and is not publishable.
+
 - 2026-07-13: cumulative receive-side ECN counters now live once per packet
   number space instead of being repeated in every retained packet receipt.
   `QuicPacketReceipt` remains responsible for packet timing and the
