@@ -4,6 +4,34 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: cumulative receive-side ECN counters now live once per packet
+  number space instead of being repeated in every retained packet receipt.
+  `QuicPacketReceipt` remains responsible for packet timing and the
+  ACK-eliciting bit, while ACK_ECN generation preserves the latest cumulative
+  snapshot across out-of-order packet numbers and acknowledged-range
+  retirement and clears it when the packet number space is discarded. This
+  reduces the receipt value from 48 bytes to 24 bytes without changing retained
+  packet numbers or ACK ranges. Short BenchmarkDotNet evidence at 32, 128, and
+  1,024 receipts reduced allocation from 1.86 to 1.11 KiB, 12.39 to 7.14 KiB,
+  and 110.53 to 63.28 KiB; mean population time improved by roughly 16-20
+  percent. Focused ACK/ECN and layout tests passed 81/81, the final duplicate
+  packet guardrail passed in the focused rerun, and the full Release suite
+  passed 9,538 tests with five intentional skips and zero failures. Independent
+  review found no actionable defect. The matched source-backed c32/s100 trace
+  passed exact validation with zero failures/timeouts and completed 12,800
+  streams versus the retained baseline's 9,600. Sampled
+  `QuicPacketReceipt[]` allocation fell from 18.23 MiB to 10.26 MiB, or from
+  1,991 to 841 bytes per completed stream; sampled top-32 allocation per stream
+  also fell about 13 percent. Trace-instrumented request rate and p95 moved from
+  878.8 requests/s and 3,522 ms to 957.1 requests/s and 3,207 ms, but these
+  shared-host values are diagnostic only and are not accepted as throughput
+  claims. BDN evidence is retained under
+  `.artifacts/bdn/packet-receipt-space-ecn-candidate-20260713a`; ProtocolLab
+  evidence is retained under run
+  `quic-packet-receipt-space-ecn-c32-gc-20260713a-quic-transport-v1-comparison`.
+  The ProtocolLab evidence is local shared-host trace evidence and is not
+  publishable.
+
 - 2026-07-13: unordered application-send queues with a compact priority range
   now materialize directly into their rented output array using a stable linear
   priority distribution. The queue's existing per-priority sequence order

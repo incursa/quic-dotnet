@@ -9,26 +9,17 @@ namespace Incursa.Quic;
 internal readonly record struct QuicPacketReceipt
 {
     private const byte AckElicitingFlag = 1 << 0;
-    private const byte CongestionExperiencedFlag = 1 << 1;
-    private const byte HasEcnCountsFlag = 1 << 2;
 
     private readonly byte flags;
-    private readonly QuicEcnCounts ecnCounts;
 
     internal QuicPacketReceipt(
         ulong ReceivedAtMicros,
         ulong BufferingDelayMicros,
-        bool AckEliciting,
-        bool CongestionExperienced,
-        QuicEcnCounts? EcnCounts)
+        bool AckEliciting)
     {
         this.ReceivedAtMicros = ReceivedAtMicros;
         this.BufferingDelayMicros = BufferingDelayMicros;
-        flags = (byte)(
-            (AckEliciting ? AckElicitingFlag : 0)
-            | (CongestionExperienced ? CongestionExperiencedFlag : 0)
-            | (EcnCounts.HasValue ? HasEcnCountsFlag : 0));
-        ecnCounts = EcnCounts.GetValueOrDefault();
+        flags = AckEliciting ? AckElicitingFlag : (byte)0;
     }
 
     public ulong ReceivedAtMicros { get; }
@@ -37,22 +28,14 @@ internal readonly record struct QuicPacketReceipt
 
     public bool AckEliciting => (flags & AckElicitingFlag) != 0;
 
-    public bool CongestionExperienced => (flags & CongestionExperiencedFlag) != 0;
-
-    public QuicEcnCounts? EcnCounts => (flags & HasEcnCountsFlag) != 0 ? ecnCounts : null;
-
     public void Deconstruct(
         out ulong ReceivedAtMicros,
         out ulong BufferingDelayMicros,
-        out bool AckEliciting,
-        out bool CongestionExperienced,
-        out QuicEcnCounts? EcnCounts)
+        out bool AckEliciting)
     {
         ReceivedAtMicros = this.ReceivedAtMicros;
         BufferingDelayMicros = this.BufferingDelayMicros;
         AckEliciting = this.AckEliciting;
-        CongestionExperienced = this.CongestionExperienced;
-        EcnCounts = this.EcnCounts;
     }
 }
 
@@ -143,9 +126,12 @@ internal sealed class QuicAckGenerationState
         state.Receipts[packetNumber] = new QuicPacketReceipt(
             receivedAtMicros,
             bufferingDelayMicros,
-            ackEliciting,
-            congestionExperienced,
-            ecnCounts);
+            ackEliciting);
+
+        if (ecnCounts.HasValue)
+        {
+            state.EcnCounts = ecnCounts;
+        }
 
         if (ackEliciting && (packetNumberSpace == QuicPacketNumberSpace.Initial || packetNumberSpace == QuicPacketNumberSpace.Handshake))
         {
@@ -310,22 +296,12 @@ internal sealed class QuicAckGenerationState
                 previousSmallestAcknowledged = range.Smallest;
             }
 
-            QuicEcnCounts? ecnCounts = null;
-            IList<QuicPacketReceipt> receipts = state.Receipts.Values;
-            for (int index = 0; index < receipts.Count; index++)
-            {
-                if (receipts[index].EcnCounts.HasValue)
-                {
-                    ecnCounts = receipts[index].EcnCounts;
-                }
-            }
-
             frame = QuicAckFrame.Rent();
-            frame.FrameType = ecnCounts.HasValue ? AckEcnFrameType : AckFrameType;
+            frame.FrameType = state.EcnCounts.HasValue ? AckEcnFrameType : AckFrameType;
             frame.LargestAcknowledged = newestRange.Largest;
             frame.AckDelay = GetAckDelayMicros(nowMicros, state.Receipts[newestRange.Largest]);
             frame.FirstAckRange = newestRange.Largest - newestRange.Smallest;
-            frame.EcnCounts = ecnCounts;
+            frame.EcnCounts = state.EcnCounts;
             if (additionalRangeCount > 0)
             {
                 frame.SetOwnedAdditionalRanges(additionalRanges, additionalRangeCount);
@@ -695,6 +671,8 @@ internal sealed class QuicAckGenerationState
 
         internal ulong? LastAckFrameTriggerPacketNumber { get; set; }
 
+        internal QuicEcnCounts? EcnCounts { get; set; }
+
         internal void Clear()
         {
             foreach (SentAckFrameState sentAckFrame in SentAckFrames.Values)
@@ -707,6 +685,7 @@ internal sealed class QuicAckGenerationState
             ImmediateAckRequired = false;
             LastAckFrameSentAtMicros = null;
             LastAckFrameTriggerPacketNumber = null;
+            EcnCounts = null;
         }
     }
 }
