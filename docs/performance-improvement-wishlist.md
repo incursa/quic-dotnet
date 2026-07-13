@@ -4,6 +4,31 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: narrowing `pendingStreamActionRequestsGate` around stream-write
+  processing was rejected after concurrency review and full-suite proof. The
+  motivating c64 sampled-thread-time trace
+  `quic-current-scaling-c64-cpu-retry-20260713a-quic-transport-v1-comparison`
+  attributed the largest direct `Monitor.Enter` caller groups to stream-write
+  chunking, pending-action registration, write handling, retry, and stream
+  bookkeeping. A first claim/remove/requeue prototype passed focused tests and
+  a 9,556-pass/5-skip full suite, but review showed that temporarily removing
+  processing requests let disposal miss non-blocked writes. A second design
+  kept requests visible with explicit `Pending`/`Processing` state and passed
+  22/22 lifecycle tests plus 129/129 broader stream/flow-control tests, including
+  cancellation, disposal, pooled-completion reuse, and same-thread completion
+  reentrancy. It was still rejected: waiting for active processing during
+  terminal cleanup deadlocked when the send path itself discarded the
+  connection. The decisive full run stopped after 2,682 passes and one skip in
+  `REQ_QUIC_RFC9001_S6P6_0004.RuntimeSendPathDiscardsConnectionWhenSuccessorConfidentialityLimitIsReached`;
+  the hang dump is retained under
+  `tests/Incursa.Quic.Tests/TestResults/bfde7ed5-d3ec-4849-a187-f87deb8a8e8d/`.
+  All candidate code and tests were reverted. Do not repeat a monitor-wait or
+  dictionary-membership ownership design; a materially different attempt must
+  model reentrant terminal transitions directly and prove cancellation,
+  disposal, retry ordering, delayed `ValueTask` consumption, and pooled-source
+  lifetime before performance measurement. This is local diagnostic evidence,
+  not a throughput claim.
+
 - 2026-07-13: externalizing packet number and packet-number space from the
   packed sent-packet value into the existing packed dictionary key was
   rejected as insufficient leverage. A corrected like-for-like packed
