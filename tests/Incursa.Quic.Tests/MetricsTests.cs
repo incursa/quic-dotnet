@@ -330,11 +330,23 @@ public class MetricsTests
         using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(5));
         TaskCompletionSource firstTransitionProcessed = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
+        Assert.True(shard.TryPostFlowControlCreditUpdate(new QuicConnectionHandle(1), runtime));
+        recorder.RecordObservableInstruments();
+        Assert.Equal(1d, recorder.GetLatestMeasurement(
+            "incursa.quic.runtime.shard.inbox.depth",
+            "shard_index",
+            "2"));
+        Assert.Equal(1d, recorder.GetLatestMeasurement(
+            "incursa.quic.runtime.shard.work_item.depth",
+            "shard_index",
+            "2",
+            "work_item_kind",
+            "flow_control_credit_update"));
+
         Task consumer = shard.RunAsync(
             (_, _) => firstTransitionProcessed.TrySetResult(),
             cancellationToken: timeout.Token);
 
-        Assert.True(shard.TryPostFlowControlCreditUpdate(new QuicConnectionHandle(1), runtime));
         await firstTransitionProcessed.Task.WaitAsync(timeout.Token);
         await WaitForMeasurementAsync(
             recorder,
@@ -342,37 +354,29 @@ public class MetricsTests
             "work_item_kind",
             "flow_control_credit_update");
 
+        recorder.RecordObservableInstruments();
+        Assert.Equal(0d, recorder.GetLatestMeasurement(
+            "incursa.quic.runtime.shard.inbox.depth",
+            "shard_index",
+            "2"));
+        Assert.Equal(0d, recorder.GetLatestMeasurement(
+            "incursa.quic.runtime.shard.work_item.depth",
+            "shard_index",
+            "2",
+            "work_item_kind",
+            "flow_control_credit_update"));
+
         await shard.DisposeAsync();
         await consumer;
 
-        Assert.Contains(recorder.Measurements, measurement =>
-            measurement.InstrumentName == "incursa.quic.runtime.shard.inbox.depth"
-            && measurement.Value == 1
-            && measurement.HasTag("shard_index", "2")
-            && !measurement.Tags.Any(tag => tag.Key == "work_item_kind"));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.shard.work_items.enqueued"
             && measurement.Value == 1
             && measurement.HasTag("shard_index", "2")
             && measurement.HasTag("work_item_kind", "flow_control_credit_update"));
         Assert.Contains(recorder.Measurements, measurement =>
-            measurement.InstrumentName == "incursa.quic.runtime.shard.work_item.depth"
-            && measurement.Value == 1
-            && measurement.HasTag("shard_index", "2")
-            && measurement.HasTag("work_item_kind", "flow_control_credit_update"));
-        Assert.Contains(recorder.Measurements, measurement =>
-            measurement.InstrumentName == "incursa.quic.runtime.shard.inbox.depth"
-            && measurement.Value == -1
-            && measurement.HasTag("shard_index", "2")
-            && !measurement.Tags.Any(tag => tag.Key == "work_item_kind"));
-        Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.shard.work_items.dequeued"
             && measurement.Value == 1
-            && measurement.HasTag("shard_index", "2")
-            && measurement.HasTag("work_item_kind", "flow_control_credit_update"));
-        Assert.Contains(recorder.Measurements, measurement =>
-            measurement.InstrumentName == "incursa.quic.runtime.shard.work_item.depth"
-            && measurement.Value == -1
             && measurement.HasTag("shard_index", "2")
             && measurement.HasTag("work_item_kind", "flow_control_credit_update"));
         Assert.Contains(recorder.Measurements, measurement =>
@@ -435,12 +439,86 @@ public class MetricsTests
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.retransmissions.retained_bytes"
             && measurement.HasTag("shard_index", "2"));
-        Assert.Equal(0d, recorder.Measurements
-            .Where(measurement => measurement.InstrumentName == "incursa.quic.runtime.shard.inbox.depth")
-            .Sum(measurement => measurement.Value));
-        Assert.Equal(0d, recorder.Measurements
-            .Where(measurement => measurement.InstrumentName == "incursa.quic.runtime.shard.work_item.depth")
-            .Sum(measurement => measurement.Value));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public async Task RuntimeShardDepthIsAbsoluteAcrossLateListenerAttachment()
+    {
+        FakeMonotonicClock clock = new(0);
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState(), clock);
+        await using QuicConnectionRuntimeShard shard = new(73, clock);
+
+        Assert.True(shard.TryPostFlowControlCreditUpdate(new QuicConnectionHandle(1), runtime));
+        using (MetricsRecorder firstRecorder = MetricsRecorder.Start(QuicMetrics.MeterName))
+        {
+            firstRecorder.RecordObservableInstruments();
+            Assert.Equal(1d, firstRecorder.GetLatestMeasurement(
+                "incursa.quic.runtime.shard.work_item.depth",
+                "shard_index",
+                "73",
+                "work_item_kind",
+                "flow_control_credit_update"));
+        }
+
+        Assert.True(shard.TryPostFlowControlCreditUpdate(new QuicConnectionHandle(1), runtime));
+        using MetricsRecorder secondRecorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+        secondRecorder.RecordObservableInstruments();
+        Assert.Equal(2d, secondRecorder.GetLatestMeasurement(
+            "incursa.quic.runtime.shard.inbox.depth",
+            "shard_index",
+            "73"));
+        Assert.Equal(2d, secondRecorder.GetLatestMeasurement(
+            "incursa.quic.runtime.shard.work_item.depth",
+            "shard_index",
+            "73",
+            "work_item_kind",
+            "flow_control_credit_update"));
+
+        TaskCompletionSource bothProcessed = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        var processed = 0;
+        Task consumer = shard.RunAsync((_, _) =>
+        {
+            if (Interlocked.Increment(ref processed) == 2)
+            {
+                bothProcessed.TrySetResult();
+            }
+        });
+
+        await bothProcessed.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        secondRecorder.RecordObservableInstruments();
+        Assert.Equal(0d, secondRecorder.GetLatestMeasurement(
+            "incursa.quic.runtime.shard.inbox.depth",
+            "shard_index",
+            "73"));
+        Assert.Equal(0d, secondRecorder.GetLatestMeasurement(
+            "incursa.quic.runtime.shard.work_item.depth",
+            "shard_index",
+            "73",
+            "work_item_kind",
+            "flow_control_credit_update"));
+
+        await shard.DisposeAsync();
+        await consumer;
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public async Task RuntimeShardDepthStopsPublishingAfterShardDisposal()
+    {
+        QuicConnectionRuntimeShard shard = new(997);
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+        recorder.RecordObservableInstruments();
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.inbox.depth"
+            && measurement.HasTag("shard_index", "997"));
+
+        await shard.DisposeAsync();
+        int measurementCount = recorder.Measurements.Count;
+        recorder.RecordObservableInstruments();
+
+        Assert.DoesNotContain(recorder.Measurements.Skip(measurementCount), measurement =>
+            measurement.HasTag("shard_index", "997"));
     }
 
     [Fact]
@@ -464,20 +542,24 @@ public class MetricsTests
         Assert.True(shard.TryPostFlowControlCreditUpdate(new QuicConnectionHandle(1), runtime));
         await firstTransitionProcessed.Task.WaitAsync(TimeSpan.FromSeconds(5));
         Assert.True(shard.TryPostFlowControlCreditUpdate(new QuicConnectionHandle(1), runtime));
+        recorder.RecordObservableInstruments();
+        Assert.Equal(1d, recorder.GetLatestMeasurement(
+            "incursa.quic.runtime.shard.work_item.depth",
+            "shard_index",
+            "2",
+            "work_item_kind",
+            "flow_control_credit_update"));
         releaseObserver.Set();
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => consumer);
+        recorder.RecordObservableInstruments();
+        Assert.Equal(0d, recorder.GetLatestMeasurement(
+            "incursa.quic.runtime.shard.work_item.depth",
+            "shard_index",
+            "2",
+            "work_item_kind",
+            "flow_control_credit_update"));
         await Assert.ThrowsAsync<InvalidOperationException>(async () => await shard.DisposeAsync());
-
-        MetricsRecorder.MeasurementRecord[] depth = recorder.Measurements
-            .Where(measurement =>
-                measurement.InstrumentName == "incursa.quic.runtime.shard.work_item.depth"
-                && measurement.HasTag("shard_index", "2")
-                && measurement.HasTag("work_item_kind", "flow_control_credit_update"))
-            .ToArray();
-        Assert.Equal(2, depth.Count(measurement => measurement.Value == 1));
-        Assert.Equal(2, depth.Count(measurement => measurement.Value == -1));
-        Assert.Equal(0d, depth.Sum(measurement => measurement.Value));
     }
 
     [Fact]
@@ -729,6 +811,12 @@ public class MetricsTests
             "incursa.quic.runtime.shard.work_items.dequeued",
             "work_item_kind",
             "event");
+        recorder.RecordObservableInstruments();
+        Assert.Equal(0d, recorder.GetLatestMeasurement(
+            "incursa.quic.runtime.shard.inbox.depth",
+            "shard_index",
+            "4"));
+
         await shard.DisposeAsync();
         await consumer;
 
@@ -742,9 +830,6 @@ public class MetricsTests
             && measurement.Value == 1
             && measurement.HasTag("shard_index", "4")
             && measurement.HasTag("work_item_kind", "event"));
-        Assert.Equal(0d, recorder.Measurements
-            .Where(measurement => measurement.InstrumentName == "incursa.quic.runtime.shard.inbox.depth")
-            .Sum(measurement => measurement.Value));
     }
 
     [Fact]
@@ -890,6 +975,22 @@ public class MetricsTests
                 return measurements.Last(measurement =>
                     measurement.InstrumentName == instrumentName
                     && measurement.HasTag(tagName, tagValue)).Value;
+            }
+        }
+
+        public double GetLatestMeasurement(
+            string instrumentName,
+            string firstTagName,
+            string firstTagValue,
+            string secondTagName,
+            string secondTagValue)
+        {
+            lock (sync)
+            {
+                return measurements.Last(measurement =>
+                    measurement.InstrumentName == instrumentName
+                    && measurement.HasTag(firstTagName, firstTagValue)
+                    && measurement.HasTag(secondTagName, secondTagValue)).Value;
             }
         }
 

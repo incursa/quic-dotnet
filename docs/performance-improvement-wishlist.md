@@ -4,6 +4,38 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-12: queue-depth diagnostics now expose absolute observable gauges
+  backed by active shard-owned registrations. Inbox depth comes directly from
+  each channel, per-kind depth is maintained continuously with enqueue-before-
+  publish ordering, late or reattached listeners see the current backlog, and
+  disposed shards stop publishing instead of retaining stale series. Focused
+  metrics tests pass 20/20, including late-listener and disposal-cardinality
+  coverage. A matched untraced c32/s100 multiplex comparison passed all five
+  baseline and five final-candidate cells; the final candidate median was
+  1,011.10 requests/s versus the retained 970.14 baseline (+4.22 percent). This
+  shared-host result is accepted only as no-regression evidence, not as a claim
+  that depth tracking improves throughput. The final Release suite passed
+  9,529/9,534 with five intentional skips. An earlier suite attempt had one
+  duplicate-pseudo-header connection-close timeout; that exact test then passed
+  5/5 focused repetitions before the clean full rerun. Core SpecTrace validation
+  currently reports the same 2,644 pre-existing schema/relationship errors on
+  both this branch and clean `main`; no SpecTrace artifacts changed in this
+  slice. The corrected c128 trace showed peak packet queue depth of 9,003 and
+  stream-write depth of 3,443 across eight
+  balanced shards, versus 175,254 outstanding 4 KiB buffers. This disproves
+  the earlier interpretation of interval depth deltas and shows that most
+  retained 4 KiB buffers are stream receive storage rather than queued UDP
+  datagrams. Three evidence-backed candidates were rejected and retained under
+  ProtocolLab `.artifacts/negative-results`: raising the default shard cap to
+  16 increased CPU/heap/timeout pressure without reducing queue depth; lowering
+  only the raw target connection window to 1 MiB did not reduce peak buffer
+  retention; and a bounded stream-write priority lane reduced trace write depth
+  from 3,443 to 444 but increased peak buffer retention, retained the same 3/5
+  c128 validation rate, and moved successful-run median throughput only +0.54
+  percent. Do not repeat these candidates without a materially different
+  design. Queue/backpressure work remains open around receive-segment lifetime,
+  application read/write coupling, and sent-packet retention.
+
 - 2026-07-12: incomplete stream try-writes now return the runtime's pooled
   `ValueTask<bool>` directly instead of allocating
   `QuicStream.TryWriteCoreAfterRuntimeWriteAsync` for every suspended write.

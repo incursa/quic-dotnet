@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Channels;
 
 namespace Incursa.Quic;
 
@@ -57,6 +58,59 @@ internal static class QuicMetrics
     private const int ClientRoleIndex = 0;
     private const int ServerRoleIndex = 1;
     private const int RoleCount = 2;
+    private const int RuntimeShardDeadlineWakeWorkItemKindIndex = (int)QuicConnectionRuntimeShardWorkItemKind.StreamWrite + 1;
+    private const int RuntimeShardWorkItemKindCount = RuntimeShardDeadlineWakeWorkItemKindIndex + 1;
+
+    internal sealed class RuntimeShardMetricsRegistration
+    {
+        private readonly ChannelReader<QuicConnectionRuntimeShardWorkItem> inbox;
+        private readonly long[] workItemDepths = new long[RuntimeShardWorkItemKindCount];
+
+        internal RuntimeShardMetricsRegistration(
+            int shardIndex,
+            ChannelReader<QuicConnectionRuntimeShardWorkItem> inbox)
+        {
+            ShardIndex = shardIndex;
+            this.inbox = inbox;
+        }
+
+        internal int ShardIndex { get; }
+
+        internal long InboxDepth => inbox.CanCount ? inbox.Count : GetTotalWorkItemDepth();
+
+        internal void BeginEnqueue(in QuicConnectionRuntimeShardWorkItem workItem)
+            => Interlocked.Increment(ref workItemDepths[GetRuntimeShardWorkItemKindIndex(in workItem)]);
+
+        internal void CancelEnqueue(in QuicConnectionRuntimeShardWorkItem workItem)
+            => Interlocked.Decrement(ref workItemDepths[GetRuntimeShardWorkItemKindIndex(in workItem)]);
+
+        internal void RecordDequeue(in QuicConnectionRuntimeShardWorkItem workItem)
+            => Interlocked.Decrement(ref workItemDepths[GetRuntimeShardWorkItemKindIndex(in workItem)]);
+
+        internal long GetWorkItemDepth(int workItemKindIndex)
+            => Volatile.Read(ref workItemDepths[workItemKindIndex]);
+
+        private long GetTotalWorkItemDepth()
+        {
+            long total = 0;
+            for (var i = 0; i < workItemDepths.Length; i++)
+            {
+                total += Volatile.Read(ref workItemDepths[i]);
+            }
+
+            return total;
+        }
+
+        private static int GetRuntimeShardWorkItemKindIndex(in QuicConnectionRuntimeShardWorkItem workItem)
+        {
+            if (IsDeadlineWakeWorkItem(in workItem))
+            {
+                return RuntimeShardDeadlineWakeWorkItemKindIndex;
+            }
+
+            return (int)workItem.Kind;
+        }
+    }
 
     private static readonly Meter Meter = new(MeterName);
     private static readonly QuicApplicationSendQueueCause[] ApplicationSendQueueCauses =
@@ -88,8 +142,8 @@ internal static class QuicMetrics
     private static readonly Counter<long> AeadOpenFailures = Meter.CreateCounter<long>("incursa.quic.aead.open_failures", unit: "events");
     private static readonly Counter<long> UdpErrors = Meter.CreateCounter<long>("incursa.quic.udp.errors", unit: "events");
     private static readonly Histogram<double> Rtt = Meter.CreateHistogram<double>("incursa.quic.rtt.ms", unit: "ms");
-    private static readonly UpDownCounter<long> RuntimeShardInboxDepth = Meter.CreateUpDownCounter<long>(RuntimeShardInboxDepthMetricName, unit: "work_items");
-    private static readonly UpDownCounter<long> RuntimeShardWorkItemDepth = Meter.CreateUpDownCounter<long>(RuntimeShardWorkItemDepthMetricName, unit: "work_items");
+    internal static readonly ObservableGauge<long> RuntimeShardInboxDepth = Meter.CreateObservableGauge(RuntimeShardInboxDepthMetricName, ObserveRuntimeShardInboxDepth, unit: "work_items");
+    internal static readonly ObservableGauge<long> RuntimeShardWorkItemDepth = Meter.CreateObservableGauge(RuntimeShardWorkItemDepthMetricName, ObserveRuntimeShardWorkItemDepth, unit: "work_items");
     private static readonly Counter<long> RuntimeShardWorkItemsEnqueued = Meter.CreateCounter<long>(RuntimeShardWorkItemsEnqueuedMetricName, unit: "work_items");
     private static readonly Counter<long> RuntimeShardWorkItemsDequeued = Meter.CreateCounter<long>(RuntimeShardWorkItemsDequeuedMetricName, unit: "work_items");
     private static readonly Histogram<double> RuntimeShardQueueDelay = Meter.CreateHistogram<double>(RuntimeShardQueueDelayMetricName, unit: "ms");
@@ -129,6 +183,8 @@ internal static class QuicMetrics
     private static readonly ObservableCounter<long> BufferPoolOversizedRents = Meter.CreateObservableCounter("incursa.quic.buffer_pool.oversized_rents", () => ObserveBufferPoolMetric(BufferPoolOversizedRentCounts, "size_bucket"), unit: "buffers");
     private static readonly long[] BufferPoolOutstandingBufferCounts = new long[BufferPoolBucketCount];
     private static readonly long[] BufferPoolOutstandingByteCounts = new long[BufferPoolBucketCount];
+    private static RuntimeShardMetricsRegistration[] runtimeShardMetricsRegistrations = [];
+    private static readonly object RuntimeShardMetricsRegistrationsSync = new();
 
     internal static void RecordConnectionStarted(QuicTlsRole role)
     {
@@ -319,68 +375,77 @@ internal static class QuicMetrics
 
     internal static void RecordRuntimeShardWorkItemEnqueued(int shardIndex, in QuicConnectionRuntimeShardWorkItem workItem)
     {
-        if (!RuntimeShardInboxDepth.Enabled
-            && !RuntimeShardWorkItemDepth.Enabled
-            && !RuntimeShardWorkItemsEnqueued.Enabled)
+        if (!RuntimeShardWorkItemsEnqueued.Enabled)
         {
             return;
         }
 
-        if (RuntimeShardInboxDepth.Enabled)
-        {
-            TagList depthTags = default;
-            depthTags.Add(RuntimeShardIndexTagName, shardIndex);
-            RuntimeShardInboxDepth.Add(1, in depthTags);
-        }
-
-        if (RuntimeShardWorkItemDepth.Enabled)
-        {
-            TagList workItemDepthTags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
-            RuntimeShardWorkItemDepth.Add(1, in workItemDepthTags);
-        }
-
-        if (RuntimeShardWorkItemsEnqueued.Enabled)
-        {
-            TagList workItemTags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
-            RuntimeShardWorkItemsEnqueued.Add(1, in workItemTags);
-        }
+        TagList workItemTags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
+        RuntimeShardWorkItemsEnqueued.Add(1, in workItemTags);
     }
 
-    internal static void RecordRuntimeShardWorkItemDequeued(int shardIndex, in QuicConnectionRuntimeShardWorkItem workItem)
+    internal static void RecordRuntimeShardWorkItemDequeued(
+        RuntimeShardMetricsRegistration registration,
+        in QuicConnectionRuntimeShardWorkItem workItem)
     {
-        if (!RuntimeShardInboxDepth.Enabled
-            && !RuntimeShardWorkItemDepth.Enabled
-            && !RuntimeShardWorkItemsDequeued.Enabled
+        registration.RecordDequeue(in workItem);
+
+        if (!RuntimeShardWorkItemsDequeued.Enabled
             && !RuntimeShardQueueDelay.Enabled)
         {
             return;
         }
 
-        if (RuntimeShardInboxDepth.Enabled)
-        {
-            TagList depthTags = default;
-            depthTags.Add(RuntimeShardIndexTagName, shardIndex);
-            RuntimeShardInboxDepth.Add(-1, in depthTags);
-        }
-
-        if (RuntimeShardWorkItemDepth.Enabled)
-        {
-            TagList workItemDepthTags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
-            RuntimeShardWorkItemDepth.Add(-1, in workItemDepthTags);
-        }
-
         if (RuntimeShardWorkItemsDequeued.Enabled)
         {
-            TagList workItemTags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
+            TagList workItemTags = CreateRuntimeShardWorkItemTags(registration.ShardIndex, in workItem);
             RuntimeShardWorkItemsDequeued.Add(1, in workItemTags);
         }
 
         if (RuntimeShardQueueDelay.Enabled && workItem.EnqueuedTimestamp != 0)
         {
-            TagList queueDelayTags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
+            TagList queueDelayTags = CreateRuntimeShardWorkItemTags(registration.ShardIndex, in workItem);
             RuntimeShardQueueDelay.Record(
                 Stopwatch.GetElapsedTime(workItem.EnqueuedTimestamp).TotalMilliseconds,
                 in queueDelayTags);
+        }
+    }
+
+    internal static RuntimeShardMetricsRegistration RegisterRuntimeShard(
+        int shardIndex,
+        ChannelReader<QuicConnectionRuntimeShardWorkItem> inbox)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(shardIndex);
+        ArgumentNullException.ThrowIfNull(inbox);
+
+        var registration = new RuntimeShardMetricsRegistration(shardIndex, inbox);
+        lock (RuntimeShardMetricsRegistrationsSync)
+        {
+            RuntimeShardMetricsRegistration[] current = runtimeShardMetricsRegistrations;
+            var updated = new RuntimeShardMetricsRegistration[current.Length + 1];
+            Array.Copy(current, updated, current.Length);
+            updated[^1] = registration;
+            Volatile.Write(ref runtimeShardMetricsRegistrations, updated);
+        }
+
+        return registration;
+    }
+
+    internal static void UnregisterRuntimeShard(RuntimeShardMetricsRegistration registration)
+    {
+        lock (RuntimeShardMetricsRegistrationsSync)
+        {
+            RuntimeShardMetricsRegistration[] current = runtimeShardMetricsRegistrations;
+            int index = Array.IndexOf(current, registration);
+            if (index < 0)
+            {
+                return;
+            }
+
+            var updated = new RuntimeShardMetricsRegistration[current.Length - 1];
+            Array.Copy(current, 0, updated, 0, index);
+            Array.Copy(current, index + 1, updated, index, current.Length - index - 1);
+            Volatile.Write(ref runtimeShardMetricsRegistrations, updated);
         }
     }
 
@@ -792,6 +857,54 @@ internal static class QuicMetrics
         }
     }
 
+    private static IEnumerable<Measurement<long>> ObserveRuntimeShardInboxDepth()
+    {
+        RuntimeShardMetricsRegistration[] registrations = Volatile.Read(ref runtimeShardMetricsRegistrations);
+        var depthsByShard = new Dictionary<int, long>();
+        foreach (RuntimeShardMetricsRegistration registration in registrations)
+        {
+            depthsByShard.TryGetValue(registration.ShardIndex, out long depth);
+            depthsByShard[registration.ShardIndex] = depth + registration.InboxDepth;
+        }
+
+        foreach ((int shardIndex, long depth) in depthsByShard)
+        {
+            yield return new Measurement<long>(
+                depth,
+                new KeyValuePair<string, object?>(RuntimeShardIndexTagName, shardIndex));
+        }
+    }
+
+    private static IEnumerable<Measurement<long>> ObserveRuntimeShardWorkItemDepth()
+    {
+        RuntimeShardMetricsRegistration[] registrations = Volatile.Read(ref runtimeShardMetricsRegistrations);
+        var depthsByShard = new Dictionary<int, long[]>();
+        foreach (RuntimeShardMetricsRegistration registration in registrations)
+        {
+            if (!depthsByShard.TryGetValue(registration.ShardIndex, out long[]? depths))
+            {
+                depths = new long[RuntimeShardWorkItemKindCount];
+                depthsByShard.Add(registration.ShardIndex, depths);
+            }
+
+            for (var workItemKindIndex = 0; workItemKindIndex < RuntimeShardWorkItemKindCount; workItemKindIndex++)
+            {
+                depths[workItemKindIndex] += registration.GetWorkItemDepth(workItemKindIndex);
+            }
+        }
+
+        foreach ((int shardIndex, long[] depths) in depthsByShard)
+        {
+            for (var workItemKindIndex = 0; workItemKindIndex < RuntimeShardWorkItemKindCount; workItemKindIndex++)
+            {
+                yield return new Measurement<long>(
+                    depths[workItemKindIndex],
+                    new KeyValuePair<string, object?>(RuntimeShardIndexTagName, shardIndex),
+                    new KeyValuePair<string, object?>(RuntimeShardWorkItemKindTagName, GetRuntimeShardWorkItemKindTag(workItemKindIndex)));
+            }
+        }
+    }
+
     private static IEnumerable<Measurement<long>> ObserveBufferPoolOutstandingBytes()
     {
         for (var i = 0; i < BufferPoolBucketCount; i++)
@@ -847,6 +960,25 @@ internal static class QuicMetrics
             <= BufferPoolSixtyFourKilobyteBucket => BufferPoolSixtyFourKilobyteBucketIndex,
             <= BufferPoolTwoHundredFiftySixKilobyteBucket => BufferPoolTwoHundredFiftySixKilobyteBucketIndex,
             _ => BufferPoolGreaterThanTwoHundredFiftySixKilobyteBucketIndex,
+        };
+    }
+
+    private static string GetRuntimeShardWorkItemKindTag(int workItemKindIndex)
+    {
+        if (workItemKindIndex == RuntimeShardDeadlineWakeWorkItemKindIndex)
+        {
+            return "deadline_wake";
+        }
+
+        return ((QuicConnectionRuntimeShardWorkItemKind)workItemKindIndex) switch
+        {
+            QuicConnectionRuntimeShardWorkItemKind.Event => "event",
+            QuicConnectionRuntimeShardWorkItemKind.PacketReceived => "packet_received",
+            QuicConnectionRuntimeShardWorkItemKind.StreamCapacityRelease => "stream_capacity_release",
+            QuicConnectionRuntimeShardWorkItemKind.FlowControlCreditUpdate => "flow_control_credit_update",
+            QuicConnectionRuntimeShardWorkItemKind.StreamOpen => "stream_open",
+            QuicConnectionRuntimeShardWorkItemKind.StreamWrite => "stream_write",
+            _ => "unknown",
         };
     }
 
