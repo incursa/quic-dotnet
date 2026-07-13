@@ -42,3 +42,9 @@ internal readonly record struct QuicRetentionSnapshot(
         return ageMicros / MicrosecondsPerMillisecond;
     }
 }
+
+internal readonly record struct QuicReceiveRetentionSnapshot(
+    long RetainedBufferCount,
+    long RetainedBufferBytes,
+    long BufferedBytes,
+    long BufferedStreamCount);

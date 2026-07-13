@@ -1141,6 +1141,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     internal QuicRetentionSnapshot CaptureRetransmissionRetentionSnapshot()
         => sendRuntime.CaptureRetransmissionRetentionSnapshot(GetElapsedMicros(lastTransitionTicks));
 
+    internal QuicReceiveRetentionSnapshot CaptureReceiveRetentionSnapshot()
+        => streamRegistry.Bookkeeping.CaptureReceiveRetentionSnapshot();
+
     private int runtimeWorkItemFlushedApplicationSends;
     private int runtimeWorkItemFlushedFlowControlUpdates;
     private int runtimeWorkItemFlushedStreamCapacityReleases;

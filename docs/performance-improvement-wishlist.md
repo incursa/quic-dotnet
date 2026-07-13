@@ -4,6 +4,28 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-12: receive-retention diagnostics now distinguish owned STREAM
+  receive segments, retained segment capacity, unread payload bytes, and
+  streams with unread data. The counters use constant-time aggregates updated
+  under the existing stream-state lock at rent, read, reset, and release
+  boundaries; focused metrics and receive-buffer lifecycle tests pass 33/33,
+  including duplicate-frame, partial-read, multi-stream, and reset coverage.
+  A source-backed c64/s100 raw QUIC multiplex diagnostic run completed all
+  12,800 streams with zero failures or timeouts and passed exact validation.
+  It observed 90,071 outstanding 4 KiB buffers globally while active
+  per-connection snapshots peaked at 1,882-1,898 owned receive segments and
+  roughly 5.25 MiB unread payload. Packet-receive queues simultaneously peaked
+  at 524-1,645 items per shard. This confirms receive-segment lifetime as the
+  dominant 4 KiB retention source while preserving queue depth as a separate
+  scheduling concern. The c128 diagnostic retained one timed-out 100-stream
+  connection and is saturation evidence only. The earlier 16 KiB stream-window
+  experiment is explicitly inconclusive: its child command launched the
+  source-backed QUIC server, so the ProtocolLab-local window edit was never
+  executed. Do not cite that run as accepting or rejecting smaller receive
+  windows. Evidence is retained under ProtocolLab `.artifacts/runs/` and
+  `.artifacts/negative-results/`; no throughput claim is made from counter-
+  instrumented shared-host runs.
+
 - 2026-07-12: queue-depth diagnostics now expose absolute observable gauges
   backed by active shard-owned registrations. Inbox depth comes directly from
   each channel, per-kind depth is maintained continuously with enqueue-before-

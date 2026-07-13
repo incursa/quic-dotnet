@@ -439,6 +439,18 @@ public class MetricsTests
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.retransmissions.retained_bytes"
             && measurement.HasTag("shard_index", "2"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.receive.retained_buffers"
+            && measurement.HasTag("shard_index", "2"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.receive.retained_bytes"
+            && measurement.HasTag("shard_index", "2"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.receive.buffered_bytes"
+            && measurement.HasTag("shard_index", "2"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.receive.buffered_streams"
+            && measurement.HasTag("shard_index", "2"));
     }
 
     [Fact]
