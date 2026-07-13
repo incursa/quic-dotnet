@@ -22,6 +22,8 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
     private readonly QuicConnectionStreamState bookkeeping;
     private readonly QuicConnectionRuntime? runtime;
     private readonly Action releaseWriteGateAction;
+    private readonly Action<bool> releaseTryWriteGateAction;
+    private readonly Action<bool> completeTryWriteFinalAction;
     private readonly ulong streamId;
     private readonly QuicStreamType type;
     private readonly bool canRead;
@@ -49,6 +51,8 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
         this.bookkeeping = bookkeeping ?? throw new ArgumentNullException(nameof(bookkeeping));
         this.runtime = runtime;
         releaseWriteGateAction = ReleaseWriteGate;
+        releaseTryWriteGateAction = CompleteTryWrite;
+        completeTryWriteFinalAction = CompleteTryWriteFinal;
         this.streamId = streamId;
 
         if (!bookkeeping.TryGetStreamSnapshot(streamId, out QuicConnectionStreamSnapshot snapshot))
@@ -960,29 +964,17 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
                 return new ValueTask<bool>(false);
             }
 
-            ValueTask<bool> writeTask = finishWrites
-                ? currentRuntime.TryWriteFinalStreamAsync(streamId, buffer, cancellationToken)
-                : currentRuntime.TryWriteStreamAsync(streamId, buffer, cancellationToken);
-            if (!writeTask.IsCompletedSuccessfully)
-            {
-                return TryWriteCoreAfterRuntimeWriteAsync(writeTask, finishWrites);
-            }
-
-            bool completed = writeTask.GetAwaiter().GetResult();
-            if (!completed)
-            {
-                ReleaseWriteGate();
-                return new ValueTask<bool>(false);
-            }
-
-            if (finishWrites)
-            {
-                CompleteWritesClosed();
-                currentRuntime.TryQueueStreamCapacityRelease(streamId);
-            }
-
-            ReleaseWriteGate();
-            return new ValueTask<bool>(true);
+            return finishWrites
+                ? currentRuntime.TryWriteFinalStreamAsync(
+                    streamId,
+                    buffer,
+                    completeTryWriteFinalAction,
+                    cancellationToken)
+                : currentRuntime.TryWriteStreamAsync(
+                    streamId,
+                    buffer,
+                    releaseTryWriteGateAction,
+                    cancellationToken);
         }
         catch
         {
@@ -991,25 +983,18 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
         }
     }
 
-    private async ValueTask<bool> TryWriteCoreAfterRuntimeWriteAsync(
-        ValueTask<bool> writeTask,
-        bool finishWrites)
+    private void CompleteTryWrite(bool _)
+        => ReleaseWriteGate();
+
+    private void CompleteTryWriteFinal(bool completed)
     {
         try
         {
-            bool completed = await writeTask.ConfigureAwait(false);
-            if (!completed)
-            {
-                return false;
-            }
-
-            if (finishWrites)
+            if (completed)
             {
                 CompleteWritesClosed();
                 runtime!.TryQueueStreamCapacityRelease(streamId);
             }
-
-            return true;
         }
         finally
         {

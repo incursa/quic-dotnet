@@ -224,6 +224,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         private CancellationTokenRegistration cancellationRegistration;
         private byte[]? ownedStreamData;
         private Action? completionAction;
+        private Action<bool>? resultCompletionAction;
         private long writeStartedTimestamp;
         private int completed;
 
@@ -250,6 +251,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             StreamDataLength = 0;
             SuppressTerminalException = false;
             completionAction = null;
+            resultCompletionAction = null;
             writeStartedTimestamp = 0;
             completed = 0;
             source.Reset();
@@ -277,8 +279,14 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         internal void ConfigureCompletionAction(Action completionAction)
             => this.completionAction = completionAction;
 
+        internal void ConfigureResultCompletionAction(Action<bool> completionAction)
+            => resultCompletionAction = completionAction;
+
         internal void ClearCompletionAction()
-            => completionAction = null;
+        {
+            completionAction = null;
+            resultCompletionAction = null;
+        }
 
         internal void RegisterCancellation(long requestId, CancellationToken cancellationToken)
         {
@@ -346,7 +354,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 return;
             }
 
-            if (TryInvokeCompletionAction(out Exception? completionException))
+            if (TryInvokeCompletionActions(succeeded: true, out Exception? completionException))
             {
                 RecordWriteCompletion("failed");
                 source.SetException(completionException!);
@@ -364,7 +372,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 return;
             }
 
-            if (TryInvokeCompletionAction(out Exception? completionException))
+            if (TryInvokeCompletionActions(succeeded: false, out Exception? completionException))
             {
                 RecordWriteCompletion("failed");
                 source.SetException(completionException!);
@@ -382,7 +390,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 return;
             }
 
-            if (TryInvokeCompletionAction(out Exception? completionException))
+            if (TryInvokeCompletionActions(succeeded: false, out Exception? completionException))
             {
                 RecordWriteCompletion("failed");
                 source.SetException(completionException!);
@@ -406,7 +414,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 return;
             }
 
-            if (TryInvokeCompletionAction(out Exception? completionException))
+            if (TryInvokeCompletionActions(succeeded: false, out Exception? completionException))
             {
                 RecordWriteCompletion("failed");
                 source.SetException(completionException!);
@@ -417,21 +425,33 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             source.SetException(new OperationCanceledException(cancellationToken));
         }
 
-        private bool TryInvokeCompletionAction(out Exception? exception)
+        private bool TryInvokeCompletionActions(bool succeeded, out Exception? exception)
         {
+            Exception? actionException = null;
+            try
+            {
+                Action<bool>? resultAction = resultCompletionAction;
+                resultCompletionAction = null;
+                resultAction?.Invoke(succeeded);
+            }
+            catch (Exception completionException)
+            {
+                actionException = completionException;
+            }
+
             try
             {
                 Action? action = completionAction;
                 completionAction = null;
                 action?.Invoke();
-                exception = null;
-                return false;
             }
             catch (Exception completionException)
             {
-                exception = completionException;
-                return true;
+                actionException ??= completionException;
             }
+
+            exception = actionException;
+            return actionException is not null;
         }
 
         private void RecordWriteCompletion(string outcome)
@@ -2002,7 +2022,26 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         ulong streamId,
         ReadOnlyMemory<byte> buffer,
         CancellationToken cancellationToken = default)
-        => WriteStreamAsyncCore(streamId, buffer, finishWrites: false, suppressTerminalException: true, cancellationToken);
+        => WriteStreamAsyncCore(
+            streamId,
+            buffer,
+            finishWrites: false,
+            suppressTerminalException: true,
+            completionAction: null,
+            cancellationToken);
+
+    internal ValueTask<bool> TryWriteStreamAsync(
+        ulong streamId,
+        ReadOnlyMemory<byte> buffer,
+        Action<bool> completionAction,
+        CancellationToken cancellationToken = default)
+        => WriteStreamAsyncCore(
+            streamId,
+            buffer,
+            finishWrites: false,
+            suppressTerminalException: true,
+            completionAction ?? throw new ArgumentNullException(nameof(completionAction)),
+            cancellationToken);
 
     internal ValueTask WriteFinalStreamAsync(
         ulong streamId,
@@ -2014,7 +2053,26 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         ulong streamId,
         ReadOnlyMemory<byte> buffer,
         CancellationToken cancellationToken = default)
-        => WriteStreamAsyncCore(streamId, buffer, finishWrites: true, suppressTerminalException: true, cancellationToken);
+        => WriteStreamAsyncCore(
+            streamId,
+            buffer,
+            finishWrites: true,
+            suppressTerminalException: true,
+            completionAction: null,
+            cancellationToken);
+
+    internal ValueTask<bool> TryWriteFinalStreamAsync(
+        ulong streamId,
+        ReadOnlyMemory<byte> buffer,
+        Action<bool> completionAction,
+        CancellationToken cancellationToken = default)
+        => WriteStreamAsyncCore(
+            streamId,
+            buffer,
+            finishWrites: true,
+            suppressTerminalException: true,
+            completionAction ?? throw new ArgumentNullException(nameof(completionAction)),
+            cancellationToken);
 
     private static async ValueTask AwaitWriteStreamResultAsync(ValueTask<bool> writeTask)
     {
@@ -2115,11 +2173,28 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
     }
 
+    private static async ValueTask<bool> AwaitTryWriteStreamResultAndCompleteAsync(
+        ValueTask<bool> writeTask,
+        Action<bool> completionAction)
+    {
+        bool completed = false;
+        try
+        {
+            completed = await writeTask.ConfigureAwait(false);
+            return completed;
+        }
+        finally
+        {
+            completionAction(completed);
+        }
+    }
+
     private ValueTask<bool> WriteStreamAsyncCore(
         ulong streamId,
         ReadOnlyMemory<byte> buffer,
         bool finishWrites,
         bool suppressTerminalException,
+        Action<bool>? completionAction,
         CancellationToken cancellationToken)
     {
         ThrowIfDisposed();
@@ -2128,6 +2203,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         {
             if (suppressTerminalException)
             {
+                completionAction?.Invoke(false);
                 return new ValueTask<bool>(false);
             }
 
@@ -2138,12 +2214,21 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         if (buffer.IsEmpty && !finishWrites)
         {
+            completionAction?.Invoke(true);
             return new ValueTask<bool>(true);
         }
 
         if (buffer.Length > MaximumStreamWriteChunkBytes)
         {
-            return WriteStreamChunksAsync(streamId, buffer, finishWrites, suppressTerminalException, cancellationToken);
+            ValueTask<bool> chunkWriteTask = WriteStreamChunksAsync(
+                streamId,
+                buffer,
+                finishWrites,
+                suppressTerminalException,
+                cancellationToken);
+            return completionAction is null
+                ? chunkWriteTask
+                : AwaitTryWriteStreamResultAndCompleteAsync(chunkWriteTask, completionAction);
         }
 
         LogApplicationSend(
@@ -2155,12 +2240,17 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             finishWrites ? QuicConnectionStreamActionKind.Finish : QuicConnectionStreamActionKind.Write,
             streamId,
             buffer.Length);
+        if (completionAction is not null)
+        {
+            completion.ConfigureResultCompletionAction(completionAction);
+        }
         completion.SuppressTerminalException = suppressTerminalException;
         if (!TryAddPendingStreamActionRequest(requestId, completion))
         {
             ReturnStreamActionRequestCompletionSource(completion);
             if (suppressTerminalException && (IsDisposed || terminalState is not null))
             {
+                completionAction?.Invoke(false);
                 return new ValueTask<bool>(false);
             }
 
@@ -2187,6 +2277,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             ReturnStreamActionRequestCompletionSource(completion);
             if (suppressTerminalException && (IsDisposed || terminalState is not null))
             {
+                completionAction?.Invoke(false);
                 return new ValueTask<bool>(false);
             }
 
@@ -2209,7 +2300,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         {
             int chunkLength = Math.Min(buffer.Length, MaximumStreamWriteChunkBytes);
             bool finishChunk = finishWrites && chunkLength == buffer.Length;
-            if (!await WriteStreamAsyncCore(streamId, buffer[..chunkLength], finishChunk, suppressTerminalException, cancellationToken).ConfigureAwait(false))
+            if (!await WriteStreamAsyncCore(
+                    streamId,
+                    buffer[..chunkLength],
+                    finishChunk,
+                    suppressTerminalException,
+                    completionAction: null,
+                    cancellationToken).ConfigureAwait(false))
             {
                 return false;
             }

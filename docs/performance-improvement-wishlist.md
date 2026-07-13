@@ -4,6 +4,38 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-12: incomplete stream try-writes now return the runtime's pooled
+  `ValueTask<bool>` directly instead of allocating
+  `QuicStream.TryWriteCoreAfterRuntimeWriteAsync` for every suspended write.
+  Completion callbacks release the per-stream write gate before delayed result
+  consumption while preserving pooled token lifetime, cancellation, disposal,
+  terminal failure, final-write closure, and write serialization. Focused
+  write-request tests passed 17/17, the wider stream and HTTP/3 slice passed
+  122 tests with one existing skip, the solution built with zero warnings, and
+  the full suite passed 9,527/9,532 with five intentional skips. One shutdown
+  ordering failure from the first full-suite run passed five consecutive exact
+  reruns and the clean full-suite rerun. An independent concurrency review
+  found no correctness defect; large multi-chunk writes retain their existing
+  async sequencing helper and are the explicit residual test gap. The first
+  profile attempt was rejected because an existing debug endpoint owned UDP
+  port 5444, causing the new source target to exit while readiness probed the
+  old endpoint. Corrected source-backed traces used a disposable same-commit
+  ProtocolLab manifest on port 5544 and passed exact 64 KiB validation. The
+  baseline trace sampled 271
+  `TryWriteCoreAfterRuntimeWriteAsync` state-machine allocations with
+  28,810,936 estimated bytes; the candidate sampled no matching or replacement
+  `AwaitTryWrite` group. Matched untraced c16/s10 confidence runs passed all
+  18 validation and benchmark cells across nine baseline and nine candidate
+  repetitions. Median request rate was effectively flat at +0.20 percent,
+  p95 improved 0.38 percent, and allocation rate improved 6.55 percent with no
+  signal regressing beyond the two-percent triage tolerance. Retained evidence
+  is under `.artifacts/perf-analysis/quic-incomplete-write-*`,
+  `.artifacts/protocol-lab-runs/quic-incomplete-write-20260712a`, and
+  `.artifacts/perf-triage/quic-incomplete-write-compare-stable-20260712a`.
+  Treat all results as local shared-host diagnostic evidence, not publishable
+  benchmark claims. The next priority is queue-depth and backpressure
+  attribution using the retained c128 multiplex failures and target telemetry.
+
 - 2026-07-10: STREAM receive storage now reserves eight backing slots on its
   first spill from the two inline segments, avoiding the immediate four-to-eight
   `BufferedSegment[]` growth observed in the retained duplex allocation trace.
