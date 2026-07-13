@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Threading;
+using System.Threading.Tasks.Sources;
 
 namespace Incursa.Quic;
 
@@ -38,6 +39,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
     private TaskCompletionSource<object?> WritesClosedTcs => writesClosed ??= new(TaskCreationOptions.RunContinuationsAsynchronously);
     private SemaphoreSlim? readGateSignal;
     private int readGateWaiterCount;
+    private TerminalReadCompletionSource? terminalReadCompletionSource;
     private SemaphoreSlim? writeGateSignal;
     private int writeGateTaken;
     private int writeGateWaiterCount;
@@ -45,6 +47,145 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
     private Exception? readTerminalException;
     private Exception? writeTerminalException;
     private int disposed;
+
+    private sealed class TerminalReadCompletionSource : IValueTaskSource<int>
+    {
+        private readonly QuicStream owner;
+        private readonly object syncRoot = new();
+        private ManualResetValueTaskSourceCore<int> source;
+        private CancellationTokenRegistration cancellationRegistration;
+        private Memory<byte> buffer;
+        private CancellationToken cancellationToken;
+        private bool busy;
+        private bool completed;
+
+        internal TerminalReadCompletionSource(QuicStream owner)
+        {
+            this.owner = owner;
+            source = new ManualResetValueTaskSourceCore<int>
+            {
+                RunContinuationsAsynchronously = true,
+            };
+        }
+
+        internal bool TryBegin(
+            Memory<byte> readBuffer,
+            CancellationToken token,
+            out ValueTask<int> operation)
+        {
+            lock (syncRoot)
+            {
+                if (busy)
+                {
+                    operation = default;
+                    return false;
+                }
+
+                if (owner.TryCompleteReadSynchronously(
+                    readBuffer,
+                    token,
+                    out int bytesRead,
+                    suppressTerminalException: true))
+                {
+                    operation = ValueTask.FromResult(bytesRead);
+                    return true;
+                }
+
+                source.Reset();
+                buffer = readBuffer;
+                cancellationToken = token;
+                busy = true;
+                completed = false;
+                cancellationRegistration = token.UnsafeRegister(
+                    static state => ((TerminalReadCompletionSource)state!).Cancel(),
+                    this);
+                operation = new ValueTask<int>(this, source.Version);
+                return true;
+            }
+        }
+
+        internal void TryComplete()
+        {
+            lock (syncRoot)
+            {
+                if (!busy || completed)
+                {
+                    return;
+                }
+
+                try
+                {
+                    if (!owner.TryCompleteReadSynchronously(
+                        buffer,
+                        cancellationToken,
+                        out int bytesRead,
+                        suppressTerminalException: true))
+                    {
+                        return;
+                    }
+
+                    completed = true;
+                    source.SetResult(bytesRead);
+                }
+                catch (Exception exception)
+                {
+                    completed = true;
+                    source.SetException(exception);
+                }
+            }
+        }
+
+        private void Cancel()
+        {
+            lock (syncRoot)
+            {
+                if (!busy || completed)
+                {
+                    return;
+                }
+
+                completed = true;
+                source.SetException(new OperationCanceledException(cancellationToken));
+            }
+        }
+
+        int IValueTaskSource<int>.GetResult(short token)
+        {
+            try
+            {
+                return source.GetResult(token);
+            }
+            finally
+            {
+                CancellationTokenRegistration registration;
+                lock (syncRoot)
+                {
+                    registration = cancellationRegistration;
+                    cancellationRegistration = default;
+                }
+
+                registration.Dispose();
+
+                lock (syncRoot)
+                {
+                    buffer = default;
+                    cancellationToken = default;
+                    completed = false;
+                    busy = false;
+                }
+            }
+        }
+
+        ValueTaskSourceStatus IValueTaskSource<int>.GetStatus(short token)
+            => source.GetStatus(token);
+
+        void IValueTaskSource<int>.OnCompleted(
+            Action<object?> continuation,
+            object? state,
+            short token,
+            ValueTaskSourceOnCompletedFlags flags)
+            => source.OnCompleted(continuation, state, token, flags);
+    }
 
     internal QuicStream(QuicConnectionStreamState bookkeeping, ulong streamId, QuicConnectionRuntime? runtime = null)
     {
@@ -244,6 +385,12 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
         if (TryCompleteReadSynchronously(buffer, cancellationToken, out int bytesRead, suppressTerminalException: true))
         {
             return ValueTask.FromResult(bytesRead);
+        }
+
+        TerminalReadCompletionSource completion = GetOrCreateTerminalReadCompletionSource();
+        if (completion.TryBegin(buffer, cancellationToken, out ValueTask<int> operation))
+        {
+            return operation;
         }
 
         return ReadCoreAsync(buffer, cancellationToken, suppressTerminalException: true);
@@ -561,6 +708,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
 
             CompleteReadsClosed();
             CompleteWritesClosed();
+            terminalReadCompletionSource?.TryComplete();
             ReleaseAllReadGateWaiters();
             writeGateSignal?.Dispose();
             base.Dispose(disposing: true);
@@ -1054,6 +1202,18 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
     private SemaphoreSlim GetOrCreateReadGateSignal()
         => GetOrCreateGateSignal(ref readGateSignal, int.MaxValue);
 
+    private TerminalReadCompletionSource GetOrCreateTerminalReadCompletionSource()
+    {
+        TerminalReadCompletionSource? completion = Volatile.Read(ref terminalReadCompletionSource);
+        if (completion is not null)
+        {
+            return completion;
+        }
+
+        TerminalReadCompletionSource created = new(this);
+        return Interlocked.CompareExchange(ref terminalReadCompletionSource, created, null) ?? created;
+    }
+
     private SemaphoreSlim GetOrCreateWriteGateSignal()
         => GetOrCreateGateSignal(ref writeGateSignal, 1);
 
@@ -1082,6 +1242,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
         {
             case QuicStreamNotificationKind.ReadAborted:
                 CompleteReadsClosed(notification.Exception!);
+                terminalReadCompletionSource?.TryComplete();
                 ReleaseAllReadGateWaiters();
                 runtime?.TryQueueStreamCapacityRelease(streamId);
                 break;
@@ -1094,6 +1255,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
                 if (canRead && !IsReadsClosed)
                 {
                     CompleteReadsClosed(notification.Exception!);
+                    terminalReadCompletionSource?.TryComplete();
                     ReleaseAllReadGateWaiters();
                 }
 
@@ -1111,6 +1273,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
 
                 break;
             case QuicStreamNotificationKind.DataAvailable:
+                terminalReadCompletionSource?.TryComplete();
                 ReleaseReadGate();
                 break;
             default:
