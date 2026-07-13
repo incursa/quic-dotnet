@@ -35,6 +35,24 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
   staging without a materially different sent-packet storage design and a
   demonstrated byte-allocation reduction.
 
+- 2026-07-13: a materially different 256-slot segmented sent-packet store was
+  also rejected. Exact production-type BenchmarkDotNet evidence looked strong
+  for a fixed snapshot: at 2,304 packets, population fell from 251.8 us and
+  814.6 KiB to 87.1 us and 253.7 KiB. The live transport trace disproved that
+  result as an end-to-end optimization because packet numbers continuously
+  advance and empty chunks are retired. In matched source-backed c32/s100 GC
+  traces, the candidate replaced 41.6 MiB of sent-packet `Dictionary.Entry[]`
+  allocation with 240.3 MiB of `QuicConnectionSentPacket[]` allocation plus
+  2.43 MiB of chunk objects. Both runs completed 9,600 streams with zero
+  failures or timeouts; request rate moved only +0.7 percent, p95 regressed
+  4.1 percent, and peak working set was effectively unchanged. The candidate
+  passed 9,539 tests with five intentional skips and independent review found
+  no correctness defect, but it is rejected for allocation churn. The code and
+  candidate benchmarks were reverted. Do not repeat fixed packet-number chunks
+  unless storage can be recycled across monotonically advancing packet ranges
+  without allocating a large cleared value array per retired chunk. All run
+  evidence is local shared-host diagnostic evidence and is not publishable.
+
 - 2026-07-13: a bounded cooperative-fairness candidate yielded each runtime
   shard after 64 processed work items so asynchronously scheduled application
   reads could run before the shard drained its entire packet backlog. Focused
