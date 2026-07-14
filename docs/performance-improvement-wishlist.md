@@ -4,6 +4,57 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: a custom reentrant short-monitor processing barrier was also
+  rejected. Unlike the `ReaderWriterLockSlim` design, it preserved same-thread
+  completion callback reentrancy, synchronized cancellation and terminal
+  sweeps with active processing, passed 25/25 focused tests, and passed the
+  cancellation/reentrant-terminal race set ten consecutive times. It released
+  the pending-action monitor during expensive write processing, but that let
+  more writes accumulate without addressing shard service capacity. In the
+  exact source-backed c64 diagnostic
+  `quic-short-monitor-processing-c64-cpu-20260713a-quic-transport-v1-comparison`,
+  average packet/write queue delay rose from the retained trace baseline's
+  149.5/170.3 ms to 228.0/251.4 ms, max shard depth rose from 1,831 to 2,331,
+  and mean write completion rose from 2.40 to 2.68 seconds. The single-run
+  throughput improvement is not sufficient to accept worse backpressure.
+  The runtime and candidate-only tests were reverted. Future work should
+  reduce per-write service work or bound ingress rather than only widening
+  pending-write admission.
+
+- 2026-07-13: a `ReaderWriterLockSlim` processing barrier around pending stream
+  actions was rejected before commit. It allowed new writes to enter a short
+  dictionary monitor while a shard processed another write, and its focused
+  cancellation, delayed-consumption, completion-pool, terminal-transition,
+  and concurrency tests passed. Review found two unacceptable races: writer
+  preference can deadlock a synchronous completion callback that queues a new
+  write while cancellation waits as a writer, and terminal publication was
+  not owned by the new barrier. The typed lock also required lifecycle disposal
+  that could race late callbacks. Exact c64 validation passed in
+  `quic-processing-gate-c64-cpu-20260713a-quic-transport-v1-comparison`, but
+  the single diagnostic increased average packet/write queue delay to roughly
+  200/210 ms and mean write completion to 2.70 seconds. A favorable unpaired
+  throughput sample is not acceptance evidence. Retain this as a rejected
+  design; a replacement must preserve monitor reentrancy, synchronize terminal
+  sweep ordering, and release the monitor during expensive write processing.
+
+- 2026-07-13: replacing only `pendingStreamActionRequestsGate` with .NET 10's
+  dedicated `System.Threading.Lock` was rejected. The change preserved the
+  existing reentrant lock scopes and passed 21/21 focused cancellation,
+  disposal, delayed-consumption, completion-pool, and concurrent-stream tests,
+  but it did not shorten the contended critical section. In the source-backed
+  c64 CPU trace, `Monitor.Enter_Slowpath` fell from 9.42 percent to 5.56
+  percent while `Lock.TryEnterSlow` added 4.82 percent, increasing combined
+  lock-entry cost to about 10.38 percent. Exact c64 validation still passed,
+  but the counter run increased average packet queue delay from 115.8 to
+  157.1 ms, average stream-write queue delay from 124.0 to 176.5 ms, and mean
+  write completion from 1.67 to 2.67 seconds. The one unpaired throughput
+  sample improved, so it is retained only as evidence of shared-host variance,
+  not as an acceptance signal. Candidate runs are
+  `quic-lock-candidate-c64-counters-20260713a-quic-transport-v1-comparison`
+  and `quic-lock-candidate-c64-cpu-20260713a-quic-transport-v1-comparison`.
+  The production change was reverted. Do not repeat a lock-type-only
+  substitution without first reducing lock hold time or retry work.
+
 - 2026-07-13: ACK receipt tracking now uses a pooled ordered store with binary
   search, sparse insertion, and one bulk compaction for acknowledged ranges
   instead of `SortedList<ulong, QuicPacketReceipt>` growth plus per-packet
