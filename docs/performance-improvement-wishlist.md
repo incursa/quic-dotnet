@@ -4,6 +4,51 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-14: retaining the original queued STREAM payload and advancing a
+  consumed-data cursor instead of rebuilding the complete unsent tail after
+  every fragment was rejected. The candidate preserved the queued owner until
+  final removal, transferred only packet-sized fragment owners to sent-packet
+  tracking, kept partially consumed writes out of batching, preserved FIN
+  promotion and offsets, and advanced the cursor only after successful packet
+  protection and accounting. Focused queue/scheduler tests passed 38/38,
+  broader blocked-send, delayed-consumption, API, RFC, and interop tests passed
+  126/126, and independent review found no ownership, retransmission, ordering,
+  FIN, or transient-failure defect. The full test project passed 9,572 tests
+  with five intentional skips and only the standing dropped-FIN and incomplete-
+  content close-timeout flakes; each exact failure then passed five consecutive
+  reruns.
+
+  A permanent 64 KiB fragmentation benchmark measured the former repeated-tail
+  rebuild at 39.545 microseconds and the cursor path at 7.315 microseconds
+  (-81.5 percent, about 5.4 times faster), with zero managed allocation in both
+  cases. The exact source-backed c64 counter/GC run
+  `quic-stream-cursor-c64-gc-20260714a-quic-transport-v1-comparison` also passed
+  12,800-stream and 838,860,800-byte validation. Against
+  `quic-pressure-metrics-c64-gc-20260714b-quic-transport-v1-comparison`, observed
+  outbound-stream-payload rent traffic fell from 6,990.74 to 782.62 MiB, total
+  owner-attributed rent traffic fell from 12,010.24 to 7,360.61 MiB, mean write
+  completion fell 12.7 percent, and traced throughput rose 15.4 percent. The
+  same run doubled peak delayed application sends and retained application-send
+  buffers from 211 to 428, demonstrating that cheaper tail formatting did not
+  solve queue admission or service capacity.
+
+  Fifty alternating, uninstrumented source-backed cells at c1, c4, c16, c32,
+  and c64 all passed exact validation with no failed requests or timeouts. The
+  median same-pair request-rate deltas were -2.99/-0.84/-1.24/-0.59/+3.43
+  percent, and mean-latency deltas were +2.69/+1.73/+1.90/+1.03/+1.78 percent.
+  At c128, three exact baseline cells succeeded, while the candidate produced
+  only two valid cells before a warmup write timeout and then failed its retry
+  with 100 timed-out streams plus an exact byte-count mismatch. The local load
+  generator reported saturation and both variants reached multi-gigabyte
+  working sets, so c128 is not used for a percentage claim; the asymmetric
+  candidate failures still block acceptance. The implementation, candidate-only
+  tests, and benchmark were reverted. Evidence remains under the
+  `quic-stream-cursor-*20260714a` ProtocolLab runs and
+  `.artifacts/bdn/queued-stream-cursor-short-20260714a`. Future outbound staging
+  work must pair copy reduction with bounded admission or earlier completion;
+  cursor-only production can feed the existing backlog faster without improving
+  service capacity. No result was uploaded or published.
+
 - 2026-07-14: runtime-pressure diagnostics now sample the first observation,
   at least every 250 ms, and every 32 work items during a sustained burst
   instead of rebuilding all pressure measurements for every work item. The
