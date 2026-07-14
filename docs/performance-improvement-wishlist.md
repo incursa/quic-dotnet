@@ -4,6 +4,38 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-14: increasing the runtime STREAM-write work-item chunk from 32 KiB
+  to 64 KiB was rejected. The candidate targeted the two sequential shard
+  work items created by each 64 KiB ProtocolLab application write; packet
+  fragmentation, congestion control, flow control, and the public write gate
+  were unchanged. A source-backed c64 counter/GC run passed exact validation
+  and reduced mean sampled STREAM-write queue delay from 127.75 to 116.33 ms,
+  mean STREAM-write service time from 0.567 to 0.409 ms, successful write
+  completion time from 2,019.13 to 1,327.67 ms, and outstanding 64 KiB buffer
+  count from 1,843 to 1,029. The same diagnostic raised maximum STREAM-write
+  queue depth from 229 to 269, maximum total shard depth from 1,346 to 1,704,
+  delayed application sends from 211 to 301, and outstanding 64 KiB capacity
+  from 64.16 to 67.24 MB. Instrumented throughput is not an acceptance claim.
+
+  Fifty alternating, uninstrumented source-backed cells at c1, c4, c16, c32,
+  and c64 all passed exact payload validation with zero failures and zero
+  timeouts. Candidate median request-rate deltas were -0.56/-0.42/+1.16/
+  +2.32/+0.02 percent respectively. Median p95 deltas were +0.66/-17.21/
+  -2.15/-2.48/+0.25 percent, and p99 deltas were +1.46/-11.03/-3.69/-2.65/
+  +0.46 percent. Evidence remains under the `quic-runtime-chunk64-gate-*` and
+  `quic-runtime-chunk64-matrix-*` ProtocolLab runs.
+
+  Correctness blocked acceptance. The full candidate test project completed
+  9,566 passes and five intentional skips, but deterministically failed two
+  RFC 9002 PTO tests: the 64 KiB finished-stream probe was not retained as a
+  probe packet, and PTO emitted only the repair fragments instead of both the
+  repair and queued stream data. Both failures reproduced in an isolated
+  candidate run; the exact two tests passed 2/2 at baseline commit `9addb6e0`.
+  The runtime change was reverted. Do not increase the application-to-runtime
+  STREAM-write chunk unless a materially different design preserves PTO repair
+  and queued-data probe behavior under the existing recovery tests. No result
+  was uploaded or published.
+
 - 2026-07-14: per-connection admission of oversized application writes was
   rejected after five bounded designs. The candidate kept caller memory
   borrowed until the public `ValueTask` completed, retained already-owned
