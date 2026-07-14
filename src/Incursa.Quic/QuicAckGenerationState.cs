@@ -123,10 +123,10 @@ internal sealed class QuicAckGenerationState
             }
         }
 
-        state.Receipts[packetNumber] = new QuicPacketReceipt(
+        state.Receipts.Set(packetNumber, new QuicPacketReceipt(
             receivedAtMicros,
             bufferingDelayMicros,
-            ackEliciting);
+            ackEliciting));
 
         if (ecnCounts.HasValue)
         {
@@ -223,12 +223,10 @@ internal sealed class QuicAckGenerationState
         ackElicitingPacketCount = 0;
 
         bool found = false;
-        IList<ulong> packetNumbers = state.Receipts.Keys;
-        IList<QuicPacketReceipt> receipts = state.Receipts.Values;
         for (int index = 0; index < state.Receipts.Count; index++)
         {
-            ulong packetNumber = packetNumbers[index];
-            QuicPacketReceipt receipt = receipts[index];
+            ulong packetNumber = state.Receipts.GetPacketNumber(index);
+            QuicPacketReceipt receipt = state.Receipts.GetReceipt(index);
             if (!receipt.AckEliciting
                 || (state.LastAckFrameTriggerPacketNumber.HasValue
                     && packetNumber <= state.LastAckFrameTriggerPacketNumber.Value))
@@ -283,28 +281,49 @@ internal sealed class QuicAckGenerationState
             QuicAckRange[] additionalRanges = additionalRangeCount == 0
                 ? []
                 : ArrayPool<QuicAckRange>.Shared.Rent(additionalRangeCount);
-            ulong previousSmallestAcknowledged = newestRange.Smallest;
-
-            for (int rangeIndex = rangeCount - 2, additionalRangeIndex = 0;
-                rangeIndex >= firstRangeIndex;
-                rangeIndex--, additionalRangeIndex++)
+            QuicAckFrame? pendingFrame = null;
+            bool additionalRangesTransferred = false;
+            try
             {
-                PacketRange range = ranges[rangeIndex];
-                ulong gap = previousSmallestAcknowledged - range.Largest - 2;
-                ulong ackRangeLength = range.Largest - range.Smallest;
-                additionalRanges[additionalRangeIndex] = new QuicAckRange(gap, ackRangeLength, range.Smallest, range.Largest);
-                previousSmallestAcknowledged = range.Smallest;
+                ulong previousSmallestAcknowledged = newestRange.Smallest;
+                for (int rangeIndex = rangeCount - 2, additionalRangeIndex = 0;
+                    rangeIndex >= firstRangeIndex;
+                    rangeIndex--, additionalRangeIndex++)
+                {
+                    PacketRange range = ranges[rangeIndex];
+                    ulong gap = previousSmallestAcknowledged - range.Largest - 2;
+                    ulong ackRangeLength = range.Largest - range.Smallest;
+                    additionalRanges[additionalRangeIndex] = new QuicAckRange(gap, ackRangeLength, range.Smallest, range.Largest);
+                    previousSmallestAcknowledged = range.Smallest;
+                }
+
+                pendingFrame = QuicAckFrame.Rent();
+                pendingFrame.FrameType = state.EcnCounts.HasValue ? AckEcnFrameType : AckFrameType;
+                pendingFrame.LargestAcknowledged = newestRange.Largest;
+                if (!state.Receipts.TryGetValue(newestRange.Largest, out QuicPacketReceipt newestReceipt))
+                {
+                    throw new InvalidOperationException("The newest ACK range has no matching packet receipt.");
+                }
+
+                pendingFrame.AckDelay = GetAckDelayMicros(nowMicros, newestReceipt);
+                pendingFrame.FirstAckRange = newestRange.Largest - newestRange.Smallest;
+                pendingFrame.EcnCounts = state.EcnCounts;
+                if (additionalRangeCount > 0)
+                {
+                    pendingFrame.SetOwnedAdditionalRanges(additionalRanges, additionalRangeCount);
+                    additionalRangesTransferred = true;
+                }
+
+                frame = pendingFrame;
+                pendingFrame = null;
             }
-
-            frame = QuicAckFrame.Rent();
-            frame.FrameType = state.EcnCounts.HasValue ? AckEcnFrameType : AckFrameType;
-            frame.LargestAcknowledged = newestRange.Largest;
-            frame.AckDelay = GetAckDelayMicros(nowMicros, state.Receipts[newestRange.Largest]);
-            frame.FirstAckRange = newestRange.Largest - newestRange.Smallest;
-            frame.EcnCounts = state.EcnCounts;
-            if (additionalRangeCount > 0)
+            finally
             {
-                frame.SetOwnedAdditionalRanges(additionalRanges, additionalRangeCount);
+                pendingFrame?.Dispose();
+                if (additionalRangeCount > 0 && !additionalRangesTransferred)
+                {
+                    ArrayPool<QuicAckRange>.Shared.Return(additionalRanges);
+                }
             }
         }
         finally
@@ -473,21 +492,20 @@ internal sealed class QuicAckGenerationState
         }
     }
 
-    private static int BuildRanges(SortedList<ulong, QuicPacketReceipt> receipts, Span<PacketRange> ranges)
+    private static int BuildRanges(QuicPacketReceiptStore receipts, Span<PacketRange> ranges)
     {
         if (receipts.Count == 0)
         {
             return 0;
         }
 
-        IList<ulong> packetNumbers = receipts.Keys;
         int rangeCount = 0;
-        ulong rangeStart = packetNumbers[0];
+        ulong rangeStart = receipts.GetPacketNumber(0);
         ulong rangeEnd = rangeStart;
 
-        for (int index = 1; index < packetNumbers.Count; index++)
+        for (int index = 1; index < receipts.Count; index++)
         {
-            ulong packetNumber = packetNumbers[index];
+            ulong packetNumber = receipts.GetPacketNumber(index);
             if (rangeEnd != ulong.MaxValue && packetNumber == rangeEnd + 1)
             {
                 rangeEnd = packetNumber;
@@ -573,16 +591,9 @@ internal sealed class QuicAckGenerationState
         }
     }
 
-    private static void RemoveRange(SortedList<ulong, QuicPacketReceipt> receipts, PacketRange range)
+    private static void RemoveRange(QuicPacketReceiptStore receipts, PacketRange range)
     {
-        for (ulong packetNumber = range.Smallest; ; packetNumber++)
-        {
-            receipts.Remove(packetNumber);
-            if (packetNumber == range.Largest)
-            {
-                return;
-            }
-        }
+        receipts.RemoveRange(range.Smallest, range.Largest);
     }
 
     private SpaceState GetOrCreateSpaceState(QuicPacketNumberSpace packetNumberSpace)
@@ -612,18 +623,16 @@ internal sealed class QuicAckGenerationState
         ackElicitingPacketCount = 0;
 
         bool found = false;
-        IList<ulong> packetNumbers = state.Receipts.Keys;
-        IList<QuicPacketReceipt> receipts = state.Receipts.Values;
         for (int index = 0; index < state.Receipts.Count; index++)
         {
-            QuicPacketReceipt receipt = receipts[index];
+            QuicPacketReceipt receipt = state.Receipts.GetReceipt(index);
             if (!receipt.AckEliciting)
             {
                 continue;
             }
 
             ackElicitingPacketCount++;
-            largestAckElicitingPacketNumber = packetNumbers[index];
+            largestAckElicitingPacketNumber = state.Receipts.GetPacketNumber(index);
             largestAckElicitingReceivedAtMicros = receipt.ReceivedAtMicros;
             found = true;
         }
@@ -658,11 +667,11 @@ internal sealed class QuicAckGenerationState
     {
         internal SpaceState(int initialCapacity)
         {
-            Receipts = new SortedList<ulong, QuicPacketReceipt>(initialCapacity);
+            Receipts = new QuicPacketReceiptStore(initialCapacity);
             SentAckFrames = new Dictionary<ulong, SentAckFrameState>(initialCapacity);
         }
 
-        internal SortedList<ulong, QuicPacketReceipt> Receipts { get; }
+        internal QuicPacketReceiptStore Receipts { get; }
         internal Dictionary<ulong, SentAckFrameState> SentAckFrames { get; }
 
         internal bool ImmediateAckRequired { get; set; }
@@ -681,7 +690,7 @@ internal sealed class QuicAckGenerationState
             }
 
             SentAckFrames.Clear();
-            Receipts.Clear();
+            Receipts.ClearAndReturnStorage();
             ImmediateAckRequired = false;
             LastAckFrameSentAtMicros = null;
             LastAckFrameTriggerPacketNumber = null;

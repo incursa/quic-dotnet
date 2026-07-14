@@ -4,6 +4,46 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: ACK receipt tracking now uses a pooled ordered store with binary
+  search, sparse insertion, and one bulk compaction for acknowledged ranges
+  instead of `SortedList<ulong, QuicPacketReceipt>` growth plus per-packet
+  removal. The store preserves packet-number ordering, duplicate replacement,
+  inclusive range retirement, `ulong.MaxValue` handling, packet-space discard,
+  and shard-serialized access. ACK-frame construction now also returns pooled
+  range/frame resources if construction fails before ownership transfer.
+  `QuicPacketReceiptStoreBenchmarks` measured the complete populate-and-retire
+  lifecycle at 128/1,024/2,400 receipts: 6.830/160.626/1,004.000 microseconds
+  and 7,312/64,800/261,578 B for `SortedList`, versus
+  1.377/14.340/35.958 microseconds and 0/40/0 B for the pooled store. The
+  source-backed c64 GC trace
+  `quic-ack-receipt-store-c64-gc-20260713a-quic-transport-v1-comparison`
+  passed exact 12,800-stream and 838,860,800-byte validation with zero failures
+  or timeouts. Against
+  `quic-next-postread-c64-gc-20260713a-quic-transport-v1-comparison`, mean
+  allocation rate fell from 126.35 to 95.65 MB/s (-24.30 percent), sampled
+  receipt arrays fell 18.67 percent, and paired `ulong[]` storage fell 19.19
+  percent. Sixty untraced source-backed c1/c4/c16/c32/c64/c128 cells used five
+  alternating baseline/candidate observations per shape; all passed exact
+  validation with no generator saturation, failed requests, or timeouts.
+  Median same-repetition throughput deltas were +6.08/+5.29/-0.32/+5.07/
+  +1.69/+4.79 percent, while paired p95 deltas were -6.63/-4.52/-5.97/-6.63/
+  -1.86/-2.96 percent. Two isolated shared-host outliers reinforce that these
+  are diagnostic guardrails, not publishable percentage claims. Focused ACK
+  tests passed 8/8, the broader ACK/recovery/congestion/RFC filter passed
+  2,964/2,965 with its unrelated close-notification timeout passing five exact
+  reruns, and the all-up suite passed 9,558 tests with five intentional skips
+  and the standing incomplete-content peer-close timeout passing five exact
+  reruns. The initial c128 control-plane request failure is retained under
+  `quic-ack-receipt-c128-baseline-r1-20260713a-quic-transport-v1-comparison`;
+  its fresh matched replacement and four further pairs all passed. This slice
+  is accepted as a receipt-retirement allocation reduction with no observed
+  throughput or latency regression across the tested load range. The touched
+  production, benchmark, raw-server, and test projects built in Release with
+  zero warnings. A broad `.slnx` build remains independently blocked by its
+  reference to the absent `eng/tools/Incursa.Quic.TraceAnalysis` project and
+  unrestored assets in three untouched sample/fuzz projects; this slice does
+  not conceal or expand into that repository-hygiene issue.
+
 - 2026-07-13: replacing the sent-packet dictionary's remove-then-insert path
   with a single `CollectionsMarshal.GetValueRefOrAddDefault` probe was
   rejected. The candidate was motivated by the c64 GC trace
