@@ -4,6 +4,22 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-13: a reusable open-addressed sent-packet store with backward-shift
+  deletion was rejected at the microbenchmark gate. It used one entry array,
+  tolerated sparse packet numbers, reused slots across a 10,000-packet
+  advancing window, and passed 24/24 focused store, ownership, send-runtime,
+  and retransmission tests. The production-shaped advancing-window benchmark
+  showed that the large inline entry array and cluster reinsertion outweighed
+  dictionary bucket savings: versus `Dictionary`, it was 20 percent slower at
+  16 live packets, 2.78 times slower at 128, and 3.56 times slower at 2,304.
+  Allocation fell 13 percent only at 16, then increased 85 percent at 128 and
+  25 percent at 2,304. The candidate was reverted without a ProtocolLab run.
+  Evidence is retained under
+  `.artifacts/bdn/sent-packet-open-addressed-candidate-20260713a`. Do not repeat
+  a whole-ledger open-addressed table with the full packet value inline; future
+  sent-packet work needs a compact indirection or a direct small-dictionary
+  path that avoids both per-packet dispatch and oversized sparse storage.
+
 - 2026-07-13: a custom reentrant short-monitor processing barrier was also
   rejected. Unlike the `ReaderWriterLockSlim` design, it preserved same-thread
   completion callback reentrancy, synchronized cancellation and terminal
