@@ -1828,7 +1828,9 @@ internal sealed class QuicConnectionStreamState
         int minimumCapacity = length >= StreamReceiveCoalescingThreshold && length < receiveBlockSize
             ? receiveBlockSize
             : length;
-        byte[] segmentData = QuicBufferPool.RentBytes(minimumCapacity);
+        byte[] segmentData = QuicBufferPool.RentBytes(
+            minimumCapacity,
+            QuicBufferPoolOwner.ReceiveSegment);
         data.Slice(dataIndex, length).CopyTo(segmentData);
         retainedReceiveBufferCount++;
         retainedReceiveBufferBytes += segmentData.Length;

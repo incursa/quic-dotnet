@@ -223,7 +223,9 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
-        openedPacket = QuicBufferPool.RentLease(openedPacketBufferLength);
+        openedPacket = QuicBufferPool.RentLease(
+            openedPacketBufferLength,
+            QuicBufferPoolOwner.Handshake);
         bool success = false;
         try
         {
@@ -1427,7 +1429,9 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
-        openedPacket = QuicBufferPool.RentLease(openedPacketBufferLength);
+        openedPacket = QuicBufferPool.RentLease(
+            openedPacketBufferLength,
+            QuicBufferPoolOwner.Handshake);
         bool success = false;
         try
         {
@@ -1480,7 +1484,9 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
-        openedPacket = QuicBufferPool.RentLease(openedPacketBufferLength);
+        openedPacket = QuicBufferPool.RentLease(
+            openedPacketBufferLength,
+            QuicBufferPoolOwner.Handshake);
         bool success = false;
         try
         {
@@ -1949,7 +1955,9 @@ internal sealed class QuicHandshakeFlowCoordinator
                 return false;
             }
 
-            byte[] versionSpecificData = QuicBufferPool.RentBytes(lengthFieldBytesWritten + packetNumberLength + paddedPayloadLength);
+            byte[] versionSpecificData = QuicBufferPool.RentBytes(
+                lengthFieldBytesWritten + packetNumberLength + paddedPayloadLength,
+                QuicBufferPoolOwner.Handshake);
             try
             {
                 int versionSpecificDataIndex = 0;
@@ -2072,7 +2080,9 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
-        byte[] versionSpecificData = QuicBufferPool.RentBytes(lengthFieldBytesWritten + packetNumberLength + paddedPayloadLength);
+        byte[] versionSpecificData = QuicBufferPool.RentBytes(
+            lengthFieldBytesWritten + packetNumberLength + paddedPayloadLength,
+            QuicBufferPoolOwner.Handshake);
         try
         {
             int versionSpecificDataIndex = 0;
@@ -2188,7 +2198,9 @@ internal sealed class QuicHandshakeFlowCoordinator
 
             ulong currentPacketNumber = nextPacketNumber;
 
-            byte[] versionSpecificData = QuicBufferPool.RentBytes(lengthFieldBytesWritten + packetNumberLength + paddedPayloadLength);
+            byte[] versionSpecificData = QuicBufferPool.RentBytes(
+                lengthFieldBytesWritten + packetNumberLength + paddedPayloadLength,
+                QuicBufferPoolOwner.Handshake);
             try
             {
                 int versionSpecificDataIndex = 0;
@@ -2260,7 +2272,9 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
-        byte[] buffer = QuicBufferPool.RentBytes(cryptoPayload.Length + CryptoFramePayloadBufferOverhead);
+        byte[] buffer = QuicBufferPool.RentBytes(
+            cryptoPayload.Length + CryptoFramePayloadBufferOverhead,
+            QuicBufferPoolOwner.Handshake);
         try
         {
             if (!QuicFrameCodec.TryFormatCryptoFrame(
@@ -2454,7 +2468,9 @@ internal sealed class QuicHandshakeFlowCoordinator
         packetNumberOffset = fixedPacketPrefixLength - packetNumberLength;
         bool spinBitEnabled = enableRandomizedSpinBitSelection && spinBit && !ShouldDisableSpinBit(destinationConnectionId);
 
-        plaintextPacket = QuicBufferPool.RentLease(fixedPacketPrefixLength + paddedPayloadLength);
+        plaintextPacket = QuicBufferPool.RentLease(
+            fixedPacketPrefixLength + paddedPayloadLength,
+            QuicBufferPoolOwner.OutboundPacketProtection);
         try
         {
             Span<byte> packet = plaintextPacket.Span;
@@ -2542,7 +2558,9 @@ internal sealed class QuicHandshakeFlowCoordinator
 
         packetNumberOffset = longHeaderPrefixLength + lengthFieldBytes;
 
-        byte[] versionSpecificData = QuicBufferPool.RentBytes(lengthFieldBytes + packetNumberLength + paddedPayloadLength);
+        byte[] versionSpecificData = QuicBufferPool.RentBytes(
+            lengthFieldBytes + packetNumberLength + paddedPayloadLength,
+            QuicBufferPoolOwner.OutboundPacketProtection);
         try
         {
             lengthFieldBuffer.Slice(0, lengthFieldBytes).CopyTo(versionSpecificData);
@@ -2652,7 +2670,9 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
-        protectedPacket = QuicBufferPool.RentLease(plaintextPacket.Length + QuicInitialPacketProtection.AuthenticationTagLength);
+        protectedPacket = QuicBufferPool.RentLease(
+            plaintextPacket.Length + QuicInitialPacketProtection.AuthenticationTagLength,
+            QuicBufferPoolOwner.OutboundPacketProtection);
         bool success = false;
         try
         {
@@ -2868,7 +2888,9 @@ internal sealed class QuicHandshakeFlowCoordinator
         bool observedKeyPhase = (unmaskedFirstByte & QuicPacketHeaderBits.KeyPhaseBitMask) != 0;
 
         int unprotectedPacketLength = protectedPacket.Length - QuicInitialPacketProtection.AuthenticationTagLength;
-        openedPacket = QuicBufferPool.RentLease(unprotectedPacketLength);
+        openedPacket = QuicBufferPool.RentLease(
+            unprotectedPacketLength,
+            QuicBufferPoolOwner.InboundPacketProtection);
         bool success = false;
         try
         {
@@ -3024,7 +3046,9 @@ internal sealed class QuicHandshakeFlowCoordinator
         }
 
         int unprotectedPacketLength = protectedPacket.Length - QuicInitialPacketProtection.AuthenticationTagLength;
-        openedPacket = QuicBufferPool.RentLease(unprotectedPacketLength);
+        openedPacket = QuicBufferPool.RentLease(
+            unprotectedPacketLength,
+            QuicBufferPoolOwner.InboundPacketProtection);
         bool success = false;
         try
         {

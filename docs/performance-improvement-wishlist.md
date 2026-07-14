@@ -4,6 +4,45 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-14: runtime-pressure diagnostics now sample the first observation,
+  at least every 250 ms, and every 32 work items during a sustained burst
+  instead of rebuilding all pressure measurements for every work item. The
+  sampling state is per connection runtime, preserves time-based visibility
+  when work is sparse, and does not alter queue admission, scheduling, flow
+  control, cancellation, or packet ownership. A permanent observed-metrics
+  benchmark covering 64 snapshot attempts improved from 291.1 to 46.97 ns per
+  attempt (-83.9 percent) and from 120 to 4 B (-96.7 percent). Production and
+  benchmark Release builds completed with zero warnings, and 29/29 focused
+  metrics tests passed. The full test project completed 9,567 passes and five
+  intentional skips with only the standing incomplete-content peer-close
+  timeout; that exact test then passed five consecutive reruns.
+
+  The central buffer pool now also reports bounded owner-tagged cumulative rent,
+  requested-byte, and rented-byte counters. Every current rent site has an
+  explicit owner, and application packet protection is separated from true
+  handshake work. Source-backed c64 diagnostic run
+  `quic-pressure-metrics-c64-gc-20260714b-quic-transport-v1-comparison` passed
+  exact 12,800-stream and 838,860,800-byte validation with zero failures or
+  timeouts. Of 12.59 GB of observed rented-byte increments, outbound stream
+  payload staging accounted for 7.33 GB (58.21 percent), inbound datagrams
+  1.80 GB (14.30 percent), outbound packet protection 1.61 GB (12.80 percent),
+  receive segments 684.75 MB (5.44 percent), inbound packet protection
+  641.85 MB (5.10 percent), and stream-write request ownership 409.78 MB
+  (3.25 percent). True handshake work was 1.24 MB (0.01 percent), and sent-
+  packet retention was 2.18 KB. This rejects sent-packet retention as the next
+  byte-movement target for this workload and prioritizes eliminating redundant
+  outbound payload staging and packet-protection copies. With every pool metric
+  actively observed, the existing rent/return microbenchmark moved from 52.74
+  to 58.58 ns (+11.1 percent), with zero allocation in both cases. That bounded
+  diagnostic cost is retained explicitly; no zero-overhead tracing claim is
+  made for observed owner attribution.
+
+  In the paired c64 CPU traces, `RecordRuntimePressureSnapshot` fell from 6.87
+  to 2.46 percent inclusive and from 1.20 to 0.14 percent exclusive. Metric
+  tag construction and EventPipe allocation remained dominant, and the traced
+  request rate was lower, so this run is diagnostic evidence only and makes no
+  transport-throughput claim. No result was uploaded or published.
+
 - 2026-07-14: completed STREAM reassembly spill and scratch lists now return to
   a two-slot, per-thread cache after `DataRead`, reset, connection cleanup, or
   replacement by a larger scratch list. The cache retains only cleared lists

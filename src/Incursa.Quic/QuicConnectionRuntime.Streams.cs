@@ -1229,7 +1229,9 @@ internal sealed partial class QuicConnectionRuntime
                     combinedPayloadLength = checked(combinedPayloadLength + queuedWrite.StreamPayloadLength);
                 }
 
-                combinedPayloadOwner = QuicBufferPool.RentBytes(combinedPayloadLength);
+                combinedPayloadOwner = QuicBufferPool.RentBytes(
+                    combinedPayloadLength,
+                    QuicBufferPoolOwner.CombinedApplicationSend);
                 int copyOffset = 0;
                 foreach (PendingApplicationSendRequest queuedWrite in selectedWrites)
                 {
@@ -4770,7 +4772,9 @@ internal sealed partial class QuicConnectionRuntime
         byte[]? plaintextPayloadOwner = null;
         if (!plaintextPayload.IsEmpty)
         {
-            plaintextPayloadOwner = QuicBufferPool.RentBytes(plaintextPayload.Length);
+            plaintextPayloadOwner = QuicBufferPool.RentBytes(
+                plaintextPayload.Length,
+                QuicBufferPoolOwner.SentPacketRetention);
             plaintextPayload.Span.CopyTo(plaintextPayloadOwner.AsSpan(0, plaintextPayload.Length));
             plaintextPayload = plaintextPayloadOwner.AsMemory(0, plaintextPayload.Length);
         }
@@ -5107,7 +5111,9 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         int bufferLength = Math.Max(ApplicationMinimumProtectedPayloadLength, frameLength);
-        QuicBufferLease bufferLease = QuicBufferPool.RentLease(bufferLength);
+        QuicBufferLease bufferLease = QuicBufferPool.RentLease(
+            bufferLength,
+            QuicBufferPoolOwner.OutboundStreamPayload);
         try
         {
             if (!QuicFrameCodec.TryFormatStreamFrame(
@@ -5308,7 +5314,9 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         int maximumPayloadBytes = GetMaximumFlowControlCreditPayloadBytes();
-        byte[] buffer = QuicBufferPool.RentBytes(maximumPayloadBytes);
+        byte[] buffer = QuicBufferPool.RentBytes(
+            maximumPayloadBytes,
+            QuicBufferPoolOwner.ControlFrame);
         int bytesWritten = 0;
         while (payloadCreditCount < streamCredits.Length
             && QuicFrameCodec.TryFormatMaxStreamDataFrame(
@@ -5470,7 +5478,9 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         int payloadLength = Math.Max(ApplicationMinimumProtectedPayloadLength, frameBytes.Length);
-        payloadOwner = QuicBufferPool.RentBytes(payloadLength);
+        payloadOwner = QuicBufferPool.RentBytes(
+            payloadLength,
+            QuicBufferPoolOwner.ControlFrame);
         Span<byte> payloadSpan = payloadOwner.AsSpan(0, payloadLength);
         frameBytes.CopyTo(payloadSpan);
         if (frameBytes.Length < payloadLength)

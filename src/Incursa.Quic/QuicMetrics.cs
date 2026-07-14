@@ -31,6 +31,7 @@ internal static class QuicMetrics
     private const string RuntimeShardIndexTagName = "shard_index";
     private const string RuntimeShardWorkItemKindTagName = "work_item_kind";
     private const string QueueCauseTagName = "queue_cause";
+    private const string BufferOwnerTagName = "owner";
     private const double MicrosecondsPerMillisecond = 1000.0;
     private const int HttpStatusInformationalMin = 100;
     private const int HttpStatusInformationalMax = 199;
@@ -60,6 +61,8 @@ internal static class QuicMetrics
     private const int RoleCount = 2;
     private const int RuntimeShardDeadlineWakeWorkItemKindIndex = (int)QuicConnectionRuntimeShardWorkItemKind.StreamWrite + 1;
     private const int RuntimeShardWorkItemKindCount = RuntimeShardDeadlineWakeWorkItemKindIndex + 1;
+    private const int MaximumRuntimePressureWorkItemsPerSnapshot = 32;
+    private static readonly long RuntimePressureSnapshotMinimumIntervalTicks = Stopwatch.Frequency / 4;
 
     internal sealed class RuntimeShardMetricsRegistration
     {
@@ -189,6 +192,21 @@ internal static class QuicMetrics
     private static readonly ObservableCounter<long> BufferPoolOversizedRents = Meter.CreateObservableCounter("incursa.quic.buffer_pool.oversized_rents", () => ObserveBufferPoolMetric(BufferPoolOversizedRentCounts, "size_bucket"), unit: "buffers");
     private static readonly long[] BufferPoolOutstandingBufferCounts = new long[BufferPoolBucketCount];
     private static readonly long[] BufferPoolOutstandingByteCounts = new long[BufferPoolBucketCount];
+    private static readonly long[] BufferPoolOwnerRentCounts = new long[(int)QuicBufferPoolOwner.Count];
+    private static readonly long[] BufferPoolOwnerRequestedByteCounts = new long[(int)QuicBufferPoolOwner.Count];
+    private static readonly long[] BufferPoolOwnerRentedByteCounts = new long[(int)QuicBufferPoolOwner.Count];
+    private static readonly ObservableCounter<long> BufferPoolOwnerRents = Meter.CreateObservableCounter(
+        "incursa.quic.buffer_pool.owner.rents",
+        () => ObserveBufferPoolOwnerMetric(BufferPoolOwnerRentCounts),
+        unit: "buffers");
+    private static readonly ObservableCounter<long> BufferPoolOwnerBytesRequested = Meter.CreateObservableCounter(
+        "incursa.quic.buffer_pool.owner.bytes.requested",
+        () => ObserveBufferPoolOwnerMetric(BufferPoolOwnerRequestedByteCounts),
+        unit: "bytes");
+    private static readonly ObservableCounter<long> BufferPoolOwnerBytesRented = Meter.CreateObservableCounter(
+        "incursa.quic.buffer_pool.owner.bytes.rented",
+        () => ObserveBufferPoolOwnerMetric(BufferPoolOwnerRentedByteCounts),
+        unit: "bytes");
     private static RuntimeShardMetricsRegistration[] runtimeShardMetricsRegistrations = [];
     private static readonly object RuntimeShardMetricsRegistrationsSync = new();
 
@@ -557,6 +575,14 @@ internal static class QuicMetrics
             return;
         }
 
+        if (!runtime.TryBeginRuntimePressureSnapshot(
+                Stopwatch.GetTimestamp(),
+                RuntimePressureSnapshotMinimumIntervalTicks,
+                MaximumRuntimePressureWorkItemsPerSnapshot))
+        {
+            return;
+        }
+
         TagList tags = default;
         tags.Add(RuntimeShardIndexTagName, shardIndex);
         if (DelayedApplicationSends.Enabled)
@@ -794,17 +820,32 @@ internal static class QuicMetrics
         return tags;
     }
 
-    internal static void RecordBufferRent(int requestedLength, int rentedLength)
+    internal static void RecordBufferRent(
+        int requestedLength,
+        int rentedLength,
+        QuicBufferPoolOwner owner)
     {
+        bool ownerMetricsEnabled = BufferPoolOwnerRents.Enabled
+            || BufferPoolOwnerBytesRequested.Enabled
+            || BufferPoolOwnerBytesRented.Enabled;
         if (!BufferPoolRents.Enabled
             && !BufferPoolRequestedRents.Enabled
             && !BufferPoolBytesRequested.Enabled
             && !BufferPoolBytesRented.Enabled
             && !BufferPoolOutstandingBuffers.Enabled
             && !BufferPoolOutstandingBytes.Enabled
-            && !BufferPoolOversizedRents.Enabled)
+            && !BufferPoolOversizedRents.Enabled
+            && !ownerMetricsEnabled)
         {
             return;
+        }
+
+        if (ownerMetricsEnabled)
+        {
+            int ownerIndex = (int)owner;
+            Interlocked.Increment(ref BufferPoolOwnerRentCounts[ownerIndex]);
+            Interlocked.Add(ref BufferPoolOwnerRequestedByteCounts[ownerIndex], requestedLength);
+            Interlocked.Add(ref BufferPoolOwnerRentedByteCounts[ownerIndex], rentedLength);
         }
 
         var bucketIndex = GetBufferSizeBucketIndex(rentedLength);
@@ -942,6 +983,38 @@ internal static class QuicMetrics
                 new KeyValuePair<string, object?>("size_bucket", GetBufferSizeBucket(i)));
         }
     }
+
+    private static IEnumerable<Measurement<long>> ObserveBufferPoolOwnerMetric(long[] values)
+    {
+        for (int ownerIndex = 0; ownerIndex < values.Length; ownerIndex++)
+        {
+            yield return new Measurement<long>(
+                Volatile.Read(ref values[ownerIndex]),
+                new KeyValuePair<string, object?>(
+                    BufferOwnerTagName,
+                    FormatBufferPoolOwner((QuicBufferPoolOwner)ownerIndex)));
+        }
+    }
+
+    internal static string FormatBufferPoolOwner(QuicBufferPoolOwner owner)
+        => owner switch
+        {
+            QuicBufferPoolOwner.Other => "other",
+            QuicBufferPoolOwner.Acknowledgment => "acknowledgment",
+            QuicBufferPoolOwner.Handshake => "handshake",
+            QuicBufferPoolOwner.InboundDatagram => "inbound_datagram",
+            QuicBufferPoolOwner.ReceiveSegment => "receive_segment",
+            QuicBufferPoolOwner.StreamWriteRequest => "stream_write_request",
+            QuicBufferPoolOwner.OutboundStreamPayload => "outbound_stream_payload",
+            QuicBufferPoolOwner.CombinedApplicationSend => "combined_application_send",
+            QuicBufferPoolOwner.InboundPacketProtection => "inbound_packet_protection",
+            QuicBufferPoolOwner.OutboundPacketProtection => "outbound_packet_protection",
+            QuicBufferPoolOwner.SentPacketRetention => "sent_packet_retention",
+            QuicBufferPoolOwner.Retransmission => "retransmission",
+            QuicBufferPoolOwner.ControlFrame => "control_frame",
+            QuicBufferPoolOwner.ListenerResponse => "listener_response",
+            _ => throw new ArgumentOutOfRangeException(nameof(owner)),
+        };
 
     private static IEnumerable<Measurement<long>> ObserveRuntimeShardInboxDepth()
     {

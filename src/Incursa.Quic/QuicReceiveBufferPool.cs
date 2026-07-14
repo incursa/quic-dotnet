@@ -117,7 +117,9 @@ internal sealed class QuicReceiveBufferPool : IDisposable
             }
         }
 
-        byte[] fallbackBuffer = QuicBufferPool.RentBytes(bufferSize);
+        byte[] fallbackBuffer = QuicBufferPool.RentBytes(
+            bufferSize,
+            QuicBufferPoolOwner.InboundDatagram);
         RecordRent(ring: false);
         return new QuicReceiveBufferLease(this, fallbackBuffer, bufferSize, fromRing: false);
     }
