@@ -461,6 +461,109 @@ public sealed class QuicStreamReceiveBufferTests
         Assert.Equal(expected, destination);
     }
 
+    [Fact]
+    public void TerminalInterleavedStreamsPreserveDataAcrossConcurrentWorkers()
+    {
+        const int segmentLength = 4;
+        const int segmentCount = 8;
+        const int totalLength = ((segmentCount * 2) + 1) * segmentLength;
+
+        Parallel.For(0, 32, workerIndex =>
+        {
+            QuicConnectionStreamState state = CreateServerReceiveState();
+            byte[] expected = Enumerable.Repeat((byte)0x20, totalLength).ToArray();
+
+            for (int index = 0; index < segmentCount; index++)
+            {
+                byte[] payload = Enumerable.Repeat((byte)(0x80 + index + workerIndex), segmentLength).ToArray();
+                int offset = ((index * 2) + 1) * segmentLength;
+                payload.CopyTo(expected, offset);
+                Assert.True(state.TryReceiveStreamFrame(
+                    ParseStreamFrame(streamId: 0, (ulong)offset, payload, fin: false),
+                    out QuicTransportErrorCode seedErrorCode));
+                Assert.Equal(default, seedErrorCode);
+            }
+
+            byte[] fillingPayload = Enumerable.Repeat((byte)0x20, totalLength).ToArray();
+            Assert.True(state.TryReceiveStreamFrame(
+                ParseStreamFrame(streamId: 0, offset: 0, fillingPayload, fin: true),
+                out QuicTransportErrorCode fillErrorCode));
+            Assert.Equal(default, fillErrorCode);
+
+            byte[] destination = new byte[totalLength];
+            Assert.True(state.TryReadStreamData(
+                0,
+                destination,
+                out int bytesWritten,
+                out bool completed,
+                out _,
+                out _,
+                out QuicTransportErrorCode readErrorCode));
+            Assert.Equal(default, readErrorCode);
+            Assert.Equal(totalLength, bytesWritten);
+            Assert.True(completed);
+            Assert.Equal(expected, destination);
+            Assert.Equal(default, state.CaptureReceiveRetentionSnapshot());
+        });
+    }
+
+    [Fact]
+    public void InterleavedStreamCanReachTerminalStateAfterThreadHandoff()
+    {
+        const int segmentLength = 4;
+        const int segmentCount = 8;
+        const int totalLength = ((segmentCount * 2) + 1) * segmentLength;
+        QuicConnectionStreamState state = CreateServerReceiveState();
+        byte[] expected = Enumerable.Repeat((byte)0x20, totalLength).ToArray();
+
+        for (int index = 0; index < segmentCount; index++)
+        {
+            byte[] payload = Enumerable.Repeat((byte)(0x80 + index), segmentLength).ToArray();
+            int offset = ((index * 2) + 1) * segmentLength;
+            payload.CopyTo(expected, offset);
+            Assert.True(state.TryReceiveStreamFrame(
+                ParseStreamFrame(streamId: 0, (ulong)offset, payload, fin: false),
+                out QuicTransportErrorCode seedErrorCode));
+            Assert.Equal(default, seedErrorCode);
+        }
+
+        Exception? workerException = null;
+        Thread worker = new(() =>
+        {
+            try
+            {
+                byte[] fillingPayload = Enumerable.Repeat((byte)0x20, totalLength).ToArray();
+                Assert.True(state.TryReceiveStreamFrame(
+                    ParseStreamFrame(streamId: 0, offset: 0, fillingPayload, fin: true),
+                    out QuicTransportErrorCode fillErrorCode));
+                Assert.Equal(default, fillErrorCode);
+
+                byte[] destination = new byte[totalLength];
+                Assert.True(state.TryReadStreamData(
+                    0,
+                    destination,
+                    out int bytesWritten,
+                    out bool completed,
+                    out _,
+                    out _,
+                    out QuicTransportErrorCode readErrorCode));
+                Assert.Equal(default, readErrorCode);
+                Assert.Equal(totalLength, bytesWritten);
+                Assert.True(completed);
+                Assert.Equal(expected, destination);
+            }
+            catch (Exception exception)
+            {
+                workerException = exception;
+            }
+        });
+
+        worker.Start();
+        Assert.True(worker.Join(TimeSpan.FromSeconds(10)));
+        Assert.Null(workerException);
+        Assert.Equal(default, state.CaptureReceiveRetentionSnapshot());
+    }
+
     private static QuicConnectionStreamState CreateServerReceiveState(ulong receiveLimit = 4096)
     {
         return new QuicConnectionStreamState(new QuicConnectionStreamStateOptions(

@@ -4,6 +4,56 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-14: completed STREAM reassembly spill and scratch lists now return to
+  a two-slot, per-thread cache after `DataRead`, reset, connection cleanup, or
+  replacement by a larger scratch list. The cache retains only cleared lists
+  with capacity at most 64; larger fragmentation histories remain collectible.
+  This preserves the existing two inline segments, geometric list growth,
+  merge rotation, pooled payload ownership, receive accounting, and stream
+  state lock. A permanent benchmark now drains 32 independent interleaved
+  terminal streams rather than measuring only same-stream scratch reuse. Its
+  Short allocation fell from 113.15 to 30.15 KB per operation (-73.4 percent),
+  while the existing single hole-fill row fell from 4.31 to 1.72 KB and the
+  repeated same-stream row remained 1.43 KB. Short-run timing was mixed and is
+  not used as acceptance evidence.
+
+  Focused receive, concurrency, thread-handoff, stream lifecycle, and RFC tests
+  passed 39/39 before the final handoff test and 16/16 after it. Independent
+  review found no correctness issue. The full test project completed 9,561
+  passes with five intentional skips and only the standing incomplete-content
+  close-notification timeout; that exact test then passed five consecutive
+  reruns. The solution wrapper also retains a pre-existing reference to the
+  absent `eng/tools/Incursa.Quic.TraceAnalysis` project, so full validation is
+  reported from the actual test project rather than claiming a clean solution
+  wrapper result.
+
+  Source-backed c64 GC/counter run
+  `quic-segment-list-cache-c64-gc-20260714a-quic-transport-v1-comparison`
+  passed exact 12,800-stream and 838,860,800-byte validation with zero failures
+  or timeouts. Against
+  `quic-ordered-write-retry-c64-gc-20260713a-quic-transport-v1-comparison`, the
+  sampled `List<BufferedSegment>` group fell from 47.22 MB to outside the top
+  32 allocation groups, mean allocation rate fell from 51.40 to 33.69 MB/s,
+  maximum GC heap fell from 685.27 to 465.90 MB, and sampled `byte[]` allocation
+  fell from 624.87 to 455.43 MB. Peak pooled outstanding buffers fell from
+  17,952 to 4,404 and bytes from 147.09 to 13.91 MB, but those pool and queue
+  lifetime deltas remain trace-timing diagnostics rather than direct cache
+  claims. The traced request rate was lower and queue-delay timing was mixed;
+  no throughput claim is made from this instrumented run.
+
+  Seven alternating uninstrumented c64 baseline/candidate pairs are retained
+  as `quic-segment-list-cache-c64-ab-r{1-7}-{baseline|candidate}-20260714a-quic-transport-v1-comparison`.
+  All 14 cells passed exact validation with zero failures or timeouts. Median
+  same-pair deltas were -1.81 percent request rate, -1.22 percent p95 latency,
+  and -2.25 percent mean latency, with wins in 3/7, 4/7, and 4/7 pairs. One
+  candidate cell was a severe retained outlier; baseline and candidate request-
+  rate relative ranges were 16.24 and 18.47 percent. Acceptance is therefore a
+  bounded allocation reduction with median throughput inside the existing two-
+  percent triage tolerance, not evidence of a throughput improvement. The
+  post-change sent-packet dictionary array remained only 1.53 MB in the trace
+  and still does not justify reviving either rejected whole-ledger design. No
+  result was uploaded or published.
+
 - 2026-07-14: flow-control-blocked stream writes now use a request-ordered
   retry queue instead of snapshotting, renting and insertion-sorting an array
   of every pending stream action, and rescanning it on each credit update. The

@@ -17,6 +17,13 @@ internal sealed class QuicConnectionStreamState
     private const int MaximumInitialTrackedStreamCapacity = 128;
     private const int InlineBufferedSegmentCapacity = 2;
     private const int SpilledBufferedSegmentInitialCapacity = InlineBufferedSegmentCapacity * 4;
+    private const int MaximumCachedBufferedSegmentCapacity = 64;
+
+    [ThreadStatic]
+    private static List<BufferedSegment>? cachedBufferedSegmentList;
+
+    [ThreadStatic]
+    private static List<BufferedSegment>? secondaryCachedBufferedSegmentList;
 
     private readonly bool isServer;
     private readonly object syncRoot = new();
@@ -1386,6 +1393,7 @@ internal sealed class QuicConnectionStreamState
         if (state.ReadOffset == state.ReceiveFinalSize.Value)
         {
             state.ReceiveState = QuicStreamReceiveState.DataRead;
+            ReleaseBufferedSegmentScratch(state);
         }
     }
 
@@ -1541,7 +1549,7 @@ internal sealed class QuicConnectionStreamState
             return;
         }
 
-        List<BufferedSegment> updated = state.BufferedSegmentScratch ??= new List<BufferedSegment>(bufferedSegmentCount + 2);
+        List<BufferedSegment> updated = state.BufferedSegmentScratch ??= RentBufferedSegmentList(bufferedSegmentCount + 2);
         updated.Clear();
         int expectedUpdatedCount = bufferedSegmentCount + 2;
         if (updated.Capacity < expectedUpdatedCount)
@@ -1705,7 +1713,7 @@ internal sealed class QuicConnectionStreamState
         }
         else
         {
-            promotedSegments = new List<BufferedSegment>(capacity: SpilledBufferedSegmentInitialCapacity);
+            promotedSegments = RentBufferedSegmentList(SpilledBufferedSegmentInitialCapacity);
         }
 
         promotedSegments.Add(state.InlineBufferedSegment);
@@ -1774,20 +1782,37 @@ internal sealed class QuicConnectionStreamState
         {
             previousActiveSegments.Clear();
             state.BufferedSegmentScratch = previousActiveSegments;
+            ReturnBufferedSegmentList(segments);
             return;
         }
 
         state.BufferedSegmentScratch = segments;
+        if (previousActiveSegments is not null)
+        {
+            ReturnBufferedSegmentList(previousActiveSegments);
+        }
     }
 
     private static void ClearBufferedSegmentStorage(StreamState state)
     {
-        state.BufferedSegmentList?.Clear();
+        List<BufferedSegment>? activeSegments = state.BufferedSegmentList;
+        List<BufferedSegment>? scratchSegments = state.BufferedSegmentScratch;
         state.BufferedSegmentList = null;
+        state.BufferedSegmentScratch = null;
         state.InlineBufferedSegment = default;
         state.SecondInlineBufferedSegment = default;
         state.HasInlineBufferedSegment = false;
         state.HasSecondInlineBufferedSegment = false;
+
+        if (activeSegments is not null)
+        {
+            ReturnBufferedSegmentList(activeSegments);
+        }
+
+        if (scratchSegments is not null && !ReferenceEquals(activeSegments, scratchSegments))
+        {
+            ReturnBufferedSegmentList(scratchSegments);
+        }
     }
 
     private BufferedSegment CreateBufferedSegment(
@@ -1877,8 +1902,87 @@ internal sealed class QuicConnectionStreamState
         if (state.BufferedSegmentScratch is null
             || candidate.Capacity > state.BufferedSegmentScratch.Capacity)
         {
+            if (state.BufferedSegmentScratch is { } previousScratch)
+            {
+                ReturnBufferedSegmentList(previousScratch);
+            }
+
             state.BufferedSegmentScratch = candidate;
+            return;
         }
+
+        ReturnBufferedSegmentList(candidate);
+    }
+
+    private static List<BufferedSegment> RentBufferedSegmentList(int minimumCapacity)
+    {
+        List<BufferedSegment>? segments = cachedBufferedSegmentList;
+        if (segments is not null)
+        {
+            cachedBufferedSegmentList = secondaryCachedBufferedSegmentList;
+            secondaryCachedBufferedSegmentList = null;
+            segments.EnsureCapacity(minimumCapacity);
+            return segments;
+        }
+
+        return new List<BufferedSegment>(minimumCapacity);
+    }
+
+    private static void ReturnBufferedSegmentList(List<BufferedSegment> segments)
+    {
+        segments.Clear();
+        if (segments.Capacity > MaximumCachedBufferedSegmentCapacity)
+        {
+            return;
+        }
+
+        if (ReferenceEquals(cachedBufferedSegmentList, segments)
+            || ReferenceEquals(secondaryCachedBufferedSegmentList, segments))
+        {
+            return;
+        }
+
+        if (cachedBufferedSegmentList is null)
+        {
+            cachedBufferedSegmentList = segments;
+            return;
+        }
+
+        if (secondaryCachedBufferedSegmentList is null)
+        {
+            if (segments.Capacity > cachedBufferedSegmentList.Capacity)
+            {
+                secondaryCachedBufferedSegmentList = cachedBufferedSegmentList;
+                cachedBufferedSegmentList = segments;
+            }
+            else
+            {
+                secondaryCachedBufferedSegmentList = segments;
+            }
+
+            return;
+        }
+
+        if (segments.Capacity > cachedBufferedSegmentList.Capacity)
+        {
+            secondaryCachedBufferedSegmentList = cachedBufferedSegmentList;
+            cachedBufferedSegmentList = segments;
+        }
+        else if (segments.Capacity > secondaryCachedBufferedSegmentList.Capacity)
+        {
+            secondaryCachedBufferedSegmentList = segments;
+        }
+    }
+
+    private static void ReleaseBufferedSegmentScratch(StreamState state)
+    {
+        if (state.BufferedSegmentScratch is not { } scratch)
+        {
+            return;
+        }
+
+        state.BufferedSegmentScratch = null;
+        ReturnBufferedSegmentList(scratch);
     }
 
     private void ReleaseBufferedSegments(StreamState state)

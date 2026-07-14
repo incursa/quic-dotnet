@@ -15,6 +15,7 @@ public class QuicConnectionStreamStateBenchmarks
     private const int BurstSegmentCount = 4;
     private const int BurstCount = 8;
     private const int BurstLength = BurstSegmentLength * BurstSegmentCount;
+    private const int IndependentStreamCount = 32;
 
     private byte[] tailFrame = [];
     private byte[] streamData = [];
@@ -186,6 +187,73 @@ public class QuicConnectionStreamStateBenchmarks
 
         state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot);
         return total + (ulong)snapshot.BufferedReadableBytes;
+    }
+
+    [Benchmark]
+    public ulong ReceiveAndDrainIndependentInterleavedStreams()
+    {
+        QuicConnectionStreamState state = CreateState(
+            connectionReceiveLimit: HoleFillLength * IndependentStreamCount * 2,
+            incomingBidirectionalStreamLimit: IndependentStreamCount,
+            peerBidirectionalReceiveLimit: HoleFillLength * 2);
+        ulong total = 0;
+        Span<byte> destination = stackalloc byte[HoleFillLength];
+
+        for (int streamIndex = 0; streamIndex < IndependentStreamCount; streamIndex++)
+        {
+            ulong streamId = (ulong)((streamIndex * 4) + 1);
+            for (int segmentIndex = 0; segmentIndex < HoleSegmentCount; segmentIndex++)
+            {
+                ulong offset = (ulong)(((segmentIndex * 2) + 1) * HoleSegmentLength);
+                QuicStreamFrame frame = new(
+                    0x0E,
+                    new QuicStreamId(streamId),
+                    hasOffset: true,
+                    offset,
+                    hasLength: true,
+                    length: HoleSegmentLength,
+                    fin: false,
+                    holeSegmentData,
+                    HoleSegmentLength);
+                if (!state.TryReceiveStreamFrame(frame, out _))
+                {
+                    throw new InvalidOperationException("Failed to seed an independent interleaved STREAM segment.");
+                }
+            }
+
+            QuicStreamFrame fillingFrame = new(
+                0x0F,
+                new QuicStreamId(streamId),
+                hasOffset: true,
+                offset: 0,
+                hasLength: true,
+                length: HoleFillLength,
+                fin: true,
+                holeFillingData,
+                HoleFillLength);
+            if (!state.TryReceiveStreamFrame(fillingFrame, out _))
+            {
+                throw new InvalidOperationException("Failed to fill an independent STREAM's interleaved holes.");
+            }
+
+            if (!state.TryReadStreamData(
+                    streamId,
+                    destination,
+                    out int bytesWritten,
+                    out bool completed,
+                    out _,
+                    out _,
+                    out _)
+                || bytesWritten != HoleFillLength
+                || !completed)
+            {
+                throw new InvalidOperationException("Failed to drain an independent interleaved STREAM.");
+            }
+
+            total += (ulong)bytesWritten;
+        }
+
+        return total;
     }
 
     [Benchmark]
