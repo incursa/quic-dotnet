@@ -71,6 +71,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly Channel<QuicConnectionEvent> inbox;
     private readonly ConcurrentDictionary<long, StreamOpenRequestCompletionSource> pendingStreamOpenRequests = new();
     private readonly Dictionary<long, StreamActionRequestCompletionSource> pendingStreamActionRequests = new();
+    private readonly PriorityQueue<long, long> pendingStreamWriteRetryRequests = new();
     private readonly ConcurrentDictionary<long, DatagramSendRequestCompletionSource> pendingDatagramSendRequests = new();
     private readonly ConcurrentQueue<StreamOpenRequestCompletionSource> streamOpenRequestCompletionSourcePool = new();
     private readonly ConcurrentQueue<StreamActionRequestCompletionSource> streamActionRequestCompletionSourcePool = new();
@@ -227,6 +228,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         private Action<bool>? resultCompletionAction;
         private long writeStartedTimestamp;
         private int completed;
+        private bool queuedForWriteRetry;
 
         internal StreamActionRequestCompletionSource(QuicConnectionRuntime owner)
         {
@@ -254,6 +256,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             resultCompletionAction = null;
             writeStartedTimestamp = 0;
             completed = 0;
+            queuedForWriteRetry = false;
             source.Reset();
         }
 
@@ -345,6 +348,28 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             {
                 QuicBufferPool.ReturnBytes(ownedData);
             }
+        }
+
+        internal bool TryMarkQueuedForWriteRetry()
+        {
+            if (queuedForWriteRetry)
+            {
+                return false;
+            }
+
+            queuedForWriteRetry = true;
+            return true;
+        }
+
+        internal bool TryClearQueuedForWriteRetry()
+        {
+            if (!queuedForWriteRetry)
+            {
+                return false;
+            }
+
+            queuedForWriteRetry = false;
+            return true;
         }
 
         internal void TrySetResult()
@@ -880,6 +905,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         {
             bool removed = pendingStreamActionRequests.Remove(requestId, out StreamActionRequestCompletionSource? removedCompletion);
             completionSource = removedCompletion!;
+            if (removed
+                && completionSource.TryClearQueuedForWriteRetry())
+            {
+                _ = pendingStreamWriteRetryRequests.Remove(requestId, out _, out _);
+            }
+
             return removed;
         }
     }

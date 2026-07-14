@@ -282,97 +282,40 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref QuicConnectionEffectAccumulator effects)
     {
-        KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource>[]? pendingRequests = null;
-        int pendingRequestCount = 0;
         lock (pendingStreamActionRequestsGate)
         {
-            if (pendingStreamActionRequests.Count == 0)
+            int pendingRetryCount = pendingStreamWriteRetryRequests.Count;
+            if (pendingRetryCount == 0)
             {
                 return false;
             }
 
-            pendingRequestCount = pendingStreamActionRequests.Count;
-            pendingRequests = ArrayPool<KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource>>.Shared.Rent(pendingRequestCount);
-            int snapshotIndex = 0;
-            foreach (KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource> pendingRequest in pendingStreamActionRequests)
-            {
-                pendingRequests[snapshotIndex++] = pendingRequest;
-            }
-
-            SortPendingStreamActionRequests(pendingRequests, pendingRequestCount);
-
             bool stateChanged = false;
-            try
+            for (int index = 0;
+                index < pendingRetryCount && pendingStreamWriteRetryRequests.TryDequeue(out long requestId, out _);
+                index++)
             {
-                for (int index = 0; index < pendingRequestCount; index++)
+                if (!pendingStreamActionRequests.TryGetValue(
+                        requestId,
+                        out QuicConnectionRuntime.StreamActionRequestCompletionSource? completion)
+                    || !completion.TryClearQueuedForWriteRetry())
                 {
-                    KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource> pendingRequest = pendingRequests[index];
-                    QuicConnectionRuntime.StreamActionRequestCompletionSource completion = pendingRequest.Value;
-                    if (completion.ActionKind is not (QuicConnectionStreamActionKind.Write or QuicConnectionStreamActionKind.Finish))
-                    {
-                        continue;
-                    }
-
-                    if (completion.ActionKind == QuicConnectionStreamActionKind.Write
-                        && !completion.HasOwnedStreamData)
-                    {
-                        continue;
-                    }
-
-                    if (completion.ActionKind == QuicConnectionStreamActionKind.Finish
-                        && completion.StreamDataLength > 0
-                        && !completion.HasOwnedStreamData)
-                    {
-                        continue;
-                    }
-
-                    if (!pendingStreamActionRequests.TryGetValue(pendingRequest.Key, out QuicConnectionRuntime.StreamActionRequestCompletionSource? currentCompletion)
-                        || !ReferenceEquals(currentCompletion, completion))
-                    {
-                        continue;
-                    }
-
-                    if (HandleWriteStreamAction(
-                            nowTicks,
-                            pendingRequest.Key,
-                            completion.StreamId,
-                            completion.GetOwnedStreamDataMemory(),
-                            completion.ActionKind == QuicConnectionStreamActionKind.Finish,
-                            ref effects))
-                    {
-                        stateChanged = true;
-                    }
+                    continue;
                 }
 
-                return stateChanged;
-            }
-            finally
-            {
-                if (pendingRequests is not null)
+                if (HandleWriteStreamAction(
+                        nowTicks,
+                        requestId,
+                        completion.StreamId,
+                        completion.GetOwnedStreamDataMemory(),
+                        completion.ActionKind == QuicConnectionStreamActionKind.Finish,
+                        ref effects))
                 {
-                    ArrayPool<KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource>>.Shared.Return(
-                        pendingRequests,
-                        clearArray: true);
+                    stateChanged = true;
                 }
             }
-        }
-    }
 
-    private static void SortPendingStreamActionRequests(
-        KeyValuePair<long, StreamActionRequestCompletionSource>[] pendingRequests,
-        int pendingRequestCount)
-    {
-        for (int index = 1; index < pendingRequestCount; index++)
-        {
-            KeyValuePair<long, StreamActionRequestCompletionSource> item = pendingRequests[index];
-            int insertIndex = index - 1;
-            while (insertIndex >= 0 && pendingRequests[insertIndex].Key > item.Key)
-            {
-                pendingRequests[insertIndex + 1] = pendingRequests[insertIndex];
-                insertIndex--;
-            }
-
-            pendingRequests[insertIndex + 1] = item;
+            return stateChanged;
         }
     }
 
@@ -590,6 +533,7 @@ internal sealed partial class QuicConnectionRuntime
                 else if (dataBlockedFrame.MaximumData != 0 || streamDataBlockedFrame.MaximumStreamData != 0)
                 {
                     completion.EnsureOwnedStreamData(streamData.Span);
+                    QueuePendingStreamWriteRetry(requestId, completion);
                     _ = TryEmitFlowControlBlockedSignal(dataBlockedFrame, streamDataBlockedFrame, ref effects);
                 }
                 else
@@ -611,6 +555,16 @@ internal sealed partial class QuicConnectionRuntime
                 writeOffset,
                 sendStateBeforeWrite,
                 ref effects);
+        }
+    }
+
+    private void QueuePendingStreamWriteRetry(
+        long requestId,
+        QuicConnectionRuntime.StreamActionRequestCompletionSource completion)
+    {
+        if (completion.TryMarkQueuedForWriteRetry())
+        {
+            pendingStreamWriteRetryRequests.Enqueue(requestId, requestId);
         }
     }
 
@@ -5806,6 +5760,7 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             pendingStreamActionRequests.Clear();
+            pendingStreamWriteRetryRequests.Clear();
         }
 
         try

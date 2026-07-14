@@ -4,6 +4,53 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-14: flow-control-blocked stream writes now use a request-ordered
+  retry queue instead of snapshotting, renting and insertion-sorting an array
+  of every pending stream action, and rescanning it on each credit update. The
+  existing reentrant monitor and pending-request dictionary remain the
+  cancellation and terminal-lifecycle authority. Only writes that actually
+  block on connection or stream credit enter the queue; cancellation removes
+  the queued ID, one retry pass processes only the IDs present at its start,
+  still-blocked writes requeue once, and terminal cleanup clears both
+  structures. Focused ordering, cancellation, delayed-consumption, disposal,
+  stream-credit, blocked-sender, and RFC tests passed 49/49. Independent diff
+  review found no correctness issue. The all-up suite passed 9,559 tests with
+  five intentional skips and reproduced only the standing incomplete-content
+  close-notification and dropped-FIN timing failures; both exact tests then
+  passed together in five consecutive reruns.
+
+  The exact source-backed c64 GC/counter diagnostic
+  `quic-ordered-write-retry-c64-gc-20260713a-quic-transport-v1-comparison`
+  passed 12,800-stream and 838,860,800-byte validation with zero failures or
+  timeouts. Against
+  `quic-next-postread-c64-gc-20260713a-quic-transport-v1-comparison`,
+  average packet/write queue delay fell from 135.9/152.9 ms to 57.6/87.3 ms,
+  max shard queue depth fell from 2,606 to 634, sampled mean successful write
+  completion fell from 1,901.5 to 85.4 ms, peak delayed application sends and
+  application-send retained buffers fell from 367 to 267, peak pooled
+  outstanding buffers fell from 34,251 to 17,952, and mean allocation rate
+  fell from 126.35 to 51.40 MB/s. These are trace-instrumented shared-host
+  diagnostics, not clean throughput claims. The paired CPU trace
+  `quic-ordered-write-retry-c64-cpu-20260713a-quic-transport-v1-comparison`
+  was neutral: `Monitor.Enter_Slowpath` moved from 9.42 to 8.96 percent and
+  inclusive retry work moved from 0.89 to 0.95 percent, so acceptance does not
+  claim a sampled-CPU reduction.
+
+  Twenty-five uninstrumented source-backed baseline/candidate pairs used five
+  alternating observations at c1, c4, c16, c32, and c64. Every run passed
+  exact validation with zero failures or timeouts. Median same-pair throughput
+  deltas were +4.21/+7.32/+3.03/+4.84/+2.85 percent; median p95 deltas were
+  -11.31/-19.69/-4.29/-6.68/-3.17 percent; and median mean-latency deltas were
+  -3.26/-4.82/-3.83/-3.29/-1.66 percent. Run IDs use
+  `quic-ordered-write-retry-c{shape}-ab-r{1-5}-{baseline|candidate}-20260713a-quic-transport-v1-comparison`.
+  c128 remains diagnostic-only: one candidate run lost exactly one 100-stream
+  connection and failed exact validation, while three fresh valid pairs had
+  mixed results with median +4.25 percent throughput, -0.64 percent p95, and
+  -2.13 percent mean latency. The failed run and target-saturation warnings are
+  retained; no c128 percentage is used to justify acceptance. This slice is
+  accepted as a bounded retry-bookkeeping and queue-pressure reduction without
+  an observed c1-c64 regression. No result was uploaded or published.
+
 - 2026-07-13: a reusable open-addressed sent-packet store with backward-shift
   deletion was rejected at the microbenchmark gate. It used one entry array,
   tolerated sparse packet numbers, reused slots across a 10,000-packet
