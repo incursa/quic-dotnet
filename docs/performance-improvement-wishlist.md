@@ -4,6 +4,48 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-14: per-connection admission of oversized application writes was
+  rejected after five bounded designs. The candidate kept caller memory
+  borrowed until the public `ValueTask` completed, retained already-owned
+  flow-control retries without another pool rent, serialized release in
+  request order, preserved the stream write gate, and covered cancellation,
+  disposal, flow-control requeue, ordering, and delayed consumption. A fixed
+  cap of 32 reduced the c64 diagnostic peak from 211 to 34 delayed application
+  buffers and from 64.16 to 52.72 MB of outstanding 64 KiB pool capacity, but
+  raised maximum shard depth from 1,346 to 1,740. A cap of 64 retained 72
+  buffers and 36.21 MB of 64 KiB pool capacity, but still imposed admission on
+  lower-load traffic. These instrumented observations prove a lifetime bound;
+  they do not prove throughput.
+
+  Clean source-backed gates rejected both fixed caps. Cap 32 improved c64
+  median request rate by 4.44 percent, but its c1/c4/c16/c32 guardrail matrix
+  included a c4 p95 regression of 12.41 percent and a c32 request-rate
+  regression of 2.52 percent with 43.77 percent candidate range. Cap 64 moved
+  median request rate by -2.67/-2.97/+2.38 percent at c4/c32/c64 and regressed
+  c4 p95 by 26.21 percent. Run IDs use `quic-admission-gate-*`,
+  `quic-admission-matrix-*`, and `quic-admission64-gate-*`.
+
+  Three pressure-sensitive variants then activated admission only after the
+  shard's pending STREAM-write count reached 128, 192, or 512. Threshold 128
+  did not activate in the c4 counter diagnostic and did activate at c64, where
+  it retained 141 delayed buffers and 37.68 MB of 64 KiB pool capacity. Its
+  clean c4/c32/c64 request-rate deltas were +2.85/+0.37/+11.63 percent, but c4
+  p95 regressed 21.20 percent. Threshold 192 moved c4/c64 request rate by
+  -0.81/+1.72 percent and c4 p95 by +20.88 percent. The final threshold 512
+  gate completed all 20 alternating c4/c64 cells with exact payload
+  validation, zero failures, and zero timeouts. It moved median request rate
+  by -1.05/-1.91 percent and p95 by -8.10/+0.91 percent, so it did not retain a
+  high-concurrency benefit. Evidence remains under
+  `quic-admission-pressure*-20260714a` ProtocolLab runs.
+
+  The implementation, metrics, and candidate-only tests were reverted. Do not
+  repeat per-connection queue-count admission with another cap or threshold.
+  A materially different follow-up must reduce creation or service cost of
+  shard STREAM-write work, or apply bounded producer backpressure before each
+  write becomes an independently queued runtime item, while preserving flow
+  control, write ordering, cancellation, and `ValueTask` memory lifetime. No
+  result was uploaded or published.
+
 - 2026-07-14: retaining the original queued STREAM payload and advancing a
   consumed-data cursor instead of rebuilding the complete unsent tail after
   every fragment was rejected. The candidate preserved the queued owner until
