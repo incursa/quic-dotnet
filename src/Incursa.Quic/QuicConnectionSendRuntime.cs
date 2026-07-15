@@ -279,6 +279,7 @@ internal sealed class QuicConnectionSendRuntime
     private readonly QuicRetransmissionQueue retransmissionQueue = new();
     private readonly QuicSenderFlowController flowController;
     private readonly QuicRttEstimator rttEstimator;
+    private QuicOutstandingSentStreamPacketIndex outstandingSentStreamPacketIndex = new();
     private QuicEcnValidationState ecnValidationState;
     private QuicConnectionSentPacketKey? latestTrackedPacketKey;
 
@@ -310,6 +311,9 @@ internal sealed class QuicConnectionSendRuntime
     public int PendingRetransmissionCount => retransmissionQueue.Count;
 
     internal int SentPacketStorageCapacity => sentPackets.EnsureCapacity(0);
+
+    internal int GetOutstandingSentStreamPacketCount(ulong streamId)
+        => outstandingSentStreamPacketIndex.GetCount(streamId);
 
     internal QuicRetentionSnapshot CaptureSentPacketRetentionSnapshot(ulong nowMicros)
     {
@@ -552,7 +556,7 @@ internal sealed class QuicConnectionSendRuntime
         ValidateCryptoMetadata(packet);
         ecnValidationState.RecordPacketSent(packet.PacketNumberSpace, CurrentEcnMarking);
         QuicConnectionSentPacketKey key = new(packet.PacketNumberSpace, packet.PacketNumber);
-        if (sentPackets.Remove(key, out QuicConnectionSentPacket replacedPacket))
+        if (TryRemoveSentPacket(key, out QuicConnectionSentPacket replacedPacket))
         {
             ReleasePacketOwners(replacedPacket);
         }
@@ -560,6 +564,7 @@ internal sealed class QuicConnectionSendRuntime
         if (!packet.AckOnlyPacket)
         {
             sentPackets[key] = packet;
+            outstandingSentStreamPacketIndex.Add(packet);
             latestTrackedPacketKey = key;
         }
         flowController.RecordPacketSent(
@@ -620,7 +625,7 @@ internal sealed class QuicConnectionSendRuntime
         bool handshakeConfirmed = false)
     {
         QuicConnectionSentPacketKey key = new(packetNumberSpace, packetNumber);
-        bool removedSentPacket = sentPackets.Remove(key, out QuicConnectionSentPacket acknowledgedPacket);
+        bool removedSentPacket = TryRemoveSentPacket(key, out QuicConnectionSentPacket acknowledgedPacket);
         bool removedPendingRetransmission = retransmissionQueue.TryRemovePendingRetransmission(key);
         if (!removedSentPacket && !removedPendingRetransmission)
         {
@@ -676,7 +681,7 @@ internal sealed class QuicConnectionSendRuntime
         {
             foreach (QuicConnectionSentPacketKey key in removedKeys)
             {
-                if (sentPackets.Remove(key, out QuicConnectionSentPacket removedPacket))
+                if (TryRemoveSentPacket(key, out QuicConnectionSentPacket removedPacket))
                 {
                     ReleasePacketOwners(removedPacket);
                     updated = true;
@@ -776,7 +781,7 @@ internal sealed class QuicConnectionSendRuntime
         {
             foreach (QuicConnectionSentPacketKey key in removedKeys)
             {
-                if (sentPackets.Remove(key, out QuicConnectionSentPacket removedPacket))
+                if (TryRemoveSentPacket(key, out QuicConnectionSentPacket removedPacket))
                 {
                     ReleasePacketOwners(removedPacket);
                     updated = true;
@@ -818,7 +823,7 @@ internal sealed class QuicConnectionSendRuntime
         {
             foreach (QuicConnectionSentPacketKey key in removedKeys)
             {
-                if (sentPackets.Remove(key, out QuicConnectionSentPacket removedPacket))
+                if (TryRemoveSentPacket(key, out QuicConnectionSentPacket removedPacket))
                 {
                     ReleasePacketOwners(removedPacket);
                     updated = true;
@@ -862,7 +867,7 @@ internal sealed class QuicConnectionSendRuntime
         bool scheduleRetransmission = true)
     {
         QuicConnectionSentPacketKey key = new(packetNumberSpace, packetNumber);
-        if (!sentPackets.Remove(key, out QuicConnectionSentPacket packet))
+        if (!TryRemoveSentPacket(key, out QuicConnectionSentPacket packet))
         {
             return false;
         }
@@ -1017,15 +1022,21 @@ internal sealed class QuicConnectionSendRuntime
 
     private bool ContainsOutstandingStreamDataForStream(ulong streamId)
     {
-        foreach (QuicConnectionSentPacket packet in sentPackets.Values)
+        return GetOutstandingSentStreamPacketCount(streamId) > 0
+            || retransmissionQueue.ContainsStreamDataForStream(streamId);
+    }
+
+    private bool TryRemoveSentPacket(
+        QuicConnectionSentPacketKey key,
+        out QuicConnectionSentPacket packet)
+    {
+        if (!sentPackets.Remove(key, out packet))
         {
-            if (QuicFramePayloadInspector.ContainsStreamDataForStream(packet.PlaintextPayload.Span, streamId))
-            {
-                return true;
-            }
+            return false;
         }
 
-        return retransmissionQueue.ContainsStreamDataForStream(streamId);
+        outstandingSentStreamPacketIndex.Remove(packet);
+        return true;
     }
 
     private bool TrySuppressResetStreamRetransmissionForStream(ulong streamId)

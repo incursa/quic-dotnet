@@ -4,6 +4,61 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-15: a lazy per-stream index of retained packets carrying non-empty
+  STREAM data is accepted. RESET_STREAM acknowledgment handling previously
+  scanned and reparsed every retained packet to determine whether the
+  acknowledged stream still had outstanding data. The runtime now parses each
+  tracked packet on insertion and removal, counts each distinct stream once per
+  packet, and performs an O(1) count lookup before consulting the retransmission
+  queue. Every replacement, acknowledgment, loss, packet-number-space discard,
+  protection-level discard, and key-phase discard uses the indexed removal
+  path. Zero-length STREAM frames, including FIN-only frames, remain excluded
+  from outstanding-data ownership.
+
+  Permanent BenchmarkDotNet coverage measures lookup, equal-parser-work
+  bookkeeping, and the complete acknowledgment lifecycle. At 64/256/1,024
+  retained packets, lookup fell from 1,138/4,875/19,555 ns to
+  4.15/3.86/3.80 ns. The complete former scan-after-every-ACK lifecycle fell
+  from 35.81/601.75/10,054.57 microseconds to 5.64/23.54/93.66 microseconds.
+  Index add/remove cost, including the same two payload parses, was 1.89/1.21/
+  1.20 times the parse-only baseline; fresh-index allocation was 4,624/22,312/
+  102,216 bytes. The accepted trade therefore pays bounded dictionary work at
+  packet lifecycle boundaries to remove the quadratic acknowledgment scan.
+
+  Fifty-eight of 59 uninstrumented source-backed ProtocolLab cells passed exact
+  validation, and those successful cells reported zero request failures or
+  request timeouts. Five
+  deterministic alternating pairs at c1/c4/c16/c32 moved aggregate median
+  request rate by +4.45/+4.55/+9.38/+7.80 percent and same-pair medians by
+  +2.91/+3.91/+9.35/+7.34 percent; aggregate p50 moved -1.61/-3.56/-4.84/
+  -5.32 percent. At c64, the aggregate request-rate median moved -0.90 percent
+  while the same-pair median moved +4.63 percent; one fully valid candidate
+  outlier is retained rather than discarded. Four valid c128 pairs moved the
+  aggregate request-rate median +0.67 percent but the same-pair median
+  -2.36 percent, with aggregate/paired p50 at +1.14/+1.10 percent. Both c64 and
+  c128 showed possible target saturation. The fifth c128 baseline cell then
+  failed raw load validation with a network-inactivity timeout and four recorded
+  errors, so its candidate counterpart was not run and c128 is not used for an
+  acceptance percentage claim. The 59-cell summary and all raw evidence remain
+  under `.artifacts/protocol-lab/sent-stream-index-pairs-20260715a` and the
+  corresponding ProtocolLab run roots. These are shared-host diagnostics, not
+  publishable rankings.
+
+  Focused index and RFC 9000 RESET_STREAM tests passed, including packet
+  replacement, every removal path, repeated/multi-stream packets, and FIN-only
+  behavior. The final logged all-up test run completed 9,572 passes and five
+  intentional skips with only the standing incomplete-content peer-close
+  timeout; that exact test passed ten consecutive isolated reruns. An earlier
+  candidate all-up run completed 9,571 passes and reproduced only the standing
+  dropped-server-FIN timing failure, which also passed ten consecutive isolated
+  reruns. No result was uploaded, deployed, or published.
+
+  Packet-mailbox batching was also rejected before implementation. The matched
+  CPU trace attributed only about 0.24 percent exclusive CPU to channel
+  publication while packet transition and service work dominated. Do not add a
+  mailbox batch merely to remove channel writes unless a materially different
+  trace shows publication or wake-up cost has become significant.
+
 - 2026-07-14: releasing `pendingStreamActionRequestsGate` during expensive
   STREAM-write processing through pooled completion-source processing leases
   was rejected. The candidate kept each request visible during processing,
