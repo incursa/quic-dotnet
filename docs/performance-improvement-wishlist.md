@@ -4,6 +4,49 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-14: releasing `pendingStreamActionRequestsGate` during expensive
+  STREAM-write processing through pooled completion-source processing leases
+  was rejected. The candidate kept each request visible during processing,
+  delayed pool reuse until both processing and `ValueTask` consumption ended,
+  made the short gate the cancellation linearization point, preserved terminal
+  cleanup and write-gate serialization, and deferred busy retry entries so a
+  low request ID could not starve ready work. Focused ownership, cancellation,
+  lifecycle, retry-fairness, and RFC tests passed 72/72 in ten consecutive
+  runs. The final all-up test run passed 9,572 tests with five intentional
+  skips and reproduced only the standing dropped-server-FIN timing failure;
+  that exact test then passed ten consecutive reruns.
+
+  Current source-backed c64 CPU diagnostics
+  `quic-queue-lease-current-{baseline,candidate}-c64-cpu-20260714a-quic-transport-v1-comparison`
+  both passed exact 12,800-stream and 838,860,800-byte validation with zero
+  failures or timeouts. Sampled exclusive `Monitor.Enter_Slowpath` fell from
+  8.52 to 5.01 percent, but traced request rate fell from 974.16 to 950.18 per
+  second and p50/p99 latency rose from 5,224.79/6,192.35 to
+  5,411.92/6,579.81 ms. Candidate final counter samples also retained 16,453
+  pooled buffers versus zero in the matched baseline; the earlier candidate
+  diagnostic ended with 15,149. Counter timing includes load-phase boundaries,
+  so this is not asserted as a leak, but the design did not prove improved
+  backlog drain. Instrumented trace movement is diagnostic, not acceptance
+  evidence.
+
+  Fifty deterministic alternating, uninstrumented source-backed cells at c1,
+  c4, c16, c32, and c64 all passed exact validation with zero failed requests
+  and zero timeouts. Candidate median request-rate deltas were
+  -1.57/-5.08/+0.32/-3.29/+1.54 percent. Median p50 deltas were
+  -2.28/-0.77/+2.45/+3.58/+4.25 percent. Same-repetition median request-rate
+  deltas were +0.39/-5.08/-1.18/-1.21/-1.41 percent, so the apparent c64
+  aggregate median gain was not stable within matched pairs. Evidence remains
+  under `quic-queue-lease-matched-20260714a-*`, with the combined summary and
+  transcript under `.artifacts/campaigns`.
+
+  The runtime implementation and candidate-only tests were reverted. Do not
+  repeat another pending-action processing barrier or lease that only shortens
+  this monitor: three materially different barrier designs have now reduced
+  lock hold time without improving queue service capacity. A future candidate
+  must reduce per-write service work or bound producer ingress before runtime
+  work-item creation, and must improve c16-c64 without regressing c1-c4. No
+  result was uploaded or published.
+
 - 2026-07-14: increasing the runtime STREAM-write work-item chunk from 32 KiB
   to 64 KiB was rejected. The candidate targeted the two sequential shard
   work items created by each 64 KiB ProtocolLab application write; packet
