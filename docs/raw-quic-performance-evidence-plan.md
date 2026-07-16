@@ -326,6 +326,34 @@ and write-completion latency. Any next scheduler candidate must be paced or
 ACK/recovery proportional and must be evaluated on download plus high-fanout
 multiplex and duplex lanes before acceptance.
 
+## Recovery Send Decision Telemetry Added 2026-07-16
+
+Incursa now emits bounded-tag recovery send metrics for congestion window,
+bytes in flight, available send bytes, budgeted and flushed datagrams, queue
+depth before and after release, outcome, and blocked reason. ProtocolLab counter
+capture retains these instruments alongside the existing shard queue delay,
+buffer retention, sent-packet retention, and stream-write completion metrics.
+
+The source-backed c1 download diagnostic
+`raw-download-recovery-metrics2-20260716-quic-transport-v1-comparison` and c16/s100
+multiplex diagnostic
+`raw-multiplex-recovery-metrics-20260716-quic-transport-v1-comparison` both passed
+exact validation with zero failed or timed-out operations. The c16/s100 run
+observed maximum shard depth 222, packet/write queue delay 62.44/63.19 ms,
+88 delayed sends, 1,268 outstanding pooled buffers, and 70.88 ms maximum sampled
+write completion. Maximum observed one-second decision rates included 553 burst
+limit outcomes, 428 post-policy congestion-blocked flushes, and ten policy-level
+congestion-blocked outcomes.
+
+This isolates the next candidate: when less than one full datagram remains in
+the congestion window, the policy currently exposes all remaining packet bytes
+as STREAM-frame payload even though short-header, packet-number, AEAD tag, and
+ACK headroom must still fit. The later congestion preflight rejects those
+attempts. The next experiment must make the partial-datagram payload budget
+packet-overhead-aware, preserve standalone FIN progress, and prove fewer futile
+flushes plus no c1/c4/c16 or high-fanout regression. Counter-attached numbers are
+diagnostic and must not be used as throughput claims.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |

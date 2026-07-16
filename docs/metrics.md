@@ -57,6 +57,14 @@ These metrics are diagnostic signals for live behavior and operational visibilit
 | `incursa.quic.runtime.sent_packets.retained` | Histogram | Sampled recovery-ledger packet count for the connection being processed on a shard. Values are per connection, not aggregate shard totals. | `shard_index` |
 | `incursa.quic.runtime.retransmissions.pending` | Histogram | Sampled pending retransmission count for the connection being processed on a shard. Values are per connection, not aggregate shard totals. | `shard_index` |
 | `incursa.quic.runtime.stream_write.completion.ms` | Histogram | Runtime stream-action completion latency, in milliseconds. A large write can produce multiple `write` samples because the runtime processes bounded chunks. | `role`, `action`, `outcome` |
+| `incursa.quic.runtime.application_send.recovery.flushes` | Counter | Recovery-progress send-release decisions. | `role`, `outcome`, `blocked_reason` |
+| `incursa.quic.runtime.application_send.recovery.congestion_window.bytes` | Histogram | Congestion window at the measured recovery send decision. | `role`, `outcome`, `blocked_reason` |
+| `incursa.quic.runtime.application_send.recovery.bytes_in_flight.bytes` | Histogram | Bytes in flight at the measured recovery send decision. | `role`, `outcome`, `blocked_reason` |
+| `incursa.quic.runtime.application_send.recovery.available_send.bytes` | Histogram | Congestion- and anti-amplification-bounded bytes available at the measured recovery send decision. | `role`, `outcome`, `blocked_reason` |
+| `incursa.quic.runtime.application_send.recovery.budget.datagrams` | Histogram | Maximum datagrams allowed by the final measured send-policy decision. | `role`, `outcome`, `blocked_reason` |
+| `incursa.quic.runtime.application_send.recovery.flushed.datagrams` | Histogram | Datagrams actually released by the recovery-progress flush. | `role`, `outcome`, `blocked_reason` |
+| `incursa.quic.runtime.application_send.recovery.queue.before` | Histogram | Queued application writes before recovery-driven release. | `role`, `outcome`, `blocked_reason` |
+| `incursa.quic.runtime.application_send.recovery.queue.after` | Histogram | Queued application writes after recovery-driven release. | `role`, `outcome`, `blocked_reason` |
 
 ## HTTP/3 Instruments
 

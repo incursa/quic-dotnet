@@ -9,6 +9,16 @@ using System.Threading.Channels;
 
 namespace Incursa.Quic;
 
+internal enum QuicApplicationSendRecoveryFlushOutcome
+{
+    QueueDrained,
+    BurstLimitReached,
+    BudgetBlocked,
+    RetransmissionPending,
+    FlushBlocked,
+    FlushFailed,
+}
+
 /// <summary>
 /// Owns the standard QUIC metrics surface without coupling the transport to a collector.
 /// </summary>
@@ -173,6 +183,14 @@ internal static class QuicMetrics
     private static readonly Histogram<long> ReceiveBufferedBytes = Meter.CreateHistogram<long>("incursa.quic.runtime.receive.buffered_bytes", unit: "bytes");
     private static readonly Histogram<long> ReceiveBufferedStreams = Meter.CreateHistogram<long>("incursa.quic.runtime.receive.buffered_streams", unit: "streams");
     private static readonly Histogram<long> ApplicationSendBatchStreams = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.batch_streams", unit: "streams");
+    private static readonly Counter<long> ApplicationSendRecoveryFlushes = Meter.CreateCounter<long>("incursa.quic.runtime.application_send.recovery.flushes", unit: "flushes");
+    private static readonly Histogram<long> ApplicationSendRecoveryCongestionWindow = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.recovery.congestion_window.bytes", unit: "bytes");
+    private static readonly Histogram<long> ApplicationSendRecoveryBytesInFlight = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.recovery.bytes_in_flight.bytes", unit: "bytes");
+    private static readonly Histogram<long> ApplicationSendRecoveryAvailableBytes = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.recovery.available_send.bytes", unit: "bytes");
+    private static readonly Histogram<long> ApplicationSendRecoveryBudgetDatagrams = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.recovery.budget.datagrams", unit: "datagrams");
+    private static readonly Histogram<long> ApplicationSendRecoveryFlushedDatagrams = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.recovery.flushed.datagrams", unit: "datagrams");
+    private static readonly Histogram<long> ApplicationSendRecoveryQueueBefore = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.recovery.queue.before", unit: "writes");
+    private static readonly Histogram<long> ApplicationSendRecoveryQueueAfter = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.recovery.queue.after", unit: "writes");
     private static readonly Histogram<double> StreamWriteCompletion = Meter.CreateHistogram<double>("incursa.quic.runtime.stream_write.completion.ms", unit: "ms");
     private static readonly long[] BufferPoolRentCounts = new long[BufferPoolBucketCount];
     private static readonly long[] BufferPoolRequestedRentCounts = new long[BufferPoolBucketCount];
@@ -507,6 +525,85 @@ internal static class QuicMetrics
         tags.Add("batch_kind", combinedWrite ? "combined_write" : "single_write");
         ApplicationSendBatchStreams.Record(streamCount, in tags);
     }
+
+    internal static void RecordApplicationSendRecoveryFlush(
+        QuicTlsRole role,
+        QuicSendPolicySnapshot snapshot,
+        QuicQueuedApplicationSendBudget budget,
+        int queuedWritesBefore,
+        int queuedWritesAfter,
+        int flushedDatagrams,
+        QuicApplicationSendRecoveryFlushOutcome outcome,
+        QuicSendPolicyBlockedReason blockedReason)
+    {
+        if (!ApplicationSendRecoveryFlushes.Enabled
+            && !ApplicationSendRecoveryCongestionWindow.Enabled
+            && !ApplicationSendRecoveryBytesInFlight.Enabled
+            && !ApplicationSendRecoveryAvailableBytes.Enabled
+            && !ApplicationSendRecoveryBudgetDatagrams.Enabled
+            && !ApplicationSendRecoveryFlushedDatagrams.Enabled
+            && !ApplicationSendRecoveryQueueBefore.Enabled
+            && !ApplicationSendRecoveryQueueAfter.Enabled)
+        {
+            return;
+        }
+
+        TagList tags = default;
+        tags.Add("role", GetRoleTag(role));
+        tags.Add("outcome", FormatApplicationSendRecoveryFlushOutcome(outcome));
+        tags.Add("blocked_reason", FormatSendPolicyBlockedReason(blockedReason));
+
+        ApplicationSendRecoveryFlushes.Add(1, in tags);
+        ApplicationSendRecoveryCongestionWindow.Record(ToInt64Saturating(snapshot.CongestionWindowBytes), in tags);
+        ApplicationSendRecoveryBytesInFlight.Record(ToInt64Saturating(snapshot.BytesInFlightBytes), in tags);
+        ApplicationSendRecoveryAvailableBytes.Record(ToInt64Saturating(ComputeAvailableSendBytes(snapshot)), in tags);
+        ApplicationSendRecoveryBudgetDatagrams.Record(Math.Max(0, budget.MaxDatagrams), in tags);
+        ApplicationSendRecoveryFlushedDatagrams.Record(Math.Max(0, flushedDatagrams), in tags);
+        ApplicationSendRecoveryQueueBefore.Record(Math.Max(0, queuedWritesBefore), in tags);
+        ApplicationSendRecoveryQueueAfter.Record(Math.Max(0, queuedWritesAfter), in tags);
+    }
+
+    internal static string FormatApplicationSendRecoveryFlushOutcome(
+        QuicApplicationSendRecoveryFlushOutcome outcome)
+        => outcome switch
+        {
+            QuicApplicationSendRecoveryFlushOutcome.QueueDrained => "queue_drained",
+            QuicApplicationSendRecoveryFlushOutcome.BurstLimitReached => "burst_limit_reached",
+            QuicApplicationSendRecoveryFlushOutcome.BudgetBlocked => "budget_blocked",
+            QuicApplicationSendRecoveryFlushOutcome.RetransmissionPending => "retransmission_pending",
+            QuicApplicationSendRecoveryFlushOutcome.FlushBlocked => "flush_blocked",
+            QuicApplicationSendRecoveryFlushOutcome.FlushFailed => "flush_failed",
+            _ => throw new ArgumentOutOfRangeException(nameof(outcome)),
+        };
+
+    internal static string FormatSendPolicyBlockedReason(QuicSendPolicyBlockedReason blockedReason)
+        => blockedReason switch
+        {
+            QuicSendPolicyBlockedReason.None => "none",
+            QuicSendPolicyBlockedReason.NoQueuedApplicationData => "no_queued_application_data",
+            QuicSendPolicyBlockedReason.NoActivePath => "no_active_path",
+            QuicSendPolicyBlockedReason.OrdinaryPacketsUnavailable => "ordinary_packets_unavailable",
+            QuicSendPolicyBlockedReason.OneRttProtectionUnavailable => "one_rtt_protection_unavailable",
+            QuicSendPolicyBlockedReason.ApplicationDataRetransmissionPending => "application_data_retransmission_pending",
+            QuicSendPolicyBlockedReason.InvalidPayloadBudget => "invalid_payload_budget",
+            QuicSendPolicyBlockedReason.CongestionLimited => "congestion_limited",
+            QuicSendPolicyBlockedReason.AntiAmplificationLimited => "anti_amplification_limited",
+            QuicSendPolicyBlockedReason.InvalidQueuedApplicationSend => "invalid_queued_application_send",
+            _ => throw new ArgumentOutOfRangeException(nameof(blockedReason)),
+        };
+
+    private static ulong ComputeAvailableSendBytes(QuicSendPolicySnapshot snapshot)
+    {
+        ulong congestionAvailableBytes = snapshot.CongestionWindowBytes > snapshot.BytesInFlightBytes
+            ? snapshot.CongestionWindowBytes - snapshot.BytesInFlightBytes
+            : 0;
+        return snapshot.IsAddressValidated
+            ? congestionAvailableBytes
+            : Math.Min(congestionAvailableBytes, snapshot.AntiAmplificationAvailableBytes);
+    }
+
+    private static long ToInt64Saturating(ulong value)
+        => value > long.MaxValue ? long.MaxValue : (long)value;
 
     internal static void RecordRuntimeFollowOnFlushItems(
         int shardIndex,

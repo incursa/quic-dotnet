@@ -854,6 +854,110 @@ public class MetricsTests
 
     [Fact]
     [Requirement("REQ-QUIC-CRT-0155")]
+    public void ApplicationSendRecoveryMetricsCaptureDecisionBudgetAndBoundedOutcome()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+        QuicSendPolicySnapshot snapshot = new(
+            HasActivePath: true,
+            CanSendOrdinaryPackets: true,
+            MaximumDatagramSizeBytes: 1_200,
+            MaximumApplicationPayloadBytes: 1_100,
+            CongestionWindowBytes: 12_000,
+            BytesInFlightBytes: 7_200,
+            PendingRetransmissionCount: 0,
+            HasApplicationDataRetransmission: false,
+            AntiAmplificationAvailableBytes: 1_000,
+            IsAddressValidated: false,
+            HandshakeConfirmed: true,
+            HasOneRttProtection: true,
+            QueuedApplicationSendCount: 9);
+
+        QuicMetrics.RecordApplicationSendRecoveryFlush(
+            QuicTlsRole.Server,
+            snapshot,
+            QuicQueuedApplicationSendBudget.Allowed(maxDatagrams: 4, maxPayloadBytes: 1_000),
+            queuedWritesBefore: 9,
+            queuedWritesAfter: 5,
+            flushedDatagrams: 4,
+            QuicApplicationSendRecoveryFlushOutcome.BurstLimitReached,
+            QuicSendPolicyBlockedReason.None);
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.recovery.flushes"
+            && measurement.Value == 1
+            && measurement.HasTag("role", "server")
+            && measurement.HasTag("outcome", "burst_limit_reached")
+            && measurement.HasTag("blocked_reason", "none"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.recovery.congestion_window.bytes"
+            && measurement.Value == 12_000);
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.recovery.bytes_in_flight.bytes"
+            && measurement.Value == 7_200);
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.recovery.available_send.bytes"
+            && measurement.Value == 1_000);
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.recovery.budget.datagrams"
+            && measurement.Value == 4);
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.recovery.flushed.datagrams"
+            && measurement.Value == 4);
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.recovery.queue.before"
+            && measurement.Value == 9);
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.recovery.queue.after"
+            && measurement.Value == 5);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public async Task RecoveryProgressEmitsApplicationSendRecoveryMetrics()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(
+            QuicMetrics.MeterName,
+            "incursa.quic.runtime.application_send.recovery.flushes");
+        await using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
+        List<QuicConnectionEffect> outboundEffects = [];
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        QuicConnectionSendDatagramEffect openSendEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> openPacket =
+            QuicS13AckPiggybackTestSupport.FindTrackedPacket(runtime, openSendEffect.Datagram);
+        outboundEffects.Clear();
+
+        QuicCongestionControlState congestion = runtime.SendRuntime.FlowController.CongestionControlState;
+        if (congestion.BytesInFlightBytes < congestion.CongestionWindowBytes)
+        {
+            congestion.RegisterPacketSent(congestion.CongestionWindowBytes - congestion.BytesInFlightBytes);
+        }
+
+        await stream.WriteAsync(new byte[] { 0xD1 });
+        _ = QuicS13AckPiggybackTestSupport.ReceiveOneRttAckOnly(
+            runtime,
+            observedAtTicks: 10,
+            packetNumber: 1,
+            largestAcknowledged: openPacket.Key.PacketNumber);
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.recovery.flushes"
+            && measurement.Value == 1
+            && measurement.HasTag("role", "client")
+            && measurement.HasTag("outcome", "queue_drained")
+            && measurement.HasTag("blocked_reason", "none"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
     public async Task RuntimeFollowOnFlushMeasurementCoversDirectFlowControlFlush()
     {
         using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);

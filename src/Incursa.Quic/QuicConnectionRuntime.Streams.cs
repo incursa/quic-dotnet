@@ -1348,31 +1348,73 @@ internal sealed partial class QuicConnectionRuntime
     {
         exception = null;
         bool stateChanged = false;
-        for (int flushCount = 0; applicationSendQueue.Count > 0; flushCount++)
+        int queuedWritesBefore = applicationSendQueue.Count;
+        if (queuedWritesBefore > 0)
         {
-            QuicQueuedApplicationSendBudget sendBudget = QuicSendPolicy.ComputeQueuedApplicationSendBudget(
-                CaptureQueuedApplicationSendPolicySnapshot());
-            if (!sendBudget.CanSendQueuedApplicationData || flushCount >= sendBudget.MaxDatagrams)
+            QuicSendPolicySnapshot policySnapshot = CaptureQueuedApplicationSendPolicySnapshot();
+            QuicQueuedApplicationSendBudget sendBudget =
+                QuicSendPolicy.ComputeQueuedApplicationSendBudget(policySnapshot);
+            QuicApplicationSendRecoveryFlushOutcome outcome =
+                QuicApplicationSendRecoveryFlushOutcome.BudgetBlocked;
+            QuicSendPolicyBlockedReason blockedReason = sendBudget.BlockedReason;
+            int flushedDatagrams = 0;
+            while (applicationSendQueue.Count > 0)
             {
-                break;
+                policySnapshot = CaptureQueuedApplicationSendPolicySnapshot();
+                sendBudget = QuicSendPolicy.ComputeQueuedApplicationSendBudget(policySnapshot);
+                if (!sendBudget.CanSendQueuedApplicationData)
+                {
+                    outcome = QuicApplicationSendRecoveryFlushOutcome.BudgetBlocked;
+                    blockedReason = sendBudget.BlockedReason;
+                    break;
+                }
+
+                if (flushedDatagrams >= sendBudget.MaxDatagrams)
+                {
+                    outcome = QuicApplicationSendRecoveryFlushOutcome.BurstLimitReached;
+                    break;
+                }
+
+                if (!FlushPendingApplicationSends(
+                        nowTicks,
+                        probePacket: false,
+                        sendBudget,
+                        ref effects,
+                        out Exception? flushException))
+                {
+                    exception = flushException;
+                    outcome = IsTransientApplicationSendPathBlocked(flushException)
+                        ? QuicApplicationSendRecoveryFlushOutcome.FlushBlocked
+                        : QuicApplicationSendRecoveryFlushOutcome.FlushFailed;
+                    blockedReason = ClassifyApplicationSendFlushBlockedReason(
+                        flushException,
+                        policySnapshot);
+                    break;
+                }
+
+                flushedDatagrams++;
+                stateChanged = true;
+                if (sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData))
+                {
+                    outcome = QuicApplicationSendRecoveryFlushOutcome.RetransmissionPending;
+                    break;
+                }
             }
 
-            if (!FlushPendingApplicationSends(
-                    nowTicks,
-                    probePacket: false,
-                    sendBudget,
-                    ref effects,
-                    out Exception? flushException))
+            if (applicationSendQueue.Count == 0)
             {
-                exception = flushException;
-                break;
+                outcome = QuicApplicationSendRecoveryFlushOutcome.QueueDrained;
             }
 
-            stateChanged = true;
-            if (sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData))
-            {
-                break;
-            }
+            QuicMetrics.RecordApplicationSendRecoveryFlush(
+                tlsState.Role,
+                policySnapshot,
+                sendBudget,
+                queuedWritesBefore,
+                applicationSendQueue.Count,
+                flushedDatagrams,
+                outcome,
+                blockedReason);
         }
 
         stateChanged |= TryFlushPendingFlowControlCreditUpdates(ref effects);
@@ -1464,6 +1506,25 @@ internal sealed partial class QuicConnectionRuntime
                     invalidOperationException.Message,
                     QueuedStreamWriteSendBlockedMessage,
                     StringComparison.Ordinal));
+    }
+
+    private static QuicSendPolicyBlockedReason ClassifyApplicationSendFlushBlockedReason(
+        Exception? exception,
+        QuicSendPolicySnapshot snapshot)
+    {
+        if (IsTransientCongestionExhaustion(exception))
+        {
+            return QuicSendPolicyBlockedReason.CongestionLimited;
+        }
+
+        if (IsTransientApplicationSendPathBlocked(exception))
+        {
+            return snapshot.IsAddressValidated
+                ? QuicSendPolicyBlockedReason.OrdinaryPacketsUnavailable
+                : QuicSendPolicyBlockedReason.AntiAmplificationLimited;
+        }
+
+        return QuicSendPolicyBlockedReason.None;
     }
 
     private void TryRemoveQueuedApplicationSendsForStream(ulong streamId, ref QuicConnectionEffectAccumulator effects)

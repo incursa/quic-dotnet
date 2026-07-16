@@ -4,6 +4,38 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: recovery-driven application-send decisions now expose bounded
+  metrics for congestion window, bytes in flight, congestion/anti-amplification
+  available bytes, datagram budget, actual datagrams released, queue depth before
+  and after release, outcome, and blocked reason. The existing stream-write
+  completion metric remains the end-to-end latency signal. Metrics use only
+  bounded `role`, `outcome`, and `blocked_reason` tags; no connection or stream
+  identifier cardinality was added. Focused metrics and RFC recovery tests passed
+  43/43. The full suite passed 9,585 tests with five skips and two suite-load
+  failures; the dropped-FIN timing test and stateless-reset fuzz test each passed
+  5/5 isolated reruns.
+
+  Counter-attached source-backed diagnostics proved ProtocolLab captures the new
+  instruments. `raw-download-recovery-metrics2-20260716-quic-transport-v1-comparison`
+  passed exact c1 download validation with zero failures/timeouts and observed
+  recovery releases of two to four datagrams. The more important
+  `raw-multiplex-recovery-metrics-20260716-quic-transport-v1-comparison` c16/s100
+  diagnostic also passed exact validation with zero failures/timeouts. Under
+  counter overhead it reached 222 queued shard items, 62.44 ms packet-receive
+  queue delay, 63.19 ms stream-write queue delay, 88 delayed sends, 1,268
+  outstanding pooled buffers, and 70.88 ms maximum sampled stream-write
+  completion latency.
+
+  The decision telemetry identified a policy/preflight mismatch rather than a
+  larger fixed-burst opportunity. Maximum observed one-second rates included
+  553 `burst_limit_reached` decisions, 428 `flush_blocked` decisions classified
+  as `congestion_limited`, and ten policy-level `budget_blocked` decisions.
+  The blocked flushes occurred after the policy allowed a one-datagram budget,
+  so the next bounded candidate is to account for packet/header/ACK headroom in
+  partial-datagram congestion budgets before frame selection and protection.
+  These counter-attached shared-host runs are diagnostic only and make no
+  throughput or peer-ranking claim.
+
 - 2026-07-16: increasing the queued application-send recovery burst from four
   datagrams to the RFC 9002 initial-window count of ten was rejected. A sampled
   CPU/counter trace of `quic.transport.stream-download.1mb` showed the fixed
