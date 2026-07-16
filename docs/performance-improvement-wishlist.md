@@ -4,6 +4,30 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-15: raw QUIC peer coverage repair is accepted as an evidence-enabling
+  slice. The public contract now distinguishes fresh-connection churn from
+  repeated stream churn on a stable connection, and a dimension-neutral
+  five-repetition comparison suite selects cold handshake, connection churn,
+  1 MiB throughput, 100-stream multiplex, and duplex peer workloads across the
+  scenario-owned c1/c4/c16/c32/c64/c128 ladders. The reusable quic-go executor
+  was advanced to the lifecycle-aware implementation already proven in the
+  internal lab, with explicit behavior validation, cold-handshake execution,
+  fresh-connection churn, connect-time metrics, tight-window duplex handling,
+  timeout classification, and requested/effective load echo.
+
+  Clean immutable scenario, target, and Windows/Linux executor packages built
+  successfully with external attestations. Their SHA-256 values are recorded
+  in `docs/raw-quic-performance-evidence-plan.md`. The Incursa,
+  MsQuic/System.Net.Quic, and quic-go manifests now share all five peer scenario
+  IDs offline. A package-to-package Windows diagnostic completed 232 connection
+  churn operations and 300 cold handshakes in bounded 250 ms windows with zero
+  failures/timeouts and exact churn byte symmetry. Public contract health,
+  84 component manifest pairs, both quic-go Go test suites, and 70 focused
+  internal tests passed. No package was uploaded, no controller or worker was
+  changed, and no result was published. The next gate is operator-approved
+  package registration and a three-target matrix preview; runtime optimization
+  must wait for fresh matched rack evidence.
+
 - 2026-07-15: replacing the per-chunk incomplete-write async state machine
   with one pooled STREAM-action request for the complete public write was
   rejected. The candidate preserved the 32 KiB runtime work-item boundary and

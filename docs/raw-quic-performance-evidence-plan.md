@@ -76,15 +76,40 @@ The public repository-health workflow, 102 contract tests, 84 raw execution
 and package tests, and temporary component-package production passed. This is
 local readiness evidence only; no packages were registered and no lab jobs ran.
 
+The reusable peer package gap is now closed offline. Public ProtocolLab commit
+`cd12d21` defines connection churn separately from stable-connection stream
+churn and adds the five-scenario comparison suite. ProtocolLab Components
+commit `4a81387` promotes the tested lifecycle-aware quic-go executor, and
+internal commit `39dc882` aligns the internal scenario filename with its ID.
+Clean immutable builds produced:
+
+- raw scenario pack `0.1.7`, SHA-256
+  `378c8657e7b114c0168fc66d0cdef6dffd06c02eb82f6f9d6c4de832c05f2278`;
+- quic-go target `0.1.9`, SHA-256
+  `dd0efec4748420b1f546c988b63c2a309d7aeb6124f86bcfcff889f4c9485b89`;
+- Windows quic-go executor `0.1.5`, SHA-256
+  `5a7e4e0afe9b8e9dbfee03ba4e129af32b32fe7387257d34f3dcfa49633cd15b`;
+  and
+- Linux quic-go executor `0.1.5`, SHA-256
+  `b716bfa7d8f9fb8fead289786dc57620360d7733006af79faf96d6396eb1b60a`.
+
+The Incursa, MsQuic/System.Net.Quic, and quic-go target manifests now have an
+exact offline intersection for cold handshake, connection churn, 1 MiB stream
+throughput, 100-stream multiplex, and duplex peer matrix. A package-to-package
+Windows smoke completed 232 fresh connection-and-stream operations and 300
+cold handshakes in bounded 250 ms diagnostic windows with zero failures or
+timeouts and exact bidirectional byte symmetry. This proves package behavior
+and matrix eligibility locally; it is not matched rack evidence or a ranking.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |
 | --- | --- | --- |
 | Payload size | 128 B churn, 64 KiB multiplex/duplex, 1 MiB upload | 1 KiB, 16 KiB, 256 KiB, 1 MiB, and multi-MiB |
 | Direction | Upload and bounded bidirectional echo | Upload, download, and simultaneous full duplex |
-| Concurrency | Named c1, c8, c32 profiles; ad hoc c64/c128 overrides | Named c1, c4, c16, c32, c64, and c128 profiles |
+| Concurrency | Scenario-owned c1, c4, c16, c32, c64, and c128 ladders under a dimension-neutral confidence profile | Prove every shape remains requested/effective-identical in live package-backed runs |
 | Stream topology | Single stream, 16-stream duplex, 100-stream multiplex | Multiple connections, many streams, mixed stream sizes |
-| Lifecycle | Cold handshake and churn at c1 | Handshake/churn scaling, resumption, rejected resumption, 0-RTT outcomes |
+| Lifecycle | Distinct cold-handshake, connection-churn, and stream-churn contracts; handshake and connection-churn c1-c128 package coverage | Matched handshake/churn scaling, then resumption, rejected resumption, and 0-RTT outcomes |
 | Flow control | Incidental multiplex evidence | Controlled windows, blocked duration, credit cadence, slow reader/writer |
 | Network | Clean profile | Loss, delay, reordering, bandwidth, MTU, and ECN where executable |
 | Duration | 3-30 second finite runs | Minutes-scale bounded-memory and recovery soaks |
@@ -100,12 +125,13 @@ local readiness evidence only; no packages were registered and no lab jobs ran.
 - `msquic-dotnet-raw-adapter-v1` now has a distinct implementation ID,
   immutable version, SHA-256, source metadata, and clean-source build
   attestation.
-- Register current authoritative quic-go implementation, executor, and scenario
-  packages instead of relying on legacy generated component identities.
-- Normalize `quic.transport.connection-churn` and
-  `quic.transport.stream-churn` without silently merging historical evidence.
-- Require package-matrix preview to resolve three runnable targets for every
-  selected peer scenario.
+- Current authoritative quic-go implementation, executor, and scenario
+  packages now build cleanly with immutable versions and attestations.
+- `quic.transport.connection-churn` and `quic.transport.stream-churn` are now
+  distinct public contracts and are not silently merged with historical evidence.
+- The three target manifests have an exact offline five-scenario intersection.
+  Controller registration and a package-matrix preview resolving three runnable
+  targets remain intentionally pending operator approval.
 
 ### 2. Prove requested and effective workload shape
 
