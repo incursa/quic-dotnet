@@ -457,14 +457,57 @@ resolve the restored repo-local tool manifest. The successful run placed the
 declared `dotnet-counters` version explicitly on `PATH`. No package was uploaded
 or registered, no controller/worker/job changed, and nothing was published.
 
+## Sustained Download Coverage Added 2026-07-16
+
+`quic.transport.sustained-download.256x64kb` mirrors the sustained upload shape
+in the server-to-client direction. Each operation requests and validates an
+exact deterministic 16 MiB response delivered as 256 sequential 64 KiB server
+writes on one long-lived bidirectional stream. The aligned commits are public
+`09fdb35`, components `40fc0ae`, internal `2213c24`, and Incursa `1bf25ae7`.
+
+Source-backed local five-repetition ladders produced the following diagnostic
+results with exact content validation, zero failed operations, and zero
+timeouts:
+
+| Connections | Validation | Benchmark | Median throughput | Relative range | Median p95 |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 5/5 | 5/5 | 35.04 MiB/s | 7.2% | 570.90 ms |
+| 4 | 5/5 | 5/5 | 105.60 MiB/s | 27.6% | 675.74 ms |
+| 16 | 5/5 | 5/5 | 177.10 MiB/s | 7.3% | 1,340.93 ms |
+
+The retained upload medians were 36.94, 128.66, and 230.46 MiB/s at the same
+connection counts. The widening c16 directional gap is diagnostic evidence of
+server send-path pressure, not a peer ranking. The shared-host runner reported
+possible or unknown target saturation; generator saturation was not detected at
+c4 or c16.
+
+Counter-attached run `sd-dl-c16-ctr-20260716-direct-package-cell` passed exact
+validation and completed 64 transfers / 1 GiB with zero failures or timeouts.
+Across eight shards, queue depth peaked between 29 and 56. Stream-write queue
+delay averaged about 6-7 ms and peaked at 24.03 ms. Oversized-write continuation
+was the only application-send queue cause: delayed sends and retained buffers
+peaked at 4-10 per shard, while direct-send-blocked, pending-retransmission, and
+small-write-delay retention remained zero. Sent-packet retention peaked at
+94-168 packets per shard with oldest observed age below 38 ms. Aggregate pooled
+buffers peaked at 829 / 1.95 MiB and ended at 19 / 3 KiB. Stream write
+completion averaged 6.69 ms and peaked at 22.41 ms. This evidence prioritizes
+the incomplete-write continuation and send scheduling path over generic pool
+resizing.
+
+The first materialized smoke is retained as a launch prerequisite failure: its
+executor path exceeded the Windows process path limit even though the package
+and materialization both contained the executable. Re-running with an explicit
+short materialization root passed. No package was uploaded or registered, no
+controller/worker/job changed, and nothing was published.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |
 | --- | --- | --- |
 | Payload size | 128 B churn, 1 KiB latency and 100-stream multiplex, 64 KiB throughput/multiplex/duplex/stream-limit pressure, 1 MiB upload and 16-stream multiplex/duplex, 16 MiB upload | 16 KiB, 256 KiB, mixed-size streams, and multi-MiB per-stream fanout |
-| Direction | Upload, exact 1 MiB download-only, bounded bidirectional echo, simultaneous 16x1 MiB duplex, and sustained 256x64 KiB upload | Sustained download and asymmetric simultaneous transfer |
+| Direction | Upload, exact 1 MiB download-only, bounded bidirectional echo, simultaneous 16x1 MiB duplex, and sustained 256x64 KiB upload and download | Asymmetric simultaneous transfer |
 | Concurrency | Scenario-owned c1, c4, c16, c32, c64, and c128 ladders under a dimension-neutral confidence profile | Prove every shape remains requested/effective-identical in live package-backed runs |
-| Stream topology | Single stream, sustained long-lived upload stream, 16-stream large multiplex/duplex, 100-stream small/medium multiplex, and one-connection 100-stream limit pressure | Multiple stable connections and mixed stream sizes in one run |
+| Stream topology | Single stream, sustained long-lived upload and download streams, 16-stream large multiplex/duplex, 100-stream small/medium multiplex, and one-connection 100-stream limit pressure | Multiple stable connections and mixed stream sizes in one run |
 | Lifecycle | Distinct cold-handshake, connection-churn, and stream-churn contracts; handshake and connection-churn c1-c128 package coverage | Matched handshake/churn scaling, then resumption, rejected resumption, and 0-RTT outcomes |
 | Flow control | Exact 100 ms slow-reader lane plus incidental multiplex evidence | Controlled windows, blocked duration, credit cadence, and slow-writer pressure |
 | Network | Clean profile | Loss, delay, reordering, bandwidth, MTU, and ECN where executable |

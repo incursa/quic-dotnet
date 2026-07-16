@@ -45,6 +45,27 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
   receive queue delay with isolated target/generator telemetry before testing a
   bounded receive-work batching or scheduling change.
 
+  The server-to-client slice is now implemented as
+  `quic.transport.sustained-download.256x64kb` across public `09fdb35`,
+  components `40fc0ae`, internal `2213c24`, and Incursa `1bf25ae7`. Fifteen
+  source-backed cells passed exact content validation and benchmark execution
+  15/15 with zero failures and timeouts. Median throughput at c1/c4/c16 was
+  35.04/105.60/177.10 MiB/s, compared with retained upload medians of
+  36.94/128.66/230.46 MiB/s. Relative ranges were 7.2/27.6/7.3 percent and
+  median p95 was 570.90/675.74/1,340.93 ms. Treat the widening c16 gap as a
+  local directional diagnostic, not a peer comparison.
+
+  Counter run `sd-dl-c16-ctr-20260716-direct-package-cell` passed exact
+  validation for 1 GiB across 64 completed transfers. Unlike upload, every
+  shard observed oversized-write continuation pressure: delayed application
+  sends and retained application-send buffers peaked at 4-10, stream-write
+  queue delay averaged about 6-7 ms and peaked at 24.03 ms, and sent-packet
+  retention peaked at 94-168 packets per shard. Aggregate pooled buffers peaked
+  at 829 / 1.95 MiB and drained to 19 / 3 KiB. Direct-send-blocked,
+  pending-retransmission, and small-write-delay retention stayed zero. This
+  narrows the next runtime investigation to incomplete-write continuation and
+  server send scheduling; do not tune pool sizes as a substitute.
+
 - 2026-07-16: an ACK-proportional queued-send burst was tested and rejected.
   The candidate retained the four-datagram floor, translated newly acknowledged
   protected bytes into datagram credit, and bounded one recovery transition at
