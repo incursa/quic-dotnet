@@ -118,9 +118,9 @@ function Get-PackageTargetConfig {
                 DefaultProject = "eng/protocol-lab/src/Incursa.ProtocolLab.Adapters.IncursaRawQuic/Incursa.ProtocolLab.Adapters.IncursaRawQuic.csproj"
                 ImplementationId = "quic-dotnet-raw-dev"
                 SuiteId = "quic-transport-v1-comparison"
-                ScenarioIds = @("quic.transport.handshake-cold", "quic.transport.latency.echo-1kb", "quic.transport.connection-churn", "quic.transport.stream-throughput.1mb", "quic.transport.multiplex.100x64kb", "quic.transport.stream-limits.100x64kb", "quic.transport.duplex-streams", "quic.transport.duplex-streams-peer-matrix")
+                ScenarioIds = @("quic.transport.handshake-cold", "quic.transport.latency.echo-1kb", "quic.transport.connection-churn", "quic.transport.stream-throughput.1mb", "quic.transport.multiplex.100x64kb", "quic.transport.stream-limits.100x64kb", "quic.transport.flow-control.slow-reader-16x64kb", "quic.transport.duplex-streams", "quic.transport.duplex-streams-peer-matrix")
                 SupportedSuiteIds = @("quic-transport-v1-comparison")
-                SupportedScenarioIds = @("quic.transport.handshake-cold", "quic.transport.latency.echo-1kb", "quic.transport.connection-churn", "quic.transport.stream-throughput.1mb", "quic.transport.multiplex.100x64kb", "quic.transport.stream-limits.100x64kb", "quic.transport.duplex-streams", "quic.transport.duplex-streams-peer-matrix")
+                SupportedScenarioIds = @("quic.transport.handshake-cold", "quic.transport.latency.echo-1kb", "quic.transport.connection-churn", "quic.transport.stream-throughput.1mb", "quic.transport.multiplex.100x64kb", "quic.transport.stream-limits.100x64kb", "quic.transport.flow-control.slow-reader-16x64kb", "quic.transport.duplex-streams", "quic.transport.duplex-streams-peer-matrix")
                 SupportedLoadProfileIds = @()
                 Protocol = "quic"
                 TestExecutorId = "quic-go-raw-load"
