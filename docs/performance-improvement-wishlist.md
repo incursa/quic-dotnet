@@ -3085,6 +3085,31 @@ operator approval before any package registration or lab execution. Until
 then, the justified local next step is trace attribution on Incursa's isolated
 download send and completion path, not a public peer-ranking claim.
 
+### Accepted 2026-07-16: current raw cross-section and honest coverage
+
+The raw performance program now has a current source-backed c16 cross-section
+instead of relying on the stale public magnitude. Five exact repetitions each
+measured 259.49 MB/s for 16 MiB upload, 30.74 MB/s for 100x1 KiB multiplex, and
+123.26 MB/s for 16x1 MiB duplex. Every one of the 15 cells passed with zero
+failed or timed-out operations. Upload throughput range was 2.96 percent;
+multiplex and duplex remain diagnostic because throughput or p95 range was
+8.25-48.25 percent. Evidence is under
+`C:\shared\temp\protocol-lab-current-raw-baseline-20260716\runs`.
+
+ProtocolLab internal commits `d11f0dd`, `b394890`, and `acbb155` close the
+source workload inventory and executable-dispatch gaps. Mixed-size c4/s16,
+stream-churn c1/s1000, slow-reader c1/s16, and duplex-peer c1/s16 all passed
+real source-backed validation and benchmark execution; the slow-reader median
+was 112.36 ms. Component commit `d2edb1b` produces scenario package `0.1.18`
+with the exact 16-stream duplex c1-c128 shape at SHA-256
+`c65ac9f7186151e5c4fdbf56394f56de59333687589c2d4589a779822917e388`.
+
+This accepts coverage truth and diagnostic baselines, not a runtime throughput
+change or public ranking. No package was uploaded or registered and nothing was
+deployed or published. The next engineering target is a fixed-total-byte raw
+write-granularity lane (1 KiB versus 64 KiB chunks, upload and download) and a
+matched package-backed peer campaign after operator approval.
+
 1. Finish terminal exception attribution and cleanup.
 2. Add permanent exception/trace-site tooling.
 3. Establish stable smoke and confidence ProtocolLab lanes.

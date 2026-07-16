@@ -784,20 +784,52 @@ server-to-client traffic shape, while the materialized current executor package
 supports it. ProtocolLab must align source and package capability declarations
 before direct source-catalog raw campaigns are considered parity evidence.
 
+## Current Raw Cross-Section and Coverage Repair 2026-07-16
+
+The source load-tool declaration and executable behavior are now aligned.
+ProtocolLab internal commits `d11f0dd`, `b394890`, and `acbb155` declare every
+used raw traffic shape, advertise the complete source scenario inventory, add
+mixed-size round-robin payloads, exact 100 ms delayed reads, stable-connection
+stream churn, and fix the duplex peer workload at 16 streams. Component commit
+`d2edb1b` carries the same duplex shape through c128 in immutable scenario
+package `0.1.18` (SHA-256
+`c65ac9f7186151e5c4fdbf56394f56de59333687589c2d4589a779822917e388`).
+
+Four short source-backed smoke cells passed exact validation and benchmark
+execution with zero failures/timeouts: mixed-size c4/s16, stream-churn c1/s1000,
+slow-reader c1/s16, and duplex-peer c1/s16. The slow-reader median was 112.36 ms,
+which proves the requested 100 ms read delay was exercised. Artifacts are under
+`C:\shared\temp\protocol-lab-raw-coverage-smoke-20260716\runs`.
+
+A separate clean five-repetition c16 cross-section on final Incursa commit
+`852d4c45` measured:
+
+| Scenario | Median throughput | Throughput range | Median p95 | p95 range |
+| --- | ---: | ---: | ---: | ---: |
+| 16 MiB upload | 259.49 MB/s | 2.96% | 1,031.56 ms | 17.64% |
+| 100x1 KiB multiplex | 30.74 MB/s | 48.25% | 50.73 ms | 9.91% |
+| 16x1 MiB duplex | 123.26 MB/s | 8.25% | 2,389.22 ms | 19.56% |
+
+All 15 cells passed exact validation with zero failed or timed-out operations.
+The results are shared-host diagnostics, not peer rankings. The upload lane is
+stable enough to guide profiling; multiplex contains one host-scheduling
+outlier and duplex tail variance remains too high for a public claim. Artifacts
+are under `C:\shared\temp\protocol-lab-current-raw-baseline-20260716\runs`.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |
 | --- | --- | --- |
-| Payload size | 128 B churn, 1 KiB latency and 100-stream multiplex, 64 KiB throughput/multiplex/duplex/stream-limit pressure, 1 MiB upload and 16-stream multiplex/duplex, 16 MiB upload | 16 KiB, 256 KiB, mixed-size streams, and multi-MiB per-stream fanout |
+| Payload size | 128 B churn; deterministic mixed 1 KiB, 16 KiB, 64 KiB, and 1 MiB streams; 1 KiB latency/multiplex; 64 KiB throughput/multiplex/duplex/stream-limit pressure; 1 MiB upload/multiplex/duplex; 16 MiB upload | 256 KiB and multi-MiB per-stream fanout with fixed aggregate bytes |
 | Direction | Upload, exact 1 MiB download-only, bounded bidirectional echo, simultaneous 16x1 MiB duplex, and sustained 256x64 KiB upload and download | Asymmetric simultaneous transfer |
 | Concurrency | Scenario-owned c1, c4, c16, c32, c64, and c128 ladders under a dimension-neutral confidence profile | Prove every shape remains requested/effective-identical in live package-backed runs |
-| Stream topology | Single stream, sustained long-lived upload and download streams, 16-stream large multiplex/duplex, 100-stream small/medium multiplex, and one-connection 100-stream limit pressure | Multiple stable connections and mixed stream sizes in one run |
+| Stream topology | Single stream, sustained long-lived upload/download, mixed-size streams over multiple stable connections, 16-stream large multiplex/duplex, 100-stream small/medium multiplex, and one-connection stream-limit pressure | Orthogonal fanout at fixed aggregate concurrency and large multiplex/duplex beyond c32 |
 | Lifecycle | Distinct cold-handshake, connection-churn, and stream-churn contracts; handshake and connection-churn c1-c128 package coverage | Matched handshake/churn scaling, then resumption, rejected resumption, and 0-RTT outcomes |
 | Flow control | Exact 100 ms slow-reader lane plus incidental multiplex evidence | Controlled windows, blocked duration, credit cadence, and slow-writer pressure |
 | Network | Clean profile | Loss, delay, reordering, bandwidth, MTU, and ECN where executable |
 | Duration | 3-30 second finite runs | Minutes-scale bounded-memory and recovery soaks |
 | Diagnostics | Counters and traces on selected Incursa runs, including receive-ring contention proof | Target and generator CPU, queue, buffer, retransmission, qlog, and network telemetry |
-| Source/package parity | Source-backed targets work with current materialized executor/scenario packages | Align the bundled raw load-tool traffic-shape declaration with the current executor package and add parity tests |
+| Source/package parity | Source traffic-shape declarations and executable behaviors are aligned; package executor support exists; immutable scenario package 0.1.18 aligns duplex c1-c128 | Run matched source/package cells from the same package inventory after registration approval |
 
 ## Work Order
 
@@ -822,6 +854,9 @@ before direct source-catalog raw campaigns are considered parity evidence.
 - Stream churn and slow-reader bring the current offline comparison inventory
   to nine campaign lanes. The unchanged controller catalog does not yet expose
   that intersection, as proven by the 2026-07-16 read-only dry-run.
+- Mixed-size, stream-churn, slow-reader, and duplex-peer source cells now execute
+  end to end with exact validation. The remaining blocker is current package
+  registration and matched campaign execution, not missing source dispatch.
 
 ### 2. Prove requested and effective workload shape
 
@@ -855,8 +890,8 @@ payload bytes/hashes, completion criteria, timeout behavior, required metrics,
 and unsupported behavior before executor implementation.
 
 After the current peer campaign is clean, prefer this next contract order:
-the sustained 64 KiB upload and download lanes are complete; add mixed-size
-multiplexing across multiple stable connections, then
+the sustained 64 KiB upload/download and mixed-size stable-connection lanes are
+complete; add fixed-total-byte write-granularity pairs, orthogonal fanout, and
 controlled RTT/loss/reordering. The 1 MiB download-only lane is complete. These
 isolate direction, write-completion latency, long-run retention, scheduler
 fairness, and recovery without conflating all five dimensions in one workload.
