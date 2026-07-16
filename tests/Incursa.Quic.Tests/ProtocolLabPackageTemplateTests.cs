@@ -19,6 +19,7 @@ public sealed class ProtocolLabPackageTemplateTests
         "quic.transport.stream-throughput.1mb",
         "quic.transport.stream-download.1mb",
         "quic.transport.sustained-stream.256x64kb",
+        "quic.transport.sustained-download.256x64kb",
         "quic.transport.multiplex.100x64kb",
         "quic.transport.stream-limits.100x64kb",
         "quic.transport.flow-control.slow-reader-16x64kb",
@@ -108,6 +109,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("quic.transport.stream-churn", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.stream-throughput.1mb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.sustained-stream.256x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.sustained-download.256x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.multiplex.100x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.stream-limits.100x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.flow-control.slow-reader-16x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
@@ -302,6 +304,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("quic.transport.stream-churn", helperScript);
         Assert.Contains("quic.transport.stream-throughput.1mb", helperScript);
         Assert.Contains("quic.transport.sustained-stream.256x64kb", helperScript);
+        Assert.Contains("quic.transport.sustained-download.256x64kb", helperScript);
         Assert.Contains("quic.transport.multiplex.100x64kb", helperScript);
         Assert.Contains("quic.transport.stream-limits.100x64kb", helperScript);
         Assert.Contains("quic.transport.flow-control.slow-reader-16x64kb", helperScript);
