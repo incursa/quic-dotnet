@@ -11,6 +11,7 @@ sender-adjacent stream state, and send-priority ordering:
 - `QuicCongestionControlBenchmarks`
 - `QuicRttEstimatorBenchmarks`
 - `QuicConnectionStreamStateBenchmarks`
+- `QuicStreamWritePreparationBenchmarks`
 - `QuicApplicationSendPriorityBenchmarks`
 
 Run them through the launcher:

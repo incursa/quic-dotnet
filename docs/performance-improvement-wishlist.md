@@ -4,6 +4,56 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-15: atomic STREAM-write preparation is accepted as a bounded
+  runtime-path optimization. The runtime previously acquired the stream-state
+  lock separately to resolve or open the local stream, capture rollback state,
+  and reserve flow-control capacity. `PrepareStreamWrite` now performs those
+  operations under one lock while preserving the 32 KiB runtime chunk, public
+  write-gate serialization, rollback state, flow-control retry ownership,
+  cancellation, disposal, exception propagation, and the later priority read.
+  Focused regression coverage preserves the prior unavailable result and
+  default transport error for missing local and peer-initiated stream IDs.
+
+  The permanent `QuicStreamWritePreparationBenchmarks` ShortRun reduced 64-
+  operation preparation from 5.421 to 3.938 microseconds and 256-operation
+  preparation from 20.741 to 15.629 microseconds, about 27 and 25 percent,
+  respectively, with zero managed allocation on both paths. The suite is also
+  part of `Invoke-QuicBaseline.ps1`; its final dry invocation passed through
+  that checked-in runner.
+
+  A matched c64 counter and CPU diagnostic passed exact validation on both
+  sides. Maximum per-shard queue depth fell from 1,718 to 1,058, the sum of
+  per-shard maxima from 8,895 to 6,112, mean packet-receive queue delay from
+  94.54 to 87.46 ms, mean packet service from 1.761 to 1.573 ms, mean
+  STREAM-write queue delay from 108.58 to 98.95 ms, and mean STREAM-write
+  service from 0.504 to 0.436 ms. Peak outstanding pooled buffers fell from
+  37,965 to 36,272. The trace removed the former write-path capture and reserve
+  calls, but exclusive `Monitor.Enter_Slowpath` rose from 8.70 to 9.43 percent,
+  mean write completion moved from 1,825 to 1,964 ms, and delayed application
+  sends and retained sent packets were slightly higher. These instrumented
+  results are diagnostic and are not throughput claims.
+
+  Sixty post-fix, uninstrumented source-backed ProtocolLab cells passed exact
+  payload validation and benchmark execution with zero failed or timed-out
+  requests. Five deterministic alternating pairs at c4 and c16 moved aggregate
+  request-rate medians by +6.72 and +0.09 percent and same-pair medians by
+  +6.02 and +1.06 percent. Ten pairs at c32 and c64 moved aggregate medians by
+  +0.14 and -0.27 percent and same-pair medians by +0.82 and -0.92 percent.
+  The two c32 campaigns individually disagreed (-3.16 and +4.95 percent), so
+  only the combined flat result is accepted. Combined c32/c64 p95 medians moved
+  -1.66/+0.92 percent, with same-pair medians at -1.65/-0.48 percent. This is
+  accepted for lower write-preparation cost and no demonstrated scaling
+  regression, not for a broad c16-c64 throughput gain. Evidence remains under
+  `.artifacts/protocol-lab/atomic-write-preparation-*` and matching ProtocolLab
+  run roots. Shared-host results remain diagnostic and non-publishable.
+
+  Focused preparation, write-cancellation, flow-control, RFC 9000, and RFC 9002
+  coverage passed 836/836 before the final contract correction; the corrected
+  preparation tests passed 5/5. The final all-up run completed 9,577 passes and
+  five intentional skips with only the standing incomplete-content peer-close
+  timeout; that exact test passed ten consecutive isolated reruns against the
+  final binaries. No result was uploaded, deployed, or published.
+
 - 2026-07-15: a lazy per-stream index of retained packets carrying non-empty
   STREAM data is accepted. RESET_STREAM acknowledgment handling previously
   scanned and reparsed every retained packet to determine whether the

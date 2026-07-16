@@ -2,7 +2,7 @@
 Runs the current QUIC baseline surface:
 - congestion-control update paths
 - RTT estimation update paths
-- sender-adjacent stream-credit, stream-state, and send-priority paths
+- sender-adjacent stream-credit, stream-state, write-preparation, and send-priority paths
 
 Use -Job Dry to validate the harness quickly or -Job Short for repeatable
 baseline measurements.
@@ -25,6 +25,7 @@ param(
         "*QuicCongestionControlBenchmarks*",
         "*QuicRttEstimatorBenchmarks*",
         "*QuicConnectionStreamStateBenchmarks*",
+        "*QuicStreamWritePreparationBenchmarks*",
         "*QuicApplicationSendPriorityBenchmarks*"
     )
 )

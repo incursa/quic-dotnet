@@ -456,33 +456,35 @@ internal sealed partial class QuicConnectionRuntime
                 return false;
             }
 
-            if (!TryResolveOrOpenLocalWritableStreamSnapshot(
-                    streamId,
-                    out QuicConnectionStreamSnapshot snapshot,
-                    out QuicTransportErrorCode openErrorCode))
+            QuicConnectionStreamWritePreparationStatus preparationStatus = streamRegistry.Bookkeeping.PrepareStreamWrite(
+                streamId,
+                streamData.Length,
+                finishWrites,
+                out QuicConnectionStreamWritePreparation preparation,
+                out QuicDataBlockedFrame dataBlockedFrame,
+                out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+                out QuicTransportErrorCode errorCode);
+            if (preparationStatus == QuicConnectionStreamWritePreparationStatus.Unavailable)
             {
                 pendingStreamActionRequests.Remove(requestId);
-                completion.TrySetException(openErrorCode != default
+                completion.TrySetException(errorCode != default
                     ? new QuicException(
                         QuicError.TransportError,
                         null,
-                        (long)openErrorCode,
+                        (long)errorCode,
                         "The stream write could not be committed.")
                     : new InvalidOperationException("The stream is not available on this connection."));
                 return false;
             }
 
-            if (snapshot.SendState == QuicStreamSendState.None)
+            if (preparationStatus == QuicConnectionStreamWritePreparationStatus.NotWritable)
             {
                 pendingStreamActionRequests.Remove(requestId);
                 completion.TrySetException(new InvalidOperationException("This stream does not have a writable side."));
                 return false;
             }
 
-            if (snapshot.SendState is QuicStreamSendState.DataSent
-                or QuicStreamSendState.DataRecvd
-                or QuicStreamSendState.ResetSent
-                or QuicStreamSendState.ResetRecvd)
+            if (preparationStatus == QuicConnectionStreamWritePreparationStatus.Completed)
             {
                 pendingStreamActionRequests.Remove(requestId);
                 if (finishWrites)
@@ -495,14 +497,40 @@ internal sealed partial class QuicConnectionRuntime
                 return false;
             }
 
-            if (!streamRegistry.Bookkeeping.TryCaptureSendState(streamId, out QuicConnectionStreamSendStateSnapshot sendStateBeforeWrite))
+            if (preparationStatus == QuicConnectionStreamWritePreparationStatus.Error)
+            {
+                pendingStreamActionRequests.Remove(requestId);
+                completion.TrySetException(new QuicException(
+                    QuicError.TransportError,
+                    null,
+                    (long)errorCode,
+                    "The stream write could not be committed."));
+                return false;
+            }
+
+            if (preparationStatus == QuicConnectionStreamWritePreparationStatus.Blocked)
+            {
+                if (dataBlockedFrame.MaximumData != 0 || streamDataBlockedFrame.MaximumStreamData != 0)
+                {
+                    completion.EnsureOwnedStreamData(streamData.Span);
+                    QueuePendingStreamWriteRetry(requestId, completion);
+                    _ = TryEmitFlowControlBlockedSignal(dataBlockedFrame, streamDataBlockedFrame, ref effects);
+                    return true;
+                }
+
+                pendingStreamActionRequests.Remove(requestId);
+                completion.TrySetException(new InvalidOperationException("The stream write could not be committed."));
+                return false;
+            }
+
+            if (preparationStatus != QuicConnectionStreamWritePreparationStatus.Reserved)
             {
                 pendingStreamActionRequests.Remove(requestId);
                 completion.TrySetException(new InvalidOperationException("The stream send state is unavailable."));
                 return false;
             }
 
-            ulong writeOffset = snapshot.UniqueBytesSent;
+            ulong writeOffset = preparation.WriteOffset;
             if (ApplicationSendDebugEnabled)
             {
                 Console.Error.WriteLine(
@@ -510,39 +538,6 @@ internal sealed partial class QuicConnectionRuntime
                     $"queue={applicationSendQueue.Count} retrans={sendRuntime.PendingRetransmissionCount} " +
                     $"ackInFlight={sendRuntime.HasAckElicitingPacketsInFlight} validated={(activePath?.AmplificationState.IsAddressValidated ?? false)} " +
                     $"oneRtt={tlsState.OneRttProtectPacketProtectionMaterial.HasValue} handshakeConfirmed={HandshakeConfirmed}.");
-            }
-
-            if (!streamRegistry.Bookkeeping.TryReserveSendCapacity(
-                streamId,
-                writeOffset,
-                streamData.Length,
-                finishWrites,
-                out QuicDataBlockedFrame dataBlockedFrame,
-                out QuicStreamDataBlockedFrame streamDataBlockedFrame,
-                out QuicTransportErrorCode errorCode))
-            {
-                if (errorCode != default)
-                {
-                    pendingStreamActionRequests.Remove(requestId);
-                    completion.TrySetException(new QuicException(
-                        QuicError.TransportError,
-                        null,
-                        (long)errorCode,
-                        "The stream write could not be committed."));
-                }
-                else if (dataBlockedFrame.MaximumData != 0 || streamDataBlockedFrame.MaximumStreamData != 0)
-                {
-                    completion.EnsureOwnedStreamData(streamData.Span);
-                    QueuePendingStreamWriteRetry(requestId, completion);
-                    _ = TryEmitFlowControlBlockedSignal(dataBlockedFrame, streamDataBlockedFrame, ref effects);
-                }
-                else
-                {
-                    pendingStreamActionRequests.Remove(requestId);
-                    completion.TrySetException(new InvalidOperationException("The stream write could not be committed."));
-                }
-
-                return dataBlockedFrame.MaximumData != 0 || streamDataBlockedFrame.MaximumStreamData != 0;
             }
 
             return HandleWriteStreamActionAfterReservation(
@@ -553,7 +548,7 @@ internal sealed partial class QuicConnectionRuntime
                 streamData,
                 finishWrites,
                 writeOffset,
-                sendStateBeforeWrite,
+                preparation.SendStateBeforeWrite,
                 ref effects);
         }
     }
@@ -869,51 +864,6 @@ internal sealed partial class QuicConnectionRuntime
         AppendLifecycleTimerEffects(ref effects);
 
         exception = null;
-        return true;
-    }
-
-    private bool TryResolveOrOpenLocalWritableStreamSnapshot(
-        ulong streamId,
-        out QuicConnectionStreamSnapshot snapshot,
-        out QuicTransportErrorCode errorCode)
-    {
-        if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamId, out snapshot))
-        {
-            errorCode = default;
-            return true;
-        }
-
-        QuicStreamId quicStreamId = new(streamId);
-        if (!streamRegistry.Bookkeeping.TryPeekLocalStream(
-                quicStreamId.IsBidirectional,
-                out QuicStreamId nextStreamId,
-                out _))
-        {
-            snapshot = default;
-            errorCode = QuicTransportErrorCode.StreamLimitError;
-            return false;
-        }
-
-        if (nextStreamId.Value != streamId)
-        {
-            snapshot = default;
-            errorCode = default;
-            return false;
-        }
-
-        if (!streamRegistry.Bookkeeping.TryOpenLocalStream(
-                quicStreamId.IsBidirectional,
-                out QuicStreamId committedStreamId,
-                out _)
-            || committedStreamId.Value != streamId
-            || !streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamId, out snapshot))
-        {
-            snapshot = default;
-            errorCode = QuicTransportErrorCode.StreamStateError;
-            return false;
-        }
-
-        errorCode = default;
         return true;
     }
 
