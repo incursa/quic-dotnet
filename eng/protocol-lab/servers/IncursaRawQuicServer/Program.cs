@@ -39,10 +39,11 @@ const int RawQuicConcurrentBidirectionalStreamLimit = 256;
 const int RawQuicReceiveWindowBytes = 16 * 1024 * 1024;
 const int RawQuicEchoBufferBytes = 64 * 1024;
 const int RawQuicDownloadChunkBytes = 64 * 1024;
-const int SustainedDownloadWriteSizeBytes = 1024;
-const int SustainedDownloadWriteCount = 4096;
-const int SustainedDownloadPayloadLength = SustainedDownloadWriteSizeBytes * SustainedDownloadWriteCount;
-const string SustainedDownloadBehavior = "sustained-download-4096x1kb";
+const int SmallApplicationWriteSizeBytes = 1024;
+const int SmallSustainedDownloadPayloadLength = 4 * 1024 * 1024;
+const int FixedTotalSmallSustainedDownloadPayloadLength = 16 * 1024 * 1024;
+const string SmallSustainedDownloadBehavior = "sustained-download-4096x1kb";
+const string FixedTotalSmallSustainedDownloadBehavior = "sustained-download-16384x1kb";
 const string DownloadRequestMagic = "PLAB-DL1";
 const int DownloadRequestLength = 16;
 const int MaximumDownloadPayloadLength = 64 * 1024 * 1024;
@@ -360,18 +361,25 @@ static byte[] CreateDownloadPayload(string? payloadLengthText)
 
 static int ResolveDownloadWriteSizeBytes(string? behavior, byte[]? downloadPayload)
 {
-    if (!string.Equals(behavior, SustainedDownloadBehavior, StringComparison.OrdinalIgnoreCase))
+    var expectedPayloadLength = behavior?.ToLowerInvariant() switch
+    {
+        SmallSustainedDownloadBehavior => SmallSustainedDownloadPayloadLength,
+        FixedTotalSmallSustainedDownloadBehavior => FixedTotalSmallSustainedDownloadPayloadLength,
+        _ => 0,
+    };
+
+    if (expectedPayloadLength == 0)
     {
         return RawQuicDownloadChunkBytes;
     }
 
-    if (downloadPayload?.Length != SustainedDownloadPayloadLength)
+    if (downloadPayload?.Length != expectedPayloadLength)
     {
         throw new InvalidOperationException(
-            $"Behavior '{SustainedDownloadBehavior}' requires server-to-client payload size {SustainedDownloadPayloadLength} bytes.");
+            $"Behavior '{behavior}' requires server-to-client payload size {expectedPayloadLength} bytes.");
     }
 
-    return SustainedDownloadWriteSizeBytes;
+    return SmallApplicationWriteSizeBytes;
 }
 
 static bool IsValidDownloadRequest(ReadOnlySpan<byte> request, int expectedPayloadLength)

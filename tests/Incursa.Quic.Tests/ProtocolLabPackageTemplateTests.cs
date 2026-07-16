@@ -21,7 +21,9 @@ public sealed class ProtocolLabPackageTemplateTests
         "quic.transport.stream-download.1mb",
         "quic.transport.stream-throughput.16mb",
         "quic.transport.sustained-stream.256x64kb",
+        "quic.transport.sustained-stream.16384x1kb",
         "quic.transport.sustained-download.256x64kb",
+        "quic.transport.sustained-download.16384x1kb",
         "quic.transport.sustained-download.4096x1kb",
         "quic.transport.multiplex.100x1kb",
         "quic.transport.multiplex.100x64kb",
@@ -116,7 +118,9 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("quic.transport.stream-churn", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.stream-throughput.1mb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.sustained-stream.256x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.sustained-stream.16384x1kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.sustained-download.256x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.sustained-download.16384x1kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.sustained-download.4096x1kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.multiplex.100x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.stream-limits.100x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
@@ -284,6 +288,8 @@ public sealed class ProtocolLabPackageTemplateTests
             "IncursaRawQuicAdapterRuntime.cs"));
 
         Assert.Contains("|quic.transport.sustained-download.4096x1kb|", source);
+        Assert.Contains("|quic.transport.sustained-stream.16384x1kb|", source);
+        Assert.Contains("|quic.transport.sustained-download.16384x1kb|", source);
         Assert.Contains("\"quic.transport.sustained-download.4096x1kb\", \"quic.transport.multiplex.100x1kb\"", source);
     }
 
@@ -311,12 +317,13 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_SIZE_BYTES", source);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_BEHAVIOR", source);
         Assert.Contains("const int RawQuicDownloadChunkBytes = 64 * 1024;", source);
-        Assert.Contains("const int SustainedDownloadWriteSizeBytes = 1024;", source);
-        Assert.Contains("const int SustainedDownloadWriteCount = 4096;", source);
-        Assert.Contains("const int SustainedDownloadPayloadLength = SustainedDownloadWriteSizeBytes * SustainedDownloadWriteCount;", source);
-        Assert.Contains("const string SustainedDownloadBehavior = \"sustained-download-4096x1kb\";", source);
+        Assert.Contains("const int SmallApplicationWriteSizeBytes = 1024;", source);
+        Assert.Contains("const int SmallSustainedDownloadPayloadLength = 4 * 1024 * 1024;", source);
+        Assert.Contains("const int FixedTotalSmallSustainedDownloadPayloadLength = 16 * 1024 * 1024;", source);
+        Assert.Contains("const string SmallSustainedDownloadBehavior = \"sustained-download-4096x1kb\";", source);
+        Assert.Contains("const string FixedTotalSmallSustainedDownloadBehavior = \"sustained-download-16384x1kb\";", source);
         Assert.Contains("return RawQuicDownloadChunkBytes;", source);
-        Assert.Contains("return SustainedDownloadWriteSizeBytes;", source);
+        Assert.Contains("return SmallApplicationWriteSizeBytes;", source);
         Assert.Contains("offset += downloadWriteSizeBytes", source);
         Assert.Contains("await stream.WriteAsync(downloadPayload.AsMemory(offset, count), cancellationToken);", source);
         Assert.DoesNotContain("connection.AcceptInboundStreamAsync", source);
@@ -361,7 +368,9 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("quic.transport.stream-churn", helperScript);
         Assert.Contains("quic.transport.stream-throughput.1mb", helperScript);
         Assert.Contains("quic.transport.sustained-stream.256x64kb", helperScript);
+        Assert.Contains("quic.transport.sustained-stream.16384x1kb", helperScript);
         Assert.Contains("quic.transport.sustained-download.256x64kb", helperScript);
+        Assert.Contains("quic.transport.sustained-download.16384x1kb", helperScript);
         Assert.Contains("quic.transport.sustained-download.4096x1kb", helperScript);
         Assert.Contains("quic.transport.multiplex.100x64kb", helperScript);
         Assert.Contains("quic.transport.stream-limits.100x64kb", helperScript);
