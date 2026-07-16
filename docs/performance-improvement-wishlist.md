@@ -4,6 +4,30 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: current source-backed raw QUIC coverage reproduced the existing
+  high-concurrency pressure with the corrected 100-stream multiplex contract.
+  A c1 stream-churn counter run completed 31,000 streams with zero failures at
+  3,029.84 streams/s, maximum shard depth 2, and no delayed-send or
+  retransmission buildup. In contrast, c16/s100 multiplex completed exact
+  payload validation but reached 821 queued shard items, 944 ms packet-receive
+  queue delay, 915 ms STREAM-write queue delay, and 14,897 outstanding 4 KiB
+  pooled buffers. A GC trace attributed 664.89 MB of sampled allocation to
+  `System.Byte[]`, followed by receive `BufferedSegment` lists and sent-packet
+  dictionary entries.
+
+  The previously rejected 16-shard default was repeated before the retained
+  negative record was rediscovered. It improved uninstrumented c16 median
+  throughput from 65.69 to 93.20 MiB/s and did not regress a five-repetition c1
+  A/B, but the matched c16 counter run increased peak pooled buffers from
+  14,897 to 25,704 and worsened maximum packet/write queue delay to
+  1,380/1,228 ms. Combined with the retained c128 timeout/pressure failure, this
+  confirms that more shard consumers increase offered work without fixing
+  receive-segment lifetime or producer backpressure. The runtime candidate was
+  reverted. Evidence remains under
+  `C:\shared\temp\protocol-lab-local-raw-20260716`; it is diagnostic,
+  shared-host, and non-publishable. Do not retry the shard-count change without
+  a materially different bounded receive/backpressure design.
+
 - 2026-07-15: raw QUIC peer coverage repair is accepted as an evidence-enabling
   slice. The public contract now distinguishes fresh-connection churn from
   repeated stream churn on a stable connection, and a dimension-neutral
