@@ -4,6 +4,43 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: immediate disposal of completed ProtocolLab raw-server stream
+  facades was tested and rejected. The candidate removed the connection-lifetime
+  `ConcurrentBag<QuicStream>` after confirming that sent-packet payload copies
+  are connection-owned. A new resilience assertion disposed the server facade
+  immediately after a deliberately dropped FIN to test the remaining lifetime
+  dependency directly.
+
+  The performance signal was initially promising but required careful ordering.
+  A sequential five-repetition campaign was contradictory and the first
+  counter-attached c16/s100 sample overstated the gain. Balanced alternating
+  baseline/candidate runs then showed median multiplex throughput changes of
+  +8.5 percent at c4 and +3.0 percent at c16, with p95 changes of -17.9 and
+  -11.1 percent. Canonical workload runs passed validation with zero failures
+  or timeouts and changed median throughput by +2.1 percent for stream churn,
+  +2.9 percent for the c16 slow-reader case, and +2.7 percent for 100-stream
+  limit pressure. A longer 1 MiB guardrail was neutral: 74.26 to 74.70 MiB/s
+  (+0.6 percent), with p95 improving from 17.35 to 16.17 ms.
+
+  The candidate nevertheless failed the correctness gate. The full Release
+  suite reproduced `DroppedServerFinIsRecoveredAndShardContinuesProcessing`
+  with `retransmittedFin=0` after immediate disposal, proving that the facade
+  observer is still required to drive tail-FIN recovery. The run also contained
+  the existing unrelated incomplete-content HTTP/3 timeout and the solution's
+  missing local trace-analysis project reference; 9,590 tests passed and five
+  were skipped. Runtime and test changes were restored; the dropped-FIN test
+  then passed 10/10 focused reruns and the unrelated HTTP/3 timeout passed in
+  isolation. Retain the diagnostic runs under
+  `incursa-raw-retention-*20260716`; do not remove completed-stream retention
+  until ACK-complete stream retirement is modeled explicitly and the
+  dropped-FIN test passes under repeated full-suite pressure.
+
+  Coverage lesson: raw scenario defaults can expand every declared connection
+  shape. The first combined counter sweep therefore attempted slow-reader c1
+  through c128 and recorded a c128 target-start failure. Future focused runs
+  must pin each named workload to its canonical connection and stream shape;
+  matrix-wide ladders remain separate scaling evidence.
+
 - 2026-07-16: raw QUIC peer coverage is expanded and package-proven for the
   five source-backed workload shapes that were missing from the reusable target
   inventory: 64 KiB and 16 MiB upload throughput, 100x1 KiB and 16x1 MiB
