@@ -2337,6 +2337,38 @@ runner, followed by a fresh matched c1/c4/c16/c32/c64/c128, five-repetition,
 round-robin Incursa/quic-go/MsQuic campaign. Runtime changes should be selected
 from those corrected traces rather than from the stale public numbers.
 
+### Accepted 2026-07-16: stable-connection stream-churn parity
+
+The ninth matched raw lane now distinguishes stream lifecycle cost from
+connection lifecycle cost. `quic.transport.stream-churn` opens, exchanges 128
+bytes in both directions, and closes 1,000 sequential bidirectional streams on
+one stable connection. The contract's exact total is 256,000 bytes. Public
+commit `cc149c7`, component commit `5be4862`, internal commit `0a51cfe`, and
+Incursa commit `e5a5304d` align the contract, reusable executor, Incursa and
+MsQuic adapters, campaign slices, and source-backed package template.
+
+Raw validation now also rejects any executor output whose reported behavior
+does not equal the selected scenario behavior. This prevents byte-compatible
+but semantically different workloads from being accepted under the wrong raw
+scenario identity.
+
+Verification:
+
+- Go executor tests passed and exercise live stream-churn dispatch;
+- 143/143 focused runner, validator, campaign, and live adapter tests passed;
+- 20/20 Incursa package-template tests passed;
+- all 90 component manifest pairs passed;
+- clean scenario, Linux/Windows executor, Incursa Linux, and MsQuic Linux
+  packages were built with parity-eligible attestations whose hashes match;
+- all five package manifests reference `quic.transport.stream-churn`.
+
+Exact package versions and hashes are recorded in
+[`raw-quic-performance-evidence-plan.md`](raw-quic-performance-evidence-plan.md).
+No package was uploaded or registered, no service was deployed or restarted,
+no lab benchmark ran, and no result was published. The public July 12 raw rows
+remain stale diagnostic evidence; the next decision gate is the current matched
+nine-lane package-backed campaign.
+
 1. Finish terminal exception attribution and cleanup.
 2. Add permanent exception/trace-site tooling.
 3. Establish stable smoke and confidence ProtocolLab lanes.

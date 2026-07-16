@@ -1,6 +1,6 @@
 # Raw QUIC Performance Evidence Plan
 
-Updated: 2026-07-15
+Updated: 2026-07-16
 
 ## Purpose
 
@@ -128,6 +128,32 @@ streams and 200 c1/s100 stream-limit operations with zero failures or timeouts
 and exact sent/received byte symmetry. Live matched rack evidence remains
 pending; no registration, deployment, or campaign ran.
 
+Stream-churn parity is now complete offline. Public contract commit `cc149c7`
+defines 1,000 sequential bidirectional 128-byte streams on one stable
+connection and fixes the total expected byte count to 256,000. Component commit
+`5be4862` adds real executor dispatch and immutable package versions, internal
+commit `0a51cfe` adds Incursa/MsQuic adapter and campaign parity plus behavior
+validation for every raw scenario, and Incursa commit `e5a5304d` advertises the
+lane from the source-backed package. Focused execution, adapter, and contract
+tests passed 143/143; Incursa package-template tests passed 20/20; Go executor
+tests and all 90 component manifest pairs passed. Clean parity-eligible packages
+were produced without registration:
+
+- Linux quic-go executor `0.1.8`:
+  `ef178d6cfd86bc203a45cfbb12cf0247ab36b6b676f56a6348800edf2e4df127`;
+- Windows quic-go executor `0.1.8`:
+  `a848dc00cfb18a4aba6a824bf3401839394920f4c709fe489bd717631ebf307c`;
+- raw scenario pack `0.1.10`:
+  `f8975470af05673f68b66c7598faad86cf39d2b1205a6f1268b9a4a0cb2b7fa3`;
+- Incursa Linux target `dev-20260716T064015Z-e5a5304d-clean`:
+  `22451ecf8a71261f285b636507421f019ef51793b357faea05a2df831192f961`;
+- MsQuic Linux target `dev-20260716T064043Z-0a51cfe-clean`:
+  `b6c45f220ffc4dd394056547be0df36f4ca3b59f1b95e27f6ba6d0fbda94ca68`.
+
+The five attestations match their archives and all five package manifests
+reference the exact stream-churn identity. This proves clean package inventory,
+not package-backed rack execution or performance.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |
@@ -137,7 +163,7 @@ pending; no registration, deployment, or campaign ran.
 | Concurrency | Scenario-owned c1, c4, c16, c32, c64, and c128 ladders under a dimension-neutral confidence profile | Prove every shape remains requested/effective-identical in live package-backed runs |
 | Stream topology | Single stream, 16-stream duplex, 100-stream multiplex, and one-connection 100-stream limit pressure | Multiple connections, many streams, mixed stream sizes |
 | Lifecycle | Distinct cold-handshake, connection-churn, and stream-churn contracts; handshake and connection-churn c1-c128 package coverage | Matched handshake/churn scaling, then resumption, rejected resumption, and 0-RTT outcomes |
-| Flow control | Incidental multiplex evidence | Controlled windows, blocked duration, credit cadence, slow reader/writer |
+| Flow control | Exact 100 ms slow-reader lane plus incidental multiplex evidence | Controlled windows, blocked duration, credit cadence, and slow-writer pressure |
 | Network | Clean profile | Loss, delay, reordering, bandwidth, MTU, and ECN where executable |
 | Duration | 3-30 second finite runs | Minutes-scale bounded-memory and recovery soaks |
 | Diagnostics | Counters and traces on selected Incursa runs | Target and generator CPU, queue, buffer, retransmission, qlog, and network telemetry |
@@ -180,7 +206,8 @@ Run Incursa, quic-go, and MsQuic with the same executor and scenario package:
 3. `quic.transport.multiplex.100x64kb`
 4. `quic.transport.stream-limits.100x64kb`
 5. `quic.transport.duplex-streams-peer-matrix`
-6. cold handshake and connection churn
+6. `quic.transport.flow-control.slow-reader-16x64kb`
+7. cold handshake, connection churn, and stable-connection stream churn
 
 Classify each concurrency point as target-limited, generator-limited,
 network-limited, unstable, or clean. Do not compare a new Incursa run with a
@@ -192,6 +219,13 @@ Add payload-direction, flow-control, sustained-stream, and controlled-network
 scenarios in small contract-first slices. Every new scenario must define exact
 payload bytes/hashes, completion criteria, timeout behavior, required metrics,
 and unsupported behavior before executor implementation.
+
+After the current nine-lane peer campaign is clean, prefer this next contract
+order: 1 MiB download-only, simultaneous 1 MiB full duplex, sustained 64 KiB
+chunks on a long-lived stream, mixed-size multiplexing across multiple stable
+connections, then controlled RTT/loss/reordering. These isolate direction,
+write-completion latency, long-run retention, scheduler fairness, and recovery
+without conflating all five dimensions in one workload.
 
 ### 5. Optimize the runtime from evidence
 
