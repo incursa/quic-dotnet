@@ -4,6 +4,47 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: sustained raw QUIC upload coverage is accepted as an evidence
+  slice. The new `quic.transport.sustained-stream.256x64kb` contract keeps one
+  bidirectional stream open for 256 sequential 64 KiB application writes and
+  validates exactly 16 MiB per operation. Public ProtocolLab commit `f5fccb6`,
+  component commit `60b8023`, internal commit `1d16ae5`, and Incursa commit
+  `6caa4d79` align the contract, reusable quic-go executor and target, runner
+  validation, source adapters, package declarations, and comparison suites.
+
+  Clean package validation produced scenario, Windows executor, Linux executor,
+  and quic-go target SHA-256 values
+  `d52858b4f4c1ef2894eda3fbf77376297d3ce39c99bd440841f8172baf8c3310`,
+  `4a9cc985cf63c641ec7a5716bf0e2c97f70fa4eae62a3b17adb19c61a8707a69`,
+  `b7790532f851ad649d5de6cf899ba50475591acf7b44759597404ca1f38dcc65`,
+  and `c46e8b35bca0bfc1476765811ee6363c021bdad842421f204f6e88c892696de2`.
+  The Incursa raw package built for Windows and Linux with SHA-256
+  `8956ce7340d78fc161cd305fdcdfb79e3a038fb703f6047266956e00bea86997`.
+
+  Matched source-backed local c1/c4/c16 ladders passed exact validation and
+  benchmark execution 5/5 at every load, with zero failed or timed-out
+  operations. Median throughput was 36.94, 128.66, and 230.46 MiB/s; median p95
+  was 511.12, 671.77, and 1,005.24 ms. Relative throughput ranges were 18.9,
+  26.3, and 5.6 percent. These shared-host runs flag possible generator and
+  target saturation and are diagnostic, not publishable peer evidence.
+
+  Counter run `codex-sustained-c16-counters-path-20260716-direct-package-cell`
+  passed exact validation and exposed balanced receive pressure rather than a
+  retention leak. Across eight shards, maximum queue depth ranged from 28 to
+  38; packet-receive queue delay averaged 4.82 to 6.86 ms and peaked at
+  32.44 ms. Delayed application sends, retained application-send buffers, and
+  pending retransmissions remained zero. Outstanding pooled buffers peaked at
+  143/589,824 bytes and drained to zero. The first two capture attempts are
+  retained as negative prerequisite evidence: a restored repo-local tool was
+  invisible from the materialized catalog root until `dotnet-counters` was put
+  explicitly on `PATH`.
+
+  No runtime change is justified from this single trace. The next coverage
+  slices are the same sustained shape in the server-to-client direction and a
+  mixed-size multiplex workload across multiple stable connections. Reproduce
+  receive queue delay with isolated target/generator telemetry before testing a
+  bounded receive-work batching or scheduling change.
+
 - 2026-07-16: an ACK-proportional queued-send burst was tested and rejected.
   The candidate retained the four-datagram floor, translated newly acknowledged
   protected bytes into datagram credit, and bounded one recovery transition at

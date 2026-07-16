@@ -418,14 +418,53 @@ different follow-up needs time-domain pacing or packet coalescing that reduces
 timer and send wakeups without adding queue service pressure to the ACK-handling
 transition.
 
+## Sustained Upload Coverage Added 2026-07-16
+
+`quic.transport.sustained-stream.256x64kb` now isolates repeated application
+writes on one long-lived stream. Each operation writes 256 sequential 64 KiB
+chunks from client to server and requires exact receipt of 16 MiB. The aligned
+commits are public `f5fccb6`, components `60b8023`, internal `1d16ae5`, and
+Incursa `6caa4d79`.
+
+Source-backed local five-repetition ladders produced the following diagnostic
+results with exact validation, zero failed operations, and zero timeouts:
+
+| Connections | Validation | Benchmark | Median throughput | Relative range | Median p95 |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 5/5 | 5/5 | 36.94 MiB/s | 18.9% | 511.12 ms |
+| 4 | 5/5 | 5/5 | 128.66 MiB/s | 26.3% | 671.77 ms |
+| 16 | 5/5 | 5/5 | 230.46 MiB/s | 5.6% | 1,005.24 ms |
+
+The runner classified possible generator saturation at every point and possible
+or unknown target saturation. These localhost/shared-host results establish a
+working workload and a profile target, not a peer ranking or publishable claim.
+
+Counter-attached run
+`codex-sustained-c16-counters-path-20260716-direct-package-cell` showed balanced
+receive work across eight shards. Per-shard maximum depth ranged from 28 to 38,
+packet-receive enqueue counts ranged from 97,307 to 97,453, mean packet queue
+delay ranged from 4.82 to 6.86 ms, and peak delay was 32.44 ms. Flow-control
+credit queue delay averaged 3.93 to 5.11 ms and peaked at 26.94 ms. Delayed
+application sends, retained application-send buffers, and pending
+retransmissions stayed at zero. Pooled buffers peaked at 143/589,824 bytes and
+drained to zero. This supports a future receive scheduling/batching experiment
+only after the pressure reproduces with isolated target and generator telemetry.
+
+The first direct-package execution without component materialization is retained
+as `load-tool-unavailable` evidence. Two counter attempts also retained honest
+`tool-unavailable` artifacts because the materialized catalog root could not
+resolve the restored repo-local tool manifest. The successful run placed the
+declared `dotnet-counters` version explicitly on `PATH`. No package was uploaded
+or registered, no controller/worker/job changed, and nothing was published.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |
 | --- | --- | --- |
 | Payload size | 128 B churn, 1 KiB latency and 100-stream multiplex, 64 KiB throughput/multiplex/duplex/stream-limit pressure, 1 MiB upload and 16-stream multiplex/duplex, 16 MiB upload | 16 KiB, 256 KiB, mixed-size streams, and multi-MiB per-stream fanout |
-| Direction | Upload, exact 1 MiB download-only, bounded bidirectional echo, and simultaneous 16x1 MiB duplex | Asymmetric simultaneous transfer and sustained directional streams |
+| Direction | Upload, exact 1 MiB download-only, bounded bidirectional echo, simultaneous 16x1 MiB duplex, and sustained 256x64 KiB upload | Sustained download and asymmetric simultaneous transfer |
 | Concurrency | Scenario-owned c1, c4, c16, c32, c64, and c128 ladders under a dimension-neutral confidence profile | Prove every shape remains requested/effective-identical in live package-backed runs |
-| Stream topology | Single stream, 16-stream large multiplex/duplex, 100-stream small/medium multiplex, and one-connection 100-stream limit pressure | Multiple stable connections and mixed stream sizes in one run |
+| Stream topology | Single stream, sustained long-lived upload stream, 16-stream large multiplex/duplex, 100-stream small/medium multiplex, and one-connection 100-stream limit pressure | Multiple stable connections and mixed stream sizes in one run |
 | Lifecycle | Distinct cold-handshake, connection-churn, and stream-churn contracts; handshake and connection-churn c1-c128 package coverage | Matched handshake/churn scaling, then resumption, rejected resumption, and 0-RTT outcomes |
 | Flow control | Exact 100 ms slow-reader lane plus incidental multiplex evidence | Controlled windows, blocked duration, credit cadence, and slow-writer pressure |
 | Network | Clean profile | Loss, delay, reordering, bandwidth, MTU, and ECN where executable |
@@ -482,17 +521,17 @@ stale peer run as one campaign.
 
 ### 4. Expand transport workloads
 
-Add payload-direction, flow-control, sustained-stream, and controlled-network
+Add payload-direction, flow-control, mixed-size, and controlled-network
 scenarios in small contract-first slices. Every new scenario must define exact
 payload bytes/hashes, completion criteria, timeout behavior, required metrics,
 and unsupported behavior before executor implementation.
 
 After the current peer campaign is clean, prefer this next contract order:
-simultaneous 1 MiB full duplex, sustained 64 KiB chunks on a long-lived stream,
-mixed-size multiplexing across multiple stable connections, then controlled
-RTT/loss/reordering. The 1 MiB download-only lane is complete. These isolate
-direction, write-completion latency, long-run retention, scheduler fairness,
-and recovery without conflating all five dimensions in one workload.
+the sustained 64 KiB upload lane is complete; add the corresponding sustained
+download, mixed-size multiplexing across multiple stable connections, then
+controlled RTT/loss/reordering. The 1 MiB download-only lane is complete. These
+isolate direction, write-completion latency, long-run retention, scheduler
+fairness, and recovery without conflating all five dimensions in one workload.
 
 ### 5. Optimize the runtime from evidence
 
@@ -500,6 +539,9 @@ Use clean matched traces to choose the next Incursa change. Priority signals are
 queue delay, write-completion latency, outstanding pooled bytes by bucket,
 sent-packet retention, retransmission retention, target CPU, allocation sites,
 exception sites, and generator saturation. Preserve rejected experiments.
+The current sustained-upload trace prioritizes packet-receive scheduling and
+batching over pool-size changes: all buffers drained and no delayed sends or
+retransmission retention accumulated.
 
 ## Acceptance Gates
 
