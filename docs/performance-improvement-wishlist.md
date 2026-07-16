@@ -2175,6 +2175,34 @@ one-repetition smoke comparison, the multiplex row does not retain the effective
 MsQuic and cannot run its duplex peer slice. Package identity, shape proof, and
 three-target parity now precede further runtime micro-optimization.
 
+### Accepted 2026-07-15: raw peer package identity and provenance
+
+The local three-target package gap is closed without changing controller or
+worker state. Incursa commit `c9cef4f1` adds cold-handshake and
+connection-churn support beside throughput, multiplex, duplex, and peer matrix;
+its package builder now rejects dirty package inputs by default, emits embedded
+source/build provenance plus an external SHA-bound attestation, and creates
+deterministic archives. ProtocolLab commit `e3165c6` provides the same evidence
+contract for the distinct System.Net.Quic/MSQuic target.
+
+Verification:
+
+- the Incursa package/run-helper contract suite passed 20/20;
+- repeated dirty-source Incursa package builds produced the same archive SHA;
+- the Windows Incursa package started and its live adapter manifest reported all
+  six scenarios;
+- clean Incursa package `dev-c9cef4f1-clean` is parity-eligible at SHA-256
+  `861326182b8b474c3ceaeed92752db10f764d36f51e4a8cfed997d7a112c4649`;
+- ProtocolLab operator-script tests passed 47/47, and clean MsQuic package
+  `0.1.1-dev-e3165c6` is parity-eligible at SHA-256
+  `bc60e9208cc7726db680dc61e08bba79421ccff094c4fa3553fe86178a143a53`;
+- both clean archives passed ProtocolLab controller package admission.
+
+These are local package artifacts, not benchmark evidence. No upload,
+deployment, campaign execution, or publication occurred. The next accepted
+step requires explicit package registration followed by a fresh package-matrix
+preview that resolves Incursa, quic-go, and MsQuic as three runnable targets.
+
 1. Finish terminal exception attribution and cleanup.
 2. Add permanent exception/trace-site tooling.
 3. Establish stable smoke and confidence ProtocolLab lanes.

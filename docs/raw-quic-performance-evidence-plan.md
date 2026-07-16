@@ -45,6 +45,24 @@ A dry-run of `raw-quic-peer-matrix` on 2026-07-15 showed:
 The campaign description says three targets, but package resolution currently
 produces two. That mismatch must fail visibly until the third target is packaged.
 
+Local package production is now repaired, but controller registration is still
+intentionally pending approval:
+
+- Incursa commit `c9cef4f1` produces deterministic `quic-dotnet-raw-dev`
+  packages with six raw scenarios, embedded provenance, and a matching external
+  attestation. Clean Linux package `dev-c9cef4f1-clean` has SHA-256
+  `861326182b8b474c3ceaeed92752db10f764d36f51e4a8cfed997d7a112c4649`.
+- ProtocolLab commit `e3165c6` produces the distinct
+  `msquic-dotnet-raw-adapter-v1` implementation package with the same six
+  scenarios and trust contract. Clean Linux package `0.1.1-dev-e3165c6` has
+  SHA-256 `bc60e9208cc7726db680dc61e08bba79421ccff094c4fa3553fe86178a143a53`.
+- Both archives pass the controller's package admission logic. The Incursa
+  Windows package also started successfully and its live adapter manifest
+  reported all six scenarios.
+- No package was uploaded and no worker/controller deployment was changed.
+  Therefore the controller dry-run remains the authoritative registration
+  blocker until an operator approves package admission and campaign execution.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |
@@ -63,10 +81,12 @@ produces two. That mismatch must fail visibly until the third target is packaged
 
 ### 1. Repair comparison identity and package coverage
 
-- Add `quic.transport.duplex-streams-peer-matrix` to the Incursa package and
-  adapter declarations after contract tests prove the runtime accepts it.
-- Package `msquic-dotnet-raw-adapter-v1` with a distinct implementation ID,
-  immutable version, SHA-256, source metadata, and clean-source build attestation.
+- `quic.transport.handshake-cold`, `quic.transport.connection-churn`, and
+  `quic.transport.duplex-streams-peer-matrix` are now declared by the Incursa
+  package, run helper, and live adapter manifest.
+- `msquic-dotnet-raw-adapter-v1` now has a distinct implementation ID,
+  immutable version, SHA-256, source metadata, and clean-source build
+  attestation.
 - Register current authoritative quic-go implementation, executor, and scenario
   packages instead of relying on legacy generated component identities.
 - Normalize `quic.transport.connection-churn` and
@@ -125,4 +145,3 @@ A raw QUIC performance claim is ready only when:
 - trace-instrumented runs are diagnostic only;
 - shared-host runs are diagnostic only; and
 - the complete peer campaign is rerun after accepted runtime changes.
-
