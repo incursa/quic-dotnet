@@ -15,6 +15,7 @@ public sealed class ProtocolLabPackageTemplateTests
         "quic.transport.stream-throughput.1mb",
         "quic.transport.multiplex.100x64kb",
         "quic.transport.duplex-streams",
+        "quic.transport.duplex-streams-peer-matrix",
     ];
 
     private static readonly string[] Http3ScenarioIds =
@@ -96,6 +97,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("quic.transport.stream-throughput.1mb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.multiplex.100x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.duplex-streams", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.duplex-streams-peer-matrix", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Equal(RawQuicScenarioIds, ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.DoesNotContain("h3", ReadYamlList(implementationYaml, "supportedProtocols"));
         Assert.DoesNotContain("http.application", ReadYamlList(implementationYaml, "supportedWorkloadFamilies"));
@@ -268,6 +270,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("quic.transport.stream-throughput.1mb", helperScript);
         Assert.Contains("quic.transport.multiplex.100x64kb", helperScript);
         Assert.Contains("quic.transport.duplex-streams", helperScript);
+        Assert.Contains("quic.transport.duplex-streams-peer-matrix", helperScript);
         Assert.Contains("New-ProtocolLabRawQuicComponentPackages.ps1", helperScript);
         Assert.Contains("New-ProtocolLabH3ComponentPackages.ps1", helperScript);
         Assert.Contains("Package-backed raw QUIC jobs require package-provided scenario and test-executor inventory", helperScript);

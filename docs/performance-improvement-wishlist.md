@@ -2167,6 +2167,14 @@ validation status, and matched peer evidence; then fill missing stream
 throughput, multiplex, duplex, concurrency, payload-size, loss, and flow-control
 workloads with current repeated baselines.
 
+The audit is recorded in
+[`raw-quic-performance-evidence-plan.md`](raw-quic-performance-evidence-plan.md).
+It found that the latest public raw cohort is a non-publishable two-target,
+one-repetition smoke comparison, the multiplex row does not retain the effective
+100-stream shape, and the current three-target package-matrix dry-run omits
+MsQuic and cannot run its duplex peer slice. Package identity, shape proof, and
+three-target parity now precede further runtime micro-optimization.
+
 1. Finish terminal exception attribution and cleanup.
 2. Add permanent exception/trace-site tooling.
 3. Establish stable smoke and confidence ProtocolLab lanes.
