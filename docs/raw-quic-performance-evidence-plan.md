@@ -236,6 +236,34 @@ silent FIN loss recovery in 10 consecutive runs. The evidence therefore
 supports a multi-connection progress investigation and additional directional
 coverage, not a speculative shard-count, pool-size, or retransmission change.
 
+That multi-connection investigation is now complete. A 16-connection,
+100-stream-per-connection integration test reproduced incomplete server
+`CompleteWritesAsync` operations even though every client had received exact
+payload bytes and EOF. The remaining completion requests had already been
+removed from the pending-action ledger. Under congestion, the runtime could
+have a small positive send budget that could not fit even a FIN-only STREAM
+header. The scheduler classified that valid queued frame as invalid, and the
+direct-send fallback removed the caller request without completing it.
+
+Incursa commit `52701dcb` classifies that condition as transient budget
+exhaustion, retains the queued FIN for congestion recovery, and ensures a true
+non-transient failure after queue commitment completes the caller with an
+exception instead of hanging. The exact high-fanout proof passed 20/20 stress
+repetitions. Focused scheduler, standalone-FIN, listener-resilience, public API,
+and RFC 9000 gates passed. The broad test project passed 9,584 tests with five
+skips and one unrelated HTTP/3 close-notification timeout that passed 5/5 exact
+reruns; the solution-level command also reported the already absent
+`eng/tools/Incursa.Quic.TraceAnalysis` project in this worktree.
+
+The post-fix source-backed run
+`local-raw-c16-100x1kb-budget-fix-20260716-quic-transport-v1-comparison`
+passed exact validation and benchmark execution 5/5, with zero failed or
+timed-out requests. Its median throughput was 25.45 MiB/s and median p95 latency
+was 64.35 ms. The run is local shared-host evidence with variance and readiness
+blockers, so it proves the progress fix but does not establish a publishable
+throughput improvement. No package was registered, no lab service changed, and
+no result was published.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |

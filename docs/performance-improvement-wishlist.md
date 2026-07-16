@@ -4,6 +4,36 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: Incursa commit `52701dcb` fixes the intermittent c16/s100
+  raw QUIC EOF failure exposed by the expanded matrix. A new 16-connection,
+  100-stream-per-connection integration proof reproduced the defect as
+  `CompleteWritesAsync` requests that remained incomplete after all response
+  payload bytes and FINs had reached the clients. The queued request ledger was
+  already empty. The direct-send fallback had removed the request after
+  classifying a valid FIN-only STREAM frame as invalid when congestion left a
+  positive payload budget too small to fit the frame header.
+
+  The scheduler now reports that boundary as a transient invalid payload
+  budget, the runtime retains and retries the queued FIN after congestion
+  recovery, and genuine non-transient post-queue failures complete the caller
+  with an exception instead of orphaning it. The exact high-fanout test passed
+  20/20 stress repetitions. Scheduler, standalone-FIN, listener-resilience,
+  public API, and RFC 9000 focused gates passed 29 and 34 tests respectively.
+  The broad test project passed 9,584 of 9,590 tests with five skips and one
+  unrelated HTTP/3 close-notification timeout; that exact timeout then passed
+  5/5 isolated reruns. The solution-level command also reported the pre-existing
+  absent `eng/tools/Incursa.Quic.TraceAnalysis` project in this worktree.
+
+  Source-backed ProtocolLab run
+  `local-raw-c16-100x1kb-budget-fix-20260716-quic-transport-v1-comparison`
+  then passed exact validation and benchmark execution 5/5 with zero failed or
+  timed-out requests. Median throughput was 25.45 MiB/s and median p95 latency
+  was 64.35 ms. This is shared-host diagnostic evidence, not a publishable
+  comparison or a throughput-improvement claim. The next contract priority is
+  true download-only raw QUIC, followed by mixed-size, asymmetric, and
+  minutes-scale bounded-memory workloads; no package, controller, worker,
+  deployment, or publication action was performed.
+
 - 2026-07-16: the expanded source-backed raw QUIC matrix completed 75 measured
   runs across five scenarios, c1/c4/c16, and five repetitions per cell. Large
   single-stream throughput remained healthy and stable at c16: 16 MiB upload
