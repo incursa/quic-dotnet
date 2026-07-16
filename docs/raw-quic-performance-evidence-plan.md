@@ -154,6 +154,16 @@ The five attestations match their archives and all five package manifests
 reference the exact stream-churn identity. This proves clean package inventory,
 not package-backed rack execution or performance.
 
+A read-only controller dry-run on 2026-07-16 confirms the live package catalog
+is still behind this offline set. Throughput and multiplex resolve all three
+targets; cold handshake, connection churn, latency, and duplex resolve only
+quic-go; stream churn and stream-limit pressure resolve no runnable targets;
+and slow-reader planning fails because the registered scenario inventory does
+not provide its suite. The preview retained the intended confidence profile,
+Comparison workflow, five repetitions, and round-robin ordering. No job was
+submitted. The dry-run artifact is
+`C:\shared\temp\protocol-lab-raw-stream-churn-20260715\controller-peer-matrix-dryrun.json`.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |
@@ -188,6 +198,9 @@ not package-backed rack execution or performance.
 - The same three target manifests now also intersect on 1 KiB latency echo and
   one-connection stream-limit pressure; fresh immutable archives prove all
   eight package-declared peer lanes offline.
+- Stream churn and slow-reader bring the current offline comparison inventory
+  to nine campaign lanes. The unchanged controller catalog does not yet expose
+  that intersection, as proven by the 2026-07-16 read-only dry-run.
 
 ### 2. Prove requested and effective workload shape
 

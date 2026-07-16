@@ -2369,6 +2369,13 @@ no lab benchmark ran, and no result was published. The public July 12 raw rows
 remain stale diagnostic evidence; the next decision gate is the current matched
 nine-lane package-backed campaign.
 
+The post-build live dry-run proves package registration is the remaining
+coverage blocker rather than another local scenario gap. Only throughput and
+multiplex currently resolve three runnable targets. Four lanes resolve quic-go
+alone, and stream churn, stream-limit pressure, and slow-reader do not resolve
+from the registered inventory. The dry-run used Comparison, five repetitions,
+and round-robin ordering and submitted no job.
+
 1. Finish terminal exception attribution and cleanup.
 2. Add permanent exception/trace-site tooling.
 3. Establish stable smoke and confidence ProtocolLab lanes.
