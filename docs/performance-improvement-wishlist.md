@@ -4,6 +4,40 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-15: replacing the per-chunk incomplete-write async state machine
+  with one pooled STREAM-action request for the complete public write was
+  rejected. The candidate preserved the 32 KiB runtime work-item boundary and
+  reposted each continuation chunk under the original request identifier. Its
+  focused lifecycle tests passed 21/21, and the broader cancellation,
+  flow-control, and RFC 9002 PTO set passed 63/63.
+
+  A matched source-backed c64 counter and sampled-CPU diagnostic passed exact
+  validation on both sides. The intended mechanism was visible: the former
+  `WriteStreamChunksAsync` continuation accounted for 5.03 percent inclusive
+  sampled CPU and its companion await path 1.72 percent in the baseline, while
+  pending-request insertion fell from 3.23 to 1.41 percent and exclusive
+  `Monitor.Enter_Slowpath` fell from 10.90 to 7.48 percent. However, traced
+  throughput fell 2.58 percent, mean CPU rose 3.34 percent, allocation rate rose
+  1.27 percent, and p95 rose 0.44 percent. Maximum per-shard queue depth rose
+  from 1,321 to 2,283, the sum of per-shard maxima rose from 7,592 to 9,929,
+  and peak outstanding pooled buffers/bytes rose from 32,150/263.43 MB to
+  39,740/325.57 MB. Instrumented results are diagnostic, not throughput claims.
+
+  Independent ownership review also found that a continuation post failure
+  could violate `TryWrite*` terminal suppression after a partial write, that
+  the design extended inline completion callbacks under the stream-action lock
+  to multi-chunk writes, and that cancellation could race the next chunk post.
+  Correcting all three safely requires a broader completion-dispatch ownership
+  design rather than another local state-machine removal. The runtime and
+  candidate-only tests were reverted without starting a clean repetition
+  matrix. Retained evidence is under
+  `.artifacts/protocol-lab/single-request-c64-cpu-20260715a` and the matching
+  `quic-single-request-{baseline,candidate}-c64-cpu-20260715a-*` ProtocolLab
+  runs. Do not repeat this one-request continuation design without first moving
+  completion callbacks outside the stream-action lock and defining an atomic
+  cancellation/terminal handoff between chunks. No result was uploaded,
+  deployed, or published.
+
 - 2026-07-15: atomic STREAM-write preparation is accepted as a bounded
   runtime-path optimization. The runtime previously acquired the stream-state
   lock separately to resolve or open the local stream, capture rollback state,
