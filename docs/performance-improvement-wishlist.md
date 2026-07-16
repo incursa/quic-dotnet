@@ -4,6 +4,28 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: true server-to-client raw QUIC coverage is now implemented end to
+  end as `quic.transport.stream-download.1mb`. The contract uses a 16-byte
+  `PLAB-DL1` request prelude, excludes that control traffic from payload
+  metrics, requires exactly 1 MiB of response data per operation, and validates
+  every response byte against the deterministic `offset % 251` pattern.
+  Public ProtocolLab commit `63242f4`, component commit `0032d2a`, internal
+  commit `42f937b`, and Incursa commit `a450928a` align the contract, reusable
+  executor, quic-go target, Incursa and MsQuic source adapters, package
+  templates, runner validation, and campaign declarations.
+
+  Focused ProtocolLab validation passed 116/116 tests, the Incursa package
+  contract passed 20/20 tests, all 92 component manifest pairs validated, and
+  the Go executor and quic-go target suites passed. Fresh one-repetition local
+  c1 diagnostics all completed with exact bytes and zero failures/timeouts:
+  MsQuic reached 181.44 MiB/s with 6.49 ms p95, quic-go reached 61.79 MiB/s
+  with 17.59 ms p95, and Incursa reached 38.21 MiB/s with 29.68 ms p95. These
+  are sequential shared-host smokes, not a matched five-repetition campaign or
+  a publishable ranking. They are sufficient to prioritize Incursa's isolated
+  server-to-client send scheduling and completion path for trace diagnosis.
+  No package was uploaded or registered, no lab service changed, and no result
+  was published.
+
 - 2026-07-16: Incursa commit `52701dcb` fixes the intermittent c16/s100
   raw QUIC EOF failure exposed by the expanded matrix. A new 16-connection,
   100-stream-per-connection integration proof reproduced the defect as
@@ -2473,6 +2495,47 @@ multiplex currently resolve three runnable targets. Four lanes resolve quic-go
 alone, and stream churn, stream-limit pressure, and slow-reader do not resolve
 from the registered inventory. The dry-run used Comparison, five repetitions,
 and round-robin ordering and submitted no job.
+
+### Accepted 2026-07-16: exact 1 MiB server-to-client download coverage
+
+`quic.transport.stream-download.1mb` closes the largest directional gap in the
+raw comparison surface. A client sends a fixed 16-byte request prelude and the
+server sends exactly 1 MiB whose byte at zero-based offset N is `N % 251`.
+The executor excludes the prelude from payload metrics, rejects a short, long,
+or corrupt response, and reports zero payload bytes sent for this direction.
+The server implementations share a deterministic response payload instead of
+allocating one 1 MiB array per stream.
+
+Public commit `63242f4`, component commit `0032d2a`, internal commit `42f937b`,
+and Incursa commit `a450928a` retain the complete contract and implementation
+slice. The immutable local package artifacts are:
+
+- scenario package `0.1.12`, SHA-256
+  `e434f72a3fd92afde2ec3dad0e17205d942ec4d8a6c8d08bb4e612529f705e0a`;
+- Windows executor package `0.1.10`, SHA-256
+  `f3f5af7320b51e4fc20e1fb27d1d2061ea29c5a7a4da355bedb0fed233cce96e`;
+- quic-go raw target package `0.1.13`, SHA-256
+  `0279f2590b58eb41f74ba2c81c6387a31795c0437b37373d90ef4d9e723f9c98`.
+
+Focused validation passed 116/116 internal tests and 20/20 Incursa package
+tests; all 92 component manifest pairs and the Go suites passed. Local c1
+diagnostics retained under the following run roots completed exact validation
+with no failures or timeouts:
+
+- `raw-download-smoke-20260716-quic-transport-v1-comparison`: Incursa,
+  38.21 MiB/s and 29.68 ms p95;
+- `raw-download-msquic-smoke-20260716-quic-transport-v1-comparison`: MsQuic,
+  181.44 MiB/s and 6.49 ms p95;
+- `raw-download-quicgo-smoke-20260716-direct-package-cell`: quic-go,
+  61.79 MiB/s and 17.59 ms p95.
+
+The three cells are one short sequential shared-host pass, so they are
+diagnostic only. A current matched c1/c4/c16/c32/c64/c128 campaign still
+requires deterministic round-robin ordering, at least five repetitions,
+target and generator telemetry, exact source/package provenance, and explicit
+operator approval before any package registration or lab execution. Until
+then, the justified local next step is trace attribution on Incursa's isolated
+download send and completion path, not a public peer-ranking claim.
 
 1. Finish terminal exception attribution and cleanup.
 2. Add permanent exception/trace-site tooling.

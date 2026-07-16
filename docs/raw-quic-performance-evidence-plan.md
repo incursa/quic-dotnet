@@ -264,12 +264,46 @@ blockers, so it proves the progress fix but does not establish a publishable
 throughput improvement. No package was registered, no lab service changed, and
 no result was published.
 
+## Exact Download Coverage Added 2026-07-16
+
+The contract-first `quic.transport.stream-download.1mb` lane now isolates the
+server-to-client send path. Its 16-byte request control prelude is excluded
+from payload metrics; each operation must receive exactly 1 MiB and validate
+every byte against the deterministic `offset % 251` pattern. The runner also
+rejects reversed byte accounting for this direction.
+
+The aligned commits are public `63242f4`, components `0032d2a`, internal
+`42f937b`, and Incursa `a450928a`. Local immutable package evidence is:
+
+| Package | Version | SHA-256 |
+| --- | --- | --- |
+| `org.protocol-lab.components.scenario.raw-quic-transport` | `0.1.12` | `e434f72a3fd92afde2ec3dad0e17205d942ec4d8a6c8d08bb4e612529f705e0a` |
+| `org.protocol-lab.components.executor.quic-go-raw-load` Windows | `0.1.10` | `f3f5af7320b51e4fc20e1fb27d1d2061ea29c5a7a4da355bedb0fed233cce96e` |
+| `org.protocol-lab.components.implementation.quic-go-raw` | `0.1.13` | `0279f2590b58eb41f74ba2c81c6387a31795c0437b37373d90ef4d9e723f9c98` |
+
+All three first local c1 diagnostics passed exact validation with zero failed
+or timed-out operations:
+
+| Target | Retained run | Throughput | p95 |
+| --- | --- | ---: | ---: |
+| Incursa | `raw-download-smoke-20260716-quic-transport-v1-comparison` | 38.21 MiB/s | 29.68 ms |
+| MsQuic | `raw-download-msquic-smoke-20260716-quic-transport-v1-comparison` | 181.44 MiB/s | 6.49 ms |
+| quic-go | `raw-download-quicgo-smoke-20260716-direct-package-cell` | 61.79 MiB/s | 17.59 ms |
+
+This is a sequential one-repetition shared-host diagnostic, not a matched or
+publishable peer ranking. It does establish a concrete Incursa
+server-to-client gap worth profiling before broad HTTP/3 tuning. The next
+authoritative campaign must run all three targets in deterministic round-robin
+order at c1/c4/c16/c32/c64/c128, use at least five repetitions, retain target
+and generator telemetry, and prove source/package parity. No package was
+uploaded or registered and no controller, worker, job, or publication changed.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |
 | --- | --- | --- |
 | Payload size | 128 B churn, 1 KiB latency and 100-stream multiplex, 64 KiB throughput/multiplex/duplex/stream-limit pressure, 1 MiB upload and 16-stream multiplex/duplex, 16 MiB upload | 16 KiB, 256 KiB, mixed-size streams, and multi-MiB per-stream fanout |
-| Direction | Upload, bounded bidirectional echo, and simultaneous 16x1 MiB duplex | Download-only and asymmetric simultaneous transfer |
+| Direction | Upload, exact 1 MiB download-only, bounded bidirectional echo, and simultaneous 16x1 MiB duplex | Asymmetric simultaneous transfer and sustained directional streams |
 | Concurrency | Scenario-owned c1, c4, c16, c32, c64, and c128 ladders under a dimension-neutral confidence profile | Prove every shape remains requested/effective-identical in live package-backed runs |
 | Stream topology | Single stream, 16-stream large multiplex/duplex, 100-stream small/medium multiplex, and one-connection 100-stream limit pressure | Multiple stable connections and mixed stream sizes in one run |
 | Lifecycle | Distinct cold-handshake, connection-churn, and stream-churn contracts; handshake and connection-churn c1-c128 package coverage | Matched handshake/churn scaling, then resumption, rejected resumption, and 0-RTT outcomes |
@@ -333,12 +367,12 @@ scenarios in small contract-first slices. Every new scenario must define exact
 payload bytes/hashes, completion criteria, timeout behavior, required metrics,
 and unsupported behavior before executor implementation.
 
-After the current nine-lane peer campaign is clean, prefer this next contract
-order: 1 MiB download-only, simultaneous 1 MiB full duplex, sustained 64 KiB
-chunks on a long-lived stream, mixed-size multiplexing across multiple stable
-connections, then controlled RTT/loss/reordering. These isolate direction,
-write-completion latency, long-run retention, scheduler fairness, and recovery
-without conflating all five dimensions in one workload.
+After the current peer campaign is clean, prefer this next contract order:
+simultaneous 1 MiB full duplex, sustained 64 KiB chunks on a long-lived stream,
+mixed-size multiplexing across multiple stable connections, then controlled
+RTT/loss/reordering. The 1 MiB download-only lane is complete. These isolate
+direction, write-completion latency, long-run retention, scheduler fairness,
+and recovery without conflating all five dimensions in one workload.
 
 ### 5. Optimize the runtime from evidence
 
