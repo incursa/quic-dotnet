@@ -298,6 +298,34 @@ order at c1/c4/c16/c32/c64/c128, use at least five repetitions, retain target
 and generator telemetry, and prove source/package parity. No package was
 uploaded or registered and no controller, worker, job, or publication changed.
 
+## Rejected Fixed-Burst Optimization 2026-07-16
+
+The first Incursa download profile showed that `QuicSendPolicy` releases at
+most four queued application datagrams after each recovery-progress event. A
+counter and sampled-CPU diagnostic found low thread-pool pressure, no measured
+retransmission buildup, and a maximum of 13 delayed sends, making that fixed cap
+a credible c1 candidate. Raising the cap to ten improved the isolated c1
+download median from 36.57 to 40.49 MiB/s and reduced p95 from 36.20 to 31.06 ms.
+
+The same candidate was neutral at c4 and c16 and did not improve the
+high-fanout shape:
+
+| Workload | Four-datagram control | Ten-datagram candidate | Decision signal |
+| --- | ---: | ---: | --- |
+| download c1 | 36.57 MiB/s, 36.20 ms p95 | 40.49 MiB/s, 31.06 ms p95 | isolated gain |
+| download c4 | 104.88 MiB/s, 44.05 ms p95 | 103.23 MiB/s, 45.06 ms p95 | neutral/noisy |
+| download c16 | 181.24 MiB/s, 98.16 ms p95 | 181.59 MiB/s, 91.93 ms p95 | throughput neutral, candidate variance higher |
+| c16/s100 multiplex | 24.04 MiB/s, 64.13 ms p95, 10.18% range | 24.60 MiB/s, 69.05 ms p95, 34.12% range | reject for latency and instability |
+
+Every cell passed exact validation 5/5 with no failed or timed-out operations.
+The code was restored to four datagrams and the experiment is retained as a
+negative result. A larger constant is not a general raw QUIC scaling fix. The
+next diagnostic coverage must capture congestion window, bytes in flight,
+available send bytes, datagrams released per recovery event, blocked reason,
+and write-completion latency. Any next scheduler candidate must be paced or
+ACK/recovery proportional and must be evaluated on download plus high-fanout
+multiplex and duplex lanes before acceptance.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |

@@ -4,6 +4,37 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: increasing the queued application-send recovery burst from four
+  datagrams to the RFC 9002 initial-window count of ten was rejected. A sampled
+  CPU/counter trace of `quic.transport.stream-download.1mb` showed the fixed
+  four-datagram recovery flush as a plausible c1 limiter: target CPU averaged
+  about 1.4 cores, thread-pool queue length peaked at one, delayed sends peaked
+  at 13, retained application bytes peaked at 802,816, and retransmissions
+  remained zero. Five-repetition c1 A/B evidence then improved median throughput
+  from 36.57 to 40.49 MiB/s and p95 from 36.20 to 31.06 ms with the larger cap.
+
+  The result did not scale. At c4, median throughput moved from 104.88 to
+  103.23 MiB/s and p95 from 44.05 to 45.06 ms. At c16, throughput was effectively
+  unchanged at 181.24 versus 181.59 MiB/s, while candidate variance increased.
+  More importantly, the c16/s100 1 KiB multiplex candidate reached 24.60 MiB/s
+  with 69.05 ms p95 and 34.12 percent throughput range. Its immediately adjacent
+  four-datagram control reached 24.04 MiB/s with 64.13 ms p95 and 10.18 percent
+  range, while the earlier post-FIN-fix four-datagram run reached 25.45 MiB/s.
+  All measured cells passed exact validation 5/5 with zero failures/timeouts,
+  so this is a scaling/variance result rather than a correctness failure.
+
+  The candidate passed 37 focused tests and 889 broad transport/RFC tests. The
+  full suite passed 9,583 tests with five skips and two timing failures that each
+  passed 5/5 isolated reruns. The source and tests were restored to the proven
+  four-datagram behavior. Retained run IDs are
+  `raw-download-*-burst{4,10}-*-20260716-quic-transport-v1-comparison`,
+  `raw-multiplex-c16s100-burst10-candidate-20260716-quic-transport-v1-comparison`,
+  and `raw-multiplex-c16s100-burst4-control2-20260716-quic-transport-v1-comparison`.
+  Do not retry a larger fixed burst cap without a materially different scheduler.
+  The next candidate must use measured congestion/recovery state, packet pacing
+  or send coalescing, and write-completion telemetry so it can improve c16-c128
+  without trading away multiplex latency or stability.
+
 - 2026-07-16: true server-to-client raw QUIC coverage is now implemented end to
   end as `quic.transport.stream-download.1mb`. The contract uses a 16-byte
   `PLAB-DL1` request prelude, excludes that control traffic from payload
