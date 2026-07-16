@@ -4,6 +4,35 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: packet-overhead-aware partial congestion budgets were tested and
+  rejected. The candidate reserved 50 bytes of short-header, packet-number, and
+  AEAD overhead before exposing a sub-datagram STREAM payload budget. In the
+  counter-attached c16/s100 diagnostic it moved maximum observed one-second
+  `flush_blocked` decisions from 428 to 2 and `budget_blocked` decisions from
+  10 to 401, while reducing maximum outstanding pooled buffers from 1,268 to
+  940. The intended early-classification mechanism worked, but maximum packet
+  and stream-write queue delay increased from 62.44/63.19 ms to 69.50/78.75 ms.
+
+  Two candidate c16/s100 five-repetition runs around an adjacent control were
+  directionally favorable: candidate medians were 25.60 and 24.97 MiB/s with
+  62.38 and 59.49 ms p95, versus 24.42 MiB/s and 67.45 ms for the control. The
+  required 1 MiB download guardrail did not hold. Compared with retained c1/c4/c16
+  baselines, the candidate was +0.88/-2.65/-7.85 percent in throughput and
+  -10.54/+5.31/+20.96 percent in p95. An immediately adjacent c16 download
+  control narrowed the throughput difference to -0.66 percent but still showed
+  a 9.35 percent p95 regression: 167.02 MiB/s and 118.73 ms candidate versus
+  168.13 MiB/s and 108.58 ms control. Every reported cell passed exact validation
+  5/5 with zero failed or timed-out operations.
+
+  The source and candidate-only tests were removed. Retained run IDs begin with
+  `raw-multiplex-overhead-budget-{candidate5,control5,candidate5b}-20260716`,
+  `raw-download-overhead-budget-c{1,4,16}-candidate5-20260716`, and
+  `raw-download-overhead-budget-c16-control5-20260716`. Do not retry this
+  payload-budget subtraction by itself. The next candidate must preserve useful
+  partial sends while changing release timing through pacing, coalescing, or an
+  ACK-proportional scheduler and must pass both multiplex and bulk-download
+  latency guardrails.
+
 - 2026-07-16: recovery-driven application-send decisions now expose bounded
   metrics for congestion window, bytes in flight, congestion/anti-amplification
   available bytes, datagram budget, actual datagrams released, queue depth before

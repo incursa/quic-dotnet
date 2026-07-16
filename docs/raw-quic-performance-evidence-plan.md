@@ -354,6 +354,41 @@ packet-overhead-aware, preserve standalone FIN progress, and prove fewer futile
 flushes plus no c1/c4/c16 or high-fanout regression. Counter-attached numbers are
 diagnostic and must not be used as throughput claims.
 
+## Rejected Partial-Datagram Budget Optimization 2026-07-16
+
+An overhead-aware send-policy candidate reserved 50 bytes of packet overhead
+when less than one full datagram remained in the congestion or
+anti-amplification budget. The counter-attached c16/s100 run
+`raw-multiplex-overhead-budget-candidate-20260716-quic-transport-v1-comparison`
+proved the intended mechanism: maximum observed one-second post-policy
+`flush_blocked` decisions fell from 428 to 2, policy-level `budget_blocked`
+decisions rose from 10 to 401, and maximum outstanding pooled buffers fell from
+1,268 to 940. It did not improve the whole service boundary: maximum packet and
+stream-write queue delay increased from 62.44/63.19 ms to 69.50/78.75 ms.
+
+Uninstrumented c16/s100 evidence was favorable but insufficient. Candidate
+runs `raw-multiplex-overhead-budget-candidate5-20260716-quic-transport-v1-comparison`
+and `raw-multiplex-overhead-budget-candidate5b-20260716-quic-transport-v1-comparison`
+reached 25.60/24.97 MiB/s and 62.38/59.49 ms p95 around control
+`raw-multiplex-overhead-budget-control5-20260716-quic-transport-v1-comparison`
+at 24.42 MiB/s and 67.45 ms p95.
+
+The mandatory exact 1 MiB download guardrail rejected the candidate. Against
+the retained burst-four baselines, c1 was neutral-to-better, c4 modestly worse,
+and c16 reached 167.02 MiB/s with 118.73 ms p95 versus 181.24 MiB/s with
+98.16 ms p95. The immediately adjacent c16 control
+`raw-download-overhead-budget-c16-control5-20260716-quic-transport-v1-comparison`
+reached 168.13 MiB/s with 108.58 ms p95, confirming a 9.35 percent latency
+regression even when throughput was effectively neutral. All compared cells
+passed exact validation 5/5 with zero failures or timeouts.
+
+The runtime remains on the prior policy and the experiment is retained as
+negative evidence. Early rejection of payloads that cannot fit packet overhead
+is not sufficient by itself. A materially different next candidate must retain
+useful partial sends and change pacing, coalescing, or ACK-proportional release
+timing, with both high-fanout multiplex and bulk-download latency as acceptance
+gates.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |
