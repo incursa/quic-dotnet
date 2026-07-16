@@ -13,9 +13,11 @@ public sealed class ProtocolLabPackageTemplateTests
     private static readonly string[] RawQuicScenarioIds =
     [
         "quic.transport.handshake-cold",
+        "quic.transport.latency.echo-1kb",
         "quic.transport.connection-churn",
         "quic.transport.stream-throughput.1mb",
         "quic.transport.multiplex.100x64kb",
+        "quic.transport.stream-limits.100x64kb",
         "quic.transport.duplex-streams",
         "quic.transport.duplex-streams-peer-matrix",
     ];
@@ -97,9 +99,11 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("quic", ReadYamlList(implementationYaml, "supportedProtocols"));
         Assert.Contains("quic.transport", ReadYamlList(implementationYaml, "supportedWorkloadFamilies"));
         Assert.Contains("quic.transport.handshake-cold", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.latency.echo-1kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.connection-churn", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.stream-throughput.1mb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.multiplex.100x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.stream-limits.100x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.duplex-streams", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.duplex-streams-peer-matrix", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Equal(RawQuicScenarioIds, ReadYamlList(implementationYaml, "supportedScenarios"));
@@ -284,9 +288,11 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("-TestExecutorId", helperScript);
         Assert.Contains("SupportedScenarioIds", helperScript);
         Assert.Contains("quic.transport.handshake-cold", helperScript);
+        Assert.Contains("quic.transport.latency.echo-1kb", helperScript);
         Assert.Contains("quic.transport.connection-churn", helperScript);
         Assert.Contains("quic.transport.stream-throughput.1mb", helperScript);
         Assert.Contains("quic.transport.multiplex.100x64kb", helperScript);
+        Assert.Contains("quic.transport.stream-limits.100x64kb", helperScript);
         Assert.Contains("quic.transport.duplex-streams", helperScript);
         Assert.Contains("quic.transport.duplex-streams-peer-matrix", helperScript);
         Assert.Contains("New-ProtocolLabRawQuicComponentPackages.ps1", helperScript);

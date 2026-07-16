@@ -101,14 +101,27 @@ cold handshakes in bounded 250 ms diagnostic windows with zero failures or
 timeouts and exact bidirectional byte symmetry. This proves package behavior
 and matrix eligibility locally; it is not matched rack evidence or a ranking.
 
+Public contract commit `ff870ee`, reusable component commit `32507af`, and
+internal runner commit `f23b47e` add two more matched lanes. The 1 KiB latency
+scenario preserves its c1/c4/c16/c32/c64/c128 ladder, while stream-limit
+pressure remains a one-connection, 100-concurrent-stream semantic capacity
+check. Incursa, MsQuic/System.Net.Quic, and quic-go all advertise both lanes;
+the shared executor validates the canonical `latency-echo` and
+`stream-limit-pressure` behavior names. The large 1 MiB bidirectional payload
+lane is intentionally not advertised by quic-go because that target caps echo
+responses at 64 KiB. Focused Go tests, 125 ProtocolLab parser/validator/adapter
+tests, 20 Incursa package-template tests, all 84 component manifest pairs, and
+the public repository-health workflow passed. Clean package hashes and live
+matched evidence remain pending; no registration, deployment, or campaign ran.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |
 | --- | --- | --- |
-| Payload size | 128 B churn, 64 KiB multiplex/duplex, 1 MiB upload | 1 KiB, 16 KiB, 256 KiB, 1 MiB, and multi-MiB |
+| Payload size | 128 B churn, 1 KiB latency echo, 64 KiB multiplex/duplex/stream-limit pressure, 1 MiB upload | 16 KiB, 256 KiB, bidirectional 1 MiB, and multi-MiB |
 | Direction | Upload and bounded bidirectional echo | Upload, download, and simultaneous full duplex |
 | Concurrency | Scenario-owned c1, c4, c16, c32, c64, and c128 ladders under a dimension-neutral confidence profile | Prove every shape remains requested/effective-identical in live package-backed runs |
-| Stream topology | Single stream, 16-stream duplex, 100-stream multiplex | Multiple connections, many streams, mixed stream sizes |
+| Stream topology | Single stream, 16-stream duplex, 100-stream multiplex, and one-connection 100-stream limit pressure | Multiple connections, many streams, mixed stream sizes |
 | Lifecycle | Distinct cold-handshake, connection-churn, and stream-churn contracts; handshake and connection-churn c1-c128 package coverage | Matched handshake/churn scaling, then resumption, rejected resumption, and 0-RTT outcomes |
 | Flow control | Incidental multiplex evidence | Controlled windows, blocked duration, credit cadence, slow reader/writer |
 | Network | Clean profile | Loss, delay, reordering, bandwidth, MTU, and ECN where executable |
@@ -132,6 +145,9 @@ and matrix eligibility locally; it is not matched rack evidence or a ranking.
 - The three target manifests have an exact offline five-scenario intersection.
   Controller registration and a package-matrix preview resolving three runnable
   targets remain intentionally pending operator approval.
+- The same three target manifests now also intersect on 1 KiB latency echo and
+  one-connection stream-limit pressure, producing seven package-declared peer
+  lanes once fresh immutable archives are built.
 
 ### 2. Prove requested and effective workload shape
 
@@ -146,9 +162,11 @@ and matrix eligibility locally; it is not matched rack evidence or a ranking.
 Run Incursa, quic-go, and MsQuic with the same executor and scenario package:
 
 1. `quic.transport.stream-throughput.1mb`
-2. `quic.transport.multiplex.100x64kb`
-3. `quic.transport.duplex-streams-peer-matrix`
-4. cold handshake and connection/stream churn after canonical ID alignment
+2. `quic.transport.latency.echo-1kb`
+3. `quic.transport.multiplex.100x64kb`
+4. `quic.transport.stream-limits.100x64kb`
+5. `quic.transport.duplex-streams-peer-matrix`
+6. cold handshake and connection churn
 
 Classify each concurrency point as target-limited, generator-limited,
 network-limited, unstable, or clean. Do not compare a new Incursa run with a

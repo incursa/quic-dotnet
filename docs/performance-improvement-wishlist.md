@@ -2256,6 +2256,36 @@ upload, worker/controller deployment, lab execution, or publication occurred.
 The next gate remains a three-target package-matrix preview after explicit
 registration approval, followed by a fresh matched campaign.
 
+### Accepted 2026-07-15: raw latency and stream-limit coverage
+
+The raw peer contract now includes two additional matched workloads. The 1 KiB
+bidirectional echo lane runs at c1/c4/c16/c32/c64/c128. The 100x64 KiB
+stream-limit lane intentionally stays at one connection so it measures
+advertised stream capacity rather than multiplying the scenario into 12,800
+simultaneous streams. Incursa, MsQuic/System.Net.Quic, and quic-go advertise
+both lanes, and the reusable quic-go executor validates their canonical
+behavior names.
+
+The quic-go target still does not advertise the bidirectional 1 MiB payload
+lane: its package server intentionally suppresses echoes above 64 KiB. That is
+retained as an explicit two-target coverage gap rather than a false parity
+claim.
+
+Verification:
+
+- public ProtocolLab repository health passed at commit `ff870ee`;
+- reusable Go executor and quic-go target tests passed at component commit
+  `32507af`;
+- all 84 public/internal component manifest pairs and the coverage baseline
+  passed;
+- 125 focused ProtocolLab parser, validator, package-script, and live adapter
+  tests passed at internal commit `f23b47e`;
+- 20 Incursa package-template tests passed.
+
+This accepts contract and local execution readiness only. Fresh immutable
+package hashes, registration, and a matched three-target campaign remain the
+next gates. No package was uploaded and no lab or publication state changed.
+
 1. Finish terminal exception attribution and cleanup.
 2. Add permanent exception/trace-site tooling.
 3. Establish stable smoke and confidence ProtocolLab lanes.
