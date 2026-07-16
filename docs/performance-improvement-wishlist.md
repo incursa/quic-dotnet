@@ -4,6 +4,33 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: the expanded source-backed raw QUIC matrix completed 75 measured
+  runs across five scenarios, c1/c4/c16, and five repetitions per cell. Large
+  single-stream throughput remained healthy and stable at c16: 16 MiB upload
+  reached a 236.47 MiB/s median with a 3.3 percent range. High fanout was the
+  distinct weak shape: 16x1 MiB multiplex passed exact validation 5/5 but fell
+  to 37.68 MiB/s with 6,463 ms p95, while 100x1 KiB multiplex had only 3/5
+  validation passes and 2/5 benchmark successes. A fresh five-repetition run
+  with internal commit `2e30595` identified three EOF timeouts at varying
+  coordinates (`14/40`, `8/35`, and `0/81`); both measured failures delivered
+  the exact 1,638,400 aggregate bytes before one of 1,600 streams missed EOF.
+  Internal commit `4518a22` now also records the QUIC stream ID and per-stream
+  received/expected bytes without changing the output schema. A following
+  three-repetition run passed 3/3, confirming intermittency rather than a fixed
+  stream-index defect.
+
+  Incursa commit `608b5d86` adds a 100-stream integration proof that silently
+  discards one server FIN-only datagram, requires every exact payload and EOF,
+  and then proves the connection remains usable. It passed 10 consecutive
+  runs and the complete 18-test listener resilience class passed. Ordinary
+  tail loss and retransmission therefore work in that bounded shape; no
+  runtime change is justified from the current trace alone. Retained runs are
+  under `C:\shared\temp\protocol-lab-local-raw-20260716` and
+  `protocol-lab-internal\.artifacts\runs\local-raw-c16-100x1kb-*`. All are
+  shared-host diagnostics and non-publishable. The next coverage priority is
+  a download-only lane, followed by a multi-connection high-fanout integration
+  proof and lightweight server-side completion attribution.
+
 - 2026-07-16: raw QUIC workload coverage now separates payload-size, stream-count,
   aggregate-byte, and simultaneous-read/write effects instead of relying on the
   stale 1 MiB throughput and 100x64 KiB multiplex rows. Public ProtocolLab

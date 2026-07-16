@@ -196,6 +196,46 @@ tuning. These runs are local, shared-host, and non-publishable; no package was
 uploaded or registered, no service was deployed or restarted, and no result
 was published.
 
+The required c1/c4/c16 matrix is now complete for these five new shapes: five
+repetitions per cell, 75 measured runs in total, with exact byte validation.
+
+| Concurrency | Scenario | Validation | Benchmark | Median MiB/s | Range | p95 ms |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | 64 KiB throughput | 5/5 | 5/5 | 35.31 | 13.6% | 2.9 |
+| 1 | 16 MiB throughput | 5/5 | 4/5 | 31.22 | 111.1% | 516.0 |
+| 1 | 100x1 KiB multiplex | 5/5 | 5/5 | 6.46 | 9.3% | 15.6 |
+| 1 | 16x1 MiB multiplex | 5/5 | 5/5 | 17.26 | 3.4% | 996.5 |
+| 1 | 16x1 MiB duplex | 5/5 | 5/5 | 17.96 | 7.0% | 936.2 |
+| 4 | 64 KiB throughput | 5/5 | 5/5 | 118.37 | 4.9% | 3.2 |
+| 4 | 16 MiB throughput | 5/5 | 5/5 | 140.57 | 12.4% | 538.9 |
+| 4 | 100x1 KiB multiplex | 4/5 | 4/5 | 16.23 | 13.8% | 28.1 |
+| 4 | 16x1 MiB multiplex | 5/5 | 5/5 | 56.89 | 38.0% | 1,174.2 |
+| 4 | 16x1 MiB duplex | 5/5 | 5/5 | 61.77 | 5.4% | 1,112.9 |
+| 16 | 64 KiB throughput | 5/5 | 5/5 | 82.95 | 20.7% | 7.9 |
+| 16 | 16 MiB throughput | 5/5 | 5/5 | 236.47 | 3.3% | 1,016.7 |
+| 16 | 100x1 KiB multiplex | 3/5 | 2/5 | 20.69 | 104.0% | 80.8 |
+| 16 | 16x1 MiB multiplex | 5/5 | 5/5 | 37.68 | 15.8% | 6,463.1 |
+| 16 | 16x1 MiB duplex | 5/5 | 5/5 | 118.00 | 3.1% | 2,077.4 |
+
+This matrix disproves the broad interpretation that Incursa raw QUIC is simply
+slow. It instead identifies high-fanout completion and small-stream scheduling
+as the current transport-level problem. A counter run of c16 100x1 KiB found
+maximum total shard depth 227, maximum delayed sends 105, maximum retained sent
+packets 140, and a peak of 991 pooled buffers; target CPU remained low and the
+thread-pool queue stayed empty. A clean CPU trace was predominantly waiting,
+not executing hot runtime code, and ended at 3,199/3,200 completed streams with
+exact sent and received payload bytes.
+
+Internal commits `2e30595` and `4518a22` make EOF failures reviewable by
+reporting zero-based connection and stream indexes, QUIC stream ID, and
+per-stream received/expected bytes. In a fresh five-repetition diagnostic the
+failed coordinates varied, and the two measured failures each delivered all
+1,638,400 bytes before one stream missed EOF. A subsequent three-repetition
+run passed every cell. Incursa commit `608b5d86` independently proved 100-stream
+silent FIN loss recovery in 10 consecutive runs. The evidence therefore
+supports a multi-connection progress investigation and additional directional
+coverage, not a speculative shard-count, pool-size, or retransmission change.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |
