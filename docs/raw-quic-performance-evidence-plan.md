@@ -389,6 +389,35 @@ useful partial sends and change pacing, coalescing, or ACK-proportional release
 timing, with both high-fanout multiplex and bulk-download latency as acceptance
 gates.
 
+## Rejected ACK-Proportional Immediate Release 2026-07-16
+
+The next candidate converted newly acknowledged protected packet bytes into an
+immediate application-send datagram allowance, preserving a floor of four and a
+service-boundary cap of sixteen. Focused API, congestion, recovery, RFC 9000,
+and RFC 9002 tests passed 1,067/1,067.
+
+Counter run
+`raw-multiplex-ack-proportional-metrics-20260716-quic-transport-v1-comparison`
+proved that aggregated ACKs produced budgets up to 16 and flushes up to 13.
+Against the fixed-four counter run, maximum outstanding buffers fell from 1,268
+to 1,151 and maximum sampled stream-write completion fell from 70.88 to
+68.63 ms. The same run raised maximum packet/write queue delay from 62.44/63.19
+to 69.38/69.75 ms, delayed sends from 88 to 161, and post-policy blocked flushes
+from 428 to 483.
+
+Uninstrumented run
+`raw-multiplex-ack-proportional-candidate5-20260716-quic-transport-v1-comparison`
+passed exact validation 5/5 with no failures or timeouts, but reached only
+24.64 MiB/s with 70.40 ms p95. The fixed-four control reached 24.42 MiB/s with
+67.45 ms p95. The throughput difference is neutral and the 4.38 percent latency
+regression fails the high-fanout guardrail, so the candidate was restored before
+running the download ladder.
+
+ACK-byte credit must not be retried as a larger immediate burst. A materially
+different follow-up needs time-domain pacing or packet coalescing that reduces
+timer and send wakeups without adding queue service pressure to the ACK-handling
+transition.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |

@@ -4,6 +4,31 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: an ACK-proportional queued-send burst was tested and rejected.
+  The candidate retained the four-datagram floor, translated newly acknowledged
+  protected bytes into datagram credit, and bounded one recovery transition at
+  sixteen datagrams. Focused API, congestion, recovery, RFC 9000, and RFC 9002
+  tests passed 1,067/1,067.
+
+  Counter-attached c16/s100 evidence proved that aggregated ACKs raised the
+  budget to 16 and released as many as 13 datagrams. Compared with the fixed-four
+  trace, peak outstanding buffers fell from 1,268 to 1,151 and maximum sampled
+  write completion fell from 70.88 to 68.63 ms. The larger release also raised
+  maximum packet/write queue delay from 62.44/63.19 to 69.38/69.75 ms, delayed
+  sends from 88 to 161, and post-policy blocked flushes from 428 to 483.
+
+  The uninstrumented five-repetition c16/s100 candidate was effectively neutral
+  in throughput and worse in latency: 24.64 MiB/s and 70.40 ms p95 versus the
+  fixed-four control at 24.42 MiB/s and 67.45 ms p95. All five candidate cells
+  passed exact validation with zero failures or timeouts. Runtime and tests were
+  restored before running the download ladder because the multiplex acceptance
+  gate had already failed. Retained run IDs are
+  `raw-multiplex-ack-proportional-metrics-20260716-quic-transport-v1-comparison`
+  and `raw-multiplex-ack-proportional-candidate5-20260716-quic-transport-v1-comparison`.
+  Do not retry ACK-byte credit as a larger immediate burst. The next scheduler
+  candidate needs time-domain pacing or packet coalescing that lowers wakeups
+  without increasing one-transition queue service pressure.
+
 - 2026-07-16: packet-overhead-aware partial congestion budgets were tested and
   rejected. The candidate reserved 50 bytes of short-header, packet-number, and
   AEAD overhead before exposing a sub-datagram STREAM payload budget. In the
