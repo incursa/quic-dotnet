@@ -12,6 +12,8 @@ public sealed class ProtocolLabPackageTemplateTests
 {
     private static readonly string[] RawQuicScenarioIds =
     [
+        "quic.transport.handshake-cold",
+        "quic.transport.connection-churn",
         "quic.transport.stream-throughput.1mb",
         "quic.transport.multiplex.100x64kb",
         "quic.transport.duplex-streams",
@@ -94,6 +96,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("IncursaRawQuicServer", implementationYaml);
         Assert.Contains("quic", ReadYamlList(implementationYaml, "supportedProtocols"));
         Assert.Contains("quic.transport", ReadYamlList(implementationYaml, "supportedWorkloadFamilies"));
+        Assert.Contains("quic.transport.handshake-cold", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.connection-churn", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.stream-throughput.1mb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.multiplex.100x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.duplex-streams", ReadYamlList(implementationYaml, "supportedScenarios"));
@@ -105,6 +109,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.DoesNotContain("http3.", implementationYaml);
         Assert.DoesNotContain("managed-httpclient-h3-load", implementationYaml);
         Assert.Contains("quicTransport", ReadYamlList(implementationYaml, "capabilities"));
+        Assert.Contains("quicHandshake", ReadYamlList(implementationYaml, "capabilities"));
         Assert.Contains("quicStreams", ReadYamlList(implementationYaml, "capabilities"));
         Assert.Contains("quicMultiplexing", ReadYamlList(implementationYaml, "capabilities"));
         Assert.Contains("quicDuplex", ReadYamlList(implementationYaml, "capabilities"));
@@ -173,6 +178,14 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("Test-NoRestoreRuntimeAssetFailure", builderScript);
         Assert.Contains("Rerun the package build once without -NoRestore", builderScript);
         Assert.Contains("Invoke-GitValue", builderScript);
+        Assert.Contains("Get-PackageSourceScope", builderScript);
+        Assert.Contains("$projectSourceDirectory", builderScript);
+        Assert.Contains("ProtocolLab package inputs are dirty", builderScript);
+        Assert.Contains("protocol-lab.package-build-provenance.v1", builderScript);
+        Assert.Contains("protocol-lab.package-build-attestation.v1", builderScript);
+        Assert.Contains("New-DeterministicZipArchive", builderScript);
+        Assert.Contains("buildAttestationPath", builderScript);
+        Assert.Contains("parityEligible", builderScript);
         Assert.Contains("$executionManifest.sourceRepository = $sourceRepository", builderScript);
         Assert.Contains("$executionManifest.sourceCommit = $sourceCommit", builderScript);
         Assert.Contains("Remove-Item -LiteralPath $publishRoot", builderScript);
@@ -183,6 +196,9 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("$executionManifest.environments = @(", builderScript);
         Assert.Contains("$executionManifest.dependencies.requiresDotNet", builderScript);
         Assert.DoesNotContain("@($RepoRoot, $ProtocolLabRoot)", builderScript, StringComparison.Ordinal);
+
+        var runScript = File.ReadAllText(Path.Combine(repoRoot, "eng", "protocol-lab", "Invoke-QuicDotNetProtocolLabRun.ps1"));
+        Assert.Contains("-AllowDirtySource", runScript);
 
         Assert.True(File.Exists(Path.Combine(repoRoot, "eng", "protocol-lab", "src", "Incursa.ProtocolLab.Adapters.IncursaRawQuic", "Incursa.ProtocolLab.Adapters.IncursaRawQuic.csproj")));
         Assert.True(File.Exists(Path.Combine(repoRoot, "eng", "protocol-lab", "servers", "IncursaRawQuicServer", "IncursaRawQuicServer.csproj")));
@@ -267,6 +283,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("TestExecutorId = \"quic-go-raw-load\"", helperScript);
         Assert.Contains("-TestExecutorId", helperScript);
         Assert.Contains("SupportedScenarioIds", helperScript);
+        Assert.Contains("quic.transport.handshake-cold", helperScript);
+        Assert.Contains("quic.transport.connection-churn", helperScript);
         Assert.Contains("quic.transport.stream-throughput.1mb", helperScript);
         Assert.Contains("quic.transport.multiplex.100x64kb", helperScript);
         Assert.Contains("quic.transport.duplex-streams", helperScript);
@@ -314,7 +332,7 @@ public sealed class ProtocolLabPackageTemplateTests
     [Theory]
     [InlineData("h3", "quic.transport.multiplex.100x64kb", "only supports protocol 'quic'")]
     [InlineData("quic", "http1.core.plaintext", "scenario(s) are not declared by the package template")]
-    [InlineData("quic", "quic.transport.handshake-cold", "scenario(s) are not declared by the package template")]
+    [InlineData("quic", "quic.transport.datagrams", "scenario(s) are not declared by the package template")]
     public void Run_helper_rejects_raw_quic_h3_fallback_arguments(string protocol, string scenarioId, string expectedError)
     {
         var repoRoot = FindRepoRoot();

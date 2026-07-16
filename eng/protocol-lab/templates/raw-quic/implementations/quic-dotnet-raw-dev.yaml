@@ -23,6 +23,8 @@ supportedProtocols:
 supportedWorkloadFamilies:
   - quic.transport
 supportedScenarios:
+  - quic.transport.handshake-cold
+  - quic.transport.connection-churn
   - quic.transport.stream-throughput.1mb
   - quic.transport.multiplex.100x64kb
   - quic.transport.duplex-streams
@@ -47,6 +49,7 @@ readinessCheck:
 shutdownBehavior: process-exit
 capabilities:
   - quicTransport
+  - quicHandshake
   - quicStreams
   - quicMultiplexing
   - quicDuplex

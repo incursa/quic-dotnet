@@ -17,7 +17,9 @@ param(
 
     [switch] $Force,
 
-    [switch] $NoRestore
+    [switch] $NoRestore,
+
+    [switch] $AllowDirtySource
 )
 
 Set-StrictMode -Version Latest
@@ -32,7 +34,9 @@ function Invoke-GitValue {
         [string[]] $Arguments,
 
         [Parameter(Mandatory = $true)]
-        [string] $Description
+        [string] $Description,
+
+        [switch] $AllowEmpty
     )
 
     $output = & git -C $RepositoryRoot @Arguments 2>$null
@@ -41,7 +45,7 @@ function Invoke-GitValue {
     }
 
     $value = ($output | Out-String).Trim()
-    if ([string]::IsNullOrWhiteSpace($value)) {
+    if (-not $AllowEmpty -and [string]::IsNullOrWhiteSpace($value)) {
         throw "Git returned an empty $Description for the quic-dotnet repository."
     }
 
@@ -51,17 +55,18 @@ function Invoke-GitValue {
 function Get-DefaultPackageVersion {
     param(
         [Parameter(Mandatory = $true)]
-        [string] $RepositoryRoot
+        [string] $RepositoryRoot,
+
+        [Parameter(Mandatory = $true)]
+        [bool] $SourceClean
     )
 
     $timestamp = Get-Date -AsUTC -Format "yyyyMMddTHHmmssZ"
     $shortSha = "nogit"
-    $dirty = "unknown"
+    $dirty = if ($SourceClean) { "clean" } else { "dirty" }
 
     try {
         $shortSha = (git -C $RepositoryRoot rev-parse --short HEAD 2>$null).Trim()
-        $status = @(git -C $RepositoryRoot status --porcelain 2>$null)
-        $dirty = if ($status.Count -gt 0) { "dirty" } else { "clean" }
     }
     catch {
         $shortSha = "nogit"
@@ -69,6 +74,125 @@ function Get-DefaultPackageVersion {
     }
 
     return "dev-$timestamp-$shortSha-$dirty"
+}
+
+function Get-PackageSourceScope {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $Target
+    )
+
+    $common = @(
+        "Directory.Build.props",
+        "Directory.Packages.props",
+        "global.json",
+        "NuGet.config",
+        "eng/protocol-lab/New-QuicDotNetProtocolLabPackage.ps1"
+    )
+
+    if ($Target -eq "RawQuic") {
+        return $common + @(
+            "eng/protocol-lab/src/Incursa.ProtocolLab.Adapters.IncursaRawQuic",
+            "eng/protocol-lab/servers/IncursaRawQuicServer",
+            "eng/protocol-lab/templates/raw-quic",
+            "src/Incursa.Quic"
+        )
+    }
+
+    return $common + @(
+        "eng/protocol-lab/templates/protocol-lab-package.json",
+        "eng/protocol-lab/templates/protocol-lab.internal.json",
+        "eng/protocol-lab/templates/implementations",
+        "eng/protocol-lab/templates/scripts",
+        "samples/Incursa.Http3.Samples.TechEmpower",
+        "src/Incursa.Quic",
+        "src/Incursa.Quic.Http3",
+        "src/Incursa.Qpack"
+    )
+}
+
+function Get-OptionalToolVersion {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $Name,
+
+        [Parameter(Mandatory = $true)]
+        [string[]] $Arguments
+    )
+
+    $command = Get-Command $Name -ErrorAction SilentlyContinue
+    if ($null -eq $command) {
+        return $null
+    }
+
+    $output = & $command.Source @Arguments 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        return $null
+    }
+
+    return (($output -join "`n").Trim())
+}
+
+function Write-JsonFile {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object] $Value,
+
+        [Parameter(Mandatory = $true)]
+        [string] $Path
+    )
+
+    $json = $Value | ConvertTo-Json -Depth 32
+    [System.IO.File]::WriteAllText($Path, $json + [Environment]::NewLine, [System.Text.UTF8Encoding]::new($false))
+}
+
+function New-DeterministicZipArchive {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $SourceRoot,
+
+        [Parameter(Mandatory = $true)]
+        [string] $DestinationPath
+    )
+
+    $fixedTimestamp = [DateTimeOffset]::new(1980, 1, 1, 0, 0, 0, [TimeSpan]::Zero)
+    $archiveStream = [System.IO.File]::Open(
+        $DestinationPath,
+        [System.IO.FileMode]::CreateNew,
+        [System.IO.FileAccess]::ReadWrite,
+        [System.IO.FileShare]::None)
+    try {
+        $archive = [System.IO.Compression.ZipArchive]::new(
+            $archiveStream,
+            [System.IO.Compression.ZipArchiveMode]::Create,
+            $true,
+            [System.Text.UTF8Encoding]::new($false))
+        try {
+            $files = @(Get-ChildItem -LiteralPath $SourceRoot -Recurse -File -Force | Sort-Object {
+                    [System.IO.Path]::GetRelativePath($SourceRoot, $_.FullName).Replace('\', '/')
+                })
+            foreach ($file in $files) {
+                $entryName = [System.IO.Path]::GetRelativePath($SourceRoot, $file.FullName).Replace('\', '/')
+                $entry = $archive.CreateEntry($entryName, [System.IO.Compression.CompressionLevel]::Optimal)
+                $entry.LastWriteTime = $fixedTimestamp
+                $entryStream = $entry.Open()
+                $sourceStream = [System.IO.File]::OpenRead($file.FullName)
+                try {
+                    $sourceStream.CopyTo($entryStream)
+                }
+                finally {
+                    $sourceStream.Dispose()
+                    $entryStream.Dispose()
+                }
+            }
+        }
+        finally {
+            $archive.Dispose()
+        }
+    }
+    finally {
+        $archiveStream.Dispose()
+    }
 }
 
 function Resolve-PathOrThrow {
@@ -248,7 +372,7 @@ function Invoke-DotNetPublish {
     $publishLog = & dotnet @publishArgs 2>&1
     if ($LASTEXITCODE -ne 0) {
         $publishText = ($publishLog | Out-String)
-        $publishLog | Write-Error
+        $publishLog | Write-Error -ErrorAction Continue
         if ($NoRestore -and (Test-NoRestoreRuntimeAssetFailure -LogText $publishText -RuntimeIdentifier $RuntimeIdentifier)) {
             throw "dotnet publish failed for runtime identifier '$RuntimeIdentifier' because restore assets are missing for that RID. Rerun the package build once without -NoRestore, then use -NoRestore again after restore succeeds."
         }
@@ -273,9 +397,22 @@ Assert-PathUnderRoot -Path $projectFullPath -Root $repoRoot -Description "Protoc
 $protocolLabRootFullPath = Resolve-PathOrThrow -Path $ProtocolLabRoot -Description "ProtocolLab root"
 $sourceRepository = Invoke-GitValue -RepositoryRoot $repoRoot -Arguments @("remote", "get-url", "origin") -Description "source repository"
 $sourceCommit = Invoke-GitValue -RepositoryRoot $repoRoot -Arguments @("rev-parse", "HEAD") -Description "source commit"
+$sourceCommitTimestamp = Invoke-GitValue -RepositoryRoot $repoRoot -Arguments @("show", "-s", "--format=%cI", "HEAD") -Description "source commit timestamp"
+$projectSourceDirectory = [System.IO.Path]::GetRelativePath($repoRoot, (Split-Path -Parent $projectFullPath)).Replace('\', '/')
+$sourceScope = @((Get-PackageSourceScope -Target $PackageTarget) + @($projectSourceDirectory) | Sort-Object -Unique)
+$sourceStatusArguments = @("status", "--porcelain=v1", "--untracked-files=normal", "--") + $sourceScope
+$sourceStatus = Invoke-GitValue `
+    -RepositoryRoot $repoRoot `
+    -Arguments $sourceStatusArguments `
+    -Description "package source status" `
+    -AllowEmpty
+$sourceClean = [string]::IsNullOrWhiteSpace($sourceStatus)
+if (-not $sourceClean -and -not $AllowDirtySource) {
+    throw "ProtocolLab package inputs are dirty. Commit the package source slice or pass -AllowDirtySource for diagnostic-only output.`n$sourceStatus"
+}
 
 if ([string]::IsNullOrWhiteSpace($PackageVersion)) {
-    $PackageVersion = Get-DefaultPackageVersion -RepositoryRoot $repoRoot
+    $PackageVersion = Get-DefaultPackageVersion -RepositoryRoot $repoRoot -SourceClean $sourceClean
 }
 
 $stageRoot = Join-Path $repoRoot "artifacts/protocol-lab/package-source/$($targetConfig.PackageId)/$PackageVersion"
@@ -368,13 +505,74 @@ if (-not [string]::IsNullOrWhiteSpace($outputDirectory)) {
     New-Item -ItemType Directory -Force -Path $outputDirectory | Out-Null
 }
 
+$build = [ordered]@{
+    configuration = $Configuration
+    runtimeIdentifiers = @($RuntimeIdentifier)
+    operatingSystem = [System.Runtime.InteropServices.RuntimeInformation]::OSDescription
+    processArchitecture = [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString()
+    powershell = $PSVersionTable.PSVersion.ToString()
+    dotnet = Get-OptionalToolVersion -Name "dotnet" -Arguments @("--version")
+}
+$source = [ordered]@{
+    repository = $sourceRepository
+    commitSha = $sourceCommit
+    workingTreeClean = $sourceClean
+    dirtyState = if ($sourceClean) { "clean" } else { "dirty" }
+    dirtyEntries = if ($sourceClean) { @() } else { @($sourceStatus -split "`n" | ForEach-Object { $_.TrimEnd("`r") } | Where-Object { $_ }) }
+    componentPath = if ($PackageTarget -eq "RawQuic") { "src/Incursa.Quic" } else { "samples/Incursa.Http3.Samples.TechEmpower" }
+    scopedPaths = $sourceScope
+}
+$embeddedProvenance = [ordered]@{
+    schemaVersion = "protocol-lab.package-build-provenance.v1"
+    generatedAtUtc = ([DateTimeOffset]::Parse($sourceCommitTimestamp)).ToUniversalTime().ToString("O")
+    timestampBasis = "source-commit"
+    parityEligible = $sourceClean
+    source = $source
+    build = $build
+    package = [ordered]@{
+        packageId = $targetConfig.PackageId
+        packageVersion = $PackageVersion
+        packageTarget = $PackageTarget
+    }
+}
+Write-JsonFile -Value $embeddedProvenance -Path (Join-Path $stageRoot "package-build-provenance.json")
+
 Remove-Item -LiteralPath $OutputPath -Force -ErrorAction SilentlyContinue
-Compress-Archive -Path (Join-Path $stageRoot "*") -DestinationPath $OutputPath -Force
+New-DeterministicZipArchive -SourceRoot $stageRoot -DestinationPath $OutputPath
 
 $sha256 = (Get-FileHash -LiteralPath $OutputPath -Algorithm SHA256).Hash.ToLowerInvariant()
+$attestationPath = "$OutputPath.build-attestation.json"
+$attestation = [ordered]@{
+    schemaVersion = "protocol-lab.package-build-attestation.v1"
+    generatedAtUtc = [DateTimeOffset]::UtcNow.ToString("O")
+    parityEligible = $sourceClean
+    source = $source
+    build = $build
+    package = [ordered]@{
+        packageId = $targetConfig.PackageId
+        packageVersion = $PackageVersion
+        packageTarget = $PackageTarget
+        sha256 = $sha256
+        materializationPath = [System.IO.Path]::GetFullPath($OutputPath)
+        buildAttestationPath = [System.IO.Path]::GetFullPath($attestationPath)
+        immutableIdentity = "$($targetConfig.PackageId)@$PackageVersion#$sha256"
+    }
+    claimBoundary = if ($sourceClean) {
+        "This attestation identifies an immutable package built from the recorded clean package-input scope."
+    }
+    else {
+        "Diagnostic-only dirty-source build. This artifact is not eligible for source/package parity or publication."
+    }
+}
+Remove-Item -LiteralPath $attestationPath -Force -ErrorAction SilentlyContinue
+Write-JsonFile -Value $attestation -Path $attestationPath
+
 [pscustomobject]@{
     path = [System.IO.Path]::GetFullPath($OutputPath)
     packageId = $targetConfig.PackageId
     packageVersion = $PackageVersion
     sha256 = $sha256
+    buildAttestationPath = [System.IO.Path]::GetFullPath($attestationPath)
+    parityEligible = $sourceClean
+    sourceCommit = $sourceCommit
 } | ConvertTo-Json -Depth 8
