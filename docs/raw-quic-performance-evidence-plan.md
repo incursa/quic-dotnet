@@ -101,18 +101,32 @@ cold handshakes in bounded 250 ms diagnostic windows with zero failures or
 timeouts and exact bidirectional byte symmetry. This proves package behavior
 and matrix eligibility locally; it is not matched rack evidence or a ranking.
 
-Public contract commit `ff870ee`, reusable component commit `32507af`, and
-internal runner commit `f23b47e` add two more matched lanes. The 1 KiB latency
+Public contract commit `ff870ee`, reusable component commit `32507af`, internal
+runner commit `f23b47e`, and Incursa commit `bee9068a` add two more matched lanes. The 1 KiB latency
 scenario preserves its c1/c4/c16/c32/c64/c128 ladder, while stream-limit
 pressure remains a one-connection, 100-concurrent-stream semantic capacity
 check. Incursa, MsQuic/System.Net.Quic, and quic-go all advertise both lanes;
 the shared executor validates the canonical `latency-echo` and
-`stream-limit-pressure` behavior names. The large 1 MiB bidirectional payload
+`stream-limit-pressure` behavior names. Together with both duplex variants,
+the clean target packages have an exact eight-scenario intersection. The large
+1 MiB bidirectional payload
 lane is intentionally not advertised by quic-go because that target caps echo
 responses at 64 KiB. Focused Go tests, 125 ProtocolLab parser/validator/adapter
 tests, 20 Incursa package-template tests, all 84 component manifest pairs, and
-the public repository-health workflow passed. Clean package hashes and live
-matched evidence remain pending; no registration, deployment, or campaign ran.
+the public repository-health workflow passed. Clean package production yielded:
+
+- scenario pack `0.1.8`: `5ff08be7d06f19194da114648574c724c5fd0ee8925bbf1168047850518c0ea0`;
+- quic-go target `0.1.11`: `ffb11cc8a03e19a0e0183e15bafe713164e7c9b4077cd9ac80a068d7cf01ed34`;
+- Windows executor `0.1.6`: `ea41cbf54a339c0d34c2330947d63fc0c8193a2b7e95bdb00fc39a799157ba3b`;
+- Linux executor `0.1.6`: `9b9ee69e69dd81618d3227ecec439e6ee0ec4c07d345444fe5502df45c68e89e`;
+- Incursa target `dev-bee9068a-clean`: `3d6364fb924cc19d7f2e36e486ad3ee2d26694c061b4cdb8037c8542cd3fb409`;
+- Windows MsQuic target `0.1.2-dev-f23b47e`: `8f51fb59274cceb4c7002d0b147237d3c9b17a28233d65325f6ed0ecf5b19b83`;
+- Linux MsQuic target `0.1.2-dev-f23b47e`: `0c1ac872216ae224eb4152e2ad46d6eeeecb0ad1882fe70b3e24a58add3bde35`.
+
+A bounded 250 ms package-to-package Windows smoke completed 3,660 c4 latency
+streams and 200 c1/s100 stream-limit operations with zero failures or timeouts
+and exact sent/received byte symmetry. Live matched rack evidence remains
+pending; no registration, deployment, or campaign ran.
 
 ## Coverage Matrix
 
@@ -142,12 +156,12 @@ matched evidence remain pending; no registration, deployment, or campaign ran.
   packages now build cleanly with immutable versions and attestations.
 - `quic.transport.connection-churn` and `quic.transport.stream-churn` are now
   distinct public contracts and are not silently merged with historical evidence.
-- The three target manifests have an exact offline five-scenario intersection.
+- The three target manifests have an exact offline eight-scenario intersection.
   Controller registration and a package-matrix preview resolving three runnable
   targets remain intentionally pending operator approval.
 - The same three target manifests now also intersect on 1 KiB latency echo and
-  one-connection stream-limit pressure, producing seven package-declared peer
-  lanes once fresh immutable archives are built.
+  one-connection stream-limit pressure; fresh immutable archives prove all
+  eight package-declared peer lanes offline.
 
 ### 2. Prove requested and effective workload shape
 

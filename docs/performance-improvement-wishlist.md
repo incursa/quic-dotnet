@@ -2280,11 +2280,19 @@ Verification:
   passed;
 - 125 focused ProtocolLab parser, validator, package-script, and live adapter
   tests passed at internal commit `f23b47e`;
-- 20 Incursa package-template tests passed.
+- 20 Incursa package-template tests passed at commit `bee9068a`;
+- clean scenario, executor, quic-go, Incursa, and MsQuic packages were produced
+  with parity-eligible provenance, yielding an exact eight-scenario target
+  intersection;
+- a bounded package-to-package Windows smoke completed 3,660 c4 latency streams
+  and 200 c1/s100 stream-limit operations with zero failures/timeouts and exact
+  sent/received byte symmetry.
 
-This accepts contract and local execution readiness only. Fresh immutable
-package hashes, registration, and a matched three-target campaign remain the
-next gates. No package was uploaded and no lab or publication state changed.
+Artifact hashes are recorded in
+[`raw-quic-performance-evidence-plan.md`](raw-quic-performance-evidence-plan.md).
+This accepts contract and local execution readiness only. Registration and a
+matched three-target campaign remain the next gates. No package was uploaded
+and no lab or publication state changed.
 
 1. Finish terminal exception attribution and cleanup.
 2. Add permanent exception/trace-site tooling.
