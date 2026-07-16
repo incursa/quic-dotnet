@@ -4,6 +4,59 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: sustained small-write raw QUIC coverage is accepted as an
+  evidence-infrastructure slice. The new
+  `quic.transport.sustained-download.4096x1kb` contract keeps one stable
+  bidirectional stream and requires exactly 4,096 sequential server writes of
+  1,024 bytes, for 4,194,304 exact content-validated bytes. This directly
+  contrasts the existing 256x64 KiB sustained-download lane without changing
+  total payload size.
+
+  Public ProtocolLab commit `7efcec4`, component commit `3e04d81`, internal
+  runner commit `cdf4778`, and Incursa commit `d3644aca` align the authoritative
+  scenario, reusable Go executor and target, runner validation, source
+  adapters, and implementation packages. Component Go tests and all 93 public
+  plus 93 internal component-manifest validations passed. Incursa adapter and
+  server builds passed with 0 warnings and 0 errors, its focused package tests
+  passed 21/21, and the internal exact-scenario tests passed 2/2. The broader
+  internal filter passed 122/127; its five initial failures were two corrected
+  parser expectations and three pre-existing timeout-prone Incursa conformance
+  cases for older 1 MiB download, 16 MiB download, and slow-reader scenarios.
+  Focused parser and execution guardrails then passed 4/4.
+
+  Clean immutable packages were produced without registration:
+
+  - scenario pack `0.1.17`:
+    `b2268f979838f825615fdf258101aadd593ade2a5b5c92ae885b071ecb319a4f`;
+  - quic-go executor Windows `0.1.15`:
+    `24954184259186222a27dc736126c9d3331116ff77250b7c7e02f046133e062c`;
+  - quic-go executor Linux `0.1.15`:
+    `03926cc45d2de001fbb796d89ada62e3de1f3b337b10797a08bcbe9307056988`;
+  - quic-go target `0.1.18`:
+    `834217dca38e9cdadb805c59152b6961928dfafd4bb42f31f6a626af37068129`;
+  - Incursa target `0.0.0-smallwrites-20260716`:
+    `390f6e34a5985c552d7b5ea354e64c5086b3df30ad11348e9845daef258cbe23`;
+    and
+  - MsQuic target `0.0.0-smallwrites-20260716`:
+    `187b4c393d12093d3b28fd87134f65aca806b79d40564d1a3cea4738f25aefeb`.
+
+  Package-backed localhost validation passed for Incursa and quic-go with zero
+  failed or timed-out transfers. In one short diagnostic sample, Incursa
+  completed 20 exact 4 MiB transfers at 39,213,386.37 B/s with 592.84 ms p95;
+  quic-go completed 24 at 49,448,791.74 B/s with 378.91 ms p95. MsQuic was
+  correctly reported unsupported because `System.Net.Quic.IsSupported` is
+  false on this host. The executed load commands used four connections and one
+  stream per connection, but the aggregate evidence incorrectly reports
+  effective concurrency 128 from a stale/default metadata field. Treat the
+  command and exact byte accounting as functional proof only; fix that
+  ProtocolLab load-shape reporting defect before a matched ranking campaign.
+
+  No package was uploaded or registered and no rack campaign or publication
+  ran. Next coverage priorities remain controlled RTT/loss/reordering and
+  one-stream-per-connection fanout, followed by an approved five-repetition
+  c1/c4/c16/c32 three-peer campaign with isolated target and generator
+  telemetry.
+
 - 2026-07-16: mixed-size raw QUIC multiplex coverage is accepted as an
   evidence-infrastructure slice. The new
   `quic.transport.multiplex.mixed-4x16` contract keeps four stable connections,

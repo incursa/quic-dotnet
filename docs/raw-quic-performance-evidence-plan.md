@@ -73,6 +73,31 @@ and content validation, then pass matched five-repetition c4/c16/c32 campaigns
 with isolated target and generator telemetry before supporting runtime tuning
 or public peer claims.
 
+Sustained small-write pressure is now also represented by the exact
+`quic.transport.sustained-download.4096x1kb` contract. Public commit `7efcec4`,
+component commit `3e04d81`, internal commit `cdf4778`, and Incursa commit
+`d3644aca` require one stable bidirectional stream, exactly 4,096 sequential
+server writes of 1,024 bytes, and 4,194,304 content-validated bytes. The
+scenario definition has identical SHA-256
+`386e543bdf3eb8ccf3eabee9b435d1663583f2f69bf20f1619271e3629b8789d`
+across the public, component-package, and internal-runner copies.
+
+Clean package-backed localhost diagnostics passed exact validation for Incursa
+and quic-go with zero failures or timeouts. One short shared-host sample measured
+Incursa at 39,213,386.37 B/s and 592.84 ms p95, and quic-go at 49,448,791.74
+B/s and 378.91 ms p95. MsQuic package selection was exact, but this Windows
+host reports `System.Net.Quic.IsSupported=false`. These results are functional
+and directional evidence only, not a peer ranking.
+
+The smoke also found a ProtocolLab evidence defect that must be repaired before
+the matched campaign. The actual load-tool commands used four connections and
+one stream per connection, while aggregate metadata reported effective
+concurrency 128 from a stale/default field. Exact commands, successful transfer
+counts, and byte totals remain reviewable in
+`C:\shared\temp\protocol-lab-small-writes-smoke-20260716\runs\raw-smallwrites-smoke-20260716-direct-package-cell`,
+but the aggregate load shape must not be cited as authoritative until fixed.
+No package was uploaded or registered and no rack job or publication ran.
+
 Offline coverage is now aligned for the five expanded peer shapes. Component
 commit `558a29d` packages the exact public comparison suite, advertises the
 existing sustained-download executor behavior, and advances quic-go target
