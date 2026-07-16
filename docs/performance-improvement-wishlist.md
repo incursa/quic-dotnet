@@ -4,6 +4,23 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: raw QUIC workload coverage now separates payload-size, stream-count,
+  aggregate-byte, and simultaneous-read/write effects instead of relying on the
+  stale 1 MiB throughput and 100x64 KiB multiplex rows. Public ProtocolLab
+  commit `a5ac2dd`, component-package commit `8ce81ff`, and internal runner
+  commit `bcfda50` add 64 KiB and 16 MiB single-stream throughput, 100x1 KiB and
+  16x1 MiB multiplex, and 16x1 MiB duplex scenarios with exact byte validation.
+  Focused internal coverage passed 81/81, component manifest validation passed
+  91/91, the reusable Go executor tests passed, and clean local scenario and
+  executor packages were produced. Four of five first source-backed Incursa
+  smokes passed; `quic.transport.multiplex.100x1kb` had one warmup read timeout
+  and then passed an isolated rerun. Treat that lane as a variance/reliability
+  signal until repeated runs establish its failure rate. No package was
+  registered, no lab service changed, and no result is publishable. The next
+  optimization gate is a repeated c1/c4/c16 ladder with target and generator
+  health retained, followed by traces only for the shapes that reproduce the
+  pressure.
+
 - 2026-07-16: current source-backed raw QUIC coverage reproduced the existing
   high-concurrency pressure with the corrected 100-stream multiplex contract.
   A c1 stream-churn counter run completed 31,000 streams with zero failures at

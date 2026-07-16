@@ -164,14 +164,46 @@ Comparison workflow, five repetitions, and round-robin ordering. No job was
 submitted. The dry-run artifact is
 `C:\shared\temp\protocol-lab-raw-stream-churn-20260715\controller-peer-matrix-dryrun.json`.
 
+The source-backed matrix is now broader than the live catalog. Public commit
+`a5ac2dd`, component commit `8ce81ff`, and internal commit `bcfda50` add five
+orthogonal workload shapes:
+
+- `quic.transport.stream-throughput.64kb` and
+  `quic.transport.stream-throughput.16mb` isolate single-stream payload-size
+  scaling around the existing 1 MiB lane;
+- `quic.transport.multiplex.100x1kb` isolates stream scheduling with little
+  aggregate data;
+- `quic.transport.multiplex.16x1mb` combines bounded fanout with 16 MiB in each
+  direction; and
+- `quic.transport.duplex-streams.16x1mb` exercises simultaneous application
+  reads and writes under the same large aggregate payload.
+
+All scenarios retain exact expected-byte validation. Focused internal tests
+passed 81/81, all 91 public/internal component manifest pairs passed, and the
+Go executor tests passed. Clean local packages were built without registration:
+
+- scenario pack `dev-20260716-expanded-raw`, SHA-256
+  `601fbb52196fbb8b931ac071df3ef0ec7975b2da243ac41858a8a5997b8524bb`;
+- Windows source-backed quic-go executor `dev-20260716-expanded-raw`, SHA-256
+  `2da31eeea109e96294937aab343be346679d57d07be9aa24dbb1b09b8b189197`.
+
+Four of five initial Incursa source-backed smokes passed exact validation and
+benchmark execution. The 100x1 KiB multiplex lane had one warmup read timeout,
+then passed an isolated rerun with the same shape. This is retained as a
+variance and reliability warning, not classified as a runtime defect or
+discarded as noise. Repeated c1/c4/c16 evidence is required before tracing or
+tuning. These runs are local, shared-host, and non-publishable; no package was
+uploaded or registered, no service was deployed or restarted, and no result
+was published.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |
 | --- | --- | --- |
-| Payload size | 128 B churn, 1 KiB latency echo, 64 KiB multiplex/duplex/stream-limit pressure, 1 MiB upload | 16 KiB, 256 KiB, bidirectional 1 MiB, and multi-MiB |
-| Direction | Upload and bounded bidirectional echo | Upload, download, and simultaneous full duplex |
+| Payload size | 128 B churn, 1 KiB latency and 100-stream multiplex, 64 KiB throughput/multiplex/duplex/stream-limit pressure, 1 MiB upload and 16-stream multiplex/duplex, 16 MiB upload | 16 KiB, 256 KiB, mixed-size streams, and multi-MiB per-stream fanout |
+| Direction | Upload, bounded bidirectional echo, and simultaneous 16x1 MiB duplex | Download-only and asymmetric simultaneous transfer |
 | Concurrency | Scenario-owned c1, c4, c16, c32, c64, and c128 ladders under a dimension-neutral confidence profile | Prove every shape remains requested/effective-identical in live package-backed runs |
-| Stream topology | Single stream, 16-stream duplex, 100-stream multiplex, and one-connection 100-stream limit pressure | Multiple connections, many streams, mixed stream sizes |
+| Stream topology | Single stream, 16-stream large multiplex/duplex, 100-stream small/medium multiplex, and one-connection 100-stream limit pressure | Multiple stable connections and mixed stream sizes in one run |
 | Lifecycle | Distinct cold-handshake, connection-churn, and stream-churn contracts; handshake and connection-churn c1-c128 package coverage | Matched handshake/churn scaling, then resumption, rejected resumption, and 0-RTT outcomes |
 | Flow control | Exact 100 ms slow-reader lane plus incidental multiplex evidence | Controlled windows, blocked duration, credit cadence, and slow-writer pressure |
 | Network | Clean profile | Loss, delay, reordering, bandwidth, MTU, and ECN where executable |
