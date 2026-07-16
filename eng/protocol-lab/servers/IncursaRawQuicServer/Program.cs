@@ -29,13 +29,20 @@ if (string.IsNullOrWhiteSpace(advertisedHost))
 var alpn = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_ALPN") ?? "plab-raw-quic";
 var certSubject = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_CERT_SUBJECT") ?? "CN=Incursa-RawQuic-Local";
 var payloadDirection = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_DIRECTION") ?? "bidirectional";
+var behavior = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_BEHAVIOR");
 var echoResponses = string.Equals(payloadDirection, "bidirectional", StringComparison.OrdinalIgnoreCase);
 var downloadPayload = string.Equals(payloadDirection, "server-to-client", StringComparison.OrdinalIgnoreCase)
     ? CreateDownloadPayload(Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_SIZE_BYTES"))
     : null;
+var downloadWriteSizeBytes = ResolveDownloadWriteSizeBytes(behavior, downloadPayload);
 const int RawQuicConcurrentBidirectionalStreamLimit = 256;
 const int RawQuicReceiveWindowBytes = 16 * 1024 * 1024;
 const int RawQuicEchoBufferBytes = 64 * 1024;
+const int RawQuicDownloadChunkBytes = 64 * 1024;
+const int SustainedDownloadWriteSizeBytes = 1024;
+const int SustainedDownloadWriteCount = 4096;
+const int SustainedDownloadPayloadLength = SustainedDownloadWriteSizeBytes * SustainedDownloadWriteCount;
+const string SustainedDownloadBehavior = "sustained-download-4096x1kb";
 const string DownloadRequestMagic = "PLAB-DL1";
 const int DownloadRequestLength = 16;
 const int MaximumDownloadPayloadLength = 64 * 1024 * 1024;
@@ -100,7 +107,7 @@ try
             Console.Error.WriteLine($"IncursaRawQuicServer accepted connection #{connectionIndex} for ALPN '{alpn}'");
         }
 
-        _ = HandleConnectionAsync(connection, connectionIndex, default, debugLogging, summaryLogging, echoResponses, downloadPayload);
+        _ = HandleConnectionAsync(connection, connectionIndex, default, debugLogging, summaryLogging, echoResponses, downloadPayload, downloadWriteSizeBytes);
     }
 }
 catch (OperationCanceledException)
@@ -121,7 +128,7 @@ finally
     await listener.DisposeAsync();
 }
 
-static async Task HandleConnectionAsync(QuicConnection connection, int connectionIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool echoResponses, byte[]? downloadPayload)
+static async Task HandleConnectionAsync(QuicConnection connection, int connectionIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes)
 {
     ConcurrentBag<QuicStream> retainedCompletedStreams = [];
 
@@ -142,7 +149,7 @@ static async Task HandleConnectionAsync(QuicConnection connection, int connectio
                 Console.Error.WriteLine($"IncursaRawQuicServer accepted inbound stream #{acceptedStreamIndex} on connection #{connectionIndex}");
             }
 
-            _ = HandleStreamAsync(stream, connectionIndex, acceptedStreamIndex, cancellationToken, debugLogging, summaryLogging, echoResponses, downloadPayload, retainedCompletedStreams);
+            _ = HandleStreamAsync(stream, connectionIndex, acceptedStreamIndex, cancellationToken, debugLogging, summaryLogging, echoResponses, downloadPayload, downloadWriteSizeBytes, retainedCompletedStreams);
         }
     }
     catch (OperationCanceledException)
@@ -182,7 +189,7 @@ static async Task HandleConnectionAsync(QuicConnection connection, int connectio
     }
 }
 
-static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int streamIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool echoResponses, byte[]? downloadPayload, ConcurrentBag<QuicStream> retainedCompletedStreams)
+static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int streamIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes, ConcurrentBag<QuicStream> retainedCompletedStreams)
 {
     var reachedEof = false;
     var completedWrites = false;
@@ -224,9 +231,9 @@ static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int 
                     throw new InvalidDataException($"Invalid raw QUIC download request length or payload size ({requestLength} bytes).");
                 }
 
-                for (var offset = 0; offset < downloadPayload.Length; offset += RawQuicEchoBufferBytes)
+                for (var offset = 0; offset < downloadPayload.Length; offset += downloadWriteSizeBytes)
                 {
-                    var count = Math.Min(RawQuicEchoBufferBytes, downloadPayload.Length - offset);
+                    var count = Math.Min(downloadWriteSizeBytes, downloadPayload.Length - offset);
                     await stream.WriteAsync(downloadPayload.AsMemory(offset, count), cancellationToken);
                     bytesSentTotal += count;
                 }
@@ -349,6 +356,22 @@ static byte[] CreateDownloadPayload(string? payloadLengthText)
     }
 
     return payload;
+}
+
+static int ResolveDownloadWriteSizeBytes(string? behavior, byte[]? downloadPayload)
+{
+    if (!string.Equals(behavior, SustainedDownloadBehavior, StringComparison.OrdinalIgnoreCase))
+    {
+        return RawQuicDownloadChunkBytes;
+    }
+
+    if (downloadPayload?.Length != SustainedDownloadPayloadLength)
+    {
+        throw new InvalidOperationException(
+            $"Behavior '{SustainedDownloadBehavior}' requires server-to-client payload size {SustainedDownloadPayloadLength} bytes.");
+    }
+
+    return SustainedDownloadWriteSizeBytes;
 }
 
 static bool IsValidDownloadRequest(ReadOnlySpan<byte> request, int expectedPayloadLength)

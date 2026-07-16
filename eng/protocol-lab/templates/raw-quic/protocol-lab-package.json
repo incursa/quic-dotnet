@@ -25,6 +25,7 @@
         "quic.transport.stream-throughput.16mb",
         "quic.transport.sustained-stream.256x64kb",
         "quic.transport.sustained-download.256x64kb",
+        "quic.transport.sustained-download.4096x1kb",
         "quic.transport.multiplex.100x1kb",
         "quic.transport.multiplex.100x64kb",
         "quic.transport.multiplex.16x1mb",

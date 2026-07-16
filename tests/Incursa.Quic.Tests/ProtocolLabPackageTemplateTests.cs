@@ -22,6 +22,7 @@ public sealed class ProtocolLabPackageTemplateTests
         "quic.transport.stream-throughput.16mb",
         "quic.transport.sustained-stream.256x64kb",
         "quic.transport.sustained-download.256x64kb",
+        "quic.transport.sustained-download.4096x1kb",
         "quic.transport.multiplex.100x1kb",
         "quic.transport.multiplex.100x64kb",
         "quic.transport.multiplex.16x1mb",
@@ -116,6 +117,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("quic.transport.stream-throughput.1mb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.sustained-stream.256x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.sustained-download.256x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.sustained-download.4096x1kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.multiplex.100x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.stream-limits.100x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.flow-control.slow-reader-16x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
@@ -248,6 +250,22 @@ public sealed class ProtocolLabPackageTemplateTests
     }
 
     [Fact]
+    public void Raw_quic_adapter_selectors_include_sustained_small_write_download()
+    {
+        var repoRoot = FindRepoRoot();
+        var source = File.ReadAllText(Path.Combine(
+            repoRoot,
+            "eng",
+            "protocol-lab",
+            "src",
+            "Incursa.ProtocolLab.Adapters.IncursaRawQuic",
+            "IncursaRawQuicAdapterRuntime.cs"));
+
+        Assert.Contains("|quic.transport.sustained-download.4096x1kb|", source);
+        Assert.Contains("\"quic.transport.sustained-download.4096x1kb\", \"quic.transport.multiplex.100x1kb\"", source);
+    }
+
+    [Fact]
     public void Raw_quic_server_project_stays_transport_only()
     {
         var repoRoot = FindRepoRoot();
@@ -269,6 +287,16 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("TryReadTerminalAsync", source);
         Assert.Contains("PLAB-DL1", source);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_SIZE_BYTES", source);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_BEHAVIOR", source);
+        Assert.Contains("const int RawQuicDownloadChunkBytes = 64 * 1024;", source);
+        Assert.Contains("const int SustainedDownloadWriteSizeBytes = 1024;", source);
+        Assert.Contains("const int SustainedDownloadWriteCount = 4096;", source);
+        Assert.Contains("const int SustainedDownloadPayloadLength = SustainedDownloadWriteSizeBytes * SustainedDownloadWriteCount;", source);
+        Assert.Contains("const string SustainedDownloadBehavior = \"sustained-download-4096x1kb\";", source);
+        Assert.Contains("return RawQuicDownloadChunkBytes;", source);
+        Assert.Contains("return SustainedDownloadWriteSizeBytes;", source);
+        Assert.Contains("offset += downloadWriteSizeBytes", source);
+        Assert.Contains("await stream.WriteAsync(downloadPayload.AsMemory(offset, count), cancellationToken);", source);
         Assert.DoesNotContain("connection.AcceptInboundStreamAsync", source);
         Assert.DoesNotContain("stream.ReadAsync(buffer.AsMemory", source);
     }
@@ -312,6 +340,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("quic.transport.stream-throughput.1mb", helperScript);
         Assert.Contains("quic.transport.sustained-stream.256x64kb", helperScript);
         Assert.Contains("quic.transport.sustained-download.256x64kb", helperScript);
+        Assert.Contains("quic.transport.sustained-download.4096x1kb", helperScript);
         Assert.Contains("quic.transport.multiplex.100x64kb", helperScript);
         Assert.Contains("quic.transport.stream-limits.100x64kb", helperScript);
         Assert.Contains("quic.transport.flow-control.slow-reader-16x64kb", helperScript);
