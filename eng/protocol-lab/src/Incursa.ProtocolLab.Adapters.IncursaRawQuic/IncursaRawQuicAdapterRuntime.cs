@@ -24,7 +24,7 @@ public sealed record IncursaRawQuicAdapterOptions
     public string ImplementationVersion { get; init; } = "1.0.0";
     public string ImplementationImage { get; init; } = "";
     public string ContractVersion { get; init; } = "v1";
-    public string SupportedScenarioSelectorExpression { get; init; } = "quic.transport.handshake-cold|quic.transport.latency.echo-1kb|quic.transport.connection-churn|quic.transport.stream-throughput.1mb|quic.transport.multiplex.100x64kb|quic.transport.stream-limits.100x64kb|quic.transport.flow-control.slow-reader-16x64kb|quic.transport.duplex-streams|quic.transport.duplex-streams-peer-matrix";
+    public string SupportedScenarioSelectorExpression { get; init; } = "quic.transport.handshake-cold|quic.transport.latency.echo-1kb|quic.transport.connection-churn|quic.transport.stream-churn|quic.transport.stream-throughput.1mb|quic.transport.multiplex.100x64kb|quic.transport.stream-limits.100x64kb|quic.transport.flow-control.slow-reader-16x64kb|quic.transport.duplex-streams|quic.transport.duplex-streams-peer-matrix";
     public int QuicPort { get; init; }
     public string QuicAlpn { get; init; } = "plab-raw-quic";
     public string CertificateSubject { get; init; } = "CN=Incursa-RawQuic-Local";
@@ -252,7 +252,7 @@ public sealed class IncursaRawQuicAdapterRuntime
     }
 
     private static bool IsSupportedScenario(string id) => SupportedScenarios.Contains(id);
-    private static readonly HashSet<string> SupportedScenarios = new(StringComparer.OrdinalIgnoreCase) { "quic.transport.handshake-cold", "quic.transport.latency.echo-1kb", "quic.transport.connection-churn", "quic.transport.stream-throughput.1mb", "quic.transport.multiplex.100x64kb", "quic.transport.stream-limits.100x64kb", "quic.transport.flow-control.slow-reader-16x64kb", "quic.transport.duplex-streams", "quic.transport.duplex-streams-peer-matrix" };
+    private static readonly HashSet<string> SupportedScenarios = new(StringComparer.OrdinalIgnoreCase) { "quic.transport.handshake-cold", "quic.transport.latency.echo-1kb", "quic.transport.connection-churn", "quic.transport.stream-churn", "quic.transport.stream-throughput.1mb", "quic.transport.multiplex.100x64kb", "quic.transport.stream-limits.100x64kb", "quic.transport.flow-control.slow-reader-16x64kb", "quic.transport.duplex-streams", "quic.transport.duplex-streams-peer-matrix" };
     private static readonly HashSet<string> SupportedCapabilities = new(StringComparer.OrdinalIgnoreCase) { "quicTransport", "quicHandshake", "quicStreams", "quicMultiplexing", "quicDuplex" };
 
     private async Task<IncursaRawQuicReadinessResult> WaitForReadinessAsync(IncursaRawQuicSession session, IncursaRawQuicEndpointProcess ep)
