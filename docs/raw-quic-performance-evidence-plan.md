@@ -63,6 +63,19 @@ intentionally pending approval:
   Therefore the controller dry-run remains the authoritative registration
   blocker until an operator approves package admission and campaign execution.
 
+The workload contract is also ready for a materially broader rerun. Public
+ProtocolLab commit `69edaed` and internal commit `ed7b177` add the
+dimension-neutral `raw-quic-peer-confidence` profile. It supplies 15-second
+measurement windows, 5-second warmups, cooldowns, five repetitions, and a
+non-publishable comparison boundary without overriding scenario dimensions.
+Handshake, throughput, multiplex, connection-churn, and duplex scenarios now
+retain their own stream shapes across c1/c4/c16/c32/c64/c128. The campaign uses
+round-robin peer ordering and includes all five workload families.
+
+The public repository-health workflow, 102 contract tests, 84 raw execution
+and package tests, and temporary component-package production passed. This is
+local readiness evidence only; no packages were registered and no lab jobs ran.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |

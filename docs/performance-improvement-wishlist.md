@@ -2203,6 +2203,35 @@ deployment, campaign execution, or publication occurred. The next accepted
 step requires explicit package registration followed by a fresh package-matrix
 preview that resolves Incursa, quic-go, and MsQuic as three runnable targets.
 
+### Accepted 2026-07-15: scenario-owned raw QUIC confidence matrix
+
+ProtocolLab public-contract commit `69edaed` and internal runner commit
+`ed7b177` replace the misleading single `local-comparison` QUIC shape with a
+dimension-neutral `raw-quic-peer-confidence` profile. The profile fixes timing,
+cooldown, five repetitions, and non-publishable evidence policy while each
+scenario retains its valid stream count. Cold handshake, 1 MiB stream
+throughput, 100x64 KiB multiplex, connection churn, and duplex coverage now
+span c1/c4/c16/c32/c64/c128. The matched campaign includes all five workload
+families and uses round-robin implementation ordering.
+
+Verification:
+
+- the exact public repository-health workflow passed;
+- 102 load-profile, scenario, and operator-script tests passed;
+- 84 raw adapter, execution, and package tests passed;
+- the complete internal suite passed 1,203/1,209 tests, with the remaining six
+  failures isolated to pre-existing cross-repository schema-registry and
+  unrelated component-package compatibility checks;
+- rerunning the failing contract class in isolation removed the registry-order
+  failures and retained two unrelated `protocol-lab-components` mismatches;
+- the raw scenario and quic-go executor component packages rebuilt
+  successfully in a temporary output directory.
+
+This is workload and campaign readiness, not throughput evidence. No package
+upload, worker/controller deployment, lab execution, or publication occurred.
+The next gate remains a three-target package-matrix preview after explicit
+registration approval, followed by a fresh matched campaign.
+
 1. Finish terminal exception attribution and cleanup.
 2. Add permanent exception/trace-site tooling.
 3. Establish stable smoke and confidence ProtocolLab lanes.
