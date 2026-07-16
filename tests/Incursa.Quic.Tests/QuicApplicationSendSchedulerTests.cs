@@ -153,6 +153,28 @@ public sealed class QuicApplicationSendSchedulerTests
         Assert.True(frame.IsFin);
     }
 
+    [Fact]
+    public void SelectQueuedApplicationSendPlan_DefersStandaloneFinWhenBudgetCannotFitItsHeader()
+    {
+        PendingApplicationSendRequest queuedWrite = CreateQueuedWrite(
+            sequence: 0,
+            streamId: 400,
+            dataLength: 0,
+            fin: true);
+
+        QuicApplicationSendPlan plan = QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
+            queuedWrite,
+            QuicQueuedApplicationSendBudget.AllowSingleDatagram(maxPayloadBytes: 1),
+            out QuicStreamFrame frame,
+            out Exception? exception);
+
+        Assert.Null(exception);
+        Assert.Equal(QuicApplicationSendPlanKind.None, plan.Kind);
+        Assert.Equal(QuicSendPolicyBlockedReason.InvalidPayloadBudget, plan.BlockedReason);
+        Assert.Equal(0, frame.StreamDataLength);
+        Assert.True(frame.IsFin);
+    }
+
     private static PendingApplicationSendRequest CreateQueuedWrite(
         long sequence,
         ulong streamId,

@@ -238,6 +238,101 @@ public sealed class QuicListenerHostSendResilienceTests
         await listenerTask;
     }
 
+    [Fact]
+    public async Task ConcurrentConnectionsCompleteEveryHighFanoutStream()
+    {
+        const int connectionCount = 16;
+        const int streamCount = 100;
+        const int responseLength = 1024;
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        using QuicListenerHost listenerHost = new(
+            new IPEndPoint(IPAddress.Loopback, 0),
+            [SslApplicationProtocol.Http3],
+            (_, _, _) =>
+            {
+                QuicServerConnectionOptions options =
+                    QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate);
+                options.MaxInboundBidirectionalStreams = streamCount + 8;
+                return ValueTask.FromResult(options);
+            },
+            listenBacklog: connectionCount,
+            runtimeShardCount: 4);
+
+        Task listenerTask = listenerHost.RunAsync();
+        IPEndPoint listenerEndPoint = (IPEndPoint)listenerHost.Socket.LocalEndPoint!;
+        Task<QuicConnection>[] acceptTasks = Enumerable.Range(0, connectionCount)
+            .Select(_ => listenerHost.AcceptConnectionAsync().AsTask())
+            .ToArray();
+        Task<QuicConnection>[] connectTasks = Enumerable.Range(0, connectionCount)
+            .Select(_ => QuicConnection.ConnectAsync(
+                QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(listenerEndPoint)).AsTask())
+            .ToArray();
+
+        QuicConnection[] clientConnections = await Task.WhenAll(connectTasks).WaitAsync(TimeSpan.FromSeconds(20));
+        QuicConnection[] serverConnections = await Task.WhenAll(acceptTasks).WaitAsync(TimeSpan.FromSeconds(20));
+        int[] serverReadEofCounts = new int[connectionCount];
+        int[] serverPayloadWriteCounts = new int[connectionCount];
+        int[] serverCompletedWriteCounts = new int[connectionCount];
+        int[] clientPayloadCounts = new int[connectionCount];
+        int[] clientReadEofCounts = new int[connectionCount];
+
+        try
+        {
+            Task[] serverTasks = serverConnections
+                .Select((connection, index) => ServeHighFanoutConnectionAsync(
+                    connection,
+                    index,
+                    streamCount,
+                    responseLength,
+                    serverReadEofCounts,
+                    serverPayloadWriteCounts,
+                    serverCompletedWriteCounts))
+                .ToArray();
+            Task[] clientTasks = clientConnections
+                .Select((connection, index) => RunHighFanoutClientAsync(
+                    connection,
+                    index,
+                    streamCount,
+                    responseLength,
+                    clientPayloadCounts,
+                    clientReadEofCounts))
+                .ToArray();
+
+            try
+            {
+                await Task.WhenAll(clientTasks.Concat(serverTasks)).WaitAsync(TimeSpan.FromSeconds(30));
+            }
+            catch (TimeoutException ex)
+            {
+                throw new TimeoutException(
+                    $"High-fanout progress timed out. " +
+                    $"serverReadEof=[{string.Join(',', serverReadEofCounts)}], " +
+                    $"serverPayloadWrites=[{string.Join(',', serverPayloadWriteCounts)}], " +
+                    $"serverCompletedWrites=[{string.Join(',', serverCompletedWriteCounts)}], " +
+                    $"clientPayload=[{string.Join(',', clientPayloadCounts)}], " +
+                    $"clientReadEof=[{string.Join(',', clientReadEofCounts)}]",
+                    ex);
+            }
+
+            Assert.False(listenerTask.IsFaulted);
+        }
+        finally
+        {
+            foreach (QuicConnection connection in clientConnections)
+            {
+                await connection.DisposeAsync();
+            }
+
+            foreach (QuicConnection connection in serverConnections)
+            {
+                await connection.DisposeAsync();
+            }
+        }
+
+        await listenerHost.DisposeAsync();
+        await listenerTask;
+    }
+
     private static QuicListenerHost CreateHost(Func<ReadOnlyMemory<byte>, SocketAddress, int> datagramSender)
         => new(
             new IPEndPoint(IPAddress.Loopback, 0),
@@ -330,6 +425,79 @@ public sealed class QuicListenerHostSendResilienceTests
     private static async Task ReadEofAsync(QuicStream stream)
     {
         Assert.Equal(0, await stream.ReadAsync(new byte[1]).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+    }
+
+    private static async Task ServeHighFanoutConnectionAsync(
+        QuicConnection connection,
+        int connectionIndex,
+        int streamCount,
+        int responseLength,
+        int[] readEofCounts,
+        int[] payloadWriteCounts,
+        int[] completedWriteCounts)
+    {
+        List<QuicStream> streams = new(streamCount);
+        try
+        {
+            for (int index = 0; index < streamCount; index++)
+            {
+                streams.Add(await connection.AcceptInboundStreamAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+            }
+
+            byte[] response = new byte[responseLength];
+            await Task.WhenAll(streams.Select(async stream =>
+            {
+                await ReadRequestToEofAsync(stream);
+                Interlocked.Increment(ref readEofCounts[connectionIndex]);
+                await stream.WriteAsync(response);
+                Interlocked.Increment(ref payloadWriteCounts[connectionIndex]);
+                await stream.CompleteWritesAsync();
+                Interlocked.Increment(ref completedWriteCounts[connectionIndex]);
+            }));
+        }
+        finally
+        {
+            foreach (QuicStream stream in streams)
+            {
+                await stream.DisposeAsync();
+            }
+        }
+    }
+
+    private static async Task RunHighFanoutClientAsync(
+        QuicConnection connection,
+        int connectionIndex,
+        int streamCount,
+        int responseLength,
+        int[] payloadCounts,
+        int[] readEofCounts)
+    {
+        List<QuicStream> streams = new(streamCount);
+        try
+        {
+            for (int index = 0; index < streamCount; index++)
+            {
+                QuicStream stream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+                streams.Add(stream);
+                await stream.WriteAsync(new byte[] { (byte)index });
+                await stream.CompleteWritesAsync();
+            }
+
+            await Task.WhenAll(streams.Select(async stream =>
+            {
+                await ReadExactResponseAsync(stream, responseLength);
+                Interlocked.Increment(ref payloadCounts[connectionIndex]);
+                await ReadEofAsync(stream);
+                Interlocked.Increment(ref readEofCounts[connectionIndex]);
+            }));
+        }
+        finally
+        {
+            foreach (QuicStream stream in streams)
+            {
+                await stream.DisposeAsync();
+            }
+        }
     }
 
     private static async Task WaitForConditionAsync(Func<bool> condition, TimeSpan timeout)

@@ -126,8 +126,7 @@ internal static class QuicApplicationSendScheduler
             budget.MaxPayloadBytes,
             out int fragmentDataLength))
         {
-            exception = new InvalidOperationException("Queued application stream payload cannot be fragmented into the current datagram payload budget.");
-            return QuicApplicationSendPlan.None(QuicSendPolicyBlockedReason.InvalidQueuedApplicationSend);
+            return QuicApplicationSendPlan.None(QuicSendPolicyBlockedReason.InvalidPayloadBudget);
         }
 
         if (fragmentDataLength < firstStreamFrame.StreamDataLength)

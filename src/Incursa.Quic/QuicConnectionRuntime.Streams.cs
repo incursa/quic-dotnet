@@ -742,6 +742,9 @@ internal sealed partial class QuicConnectionRuntime
                 pendingStreamActionRequests.Remove(requestId);
                 if (queuedFlushException is not null && !IsTransientApplicationSendPathBlocked(queuedFlushException))
                 {
+                    // The stream state and queued payload are already committed, so this path cannot safely roll
+                    // back. It must still complete the caller instead of orphaning the request after removal.
+                    completion.TrySetException(queuedFlushException);
                     return false;
                 }
 
@@ -1044,7 +1047,7 @@ internal sealed partial class QuicConnectionRuntime
                     schedulerBudget,
                     out QuicStreamFrame onlyQueuedWriteFrame,
                     out exception);
-                if (sendPlan.Kind == QuicApplicationSendPlanKind.None)
+                if (TryHandleNoQueuedApplicationSendPlan(sendPlan, ref exception))
                 {
                     return false;
                 }
@@ -1094,7 +1097,7 @@ internal sealed partial class QuicConnectionRuntime
                     schedulerBudget,
                     out QuicStreamFrame nextQueuedWriteFrame,
                     out exception);
-                if (nextWritePlan.Kind == QuicApplicationSendPlanKind.None)
+                if (TryHandleNoQueuedApplicationSendPlan(nextWritePlan, ref exception))
                 {
                     return false;
                 }
@@ -1137,7 +1140,7 @@ internal sealed partial class QuicConnectionRuntime
                     schedulerBudget,
                     out QuicStreamFrame firstSelectedWriteFrame,
                     out exception);
-                if (sendPlan.Kind == QuicApplicationSendPlanKind.None)
+                if (TryHandleNoQueuedApplicationSendPlan(sendPlan, ref exception))
                 {
                     return false;
                 }
@@ -1422,6 +1425,24 @@ internal sealed partial class QuicConnectionRuntime
                 invalidOperationException.Message,
                 CongestionControllerExhaustedMessage,
                 StringComparison.Ordinal);
+    }
+
+    private static bool TryHandleNoQueuedApplicationSendPlan(
+        QuicApplicationSendPlan sendPlan,
+        ref Exception? exception)
+    {
+        if (sendPlan.Kind != QuicApplicationSendPlanKind.None)
+        {
+            return false;
+        }
+
+        if (exception is null
+            && sendPlan.BlockedReason == QuicSendPolicyBlockedReason.InvalidPayloadBudget)
+        {
+            exception = CongestionControllerExhaustedException;
+        }
+
+        return true;
     }
 
     private static Exception MaterializeApplicationSendException(Exception exception)
