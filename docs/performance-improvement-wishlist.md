@@ -4,6 +4,33 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: the current Incursa raw QUIC package completed a fresh local
+  breadth sweep across all 17 explicitly selected scenarios. Run
+  `incursa-raw-fresh-coverage-all-20260716-quic-transport-v1-comparison`
+  passed exact validation and benchmark execution 17/17, with zero failed or
+  timed-out operations and target/load-tool process telemetry present for every
+  cell. The retained evidence is under
+  `C:\shared\temp\protocol-lab-raw-audit-20260716-v2\diagnostic-runs`.
+
+  The strongest current shapes were 1 KiB echo latency (3,579.7 operations/s,
+  0.59 ms p95), 100x1 KiB multiplexing (5,760.9 operations/s, 31.32 ms p95),
+  and stream churn (3,426.1 operations/s, 0.62 ms p95). The clearest pressure
+  lanes were 100x64 KiB stream limits (15.18 MiB/s, 943.12 ms p95), 100x64 KiB
+  multiplexing (13.53 MiB/s, 1,148.95 ms p95), 16x1 MiB multiplexing
+  (22.48 MiB/s, 920.82 ms p95), and simultaneous 16x1 MiB duplex
+  (24.52 MiB/s, 804.79 ms p95). These are directional measurements, not
+  accepted regressions or peer gaps.
+
+  This sweep is single-repetition, localhost/shared-host, and target saturation
+  warnings are present. The ProtocolLab runner metadata also records unrelated
+  dirty work, while the Incursa target came from the retained clean package.
+  Treat the run only as a current functional and diagnostic baseline. It does
+  not refresh the public site and cannot support a peer ranking. The next
+  coverage gaps remain mixed-size multiplexing across multiple stable
+  connections and controlled RTT/loss/reordering; the next runtime evidence
+  should continue to use 100x64 KiB stream-limit pressure with 1 MiB and
+  100x1 KiB guardrails.
+
 - 2026-07-16: increasing the initial spilled STREAM receive-segment list
   capacity from 8 to 16 was tested and rejected. The current 100-stream limit
   trace showed `BufferedSegment[]` as the second-largest allocation group, so
