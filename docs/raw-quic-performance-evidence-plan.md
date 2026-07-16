@@ -500,6 +500,49 @@ and materialization both contained the executable. Re-running with an explicit
 short materialization root passed. No package was uploaded or registered, no
 controller/worker/job changed, and nothing was published.
 
+## Oversized-Write Continuation Improved 2026-07-16
+
+The sustained-download trace identified an avoidable quadratic-shaped copy
+path: every partial STREAM send rented a new owner and copied the complete
+shrinking unsent tail. The accepted implementation keeps the queued owner and
+stream bytes in place, writes the next STREAM header immediately before the
+unsent data, and advances a validated payload offset/length. The fragment still
+gets its own owner because sent-packet tracking and retransmission require it.
+This does not change congestion control, flow control, retransmission, FIN,
+cancellation, write-gate serialization, or packet protection semantics.
+
+Permanent BenchmarkDotNet evidence:
+
+| STREAM data | Rent and rebuild | Advance header | Ratio |
+| ---: | ---: | ---: | ---: |
+| 32 KiB | 679.45 ns | 35.18 ns | 0.05 |
+| 64 KiB | 1,298.63 ns | 35.38 ns | 0.03 |
+
+Counter/trace run `sd-dl-zc2-c16-ctr-20260716-direct-package-cell` passed exact
+64-transfer / 1 GiB validation with zero failures/timeouts. Its sampled pool
+rent rate was 84,421/s versus 106,888/s in
+`sd-dl-c16-ctr-20260716-direct-package-cell`; sampled rented-byte rate was
+206.1 versus 664.9 MiB/s. Maximum outstanding buffers, queue depth, delayed
+sends, and retained packets did not consistently improve. Instrumentation and
+run variance prevent an end-to-end claim from this comparison.
+
+Matched 3-second, one-second-warmup, five-repetition source-backed ladders all
+passed exact validation and benchmark execution:
+
+| Connections | Control throughput | Candidate throughput | Delta | Control p95 | Candidate p95 | Delta |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 35.04 MiB/s | 35.72 MiB/s | +2.0% | 570.90 ms | 538.39 ms | -5.7% |
+| 4 | 105.60 MiB/s | 101.59 MiB/s | -3.8% | 675.74 ms | 700.35 ms | +3.6% |
+| 16 | 177.10 MiB/s | 175.79 MiB/s | -0.7% | 1,340.93 ms | 1,337.01 ms | -0.3% |
+
+These shared-host results are throughput-neutral within observed variance. The
+candidate is retained because the targeted operation is substantially cheaper,
+the trace confirms lower owner-rent pressure, exact behavior is preserved, and
+no load point shows a material repeatable regression. It is not a publishable
+peer result. Focused tests passed 60 with four intentional skips. The full
+suite passed 9,591 with five skips and one dropped-FIN timing failure; that
+unrelated assertion passed 10/10 isolated reruns.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |
@@ -570,8 +613,8 @@ payload bytes/hashes, completion criteria, timeout behavior, required metrics,
 and unsupported behavior before executor implementation.
 
 After the current peer campaign is clean, prefer this next contract order:
-the sustained 64 KiB upload lane is complete; add the corresponding sustained
-download, mixed-size multiplexing across multiple stable connections, then
+the sustained 64 KiB upload and download lanes are complete; add mixed-size
+multiplexing across multiple stable connections, then
 controlled RTT/loss/reordering. The 1 MiB download-only lane is complete. These
 isolate direction, write-completion latency, long-run retention, scheduler
 fairness, and recovery without conflating all five dimensions in one workload.

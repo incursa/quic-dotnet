@@ -92,7 +92,9 @@ public class QuicApplicationSendBatchPayloadBenchmarks
         int copyOffset = 0;
         foreach (PendingApplicationSendRequest queuedWrite in selectedWrites)
         {
-            queuedWrite.StreamPayload.AsSpan(0, queuedWrite.StreamPayloadLength)
+            queuedWrite.StreamPayload.AsSpan(
+                    queuedWrite.StreamPayloadOffset,
+                    queuedWrite.StreamPayloadLength)
                 .CopyTo(destination[copyOffset..]);
             copyOffset += queuedWrite.StreamPayloadLength;
         }

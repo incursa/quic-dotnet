@@ -12,7 +12,8 @@ internal readonly record struct PendingApplicationSendRequest(
     byte[] StreamPayload,
     int StreamPayloadLength,
     ulong FirstEnqueuedAtMicros = 0,
-    QuicApplicationSendQueueCause QueueCause = QuicApplicationSendQueueCause.SmallWriteDelay);
+    QuicApplicationSendQueueCause QueueCause = QuicApplicationSendQueueCause.SmallWriteDelay,
+    int StreamPayloadOffset = 0);
 
 internal enum QuicApplicationSendQueueCause
 {
@@ -253,6 +254,40 @@ internal sealed class QuicApplicationSendQueue
             pendingRequests[index] = queuedWrite with
             {
                 StreamPayload = streamPayload,
+                StreamPayloadLength = streamPayloadLength,
+                StreamPayloadOffset = 0,
+            };
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool TryUpdateQueuedWritePayloadSlice(
+        long sequence,
+        byte[] expectedStreamPayload,
+        int streamPayloadOffset,
+        int streamPayloadLength)
+    {
+        if (streamPayloadOffset < 0
+            || streamPayloadLength < 0
+            || streamPayloadOffset > expectedStreamPayload.Length - streamPayloadLength)
+        {
+            return false;
+        }
+
+        for (int index = 0; index < pendingRequests.Count; index++)
+        {
+            PendingApplicationSendRequest queuedWrite = pendingRequests[index];
+            if (queuedWrite.Sequence != sequence
+                || !ReferenceEquals(queuedWrite.StreamPayload, expectedStreamPayload))
+            {
+                continue;
+            }
+
+            pendingRequests[index] = queuedWrite with
+            {
+                StreamPayloadOffset = streamPayloadOffset,
                 StreamPayloadLength = streamPayloadLength,
             };
             return true;

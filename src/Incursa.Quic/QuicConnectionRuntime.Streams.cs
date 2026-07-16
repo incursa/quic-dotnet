@@ -805,19 +805,19 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        byte[]? remainderPayload = null;
-        int remainderPayloadLength = 0;
-        if (fragmentDataLength < queuedFrame.StreamDataLength
-            && !TryBuildOutboundStreamPayload(
-                queuedFrame.StreamId.Value,
-                queuedFrame.Offset + (ulong)fragmentDataLength,
-                queuedFrame.StreamData[fragmentDataLength..],
-                fin: queuedFrame.IsFin,
-                out remainderPayload,
-                out remainderPayloadLength))
+        bool hasRemainder = fragmentDataLength < queuedFrame.StreamDataLength;
+        QuicStreamPayloadRemainderLayout remainderLayout = default;
+        if (hasRemainder
+            && !QuicStreamPayloadSizer.TryCreateRemainderLayout(
+                queuedFrame,
+                queuedWrite.StreamPayloadOffset,
+                fragmentDataLength,
+                ApplicationMinimumProtectedPayloadLength,
+                queuedWrite.StreamPayload.Length,
+                out remainderLayout))
         {
             QuicBufferPool.ReturnBytes(fragmentPayload);
-            exception = new InvalidOperationException("The connection runtime could not build the queued stream write remainder.");
+            exception = new InvalidOperationException("The connection runtime could not plan the queued stream write remainder.");
             return false;
         }
 
@@ -835,22 +835,20 @@ internal sealed partial class QuicConnectionRuntime
                 out exception))
         {
             QuicBufferPool.ReturnBytes(fragmentPayload);
-            if (remainderPayload is not null)
-            {
-                QuicBufferPool.ReturnBytes(remainderPayload);
-            }
-
             return false;
         }
 
-        if (remainderPayload is not null)
+        if (hasRemainder)
         {
-            if (!applicationSendQueue.TryReplaceQueuedWritePayload(
+            QuicStreamPayloadSizer.ApplyRemainderLayout(
+                queuedWrite.StreamPayload,
+                remainderLayout);
+            if (!applicationSendQueue.TryUpdateQueuedWritePayloadSlice(
                     queuedWrite.Sequence,
-                    remainderPayload,
-                    remainderPayloadLength))
+                    queuedWrite.StreamPayload,
+                    remainderLayout.PayloadOffset,
+                    remainderLayout.PayloadLength))
             {
-                QuicBufferPool.ReturnBytes(remainderPayload);
                 throw new InvalidOperationException("The connection runtime could not update the queued stream write after a partial send.");
             }
         }
@@ -958,7 +956,9 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         if (!QuicStreamParser.TryParseStreamFrame(
-                queuedWrite.StreamPayload.AsSpan(0, queuedWrite.StreamPayloadLength),
+                queuedWrite.StreamPayload.AsSpan(
+                    queuedWrite.StreamPayloadOffset,
+                    queuedWrite.StreamPayloadLength),
                 out QuicStreamFrame frame)
             || !TryBuildOutboundStreamPayload(
                 streamId,
@@ -1081,7 +1081,9 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
-                combinedPayload = onlyQueuedWrite.StreamPayload.AsMemory(0, onlyQueuedWrite.StreamPayloadLength);
+                combinedPayload = onlyQueuedWrite.StreamPayload.AsMemory(
+                    onlyQueuedWrite.StreamPayloadOffset,
+                    onlyQueuedWrite.StreamPayloadLength);
                 payloadStreamId = onlyQueuedWrite.StreamId;
             }
             else
@@ -1188,7 +1190,9 @@ internal sealed partial class QuicConnectionRuntime
                 int copyOffset = 0;
                 foreach (PendingApplicationSendRequest queuedWrite in selectedWrites)
                 {
-                    queuedWrite.StreamPayload.AsSpan(0, queuedWrite.StreamPayloadLength)
+                    queuedWrite.StreamPayload.AsSpan(
+                            queuedWrite.StreamPayloadOffset,
+                            queuedWrite.StreamPayloadLength)
                         .CopyTo(combinedPayloadOwner.AsSpan(copyOffset));
                     copyOffset += queuedWrite.StreamPayloadLength;
                 }

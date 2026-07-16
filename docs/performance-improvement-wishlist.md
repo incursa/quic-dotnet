@@ -66,6 +66,33 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
   narrows the next runtime investigation to incomplete-write continuation and
   server send scheduling; do not tune pool sizes as a substitute.
 
+  Oversized-write continuation now advances the unsent STREAM header inside
+  the existing queued owner instead of renting and copying the entire shrinking
+  remainder after every protected fragment. The queued owner, priority,
+  sequence, enqueue timestamp, queue cause, FIN bit, and stream offset remain
+  stable; protection failure does not mutate the queue. A permanent
+  `QuicStreamRemainderLayoutBenchmarks` comparison measured 32 KiB remainder
+  advancement at 35.18 ns versus 679.45 ns for rent-and-rebuild, and 64 KiB at
+  35.38 ns versus 1,298.63 ns, or about 19x and 37x faster for this operation.
+
+  Counter/trace run `sd-dl-zc2-c16-ctr-20260716-direct-package-cell` passed
+  exact 1 GiB validation with zero failures/timeouts. Against the retained
+  traced control, sampled pool-rent rate fell from 106,888 to 84,421 rents/s
+  and sampled rented-byte rate from 664.9 to 206.1 MiB/s. Queue and retention
+  maxima were mixed and sometimes worse, so the trace is mechanism evidence,
+  not a throughput claim. The preceding `sd-dl-zc-c16-ctr-20260716` attempt is
+  retained because counters were honestly unavailable until the manifest-pinned
+  tool was placed explicitly on `PATH`.
+
+  Exact-duration, uninstrumented five-repetition controls and candidates passed
+  30/30 validations. Candidate median throughput changed by +2.0/-3.8/-0.7
+  percent at c1/c4/c16 and median p95 by -5.7/+3.6/-0.3 percent. This is neutral
+  within shared-host variance, so the slice is accepted only as a bounded
+  allocation-path improvement. Focused tests passed 60 with four intentional
+  skips. The full suite passed 9,591 with five skips; its sole failure was the
+  existing dropped-FIN timing assertion, which then passed 10/10 isolated
+  reruns. No package, controller, worker, deployment, or publication changed.
+
 - 2026-07-16: an ACK-proportional queued-send burst was tested and rejected.
   The candidate retained the four-datagram floor, translated newly acknowledged
   protected bytes into datagram credit, and bounded one recovery transition at

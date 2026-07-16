@@ -114,7 +114,9 @@ internal static class QuicApplicationSendScheduler
         }
 
         if (!QuicStreamParser.TryParseStreamFrame(
-            firstQueuedWrite.StreamPayload.AsSpan(0, firstQueuedWrite.StreamPayloadLength),
+            firstQueuedWrite.StreamPayload.AsSpan(
+                firstQueuedWrite.StreamPayloadOffset,
+                firstQueuedWrite.StreamPayloadLength),
             out firstStreamFrame))
         {
             exception = new InvalidOperationException("Queued application stream payload is not a valid STREAM frame.");
