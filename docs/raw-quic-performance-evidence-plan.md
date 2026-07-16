@@ -89,13 +89,18 @@ B/s and 378.91 ms p95. MsQuic package selection was exact, but this Windows
 host reports `System.Net.Quic.IsSupported=false`. These results are functional
 and directional evidence only, not a peer ranking.
 
-The smoke also found a ProtocolLab evidence defect that must be repaired before
-the matched campaign. The actual load-tool commands used four connections and
-one stream per connection, while aggregate metadata reported effective
-concurrency 128 from a stale/default field. Exact commands, successful transfer
-counts, and byte totals remain reviewable in
-`C:\shared\temp\protocol-lab-small-writes-smoke-20260716\runs\raw-smallwrites-smoke-20260716-direct-package-cell`,
-but the aggregate load shape must not be cited as authoritative until fixed.
+The first smoke also found a ProtocolLab evidence defect: actual commands used
+four connections and one stream per connection, while aggregate metadata
+reported effective concurrency 128 from a generic profile default. ProtocolLab
+internal commit `6cb1e06` fixes the runner plan and packaged-executor environment
+to derive raw QUIC concurrency from the executed controls. Its regression test
+passed along with all 241 `LoadToolInvokerTests`. Follow-up package-backed run
+`raw-smallwrites-loadshape-fixed-d-20260716-direct-package-cell` passed exact
+validation and benchmark execution, reported requested and effective concurrency
+4, completed 28 transfers and 117,440,512 received bytes, and recorded zero
+failures or timeouts. The original diagnostic remains reviewable under
+`C:\shared\temp\protocol-lab-small-writes-smoke-20260716`; the corrected proof
+is under `C:\shared\temp\protocol-lab-small-writes-loadshape-fixed-d-20260716`.
 No package was uploaded or registered and no rack job or publication ran.
 
 Offline coverage is now aligned for the five expanded peer shapes. Component

@@ -45,11 +45,16 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
   completed 20 exact 4 MiB transfers at 39,213,386.37 B/s with 592.84 ms p95;
   quic-go completed 24 at 49,448,791.74 B/s with 378.91 ms p95. MsQuic was
   correctly reported unsupported because `System.Net.Quic.IsSupported` is
-  false on this host. The executed load commands used four connections and one
-  stream per connection, but the aggregate evidence incorrectly reports
-  effective concurrency 128 from a stale/default metadata field. Treat the
-  command and exact byte accounting as functional proof only; fix that
-  ProtocolLab load-shape reporting defect before a matched ranking campaign.
+  false on this host. The initial evidence incorrectly reported effective
+  concurrency 128 even though the executed commands used four connections and
+  one stream per connection. ProtocolLab internal commit `6cb1e06` now derives
+  packaged raw QUIC requested, effective, and exported concurrency from those
+  actual controls instead of a generic profile default. Its focused regression
+  passed 1/1 and all `LoadToolInvokerTests` passed 241/241. Follow-up run
+  `raw-smallwrites-loadshape-fixed-d-20260716-direct-package-cell` passed
+  validation and benchmark execution with requested/effective concurrency 4,
+  28 exact transfers, 117,440,512 received bytes, and zero failures or timeouts.
+  Treat these shared-host samples as functional proof only.
 
   No package was uploaded or registered and no rack campaign or publication
   ran. Next coverage priorities remain controlled RTT/loss/reordering and
