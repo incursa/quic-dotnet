@@ -75,6 +75,10 @@ internal static class IncursaRawQuicProtocolEndpointLauncher
         {
             si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_DIRECTION"] = payloadDirection;
         }
+        if (plan.Scenario.QuicTransport?.PayloadSizeBytes is > 0 and var payloadSizeBytes)
+        {
+            si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_SIZE_BYTES"] = payloadSizeBytes.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
 
         var behavior = plan.Scenario.QuicTransport?.Behavior;
         if (!string.IsNullOrWhiteSpace(behavior))
@@ -175,30 +179,16 @@ internal static class IncursaRawQuicProtocolEndpointLauncher
     private static string? ResolveNewestBuildOutput(string projectDirectory, IReadOnlyCollection<string> fileNames, bool packageOnly)
     {
         var candidateRoots = new[] { Path.Combine(projectDirectory, "bin", "Release"), Path.Combine(projectDirectory, "bin", "Debug") };
-        foreach (var candidateRoot in candidateRoots)
-        {
-            if (!Directory.Exists(candidateRoot))
-            {
-                continue;
-            }
-
-            var candidates = packageOnly
+        return candidateRoots
+            .Where(Directory.Exists)
+            .SelectMany(candidateRoot => packageOnly
                 ? EnumeratePackageBuildOutputs(candidateRoot, fileNames)
-                : EnumerateFrameworkBuildOutputs(candidateRoot, fileNames);
-
-            var match = candidates
-                .Where(path => fileNames.Contains(Path.GetFileName(path), StringComparer.OrdinalIgnoreCase))
-                .Select(path => new FileInfo(path))
-                .OrderByDescending(info => info.LastWriteTimeUtc)
-                .FirstOrDefault();
-
-            if (match is not null)
-            {
-                return match.FullName;
-            }
-        }
-
-        return null;
+                : EnumerateFrameworkBuildOutputs(candidateRoot, fileNames))
+            .Where(path => fileNames.Contains(Path.GetFileName(path), StringComparer.OrdinalIgnoreCase))
+            .Select(path => new FileInfo(path))
+            .OrderByDescending(info => info.LastWriteTimeUtc)
+            .Select(info => info.FullName)
+            .FirstOrDefault();
     }
 
     private static IEnumerable<string> EnumeratePackageBuildOutputs(string candidateRoot, IReadOnlyCollection<string> fileNames)

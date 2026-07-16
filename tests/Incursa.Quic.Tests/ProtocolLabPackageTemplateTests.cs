@@ -17,6 +17,7 @@ public sealed class ProtocolLabPackageTemplateTests
         "quic.transport.connection-churn",
         "quic.transport.stream-churn",
         "quic.transport.stream-throughput.1mb",
+        "quic.transport.stream-download.1mb",
         "quic.transport.multiplex.100x64kb",
         "quic.transport.stream-limits.100x64kb",
         "quic.transport.flow-control.slow-reader-16x64kb",
@@ -255,6 +256,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.DoesNotContain("PROTOCOL_LAB_INCURSA_RAW_QUIC_QLOG_PATH", source);
         Assert.Contains("TryAcceptInboundStreamAsync", source);
         Assert.Contains("TryReadTerminalAsync", source);
+        Assert.Contains("PLAB-DL1", source);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_SIZE_BYTES", source);
         Assert.DoesNotContain("connection.AcceptInboundStreamAsync", source);
         Assert.DoesNotContain("stream.ReadAsync(buffer.AsMemory", source);
     }
