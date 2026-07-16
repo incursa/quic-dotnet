@@ -4,6 +4,18 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: increasing the initial spilled STREAM receive-segment list
+  capacity from 8 to 16 was tested and rejected. The current 100-stream limit
+  trace showed `BufferedSegment[]` as the second-largest allocation group, so
+  the candidate attempted to avoid one geometric list growth without changing
+  flow control, receive buffers, or scheduling. Focused receive-buffer and
+  reordered STREAM tests passed 25/25, but the actual receive-state ShortRun
+  benchmark retained the same 1.72 KiB allocation per operation and regressed
+  from 4.384 to 4.575 microseconds. The runtime change was restored before any
+  ProtocolLab campaign. Retain the benchmark artifacts under
+  `C:\shared\temp\quic-bdn-segment-capacity-{baseline,candidate}-20260716`;
+  do not revisit list pre-sizing without a different measured mechanism.
+
 - 2026-07-16: immediate disposal of completed ProtocolLab raw-server stream
   facades was tested and rejected. The candidate removed the connection-lifetime
   `ConcurrentBag<QuicStream>` after confirming that sent-packet payload copies
@@ -23,14 +35,17 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
   (+0.6 percent), with p95 improving from 17.35 to 16.17 ms.
 
   The candidate nevertheless failed the correctness gate. The full Release
-  suite reproduced `DroppedServerFinIsRecoveredAndShardContinuesProcessing`
-  with `retransmittedFin=0` after immediate disposal, proving that the facade
-  observer is still required to drive tail-FIN recovery. The run also contained
-  the existing unrelated incomplete-content HTTP/3 timeout and the solution's
-  missing local trace-analysis project reference; 9,590 tests passed and five
-  were skipped. Runtime and test changes were restored; the dropped-FIN test
-  then passed 10/10 focused reruns and the unrelated HTTP/3 timeout passed in
-  isolation. Retain the diagnostic runs under
+  suite reproduced the known timing-sensitive
+  `DroppedServerFinIsRecoveredAndShardContinuesProcessing` failure with
+  `retransmittedFin=0` after immediate disposal. That single failure does not
+  prove causation because the same test has failed under prior full-suite load,
+  but it prevents accepting a lifetime change until deterministic ACK-complete
+  retirement proof exists. The run also contained the existing unrelated
+  incomplete-content HTTP/3 timeout and the solution's missing local
+  trace-analysis project reference; 9,590 tests passed and five were skipped.
+  Runtime and test changes were restored; the dropped-FIN test then passed
+  10/10 focused reruns and the unrelated HTTP/3 timeout passed in isolation.
+  Retain the diagnostic runs under
   `incursa-raw-retention-*20260716`; do not remove completed-stream retention
   until ACK-complete stream retirement is modeled explicitly and the
   dropped-FIN test passes under repeated full-suite pressure.
