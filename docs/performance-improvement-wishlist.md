@@ -2294,6 +2294,49 @@ This accepts contract and local execution readiness only. Registration and a
 matched three-target campaign remain the next gates. No package was uploaded
 and no lab or publication state changed.
 
+### Accepted 2026-07-16: raw workload-shape integrity and slow-reader coverage
+
+The raw QUIC evidence surface now includes
+`quic.transport.flow-control.slow-reader-16x64kb`, a 16-stream, 64 KiB exact
+echo workload whose client delays response reads by 100 milliseconds. Incursa,
+MsQuic/System.Net.Quic, and quic-go package templates advertise the scenario,
+the reusable executor validates its canonical behavior and observed delay, and
+clean local packages passed strict package-backed smoke for the supported host
+targets. Public contract commit `950ec73`, component commits `5063930` and
+`5083c00`, internal commits `5c5ec71` and `066838a`, and Incursa commit
+`40774b16` retain that work.
+
+Review of current controller previews also found that the generic `smoke`
+profile could override a fixed raw scenario's stream count. Historical cells
+labeled `quic.transport.multiplex.100x64kb` could therefore execute as `c1-s1`
+and still validate against the overridden cell shape. Internal commit
+`d35a727` closes that evidence-integrity hole: raw campaign defaults now use
+the dimension-neutral `raw-quic-peer-confidence` profile, plan construction
+rejects any stream count that differs from `quicTransport.streamCount`, and
+the deterministic validator repeats the same gate. Throughput remains one
+stream, multiplex remains 100, slow-reader remains 16, and handshake remains
+zero. Explicit incompatible CLI overrides fail rather than silently relabeling
+the workload.
+
+Verification:
+
+- 100 focused load-profile, planner, validator, execution, and operator-script
+  tests passed;
+- a live controller dry-run selected `raw-quic-peer-confidence`, Comparison,
+  five repetitions, round-robin ordering, and all three throughput targets;
+- the all-up internal suite passed 1,219/1,228 tests, with the nine failures
+  isolated to existing cross-repository schema registration, package fixture,
+  and environment-materialization interference outside this slice;
+- no package was registered, no worker/controller was deployed or restarted,
+  no benchmark job was submitted, and no result was published.
+
+Older raw QUIC results whose retained cell shape does not match the named
+scenario contract are not authoritative baselines. The next gate is explicit
+approval to register the already-built current packages and deploy the current
+runner, followed by a fresh matched c1/c4/c16/c32/c64/c128, five-repetition,
+round-robin Incursa/quic-go/MsQuic campaign. Runtime changes should be selected
+from those corrected traces rather than from the stale public numbers.
+
 1. Finish terminal exception attribution and cleanup.
 2. Add permanent exception/trace-site tooling.
 3. Establish stable smoke and confidence ProtocolLab lanes.
