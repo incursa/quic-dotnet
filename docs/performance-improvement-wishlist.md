@@ -4,6 +4,49 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: mixed-size raw QUIC multiplex coverage is accepted as an
+  evidence-infrastructure slice. The new
+  `quic.transport.multiplex.mixed-4x16` contract keeps four stable connections,
+  opens sixteen concurrent bidirectional streams per connection, and applies
+  the deterministic 1 KiB, 16 KiB, 64 KiB, and 1 MiB payload sequence in
+  round-robin order. Exact validation requires 9,052,160 bytes per connection
+  batch rather than inferring a uniform payload from the largest stream.
+
+  Public ProtocolLab commit `8e1d3f4`, component commit `cbcea9f`, internal
+  runner commit `75357a1`, and Incursa commit `e7d23130` align the authoritative
+  scenario, reusable Go executor and target, runner validation, source adapters,
+  implementation packages, and comparison suites. Focused internal tests
+  passed 27/27 after building the adapter executables, and Incursa package
+  tests passed 20/20. Clean immutable Windows packages were produced without
+  registration:
+
+  - scenario pack `0.1.16`:
+    `5b05c883625aabd298a6cf0fa35cd61a169da7bb5ca1d9270f11aba218377ba7`;
+  - quic-go executor `0.1.14`:
+    `83ebb9f3cc86bd031a78f2a75a85adcd4a01f137220e29e41feabdbd7a6a35c2`;
+  - quic-go target `0.1.17`:
+    `1f19d776c82978e8913a8c6b79fe58e3134c231955029d189834ac128acbae97`;
+  - Incursa target `0.0.0-mixed-20260716`:
+    `2588d2e7c9e424c4aa588991bd87f81df88bd85714efb8e153a672ba20f9e8ad`;
+    and
+  - MsQuic target `0.0.0-mixed-20260716`:
+    `403389b33b0692387a51386b5795762936b756a58fa50b4ca3ebf693da97efbf`.
+
+  A short package-backed c4/s16 localhost smoke passed exact validation for
+  Incursa and quic-go with zero failed or timed-out streams. Incursa completed
+  384 streams at 46,946,593.49 B/s and quic-go completed 448 streams at
+  54,075,853.60 B/s. This one-repetition shared-host result is diagnostic only,
+  not a ranking. The MsQuic package advertised the exact scenario, but
+  `System.Net.Quic.IsSupported` was false on this Windows host, so its validation
+  was correctly reported as unavailable rather than passed or failed.
+
+  No package was uploaded or registered and no rack campaign or publication
+  ran. The next coverage priorities are controlled RTT/loss/reordering,
+  sustained small-write pressure, and connection-fanout scaling. Each should be
+  implemented as an exact contract and locally package-proven before requesting
+  an approved five-repetition c4/c16/c32 three-peer rack campaign with isolated
+  target and generator telemetry.
+
 - 2026-07-16: demand-triggered sent-packet dictionary reservation was modeled
   and rejected before changing the runtime. The permanent
   `QuicSentPacketDictionaryCapacityBenchmarks` comparison covers the current

@@ -48,6 +48,31 @@ rows resolve only quic-go, stream-limit and stream-churn coverage is absent, and
 slow-reader selection cannot find the packaged comparison suite. No package was
 uploaded, registered, or published and no job was submitted.
 
+The source-backed inventory now also includes the exact mixed-size workload
+`quic.transport.multiplex.mixed-4x16`. Public commit `8e1d3f4`, component
+commit `cbcea9f`, internal commit `75357a1`, and Incursa commit `e7d23130`
+define four stable connections, sixteen concurrent streams per connection, and
+a deterministic 1 KiB/16 KiB/64 KiB/1 MiB round-robin payload sequence. The
+runner validates 9,052,160 bytes per connection batch from the declared
+contract, rather than treating the 1 MiB maximum as a uniform stream size.
+
+Clean package-backed localhost diagnostics passed exact validation for Incursa
+and quic-go with no failed or timed-out streams. Incursa measured
+46,946,593.49 B/s and quic-go measured 54,075,853.60 B/s in one short c4/s16
+repetition. This is functional and directional evidence only. MsQuic package
+selection was exact, but the host reported `System.Net.Quic.IsSupported=false`,
+so no MsQuic performance result exists for this smoke. The package hashes and
+test totals are retained in `performance-improvement-wishlist.md`.
+
+This addition strengthens the offline coverage matrix but does not repair the
+public comparison by itself. No package was registered and no rack campaign or
+publication ran. The next proposed contract gaps are controlled network
+impairment (RTT, loss, and reordering), sustained small writes on stable streams,
+and one-stream-per-connection fanout. Those lanes must preserve exact payload
+and content validation, then pass matched five-repetition c4/c16/c32 campaigns
+with isolated target and generator telemetry before supporting runtime tuning
+or public peer claims.
+
 Offline coverage is now aligned for the five expanded peer shapes. Component
 commit `558a29d` packages the exact public comparison suite, advertises the
 existing sustained-download executor behavior, and advances quic-go target
