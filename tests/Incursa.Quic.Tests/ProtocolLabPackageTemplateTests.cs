@@ -25,6 +25,7 @@ public sealed class ProtocolLabPackageTemplateTests
         "quic.transport.multiplex.100x1kb",
         "quic.transport.multiplex.100x64kb",
         "quic.transport.multiplex.16x1mb",
+        "quic.transport.multiplex.mixed-4x16",
         "quic.transport.stream-limits.100x64kb",
         "quic.transport.flow-control.slow-reader-16x64kb",
         "quic.transport.duplex-streams",
@@ -120,6 +121,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("quic.transport.flow-control.slow-reader-16x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.duplex-streams", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.duplex-streams-peer-matrix", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.multiplex.mixed-4x16", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Equal(RawQuicScenarioIds, ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.DoesNotContain("h3", ReadYamlList(implementationYaml, "supportedProtocols"));
         Assert.DoesNotContain("http.application", ReadYamlList(implementationYaml, "supportedWorkloadFamilies"));

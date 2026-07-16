@@ -36,6 +36,7 @@ supportedScenarios:
   - quic.transport.multiplex.100x1kb
   - quic.transport.multiplex.100x64kb
   - quic.transport.multiplex.16x1mb
+  - quic.transport.multiplex.mixed-4x16
   - quic.transport.stream-limits.100x64kb
   - quic.transport.flow-control.slow-reader-16x64kb
   - quic.transport.duplex-streams
