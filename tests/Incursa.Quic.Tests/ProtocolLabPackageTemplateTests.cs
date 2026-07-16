@@ -227,6 +227,28 @@ public sealed class ProtocolLabPackageTemplateTests
     }
 
     [Fact]
+    public void Raw_quic_source_backed_launcher_resolves_server_project_from_source_root()
+    {
+        var repoRoot = FindRepoRoot();
+        var launcher = File.ReadAllText(Path.Combine(
+            repoRoot,
+            "eng",
+            "protocol-lab",
+            "src",
+            "Incursa.ProtocolLab.Adapters.IncursaRawQuic",
+            "IncursaRawQuicProtocolEndpointLauncher.cs"));
+
+        Assert.Contains("PROTOCOL_LAB_INCURSA_QUIC_SOURCE_ROOT", launcher);
+        Assert.Contains("var sourceProject = Path.GetFullPath(Path.Combine(", launcher);
+        Assert.Contains("\"eng\"", launcher);
+        Assert.Contains("\"IncursaRawQuicServer.csproj\"", launcher);
+        Assert.Contains("ResolveBuiltServerExecutable(sourceProjectDirectory, sourceAssemblyName)", launcher);
+        Assert.Contains("ResolveBuiltServerDll(sourceProjectDirectory, sourceAssemblyName)", launcher);
+        Assert.Contains("si.ArgumentList.Add(sourceProject);", launcher);
+        Assert.Contains("throw new FileNotFoundException(", launcher);
+    }
+
+    [Fact]
     public void Raw_quic_adapter_project_uses_public_contracts_not_public_adapters()
     {
         var repoRoot = FindRepoRoot();

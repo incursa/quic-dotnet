@@ -29,16 +29,49 @@ internal static class IncursaRawQuicProtocolEndpointLauncher
         var incursaQuicSourceRoot = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_QUIC_SOURCE_ROOT");
         if (!string.IsNullOrWhiteSpace(incursaQuicSourceRoot))
         {
-            si.FileName = "dotnet";
-            si.ArgumentList.Add("run");
-            si.ArgumentList.Add("--configuration");
-            si.ArgumentList.Add("Release");
-            si.ArgumentList.Add("--no-launch-profile");
-            si.ArgumentList.Add("--project");
-            si.ArgumentList.Add(resolvedProject);
-            si.ArgumentList.Add($"-p:IncursaQuicSourceRoot={incursaQuicSourceRoot}");
-            si.ArgumentList.Add("--");
-            si.ArgumentList.Add(port.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            var sourceProject = Path.GetFullPath(Path.Combine(
+                incursaQuicSourceRoot,
+                "eng",
+                "protocol-lab",
+                "servers",
+                "IncursaRawQuicServer",
+                "IncursaRawQuicServer.csproj"));
+            if (!File.Exists(sourceProject))
+            {
+                throw new FileNotFoundException(
+                    "The source-backed Incursa raw QUIC server project was not found.",
+                    sourceProject);
+            }
+
+            var sourceProjectDirectory = Path.GetDirectoryName(sourceProject) ?? incursaQuicSourceRoot;
+            var sourceAssemblyName = Path.GetFileNameWithoutExtension(sourceProject);
+            if (ResolveBuiltServerExecutable(sourceProjectDirectory, sourceAssemblyName) is { } sourceExecutable)
+            {
+                EnsureExecutablePermission(sourceExecutable);
+                si.FileName = sourceExecutable;
+                si.ArgumentList.Add(port.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            }
+            else if (ResolveBuiltServerDll(sourceProjectDirectory, sourceAssemblyName) is { } sourceDll)
+            {
+                si.FileName = "dotnet";
+                si.ArgumentList.Add("exec");
+                si.ArgumentList.Add(sourceDll);
+                si.ArgumentList.Add(port.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            }
+            else
+            {
+                si.FileName = "dotnet";
+                si.ArgumentList.Add("run");
+                si.ArgumentList.Add("--configuration");
+                si.ArgumentList.Add("Release");
+                si.ArgumentList.Add("--no-launch-profile");
+                si.ArgumentList.Add("--project");
+                si.ArgumentList.Add(sourceProject);
+                si.ArgumentList.Add($"-p:IncursaQuicSourceRoot={incursaQuicSourceRoot}");
+                si.ArgumentList.Add("--");
+                si.ArgumentList.Add(port.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            }
+
             si.Environment["PROTOCOL_LAB_INCURSA_QUIC_SOURCE_ROOT"] = incursaQuicSourceRoot;
         }
         else if (ResolveBuiltServerExecutable(projectDirectory, assemblyName) is { } directExec)

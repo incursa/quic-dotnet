@@ -359,6 +359,32 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
   `protocol-lab-raw-owner-ab-20260716`. No package, controller, worker,
   deployment, or publication changed.
 
+- 2026-07-16: fresh raw coverage disproves the stale public summary and narrows
+  the next optimization target. Five-repetition, round-robin, uninstrumented
+  source-backed cells passed exact validation for 1 MiB download at
+  c1/c16/c64/c128, 100 ms slow-reader flow control at c1/c16/c64, stable
+  1,000-stream churn, and 4,096x1 KiB sustained download at c1/c16. All accepted
+  Incursa and quic-go cells had zero failures and timeouts; System.Net.Quic was
+  unsupported on the shared Windows host.
+
+  Incursa is behind quic-go at c1 for 1 MiB download (37.75 versus 59.82 MiB/s),
+  sustained small writes (26.52 versus 49.56 MiB/s), and stream churn
+  (3,533.94 versus 4,540.68 ops/s). It scales strongly at c16 and above: the
+  1 MiB download reaches 180.80 versus 52.38 MiB/s at c16, slow-reader reaches
+  66.49 versus 43.30 MiB/s at c16 and 85.09 versus 42.79 MiB/s at c64, and the
+  sustained small-write lane reaches 179.60 versus 40.74 MiB/s at c16. The next
+  runtime diagnostic therefore targets c1 per-write and stream-lifecycle cost
+  without regressing c16-c128.
+
+  The same campaign found and fixed package source-mode startup. A packaged
+  adapter with `PROTOCOL_LAB_INCURSA_QUIC_SOURCE_ROOT` now resolves the server
+  project under that root and prefers an existing Release executable or DLL.
+  Package tests pass 22/22; a rebuilt diagnostic-only package passed both
+  source-backed and ordinary prebuilt slow-reader cells. The missing-project
+  and cold-build-timeout attempts remain retained as negative evidence. No
+  package was uploaded or registered, and no controller, worker, deployment,
+  or publication changed.
+
 - 2026-07-16: an ACK-proportional queued-send burst was tested and rejected.
   The candidate retained the four-datagram floor, translated newly acknowledged
   protected bytes into datagram credit, and bounded one recovery transition at

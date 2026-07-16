@@ -696,6 +696,51 @@ passed 9,597 tests with five intentional skips and zero failures. Evidence remai
 under `C:\shared\temp\protocol-lab-raw-queued-owner-candidate-20260716`.
 Nothing was deployed, registered, uploaded, or published.
 
+## Fresh Raw Coverage and Package Startup 2026-07-16
+
+A current source-backed campaign replaced the stale public raw picture with
+five-repetition, round-robin, exact-validation cells on the shared Windows
+host. Counters and traces were disabled, and every accepted Incursa and
+quic-go cell completed with zero failures and timeouts. System.Net.Quic/MsQuic
+reported unsupported on this host, so these results are diagnostic rather than
+a complete three-peer ranking.
+
+| Scenario | Connections | Incursa median | quic-go median | Incursa p95 | quic-go p95 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 MiB download | 1 | 37.75 MiB/s | 59.82 MiB/s | 35.28 ms | 18.58 ms |
+| 1 MiB download | 16 | 180.80 MiB/s | 52.38 MiB/s | 89.45 ms | 309.08 ms |
+| 1 MiB download | 64 | 181.88 MiB/s | 50.51 MiB/s | 348.74 ms | 1,267.43 ms |
+| 1 MiB download | 128 | 173.74 MiB/s | 50.48 MiB/s | 685.96 ms | 2,513.82 ms |
+| 100 ms slow reader, 16x64 KiB | 1 | 8.49 MiB/s | 8.59 MiB/s | 119.16 ms | 118.48 ms |
+| 100 ms slow reader, 16x64 KiB | 16 | 66.49 MiB/s | 43.30 MiB/s | 236.47 ms | 375.13 ms |
+| 100 ms slow reader, 16x64 KiB | 64 | 85.09 MiB/s | 42.79 MiB/s | 703.40 ms | 1,483.50 ms |
+| 4,096x1 KiB download | 1 | 26.52 MiB/s | 49.56 MiB/s | 173.16 ms | 86.65 ms |
+| 4,096x1 KiB download | 16 | 179.60 MiB/s | 40.74 MiB/s | 352.71 ms | 1,579.66 ms |
+| 1,000-stream churn | 1 | 3,533.94 ops/s | 4,540.68 ops/s | 0.58 ms | 0.55 ms |
+
+The slow-reader lane is healthy and does not justify a backpressure change.
+The remaining current gaps are low-concurrency per-write overhead in the
+4,096-write download and about 22 percent lower stable-connection stream-churn
+rate. Both reverse at higher transfer concurrency, so future work must preserve
+the strong c16-c128 behavior rather than optimizing only c1.
+
+Package-backed coverage also exposed a source-mode startup defect. When
+`PROTOCOL_LAB_INCURSA_QUIC_SOURCE_ROOT` was set, the packaged adapter still
+used its intentionally absent package-local project path. Source mode now
+resolves the raw server project from the supplied source root and prefers its
+existing Release executable or DLL before falling back to `dotnet run`.
+Focused package tests pass 22/22. Diagnostic package
+`quic-dotnet-raw-dev@0.0.0-sourcepathfix2-20260716` passed one source-backed and
+one prebuilt package-backed slow-reader cell. The missing-project attempt and
+the first cold-build timeout are retained under
+`raw-slow-reader-current-c1-20260716-quic-transport-v1-comparison` and
+`raw-package-sourcepath-fix-c1-20260716-quic-transport-v1-comparison`.
+
+The accepted campaign roots are under
+`C:\shared\temp\protocol-lab-raw-peer-current-20260716\runs`. No package was
+uploaded or registered, and no controller, worker, deployment, or publication
+state changed.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |
