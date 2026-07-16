@@ -17,6 +17,10 @@ public class QuicByteBufferAllocationBenchmarks
     private byte[] readBuffer = [];
     private byte[][] oneKilobyteStreamFrames = [];
     private byte[] fourKilobyteReadBuffer = [];
+    private byte[] terminalOneKilobyteStreamFrame = [];
+    private byte[] nonTerminalFourKilobyteStreamFrame = [];
+    private byte[] terminalTailStreamFrame = [];
+    private byte[] terminalTailReadBuffer = [];
 
     /// <summary>
     /// Prepares representative STREAM payloads and read buffers.
@@ -45,6 +49,24 @@ public class QuicByteBufferAllocationBenchmarks
         }
 
         fourKilobyteReadBuffer = new byte[oneKilobytePayload.Length * oneKilobyteStreamFrames.Length];
+        terminalOneKilobyteStreamFrame = FormatStreamFrame(
+            streamId: 0,
+            offset: 0,
+            oneKilobytePayload,
+            fin: true);
+        byte[] fourKilobytePayload = new byte[4 * 1024];
+        nonTerminalFourKilobyteStreamFrame = FormatStreamFrame(
+            streamId: 0,
+            offset: 0,
+            fourKilobytePayload,
+            fin: false);
+        byte[] terminalTailPayload = new byte[1024];
+        terminalTailStreamFrame = FormatStreamFrame(
+            streamId: 0,
+            offset: (ulong)fourKilobytePayload.Length,
+            terminalTailPayload,
+            fin: true);
+        terminalTailReadBuffer = new byte[fourKilobytePayload.Length + terminalTailPayload.Length];
     }
 
     /// <summary>
@@ -150,6 +172,79 @@ public class QuicByteBufferAllocationBenchmarks
     }
 
     /// <summary>
+    /// Measures a terminal 1KB STREAM frame and includes retained capacity in the result guard.
+    /// </summary>
+    [Benchmark]
+    public long StreamReceive_SingleTerminalOneKilobyteFrame()
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState();
+        if (!QuicStreamParser.TryParseStreamFrame(terminalOneKilobyteStreamFrame, out QuicStreamFrame frame)
+            || !state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode)
+            || errorCode != default)
+        {
+            return -1;
+        }
+
+        QuicReceiveRetentionSnapshot retained = state.CaptureReceiveRetentionSnapshot();
+        Span<byte> destination = fourKilobyteReadBuffer.AsSpan(0, frame.StreamDataLength);
+        if (!state.TryReadStreamData(
+                frame.StreamId.Value,
+                destination,
+                out int bytesWritten,
+                out bool completed,
+                out _,
+                out _,
+                out errorCode)
+            || errorCode != default)
+        {
+            return -1;
+        }
+
+        return retained.RetainedBufferBytes
+            ^ bytesWritten
+            ^ (completed ? 1 : 0)
+            ^ destination[0];
+    }
+
+    /// <summary>
+    /// Measures a terminal tail after a full 4KB segment and includes retained capacity in the result guard.
+    /// </summary>
+    [Benchmark]
+    public long StreamReceive_TerminalTailAfterFullSegment()
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState(receiveLimit: 8 * 1024);
+        if (!QuicStreamParser.TryParseStreamFrame(nonTerminalFourKilobyteStreamFrame, out QuicStreamFrame firstFrame)
+            || !state.TryReceiveStreamFrame(firstFrame, out QuicTransportErrorCode errorCode)
+            || errorCode != default
+            || !QuicStreamParser.TryParseStreamFrame(terminalTailStreamFrame, out QuicStreamFrame tailFrame)
+            || !state.TryReceiveStreamFrame(tailFrame, out errorCode)
+            || errorCode != default)
+        {
+            return -1;
+        }
+
+        QuicReceiveRetentionSnapshot retained = state.CaptureReceiveRetentionSnapshot();
+        if (!state.TryReadStreamData(
+                streamIdValue: 0,
+                terminalTailReadBuffer,
+                out int bytesWritten,
+                out bool completed,
+                out _,
+                out _,
+                out errorCode)
+            || errorCode != default)
+        {
+            return -1;
+        }
+
+        return retained.RetainedBufferBytes
+            ^ bytesWritten
+            ^ (completed ? 1 : 0)
+            ^ terminalTailReadBuffer[0]
+            ^ terminalTailReadBuffer[^1];
+    }
+
+    /// <summary>
     /// Measures receiving a duplicate STREAM payload that should not be buffered again.
     /// </summary>
     [Benchmark]
@@ -234,19 +329,19 @@ public class QuicByteBufferAllocationBenchmarks
             ^ secondDestination[^1];
     }
 
-    private static QuicConnectionStreamState CreateServerReceiveState()
+    private static QuicConnectionStreamState CreateServerReceiveState(ulong receiveLimit = 4096)
     {
         return new QuicConnectionStreamState(new QuicConnectionStreamStateOptions(
             IsServer: true,
-            InitialConnectionReceiveLimit: 4096,
+            InitialConnectionReceiveLimit: receiveLimit,
             InitialConnectionSendLimit: 4096,
             InitialIncomingBidirectionalStreamLimit: 16,
             InitialIncomingUnidirectionalStreamLimit: 16,
             InitialPeerBidirectionalStreamLimit: 16,
             InitialPeerUnidirectionalStreamLimit: 16,
-            InitialLocalBidirectionalReceiveLimit: 4096,
-            InitialPeerBidirectionalReceiveLimit: 4096,
-            InitialPeerUnidirectionalReceiveLimit: 4096,
+            InitialLocalBidirectionalReceiveLimit: receiveLimit,
+            InitialPeerBidirectionalReceiveLimit: receiveLimit,
+            InitialPeerUnidirectionalReceiveLimit: receiveLimit,
             InitialLocalBidirectionalSendLimit: 4096,
             InitialLocalUnidirectionalSendLimit: 4096,
             InitialPeerBidirectionalSendLimit: 4096));

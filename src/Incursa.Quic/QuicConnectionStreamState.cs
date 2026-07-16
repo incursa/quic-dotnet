@@ -717,7 +717,11 @@ internal sealed class QuicConnectionStreamState
 
             if (frame.StreamDataLength > 0 && additionalBytes > 0)
             {
-                InsertReadableBytes(state, frame.Offset, frame.StreamData);
+                InsertReadableBytes(
+                    state,
+                    frame.Offset,
+                    frame.StreamData,
+                    proposedFinalSize);
             }
 
             if (additionalBytes > 0)
@@ -1572,7 +1576,11 @@ internal sealed class QuicConnectionStreamState
         return (streamIndex << StreamIdTypeBitCount) | initiatorBit | directionBit;
     }
 
-    private void InsertReadableBytes(StreamState state, ulong offset, ReadOnlySpan<byte> data)
+    private void InsertReadableBytes(
+        StreamState state,
+        ulong offset,
+        ReadOnlySpan<byte> data,
+        ulong? finalOffset)
     {
         if (data.Length == 0)
         {
@@ -1600,7 +1608,13 @@ internal sealed class QuicConnectionStreamState
         {
             AddBufferedSegment(
                 state,
-                CreateBufferedSegment(currentOffset, data, dataIndex, data.Length, useContinuationBlock: false));
+                CreateBufferedSegment(
+                    currentOffset,
+                    data,
+                    dataIndex,
+                    data.Length,
+                    useContinuationBlock: false,
+                    finalOffset));
             IncreaseBufferedReadableBytes(state, data.Length);
             return;
         }
@@ -1621,7 +1635,8 @@ internal sealed class QuicConnectionStreamState
                     data,
                     dataIndex,
                     data.Length,
-                    useContinuationBlock: lastSegment.End == currentOffset));
+                    useContinuationBlock: lastSegment.End == currentOffset,
+                    finalOffset));
             IncreaseBufferedReadableBytes(state, data.Length);
             return;
         }
@@ -1651,7 +1666,8 @@ internal sealed class QuicConnectionStreamState
                     data,
                     tailDataIndex,
                     tailLength,
-                    useContinuationBlock: true));
+                    useContinuationBlock: true,
+                    finalOffset));
             IncreaseBufferedReadableBytes(state, tailLength);
             return;
         }
@@ -1683,7 +1699,8 @@ internal sealed class QuicConnectionStreamState
                         data,
                         dataIndex,
                         gapLength,
-                        useContinuationBlock: false));
+                        useContinuationBlock: false,
+                        finalOffset));
                     IncreaseBufferedReadableBytes(state, gapLength);
                     dataIndex += gapLength;
                     currentOffset += (ulong)gapLength;
@@ -1717,7 +1734,8 @@ internal sealed class QuicConnectionStreamState
                 data,
                 dataIndex,
                 tailLength,
-                useContinuationBlock: false));
+                useContinuationBlock: false,
+                finalOffset));
             IncreaseBufferedReadableBytes(state, tailLength);
         }
 
@@ -1927,14 +1945,19 @@ internal sealed class QuicConnectionStreamState
         ReadOnlySpan<byte> data,
         int dataIndex,
         int length,
-        bool useContinuationBlock)
+        bool useContinuationBlock,
+        ulong? finalOffset)
     {
         int receiveBlockSize = useContinuationBlock
             ? ContinuationStreamReceiveBlockSize
             : InitialStreamReceiveBlockSize;
-        int minimumCapacity = length >= StreamReceiveCoalescingThreshold && length < receiveBlockSize
-            ? receiveBlockSize
-            : length;
+        bool reachesFinalOffset = finalOffset.HasValue
+            && offset + (ulong)length == finalOffset.Value;
+        int minimumCapacity = !reachesFinalOffset
+            && length >= StreamReceiveCoalescingThreshold
+            && length < receiveBlockSize
+                ? receiveBlockSize
+                : length;
         byte[] segmentData = QuicBufferPool.RentBytes(
             minimumCapacity,
             QuicBufferPoolOwner.ReceiveSegment);

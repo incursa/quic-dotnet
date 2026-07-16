@@ -188,6 +188,9 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-CRT-0050.json`](VER-QUIC-CRT-0050.json): canonical CRT server-side 0-RTT admission anti-replay gate verification source
 - [`VER-QUIC-CRT-0052.json`](VER-QUIC-CRT-0052.json): canonical CRT server first-flight x25519 compatibility verification source
 - [`VER-QUIC-CRT-0053.json`](VER-QUIC-CRT-0053.json): canonical CRT QUIC and HTTP/3 metrics verification source
+- [`VER-QUIC-CRT-0055.json`](VER-QUIC-CRT-0055.json): canonical bounded runtime-shard metrics verification source
+- [`VER-QUIC-CRT-0056.json`](VER-QUIC-CRT-0056.json): canonical queued application-send residence diagnostics verification source
+- [`VER-QUIC-CRT-0057.json`](VER-QUIC-CRT-0057.json): canonical terminal stream receive capacity verification source
 
 ## Notes
 

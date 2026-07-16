@@ -2107,6 +2107,66 @@ Done when:
 
 ## Suggested Order
 
+### Accepted 2026-07-15: FIN-aware terminal receive capacity
+
+`QuicConnectionStreamState` now rents exact capacity for newly buffered STREAM
+data that reaches an already validated final size. This applies both to a
+data-bearing FIN and to non-FIN data arriving after an out-of-order FIN-only
+frame. Nonterminal data keeps the existing 4 KiB initial and 8 KiB continuation
+coalescing capacity. The change does not compact an existing segment when a
+later FIN establishes final size, because that would add a copy to reclaim an
+already-rented buffer.
+
+Deterministic proof:
+
+- focused receive/read/ownership/metrics tests passed 51/51, including
+  nonterminal coalescing, a 1 KiB terminal continuation tail, and FIN-first
+  reordered data delivery, completion, and release;
+- the complete Release inventory passed as a deterministic partition: the main
+  partition passed 9,579 tests with five intentional skips, while the HTTP/3
+  incomplete-content close and dropped-server-FIN recovery tests each passed
+  5/5 independently after showing suite-order timing failures in all-in-one
+  runs;
+- independent review found the FIN-first and below-threshold proof gaps; both
+  were fixed before closeout;
+- permanent `QuicByteBufferAllocationBenchmarks` rows cover a terminal 1 KiB
+  frame and a 1 KiB terminal tail after a full 4 KiB segment. Matched local
+  ShortRun means were 433.3 ns versus 440.3 ns for the single terminal frame
+  and 702.5 ns versus 790.5 ns for the terminal tail. Both three-iteration
+  samples have very wide confidence intervals and unchanged rounded managed
+  allocation, so they are retained as branch/shape guards rather than a speed
+  claim.
+
+End-to-end evidence:
+
+- one matched c64/s100 counter pair was diagnostic and mixed: peak central-pool
+  outstanding bytes fell 18 percent in the `<=16 KiB` bucket and 6 percent in
+  the `<=4 KiB` bucket, while stream-write and buffered-byte tails varied in the
+  opposite direction;
+- five alternating exact-baseline/candidate source-backed c64/s100 runs of
+  `quic.transport.multiplex.100x64kb` all passed validation and completed with
+  zero failed or timed-out requests. Candidate throughput exceeded its paired
+  baseline in all five accepted pairs; median throughput moved from 56.16 to
+  63.63 MB/s, median p95 latency from 6,159.57 to 5,591.06 ms, and throughput
+  relative range from 35.35 to 11.35 percent;
+- one additional baseline attempt failed during warmup with `timeout: no recent
+  network activity` and is retained as negative reliability evidence rather
+  than replaced or counted as a successful repetition.
+
+Artifacts are retained under
+`protocol-lab-internal/.artifacts/runs/quic-terminal-receive-*-20260715a-*` and
+the two reviewed BenchmarkDotNet roots under
+`.artifacts/bdn/terminal-receive-*-reviewed-20260715a`. These are local
+shared-host development results. They justify retaining the bounded runtime
+change but are not publishable or peer-ranking evidence.
+
+The next program priority is to audit the freshness and breadth of published
+raw QUIC evidence before selecting another micro-optimization: map every public
+row to its run date, QUIC.NET commit/package, scenario, load shape, load tool,
+validation status, and matched peer evidence; then fill missing stream
+throughput, multiplex, duplex, concurrency, payload-size, loss, and flow-control
+workloads with current repeated baselines.
+
 1. Finish terminal exception attribution and cleanup.
 2. Add permanent exception/trace-site tooling.
 3. Establish stable smoke and confidence ProtocolLab lanes.

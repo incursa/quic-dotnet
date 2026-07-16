@@ -19,7 +19,7 @@ public sealed class QuicStreamReceiveBufferTests
 
         QuicReceiveRetentionSnapshot initial = state.CaptureReceiveRetentionSnapshot();
         Assert.Equal(1, initial.RetainedBufferCount);
-        Assert.Equal(4 * 1024, initial.RetainedBufferBytes);
+        Assert.Equal(1024, initial.RetainedBufferBytes);
         Assert.Equal(payload.Length, initial.BufferedBytes);
         Assert.Equal(1, initial.BufferedStreamCount);
 
@@ -30,7 +30,7 @@ public sealed class QuicStreamReceiveBufferTests
 
         QuicReceiveRetentionSnapshot partial = state.CaptureReceiveRetentionSnapshot();
         Assert.Equal(1, partial.RetainedBufferCount);
-        Assert.Equal(4 * 1024, partial.RetainedBufferBytes);
+        Assert.Equal(1024, partial.RetainedBufferBytes);
         Assert.Equal(payload.Length - firstRead.Length, partial.BufferedBytes);
         Assert.Equal(1, partial.BufferedStreamCount);
 
@@ -39,6 +39,84 @@ public sealed class QuicStreamReceiveBufferTests
         Assert.Equal(default, errorCode);
         Assert.Equal(secondRead.Length, bytesWritten);
         Assert.True(completed);
+        Assert.Equal(default, state.CaptureReceiveRetentionSnapshot());
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void NonTerminalReceiveSegmentRetainsCoalescingCapacity()
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState();
+        byte[] payload = Enumerable.Repeat((byte)0x4A, 1024).ToArray();
+
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(streamId: 0, offset: 0, payload, fin: false),
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(
+            new QuicReceiveRetentionSnapshot(1, 4 * 1024, payload.Length, 1),
+            state.CaptureReceiveRetentionSnapshot());
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void TerminalTailDoesNotReserveUnusedContinuationCapacity()
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState(receiveLimit: 8 * 1024);
+        byte[] first = Enumerable.Repeat((byte)0x31, 4 * 1024).ToArray();
+        byte[] tail = Enumerable.Repeat((byte)0x32, 1024).ToArray();
+
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(streamId: 0, offset: 0, first, fin: false),
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(streamId: 0, offset: (ulong)first.Length, tail, fin: true),
+            out errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.Equal(
+            new QuicReceiveRetentionSnapshot(
+                RetainedBufferCount: 2,
+                RetainedBufferBytes: first.Length + tail.Length,
+                BufferedBytes: first.Length + tail.Length,
+                BufferedStreamCount: 1),
+            state.CaptureReceiveRetentionSnapshot());
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void KnownFinalSizeMakesReorderedTerminalDataUseExactCapacity()
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState();
+        byte[] payload = Enumerable.Repeat((byte)0x42, 1024).ToArray();
+
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(streamId: 0, offset: (ulong)payload.Length, [], fin: true),
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(streamId: 0, offset: 0, payload, fin: false),
+            out errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.Equal(
+            new QuicReceiveRetentionSnapshot(1, payload.Length, payload.Length, 1),
+            state.CaptureReceiveRetentionSnapshot());
+
+        byte[] destination = new byte[payload.Length];
+        Assert.True(state.TryReadStreamData(
+            streamIdValue: 0,
+            destination,
+            out int bytesWritten,
+            out bool completed,
+            out _,
+            out _,
+            out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(payload.Length, bytesWritten);
+        Assert.True(completed);
+        Assert.Equal(payload, destination);
         Assert.Equal(default, state.CaptureReceiveRetentionSnapshot());
     }
 

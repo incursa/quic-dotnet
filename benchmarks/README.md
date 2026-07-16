@@ -137,6 +137,8 @@ suites above.
 
 The benchmark project also contains the following permanent suites:
 
+- `QuicByteBufferAllocationBenchmarks`, including terminal STREAM receive
+  rows that guard exact retained capacity when final size is known.
 - `QuicPublicApiLoopbackBenchmarks`
 - `QuicPublicApiStreamTransferBenchmarks`
 - `QuicPublicApiSteadyStateStreamBenchmarks`
