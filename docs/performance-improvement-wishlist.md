@@ -4,6 +4,35 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: raw QUIC peer coverage is expanded and package-proven for the
+  five source-backed workload shapes that were missing from the reusable target
+  inventory: 64 KiB and 16 MiB upload throughput, 100x1 KiB and 16x1 MiB
+  multiplex, and 16x1 MiB simultaneous duplex. Component commit `558a29d`
+  advances the quic-go target to `0.1.16`, the executor to `0.1.13`, and the
+  scenario pack to `0.1.15`; internal commit `6856861` forwards exact
+  `PLAB_SCENARIO_ID` and `PLAB_PROTOCOL` values to target processes.
+
+  The first package smoke exposed and rejected payload-size guessing in the
+  quic-go target: a 64 KiB upload was incorrectly echoed. The accepted target
+  chooses no-echo or 1 KiB/64 KiB/1 MiB echo behavior from the exact scenario
+  identity. Clean immutable packages were built with SHA-256 values
+  `fc5dab790af32350f564b0db392ad2ec83e25e5687a55a8342002f9d2783b894`
+  (Windows executor),
+  `dc8cdba6970bf81c6ed994c4c2f5defadddffd641fc52ba84ae7d117954a3b01`
+  (quic-go target), and
+  `aa456e933441df661a7c2d0c70805abbf7c667e5c4181040543c58877a63f006`
+  (scenario pack). The packaged comparison suite hashes identically to the
+  public authority.
+
+  One-second package-to-package diagnostics completed all five new shapes with
+  zero failed or timed-out operations. Upload lanes received zero response
+  bytes; multiplex and duplex lanes received exact echo bytes. This is package
+  behavior proof, not benchmark evidence or a peer ranking. The live controller
+  still has stale packages and the public site still has no claim-eligible raw
+  QUIC result, so the next gate is an approved package refresh followed by a
+  matched Incursa/quic-go/MsQuic campaign before selecting another runtime
+  optimization from the published numbers.
+
 - 2026-07-16: sustained raw QUIC upload coverage is accepted as an evidence
   slice. The new `quic.transport.sustained-stream.256x64kb` contract keeps one
   bidirectional stream open for 256 sequential 64 KiB application writes and

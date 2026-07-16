@@ -29,6 +29,45 @@ enough raw measurement artifacts to support a ranking claim.
 
 The gap shown by these numbers may be real. Its size is not yet established.
 
+### Live coverage audit on 2026-07-16
+
+The current public page is newer than the two-row snapshot above, but it still
+does not provide a decision-ready transport baseline. It reports four tested
+implementation ecosystems, fourteen exact targets, six observed raw QUIC
+scenarios, fifty-five current rows, and zero rows eligible for a public
+performance claim. The newest evidence is dated 2026-07-16. The observed
+scenario set is connection churn, duplex streams, cold handshake, 1 KiB echo,
+100x64 KiB multiplex, and 1 MiB upload throughput. Large-payload scaling,
+small-stream scheduling, sustained directional transfers, and the large duplex
+shape are therefore absent from the public comparison surface.
+
+A read-only controller dry-run confirmed that stale registered packages, not
+missing public contracts, are now the immediate breadth blocker. All three
+peers resolve only for 1 MiB throughput and 100x64 KiB multiplex; most lifecycle
+rows resolve only quic-go, stream-limit and stream-churn coverage is absent, and
+slow-reader selection cannot find the packaged comparison suite. No package was
+uploaded, registered, or published and no job was submitted.
+
+Offline coverage is now aligned for the five expanded peer shapes. Component
+commit `558a29d` packages the exact public comparison suite, advertises the
+existing sustained-download executor behavior, and advances quic-go target
+support to 64 KiB/16 MiB upload, 100x1 KiB/16x1 MiB multiplex, and 16x1 MiB
+duplex. Internal commit `6856861` forwards exact scenario/protocol identity to
+target processes so target behavior does not infer direction from payload size.
+The clean package hashes are:
+
+| Package | Version | SHA-256 |
+| --- | --- | --- |
+| `org.protocol-lab.components.executor.quic-go-raw-load` Windows | `0.1.13` | `fc5dab790af32350f564b0db392ad2ec83e25e5687a55a8342002f9d2783b894` |
+| `org.protocol-lab.components.implementation.quic-go-raw` | `0.1.16` | `dc8cdba6970bf81c6ed994c4c2f5defadddffd641fc52ba84ae7d117954a3b01` |
+| `org.protocol-lab.components.scenario.raw-quic-transport` | `0.1.15` | `aa456e933441df661a7c2d0c70805abbf7c667e5c4181040543c58877a63f006` |
+
+Package-to-package one-second diagnostics passed all five new shapes with zero
+failed operations or timeouts and exact directional byte accounting. These are
+behavior smokes only. The next decision-ready step remains an operator-approved
+package refresh and a five-repetition, deterministic round-robin
+Incursa/quic-go/MsQuic rack campaign with target and generator telemetry.
+
 ## Current Controller Readiness
 
 The rack controller has one ready SUT worker and two ready load-generator
