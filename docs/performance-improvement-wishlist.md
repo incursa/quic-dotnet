@@ -4,6 +4,27 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: demand-triggered sent-packet dictionary reservation was modeled
+  and rejected before changing the runtime. The permanent
+  `QuicSentPacketDictionaryCapacityBenchmarks` comparison covers the current
+  64-entry start, an intermediate 1,024-entry reserve at 512 retained packets,
+  and a late 2,048-entry reserve at 1,536 retained packets.
+
+  The early reserve cut allocation by 42 percent and population time by 24
+  percent at 1,664 packets, close to the 1,656-packet trace peak, but increased
+  allocation and time by about 25 percent at 1,024 packets. Moving the larger
+  reserve trigger to 1,536 removed that midrange penalty and reduced allocation
+  by 16 percent at 1,664 and 2,048 packets, with population time improving by
+  about 2 and 8 percent. However, its additional per-packet condition measured
+  3-10 percent slower below the trigger in the isolated ledger benchmark.
+
+  Retain the ShortRun artifacts under
+  `C:\shared\temp\quic-bdn-sent-capacity-{expanded,late}-short*-20260716`.
+  Do not add a condition to every packet insertion for this capacity policy.
+  Revisit only with a materially different pressure signal outside the packet
+  insertion hot path or a sent-packet storage design that avoids dictionary
+  growth without penalizing ordinary connections.
+
 - 2026-07-16: the current Incursa raw QUIC package completed a fresh local
   breadth sweep across all 17 explicitly selected scenarios. Run
   `incursa-raw-fresh-coverage-all-20260716-quic-transport-v1-comparison`
