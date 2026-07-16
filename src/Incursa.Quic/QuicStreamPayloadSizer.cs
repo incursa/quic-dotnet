@@ -190,7 +190,7 @@ internal static class QuicStreamPayloadSizer
         return best > 0;
     }
 
-    private static bool TryGetOutboundStreamFrameLength(
+    internal static bool TryGetOutboundStreamFrameLength(
         byte frameType,
         ulong streamId,
         ulong offset,

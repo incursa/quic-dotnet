@@ -323,6 +323,42 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
   existing dropped-FIN timing assertion, which then passed 10/10 isolated
   reruns. No package, controller, worker, deployment, or publication changed.
 
+- 2026-07-16: semantic raw STREAM staging removes the pooled-capacity penalty
+  from queued large writes. A public write that exceeds the current packet
+  service budget now queues its unframed application bytes with stream ID,
+  offset, priority, FIN state, enqueue time, and queue cause. STREAM framing is
+  deferred until the scheduler selects a fragment. Packet protection and
+  sent-packet retention still receive an independently owned framed plaintext
+  buffer, preserving PTO rebuild, retransmission, cancellation, ordering, and
+  delayed-consumption behavior. Raw entries are not mixed with other queued
+  writes in this first bounded slice.
+
+  This is materially different from the rejected cursor-only design below. It
+  removes the long-lived encoded payload owner whose 32 KiB data plus STREAM
+  header rounded to a 64 KiB `ArrayPool` bucket; it does not merely advance a
+  cursor through that oversized owner. Counter-attached c128 download evidence
+  passed exact validation and reduced peak pooled capacity from about 62.1 MiB
+  to 21.3 MiB. The 64 KiB bucket fell from 1,003 buffers / 65.1 MiB to
+  235 buffers / 7.4 MiB. Throughput and latency from this instrumented run are
+  diagnostic only.
+
+  Sixty alternating, uninstrumented source-backed 1 MiB download cells passed
+  exact validation with zero failures and timeouts. Candidate median throughput
+  deltas at c1/c4/c16/c32/c64/c128 were +0.8/+4.0/-0.9/+0.4/+1.3/-0.3 percent;
+  p95 deltas were +4.1/-9.1/+10.5/-6.6/-3.7/+0.7 percent. Because the short c16
+  set was noisy, ten longer confirmation cells were run: candidate median
+  throughput was 182.93 versus 177.95 MiB/s and median p95 was 87.99 versus
+  91.91 ms. All confirmation cells also passed exact validation without errors.
+
+  Focused queue, scheduler, API, FIN, high-fanout, and recovery tests pass
+  115/115. One complete-suite run passed 9,596 tests with five intentional
+  skips and only the timing-sensitive dropped-FIN injection assertion failing;
+  that exact test then passed 10/10 isolated reruns. The final full-suite gate
+  passed 9,597 tests with five intentional skips and zero failures. Evidence is
+  retained under
+  `protocol-lab-raw-owner-ab-20260716`. No package, controller, worker,
+  deployment, or publication changed.
+
 - 2026-07-16: an ACK-proportional queued-send burst was tested and rejected.
   The candidate retained the four-datagram floor, translated newly acknowledged
   protected bytes into datagram credit, and bounded one recovery transition at

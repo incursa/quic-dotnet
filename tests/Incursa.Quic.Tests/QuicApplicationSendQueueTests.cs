@@ -6,6 +6,66 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicApplicationSendQueueTests
 {
     [Fact]
+    public void RawStreamDataAdvancesWithoutReformattingOwner()
+    {
+        QuicApplicationSendQueue queue = new();
+        byte[] streamData = QuicBufferPool.RentBytes(32);
+        Enumerable.Range(0, 32).Select(static value => (byte)value).ToArray().CopyTo(streamData, 0);
+        queue.EnqueueRawStreamData(
+            streamId: 4,
+            priority: 2,
+            streamData,
+            streamDataLength: 32,
+            streamOffset: 11,
+            isFinal: true);
+        Assert.True(queue.TryGetLatestQueuedWriteForStream(4, out PendingApplicationSendRequest before));
+
+        Assert.True(queue.TryAdvanceQueuedRawStreamData(before.Sequence, streamData, consumedDataLength: 12));
+        Assert.True(queue.TryGetLatestQueuedWriteForStream(4, out PendingApplicationSendRequest after));
+        Assert.True(after.TryGetStreamFrame(out QuicStreamFrame frame));
+
+        Assert.Same(streamData, after.StreamPayload);
+        Assert.Equal(12, after.StreamPayloadOffset);
+        Assert.Equal(20, after.StreamPayloadLength);
+        Assert.Equal(23UL, after.StreamOffset);
+        Assert.True(after.IsFinal);
+        Assert.Equal(Enumerable.Range(12, 20).Select(static value => (byte)value), frame.StreamData.ToArray());
+        queue.Clear();
+    }
+
+    [Fact]
+    public void RawStreamDataCanBePromotedToFinalInPlace()
+    {
+        QuicApplicationSendQueue queue = new();
+        byte[] streamData = QuicBufferPool.RentBytes(8);
+        queue.EnqueueRawStreamData(4, 0, streamData, 8, streamOffset: 0, isFinal: false);
+        Assert.True(queue.TryGetLatestQueuedWriteForStream(4, out PendingApplicationSendRequest before));
+
+        Assert.True(queue.TryMarkQueuedWriteFinal(before.Sequence));
+        Assert.True(queue.TryGetLatestQueuedWriteForStream(4, out PendingApplicationSendRequest after));
+        Assert.True(after.TryGetStreamFrame(out QuicStreamFrame frame));
+
+        Assert.Same(streamData, after.StreamPayload);
+        Assert.True(after.IsFinal);
+        Assert.True(frame.IsFin);
+        queue.Clear();
+    }
+
+    [Fact]
+    public void EncodedStreamDataCannotBePromotedThroughRawMetadata()
+    {
+        QuicApplicationSendQueue queue = new();
+        byte[] streamPayload = QuicBufferPool.RentBytes(8);
+        queue.Enqueue(streamId: 4, priority: 0, streamPayload, streamPayloadLength: 8);
+        Assert.True(queue.TryGetLatestQueuedWriteForStream(4, out PendingApplicationSendRequest before));
+
+        Assert.False(queue.TryMarkQueuedWriteFinal(before.Sequence));
+        Assert.True(queue.TryGetLatestQueuedWriteForStream(4, out PendingApplicationSendRequest after));
+        Assert.False(after.IsFinal);
+        queue.Clear();
+    }
+
+    [Fact]
     public void CaptureRetentionSnapshotCountsActualPayloadOwnerCapacity()
     {
         QuicApplicationSendQueue queue = new();

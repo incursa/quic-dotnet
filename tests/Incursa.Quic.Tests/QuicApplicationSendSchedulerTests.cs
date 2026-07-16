@@ -6,6 +6,36 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicApplicationSendSchedulerTests
 {
     [Fact]
+    public void SelectQueuedApplicationSendPlanFragmentsRawStreamDataWithoutBatchingLaterWrites()
+    {
+        PendingApplicationSendRequest rawWrite = new(
+            Sequence: 0,
+            StreamId: 4,
+            Priority: 0,
+            StreamPayload: Enumerable.Range(0, 96).Select(static value => (byte)value).ToArray(),
+            StreamPayloadLength: 96,
+            ContainsRawStreamData: true,
+            StreamOffset: 17,
+            IsFinal: true);
+        PendingApplicationSendRequest encodedWrite = CreateQueuedWrite(sequence: 1, streamId: 8, dataLength: 8);
+
+        QuicApplicationSendPlan plan = QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
+            [rawWrite, encodedWrite],
+            QuicQueuedApplicationSendBudget.AllowSingleDatagram(maxPayloadBytes: 40),
+            out QuicStreamFrame frame,
+            out Exception? exception);
+
+        Assert.Null(exception);
+        Assert.Equal(QuicApplicationSendPlanKind.Fragment, plan.Kind);
+        Assert.Equal(1, plan.SelectedWriteCount);
+        Assert.InRange(plan.FragmentDataLength, 1, 95);
+        Assert.Equal(4UL, frame.StreamId.Value);
+        Assert.Equal(17UL, frame.Offset);
+        Assert.True(frame.IsFin);
+        Assert.Equal(96, frame.StreamDataLength);
+    }
+
+    [Fact]
     public void SelectQueuedApplicationSendPlan_SelectsNoWorkWhenBudgetIsZero()
     {
         PendingApplicationSendRequest[] queuedWrites = [CreateQueuedWrite(sequence: 0, streamId: 4, dataLength: 16)];

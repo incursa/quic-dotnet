@@ -637,6 +637,65 @@ peer result. Focused tests passed 60 with four intentional skips. The full
 suite passed 9,591 with five skips and one dropped-FIN timing failure; that
 unrelated assertion passed 10/10 isolated reruns.
 
+## Semantic Raw STREAM Staging 2026-07-16
+
+The next send-side trace isolated a capacity amplification rather than a pool
+leak. The public write path commits at most 32 KiB of stream data at a time.
+Formatting those bytes as a STREAM frame before queueing adds header bytes, so
+`ArrayPool<byte>.Shared` rounds each long-lived queued owner to 64 KiB. At c128,
+thousands of valid outstanding writes therefore retained about twice their
+application-data capacity even though buffers eventually drained and
+retransmission retention remained bounded.
+
+The accepted candidate queues raw application bytes plus semantic stream
+metadata and formats only the fragment selected for service. The queue retains
+stream ID, offset, priority, FIN state, enqueue timestamp, and queue cause.
+Raw writes remain single-entry scheduler selections. Packet protection still
+receives a separately owned framed plaintext buffer, and that owner transfers
+to sent-packet tracking for PTO/retransmission exactly as before. Protection
+failure leaves the raw queue owner intact. Partial progress advances the raw
+owner slice and stream offset only after successful protection and accounting.
+
+Counter-attached exact diagnostics proved the intended retention mechanism:
+
+| Connections | Control peak pool | Candidate peak pool | Candidate 64 KiB bucket | Result |
+| ---: | ---: | ---: | ---: | --- |
+| 64 | 3,937 buffers / 9.81 MiB | 3,869 buffers / 9.71 MiB | 136 buffers / 4.25 MiB | exact, no errors |
+| 128 | 5,373 buffers / 62.06 MiB | 8,518 buffers / 21.29 MiB | 235 buffers / 7.38 MiB | exact, no errors |
+
+The higher c128 buffer count is expected because the raw 32 KiB owners are
+smaller; retained capacity is the acceptance signal. Counter-attached
+throughput is not used as a performance claim.
+
+The clean source-backed A/B campaign alternated baseline and candidate order,
+used five repetitions at every c1/c4/c16/c32/c64/c128 point, disabled traces
+and counters, and validated the exact 1 MiB response content in every cell:
+
+| Connections | Control median | Candidate median | Throughput delta | Control p95 | Candidate p95 | p95 delta |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 37.13 MiB/s | 37.43 MiB/s | +0.8% | 34.23 ms | 35.62 ms | +4.1% |
+| 4 | 96.66 MiB/s | 100.53 MiB/s | +4.0% | 50.17 ms | 45.63 ms | -9.1% |
+| 16 | 174.65 MiB/s | 173.10 MiB/s | -0.9% | 99.00 ms | 109.36 ms | +10.5% |
+| 32 | 169.30 MiB/s | 169.90 MiB/s | +0.4% | 199.09 ms | 186.02 ms | -6.6% |
+| 64 | 158.41 MiB/s | 160.39 MiB/s | +1.3% | 344.44 ms | 331.69 ms | -3.7% |
+| 128 | 149.11 MiB/s | 148.60 MiB/s | -0.3% | 644.16 ms | 648.74 ms | +0.7% |
+
+The short c16 candidate set had higher variance, so a second alternating set
+used ten-second measurement windows. Its five candidate cells reached
+182.93 MiB/s median and 87.99 ms median p95 versus 177.95 MiB/s and 91.91 ms
+for the five controls. All 70 uninstrumented cells passed exact validation with
+zero failed or timed-out operations. These shared-host results establish no
+material c1-c128 regression; they are not a peer ranking or publishable claim.
+
+Focused queue, scheduler, public API, high-fanout FIN, RFC 9000, and RFC 9002
+tests pass 115/115. One full-suite run passed 9,596 tests with five intentional
+skips; its only failure was the existing timing-sensitive dropped-FIN injection
+assertion, which then passed 10/10 isolated reruns. The final full-suite gate
+passed 9,597 tests with five intentional skips and zero failures. Evidence remains under
+`C:\shared\temp\protocol-lab-raw-owner-ab-20260716` and the two counter roots
+under `C:\shared\temp\protocol-lab-raw-queued-owner-candidate-20260716`.
+Nothing was deployed, registered, uploaded, or published.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |

@@ -113,11 +113,7 @@ internal static class QuicApplicationSendScheduler
             return QuicApplicationSendPlan.None(budget.BlockedReason);
         }
 
-        if (!QuicStreamParser.TryParseStreamFrame(
-            firstQueuedWrite.StreamPayload.AsSpan(
-                firstQueuedWrite.StreamPayloadOffset,
-                firstQueuedWrite.StreamPayloadLength),
-            out firstStreamFrame))
+        if (!firstQueuedWrite.TryGetStreamFrame(out firstStreamFrame))
         {
             exception = new InvalidOperationException("Queued application stream payload is not a valid STREAM frame.");
             return QuicApplicationSendPlan.None(QuicSendPolicyBlockedReason.InvalidQueuedApplicationSend);
@@ -142,7 +138,7 @@ internal static class QuicApplicationSendScheduler
                 firstStreamFrame.StreamId.Value);
         }
 
-        int selectedWriteCount = queuedWriteCount == 1
+        int selectedWriteCount = queuedWriteCount == 1 || firstQueuedWrite.ContainsRawStreamData
             ? 1
             : QuicApplicationSendQueue.SelectQueuedApplicationSendBatchCount(
                 sortedQueuedWrites,
