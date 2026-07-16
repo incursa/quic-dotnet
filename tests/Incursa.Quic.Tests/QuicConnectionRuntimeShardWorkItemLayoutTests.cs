@@ -88,7 +88,7 @@ public sealed class QuicConnectionRuntimeShardWorkItemLayoutTests
             datagram,
             RoutedLocallyIssuedConnectionId: ulong.MaxValue,
             EcnCounts: ecnCounts);
-        QuicReceiveBufferOwnership ownership = new(null, FromRing: true);
+        QuicReceiveBufferOwnership ownership = new(null, RingToken: 1);
         QuicConnectionRuntimeShardWorkItem item = new(
             new QuicConnectionHandle(6),
             runtime,

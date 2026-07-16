@@ -4,6 +4,56 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: the raw receive-buffer ring no longer serializes every socket
+  receive and runtime return through one monitor. A versioned lock-free free
+  list now carries the exact bounded ring index and lease generation in the
+  ownership token, retains the existing ArrayPool fallback, and rejects
+  wrong-index, stale-generation, and duplicate returns. The packed state
+  reserves 12 bits for at most 4,095 ring slots and 52 bits for the generation
+  so long-running wraparound is not a practical service-lifetime risk.
+
+  A permanent ShortRun benchmark compared the pre-change commit `9e643620`
+  with the accepted candidate. Single rent/return improved from 40.88 to
+  33.74 ns (-17.5 percent), and a 64-operation burst improved from 38.75 to
+  32.75 ns per operation (-15.5 percent). Both remained allocation-free.
+  Retain the baseline report under
+  `C:\shared\temp\bdn-receive-pool-baseline-20260716` and the accepted report
+  under
+  `C:\shared\temp\bdn-receive-pool-lockfree-generation-state-20260716`.
+
+  Five alternating, uninstrumented source-backed samples at c1 and c16 used
+  the same packaged `quic-go-raw-load@0.1.15` executor and
+  `raw-quic-transport@0.1.17` scenario. All 20 cells passed exact 4 MiB content
+  validation with zero failures/timeouts. At c1, median throughput changed
+  from 37,902,025 to 39,070,802 B/s (+3.1 percent) and p95 from 149.81 to
+  129.68 ms (-13.4 percent); the baseline throughput CV was 9.53 percent, so
+  this is directional rather than stable evidence. At c16, throughput changed
+  from 190,522,132 to 188,852,425 B/s (-0.9 percent) and p95 from 350.99 to
+  356.03 ms (+1.4 percent), with CVs below 1 percent. The c16 result is neutral
+  shared-host evidence, not a publishable claim. Retain all 20 cells under
+  `C:\shared\temp\protocol-lab-receive-pool-matched-ab-20260716\runs`.
+
+  The retained baseline CPU trace sampled 808
+  `Monitor.Enter_Slowpath <- QuicReceiveBufferPool.Return` edges. Candidate
+  trace `receive-pool-candidate-cpu-c1-20260716` contains no receive-pool
+  monitor frame; remaining monitor samples belong to other runtime locks. This
+  trace predates the generation hardening but proves the same monitor-removal
+  mechanism retained by the accepted implementation. Focused ownership/layout
+  tests passed 23/23, including a copied stale-ownership regression and the
+  concurrent pool stress test. Two final full Release runs each completed
+  9,601 passes and five intentional skips with one different load-sensitive
+  failure: the first hit the known dropped-server-FIN assertion and the second
+  timed out waiting for an HTTP/3 peer close. Each exact failed test then passed
+  10/10 reruns on the same final binary. These unrelated suite-load flakes are
+  retained rather than hidden or used to alter the receive-pool implementation.
+
+  The first direct source-catalog smoke is retained as infrastructure evidence:
+  its bundled `quic-go-raw-load` manifest rejected the server-to-client traffic
+  shape, while the current package-backed executor accepted and completed the
+  exact same cell. Source/package load-tool capability parity is therefore a
+  ProtocolLab coverage repair item. No package, controller, worker,
+  deployment, registration, or publication state changed.
+
 - 2026-07-16: sustained small-write raw QUIC coverage is accepted as an
   evidence-infrastructure slice. The new
   `quic.transport.sustained-download.4096x1kb` contract keeps one stable

@@ -14,18 +14,20 @@ internal sealed class QuicReceiveBufferPool : IDisposable
     // changing the ownership model.
     internal const int DefaultRingSize = 128;
     internal const string RingSizeEnvironmentVariable = "INCURSA_QUIC_RECEIVE_BUFFER_RING_SIZE";
+    private const int RingTokenIndexBits = 12;
+    internal const long RingTokenIndexMask = (1L << RingTokenIndexBits) - 1;
+    private const long RingTokenGenerationMask = (1L << (64 - RingTokenIndexBits)) - 1;
+    internal const int MaximumRingSize = (1 << RingTokenIndexBits) - 1;
 
     private static int nextPoolId;
-    private readonly object gate = new();
     private readonly byte[]?[] ringBuffers;
-    private readonly int[] freeIndexes;
-    private readonly bool[] rentedRingBuffers;
-    private readonly Dictionary<byte[], int> ringIndexes;
+    private readonly int[] nextFreeIndexes;
+    private readonly long[] ringStates;
     private readonly int bufferSize;
     private readonly int poolId;
     private readonly string ownerName;
 
-    private int freeCount;
+    private long freeHead;
     private long currentOutstanding;
     private long maxOutstanding;
     private long ringRents;
@@ -47,7 +49,7 @@ internal sealed class QuicReceiveBufferPool : IDisposable
         }
 
         int effectiveRingSize = ringSize ?? ResolveDefaultRingSize();
-        if (effectiveRingSize < 0)
+        if (effectiveRingSize < 0 || effectiveRingSize > MaximumRingSize)
         {
             throw new ArgumentOutOfRangeException(nameof(ringSize));
         }
@@ -56,16 +58,15 @@ internal sealed class QuicReceiveBufferPool : IDisposable
         this.ownerName = string.IsNullOrWhiteSpace(ownerName) ? "unknown" : ownerName;
         poolId = Interlocked.Increment(ref nextPoolId);
         ringBuffers = new byte[effectiveRingSize][];
-        freeIndexes = new int[effectiveRingSize];
-        rentedRingBuffers = new bool[effectiveRingSize];
-        ringIndexes = new Dictionary<byte[], int>(effectiveRingSize, ReferenceEqualityComparer.Instance);
+        nextFreeIndexes = new int[effectiveRingSize];
+        ringStates = new long[effectiveRingSize];
 
         for (int index = 0; index < effectiveRingSize; index++)
         {
-            freeIndexes[index] = index;
+            nextFreeIndexes[index] = index - 1;
         }
 
-        freeCount = effectiveRingSize;
+        freeHead = PackVersionedIndex(effectiveRingSize - 1, version: 0);
         if (preallocateRingBuffers)
         {
             PreallocateRingBuffers();
@@ -100,28 +101,26 @@ internal sealed class QuicReceiveBufferPool : IDisposable
 
     internal QuicReceiveBufferLease Rent()
     {
-        lock (gate)
+        if (TryPopFreeIndex(out int index))
         {
-            if (freeCount > 0)
+            byte[]? buffer = Volatile.Read(ref ringBuffers[index]);
+            if (buffer is null)
             {
-                int index = freeIndexes[--freeCount];
-                byte[]? buffer = ringBuffers[index];
-                if (buffer is null)
-                {
-                    buffer = AllocateRingBuffer(index);
-                }
-
-                rentedRingBuffers[index] = true;
-                RecordRent(ring: true);
-                return new QuicReceiveBufferLease(this, buffer, bufferSize, fromRing: true);
+                buffer = AllocateRingBuffer(index);
             }
+
+            long activeState = (Volatile.Read(ref ringStates[index]) + 1) & RingTokenGenerationMask;
+            Volatile.Write(ref ringStates[index], activeState);
+            long ringToken = PackVersionedIndex(index, activeState);
+            RecordRent(ring: true);
+            return new QuicReceiveBufferLease(this, buffer, bufferSize, ringToken);
         }
 
         byte[] fallbackBuffer = QuicBufferPool.RentBytes(
             bufferSize,
             QuicBufferPoolOwner.InboundDatagram);
         RecordRent(ring: false);
-        return new QuicReceiveBufferLease(this, fallbackBuffer, bufferSize, fromRing: false);
+        return new QuicReceiveBufferLease(this, fallbackBuffer, bufferSize, ringToken: 0);
     }
 
     internal void Return(byte[] buffer, QuicReceiveBufferOwnership ownership)
@@ -140,18 +139,20 @@ internal sealed class QuicReceiveBufferPool : IDisposable
             return;
         }
 
-        lock (gate)
+        int index = ownership.RingIndex;
+        long activeState = UnpackVersion(ownership.RingToken);
+        if ((uint)index >= (uint)ringBuffers.Length
+            || !ReferenceEquals(Volatile.Read(ref ringBuffers[index]), buffer)
+            || Interlocked.CompareExchange(
+                ref ringStates[index],
+                (activeState + 1) & RingTokenGenerationMask,
+                activeState) != activeState)
         {
-            if (!ringIndexes.TryGetValue(buffer, out int index) || !rentedRingBuffers[index])
-            {
-                Interlocked.Increment(ref doubleReturnAttempts);
-                return;
-            }
-
-            rentedRingBuffers[index] = false;
-            freeIndexes[freeCount++] = index;
+            Interlocked.Increment(ref doubleReturnAttempts);
+            return;
         }
 
+        PushFreeIndex(index);
         RecordReturn();
     }
 
@@ -166,11 +167,54 @@ internal sealed class QuicReceiveBufferPool : IDisposable
     private byte[] AllocateRingBuffer(int index)
     {
         byte[] buffer = new byte[bufferSize];
-        ringBuffers[index] = buffer;
-        ringIndexes.Add(buffer, index);
+        Volatile.Write(ref ringBuffers[index], buffer);
         Interlocked.Increment(ref allocatedRingBuffers);
         return buffer;
     }
+
+    private bool TryPopFreeIndex(out int index)
+    {
+        while (true)
+        {
+            long observedHead = Volatile.Read(ref freeHead);
+            index = UnpackFreeIndex(observedHead);
+            if (index < 0)
+            {
+                return false;
+            }
+
+            int nextIndex = Volatile.Read(ref nextFreeIndexes[index]);
+            long updatedHead = PackVersionedIndex(nextIndex, unchecked(UnpackVersion(observedHead) + 1));
+            if (Interlocked.CompareExchange(ref freeHead, updatedHead, observedHead) == observedHead)
+            {
+                return true;
+            }
+        }
+    }
+
+    private void PushFreeIndex(int index)
+    {
+        while (true)
+        {
+            long observedHead = Volatile.Read(ref freeHead);
+            Volatile.Write(ref nextFreeIndexes[index], UnpackFreeIndex(observedHead));
+            long updatedHead = PackVersionedIndex(index, unchecked(UnpackVersion(observedHead) + 1));
+            if (Interlocked.CompareExchange(ref freeHead, updatedHead, observedHead) == observedHead)
+            {
+                return;
+            }
+        }
+    }
+
+    // The 52-bit version prevents practical ABA wraparound while retaining 4,095 bounded ring slots.
+    private static long PackVersionedIndex(int index, long version)
+        => unchecked(((version & RingTokenGenerationMask) << RingTokenIndexBits) | ((index + 1) & RingTokenIndexMask));
+
+    private static int UnpackFreeIndex(long head)
+        => (int)(head & RingTokenIndexMask) - 1;
+
+    private static long UnpackVersion(long value)
+        => (long)((ulong)value >> RingTokenIndexBits);
 
     private void RecordRent(bool ring)
     {
@@ -211,6 +255,7 @@ internal sealed class QuicReceiveBufferPool : IDisposable
 
         return int.TryParse(value, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int parsed)
             && parsed >= 0
+            && parsed <= MaximumRingSize
             ? parsed
             : DefaultRingSize;
     }
@@ -221,14 +266,18 @@ internal struct QuicReceiveBufferLease : IDisposable
     private QuicReceiveBufferPool? pool;
     private byte[]? buffer;
     private int length;
-    private bool fromRing;
+    private long ringToken;
 
-    internal QuicReceiveBufferLease(QuicReceiveBufferPool pool, byte[] buffer, int length, bool fromRing)
+    internal QuicReceiveBufferLease(
+        QuicReceiveBufferPool pool,
+        byte[] buffer,
+        int length,
+        long ringToken)
     {
         this.pool = pool;
         this.buffer = buffer;
         this.length = length;
-        this.fromRing = fromRing;
+        this.ringToken = ringToken;
     }
 
     internal byte[] Buffer => buffer ?? throw new ObjectDisposedException(nameof(QuicReceiveBufferLease));
@@ -237,7 +286,7 @@ internal struct QuicReceiveBufferLease : IDisposable
         ? Memory<byte>.Empty
         : buffer.AsMemory(0, length);
 
-    internal QuicReceiveBufferOwnership Ownership => new(pool, fromRing);
+    internal QuicReceiveBufferOwnership Ownership => new(pool, ringToken);
 
     internal void TransferToRuntime()
     {
@@ -249,7 +298,7 @@ internal struct QuicReceiveBufferLease : IDisposable
         buffer = null;
         pool = null;
         length = 0;
-        fromRing = false;
+        ringToken = 0;
     }
 
     public void Dispose()
@@ -264,13 +313,20 @@ internal struct QuicReceiveBufferLease : IDisposable
         buffer = null;
         pool = null;
         length = 0;
-        bool returnedFromRing = fromRing;
-        fromRing = false;
-        owner.Return(leasedBuffer, new QuicReceiveBufferOwnership(owner, returnedFromRing));
+        long returnedRingToken = ringToken;
+        ringToken = 0;
+        owner.Return(leasedBuffer, new QuicReceiveBufferOwnership(owner, returnedRingToken));
     }
 }
 
-internal readonly record struct QuicReceiveBufferOwnership(QuicReceiveBufferPool? Pool, bool FromRing);
+internal readonly record struct QuicReceiveBufferOwnership(
+    QuicReceiveBufferPool? Pool,
+    long RingToken = 0)
+{
+    internal bool FromRing => RingToken != 0;
+
+    internal int RingIndex => (int)(RingToken & QuicReceiveBufferPool.RingTokenIndexMask) - 1;
+}
 
 internal readonly record struct QuicReceiveBufferPoolSnapshot(
     int PoolId,

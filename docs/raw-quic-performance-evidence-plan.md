@@ -741,6 +741,49 @@ The accepted campaign roots are under
 uploaded or registered, and no controller, worker, deployment, or publication
 state changed.
 
+## Receive Ring Contention Removed 2026-07-16
+
+The c1 sustained-small-write CPU trace identified the receive-ring return
+monitor as a sampled hot edge. The accepted runtime uses a versioned bounded
+free list and carries the exact ring index and lease generation through the
+existing ownership token. ArrayPool fallback, wrong-index, stale-generation,
+and duplicate-return rejection, shard ownership transfer, and the 128-byte
+shard work-item layout remain intact.
+
+The permanent pre-change/candidate ShortRun comparison was allocation-free:
+
+| Operation | Pre-change | Candidate | Delta |
+| --- | ---: | ---: | ---: |
+| One rent/return | 40.88 ns | 33.74 ns | -17.5% |
+| 64-operation burst | 38.75 ns | 32.75 ns | -15.5% |
+
+Matched uninstrumented source-backed runs used five samples per variant and
+load point with exact 4 MiB content validation:
+
+| Connections | Pre-change throughput | Candidate throughput | Delta | Pre-change p95 | Candidate p95 | Delta |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 37.90 MB/s | 39.07 MB/s | +3.1% | 149.81 ms | 129.68 ms | -13.4% |
+| 16 | 190.52 MB/s | 188.85 MB/s | -0.9% | 350.99 ms | 356.03 ms | +1.4% |
+
+All 20 cells passed validation and benchmark execution with zero failed or
+timed-out operations. Candidate trace
+`receive-pool-candidate-cpu-c1-20260716` no longer contains a
+`QuicReceiveBufferPool` monitor frame. The c1 baseline throughput CV was 9.53
+percent; c16 baseline and candidate CVs were 0.60 and 0.85 percent. The c16
+result is neutral and all shared-host evidence remains diagnostic. Matched run
+artifacts are under
+`C:\shared\temp\protocol-lab-receive-pool-matched-ab-20260716\runs`.
+Benchmark reports are under
+`C:\shared\temp\bdn-receive-pool-baseline-20260716` and
+`C:\shared\temp\bdn-receive-pool-lockfree-generation-state-20260716`.
+
+The failed direct-catalog smoke
+`receive-pool-baseline-smoke-c1-20260716` is retained because it exposed a
+coverage mismatch: the bundled source load-tool manifest rejects the
+server-to-client traffic shape, while the materialized current executor package
+supports it. ProtocolLab must align source and package capability declarations
+before direct source-catalog raw campaigns are considered parity evidence.
+
 ## Coverage Matrix
 
 | Area | Current coverage | Required next coverage |
@@ -753,7 +796,8 @@ state changed.
 | Flow control | Exact 100 ms slow-reader lane plus incidental multiplex evidence | Controlled windows, blocked duration, credit cadence, and slow-writer pressure |
 | Network | Clean profile | Loss, delay, reordering, bandwidth, MTU, and ECN where executable |
 | Duration | 3-30 second finite runs | Minutes-scale bounded-memory and recovery soaks |
-| Diagnostics | Counters and traces on selected Incursa runs | Target and generator CPU, queue, buffer, retransmission, qlog, and network telemetry |
+| Diagnostics | Counters and traces on selected Incursa runs, including receive-ring contention proof | Target and generator CPU, queue, buffer, retransmission, qlog, and network telemetry |
+| Source/package parity | Source-backed targets work with current materialized executor/scenario packages | Align the bundled raw load-tool traffic-shape declaration with the current executor package and add parity tests |
 
 ## Work Order
 

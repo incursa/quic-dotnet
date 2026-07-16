@@ -55,6 +55,8 @@ public sealed class QuicReceiveBufferPoolTests
         Assert.True(first.Ownership.FromRing);
         Assert.True(second.Ownership.FromRing);
         Assert.False(third.Ownership.FromRing);
+        Assert.NotEqual(first.Ownership.RingIndex, second.Ownership.RingIndex);
+        Assert.Equal(-1, third.Ownership.RingIndex);
     }
 
     [Fact]
@@ -89,6 +91,88 @@ public sealed class QuicReceiveBufferPoolTests
         Assert.Equal(1, snapshot.Returns);
         Assert.Equal(0, snapshot.CurrentOutstanding);
         Assert.Equal(1, snapshot.DoubleReturnAttempts);
+    }
+
+    [Fact]
+    public void Return_RejectsMismatchedRingIndexWithoutReleasingTheLease()
+    {
+        using QuicReceiveBufferPool pool = new(bufferSize: 32, ringSize: 2);
+        QuicReceiveBufferLease lease = pool.Rent();
+        QuicReceiveBufferOwnership ownership = lease.Ownership;
+        int otherIndex = ownership.RingIndex == 0 ? 1 : 0;
+
+        long wrongIndexToken = (ownership.RingToken & ~QuicReceiveBufferPool.RingTokenIndexMask) | (uint)(otherIndex + 1);
+        pool.Return(lease.Buffer, new QuicReceiveBufferOwnership(pool, wrongIndexToken));
+
+        QuicReceiveBufferPoolSnapshot rejectedSnapshot = pool.Snapshot;
+        Assert.Equal(1, rejectedSnapshot.CurrentOutstanding);
+        Assert.Equal(1, rejectedSnapshot.DoubleReturnAttempts);
+
+        lease.Dispose();
+        QuicReceiveBufferPoolSnapshot returnedSnapshot = pool.Snapshot;
+        Assert.Equal(0, returnedSnapshot.CurrentOutstanding);
+        Assert.Equal(1, returnedSnapshot.Returns);
+    }
+
+    [Fact]
+    public void Return_RejectsStaleOwnershipAfterTheRingSlotIsRentedAgain()
+    {
+        using QuicReceiveBufferPool pool = new(bufferSize: 32, ringSize: 1);
+        QuicReceiveBufferLease first = pool.Rent();
+        byte[] buffer = first.Buffer;
+        QuicReceiveBufferOwnership staleOwnership = first.Ownership;
+        first.Dispose();
+
+        QuicReceiveBufferLease second = pool.Rent();
+        Assert.Same(buffer, second.Buffer);
+        Assert.NotEqual(staleOwnership.RingToken, second.Ownership.RingToken);
+
+        pool.Return(buffer, staleOwnership);
+
+        QuicReceiveBufferPoolSnapshot rejectedSnapshot = pool.Snapshot;
+        Assert.Equal(1, rejectedSnapshot.CurrentOutstanding);
+        Assert.Equal(1, rejectedSnapshot.DoubleReturnAttempts);
+
+        second.Dispose();
+        QuicReceiveBufferPoolSnapshot returnedSnapshot = pool.Snapshot;
+        Assert.Equal(0, returnedSnapshot.CurrentOutstanding);
+        Assert.Equal(2, returnedSnapshot.Returns);
+    }
+
+    [Fact]
+    public void RentAndReturn_RemainBalancedUnderConcurrentContention()
+    {
+        const int workerCount = 8;
+        const int iterationsPerWorker = 5_000;
+        using QuicReceiveBufferPool pool = new(
+            bufferSize: 32,
+            ringSize: 4,
+            preallocateRingBuffers: true);
+
+        Parallel.For(0, workerCount, _ =>
+        {
+            for (int iteration = 0; iteration < iterationsPerWorker; iteration++)
+            {
+                using QuicReceiveBufferLease lease = pool.Rent();
+                lease.Memory.Span[0] = (byte)iteration;
+            }
+        });
+
+        QuicReceiveBufferPoolSnapshot snapshot = pool.Snapshot;
+        Assert.Equal(0, snapshot.CurrentOutstanding);
+        Assert.Equal(0, snapshot.DoubleReturnAttempts);
+        Assert.Equal((long)workerCount * iterationsPerWorker, snapshot.RingRents + snapshot.FallbackRents);
+        Assert.Equal((long)workerCount * iterationsPerWorker, snapshot.Returns);
+        Assert.Equal(4, snapshot.AllocatedRingBuffers);
+    }
+
+    [Fact]
+    public void Constructor_RejectsRingSizeBeyondPackedIndexCapacity()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            new QuicReceiveBufferPool(
+                bufferSize: 32,
+                ringSize: QuicReceiveBufferPool.MaximumRingSize + 1));
     }
 
     [Fact]
