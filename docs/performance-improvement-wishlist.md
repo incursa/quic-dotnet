@@ -982,6 +982,23 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
   design. Queue/backpressure work remains open around receive-segment lifetime,
   application read/write coupling, and sent-packet retention.
 
+- 2026-07-15: a bounded per-shard listener send-queue candidate was rejected
+  before ProtocolLab measurement. The accepted c64 CPU trace showed synchronous
+  listener UDP send work inside runtime-shard packet service, so the candidate
+  transferred detached datagram ownership to one ordered sender per shard,
+  bounded each queue at 256 datagrams, and used an ordering-preserving
+  producer drain when the bound was reached. Production and test projects built
+  cleanly, and focused queue ordering and ownership tests were added during the
+  experiment. However, the existing transient UDP-loss integration test
+  `DroppedServerFinIsRecoveredAndShardContinuesProcessing` deterministically
+  timed out twice while reading the 64 KiB response after one dropped send.
+  The synchronous baseline keeps packet emission and recovery bookkeeping on
+  the same shard service boundary; decoupling them changed that recovery timing
+  enough to violate the existing five-second contract. The runtime, metrics,
+  and test candidate was fully reverted. Do not repeat an asynchronous listener
+  send queue without a design that couples actual socket emission to congestion
+  and loss-recovery accounting.
+
 - 2026-07-12: incomplete stream try-writes now return the runtime's pooled
   `ValueTask<bool>` directly instead of allocating
   `QuicStream.TryWriteCoreAfterRuntimeWriteAsync` for every suspended write.
