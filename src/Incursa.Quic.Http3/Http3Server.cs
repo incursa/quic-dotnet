@@ -919,7 +919,7 @@ public sealed class Http3Server : IAsyncDisposable
                 throw new Http3Exception(Http3ErrorCode.MessageError, "The HTTP/3 request did not contain a HEADERS frame.");
             }
 
-            return Http3RequestReadResult.FromRequest(CreateRequest(headers, body?.WrittenMemory ?? ReadOnlyMemory<byte>.Empty));
+            return Http3RequestReadResult.FromRequest(CreateOwnedRequest(headers, body?.WrittenMemory ?? ReadOnlyMemory<byte>.Empty));
         }
         finally
         {
@@ -1129,10 +1129,18 @@ public sealed class Http3Server : IAsyncDisposable
         }
     }
 
-    private static Http3Request CreateRequest(IReadOnlyList<QPackFieldLine> headers, ReadOnlyMemory<byte> body)
+    private static Http3Request CreateOwnedRequest(IReadOnlyList<QPackFieldLine> headers, ReadOnlyMemory<byte> body)
     {
         Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, checked((ulong)body.Length));
-        return new Http3Request(result.Method!, result.Scheme ?? string.Empty, result.Authority ?? string.Empty, result.Path ?? string.Empty, result.Protocol, headers, body);
+        return new Http3Request(
+            result.Method!,
+            result.Scheme ?? string.Empty,
+            result.Authority ?? string.Empty,
+            result.Path ?? string.Empty,
+            result.Protocol,
+            headers,
+            body,
+            copyBody: false);
     }
 
     private sealed class Http3StreamingRequestBodyReader : IAsyncEnumerable<ReadOnlyMemory<byte>>, IAsyncDisposable
@@ -1195,13 +1203,32 @@ public sealed class Http3Server : IAsyncDisposable
 
         public async ValueTask<Http3Request> ReadBufferedRequestAsync(CancellationToken cancellationToken)
         {
-            ArrayBufferWriter<byte> body = new();
+            ReadOnlyMemory<byte> firstSegment = default;
+            ArrayBufferWriter<byte>? body = null;
             while (await ReadNextDataAsync(cancellationToken).ConfigureAwait(false) is { HasData: true } next)
             {
+                if (next.Data.IsEmpty)
+                {
+                    continue;
+                }
+
+                if (firstSegment.IsEmpty)
+                {
+                    firstSegment = next.Data;
+                    continue;
+                }
+
+                if (body is null)
+                {
+                    body = new ArrayBufferWriter<byte>(checked(firstSegment.Length + next.Data.Length));
+                    body.Write(firstSegment.Span);
+                    firstSegment = default;
+                }
+
                 body.Write(next.Data.Span);
             }
 
-            return CreateRequest(Request.Headers, body.WrittenMemory);
+            return CreateOwnedRequest(Request.Headers, body?.WrittenMemory ?? firstSegment);
         }
 
         public async ValueTask DrainAsync(CancellationToken cancellationToken)

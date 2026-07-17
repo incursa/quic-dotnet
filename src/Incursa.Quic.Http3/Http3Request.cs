@@ -48,6 +48,19 @@ public sealed class Http3Request
         string? protocol,
         IReadOnlyList<QPackFieldLine> headers,
         ReadOnlyMemory<byte> body)
+        : this(method, scheme, authority, path, protocol, headers, body, copyBody: true)
+    {
+    }
+
+    internal Http3Request(
+        string method,
+        string scheme,
+        string authority,
+        string path,
+        string? protocol,
+        IReadOnlyList<QPackFieldLine> headers,
+        ReadOnlyMemory<byte> body,
+        bool copyBody)
     {
         Method = method ?? throw new ArgumentNullException(nameof(method));
         Scheme = scheme ?? throw new ArgumentNullException(nameof(scheme));
@@ -55,7 +68,7 @@ public sealed class Http3Request
         Path = path ?? throw new ArgumentNullException(nameof(path));
         Protocol = protocol;
         Headers = headers ?? throw new ArgumentNullException(nameof(headers));
-        Body = body.ToArray();
+        Body = copyBody ? body.ToArray() : body;
     }
 
     /// <summary>

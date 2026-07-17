@@ -3774,3 +3774,60 @@ readable negative result under `C:\shared\temp\pl-h3-crosslayer-20260717`.
 Do not retry borrowed parser views without call-stack attribution showing that
 owned HTTP/3 frame payloads are a material fraction of an end-to-end workload,
 or a design that removes a broader copy boundary than frame parsing alone.
+
+### Accepted 2026-07-17: retain server-owned buffered HTTP/3 request bodies
+
+Call-stack analysis of the post-`7ff46d04` 1 MiB upload trace explained why
+borrowed parser views had little end-to-end effect. In addition to fragmented
+frame storage and the owned DATA payload, the non-streaming adapter fallback
+copied that payload into an `ArrayBufferWriter<byte>` and then copied the
+completed body again into `Http3Request`. The accepted change keeps public
+request constructors defensively copying caller memory, but lets the server
+retain memory it exclusively owns. A single non-empty DATA frame is transferred
+directly into the request; multiple frames are concatenated only after the
+second segment arrives, and the resulting owned writer memory is retained
+without a final copy. Empty frames, frame ordering, content-length validation,
+diagnostics, streaming handlers, cancellation, and transport behavior are
+unchanged.
+
+The matched c16 `gc-verbose` upload trace completed exact payload validation
+with zero failures. Sampled `System.Byte[]` attribution fell from 8.406 to
+5.435 billion bytes while completed requests rose from 1,098 to 1,245.
+Normalized attribution therefore fell from 7.301 to 4.164 MiB per 1 MiB
+request, a 43.0% reduction. The removed top stacks were request-body aggregation
+and the final `Http3Request` copy. Trace throughput is attribution evidence only.
+
+The first clean five-repetition candidate run was +10.6% versus the prior
+accepted upload baseline but had 12.9% range, so a fresh parent-commit baseline
+at `dcfaa8de` and second candidate run were executed back-to-back. Median upload
+throughput improved from 89.30 to 92.21 requests/s (+3.3%), p95 improved from
+277.1 to 272.5 ms (-1.7%), and candidate range was 5.4%. All ten cells passed
+exact validation with zero failures or timeouts. The substantial allocation
+reduction, rather than the modest shared-host throughput movement, is the
+primary acceptance evidence.
+
+Fresh five-repetition controls remained inside the normal guardrail:
+
+| Lane | Baseline median | Candidate median | Throughput delta | p95 delta |
+| --- | ---: | ---: | ---: | ---: |
+| 1 MiB fixed response, c16 | 46.68 requests/s | 45.21 requests/s | -3.2% | -3.2% |
+| 1.6 MiB streaming response, c16 | 28.22 requests/s | 28.05 requests/s | -0.6% | +1.6% |
+| 64 KiB upload echo, c16, isolated rerun | 387.70 requests/s | 421.98 requests/s | +8.8% | -1.3% |
+| 1 MiB simultaneous duplex, c1 | 23.43 requests/s | 25.63 requests/s | +9.4% | -1.9% |
+| 100-stream multiplex, c1/s100 | 192.78 requests/s | 195.75 requests/s | +1.5% | +0.4% |
+
+The initial mixed control command incorrectly forced the sustained duplex lane
+to c16 even though that load tool is defined for one persistent connection; its
+nonzero exits are preserved in `baseline2-h3-owned-controls-r5-h3-local-v1` and
+are not treated as runtime evidence. Correct c1 duplex baseline/candidate runs
+then passed all ten cells. Focused request ownership, empty-body, multi-frame,
+and coalesced-body tests passed 6/6. The full Release solution passed 9,606
+tests and skipped five, with one unrelated server-FIN recovery assertion failing
+once before passing 5/5 exact reruns.
+
+Evidence is retained under
+`C:\shared\temp\pl-h3-crosslayer-20260717`, including the trace, two upload
+candidate campaigns, fresh parent/candidate controls, corrected duplex runs,
+multiplex runs, and the malformed-shape evidence. These are local shared-host
+diagnostics, not isolated publishable claims. Nothing was deployed or
+published.

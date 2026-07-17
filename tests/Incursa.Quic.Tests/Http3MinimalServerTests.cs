@@ -13,6 +13,42 @@ namespace Incursa.Quic.Tests;
 public sealed class Http3MinimalServerTests
 {
     [Fact]
+    public void RequestConstructor_DefensivelyCopiesBody()
+    {
+        byte[] body = [0x01, 0x02, 0x03];
+
+        Http3Request request = new(
+            "POST",
+            "https",
+            "localhost",
+            "/upload",
+            [],
+            body);
+        body[0] = 0xFF;
+
+        Assert.Equal([0x01, 0x02, 0x03], request.Body.ToArray());
+    }
+
+    [Fact]
+    public void RequestOwnedBodyConstructor_BorrowsBodyMemory()
+    {
+        byte[] body = [0x01, 0x02, 0x03];
+
+        Http3Request request = new(
+            "POST",
+            "https",
+            "localhost",
+            "/upload",
+            protocol: null,
+            headers: [],
+            body: body,
+            copyBody: false);
+
+        Assert.True(MemoryMarshal.TryGetArray(request.Body, out ArraySegment<byte> segment));
+        Assert.Same(body, segment.Array);
+    }
+
+    [Fact]
     public void ServerResponseConstructor_DefensivelyCopiesBody()
     {
         byte[] body = [0x01, 0x02, 0x03];
