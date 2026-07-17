@@ -1986,6 +1986,30 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    public async Task StreamingCapableHandler_BufferedFallback_OwnsSingleSegmentBody()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        byte[] body = CreateDeterministicBytes(777);
+        DuplexStreamingHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WritePostRequestAsync(requestStream, "/buffered", body, includeContentLength: true);
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.Equal(body, handler.BufferedBody);
+        Assert.Equal(body.Length, handler.BufferedBodyBackingArrayLength);
+    }
+
+    [Fact]
     public async Task StreamingCapableHandler_HandlesConcurrentBodylessRequests()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -3240,6 +3264,8 @@ public sealed class Http3MinimalServerTests
 
         public byte[] BufferedBody { get; private set; } = [];
 
+        public int BufferedBodyBackingArrayLength { get; private set; }
+
         public int StreamingCalls { get; private set; }
 
         public bool CanHandleStreaming(Http3StreamingRequest request)
@@ -3249,6 +3275,8 @@ public sealed class Http3MinimalServerTests
         {
             BufferedCalls++;
             BufferedBody = request.Body.ToArray();
+            Assert.True(MemoryMarshal.TryGetArray(request.Body, out ArraySegment<byte> segment));
+            BufferedBodyBackingArrayLength = segment.Array!.Length;
             byte[] body = System.Text.Encoding.UTF8.GetBytes("buffered:" + System.Text.Encoding.UTF8.GetString(request.Body.Span));
             return ValueTask.FromResult(new Http3ServerResponse(200, body));
         }

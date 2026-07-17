@@ -1306,7 +1306,9 @@ public sealed class Http3Server : IAsyncDisposable
 
             if (bodySegments is null)
             {
-                return CreateOwnedRequest(Request.Headers, firstSegment);
+                return CreateOwnedRequest(
+                    Request.Headers,
+                    firstSegment.IsEmpty ? ReadOnlyMemory<byte>.Empty : firstSegment.ToArray());
             }
 
             byte[] body = GC.AllocateUninitializedArray<byte>(bodyLength);
