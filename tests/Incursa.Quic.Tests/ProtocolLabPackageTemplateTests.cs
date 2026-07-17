@@ -71,6 +71,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Equal("quic-dotnet-raw-dev", providedImplementation.GetProperty("implementationId").GetString());
         Assert.Equal(["quic"], ReadJsonStringArray(providedImplementation, "protocols"));
         Assert.Equal(RawQuicScenarioIds, ReadJsonStringArray(providedImplementation, "scenarios"));
+        Assert.Equal(RawQuicScenarioIds, ReadJsonStringArray(providedImplementation, "testCaseIds"));
         Assert.DoesNotContain("h3", ReadJsonStringArray(providedImplementation, "protocols"));
         Assert.DoesNotContain("http.core.plaintext", ReadJsonStringArray(providedImplementation, "scenarios"));
         Assert.DoesNotContain("http3.payload.bytes.64kb", ReadJsonStringArray(providedImplementation, "scenarios"));
@@ -129,6 +130,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("quic.transport.duplex-streams-peer-matrix", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.multiplex.mixed-4x16", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Equal(RawQuicScenarioIds, ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Equal(RawQuicScenarioIds, ReadYamlList(implementationYaml, "supportedTestCaseIds"));
         Assert.DoesNotContain("h3", ReadYamlList(implementationYaml, "supportedProtocols"));
         Assert.DoesNotContain("http.application", ReadYamlList(implementationYaml, "supportedWorkloadFamilies"));
         Assert.DoesNotContain("http.core.", implementationYaml);
