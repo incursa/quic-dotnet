@@ -3527,3 +3527,32 @@ under `C:\shared\temp\linux-sendto-gate-20260717`, and the SUT copies under
 and `/home/samuel/quic-perf/linux-sendto-gate-20260717`. Do not retry a direct
 single-datagram syscall wrapper without a materially larger measured managed
 overhead or a safe zero-copy batch design that also clears the c16 guardrail.
+
+### Rejected 2026-07-17: derive packet-number length after one header mask
+
+The current short-header packet-open path tries packet-number lengths one
+through four. Because the QUIC header-protection sample begins four bytes after
+the packet-number offset regardless of the encoded packet-number length, a
+candidate generated one header-protection mask per connection-ID candidate,
+derived the encoded length from the unmasked first byte, and retained the same
+fixed-bit, reserved-bit, AEAD, key-phase, packet-number expansion, and payload
+validation. Both allocating and pooled-lease paths were changed. The Release
+solution build passed with zero warnings, and focused RFC 9001, short-header,
+captured-interoperability, and grease-bit tests passed 436/436.
+
+The accepted `90e1416e` Linux source baseline measured 28.406 MiB/s at c16 and
+36.382 MiB/s at c64 in the 64 KiB bidirectional echo lane. Five candidate
+repetitions measured 28.538 MiB/s at c16 (+0.46%) and 35.509 MiB/s at c64
+(-2.40%). Median p95 latency moved from 38.36 to 37.88 ms at c16 and from 88.43
+to 86.64 ms at c64. Candidate throughput ranged from 27.118 to 29.748 MiB/s at
+c16 and from 30.668 to 38.747 MiB/s at c64. All ten cells completed with zero
+failed or timed-out requests, but the throughput movement was immaterial and
+did not justify a full c1-c128 campaign. A repository BenchmarkDotNet row was
+also non-decisive because its iteration setup forces one invocation and
+produces iterations far below the recommended measurement duration.
+
+The runtime change was reverted. Retain local candidate evidence under
+`C:\shared\temp\pl-header-pn-20260717` and the SUT evidence under
+`/home/samuel/quic-perf/evidence/candidate-header-pn-c16-c64-20260717`.
+Do not retry this packet-number derivation unless a materially different packet
+open design has direct attribution and can clear the end-to-end c16 guardrail.
