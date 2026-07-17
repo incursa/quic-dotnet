@@ -3556,3 +3556,25 @@ The runtime change was reverted. Retain local candidate evidence under
 `/home/samuel/quic-perf/evidence/candidate-header-pn-c16-c64-20260717`.
 Do not retry this packet-number derivation unless a materially different packet
 open design has direct attribution and can clear the end-to-end c16 guardrail.
+
+### Rejected 2026-07-17: raise raw-server ThreadPool minimum to 64
+
+The retained c16 traces combine deep shard queues, low target CPU, and an empty
+ThreadPool queue. A diagnostic-only raw-server candidate raised both worker and
+completion-port minimums to 64 on the 16-core Linux target to test whether slow
+worker injection or continuation scheduling explained the queue service gap.
+It did not change the QUIC runtime, protocol behavior, or load shape.
+
+Against the accepted `90e1416e` 64 KiB bidirectional echo baseline, five
+candidate repetitions measured 27.642 MiB/s at c16 versus 28.406 MiB/s
+(-2.69%) and 34.977 MiB/s at c64 versus 36.382 MiB/s (-3.86%). Median p95 moved
+from 38.36 to 38.58 ms at c16 and from 88.43 to 86.95 ms at c64. Candidate
+throughput ranged from 26.375 to 28.889 MiB/s at c16 and 34.754 to 36.571 MiB/s
+at c64. All ten cells completed with zero failed or timed-out requests.
+
+The temporary server setting was removed. Retain local evidence under
+`C:\shared\temp\pl-minthreads64-20260717` and the SUT evidence under
+`/home/samuel/quic-perf/evidence/diagnostic-minthreads64-c16-c64-20260717`.
+Do not use global ThreadPool minimum tuning as the next queue-service candidate;
+investigate queue ownership, service ordering, and the reproducible truncated
+response or upload idle-timeout paths instead.
