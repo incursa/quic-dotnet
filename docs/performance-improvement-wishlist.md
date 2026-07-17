@@ -3701,3 +3701,42 @@ trace runs. The same streaming trace still attributed about 701 MiB to
 That adapter-owned payload churn is the next separate cross-layer/API-usage
 candidate; it is not credited to this library change. Nothing was deployed or
 published.
+
+### Accepted 2026-07-17: reuse fragmented HTTP/3 frame pending storage
+
+The sustained simultaneous request/response trace identified a second general
+HTTP/3 allocation mechanism after the response-write state-machine change. A
+16 KiB server read commonly ended after the 16 KiB DATA payload but before the
+frame header and payload were both complete. `Http3FrameReader` appended the
+next read to a newly allocated array and then allocated again to retain the
+unconsumed suffix. The accepted change retains one bounded per-reader pending
+buffer, compacts unconsumed bytes in place, and releases capacities above 64
+KiB once the buffered frame has been consumed. Frame payloads remain owned by
+their returned frame objects; parsing, truncation errors, and frame validation
+semantics are unchanged.
+
+The permanent 64-frame fragmentation benchmark measured 3.01 MiB allocated per
+operation on `12e05b5c` and 1.05 MiB with the candidate, a 65.1% reduction.
+Median time moved from 322.3 to 163.0 microseconds, but benchmark timing was
+noisy and is supporting evidence rather than the primary acceptance claim. In
+the sustained duplex trace, normalized `System.Byte[]` attribution fell from
+4.331 MiB per exact 1 MiB bidirectional transfer to 1.259 MiB, a 70.9%
+reduction. Trace-instrumented throughput is not used as a performance claim.
+
+Five clean sustained-duplex repetitions improved median throughput from 22.70
+to 23.93 MiB/s (+5.4%) and median p95 from 37.4 to 36.5 ms (-2.4%), with 614
+candidate transfers and no failures. The first c16 control campaign was visibly
+disturbed, so the complete baseline/candidate sequence was repeated. In the
+final matched baseline/candidate pair, the 1 MiB fixed response was flat at
+42.95 versus 42.92 requests/s, the 1.6 MiB streaming response was flat at 27.48
+versus 27.65 requests/s, and the 64 KiB upload echo was flat at 403.10 versus
+400.47 requests/s with improved p95. The 1 MiB upload sink improved from 53.59
+to 81.30 requests/s (+51.7%) while p95 fell from 532.2 to 318.6 ms. All 40
+cells in the final baseline/candidate pair passed exact protocol and payload
+validation with zero failures or timeouts.
+
+Focused frame-layer tests passed 38/38. The full solution passed 9,605 tests,
+skipped five, and failed zero. Evidence is retained under
+`C:\shared\temp\pl-h3-crosslayer-20260717`, including the A/B/A/B control
+campaigns, sustained-duplex repetitions, traces, and benchmark output. These
+shared-host results remain diagnostic. Nothing was deployed or published.
