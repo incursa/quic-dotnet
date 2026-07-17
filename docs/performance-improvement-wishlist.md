@@ -3175,3 +3175,64 @@ changed, and nothing was deployed or published.
 The next raw runtime tranche should target the absolute c16-c128 gap in the
 shared receive/send pipeline, especially datagram send cost, stream receive
 locking, and packet scheduling, rather than retuning small-write heuristics.
+
+### Rejected 2026-07-16: split stream-action lifecycle and processing gates
+
+The 100x1 KiB multiplex ladder falls after c16: 7.28 MiB/s at c1, 17.65 at
+c4, 24.44 at c16, 20.97 at c32, 13.61 at c64, and 8.47 at c128. Target CPU
+also falls while memory and handle counts rise. The investigated lock protected
+both cross-thread request lifecycle and the complete stream-write transport
+mutation, so the candidate separated lifecycle, retry, and processing gates
+while preserving serialized packet and send-state mutation.
+
+The first design removed transport serialization and is rejected for
+correctness: a c64 cell returned 221 of 1,024 expected response bytes. Its
+evidence remains under `C:\shared\temp\pllockcandidate\c16` and `c64`.
+
+The second design used an exact-value `ConcurrentDictionary`, per-request
+completion ownership, a lifecycle gate, a retry-queue gate, and a distinct
+processing gate. It passed 20 focused cancellation, completion-pool, and
+structural requirement tests, including a 128-write transition/cancellation
+race that also passed ten repetitions. A full run completed 9,605 passing tests
+and five skips, with one DoQ excessive-load timing failure that passed ten
+consecutive exact reruns. Candidate commit `30667255` and revert `57c47587`
+retain the implementation and its removal.
+
+Pre-commit shared-host evidence initially looked favorable. Five usable c64
+matched pairs produced 14.14 versus 15.89 MiB/s (+12.4%), with p95 improving
+26.5% and p99 improving 29.2%. c1 and c4 were +1.8% and +2.7%; c16 was -2.3%.
+Stable controls stayed within 3.4% throughput, but the 16 MiB upload control
+completed 10/10 baseline cells and only 8/10 candidate cells before five
+candidate supplements passed. Evidence is under
+`C:\shared\temp\pllockcandidate\v2-c1`, `v2-c4`, `v2-c16`, `v2-c64`, and
+`v2-controls-corrected`.
+
+Wake diagnostics explained only a bounded scheduling effect. Async wakeups
+fell from 5,344 to 2,903 and mean work per wake rose from 2,048.6 to 2,401.6,
+but average shard peak queue depth increased from 496.5 to 510.6, absolute peak
+from 561 to 569, and outstanding pooled bytes remained approximately 7 MiB.
+Request-registration slow-monitor attribution fell from 0.377% to 0.314%, while
+total slow-monitor and thread-pool semaphore wait shares stayed flat near 4.2%
+and 67.2%. ProtocolLab commit `68effd6` and evidence under
+`C:\shared\temp\pllockcandidate\v2-diagnostics` retain that attribution.
+
+The required clean committed rerun reversed the result. All ten c64 cells
+passed exact validation with zero failures or timeouts, but variance was too
+high and the candidate was slower:
+
+| Variant | Median | Range | p95 | p99 |
+| --- | ---: | ---: | ---: | ---: |
+| Baseline `ea4fb618` | 14.72 MiB/s | 73.4% | 287.02 ms | 351.15 ms |
+| Candidate `30667255` | 13.19 MiB/s | 57.7% | 328.60 ms | 396.93 ms |
+
+That is -10.4% throughput, +14.5% p95, and +13.0% p99. No cell had an
+objective network/resource failure or load-generator saturation signal that
+would justify excluding it, and the candidate lost four of five paired
+repetitions. The clean evidence root is
+`C:\shared\temp\pllockcandidate\committed-c64-30667255`.
+
+The candidate is therefore rejected and must not be published as an
+improvement. Do not repeat another minor lock split. The next diagnosis should
+target the unchanged queue peaks, pooled-buffer retention, and the pre-existing
+221-byte truncated-response and upload idle-timeout failures before another
+runtime scheduling design is attempted.
