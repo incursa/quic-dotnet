@@ -18,6 +18,11 @@
         "quic.transport.stream-throughput.1mb",
         "quic.transport.multiplex.100x64kb",
         "quic.transport.duplex-streams"
+      ],
+      "testCaseIds": [
+        "quic.transport.stream-throughput.1mb",
+        "quic.transport.multiplex.100x64kb",
+        "quic.transport.duplex-streams"
       ]
     }
   ],
