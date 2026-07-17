@@ -37,9 +37,13 @@ internal static class QuicMetrics
     private const string RuntimeShardWorkItemsDequeuedMetricName = "incursa.quic.runtime.shard.work_items.dequeued";
     private const string RuntimeShardQueueDelayMetricName = "incursa.quic.runtime.shard.queue_delay.ms";
     private const string RuntimeShardServiceTimeMetricName = "incursa.quic.runtime.shard.service_time.ms";
+    private const string RuntimeShardWakeupsMetricName = "incursa.quic.runtime.shard.wakeups";
+    private const string RuntimeShardEmptyWakeupsMetricName = "incursa.quic.runtime.shard.empty_wakeups";
+    private const string RuntimeShardWorkItemsPerWakeMetricName = "incursa.quic.runtime.shard.work_items_per_wake";
     private const string RuntimeFollowOnFlushItemsMetricName = "incursa.quic.runtime.follow_on_flush.items";
     private const string RuntimeShardIndexTagName = "shard_index";
     private const string RuntimeShardWorkItemKindTagName = "work_item_kind";
+    private const string RuntimeShardWakeCompletionTagName = "completion";
     private const string QueueCauseTagName = "queue_cause";
     private const string BufferOwnerTagName = "owner";
     private const double MicrosecondsPerMillisecond = 1000.0;
@@ -161,6 +165,9 @@ internal static class QuicMetrics
     private static readonly Counter<long> RuntimeShardWorkItemsDequeued = Meter.CreateCounter<long>(RuntimeShardWorkItemsDequeuedMetricName, unit: "work_items");
     private static readonly Histogram<double> RuntimeShardQueueDelay = Meter.CreateHistogram<double>(RuntimeShardQueueDelayMetricName, unit: "ms");
     private static readonly Histogram<double> RuntimeShardServiceTime = Meter.CreateHistogram<double>(RuntimeShardServiceTimeMetricName, unit: "ms");
+    private static readonly Counter<long> RuntimeShardWakeups = Meter.CreateCounter<long>(RuntimeShardWakeupsMetricName, unit: "wakeups");
+    private static readonly Counter<long> RuntimeShardEmptyWakeups = Meter.CreateCounter<long>(RuntimeShardEmptyWakeupsMetricName, unit: "wakeups");
+    private static readonly Histogram<long> RuntimeShardWorkItemsPerWake = Meter.CreateHistogram<long>(RuntimeShardWorkItemsPerWakeMetricName, unit: "work_items");
     private static readonly Counter<long> RuntimeFollowOnFlushItems = Meter.CreateCounter<long>(RuntimeFollowOnFlushItemsMetricName, unit: "items");
     private static readonly Histogram<long> DelayedApplicationSends = Meter.CreateHistogram<long>("incursa.quic.runtime.delayed_application_sends", unit: "writes");
     private static readonly Histogram<long> ApplicationSendRetainedBuffers = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.retained_buffers", unit: "buffers");
@@ -509,6 +516,29 @@ internal static class QuicMetrics
 
         TagList tags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
         RuntimeShardServiceTime.Record(Stopwatch.GetElapsedTime(startedTimestamp).TotalMilliseconds, in tags);
+    }
+
+    internal static void RecordRuntimeShardWakeCycle(
+        int shardIndex,
+        bool completedSynchronously,
+        int productiveWorkItems)
+    {
+        if (!RuntimeShardWakeups.Enabled
+            && !RuntimeShardEmptyWakeups.Enabled
+            && !RuntimeShardWorkItemsPerWake.Enabled)
+        {
+            return;
+        }
+
+        TagList tags = default;
+        tags.Add(RuntimeShardIndexTagName, shardIndex);
+        tags.Add(RuntimeShardWakeCompletionTagName, completedSynchronously ? "sync" : "async");
+        RuntimeShardWakeups.Add(1, in tags);
+        RuntimeShardWorkItemsPerWake.Record(productiveWorkItems, in tags);
+        if (productiveWorkItems == 0)
+        {
+            RuntimeShardEmptyWakeups.Add(1, in tags);
+        }
     }
 
     internal static bool RuntimeFollowOnFlushMetricsEnabled => RuntimeFollowOnFlushItems.Enabled;

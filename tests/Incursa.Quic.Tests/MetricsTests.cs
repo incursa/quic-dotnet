@@ -1180,6 +1180,33 @@ public class MetricsTests
             workItems.Select(workItem => QuicMetrics.NormalizeRuntimeShardWorkItemKind(in workItem)));
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void QuicRuntimeShardWakeCycleMetricsUseBoundedCompletionTags()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+
+        QuicMetrics.RecordRuntimeShardWakeCycle(shardIndex: 7, completedSynchronously: false, productiveWorkItems: 3);
+        QuicMetrics.RecordRuntimeShardWakeCycle(shardIndex: 7, completedSynchronously: true, productiveWorkItems: 0);
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.wakeups"
+            && measurement.Value == 1
+            && measurement.HasTag("shard_index", "7")
+            && measurement.HasTag("completion", "async"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.work_items_per_wake"
+            && measurement.Value == 3
+            && measurement.HasTag("completion", "async"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.empty_wakeups"
+            && measurement.Value == 1
+            && measurement.HasTag("completion", "sync"));
+        Assert.DoesNotContain(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.empty_wakeups"
+            && measurement.HasTag("completion", "async"));
+    }
+
     private static QuicConnectionRuntime CreateRuntimeWithActivePath()
     {
         QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
