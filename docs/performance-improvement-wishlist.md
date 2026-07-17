@@ -3740,3 +3740,37 @@ skipped five, and failed zero. Evidence is retained under
 `C:\shared\temp\pl-h3-crosslayer-20260717`, including the A/B/A/B control
 campaigns, sustained-duplex repetitions, traces, and benchmark output. These
 shared-host results remain diagnostic. Nothing was deployed or published.
+
+### Rejected 2026-07-17: borrowed HTTP/3 DATA-frame payload views
+
+The post-`7ff46d04` buffered-upload trace attributed about 8.02 GiB of sampled
+`System.Byte[]` allocation while validating 1.07 GiB of request payload. A
+candidate added internal borrowed frame-payload views for buffered server and
+client consumers while preserving the public owning parser API, diagnostics,
+frame validation, payload ordering, and streaming-body ownership. The direct
+64-frame fragmentation benchmark fell from 1,077.55 KiB to 48.2 KiB allocated
+per operation, a 95.5% reduction.
+
+The first integration intentionally retained the owning path whenever frame
+diagnostics were enabled and therefore did not affect the ProtocolLab target.
+The second emitted the same frame type, raw type, stream ID, and payload length
+directly from borrowed views, but initially traded the owned payload copy for a
+partial-frame suffix copy. A third design retained an unread offset and delayed
+compaction until the next read. The trace then exposed the actual adapter path:
+handlers that support any streaming route first create a streaming body reader,
+and non-streaming `/echo`, `/hash`, `/sink`, and `/upload` requests buffer
+through that reader. The final candidate covered that fallback as well.
+
+Even after all real paths were covered, sampled byte-array allocation changed
+only from 7.301 to 7.155 MiB per completed 1 MiB upload, about 2%. The clean c16
+upload-sink gate completed five valid candidate cells with zero failures or
+timeouts, but median throughput regressed from the accepted `7ff46d04` result
+of 81.30 to 75.79 requests/s (-6.8%). Median p95 moved from 318.6 to 324.2 ms,
+and relative throughput range worsened from 4.0% to 12.1%. The source and test
+changes were reverted.
+
+Retain the baseline, intermediate traces, clean candidate run, and machine-
+readable negative result under `C:\shared\temp\pl-h3-crosslayer-20260717`.
+Do not retry borrowed parser views without call-stack attribution showing that
+owned HTTP/3 frame payloads are a material fraction of an end-to-end workload,
+or a design that removes a broader copy boundary than frame parsing alone.
