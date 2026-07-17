@@ -703,6 +703,14 @@ public sealed class Http3Server : IAsyncDisposable
                 {
                     await streamingBodyReader.DrainAsync(cancellationToken).ConfigureAwait(false);
                 }
+                else if (requestResult.RequiresRequestDrain)
+                {
+                    await DrainHeadersOnlyRequestAsync(
+                        stream,
+                        requestResult.HeadersOnlyRequest.Headers,
+                        qpackState,
+                        cancellationToken).ConfigureAwait(false);
+                }
 
                 if (response.SendGoAwayAfterResponse)
                 {
@@ -886,7 +894,7 @@ public sealed class Http3Server : IAsyncDisposable
                         qpackState,
                         cancellationToken).ConfigureAwait(false) is { } fastPathRequest)
                 {
-                    return Http3RequestReadResult.FromHeadersOnly(fastPathRequest);
+                    return Http3RequestReadResult.FromHeadersOnly(fastPathRequest, requiresRequestDrain: true);
                 }
 
                 frameReader ??= new Http3FrameReader(ValidateRequestStreamFrameType);
@@ -916,6 +924,45 @@ public sealed class Http3Server : IAsyncDisposable
             }
 
             return Http3RequestReadResult.FromRequest(CreateOwnedRequest(headers, body?.WrittenMemory ?? ReadOnlyMemory<byte>.Empty));
+        }
+        finally
+        {
+            QuicBufferPool.ReturnBytes(buffer);
+        }
+    }
+
+    private async ValueTask DrainHeadersOnlyRequestAsync(
+        QuicStream stream,
+        IReadOnlyList<QPackFieldLine> headers,
+        ConnectionQPackState qpackState,
+        CancellationToken cancellationToken)
+    {
+        Http3FrameReader frameReader = new(ValidateRequestStreamFrameType);
+        Http3RequestMessageValidator validator = new();
+        validator.ReceiveOwnedHeaders(headers);
+        byte[] buffer = QuicBufferPool.RentBytes(readBufferSize);
+
+        try
+        {
+            while (true)
+            {
+                int bytesRead = await stream.TryReadTerminalAsync(buffer.AsMemory(0, readBufferSize), cancellationToken).ConfigureAwait(false);
+                IEnumerable<Http3Frame> frames = bytesRead == 0
+                    ? frameReader.Complete()
+                    : frameReader.Read(buffer.AsSpan(0, bytesRead));
+
+                foreach (Http3Frame frame in frames)
+                {
+                    EmitFrame(Http3DiagnosticKind.FrameReceived, stream.Id, frame);
+                    await ProcessDrainedRequestFrameAsync(frame, validator, stream.Id, qpackState, cancellationToken).ConfigureAwait(false);
+                }
+
+                if (bytesRead == 0)
+                {
+                    validator.Complete();
+                    return;
+                }
+            }
         }
         finally
         {
@@ -1053,6 +1100,32 @@ public sealed class Http3Server : IAsyncDisposable
                 return body;
             case Http3UnknownFrame:
                 return body;
+            default:
+                throw new Http3Exception(Http3ErrorCode.FrameUnexpected, "The request stream contained an invalid frame type.");
+        }
+    }
+
+    private async ValueTask ProcessDrainedRequestFrameAsync(
+        Http3Frame frame,
+        Http3RequestMessageValidator validator,
+        long streamId,
+        ConnectionQPackState qpackState,
+        CancellationToken cancellationToken)
+    {
+        switch (frame)
+        {
+            case Http3HeadersFrame headersFrame:
+                IReadOnlyList<QPackFieldLine> fieldSection = await qpackState.DecodeRequestHeadersAsync(
+                        checked((ulong)streamId),
+                        headersFrame.EncodedFieldSection,
+                        cancellationToken).ConfigureAwait(false);
+                validator.ReceiveOwnedHeaders(fieldSection);
+                break;
+            case Http3DataFrame dataFrame:
+                validator.ReceiveData(checked((ulong)dataFrame.Data.Length));
+                break;
+            case Http3UnknownFrame:
+                break;
             default:
                 throw new Http3Exception(Http3ErrorCode.FrameUnexpected, "The request stream contained an invalid frame type.");
         }
@@ -1454,18 +1527,22 @@ public sealed class Http3Server : IAsyncDisposable
             Http3Request? request,
             Http3StreamingRequest? streamingRequest,
             Http3StreamingRequestBodyReader? streamingBodyReader,
-            bool isHeadersOnly)
+            bool isHeadersOnly,
+            bool requiresRequestDrain)
         {
             HeadersOnlyRequest = headersOnlyRequest;
             this.request = request;
             this.streamingRequest = streamingRequest;
             StreamingBodyReader = streamingBodyReader;
             IsHeadersOnly = isHeadersOnly;
+            RequiresRequestDrain = requiresRequestDrain;
         }
 
         public Http3HeadersOnlyRequest HeadersOnlyRequest { get; }
 
         public bool IsHeadersOnly { get; }
+
+        public bool RequiresRequestDrain { get; }
 
         public bool IsStreaming => streamingRequest is not null;
 
@@ -1499,11 +1576,13 @@ public sealed class Http3Server : IAsyncDisposable
             }
         }
 
-        public static Http3RequestReadResult FromHeadersOnly(Http3HeadersOnlyRequest request)
-            => new(request, null, null, null, isHeadersOnly: true);
+        public static Http3RequestReadResult FromHeadersOnly(
+            Http3HeadersOnlyRequest request,
+            bool requiresRequestDrain = false)
+            => new(request, null, null, null, isHeadersOnly: true, requiresRequestDrain);
 
         public static Http3RequestReadResult FromRequest(Http3Request request)
-            => new(default, request ?? throw new ArgumentNullException(nameof(request)), null, null, isHeadersOnly: false);
+            => new(default, request ?? throw new ArgumentNullException(nameof(request)), null, null, isHeadersOnly: false, requiresRequestDrain: false);
 
         public static Http3RequestReadResult FromStreaming(
             Http3StreamingRequest request,
@@ -1513,7 +1592,8 @@ public sealed class Http3Server : IAsyncDisposable
                 null,
                 request ?? throw new ArgumentNullException(nameof(request)),
                 bodyReader ?? throw new ArgumentNullException(nameof(bodyReader)),
-                isHeadersOnly: false);
+                isHeadersOnly: false,
+                requiresRequestDrain: false);
 
         public Http3Request ToRequest()
         {

@@ -194,6 +194,44 @@ public sealed class Http3MinimalServerTests
         Assert.NotEmpty(handler.Headers);
     }
 
+    [Fact]
+    public async Task HeadersOnlyHandler_ReleasesCapacityAcrossRepeatedConcurrentBatches()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        const int BatchSize = 100;
+        const int BatchCount = 6;
+        HeadersOnlyFastPathHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        for (int batch = 0; batch < BatchCount; batch++)
+        {
+            Task<Http3Response>[] responseTasks = Enumerable.Range(0, BatchSize)
+                .Select(async requestIndex =>
+                {
+                    await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+                    await WriteGetRequestAsync(requestStream, $"/fast?batch={batch}&request={requestIndex}");
+                    return await ReadResponseAsync(requestStream);
+                })
+                .ToArray();
+
+            Http3Response[] responses = await Task.WhenAll(responseTasks).WaitAsync(TimeSpan.FromSeconds(20));
+            Assert.All(responses, static response =>
+            {
+                Assert.Equal(200, response.StatusCode);
+                Assert.True(response.StreamCompleted);
+            });
+        }
+
+        Assert.Equal(BatchSize * BatchCount, handler.HeadersOnlyCalls);
+        Assert.Equal(0, handler.FullRequestCalls);
+    }
+
     [Theory]
     [Requirement("REQ-QUIC-RFC9114-S9-0002")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -3285,9 +3323,12 @@ public sealed class Http3MinimalServerTests
 
     private sealed class HeadersOnlyFastPathHandler : IHttp3RequestHandler, IHttp3HeadersOnlyRequestHandler
     {
-        public int HeadersOnlyCalls { get; private set; }
+        private int headersOnlyCalls;
+        private int fullRequestCalls;
 
-        public int FullRequestCalls { get; private set; }
+        public int HeadersOnlyCalls => Volatile.Read(ref headersOnlyCalls);
+
+        public int FullRequestCalls => Volatile.Read(ref fullRequestCalls);
 
         public string Method { get; private set; } = string.Empty;
 
@@ -3299,7 +3340,7 @@ public sealed class Http3MinimalServerTests
         {
             _ = request;
             _ = cancellationToken;
-            FullRequestCalls++;
+            Interlocked.Increment(ref fullRequestCalls);
             return ValueTask.FromResult(new Http3ServerResponse(500, "slow"u8.ToArray()));
         }
 
@@ -3308,7 +3349,7 @@ public sealed class Http3MinimalServerTests
             CancellationToken cancellationToken = default)
         {
             _ = cancellationToken;
-            HeadersOnlyCalls++;
+            Interlocked.Increment(ref headersOnlyCalls);
             Method = request.Method;
             Path = request.Path;
             Headers = request.Headers;
