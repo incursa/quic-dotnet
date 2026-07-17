@@ -3424,6 +3424,20 @@ failures; both exact tests then passed together in 10/10 consecutive reruns.
 `git diff --check` passed. No package was registered and nothing was deployed
 or published.
 
+The accepted clean source at `90e1416e` was subsequently packaged locally as
+`quic-dotnet-raw-dev@0.0.0-final-write-90e1416e` for both `linux-x64` and
+`win-x64`. Its immutable SHA-256 is
+`70149e61f22e9553e0fadde923e7e97c5a4d22897093b2a68de2b61cadb1d372`.
+The external attestation and embedded provenance both identify full commit
+`90e1416e84d0af898a8760e81af86a15e098c944`, a clean package-input scope, and
+source/package parity eligibility. Recomputed archive hashing matched the
+attestation, all four platform adapter/server payloads were present, and the
+extracted Windows package entrypoint reported adapter status `ready` before its
+validation process tree was stopped. Retain the package, attestation, extracted
+validation payload, and health logs under
+`C:\shared\temp\pl-final-write-20260717\packages`. The package was not uploaded
+or registered, and nothing was deployed or published.
+
 ### Rejected 2026-07-17: direct due-timer processing during bounded shard drains
 
 The c64 queue diagnostics suggested that the shard's complete inbox drain can
