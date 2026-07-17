@@ -642,40 +642,11 @@ internal sealed class QuicConnectionStreamState
         return true;
     }
 
-    public bool TryReceiveStreamFrame(
-        QuicStreamFrame frame,
-        out QuicTransportErrorCode errorCode,
-        QuicApplicationDataEpoch epoch = QuicApplicationDataEpoch.OneRtt)
-        => TryReceiveStreamFrameCore(
-            frame,
-            prepareRuntimeDelivery: false,
-            out errorCode,
-            out _,
-            epoch);
-
-    internal bool TryReceiveStreamFrameForRuntime(
-        QuicStreamFrame frame,
-        out QuicTransportErrorCode errorCode,
-        out QuicConnectionStreamReceiveResult receiveResult,
-        QuicApplicationDataEpoch epoch = QuicApplicationDataEpoch.OneRtt)
-        => TryReceiveStreamFrameCore(
-            frame,
-            prepareRuntimeDelivery: true,
-            out errorCode,
-            out receiveResult,
-            epoch);
-
-    private bool TryReceiveStreamFrameCore(
-        QuicStreamFrame frame,
-        bool prepareRuntimeDelivery,
-        out QuicTransportErrorCode errorCode,
-        out QuicConnectionStreamReceiveResult receiveResult,
-        QuicApplicationDataEpoch epoch)
+    public bool TryReceiveStreamFrame(QuicStreamFrame frame, out QuicTransportErrorCode errorCode, QuicApplicationDataEpoch epoch = QuicApplicationDataEpoch.OneRtt)
     {
         lock (syncRoot)
         {
             errorCode = default;
-            receiveResult = default;
             if (!TryResolveReceiveCapableStream(frame.StreamId, out StreamState? state, out errorCode))
             {
                 return false;
@@ -690,7 +661,6 @@ internal sealed class QuicConnectionStreamState
                     return false;
                 }
 
-                receiveResult = PrepareRuntimeReceiveResult(frame.StreamId, state, prepareRuntimeDelivery);
                 return true;
             }
 
@@ -721,7 +691,6 @@ internal sealed class QuicConnectionStreamState
 
             if (state.ReceiveState is QuicStreamReceiveState.DataRecvd or QuicStreamReceiveState.DataRead)
             {
-                receiveResult = PrepareRuntimeReceiveResult(frame.StreamId, state, prepareRuntimeDelivery);
                 return true;
             }
 
@@ -768,30 +737,8 @@ internal sealed class QuicConnectionStreamState
             }
 
             UpdateReceiveState(state);
-            receiveResult = PrepareRuntimeReceiveResult(frame.StreamId, state, prepareRuntimeDelivery);
             return true;
         }
-    }
-
-    private QuicConnectionStreamReceiveResult PrepareRuntimeReceiveResult(
-        QuicStreamId streamId,
-        StreamState state,
-        bool prepareRuntimeDelivery)
-    {
-        bool queuePeerAccept = prepareRuntimeDelivery
-            && IsPeerInitiated(streamId)
-            && state.HasReceivePart
-            && !state.PeerAcceptQueued;
-        if (queuePeerAccept)
-        {
-            state.PeerAcceptQueued = true;
-        }
-
-        return new QuicConnectionStreamReceiveResult(
-            ReceiveCompleted: state.ReceiveState == QuicStreamReceiveState.DataRecvd,
-            HasReadableData: HasContiguousReadableBytes(state)
-                || state.ReceiveState is QuicStreamReceiveState.DataRecvd or QuicStreamReceiveState.DataRead,
-            QueuePeerAccept: queuePeerAccept);
     }
 
     public bool TryReceiveStreamDataBlockedFrame(
@@ -2314,11 +2261,6 @@ internal readonly record struct QuicConnectionStreamSendStateSnapshot(
     ulong? SendFinalSize,
     ulong HighestSentOffset,
     QuicByteRangeSetSnapshot SentRanges);
-
-internal readonly record struct QuicConnectionStreamReceiveResult(
-    bool ReceiveCompleted,
-    bool HasReadableData,
-    bool QueuePeerAccept);
 
 internal readonly record struct QuicConnectionStreamWritePreparation(
     ulong WriteOffset,

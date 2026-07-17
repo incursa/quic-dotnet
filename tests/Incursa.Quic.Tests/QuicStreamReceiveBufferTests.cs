@@ -6,43 +6,6 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicStreamReceiveBufferTests
 {
     [Fact]
-    public void RuntimeReceiveResultCombinesReadinessCompletionAndFirstAcceptDecision()
-    {
-        QuicConnectionStreamState state = CreateServerReceiveState();
-        QuicStreamFrame firstFrame = ParseStreamFrame(streamId: 0, offset: 0, [0x11], fin: false);
-
-        Assert.True(state.TryReceiveStreamFrameForRuntime(
-            firstFrame,
-            out QuicTransportErrorCode errorCode,
-            out QuicConnectionStreamReceiveResult firstResult));
-        Assert.Equal(default, errorCode);
-        Assert.True(firstResult.HasReadableData);
-        Assert.False(firstResult.ReceiveCompleted);
-        Assert.True(firstResult.QueuePeerAccept);
-
-        Assert.True(state.TryReceiveStreamFrameForRuntime(
-            ParseStreamFrame(streamId: 0, offset: 1, [0x22], fin: true),
-            out errorCode,
-            out QuicConnectionStreamReceiveResult terminalResult));
-        Assert.Equal(default, errorCode);
-        Assert.True(terminalResult.HasReadableData);
-        Assert.True(terminalResult.ReceiveCompleted);
-        Assert.False(terminalResult.QueuePeerAccept);
-    }
-
-    [Fact]
-    public void LegacyReceiveEntryPointDoesNotConsumeRuntimeAcceptDecision()
-    {
-        QuicConnectionStreamState state = CreateServerReceiveState();
-        QuicStreamFrame frame = ParseStreamFrame(streamId: 0, offset: 0, [0x11], fin: true);
-
-        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
-        Assert.Equal(default, errorCode);
-        Assert.True(state.TryMarkPeerAcceptQueued(0));
-        Assert.False(state.TryMarkPeerAcceptQueued(0));
-    }
-
-    [Fact]
     [Requirement("REQ-QUIC-CRT-0155")]
     public void ReceiveRetentionSnapshotTracksBufferCapacityAndUnreadBytes()
     {
