@@ -3578,3 +3578,43 @@ The temporary server setting was removed. Retain local evidence under
 Do not use global ThreadPool minimum tuning as the next queue-service candidate;
 investigate queue ownership, service ordering, and the reproducible truncated
 response or upload idle-timeout paths instead.
+
+### Rejected 2026-07-17: one-millisecond deadline wake floor
+
+Fresh accepted-source counter captures localized the apparent empty-wakeup
+pressure to the shard deadline timer rather than the channel itself. At c64,
+one shard peaked at 30,520 `deadline_wake` enqueues and 29,814 empty async wake
+cycles per second while the inbox peaked at 84 work items. A bounded candidate
+rounded only future sub-millisecond waits up to one millisecond before arming
+the operating-system timer. It preserved absolute due ticks, same-inbox timer
+serialization, cancellation, timer ordering, and generation checks. Focused
+deadline, shard-serialization, and metrics tests passed 35/35.
+
+The counter gate proved the mechanism but also exposed its tradeoff. At c64,
+the maximum sampled deadline-wake rate fell from 30,520 to 247 per second and
+the inbox peak fell from 84 to 56. However, the counter-attached throughput
+dropped from 28.71 to 16.08 MiB/s, retained pooled memory rose from 1.10 to
+1.49 MiB, and the oldest retained sent-packet age rose from 2.61 to 4.12
+seconds. Counter-attached throughput is not an acceptance metric, but the
+retention movement made a complete uninstrumented gate necessary.
+
+The uninstrumented 64 KiB bidirectional echo gate used the same Linux SUT,
+load executable, source-backed server, two-second warmup, 15-second duration,
+exact payload validation, and five repetitions per c1/c4/c16/c32/c64/c128
+point. Candidate median throughput versus accepted `90e1416e` was +2.27%,
++2.33%, -2.59%, +2.56%, +1.48%, and +21.49% respectively. The c128 comparison
+was not stable evidence: baseline CV was 48.33%, candidate CV was 65.36%, and
+the candidate had two severely disturbed cells at 2.32 and 6.42 MiB/s. Stable
+c1-c64 points remained below the normal 10% acceptance bar, while c16 regressed
+and c128 stability worsened. All 30 candidate cells completed with zero failed
+or timed-out requests.
+
+The full solution run passed 9,605 tests, skipped five, and reproduced the
+previously documented HTTP/3 incomplete-content close timeout. The exact test
+then passed 5/5 consecutive reruns. The runtime and focused-test changes were
+reverted. Retain local evidence under
+`C:\shared\temp\pl-deadline-wake-20260717` and SUT evidence under
+`/home/samuel/quic-perf/evidence/{candidate-deadline-wake-c16-c64-counters-20260717,candidate-deadline-wake-c16-c64-20260717,candidate-deadline-wake-c1-c128-20260717}`.
+Do not retry a coarse timer floor without a deadline mechanism that avoids both
+early-wake churn and millisecond-scale ACK, recovery, and application-send
+deferral.
