@@ -1145,16 +1145,19 @@ public sealed class Http3Server : IAsyncDisposable
 
     private sealed class Http3StreamingRequestBodyReader : IAsyncEnumerable<ReadOnlyMemory<byte>>, IAsyncDisposable
     {
+        private const int InitialReadBufferSize = 4 * 1024;
         private readonly Http3Server owner;
         private readonly QuicStream stream;
         private readonly ConnectionQPackState qpackState;
+        private readonly int readBufferSize;
         private readonly Http3StreamingFrameReader frameReader = new(ValidateRequestStreamFrameType);
         private readonly Http3RequestMessageValidator validator = new();
         private readonly Queue<Http3StreamingFramePart> pendingParts = [];
         private readonly SemaphoreSlim readGate = new(1, 1);
-        private readonly byte[] buffer;
+        private byte[] buffer;
         private int enumerated;
         private int disposed;
+        private bool bodyDataObserved;
         private bool completed;
 
         private Http3StreamingRequestBodyReader(
@@ -1166,7 +1169,8 @@ public sealed class Http3Server : IAsyncDisposable
             this.owner = owner;
             this.stream = stream;
             this.qpackState = qpackState;
-            buffer = QuicBufferPool.RentBytes(readBufferSize);
+            this.readBufferSize = readBufferSize;
+            buffer = QuicBufferPool.RentBytes(Math.Min(readBufferSize, InitialReadBufferSize));
         }
 
         public Http3StreamingRequest Request { get; private set; } = null!;
@@ -1360,6 +1364,7 @@ public sealed class Http3Server : IAsyncDisposable
                         continue;
                     }
 
+                    EnsureBodyReadBuffer();
                     int bytesRead = await stream.TryReadTerminalAsync(buffer, cancellationToken).ConfigureAwait(false);
                     if (bytesRead == 0)
                     {
@@ -1391,6 +1396,7 @@ public sealed class Http3Server : IAsyncDisposable
         {
             if (part.IsData)
             {
+                bodyDataObserved = true;
                 validator.ReceiveData(checked((ulong)part.Data.Length));
                 return new StreamingBodyReadResult(true, part.Data);
             }
@@ -1410,6 +1416,18 @@ public sealed class Http3Server : IAsyncDisposable
                 default:
                     throw new Http3Exception(Http3ErrorCode.FrameUnexpected, "The request stream contained an invalid frame type.");
             }
+        }
+
+        private void EnsureBodyReadBuffer()
+        {
+            if (!bodyDataObserved || buffer.Length >= readBufferSize)
+            {
+                return;
+            }
+
+            byte[] priorBuffer = buffer;
+            buffer = QuicBufferPool.RentBytes(readBufferSize);
+            QuicBufferPool.ReturnBytes(priorBuffer);
         }
 
         private void EmitFrame(Http3StreamingFramePart part)

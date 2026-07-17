@@ -1948,6 +1948,40 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    public async Task StreamingCapableHandler_HandlesConcurrentBodylessRequests()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        const int RequestCount = 32;
+        BodylessStreamingFallbackHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        Task<Http3Response>[] responseTasks = Enumerable.Range(0, RequestCount)
+            .Select(async requestIndex =>
+            {
+                await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+                await WriteGetRequestAsync(requestStream, $"/bodyless?request={requestIndex}");
+                return await ReadResponseAsync(requestStream);
+            })
+            .ToArray();
+
+        Http3Response[] responses = await Task.WhenAll(responseTasks).WaitAsync(TimeSpan.FromSeconds(20));
+
+        Assert.All(responses, static response =>
+        {
+            Assert.Equal(200, response.StatusCode);
+            Assert.Equal("bodyless", System.Text.Encoding.UTF8.GetString(response.Body));
+            Assert.True(response.StreamCompleted);
+        });
+        Assert.Equal(RequestCount, handler.BufferedCalls);
+    }
+
+    [Fact]
     public async Task RequestDataBeforeHeaders_ClosesConnectionWithFrameUnexpected()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -3207,6 +3241,26 @@ public sealed class Http3MinimalServerTests
                 yield return chunk;
             }
         }
+    }
+
+    private sealed class BodylessStreamingFallbackHandler : IHttp3RequestHandler, IHttp3StreamingRequestHandler
+    {
+        private int bufferedCalls;
+
+        public int BufferedCalls => Volatile.Read(ref bufferedCalls);
+
+        public bool CanHandleStreaming(Http3StreamingRequest request) => false;
+
+        public ValueTask<Http3ServerResponse> HandleAsync(Http3Request request, CancellationToken cancellationToken = default)
+        {
+            Assert.True(request.Body.IsEmpty);
+            Interlocked.Increment(ref bufferedCalls);
+            return ValueTask.FromResult(new Http3ServerResponse(200, "bodyless"u8.ToArray()));
+        }
+
+        public ValueTask<Http3ServerResponse> HandleStreamingAsync(
+            Http3StreamingRequest request,
+            CancellationToken cancellationToken = default) => throw new InvalidOperationException("The bodyless fallback handler must not select streaming.");
     }
 
     private sealed class CaptureRequestHandler : IHttp3RequestHandler

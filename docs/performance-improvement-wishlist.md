@@ -3906,3 +3906,58 @@ intermediate 16 KiB trace and campaign, final repeated campaign, final trace,
 disturbed multiplex run, and failed source-root baseline attempt. These are
 shared-host diagnostics, not publishable isolated-hardware claims. Nothing was
 deployed or published.
+
+### Accepted 2026-07-17: lazily grow HTTP/3 request read buffers
+
+The current 100-stream HTTP/3 multiplex call-stack trace showed that every
+`Http3StreamingRequestBodyReader` eagerly rented its configured 16 KiB buffer,
+including bodyless requests handled by the buffered fallback. The accepted
+change starts each reader with at most 4 KiB and promotes it to the configured
+size only after the first DATA segment is observed. Large uploads and duplex
+requests therefore retain the sustained-body buffer size after their first
+segment, while 100 simultaneously active bodyless readers request about
+1.17 MiB less pooled capacity in aggregate.
+
+The trace also preserved important non-candidates. Its runtime counter
+collector allocated about 38 MiB of `Int32[][]`, and the forced counter stop
+left a truncated output file, so trace allocation samples and trace throughput
+are not used as an acceptance claim. The exception stream contained nine
+HTTP/3 shutdown/control-path exceptions plus one channel-close and one
+object-disposed event; that volume and attribution did not justify exception
+path tuning. No raw QUIC transport change was attempted.
+
+Fresh five-repetition shared-host diagnostics produced:
+
+| Lane | Baseline median | Candidate median | Throughput delta | Baseline p95 | Candidate p95 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 100-stream multiplex, c1/s100 | 188.16 requests/s | 192.78 requests/s | +2.5% | 107.01 ms | 100.14 ms |
+| 1 MiB fixed response, c16 | 32.01 requests/s | 32.58 requests/s | +1.8% | 532.89 ms | 494.85 ms |
+| 100x16 KiB streaming response, c16 | 19.56 requests/s | 20.67 requests/s | +5.7% | 846.23 ms | 772.38 ms |
+| 1 MiB upload sink, c16 | 64.30 requests/s | 65.12 requests/s | +1.3% | 384.23 ms | 367.48 ms |
+| 1 MiB simultaneous duplex, baseline first | 18.42 requests/s | 17.50 requests/s | -5.0% | 51.22 ms | 50.31 ms |
+| 1 MiB simultaneous duplex, candidate first | 16.51 requests/s | 17.84 requests/s | +8.1% | 53.03 ms | 51.50 ms |
+
+All 40 baseline and 40 candidate cells passed exact protocol and payload
+validation with zero failures or timeouts. The duplex throughput result changed
+sign with execution order, while p95 improved in both orders; it is retained as
+order-sensitive neutral evidence rather than an improvement claim. Multiplex
+range narrowed from 11.6% to 5.8%. Other candidate ranges remained above the
+publishable threshold, including 14.9% for upload and 12.8% for the reversed
+duplex run.
+
+A new 32-stream bodyless-request concurrency test passed. The first selected
+HTTP/3 invocation passed 80 tests, skipped one, and retained one control-stream
+close-observation timeout. The repeat passed 79, skipped one, and retained that
+timeout plus an incomplete-content-length close timeout. Each exact close test
+then passed 5/5 in isolation. The full Release solution passed 9,614 tests and
+skipped five, with the incomplete-content-length close test timing out once;
+its immediate post-suite rerun passed 5/5. These timing failures remain
+explicit rather than being reported as a completely green invocation.
+
+Evidence is retained under
+`C:\shared\temp\pl-h3-crosslayer-20260717` in the
+`baseline-h3-lazy-body-buffer-*`, `candidate-h3-lazy-body-buffer-*`,
+`baseline2-h3-lazy-body-buffer-*`, and
+`candidate2-h3-lazy-body-buffer-*` runs, plus the baseline and candidate
+multiplex call-stack traces. These are shared-host diagnostics, not publishable
+isolated-hardware claims. Nothing was deployed or published.
