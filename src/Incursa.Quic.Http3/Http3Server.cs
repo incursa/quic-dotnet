@@ -1833,10 +1833,26 @@ public sealed class Http3Server : IAsyncDisposable
             int count = Math.Min(framePayloadSize, body.Length - offset);
             bool isFinalFrame = offset + count == body.Length;
             byte[] dataFrameHeader = GetDataFrameHeader(count);
-            if (!await WriteFrameBytesAsync(stream, dataFrameHeader, cancellationToken).ConfigureAwait(false)
-                || !await WritePayloadBytesAsync(stream, body.Slice(offset, count), isFinalFrame, cancellationToken).ConfigureAwait(false))
+            if (!await WriteFrameBytesAsync(stream, dataFrameHeader, cancellationToken).ConfigureAwait(false))
             {
                 return false;
+            }
+
+            int payloadOffset = 0;
+            while (payloadOffset < count)
+            {
+                int writeCount = Math.Min(ResponseWriteChunkSize, count - payloadOffset);
+                ReadOnlyMemory<byte> chunk = body.Slice(offset + payloadOffset, writeCount);
+                bool isFinalWrite = isFinalFrame && payloadOffset + writeCount == count;
+                bool written = isFinalWrite
+                    ? await stream.TryWriteFinalAsync(chunk, cancellationToken).ConfigureAwait(false)
+                    : await stream.TryWriteAsync(chunk, cancellationToken).ConfigureAwait(false);
+                if (!written)
+                {
+                    return false;
+                }
+
+                payloadOffset += writeCount;
             }
 
             offset += count;
@@ -1877,14 +1893,34 @@ public sealed class Http3Server : IAsyncDisposable
         await using IAsyncEnumerator<ReadOnlyMemory<byte>> enumerator = body.GetAsyncEnumerator(cancellationToken);
         while (await enumerator.MoveNextAsync().ConfigureAwait(false))
         {
-            if (!await WriteResponseDataFramesAsync(
-                stream,
-                enumerator.Current,
-                dataFramePayloadSize,
-                cancellationToken,
-                finalFrame: false).ConfigureAwait(false))
+            ReadOnlyMemory<byte> current = enumerator.Current;
+            int framePayloadSize = dataFramePayloadSize ?? ResponseDataFrameChunkSize;
+            int offset = 0;
+            while (offset < current.Length)
             {
-                return false;
+                int count = Math.Min(framePayloadSize, current.Length - offset);
+                byte[] dataFrameHeader = GetDataFrameHeader(count);
+                if (!await WriteFrameBytesAsync(stream, dataFrameHeader, cancellationToken).ConfigureAwait(false))
+                {
+                    return false;
+                }
+
+                int payloadOffset = 0;
+                while (payloadOffset < count)
+                {
+                    int writeCount = Math.Min(ResponseWriteChunkSize, count - payloadOffset);
+                    if (!await stream.TryWriteAsync(
+                        current.Slice(offset + payloadOffset, writeCount),
+                        cancellationToken).ConfigureAwait(false))
+                    {
+                        return false;
+                    }
+
+                    payloadOffset += writeCount;
+                }
+
+                EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Data, count);
+                offset += count;
             }
         }
 
@@ -1894,48 +1930,6 @@ public sealed class Http3Server : IAsyncDisposable
         }
 
         EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Data, 0);
-        return true;
-    }
-
-    private async ValueTask<bool> WriteResponseDataFramesAsync(
-        QuicStream stream,
-        ReadOnlyMemory<byte> body,
-        int? dataFramePayloadSize,
-        CancellationToken cancellationToken,
-        bool finalFrame = true)
-    {
-        if (body.IsEmpty)
-        {
-            if (finalFrame)
-            {
-                if (!await WriteFinalFrameBytesAsync(stream, EmptyDataFrame, cancellationToken).ConfigureAwait(false))
-                {
-                    return false;
-                }
-
-                EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Data, 0);
-            }
-
-            return true;
-        }
-
-        int framePayloadSize = dataFramePayloadSize ?? ResponseDataFrameChunkSize;
-        int offset = 0;
-        while (offset < body.Length)
-        {
-            int count = Math.Min(framePayloadSize, body.Length - offset);
-            bool isFinalFrame = finalFrame && offset + count == body.Length;
-            byte[] dataFrameHeader = GetDataFrameHeader(count);
-            if (!await WriteFrameBytesAsync(stream, dataFrameHeader, cancellationToken).ConfigureAwait(false)
-                || !await WritePayloadBytesAsync(stream, body.Slice(offset, count), isFinalFrame, cancellationToken).ConfigureAwait(false))
-            {
-                return false;
-            }
-
-            EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Data, count);
-            offset += count;
-        }
-
         return true;
     }
 
@@ -1964,59 +1958,6 @@ public sealed class Http3Server : IAsyncDisposable
             if (!await stream.TryWriteAsync(frameBytes.AsMemory(offset, count), cancellationToken).ConfigureAwait(false))
             {
                 return false;
-            }
-
-            offset += count;
-        }
-
-        return true;
-    }
-
-    private static ValueTask<bool> WritePayloadBytesAsync(
-        QuicStream stream,
-        ReadOnlyMemory<byte> payload,
-        bool finalFrame,
-        CancellationToken cancellationToken)
-    {
-        if (payload.IsEmpty)
-        {
-            return new ValueTask<bool>(true);
-        }
-
-        if (payload.Length <= ResponseWriteChunkSize)
-        {
-            return finalFrame
-                ? stream.TryWriteFinalAsync(payload, cancellationToken)
-                : stream.TryWriteAsync(payload, cancellationToken);
-        }
-
-        return WritePayloadBytesSlowAsync(stream, payload, finalFrame, cancellationToken);
-    }
-
-    private static async ValueTask<bool> WritePayloadBytesSlowAsync(
-        QuicStream stream,
-        ReadOnlyMemory<byte> payload,
-        bool finalFrame,
-        CancellationToken cancellationToken)
-    {
-        int offset = 0;
-        while (offset < payload.Length)
-        {
-            int count = Math.Min(ResponseWriteChunkSize, payload.Length - offset);
-            ReadOnlyMemory<byte> chunk = payload.Slice(offset, count);
-            if (finalFrame && offset + count == payload.Length)
-            {
-                if (!await stream.TryWriteFinalAsync(chunk, cancellationToken).ConfigureAwait(false))
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (!await stream.TryWriteAsync(chunk, cancellationToken).ConfigureAwait(false))
-                {
-                    return false;
-                }
             }
 
             offset += count;

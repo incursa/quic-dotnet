@@ -3656,3 +3656,48 @@ results, not publishable isolated-hardware proof. Do not retry cumulative
 `MAX_STREAMS` release batching without new attribution that separates control
 packet cost from the dominant stream/data scheduling path and explains the
 opposite c64 outcomes.
+
+### Accepted 2026-07-17: keep HTTP/3 response payload writes in one state machine
+
+A source-backed `gc-verbose` ProtocolLab trace of the 1 MiB fixed response at
+c16 attributed 6.91 MiB of sampled allocation to
+`Http3Server.WritePayloadBytesSlowAsync`. The 1.6 MiB streaming response was
+more pronounced: its per-chunk `WriteResponseDataFramesAsync` state machines
+accounted for 178.79 MiB in one 15-second diagnostic cell. Both helpers were
+entered once per HTTP/3 DATA-frame payload even though the surrounding fixed or
+streaming response method already owned an asynchronous state machine.
+
+The accepted change keeps the existing 16 KiB DATA-frame boundaries, 4 KiB
+QUIC write size, final-write behavior, cancellation, flow control, and frame
+diagnostics. It only moves the bounded payload sub-write loops into the existing
+per-response state machines. The removed allocation groups no longer appeared
+in candidate traces. The candidate streaming response state machine itself was
+1.83 MiB, versus 178.79 MiB for the removed per-chunk state machines. Trace
+cells are attribution evidence only and are not used as throughput claims.
+
+Five clean baseline and candidate repetitions were run for each lane on the
+same shared host. All 40 cells passed exact protocol and payload validation with
+zero request failures:
+
+| Lane | Baseline median | Candidate median | Throughput delta | p95 delta | Baseline range | Candidate range |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 MiB fixed response, c16 | 43.18 MiB/s | 48.33 MiB/s | +11.9% | -20.4% | 36.3% | 8.7% |
+| 1.6 MiB streaming response, c16 | 43.57 MiB/s | 46.51 MiB/s | +6.7% | -9.8% | 28.1% | 8.5% |
+| 100x1 KiB multiplex control | 0.18 MiB/s | 0.19 MiB/s | +7.2% | -11.5% | 45.5% | 2.7% |
+| 1 MiB simultaneous duplex control | 3.19 MiB/s | 3.07 MiB/s | -3.9% | +4.1% | 17.7% | 41.2% |
+
+The shared-host campaign remains diagnostic, and the wide baseline ranges make
+small throughput deltas non-authoritative. The allocation mechanism is direct,
+the two affected workload medians improved, and the duplex control stayed
+inside the 5% guardrail. Focused large-response, streaming-response, frame
+boundary, and simultaneous duplex tests passed 6/6. The full solution passed
+9,605 tests, skipped five, and failed zero.
+
+Evidence is retained under
+`C:\shared\temp\pl-h3-crosslayer-20260717`, including clean repeated runs
+prefixed `baseline-h3-` and `candidate-h3-`, plus the fixed and streaming
+trace runs. The same streaming trace still attributed about 701 MiB to
+`System.Byte[]` from the ProtocolLab deterministic streaming-body generator.
+That adapter-owned payload churn is the next separate cross-layer/API-usage
+candidate; it is not credited to this library change. Nothing was deployed or
+published.
