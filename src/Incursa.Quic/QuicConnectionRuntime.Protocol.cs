@@ -1934,7 +1934,11 @@ internal sealed partial class QuicConnectionRuntime
                 Console.Error.WriteLine(
                     $"app-rx stream role={tlsState.Role} packet={packetNumber} stream={streamFrame.StreamId.Value} offset={streamFrame.Offset} length={streamFrame.StreamDataLength} fin={streamFrame.IsFin}.");
             }
-            if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode, QuicApplicationDataEpoch.OneRtt))
+            if (!streamRegistry.Bookkeeping.TryReceiveStreamFrameForRuntime(
+                    streamFrame,
+                    out QuicTransportErrorCode errorCode,
+                    out QuicConnectionStreamReceiveResult receiveResult,
+                    QuicApplicationDataEpoch.OneRtt))
             {
                 if (ApplicationReceiveRejectDiagnosticsEnabled)
                 {
@@ -1966,27 +1970,19 @@ internal sealed partial class QuicConnectionRuntime
                     "The peer sent a STREAM frame that violated receive-side stream or flow-control state.",
                     ref effects);
             }
-            if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(
-                    streamFrame.StreamId.Value,
-                    out QuicConnectionStreamSnapshot updatedStreamSnapshot)
-                && updatedStreamSnapshot.ReceiveState == QuicStreamReceiveState.DataRecvd)
+            if (receiveResult.ReceiveCompleted)
             {
                 _ = sendRuntime.TrySuppressStopSendingRetransmissionForStream(streamFrame.StreamId.Value);
             }
 
-                if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(
-                        streamFrame.StreamId.Value,
-                        out QuicConnectionStreamSnapshot updatedReadableSnapshot)
-                    && (updatedReadableSnapshot.HasContiguousReadableBytes
-                        || updatedReadableSnapshot.ReceiveState == QuicStreamReceiveState.DataRecvd
-                        || updatedReadableSnapshot.ReceiveState == QuicStreamReceiveState.DataRead))
-                {
-                    NotifyStreamObservers(
-                        streamFrame.StreamId.Value,
-                        new QuicStreamNotification(QuicStreamNotificationKind.DataAvailable, null));
-                }
+            if (receiveResult.HasReadableData)
+            {
+                NotifyStreamObservers(
+                    streamFrame.StreamId.Value,
+                    new QuicStreamNotification(QuicStreamNotificationKind.DataAvailable, null));
+            }
 
-            if (streamRegistry.Bookkeeping.TryMarkPeerAcceptQueued(streamFrame.StreamId.Value))
+            if (receiveResult.QueuePeerAccept)
             {
                 TryQueueInboundStreamId(streamFrame.StreamId.Value);
             }
@@ -2272,7 +2268,11 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
-                if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode, QuicApplicationDataEpoch.ZeroRtt))
+                if (!streamRegistry.Bookkeeping.TryReceiveStreamFrameForRuntime(
+                        streamFrame,
+                        out QuicTransportErrorCode errorCode,
+                        out QuicConnectionStreamReceiveResult receiveResult,
+                        QuicApplicationDataEpoch.ZeroRtt))
                 {
                     return TryHandleApplicationDataFrameError(
                         nowTicks,
@@ -2282,27 +2282,19 @@ internal sealed partial class QuicConnectionRuntime
                         ref effects);
                 }
 
-                if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(
-                        streamFrame.StreamId.Value,
-                        out QuicConnectionStreamSnapshot updatedStreamSnapshot)
-                    && updatedStreamSnapshot.ReceiveState == QuicStreamReceiveState.DataRecvd)
+                if (receiveResult.ReceiveCompleted)
                 {
                     _ = sendRuntime.TrySuppressStopSendingRetransmissionForStream(streamFrame.StreamId.Value);
                 }
 
-                if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(
-                        streamFrame.StreamId.Value,
-                        out QuicConnectionStreamSnapshot updatedReadableSnapshot)
-                    && (updatedReadableSnapshot.HasContiguousReadableBytes
-                        || updatedReadableSnapshot.ReceiveState == QuicStreamReceiveState.DataRecvd
-                        || updatedReadableSnapshot.ReceiveState == QuicStreamReceiveState.DataRead))
+                if (receiveResult.HasReadableData)
                 {
                     NotifyStreamObservers(
                         streamFrame.StreamId.Value,
                         new QuicStreamNotification(QuicStreamNotificationKind.DataAvailable, null));
                 }
 
-                if (streamRegistry.Bookkeeping.TryMarkPeerAcceptQueued(streamFrame.StreamId.Value))
+                if (receiveResult.QueuePeerAccept)
                 {
                     TryQueueInboundStreamId(streamFrame.StreamId.Value);
                 }
