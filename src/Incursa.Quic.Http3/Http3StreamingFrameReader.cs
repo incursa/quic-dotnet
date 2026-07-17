@@ -3,7 +3,7 @@
 
 namespace Incursa.Quic.Http3;
 
-internal sealed class Http3StreamingFrameReader
+internal sealed class Http3StreamingFrameReader : IDisposable
 {
     private const int MaximumFrameHeaderLength = 16;
     private const int MaximumDataSegmentLength = 64 * 1024;
@@ -15,7 +15,10 @@ internal sealed class Http3StreamingFrameReader
     private int framePayloadLength;
     private int remainingPayloadLength;
     private byte[]? bufferedPayload;
+    private List<byte[]>? rentedDataBuffers;
+    private int bufferedPayloadCapacity;
     private int bufferedPayloadCount;
+    private int disposed;
     private bool readingPayload;
 
     public Http3StreamingFrameReader(Func<ulong, Http3Exception?>? frameTypeValidator = null)
@@ -27,6 +30,7 @@ internal sealed class Http3StreamingFrameReader
 
     public void Read(ReadOnlyMemory<byte> source, Queue<Http3StreamingFramePart> output)
     {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
         ArgumentNullException.ThrowIfNull(output);
 
         while (!source.IsEmpty)
@@ -39,17 +43,27 @@ internal sealed class Http3StreamingFrameReader
 
             if (frameType == (ulong)Http3FrameType.Data)
             {
-                bufferedPayload ??= GC.AllocateUninitializedArray<byte>(Math.Min(remainingPayloadLength, MaximumDataSegmentLength));
-                int dataCount = Math.Min(source.Length, bufferedPayload.Length - bufferedPayloadCount);
+                if (bufferedPayload is null)
+                {
+                    bufferedPayloadCapacity = Math.Min(remainingPayloadLength, MaximumDataSegmentLength);
+                    bufferedPayload = QuicBufferPool.RentBytes(bufferedPayloadCapacity);
+                    (rentedDataBuffers ??= new List<byte[]>(16)).Add(bufferedPayload);
+                }
+
+                int dataCount = Math.Min(source.Length, bufferedPayloadCapacity - bufferedPayloadCount);
                 source.Span[..dataCount].CopyTo(bufferedPayload.AsSpan(bufferedPayloadCount));
                 source = source[dataCount..];
                 bufferedPayloadCount += dataCount;
                 remainingPayloadLength -= dataCount;
-                if (bufferedPayloadCount == bufferedPayload.Length || remainingPayloadLength == 0)
+                if (bufferedPayloadCount == bufferedPayloadCapacity || remainingPayloadLength == 0)
                 {
                     bool endsFrame = remainingPayloadLength == 0;
-                    output.Enqueue(Http3StreamingFramePart.FromData(bufferedPayload, endsFrame, framePayloadLength));
+                    output.Enqueue(Http3StreamingFramePart.FromData(
+                        bufferedPayload.AsMemory(0, bufferedPayloadCount),
+                        endsFrame,
+                        framePayloadLength));
                     bufferedPayload = null;
+                    bufferedPayloadCapacity = 0;
                     bufferedPayloadCount = 0;
                     if (endsFrame)
                     {
@@ -79,6 +93,26 @@ internal sealed class Http3StreamingFrameReader
         {
             throw new Http3Exception(Http3ErrorCode.FrameError, "The HTTP/3 stream ended with a truncated frame.");
         }
+    }
+
+    public void Dispose()
+    {
+        if (Interlocked.Exchange(ref disposed, 1) != 0)
+        {
+            return;
+        }
+
+        if (rentedDataBuffers is null)
+        {
+            return;
+        }
+
+        foreach (byte[] buffer in rentedDataBuffers)
+        {
+            QuicBufferPool.ReturnBytes(buffer);
+        }
+
+        rentedDataBuffers.Clear();
     }
 
     private void ReadHeader(ref ReadOnlyMemory<byte> source, Queue<Http3StreamingFramePart> output)
@@ -157,6 +191,7 @@ internal sealed class Http3StreamingFrameReader
         framePayloadLength = 0;
         remainingPayloadLength = 0;
         bufferedPayload = null;
+        bufferedPayloadCapacity = 0;
         bufferedPayloadCount = 0;
         readingPayload = false;
     }

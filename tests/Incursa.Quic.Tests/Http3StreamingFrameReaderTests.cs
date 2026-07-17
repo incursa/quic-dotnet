@@ -12,7 +12,7 @@ public sealed class Http3StreamingFrameReaderTests
     {
         byte[] payload = CreatePayload(128 * 1024);
         byte[] encoded = Http3FrameWriter.WriteData(payload);
-        Http3StreamingFrameReader reader = new();
+        using Http3StreamingFrameReader reader = new();
         Queue<Http3StreamingFramePart> parts = [];
 
         int offset = 0;
@@ -43,7 +43,7 @@ public sealed class Http3StreamingFrameReaderTests
         const ulong frameType = 0x21;
         byte[] payload = CreatePayload(4096);
         byte[] encoded = Http3FrameWriter.WriteFrame(frameType, payload);
-        Http3StreamingFrameReader reader = new();
+        using Http3StreamingFrameReader reader = new();
         Queue<Http3StreamingFramePart> parts = [];
 
         foreach (byte value in encoded)
@@ -67,7 +67,7 @@ public sealed class Http3StreamingFrameReaderTests
         byte[] secondPayload = "second"u8.ToArray();
         byte[] second = Http3FrameWriter.WriteData(secondPayload);
         byte[] encoded = [.. first, .. second];
-        Http3StreamingFrameReader reader = new();
+        using Http3StreamingFrameReader reader = new();
         Queue<Http3StreamingFramePart> parts = [];
 
         reader.Read(encoded.AsMemory(0, 3), parts);
@@ -93,7 +93,7 @@ public sealed class Http3StreamingFrameReaderTests
     public void Complete_RejectsTruncatedFrame(int retainedBytes)
     {
         byte[] encoded = Http3FrameWriter.WriteData(CreatePayload(32));
-        Http3StreamingFrameReader reader = new();
+        using Http3StreamingFrameReader reader = new();
         Queue<Http3StreamingFramePart> parts = [];
         reader.Read(encoded.AsMemory(0, retainedBytes), parts);
 
