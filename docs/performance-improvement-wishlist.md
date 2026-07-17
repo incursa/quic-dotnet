@@ -3423,3 +3423,51 @@ full suite produced the same 9,603 passes, five skips, and same two broad-run
 failures; both exact tests then passed together in 10/10 consecutive reruns.
 `git diff --check` passed. No package was registered and nothing was deployed
 or published.
+
+### Rejected 2026-07-17: direct due-timer processing during bounded shard drains
+
+The c64 queue diagnostics suggested that the shard's complete inbox drain can
+postpone ACK, recovery, idle, and application-send deadline checks while the
+channel remains continuously nonempty. A bounded-drain candidate alternated 64
+inbox work items with already-due timer events and passed a focused test that
+preloaded 256 local work items before an idle deadline.
+
+The design was rejected before ProtocolLab measurement because it processed
+timer events directly instead of re-entering them through the same serialized
+inbox. That violates `REQ-QUIC-CRT-0054` and the deadline-scheduler architecture
+even though runtime mutation remained single-threaded. The code and candidate
+test were reverted. A future deadline-fairness design must retain one queued
+ordering surface for network, local API, and timer events; do not repeat direct
+timer dispatch or treat queue serialization alone as equivalent to the required
+same-queue contract.
+
+### Rejected 2026-07-17: bounded Linux listener `sendmmsg` batches
+
+The published Linux raw QUIC peer report and the current 64 KiB echo trace
+justified testing the dormant `QuicSocketSendBatch` primitive at the listener
+boundary. The candidate accumulated at most 32 already-protected datagrams per
+runtime shard, preserved routed-handle and datagram order, retained detached
+packet owners until the synchronous batch callback completed, and kept packet
+information, custom sender, Windows, and unsupported native paths on the
+existing single-send implementation. Focused ownership, observer-failure,
+runtime-shard, listener-host, and socket-batch tests passed 47/47. A second
+variant used single sends below four datagrams to avoid native setup cost for
+small batches.
+
+Same-host Debian 12 source builds used the current accepted `90e1416e` source,
+the same freshly built `quic-go-raw-load` executable, 64 KiB bidirectional echo,
+one stream per connection, two seconds of warmup, 15 seconds of measurement,
+and five repetitions. The accepted baseline measured 27.910 MiB/s at c16 and
+34.997 MiB/s at c64. Unconditionally batching two or more datagrams measured
+27.210 MiB/s at c16 (-2.5%) and 37.976 MiB/s at c64 (+8.5%). Requiring at least
+four datagrams measured 26.882 MiB/s at c16 (-3.7%) and 37.224 MiB/s at c64
+(+6.4%). Every cell completed with zero failed or timed-out requests, but both
+variants regressed the documented c16 gap and remained below the normal 10%
+throughput bar at c64. No c1-c128 or control campaign was justified.
+
+The runtime and test changes were reverted. Retain local evidence under
+`C:\shared\temp\pl-linux-sendmmsg-20260717` and the copied SUT evidence under
+`/home/samuel/quic-perf/evidence/{baseline-90e1416e-c16-c64-20260717,candidate-sendmmsg-batch-c16-c64-20260717,candidate-sendmmsg-min4-c16-c64-20260717}`.
+Do not retry listener-level `sendmmsg` batching without a materially cheaper
+native buffer-lifetime design or evidence that the deployment path produces
+larger batches without c16 loss.
