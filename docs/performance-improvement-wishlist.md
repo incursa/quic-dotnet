@@ -3471,3 +3471,32 @@ The runtime and test changes were reverted. Retain local evidence under
 Do not retry listener-level `sendmmsg` batching without a materially cheaper
 native buffer-lifetime design or evidence that the deployment path produces
 larger batches without c16 loss.
+
+### Rejected 2026-07-17: queue-preserving bounded shard drains
+
+The prior direct timer-dispatch experiment was replaced with a contract-safe
+design that processed at most 64 inbox items before re-entering the shard loop.
+Newly due ACK, recovery, idle, and application-send timers were still appended
+to the same serialized inbox required by `REQ-QUIC-CRT-0054`; no timer bypassed
+the channel and existing work retained its order. A requirement-home test
+proved that a deadline becoming due under a continuously nonempty inbox was
+discovered between drain windows. Focused timer, deadline, idle, application
+send, and runtime-shard tests passed 80/80.
+
+The current accepted `90e1416e` Linux source baseline completed the 64 KiB
+bidirectional echo lane at c1, c4, c16, c32, c64, and c128 with five
+repetitions and zero failed or timed-out requests. Its c16 and c64 medians were
+28.406 MiB/s and 36.382 MiB/s. The bounded-drain candidate measured 28.463
+MiB/s at c16 (+0.2%) and 33.373 MiB/s at c64 (-8.3%); median p95 latency was
+essentially unchanged at c16 and worsened from 88.43 ms to 91.19 ms at c64.
+The c64 candidate range also widened to 27.624-35.541 MiB/s. These direct
+same-host source runs were sequential diagnostic gates, not matched
+publishable evidence, but the clear c64 regression made a full campaign
+unnecessary.
+
+The runtime and test changes were reverted. Retain the accepted-source ladder
+under `C:\shared\temp\pl-current-raw-baseline-20260717`, the candidate gate
+under `C:\shared\temp\pl-bounded-drain-20260717`, and the copied SUT evidence
+under `/home/samuel/quic-perf/evidence/{baseline-90e1416e-c1-c128-20260717,candidate-bounded-drain-c16-c64-20260717}`.
+Do not retry bounded inbox drains without evidence for a different fairness
+mechanism that avoids the c64 throughput and variance penalty.
