@@ -3500,3 +3500,30 @@ under `C:\shared\temp\pl-bounded-drain-20260717`, and the copied SUT evidence
 under `/home/samuel/quic-perf/evidence/{baseline-90e1416e-c1-c128-20260717,candidate-bounded-drain-c16-c64-20260717}`.
 Do not retry bounded inbox drains without evidence for a different fairness
 mechanism that avoids the c64 throughput and variance penalty.
+
+### Rejected 2026-07-17: direct Linux `sendto` wrapper
+
+A fresh current-source Linux c16 trace for the 64 KiB bidirectional echo lane
+attributed 5.15 percent inclusive sampled time to listener datagram send. The
+managed `SocketPal.TryCompleteSendTo` portion was 3.0 percent and native
+`sendmsg` was 2.14 percent, so a Linux-specific direct syscall was tested before
+changing production code. The isolated gate reused one UDP socket, the same
+cached native socket address, a 1,200-byte payload, pinned payload/address
+memory, seven alternating 100,000-datagram rounds, and a dedicated loopback
+receiver.
+
+Managed `Socket.SendTo` measured a stable 11.300 microseconds per datagram;
+direct libc `sendto` measured 10.276 microseconds, a 9.1 percent primitive
+reduction. Applied to the traced 5.15 percent send share, the upper-bound
+whole-process benefit is approximately 0.5 percent before accounting for
+SafeHandle, platform, error-mapping, and maintenance costs. That does not meet
+the end-to-end gate and does not justify replacing the framework socket path.
+No production or test files changed and no ProtocolLab matrix was spent.
+
+Retain the diagnostic trace under
+`C:\shared\temp\pl-current-linux-trace-20260717`, the isolated benchmark source
+under `C:\shared\temp\linux-sendto-gate-20260717`, and the SUT copies under
+`/home/samuel/quic-perf/evidence/baseline-90e1416e-c16-linux-trace-20260717`
+and `/home/samuel/quic-perf/linux-sendto-gate-20260717`. Do not retry a direct
+single-datagram syscall wrapper without a materially larger measured managed
+overhead or a safe zero-copy batch design that also clears the c16 guardrail.
