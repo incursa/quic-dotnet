@@ -137,7 +137,7 @@ public sealed class Http3FrameReader
         return Read([], endOfStream: true);
     }
 
-    private static Http3Frame ParseFrame(ulong frameType, byte[] payload)
+    internal static Http3Frame ParseFrame(ulong frameType, byte[] payload)
     {
         return frameType switch
         {

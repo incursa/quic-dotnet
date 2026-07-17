@@ -1893,6 +1893,61 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    public async Task PostDataRequest_WithLargeSingleDataFrame_PreservesBodyAcrossReads()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        byte[] body = CreateDeterministicBytes(256 * 1024);
+        CaptureBodyHandler handler = new();
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler, diagnostics);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WritePostRequestAsync(requestStream, "/upload", body, includeContentLength: true);
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.True(
+            response.StatusCode == 200,
+            string.Join(" | ", diagnostics.Events.Select(static diagnostic => $"{diagnostic.Kind}:{diagnostic.ErrorCode}:{diagnostic.Message}")));
+        Assert.Equal(body, handler.Body);
+        Http3DiagnosticEvent dataFrame = Assert.Single(
+            diagnostics.Events,
+            static diagnostic => diagnostic.Kind == Http3DiagnosticKind.FrameReceived
+                && diagnostic.FrameType == Http3FrameType.Data);
+        Assert.Equal(body.Length, dataFrame.PayloadLength);
+    }
+
+    [Fact]
+    public async Task StreamingCapableHandler_BufferedFallback_PreservesLargeBodyAcrossSegments()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        byte[] body = CreateDeterministicBytes(1024 * 1024);
+        DuplexStreamingHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WritePostRequestAsync(requestStream, "/buffered", body, includeContentLength: true);
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.Equal(1, handler.BufferedCalls);
+        Assert.Equal(body, handler.BufferedBody);
+    }
+
+    [Fact]
     public async Task RequestDataBeforeHeaders_ClosesConnectionWithFrameUnexpected()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -3111,6 +3166,8 @@ public sealed class Http3MinimalServerTests
     {
         public int BufferedCalls { get; private set; }
 
+        public byte[] BufferedBody { get; private set; } = [];
+
         public int StreamingCalls { get; private set; }
 
         public bool CanHandleStreaming(Http3StreamingRequest request)
@@ -3119,6 +3176,7 @@ public sealed class Http3MinimalServerTests
         public ValueTask<Http3ServerResponse> HandleAsync(Http3Request request, CancellationToken cancellationToken = default)
         {
             BufferedCalls++;
+            BufferedBody = request.Body.ToArray();
             byte[] body = System.Text.Encoding.UTF8.GetBytes("buffered:" + System.Text.Encoding.UTF8.GetString(request.Body.Span));
             return ValueTask.FromResult(new Http3ServerResponse(200, body));
         }

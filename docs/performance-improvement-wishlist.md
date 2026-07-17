@@ -3845,3 +3845,64 @@ candidate campaigns, fresh parent/candidate controls, corrected duplex runs,
 multiplex runs, and the malformed-shape evidence. These are local shared-host
 diagnostics, not isolated publishable claims. Nothing was deployed or
 published.
+
+### Accepted 2026-07-17: stream bounded HTTP/3 request DATA segments
+
+ProtocolLab call-stack attribution on the accepted `9d9f86aa` source showed
+that large request bodies were still assembled as complete `Http3DataFrame`
+payloads before either a streaming handler or the buffered fallback could
+consume them. At c16, the one-MiB upload trace attributed the dominant sampled
+allocation to repeated `Http3FrameReader.Read` growth and final payload copies.
+The sustained duplex trace showed the same whole-frame boundary in the direct
+request-to-response streaming path.
+
+The accepted reader parses frame headers incrementally, retains non-DATA frame
+behavior, and emits DATA as owned segments bounded to 64 KiB. Buffered handlers
+retain those owned segments and perform one exact final concatenation only when
+more than one segment exists. Streaming handlers can consume segments before
+the complete DATA frame arrives. Frame ordering, trailing headers, declared
+frame diagnostics, content-length validation, truncation errors, cancellation,
+single-enumeration behavior, and owned-memory lifetime remain intact.
+
+The first implementation exposed two correctness and performance issues that
+are retained as negative evidence. Its buffered fallback accidentally reused
+an empty first-segment sentinel after aggregation began and omitted one 16 KiB
+segment; ProtocolLab rejected the request with exact expected/received lengths.
+After that fix, 16 KiB parser segments moved buffered cost into repeated
+`ArrayBufferWriter` growth and increased duplex iterator pressure. The final
+design retains segments and groups parser output at 64 KiB instead of trusting
+remote Content-Length for eager allocation.
+
+Final matched local diagnostics on the same shared host produced:
+
+| Lane | Baseline median | Candidate median | Throughput delta | Baseline p95 | Candidate p95 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 MiB upload sink, c16 | 89.30 requests/s | 97.73 requests/s | +9.4% | 277.1 ms | 234.6 ms |
+| 1 MiB simultaneous duplex, c1 | 23.43 MiB/s | 27.89 MiB/s | +19.0% | 35.0 ms | 33.6 ms |
+| 1 MiB fixed response, c16 | 46.68 requests/s | 47.58 requests/s | +1.9% | 421.2 ms | 356.6 ms |
+| 100x16 KiB streaming response, c16 | 28.22 requests/s | 30.50 requests/s | +8.1% | 698.5 ms | 548.0 ms |
+| 64 KiB upload echo, c16 | 438.22 requests/s | 492.20 requests/s | +12.3% | 69.4 ms | 41.8 ms |
+| 100-stream multiplex, c1/s100 | 192.78 requests/s | 198.25 requests/s | +2.8% | 101.3 ms | 100.0 ms |
+
+Every valid candidate cell passed exact HTTP/3 and payload validation with zero
+failed or timed-out requests. The c16 duplex load tool failed in all five
+baseline and all five candidate cells, so that invalid shape is preserved but
+excluded from comparison. An initial multiplex campaign was visibly disturbed
+at 138.6-197.9 requests/s; the immediate repeat tightened to 192.0-202.4 and is
+the reported diagnostic. A fresh detached baseline attempt failed before
+readiness because ProtocolLab's source-root adapter `.deps.json` omitted the
+source-backed QUIC assemblies; it is infrastructure evidence, not benchmark
+evidence.
+
+Final trace attribution is not used as a throughput claim. It reduced sampled
+`System.Byte[]` allocation from 4.23 to 2.27 MiB per completed upload and from
+1.26 to 1.07 MiB per duplex transfer. Exception event counts were unchanged.
+Focused parser, large-body fallback, streaming, and System.Net HTTP/3 tests
+passed 9/9 before the full regression gate.
+
+Evidence is retained under
+`C:\shared\temp\pl-h3-crosslayer-20260717`, including every failed validation,
+intermediate 16 KiB trace and campaign, final repeated campaign, final trace,
+disturbed multiplex run, and failed source-root baseline attempt. These are
+shared-host diagnostics, not publishable isolated-hardware claims. Nothing was
+deployed or published.
