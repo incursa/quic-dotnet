@@ -3618,3 +3618,41 @@ reverted. Retain local evidence under
 Do not retry a coarse timer floor without a deadline mechanism that avoids both
 early-wake churn and millisecond-scale ACK, recovery, and application-send
 deferral.
+
+### Rejected 2026-07-17: cumulative `MAX_STREAMS` release batching
+
+The 100x1 KiB multiplex trace showed repeated peer-stream capacity releases and
+provided a plausible general packet-scheduling candidate: replace one protected
+`MAX_STREAMS` packet per closed peer stream with one cumulative update per
+direction. The implementation prepared and committed each group atomically,
+preserved congestion/protection failure retry, and retained the existing
+per-stream path for invalid or small groups. Focused stream-capacity,
+concurrency, retry, and RFC tests passed 29/29, and the raw server Release build
+completed with zero warnings.
+
+The first matched source-backed c1-c128 campaign batched every eligible group.
+It completed all 60 cells with five repetitions per baseline/candidate shape,
+exact payload validation, and zero failures or timeouts. The candidate was
++2.8%, +4.8%, -7.4%, +0.2%, +17.5%, and +1.7% at c1, c4, c16, c32, c64, and
+c128. Despite the c64 gain and lower c64 p95/p99, the 7.4% c16 regression
+rejected that design. A diagnostic batch-size histogram then showed median
+groups of five at c16 and six at c64, while c64 p95/p99 groups reached 23/37.
+
+A second design retained the original individual path below 16 releasable
+streams per direction. Its matched c16/c64 gate also used five interleaved
+baseline and candidate repetitions, the same source-backed runner and load
+tool, exact payload validation, and zero failures, timeouts, validation errors,
+or detected generator saturation. At c16, median throughput improved from
+30.14 to 31.69 MiB/s (+5.1%), p95 improved 1.6%, and p99 improved 2.8%. At c64,
+median throughput fell from 19.77 to 16.97 MiB/s (-14.2%), while p95 improved
+4.3% and p99 improved 35.5%. The repeated c64 throughput regression rejects
+the thresholded design and shows that the first campaign's c64 gain was not a
+stable basis for retaining the added state and packet-building complexity.
+
+The runtime, metrics, helper, and tests were reverted. Retain the unthresholded
+campaign, counter capture, and thresholded gate under
+`C:\shared\temp\pl-maxstreams-batch-20260717`. These are shared-host diagnostic
+results, not publishable isolated-hardware proof. Do not retry cumulative
+`MAX_STREAMS` release batching without new attribution that separates control
+packet cost from the dominant stream/data scheduling path and explains the
+opposite c64 outcomes.
