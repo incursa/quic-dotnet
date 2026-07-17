@@ -3,6 +3,7 @@
 
 namespace Incursa.Quic.Tests;
 
+using System.Collections.Concurrent;
 using System.Reflection;
 
 public sealed class QuicConnectionRuntimeWriteRequestCancellationTests
@@ -189,6 +190,84 @@ public sealed class QuicConnectionRuntimeWriteRequestCancellationTests
         await cancellation.CancelAsync();
 
         await Assert.ThrowsAsync<OperationCanceledException>(() => writeTask);
+    }
+
+    [Fact]
+    public async Task WriteStreamAsync_ConcurrentTransitionsAndCancellationCompleteEachRequestExactlyOnce()
+    {
+        await using QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
+
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+
+        ConcurrentQueue<QuicConnectionStreamActionEvent> postedWrites = new();
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            if (connectionEvent is QuicConnectionStreamActionEvent
+                {
+                    ActionKind: QuicConnectionStreamActionKind.Write,
+                } writeEvent)
+            {
+                postedWrites.Enqueue(writeEvent);
+            }
+
+            return true;
+        });
+
+        const int requestCount = 128;
+        CancellationTokenSource[] cancellations = Enumerable.Range(0, requestCount)
+            .Select(_ => new CancellationTokenSource())
+            .ToArray();
+        Task[] writes = Enumerable.Range(0, requestCount)
+            .Select(index => runtime.WriteStreamAsync(
+                streamId.Value,
+                new byte[] { (byte)index },
+                cancellations[index].Token).AsTask())
+            .ToArray();
+
+        Assert.Equal(requestCount, postedWrites.Count);
+
+        using ManualResetEventSlim start = new(false);
+        Task transitionWorker = Task.Run(() =>
+        {
+            start.Wait();
+            while (postedWrites.TryDequeue(out QuicConnectionStreamActionEvent? writeEvent))
+            {
+                _ = runtime.Transition(writeEvent);
+            }
+        });
+        Task cancellationWorker = Task.Run(() =>
+        {
+            start.Wait();
+            Parallel.For(0, requestCount, index => cancellations[index].Cancel());
+        });
+
+        start.Set();
+        await Task.WhenAll(transitionWorker, cancellationWorker).WaitAsync(TimeSpan.FromSeconds(30));
+
+        int succeeded = 0;
+        int canceled = 0;
+        for (int index = 0; index < writes.Length; index++)
+        {
+            try
+            {
+                await writes[index].WaitAsync(TimeSpan.FromSeconds(30));
+                succeeded++;
+            }
+            catch (OperationCanceledException)
+            {
+                canceled++;
+            }
+        }
+
+        Assert.Equal(requestCount, succeeded + canceled);
+
+        foreach (CancellationTokenSource cancellation in cancellations)
+        {
+            cancellation.Dispose();
+        }
     }
 
     [Fact]
