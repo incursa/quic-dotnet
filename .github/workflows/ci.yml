@@ -55,10 +55,19 @@ jobs:
         id: spectrace
         shell: pwsh
         run: |
+          $eventName = '${{ github.event_name }}'
+          $refName = '${{ github.ref_name }}'
+          $defaultBranch = '${{ github.event.repository.default_branch }}'
           $baseSha = '${{ env.SPEC_TRACE_BASE_SHA }}'
           $headSha = '${{ env.SPEC_TRACE_HEAD_SHA }}'
-          if ([string]::IsNullOrWhiteSpace($baseSha) -or $baseSha -eq '0000000000000000000000000000000000000000') {
-            $defaultBranch = '${{ github.event.repository.default_branch }}'
+
+          if ($eventName -eq 'push' -and $refName -ne $defaultBranch) {
+            $baseSha = git merge-base "origin/$defaultBranch" $headSha
+            if ([string]::IsNullOrWhiteSpace($baseSha)) {
+              $baseSha = (git rev-list --max-parents=0 $headSha | Select-Object -First 1)
+            }
+          }
+          elseif ([string]::IsNullOrWhiteSpace($baseSha) -or $baseSha -eq '0000000000000000000000000000000000000000') {
             $baseSha = git merge-base "origin/$defaultBranch" $headSha
             if ([string]::IsNullOrWhiteSpace($baseSha)) {
               $baseSha = (git rev-list --max-parents=0 $headSha | Select-Object -First 1)
