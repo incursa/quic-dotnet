@@ -3236,3 +3236,54 @@ improvement. Do not repeat another minor lock split. The next diagnosis should
 target the unchanged queue peaks, pooled-buffer retention, and the pre-existing
 221-byte truncated-response and upload idle-timeout failures before another
 runtime scheduling design is attempted.
+
+### Rejected 2026-07-17: collapse STREAM receive delivery decisions
+
+Sampled c64 CPU evidence from the retained multiplex campaign attributed 4.27%
+exclusive CPU to `Monitor.Enter_Slowpath`. The largest project-attributed
+groups were stream snapshots, pending stream-action ownership, stream priority,
+peer stream-capacity release, application reads, and STREAM-frame receipt.
+The 1-RTT and 0-RTT receive loops applied each accepted STREAM frame under the
+connection-wide stream-state lock, then reacquired the same lock twice for
+completion/readability snapshots and once more to mark first peer delivery.
+
+Candidate commit `b982ed85` returned completion, readability, and first-accept
+decisions from the original receive transaction while preserving the legacy
+bookkeeping entry point. Revert `1fe495a2` removes it from the active runtime.
+Receive-buffer tests passed 21/21. A broader runtime, stream-state, and RFC 9000
+filter passed 4,476, skipped three intentional ProtocolLab-sized cases, and had
+zero failures.
+
+All 40 uninstrumented source-backed ProtocolLab cells used exact 100x1 KiB
+multiplex validation, identical executor package 0.1.14, alternating AB/BA
+ordering, five observations per variant and shape, and zero validation,
+request, or timeout failures. The initial c16 gate favored the candidate, but
+the required higher-concurrency gates did not:
+
+| Shape | Baseline | Candidate | Throughput delta | Baseline p95 | Candidate p95 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| c16 | 17.51 MiB/s | 25.97 MiB/s | +48.3% | 63.94 ms | 58.01 ms |
+| c64, immediate alternation | 14.54 MiB/s | 12.90 MiB/s | -11.3% | 298.22 ms | 282.87 ms |
+| c64, 30-second cooldown | 18.80 MiB/s | 17.17 MiB/s | -8.7% | 266.06 ms | 281.04 ms |
+| c128, 30-second cooldown | 9.28 MiB/s | 8.86 MiB/s | -4.5% | 723.98 ms | 784.18 ms |
+
+The shared host remained highly variable at c64-c128. The cooled candidate
+range was 31.4% at c64 and 106.7% at c128; its c128 p99 was 953.27 ms versus
+833.80 ms baseline. The c64 generator CPU also tracked achieved throughput,
+confirming that slow cells left the generator waiting rather than proving a
+generator saturation ceiling. Cooldown removed the strongest immediate-order
+bias but did not produce a repeated high-concurrency win.
+
+Evidence is retained under:
+
+- `C:\shared\temp\pl-receive-result-candidate-20260717`;
+- `C:\shared\temp\pl-receive-result-candidate-c64-cooldown-20260717`;
+- `C:\shared\temp\pl-receive-result-candidate-c128-cooldown-20260717`.
+
+This candidate is rejected because it improves c16 without improving the actual
+c64-c128 collapse and worsens high-concurrency tail latency. Do not repeat
+another variation that only folds receive-state snapshots into the existing
+connection-wide stream lock. The next evidence-supported target is the
+independent datagram send cost, followed by packet scheduling and receive-state
+ownership changes that shorten or remove the connection-wide critical section
+rather than doing more work inside it.
