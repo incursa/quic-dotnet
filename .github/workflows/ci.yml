@@ -32,6 +32,22 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Install native QUIC support
+        env:
+          LIBMSQUIC_VERSION: 2.4.8
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes \
+            libbpf1 \
+            libelf1t64 \
+            libnl-3-200 \
+            libnl-route-3-200 \
+            libnuma1 \
+            libxdp1
+          curl --fail --location --remote-name \
+            "https://packages.microsoft.com/ubuntu/24.04/prod/pool/main/libm/libmsquic/libmsquic_${LIBMSQUIC_VERSION}_amd64.deb"
+          sudo dpkg --install "libmsquic_${LIBMSQUIC_VERSION}_amd64.deb"
+
       - name: Restore local tools
         run: dotnet tool restore
 

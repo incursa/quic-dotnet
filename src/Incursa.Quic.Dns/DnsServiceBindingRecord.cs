@@ -195,12 +195,9 @@ public sealed class DnsServiceBindingRecord
 
     private static bool IsValidDohPathTemplate(string dohPathTemplate)
     {
-        if (string.IsNullOrEmpty(dohPathTemplate) || dohPathTemplate[0] != PathSeparator)
-        {
-            return false;
-        }
-
-        if (Uri.TryCreate(dohPathTemplate, UriKind.Absolute, out _))
+        if (string.IsNullOrEmpty(dohPathTemplate)
+            || dohPathTemplate[0] != PathSeparator
+            || dohPathTemplate.StartsWith("//", StringComparison.Ordinal))
         {
             return false;
         }
