@@ -3316,3 +3316,30 @@ connection-wide stream lock. The next evidence-supported target is the
 independent datagram send cost, followed by packet scheduling and receive-state
 ownership changes that shorten or remove the connection-wide critical section
 rather than doing more work inside it.
+
+### Rejected 2026-07-17: payload-sized ProtocolLab echo receive buffers
+
+The raw Incursa ProtocolLab server rented a 64 KiB echo buffer for every active
+stream, including the 100x1 KiB multiplex lane. A bounded harness candidate
+instead sized non-download receive buffers from the declared payload length,
+which would reduce the nominal active-stream rental from 64 KiB to 1 KiB in
+that lane without changing runtime flow control, packet scheduling, write
+ordering, or FIN behavior.
+
+The first matched source-backed c16 gate completed five exact repetitions per
+variant with zero validation failures, request failures, or timeouts. The
+baseline median was 28,884.40 requests/s (28.21 MiB/s), 53.60 ms p95, and
+76.24 ms p99. The candidate median was 27,418.40 requests/s (26.78 MiB/s),
+56.24 ms p95, and 104.69 ms p99: -5.1 percent throughput and +37.3 percent
+p99. One candidate repetition also fell to 12,146.40 requests/s, confirming
+that the shared-host batch was not stable enough to support a memory claim.
+
+The run's adapter working-set metric was captured before load, and both
+variants reported unavailable QUIC buffer-pool counters because the counter
+stream was empty. The experiment therefore neither passed the performance gate
+nor produced proof of lower peak working set or pooled-buffer retention. The
+candidate was reverted without spending the c1-c128 matrix. Evidence remains
+under `C:\shared\temp\pl-receive-buffer-size-20260717`. Do not repeat
+payload-sized harness rentals without load-window process-memory or pool-counter
+instrumentation and a materially different explanation for the tail-latency
+regression.
