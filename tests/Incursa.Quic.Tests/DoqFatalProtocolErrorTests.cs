@@ -857,6 +857,12 @@ public sealed class DoqFatalProtocolErrorTests
             catch (ObjectDisposedException) when (cancellation.IsCancellationRequested)
             {
             }
+            catch (QuicException exception) when (exception.ApplicationErrorCode == (long)DoqErrorCode.ProtocolError)
+            {
+                // Fatal-policy tests intentionally make the client send a DoQ protocol close.
+                // Once close delivery is synchronized, the raw peer can observe that close
+                // while its scripted stream operation is still in flight.
+            }
         }
 
         public async ValueTask DisposeAsync()

@@ -221,8 +221,14 @@ public sealed class QuicConnection : IAsyncDisposable
 
         if (runtime.TerminalState is not null)
         {
-            return ValueTask.CompletedTask;
+            return runtime.PendingLocalCloseDispatch is { } pendingDispatch
+                ? new ValueTask(pendingDispatch.WaitAsync(cancellationToken))
+                : ValueTask.CompletedTask;
         }
+
+        Task? dispatchCompletion = runtime.LocalApiEventDispatcher is null
+            ? null
+            : runtime.BeginLocalCloseDispatch();
 
         QuicConnectionLocalCloseRequestedEvent closeEvent = new(
             runtime.Clock.Ticks,
@@ -233,9 +239,16 @@ public sealed class QuicConnection : IAsyncDisposable
                 ReasonPhrase: null));
 
         runtime.ProjectLocalCloseRequested(closeEvent, runtime.Clock.Ticks);
-        _ = runtime.TryPostLocalApiEvent(closeEvent);
+        if (!runtime.TryPostLocalApiEvent(closeEvent))
+        {
+            InvalidOperationException exception = new("The connection runtime could not queue the local close request.");
+            runtime.FailLocalCloseDispatch(exception);
+            throw exception;
+        }
 
-        return ValueTask.CompletedTask;
+        return dispatchCompletion is null
+            ? ValueTask.CompletedTask
+            : new ValueTask(dispatchCompletion.WaitAsync(cancellationToken));
     }
 
     /// <summary>
@@ -251,6 +264,10 @@ public sealed class QuicConnection : IAsyncDisposable
         if (runtime.TerminalState is null && options.DefaultCloseErrorCode >= 0)
         {
             ValidateErrorCode(options.DefaultCloseErrorCode);
+            if (runtime.LocalApiEventDispatcher is not null)
+            {
+                _ = runtime.BeginLocalCloseDispatch();
+            }
             QuicConnectionLocalCloseRequestedEvent closeEvent = new(
                 runtime.Clock.Ticks,
                 new QuicConnectionCloseMetadata(
@@ -260,7 +277,17 @@ public sealed class QuicConnection : IAsyncDisposable
                     ReasonPhrase: null));
 
             runtime.ProjectLocalCloseRequested(closeEvent, runtime.Clock.Ticks);
-            _ = runtime.TryPostLocalApiEvent(closeEvent);
+            if (!runtime.TryPostLocalApiEvent(closeEvent))
+            {
+                InvalidOperationException exception = new("The connection runtime could not queue the local close request.");
+                runtime.FailLocalCloseDispatch(exception);
+                throw exception;
+            }
+        }
+
+        if (runtime.PendingLocalCloseDispatch is { } pendingDispatch)
+        {
+            await pendingDispatch.ConfigureAwait(false);
         }
 
         if (lifetimeOwner is not null)

@@ -577,6 +577,11 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 effectObserver?.Invoke(workItem.Handle, effect);
             }
 
+            if (workItem.ConnectionEvent is QuicConnectionLocalCloseRequestedEvent)
+            {
+                runtime.CompleteLocalCloseDispatch();
+            }
+
             QuicMetrics.RecordRuntimePressureSnapshot(shardIndex, runtime);
         }
         finally

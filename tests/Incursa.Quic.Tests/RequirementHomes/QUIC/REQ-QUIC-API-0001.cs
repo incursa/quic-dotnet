@@ -275,6 +275,40 @@ public sealed class REQ_QUIC_API_0001
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public async Task QuicConnection_CloseAsync_WaitsForHostedCloseEffectsBeforeCompleting()
+    {
+        QuicConnectionRuntime runtime = CreateConnectionRuntime();
+        TestQuicConnectionOptions options = new();
+        QuicConnection connection = new(runtime, options);
+        QuicConnectionHandle handle = new(1);
+        using ManualResetEventSlim effectEntered = new();
+        using ManualResetEventSlim releaseEffect = new();
+        await using QuicConnectionRuntimeShard shard = new(0);
+        _ = shard.RunAsync(effectObserver: (_, _) =>
+        {
+            effectEntered.Set();
+            releaseEffect.Wait(TimeSpan.FromSeconds(10));
+        });
+        runtime.SetLocalApiEventDispatcher(connectionEvent => shard.TryPost(handle, runtime, connectionEvent));
+
+        ValueTask closeOperation = connection.CloseAsync(42);
+        try
+        {
+            Assert.True(effectEntered.Wait(TimeSpan.FromSeconds(10)));
+            Assert.False(closeOperation.IsCompleted);
+        }
+        finally
+        {
+            releaseEffect.Set();
+        }
+
+        await closeOperation.AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await connection.DisposeAsync();
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task QuicConnection_DisposeAsync_UsesTheConfiguredDefaultCloseCode()
     {
         QuicConnectionRuntime runtime = CreateConnectionRuntime();
