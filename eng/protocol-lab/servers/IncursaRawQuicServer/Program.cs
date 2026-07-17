@@ -30,9 +30,10 @@ var alpn = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_ALP
 var certSubject = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_CERT_SUBJECT") ?? "CN=Incursa-RawQuic-Local";
 var payloadDirection = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_DIRECTION") ?? "bidirectional";
 var behavior = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_BEHAVIOR");
+var payloadSizeText = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_SIZE_BYTES");
 var echoResponses = string.Equals(payloadDirection, "bidirectional", StringComparison.OrdinalIgnoreCase);
 var downloadPayload = string.Equals(payloadDirection, "server-to-client", StringComparison.OrdinalIgnoreCase)
-    ? CreateDownloadPayload(Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_SIZE_BYTES"))
+    ? CreateDownloadPayload(payloadSizeText)
     : null;
 var downloadWriteSizeBytes = ResolveDownloadWriteSizeBytes(behavior, downloadPayload);
 const int RawQuicConcurrentBidirectionalStreamLimit = 256;
@@ -47,6 +48,7 @@ const string FixedTotalSmallSustainedDownloadBehavior = "sustained-download-1638
 const string DownloadRequestMagic = "PLAB-DL1";
 const int DownloadRequestLength = 16;
 const int MaximumDownloadPayloadLength = 64 * 1024 * 1024;
+var boundedFinalEchoBytes = ResolveBoundedFinalEchoBytes(echoResponses, behavior, payloadSizeText);
 
 var certificate = GenerateSelfSignedCertificate(certSubject);
 var alpnProtocol = new SslApplicationProtocol(alpn);
@@ -108,7 +110,7 @@ try
             Console.Error.WriteLine($"IncursaRawQuicServer accepted connection #{connectionIndex} for ALPN '{alpn}'");
         }
 
-        _ = HandleConnectionAsync(connection, connectionIndex, default, debugLogging, summaryLogging, echoResponses, downloadPayload, downloadWriteSizeBytes);
+        _ = HandleConnectionAsync(connection, connectionIndex, default, debugLogging, summaryLogging, echoResponses, downloadPayload, downloadWriteSizeBytes, boundedFinalEchoBytes);
     }
 }
 catch (OperationCanceledException)
@@ -129,7 +131,7 @@ finally
     await listener.DisposeAsync();
 }
 
-static async Task HandleConnectionAsync(QuicConnection connection, int connectionIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes)
+static async Task HandleConnectionAsync(QuicConnection connection, int connectionIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes, int? boundedFinalEchoBytes)
 {
     ConcurrentBag<QuicStream> retainedCompletedStreams = [];
 
@@ -150,7 +152,7 @@ static async Task HandleConnectionAsync(QuicConnection connection, int connectio
                 Console.Error.WriteLine($"IncursaRawQuicServer accepted inbound stream #{acceptedStreamIndex} on connection #{connectionIndex}");
             }
 
-            _ = HandleStreamAsync(stream, connectionIndex, acceptedStreamIndex, cancellationToken, debugLogging, summaryLogging, echoResponses, downloadPayload, downloadWriteSizeBytes, retainedCompletedStreams);
+            _ = HandleStreamAsync(stream, connectionIndex, acceptedStreamIndex, cancellationToken, debugLogging, summaryLogging, echoResponses, downloadPayload, downloadWriteSizeBytes, boundedFinalEchoBytes, retainedCompletedStreams);
         }
     }
     catch (OperationCanceledException)
@@ -190,7 +192,7 @@ static async Task HandleConnectionAsync(QuicConnection connection, int connectio
     }
 }
 
-static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int streamIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes, ConcurrentBag<QuicStream> retainedCompletedStreams)
+static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int streamIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes, int? boundedFinalEchoBytes, ConcurrentBag<QuicStream> retainedCompletedStreams)
 {
     var reachedEof = false;
     var completedWrites = false;
@@ -241,33 +243,73 @@ static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int 
             }
             else
             {
-                while (true)
+                if (boundedFinalEchoBytes is int expectedEchoBytes && stream.CanWrite)
                 {
-                    var bytesRead = await stream.TryReadTerminalAsync(buffer.AsMemory(0, RawQuicEchoBufferBytes), cancellationToken);
-                    if (bytesRead <= 0)
+                    var received = 0;
+                    while (received < expectedEchoBytes)
                     {
-                        reachedEof = true;
-                        if (debugLogging)
+                        var bytesRead = await stream.TryReadTerminalAsync(
+                            buffer.AsMemory(received, expectedEchoBytes - received),
+                            cancellationToken);
+                        if (bytesRead <= 0)
                         {
-                            Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} reached EOF after read loop");
+                            throw new InvalidDataException(
+                                $"Raw QUIC request ended after {received} of {expectedEchoBytes} declared bytes.");
                         }
-                        break;
+
+                        received += bytesRead;
+                        bytesReadTotal += bytesRead;
                     }
+
+                    var trailingBytes = await stream.TryReadTerminalAsync(buffer.AsMemory(0, 1), cancellationToken);
+                    if (trailingBytes > 0)
+                    {
+                        throw new InvalidDataException(
+                            $"Raw QUIC request exceeded its declared {expectedEchoBytes}-byte payload.");
+                    }
+
+                    reachedEof = true;
+                    await stream.WriteFinalAsync(buffer.AsMemory(0, expectedEchoBytes), cancellationToken);
+                    bytesSentTotal += expectedEchoBytes;
+                    completedWrites = true;
 
                     if (debugLogging)
                     {
-                        Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} read {bytesRead} byte(s)");
+                        Console.Error.WriteLine(
+                            $"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} " +
+                            $"echoed and completed {expectedEchoBytes} declared byte(s)");
                     }
-
-                    bytesReadTotal += bytesRead;
-                    if (echoResponses && stream.CanWrite)
+                }
+                else
+                {
+                    while (true)
                     {
-                        await stream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
-                        bytesSentTotal += bytesRead;
+                        var bytesRead = await stream.TryReadTerminalAsync(buffer.AsMemory(0, RawQuicEchoBufferBytes), cancellationToken);
+                        if (bytesRead <= 0)
+                        {
+                            reachedEof = true;
+                            if (debugLogging)
+                            {
+                                Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} reached EOF after read loop");
+                            }
+                            break;
+                        }
 
                         if (debugLogging)
                         {
-                            Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} echoed {bytesRead} byte(s)");
+                            Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} read {bytesRead} byte(s)");
+                        }
+
+                        bytesReadTotal += bytesRead;
+                        if (echoResponses && stream.CanWrite)
+                        {
+                            await stream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
+                            bytesSentTotal += bytesRead;
+
+                            if (debugLogging)
+                            {
+                                Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} echoed {bytesRead} byte(s)");
+                            }
                         }
                     }
                 }
@@ -278,7 +320,7 @@ static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int 
             ArrayPool<byte>.Shared.Return(buffer);
         }
 
-        if (stream.CanWrite)
+        if (stream.CanWrite && !completedWrites)
         {
             await stream.CompleteWritesAsync(cancellationToken);
             completedWrites = true;
@@ -339,6 +381,19 @@ static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int 
             await stream.DisposeAsync();
         }
     }
+}
+
+static int? ResolveBoundedFinalEchoBytes(bool echoResponses, string? behavior, string? payloadSizeText)
+{
+    if (!echoResponses
+        || behavior?.StartsWith("duplex-streams", StringComparison.OrdinalIgnoreCase) == true
+        || !int.TryParse(payloadSizeText, out var payloadSize)
+        || payloadSize is <= 0 or > SmallApplicationWriteSizeBytes)
+    {
+        return null;
+    }
+
+    return payloadSize;
 }
 
 static byte[] CreateDownloadPayload(string? payloadLengthText)

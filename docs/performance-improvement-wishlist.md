@@ -3343,3 +3343,83 @@ under `C:\shared\temp\pl-receive-buffer-size-20260717`. Do not repeat
 payload-sized harness rentals without load-window process-memory or pool-counter
 instrumentation and a materially different explanation for the tail-latency
 regression.
+
+### Accepted 2026-07-17: coalesce bounded small echo data and FIN
+
+The raw Incursa ProtocolLab server previously issued `WriteAsync` followed by
+`CompleteWritesAsync` for every bidirectional echo. The runtime already exposes
+an internal `WriteFinalAsync` operation that preserves the write gate,
+cancellation, delayed `ValueTask` consumption, exception propagation, and FIN
+ordering while representing data plus FIN as one stream action. The accepted
+harness change uses that operation only when the peer contract declares a
+positive payload no larger than the existing 1 KiB small-application-write
+policy. Duplex behavior and payloads above 1 KiB retain the incremental read,
+write, and completion path. The bounded path requires peer EOF before writing
+the response and rejects requests with bytes beyond the declared payload, so
+truncated and oversized requests do not become successful benchmark samples.
+
+The matched 100x1 KiB source-backed campaign used the same executor package,
+exact payload validation, five repetitions per shape, and zero failures or
+timeouts in all 60 baseline/candidate cells:
+
+| Shape | Baseline | Candidate | Throughput delta | Baseline p95 | Candidate p95 | p95 delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| c1 | 9.17 MiB/s | 10.65 MiB/s | +16.2% | 11.19 ms | 9.47 ms | -15.4% |
+| c4 | 20.05 MiB/s | 26.38 MiB/s | +31.6% | 20.71 ms | 16.77 ms | -19.0% |
+| c16 | 26.77 MiB/s | 32.29 MiB/s | +20.6% | 59.29 ms | 52.22 ms | -11.9% |
+| c32 | 21.86 MiB/s | 30.02 MiB/s | +37.4% | 129.15 ms | 94.83 ms | -26.6% |
+| c64 | 17.32 MiB/s | 20.54 MiB/s | +18.6% | 285.73 ms | 220.89 ms | -22.7% |
+| c128 | 10.54 MiB/s | 13.84 MiB/s | +31.3% | 695.23 ms | 465.83 ms | -33.0% |
+
+The candidate materially reduces scheduling pressure at every measured shape
+but does not close Incursa's absolute c128 peer gap. Candidate p99 improved at
+c4, c32, c64, and c128; it regressed 12.9% at c1 and 15.2% at c16 on the
+shared host, while p95 and throughput improved at both shapes.
+Matched unaffected controls remained within the throughput guardrail: 64 KiB
+single-stream upload -0.4%, fixed-total 256x64 KiB upload -3.3%, 16-stream
+duplex -1.3%, and 16x1 MiB multiplex -0.8%. Each control had five exact
+baseline and candidate repetitions with no request failures or timeouts.
+
+One diagnostic-only c16 counter pair supports the mechanism rather than being
+used as a throughput claim. At higher achieved throughput, the final EOF-first
+candidate reduced the observed runtime queue peak from 209 to 94, stream-write
+queue peak from 124 to 41, packet-receive queue peak from 99 to 67,
+delayed-send peak from 103 to 90, receive-retained-buffer peak from 129 to 123,
+and sampled pool-rent volume from 4.37 million to 3.44 million. Peak
+outstanding pooled buffers fell from 1,259 to 496. The counter
+aggregation is sampling-based, so these values are attribution signals, not
+exact per-request accounting.
+
+An initial 64 KiB fast-path bound is explicitly rejected. At c16 it regressed
+median 100x64 KiB throughput from 72.12 to 66.29 MiB/s (-8.1%) and raised p99
+10.7%, showing that incremental read/write overlap matters for larger payloads.
+After narrowing the bound to the existing 1 KiB policy, a five-repetition c16
+rerun produced 74.16 MiB/s (+2.8%) and 11.9% lower p99 versus the same baseline.
+The c1 narrowed rerun was -5.0% with a 7.6% candidate range on the shared host;
+because the large-payload path is unchanged and c16 recovered, it is retained
+as a variance caveat rather than evidence for the candidate.
+
+An earlier small-payload variant wrote the response before checking peer EOF.
+It produced larger headline gains but could respond before rejecting an
+oversized request, so it is rejected as a semantic shortcut. Its artifacts are
+retained alongside the accepted EOF-first matrix and are not used for the
+accepted throughput claim.
+
+Evidence is retained under `C:\shared\temp\pl-final-write-20260717`, including
+the full c1-c128 matrix, control runs, counter captures, the rejected broad
+64 KiB bound, and the narrowed 64 KiB reruns. A fixed-total 16,384x1 KiB upload
+attempt did not exercise the candidate and is not an idle-timeout result: the
+0.1.14 raw load executor rejected `sustained-stream-16384x1kb` as unsupported.
+That artifact is retained as an executor-coverage gap and no performance claim
+is made from it.
+
+Focused final-write, cancellation, concurrency, FIN-scheduling, and harness
+tests passed 42/42. The full solution run passed 9,603, skipped five, and
+reproduced two previously documented broad-run timing failures: the HTTP/3
+incomplete-content close timeout and the dropped-server-FIN resilience
+assertion. Both passed together on exact rerun; the dropped-FIN case then
+passed 10/10 consecutive isolated reruns. After the EOF-order correction, the
+full suite produced the same 9,603 passes, five skips, and same two broad-run
+failures; both exact tests then passed together in 10/10 consecutive reruns.
+`git diff --check` passed. No package was registered and nothing was deployed
+or published.
