@@ -906,6 +906,48 @@ The current sustained-upload trace prioritizes packet-receive scheduling and
 batching over pool-size changes: all buffers drained and no delayed sends or
 retransmission retention accumulated.
 
+## Fixed-Total Write Shape and ACK Ledger 2026-07-16
+
+The source-backed raw surface now has exact fixed-total 16 MiB upload and
+download pairs for 256 application writes of 64 KiB and 16,384 application
+writes of 1 KiB. Go executor tests prove application write boundaries; wire
+validation continues to prove exact payload bytes and content rather than
+claiming that UDP packetization preserves those boundaries. ProtocolLab
+internal commits `a36ee07` and `beaef5b`, component commit `75912ad`, and
+Incursa commit `4d99d6ce` retain the workload and source-target freshness
+support. The immutable local packages were built but were not uploaded or
+registered.
+
+A matched c16 Incursa/MsQuic characterization showed that the relative
+small-write penalty is not Incursa-specific: Incursa was 24.5% slower on the
+1 KiB shape than its 64 KiB control, while MsQuic was 30.9% slower. Incursa's
+absolute c16 throughput remained approximately 40-55% below MsQuic, so the
+actionable gap is the shared raw runtime rather than the application write
+shape alone. This peer evidence is shared-host diagnostic evidence, not a
+publishable ranking.
+
+The subsequent ACK receipt-ledger candidate replaced linear history scans in
+packet recording and pending-ACK checks with maintained range/largest state
+and a binary-search start index. Permanent microbenchmarks reduced the 2,400
+receipt recording lifecycle from 5.882 ms to 74.912 us and the pending-ACK
+check from 4.935 us to 23.04 ns.
+
+Source-backed ProtocolLab baseline/candidate campaigns each ran both upload
+shapes for five repetitions at c1 and c16. All 40 cells passed exact validation
+and benchmark execution with zero failed or timed-out operations. At c1:
+
+| Scenario | Baseline | Candidate | Throughput delta | p95 delta |
+| --- | ---: | ---: | ---: | ---: |
+| `quic.transport.sustained-stream.16384x1kb` | 27.43 MiB/s | 56.98 MiB/s | +107.7% | -48.1% |
+| `quic.transport.sustained-stream.256x64kb` | 43.01 MiB/s | 74.23 MiB/s | +72.6% | -45.2% |
+
+At c16, throughput was +0.7% and -2.1% respectively, both within the 7-10%
+observed ranges. The accepted conclusion is bounded: ACK receipt history was a
+major c1 bottleneck, while high-concurrency throughput remains constrained
+elsewhere. Run roots and comparisons are under
+`C:\shared\temp\protocol-lab-ack-ledger-*20260716`. No package, lab service,
+worker, controller, or publication state changed.
+
 ## Acceptance Gates
 
 A raw QUIC performance claim is ready only when:

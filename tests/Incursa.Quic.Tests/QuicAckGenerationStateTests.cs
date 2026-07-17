@@ -130,6 +130,45 @@ public sealed class QuicAckGenerationStateTests
         frame.Dispose();
     }
 
+    [Fact]
+    public void RetiringLargestAckElicitingPacketRefreshesGapDetectionState()
+    {
+        QuicAckGenerationState state = new();
+        state.RecordProcessedPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 1,
+            ackEliciting: true,
+            receivedAtMicros: 1_000);
+        state.RecordProcessedPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 3,
+            ackEliciting: true,
+            receivedAtMicros: 1_100);
+
+        using QuicAckFrame largestOnly = new()
+        {
+            LargestAcknowledged = 3,
+            FirstAckRange = 0,
+        };
+        state.MarkAckFrameSent(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 20,
+            largestOnly,
+            sentAtMicros: 1_200,
+            ackOnlyPacket: false);
+        Assert.True(state.TryRetireAcknowledgedAckRanges(
+            QuicPacketNumberSpace.ApplicationData,
+            ackedPacketNumber: 20));
+
+        state.RecordProcessedPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 2,
+            ackEliciting: true,
+            receivedAtMicros: 1_300);
+
+        Assert.False(state.ShouldSendAckImmediately(QuicPacketNumberSpace.ApplicationData));
+    }
+
     private static void AssertEcnCounts(QuicAckFrame frame, ulong ect0, ulong ect1, ulong ecnCe)
     {
         Assert.True(frame.EcnCounts.HasValue);

@@ -3116,3 +3116,62 @@ matched package-backed peer campaign after operator approval.
 4. Attack HTTP/3 allocation hot spots.
 5. Add raw QUIC and public API stream-transfer baselines.
 6. Move repeatable evidence onto package-backed lab/controller runs.
+
+### Accepted 2026-07-16: bounded ACK receipt-ledger work
+
+Sustained raw receive traffic exposed two quadratic ACK-generation operations.
+`RecordProcessedPacket` enumerated every retained receipt to find the largest
+ack-eliciting packet and enumerated the same history again to count disjoint
+ACK ranges. ACK scheduling then scanned acknowledged-but-not-yet-retired
+receipts from index zero even when only one newer packet was pending.
+
+The accepted runtime keeps the disjoint range count in
+`QuicPacketReceiptStore`, caches the largest retained ack-eliciting packet with
+explicit refresh after retirement and trimming, and binary-searches to the
+first receipt newer than the last ACK trigger. Duplicate replacement,
+out-of-order detection, delayed ACK thresholds, ECN state, ACK-range
+retirement, and packet-number-space discard behavior remain unchanged.
+
+Permanent BenchmarkDotNet coverage in
+`QuicAckGenerationStateRecordingBenchmarks` measured contiguous receipt
+recording as follows:
+
+| Receipts | Baseline | Candidate | Delta |
+| ---: | ---: | ---: | ---: |
+| 128 | 22.32 us | 3.701 us | -83.4% |
+| 1,024 | 1,082.76 us | 30.415 us | -97.2% |
+| 2,400 | 5,881.90 us | 74.912 us | -98.7% |
+
+The pending-ACK check after retained history fell from 310.5 ns to 18.76 ns at
+128 receipts, from 2.125 us to 21.74 ns at 1,024, and from 4.935 us to 23.04 ns
+at 2,400. Allocations stayed effectively flat; the optimized recording state
+is 1.86 KiB per benchmark operation versus 1.84 KiB before the cached field.
+Reports are under `C:\shared\temp\quic-ack-recording-*20260716` and
+`C:\shared\temp\quic-ack-pending-*20260716`.
+
+Matched local source-backed ProtocolLab runs used exact 16 MiB uploads, five
+repetitions, current target builds, and zero failed or timed-out operations.
+The c1 comparison produced the material end-to-end result:
+
+| Scenario | Baseline | Candidate | Throughput delta | p95 delta |
+| --- | ---: | ---: | ---: | ---: |
+| 16,384 x 1 KiB | 27.43 MiB/s | 56.98 MiB/s | +107.7% | -48.1% |
+| 256 x 64 KiB | 43.01 MiB/s | 74.23 MiB/s | +72.6% | -45.2% |
+
+At c16 the same candidate was neutral within variance: +0.7% for 1 KiB and
+-2.1% for 64 KiB, with 7-10% throughput ranges. This change removes a
+single-connection retained-history bottleneck; it does not close Incursa's
+absolute c16 peer gap. Evidence and machine-readable comparisons are under
+`C:\shared\temp\protocol-lab-ack-ledger-*20260716`.
+
+Focused tests passed 10/10. The full suite passed 9,602, skipped five, and hit
+two broad-run timing failures: one existing HTTP/3 close timeout and one
+dropped-FIN resilience assertion. Both passed on exact rerun, and the
+dropped-FIN case then passed 10 consecutive runs. Two independent reviews
+found no correctness defect and requested the now-present largest-cache
+retirement regression. No package was registered, no controller or worker was
+changed, and nothing was deployed or published.
+
+The next raw runtime tranche should target the absolute c16-c128 gap in the
+shared receive/send pipeline, especially datagram send cost, stream receive
+locking, and packet scheduling, rather than retuning small-write heuristics.
