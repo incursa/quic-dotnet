@@ -19,6 +19,8 @@ public sealed class ProtocolLabPackageTemplateTests
 
     private static readonly string[] Http3ScenarioIds =
     [
+        "http3.core.plaintext",
+        "http3.core.json",
         "http3.payload.bytes.1kb",
         "http3.payload.bytes.64kb",
         "http3.payload.bytes.1mb",
