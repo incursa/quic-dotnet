@@ -58,7 +58,11 @@ jobs:
           $baseSha = '${{ env.SPEC_TRACE_BASE_SHA }}'
           $headSha = '${{ env.SPEC_TRACE_HEAD_SHA }}'
           if ([string]::IsNullOrWhiteSpace($baseSha) -or $baseSha -eq '0000000000000000000000000000000000000000') {
-            $baseSha = (git rev-list --max-parents=0 $headSha | Select-Object -First 1)
+            $defaultBranch = '${{ github.event.repository.default_branch }}'
+            $baseSha = git merge-base "origin/$defaultBranch" $headSha
+            if ([string]::IsNullOrWhiteSpace($baseSha)) {
+              $baseSha = (git rev-list --max-parents=0 $headSha | Select-Object -First 1)
+            }
           }
 
           $scopes = @(
