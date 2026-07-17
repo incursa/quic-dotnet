@@ -208,6 +208,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("$projectSourceDirectory", builderScript);
         Assert.Contains("ProtocolLab package inputs are dirty", builderScript);
         Assert.Contains("protocol-lab.package-build-provenance.v1", builderScript);
+        Assert.Contains("runtimeIdentifier = ($RuntimeIdentifier -join \"+\")", builderScript);
         Assert.Contains("protocol-lab.package-build-attestation.v1", builderScript);
         Assert.Contains("New-DeterministicZipArchive", builderScript);
         Assert.Contains("buildAttestationPath", builderScript);

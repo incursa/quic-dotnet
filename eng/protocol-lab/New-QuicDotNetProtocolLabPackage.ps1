@@ -507,6 +507,7 @@ if (-not [string]::IsNullOrWhiteSpace($outputDirectory)) {
 
 $build = [ordered]@{
     configuration = $Configuration
+    runtimeIdentifier = ($RuntimeIdentifier -join "+")
     runtimeIdentifiers = @($RuntimeIdentifier)
     operatingSystem = [System.Runtime.InteropServices.RuntimeInformation]::OSDescription
     processArchitecture = [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString()
