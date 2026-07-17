@@ -70,7 +70,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly Channel<ReadOnlyMemory<byte>>? inboundDatagrams;
     private readonly Channel<QuicConnectionEvent> inbox;
     private readonly ConcurrentDictionary<long, StreamOpenRequestCompletionSource> pendingStreamOpenRequests = new();
-    private readonly ConcurrentDictionary<long, StreamActionRequestCompletionSource> pendingStreamActionRequests = new();
+    private readonly Dictionary<long, StreamActionRequestCompletionSource> pendingStreamActionRequests = new();
     private readonly PriorityQueue<long, long> pendingStreamWriteRetryRequests = new();
     private readonly ConcurrentDictionary<long, DatagramSendRequestCompletionSource> pendingDatagramSendRequests = new();
     private readonly ConcurrentQueue<StreamOpenRequestCompletionSource> streamOpenRequestCompletionSourcePool = new();
@@ -79,9 +79,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly ConcurrentQueue<InboundStreamAcceptCompletionSource> inboundStreamAcceptCompletionSourcePool = new();
     private long lastRuntimePressureSnapshotTimestamp;
     private int runtimePressureSnapshotSkippedWorkItems;
-    private readonly object pendingStreamActionRequestLifecycleGate = new();
-    private readonly object pendingStreamActionProcessingGate = new();
-    private readonly object pendingStreamWriteRetryRequestsGate = new();
+    private readonly object pendingStreamActionRequestsGate = new();
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
     private readonly object scheduledFlowControlCreditGate = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
@@ -899,43 +897,25 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     private bool TryAddPendingStreamActionRequest(long requestId, StreamActionRequestCompletionSource completionSource)
     {
-        lock (pendingStreamActionRequestLifecycleGate)
+        lock (pendingStreamActionRequestsGate)
         {
-            if (IsDisposed || terminalState is not null)
-            {
-                return false;
-            }
-
             return pendingStreamActionRequests.TryAdd(requestId, completionSource);
         }
     }
 
     private bool TryRemovePendingStreamActionRequest(long requestId, out StreamActionRequestCompletionSource completionSource)
     {
-        completionSource = null!;
-        if (!pendingStreamActionRequests.TryGetValue(requestId, out StreamActionRequestCompletionSource? candidate))
+        lock (pendingStreamActionRequestsGate)
         {
-            return false;
-        }
-
-        lock (candidate)
-        {
-            if (!pendingStreamActionRequests.TryRemove(
-                    new KeyValuePair<long, StreamActionRequestCompletionSource>(requestId, candidate)))
+            bool removed = pendingStreamActionRequests.Remove(requestId, out StreamActionRequestCompletionSource? removedCompletion);
+            completionSource = removedCompletion!;
+            if (removed
+                && completionSource.TryClearQueuedForWriteRetry())
             {
-                return false;
+                _ = pendingStreamWriteRetryRequests.Remove(requestId, out _, out _);
             }
 
-            completionSource = candidate;
-            lock (pendingStreamWriteRetryRequestsGate)
-            {
-                if (candidate.TryClearQueuedForWriteRetry())
-                {
-                    _ = pendingStreamWriteRetryRequests.Remove(requestId, out _, out _);
-                }
-            }
-
-            return true;
+            return removed;
         }
     }
 
