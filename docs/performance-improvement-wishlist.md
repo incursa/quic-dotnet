@@ -3176,6 +3176,35 @@ The next raw runtime tranche should target the absolute c16-c128 gap in the
 shared receive/send pipeline, especially datagram send cost, stream receive
 locking, and packet scheduling, rather than retuning small-write heuristics.
 
+### Rejected 2026-07-17: per-datagram ECN lookup and direct Windows send
+
+The retained c64 CPU trace attributed 3.16% exclusive CPU to the listener
+datagram-send method, with the native socket send accounting for only part of
+that sampled stack. Two bounded candidates tested whether avoidable socket
+bookkeeping or managed endpoint marshalling explained the gap.
+
+The current runtime emits `NotEct` while the managed receive path cannot read
+ECN metadata. Avoiding creation and lookup of fresh per-socket ECN state reduced
+the isolated marking helper from 9.650 ns to 2.179 ns (-77.4%) with zero
+allocation. The absolute saving is only 7.471 ns per datagram, too small to
+explain the multiplex collapse or justify a full c1-c128 campaign. The helper
+change was not retained; the permanent benchmark and raw reports remain under
+`C:\shared\temp\quic-ecn-notect-*20260717`.
+
+A Windows `sendto` P/Invoke candidate then reused the cached `SocketAddress`
+buffer and `SafeSocketHandle` to bypass the managed overload. The matched
+loopback benchmark measured 7.246 us for `Socket.SendTo` and 7.216 us for the
+direct primitive, ratio 1.00 within noise, with zero allocation for both. The
+candidate and benchmark were removed. Evidence remains under
+`C:\shared\temp\quic-direct-sendto-20260717`.
+
+Neither primitive passed the independent gate, so ProtocolLab cells were not
+run and no end-to-end improvement is claimed. Do not repeat a direct Windows
+send wrapper or minor ECN lookup variant without materially different evidence.
+The next target is packet scheduling and queue service capacity; asynchronous
+listener send decoupling remains rejected because socket emission must stay
+coupled to congestion and recovery accounting.
+
 ### Rejected 2026-07-16: split stream-action lifecycle and processing gates
 
 The 100x1 KiB multiplex ladder falls after c16: 7.28 MiB/s at c1, 17.65 at
