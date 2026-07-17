@@ -4018,3 +4018,36 @@ failures.
 Evidence is retained under
 `C:\shared\temp\pl-h3-crosslayer-verified-20260717`, including per-run source
 verification JSON. Nothing was deployed or published.
+
+### Rejected 2026-07-17: bypass wildcard packet-information receive for HTTP/3
+
+The accepted `f31b5979` response-write change was followed by a source-verified,
+instrumented c16 one-MiB HTTP/3 run. It completed 489 exact responses with zero
+failures or timeouts. Metrics instrumentation dominated sampled allocation, so
+the instrumented throughput is attribution-only evidence. The first substantial
+non-instrumentation allocation group was the wildcard UDP packet-information
+path under `Socket.ReceiveMessageFromAsync`, principally `UInt16[]` and
+`IPAddress` instances.
+
+A reversible ProtocolLab adapter experiment bound the Incursa endpoint to the
+concrete IPv6 loopback address, bypassing wildcard packet-information receipt
+without changing the QUIC runtime. Five exact c16 repetitions regressed median
+throughput from 38.04 to 37.21 MiB/s (-2.2%) and p95 latency from 439.91 to
+450.27 ms. Both campaigns had zero failures and timeouts. The temporary adapter
+change was reverted; the packet-information allocations are real but do not
+justify a native receive rewrite from this evidence.
+
+The same trace gives a stronger cross-layer direction: one active runtime shard
+reached queue depth 69, 70 delayed application sends, about 558 KiB of retained
+application-send payload, and mean STREAM-write completion around 5.5 ms.
+Investigate application-send queue ownership, service ordering, wakeup
+coalescing, and bounded batching next. Return to socket receive only if another
+broad workload attributes a material end-to-end cost and supplies a plausible
+mechanism.
+
+Trace and negative evidence are retained under
+`C:\shared\temp\pl-h3-crosslayer-verified-20260717` in the
+`post-f31b-h3-1mb-c16-trace-direct-package-cell`,
+`diagnostic-h3-ipv6loopback-c16-r5-direct-package-cell`, and
+`negative-results` directories. These are shared-host diagnostics. Nothing was
+deployed or published.
