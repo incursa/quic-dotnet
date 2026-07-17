@@ -3988,3 +3988,33 @@ The failed campaign and machine-readable negative result are retained under
 and `C:\shared\temp\pl-h3-crosslayer-20260717\negative-results`. A correction
 addendum is retained beside the original negative record. These are shared-host
 diagnostic artifacts. Nothing was deployed or published.
+
+### Accepted 2026-07-17: align HTTP/3 response writes to 16 KiB DATA payloads
+
+A corrected Release campaign verified the source-built QPACK, QUIC, and HTTP/3
+assembly hashes against the binaries copied beside the ProtocolLab adapter
+before load. Five-repetition baseline/candidate runs then exercised fixed 1 KiB,
+64 KiB, and one-MiB responses, 1.6 MiB streaming responses, one-MiB uploads, and
+simultaneous one-MiB request/response streaming.
+
+At c1, the 16 KiB boundary improved median throughput or request rate by 16.6%
+for 1 KiB, 20.4% for 64 KiB, 16.9% for one-MiB, 29.0% for streaming, and 10.5%
+for duplex. Upload request rate declined 2.5%. At c16, 1 KiB was neutral at
+-0.2%, while 64 KiB improved 17.2%, one-MiB 6.0%, streaming 3.7%, and upload
+2.9%. Every valid candidate cell had zero failed or timed-out requests. The c1
+shared-host runs had material variance, so these are diagnostic medians rather
+than isolated-hardware claims; the lower-variance c16 runs confirm no broad
+regression and a substantial 64 KiB gain.
+
+The requested c16 duplex shape was excluded because the load tool correctly
+requires one connection and one stream for exact simultaneous-duplex proof; all
+five valid c1 duplex repetitions passed. The focused source suite passed exact
+queued final-write delivery and 128 concurrent one-MiB HTTP/3 responses. A broad
+HTTP/3 run passed 1,115 tests with one skip and one known close-observation
+timeout; that timing-sensitive test then passed 5/5 in isolation.
+The final Release solution run passed 9,618 tests with five skips and no
+failures.
+
+Evidence is retained under
+`C:\shared\temp\pl-h3-crosslayer-verified-20260717`, including per-run source
+verification JSON. Nothing was deployed or published.

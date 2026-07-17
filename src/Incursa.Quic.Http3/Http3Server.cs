@@ -20,12 +20,10 @@ public sealed class Http3Server : IAsyncDisposable
     // SEE: spec:REQ-QUIC-RFC9114-S9-0001
     // SEE: code:src/Incursa.Quic.Http3/Http3FrameWriter.cs#WriteFrame
     // SEE: code:src/Incursa.Quic.Http3/Http3Server.cs#WriteFinalFrameBytesAsync
-    // ResponseDataFrameChunkSize caps HTTP/3 DATA payloads, while
-    // ResponseWriteChunkSize only caps each QUIC write call. Keeping them
-    // separate preserves frame boundaries and keeps the final-frame path able
-    // to use WriteFinalAsync on the last chunk.
-    private const int ResponseWriteChunkSize = 4 * 1024;
+    // Keep the HTTP/3 DATA payload and QUIC write boundaries aligned so each
+    // frame payload is submitted without four separate transport writes.
     private const int ResponseDataFrameChunkSize = 16 * 1024;
+    private const int ResponseWriteChunkSize = ResponseDataFrameChunkSize;
     private const int FieldSectionRequiredInsertCountPrefixBits = 8;
     private const int FieldSectionBasePrefixBits = 7;
     private const int MaxWebSocketControlPayloadLength = 125;
@@ -45,8 +43,6 @@ public sealed class Http3Server : IAsyncDisposable
 
     private static readonly string[] ResponseStatusCodeStrings = CreateResponseStatusCodeStrings();
     private static readonly byte[] EmptyDataFrame = Http3FrameWriter.WriteData(ReadOnlySpan<byte>.Empty);
-    private static readonly byte[] ResponseWriteChunkDataFrameHeader =
-        WriteFrameHeader((ulong)Http3FrameType.Data, ResponseWriteChunkSize);
     private static readonly byte[] ResponseDataFrameChunkDataFrameHeader =
         WriteFrameHeader((ulong)Http3FrameType.Data, ResponseDataFrameChunkSize);
     private const byte QPackIntegerContinuationValueMask = 0x7F;
@@ -2663,7 +2659,6 @@ public sealed class Http3Server : IAsyncDisposable
     {
         return payloadLength switch
         {
-            ResponseWriteChunkSize => ResponseWriteChunkDataFrameHeader,
             ResponseDataFrameChunkSize => ResponseDataFrameChunkDataFrameHeader,
             _ => WriteFrameHeader((ulong)Http3FrameType.Data, payloadLength),
         };
