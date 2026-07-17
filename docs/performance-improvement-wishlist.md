@@ -3961,3 +3961,30 @@ Evidence is retained under
 `candidate2-h3-lazy-body-buffer-*` runs, plus the baseline and candidate
 multiplex call-stack traces. These are shared-host diagnostics, not publishable
 isolated-hardware claims. Nothing was deployed or published.
+
+### Evidence correction 2026-07-17: HTTP/3 16 KiB response-write boundary remains unassessed
+
+The current c16 fixed-response and streaming-response traces showed that the
+HTTP/3 adapter creates 16 KiB DATA frames but submits each payload to QUIC as
+four 4 KiB writes. A bounded experiment aligned the adapter write boundary to
+the existing 16 KiB DATA-frame boundary. Focused source tests passed exact
+delivery for 128 concurrent one-MiB HTTP/3 responses and for queued final writes
+across 16 transport streams.
+
+The associated ProtocolLab campaign cannot assess the candidate. Its target
+adapter loaded package-backed QUIC and HTTP/3 assemblies dated 2026-05-31, not
+the requested source tree containing the candidate. The recorded 7,303 truncated
+responses remain useful evidence about that stale package build, but they do not
+prove a candidate regression or a transport completion defect. The candidate is
+reverted pending a correctly provenance-verified Release campaign.
+
+Do not accept, reject, or tune adjacent write boundaries from this invalid
+campaign. Any future source-backed run must verify that the source-built QPACK,
+QUIC, and HTTP/3 assembly hashes exactly match the assemblies copied beside the
+ProtocolLab adapter before load begins.
+
+The failed campaign and machine-readable negative result are retained under
+`C:\shared\temp\pl-h3-crosslayer-20260717\candidate-h3-16kb-write-boundary-r5-h3-local-v1`
+and `C:\shared\temp\pl-h3-crosslayer-20260717\negative-results`. A correction
+addendum is retained beside the original negative record. These are shared-host
+diagnostic artifacts. Nothing was deployed or published.

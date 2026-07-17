@@ -133,6 +133,65 @@ public sealed class Http3SystemNetInteropRegressionTests
         }
     }
 
+    [Fact]
+    [Trait("Category", "Regression")]
+    public async Task SystemNetClient_ConcurrentOneMiBResponsesCompleteExactly()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        const int workerCount = 16;
+        const int requestsPerWorker = 8;
+        byte[] body = CreateDeterministicBytes(1024 * 1024);
+        await using SystemNetInteropServer server = await SystemNetInteropServer.StartAsync(
+            new FixedBodyHandler(body));
+
+        Task[] workers = new Task[workerCount];
+        for (int workerIndex = 0; workerIndex < workers.Length; workerIndex++)
+        {
+            int capturedWorkerIndex = workerIndex;
+            workers[workerIndex] = RunWorkerAsync(capturedWorkerIndex);
+        }
+
+        await Task.WhenAll(workers);
+
+        async Task RunWorkerAsync(int workerIndex)
+        {
+            for (int requestIndex = 0; requestIndex < requestsPerWorker; requestIndex++)
+            {
+                int requestId = workerIndex * requestsPerWorker + requestIndex;
+                using var request = new HttpRequestMessage(
+                    HttpMethod.Get,
+                    server.CreateUri($"/large?request={requestId}"))
+                {
+                    Version = HttpVersion.Version30,
+                    VersionPolicy = HttpVersionPolicy.RequestVersionExact
+                };
+                HttpResponseMessage response;
+                try
+                {
+                    response = await server.SendAsync(
+                        request,
+                        HttpCompletionOption.ResponseHeadersRead);
+                }
+                catch (Exception exception)
+                {
+                    throw new InvalidOperationException($"Native HTTP/3 request {requestId} failed.", exception);
+                }
+                using (response)
+                {
+                    byte[] received = await response.Content.ReadAsByteArrayAsync();
+
+                    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                    Assert.Equal(HttpVersion.Version30, response.Version);
+                    Assert.Equal(body, received);
+                }
+            }
+        }
+    }
+
     private static byte[] CreateDeterministicBytes(int length)
     {
         byte[] payload = GC.AllocateUninitializedArray<byte>(length);
