@@ -37,7 +37,10 @@ public sealed class REQ_QUIC_RFC9250_0073
         Assert.Contains("NoError = 0x0", errorCodes, StringComparison.Ordinal);
         Assert.Contains("targetConnection.CloseAsync((long)DoqErrorCode.NoError", client, StringComparison.Ordinal);
         Assert.Contains("DisposeAsyncWithOutstandingQueryClosesConnectionWithDoqNoError", tests, StringComparison.Ordinal);
-        Assert.Contains("Assert.Equal((ulong)DoqErrorCode.NoError, terminalState.Close.ApplicationErrorCode)", tests, StringComparison.Ordinal);
+        Assert.Contains("locallyProjectedNoError", tests, StringComparison.Ordinal);
+        Assert.Contains("peerAcknowledgedNoErrorClose", tests, StringComparison.Ordinal);
+        Assert.Contains("terminalState.Close.ApplicationErrorCode == (ulong)DoqErrorCode.NoError", tests, StringComparison.Ordinal);
+        Assert.Contains("terminalState.Close.TransportErrorCode == QuicTransportErrorCode.NoError", tests, StringComparison.Ordinal);
     }
 
     [Fact]
