@@ -5304,3 +5304,31 @@ C:\shared\temp\quic-h3-immediate-pmtu-20260718. Do not repeat PMTU timing
 or immediate-probe variants without new evidence that ordinary packets actually
 remain materially larger for most of the measured transfer and that the reduced
 packet count can exceed the cost of the existing actor and socket-send path.
+
+### Rejected 2026-07-18: lock-free endpoint receive socket lookup
+
+A sampled-thread trace of the local one-MiB transport download at c16 attributed
+76 samples to `QuicConnectionEndpointHost.GetSocketBinding` entering
+`socketGate` once per received datagram. A bounded candidate replaced that
+receive-side monitor with a volatile socket-reference read and published a
+port-rebinding replacement with a volatile write before disposing the old
+socket. Socket replacement, sends, shutdown wakeup, and disposal remained under
+the existing gate, preserving rebinding and receive-loop wakeup behavior.
+
+Frozen pre-change and candidate benchmark outputs ran contemporaneously in
+A/B/B/A followed by A/B/A/B order. The longer five-second campaign used five
+exact one-MiB download samples per arm at c16 with zero failures:
+
+| Variant | Campaign medians | Median p95 | Median allocation |
+| --- | ---: | ---: | ---: |
+| baseline | 24.98, 25.27 MiB/s | 699.15 ms | 428,239 B/op |
+| candidate | 24.32, 24.61 MiB/s | 684.67 ms | 414,392 B/op |
+
+The candidate regressed median throughput by about 2.6%, while p95 and
+allocation improved only about 2-3%. Lower candidate variance did not satisfy a
+timing, allocation, or tail-latency acceptance gate. The runtime change was
+reverted and ProtocolLab was not run. Frozen assemblies, SHA-256 hashes, and all
+eight raw JSON reports are retained under
+`C:\shared\temp\quic-local-first-20260718`. Do not repeat endpoint socket
+lookup lock removal without new evidence that it consumes a materially larger
+share of end-to-end service time.
