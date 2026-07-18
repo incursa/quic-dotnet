@@ -4125,3 +4125,71 @@ collections in one second. That one-second sample is not a performance claim;
 it selects buffered upload for the next local allocation/exception trace before
 any runtime candidate is proposed. ProtocolLab remains reserved for confirming
 candidates that first pass the local gate.
+
+### Accepted 2026-07-17: reuse the streaming frame parser for buffered request bodies
+
+A five-second local 64 KiB buffered-upload trace at baseline `246fe779`
+attributed nearly all managed allocation to three server-side byte-array paths:
+761.55 MB copying complete HTTP/3 frame payloads, 481.66 MB repeatedly growing
+the buffered request body, and 207.44 MB growing the frame reader's pending
+buffer. The exact workload completed 3,144 requests at 39.04 MiB/s, allocated
+about 390.3 KiB per request, and incurred 179 gen0, 89 gen1, and 89 gen2
+collections. The trace and stack attribution are retained under
+`C:\shared\temp\quic-http3-local-upload-trace-20260717`; the trace SHA-256 is
+`9a006ba696b4234192b33538dd8ef5d4fbe7bf568f8e2bc76e1c998eadb99feb`.
+
+The accepted change routes ordinary buffered request bodies through the existing
+pooled streaming frame parser, then makes the one exact owned body copy required
+by the buffered `Http3Request.Body` lifetime. It preserves the existing
+headers-only fast path, streaming-handler selection and retention contract,
+frame diagnostics, content-length validation, cancellation, and connection
+error behavior. A first version that routed bodyless requests through the
+streaming reader was immediately rejected after a quick local control showed a
+roughly 24% fixed-download regression; it was refined rather than retained.
+
+Separate baseline and candidate assemblies ran in A/B/B/A order. Each pass used
+five exact one-second samples after warmup for 1 KiB, 64 KiB, and one-MiB
+uploads at c1/c4/c16, plus 64 KiB fixed-download controls. Across 240 measured
+samples there were no payload, content-length, protocol, or request failures.
+Combined ten-sample medians were:
+
+| Workload | Baseline MiB/s | Candidate MiB/s | Throughput delta | Baseline/Candidate CV | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 KiB upload / c1 | 2.24 | 2.08 | -7.0% | 27.1% / 26.2% | +3.5% | -14.8% |
+| 1 KiB upload / c4 | 9.70 | 9.72 | +0.2% | 3.6% / 2.6% | -4.5% | -14.1% |
+| 1 KiB upload / c16 | 13.36 | 13.02 | -2.5% | 3.1% / 7.5% | -5.1% | -15.0% |
+| 64 KiB upload / c1 | 51.67 | 54.44 | +5.3% | 3.1% / 4.2% | -23.0% | -80.3% |
+| 64 KiB upload / c4 | 85.48 | 90.11 | +5.4% | 6.8% / 2.0% | -10.5% | -80.3% |
+| 64 KiB upload / c16 | 85.02 | 88.10 | +3.6% | 2.1% / 2.1% | -1.0% | -80.3% |
+| 1 MiB upload / c1 | 80.69 | 86.72 | +7.5% | 11.3% / 2.8% | -5.0% | -82.2% |
+| 1 MiB upload / c4 | 90.08 | 100.15 | +11.2% | 3.9% / 4.1% | -23.7% | -82.3% |
+| 1 MiB upload / c16 | 89.91 | 90.95 | +1.2% | 3.2% / 11.1% | -18.6% | -81.8% |
+| 64 KiB fixed / c1 | 37.19 | 36.82 | -1.0% | 33.7% / 32.1% | -2.4% | -1.3% |
+| 64 KiB fixed / c4 | 51.24 | 49.31 | -3.8% | 3.0% / 4.6% | +8.2% | -0.3% |
+| 64 KiB fixed / c16 | 47.17 | 46.54 | -1.3% | 2.5% / 3.6% | +1.1% | -0.3% |
+
+The noisy c1 1 KiB and fixed rows are retained but are not used alone as effect
+claims. Stable controls remain within the approximately 5% throughput guardrail.
+The candidate passes the local gate through its repeated 80-82% large-upload
+allocation reduction, removal of hundreds of gen2 collections, stable timing,
+and the c4 one-MiB throughput and tail-latency gains.
+
+A matching candidate trace reported about 76.8 KiB allocated per 64 KiB
+request with no gen2 collections. The three baseline copy/growth stacks were
+absent; the dominant remaining allocation was the single exact owned request
+body array. Its trace SHA-256 is
+`82d8ad285c03776ee2c41f3839eccfa67dfde233c039a27a3d602955c063b484`.
+Baseline and candidate exception traces were identical: 19 shutdown-time
+abort/cancellation exceptions each and no new steady-state exception pressure.
+Candidate A/B, trace, allocation, and exception artifacts are retained under
+`C:\shared\temp\quic-http3-buffered-reader-20260717`.
+
+The existing ProtocolLab Incursa upload adapter intentionally selects
+`IHttp3StreamingRequestHandler` for hash, sink, echo, upload, and duplex paths,
+so those scenarios bypass this buffered API and cannot confirm its effect.
+No ProtocolLab run was launched and no benchmark-only adapter switch was added.
+The normal one-MiB exact-body test is now active rather than opt-in. The focused
+HTTP/3 server and streaming-reader suite passed 83/83; the broader HTTP/3 run
+passed 1,119 tests before two close-observation timeouts, both of which then
+passed 5/5 in isolation. The final Release solution run passed 9,625 tests with
+four intentional skips and no failures. Nothing was deployed or published.

@@ -2240,7 +2240,7 @@ public sealed class Http3MinimalServerTests
                 && diagnostic.PayloadLength == body.Length);
     }
 
-    [Fact(Skip = "Large HTTP/3 body loopback stress coverage belongs in ProtocolLab or a dedicated stress gate; default CI keeps smaller body coverage active.")]
+    [Fact]
     [Requirement("REQ-QUIC-RFC9114-S9-0002")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
