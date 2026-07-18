@@ -4504,7 +4504,20 @@ and focused TRX files. The final Release build completed with zero warnings and
 errors. The full Release test-project rerun passed 9,631 tests with four
 explicit skips and zero failures. Two integration tests that failed once under
 the first full-suite load each passed five immediate isolated reruns before the
-clean full-suite rerun. These are local loopback results. ProtocolLab has not
-yet been run and no public or peer-comparison claim is made. Repeated PMTU
-search with bounded retry/backoff remains future work; do not replace the safe
-initial ceiling or repeat the rejected trigger placements.
+clean full-suite rerun.
+
+The smallest matching ProtocolLab confirmation then ran the one-MiB c16 HTTP/3
+scenario in adjacent baseline/candidate/baseline order with five repetitions
+per pass. Source assembly verification proved clean `9eeaecd2` baseline and
+`f6acad6b` candidate inputs. Across the ten baseline and five candidate cells,
+median throughput increased from 52.36 to 61.79 requests/s (+18.0%) and median
+p95 latency fell from 315.77 to 267.80 ms (-15.2%). Throughput CV was 2.14%
+baseline and 1.64% candidate. All 15 cells passed exact HTTP/3 validation with
+zero failed or timed-out requests. The confirmation summary and normal evidence
+bundles are retained under
+`C:\shared\temp\pl-h3-pmtu-confirmation-20260718`.
+
+This confirmation is shared-host local-lab evidence, not isolated-hardware or
+peer-comparison proof, and no public claim is made. Repeated PMTU search with
+bounded retry/backoff remains future work; do not replace the safe initial
+ceiling or repeat the rejected trigger placements.
