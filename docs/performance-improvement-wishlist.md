@@ -5213,3 +5213,40 @@ JSON reports are under
 single-call fixed-response write or another response-write-size variant without
 new attribution. Reducing HTTP/3 API entries alone does not raise the actor's
 packet service capacity.
+
+### Rejected 2026-07-18: clamp ACK walks to tracked packet bounds
+
+The external one-MiB fixed-response trace showed ACK packet handling competing
+with stream writes on the single connection actor. A bounded candidate scanned
+the authoritative sent-packet and retransmission ledgers once per ACK and
+clamped each encoded ACK range to the smallest and largest packet numbers still
+tracked. This preserved range order, congestion and recovery accounting,
+retransmission cancellation, packet-owner release, and spurious-loss handling,
+while avoiding dictionary misses below or above the live ledger. Focused
+sent-packet ownership and ledger tests passed 11/11.
+
+Frozen source-backed target binaries had SHA-256 values
+`A8C654B3B05BE14ABEF38BED5DCBFE72E0901D7BDA34A47FC524F54932DFCBAC`
+for baseline and
+`9021DC8777FC1111C6F7C9619C091EDCCEFCAC8A02E426D6301F47F3F28D38D9`
+for candidate. An A/B/B/A campaign ran six exact three-second samples per
+variant at c1, c4, and c16, with zero HTTP/3, content-length, EOF, payload, or
+request failures:
+
+| Shape | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| c1 | 45.33 | 45.35 | +0.0% | -2.2% | +5.6% |
+| c4 | 43.60 | 43.30 | -0.7% | -0.1% | +0.2% |
+| c16 | 39.22 | 40.42 | +3.1% | -4.2% | -0.9% |
+
+The c16 direction was favorable and stable, but the gain was below the normal
+5-10% end-to-end gate and no material allocation reduction appeared. The
+runtime and candidate-only test changes were reverted, and ProtocolLab was not
+run. The launcher, frozen assemblies, hashes, four raw JSON reports, target
+logs, and aggregate statistics are retained under
+`C:\shared\temp\quic-h3-ack-bounds-20260718`. Do not repeat packet-bound
+clamping alone without evidence that historical ACK-range misses have become a
+larger fraction of actor service time. The remaining gap still requires a
+mechanism that reduces packet count, synchronous datagram submission cost, or
+the serial actor work required per ACK by substantially more than this ledger
+optimization.
