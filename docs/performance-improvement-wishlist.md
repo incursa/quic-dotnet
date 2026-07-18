@@ -5426,3 +5426,40 @@ tracked-bound ACK-range candidate, this rejects minor ACK-ledger parsing
 variants as the next route to closing the multi-fold gap. Reassess the broader
 serial actor and recovery-flush mechanism before attempting more ACK ledger
 micro-optimizations.
+
+### Rejected 2026-07-18: admit a complete public write in one actor action
+
+The permanent local peer harness reproduced the single-connection scaling gap
+with exact one-MiB downloads and five uninstrumented samples per cell. Incursa
+measured 45.43, 30.51, and 25.84 MiB/s at c1, c4, and c16, while
+`System.Net.Quic` measured 24.66, 202.42, and 197.34 MiB/s. Incursa p95 was
+8.23x and 6.77x higher at c4 and c16, and allocation per operation was 19.05x
+and 17.97x higher. The source-backed result is retained at
+`C:\shared\temp\quic-local-first-20260718\current-peer-1mb-download-c1-c4-c16-r5.json`.
+
+The current Incursa path turns one one-MiB public write into thirty-two
+separately posted and awaited 32 KiB actor requests. A materially different
+candidate removed that API-side chunk continuation and admitted the complete
+buffer as one actor request, relying on the accepted semantic raw-send queue to
+fragment the payload when packets were scheduled. This did not repeat the
+rejected 64 KiB work-item boundary or the prior one-request design that reposted
+each 32 KiB continuation. Focused flow-control, cancellation, stream-write, and
+queued-final-write tests passed 167/167, and the candidate built with zero
+warnings.
+
+The candidate nevertheless failed the first end-to-end correctness gate. The
+clean baseline completed its A1 c1/c4/c16 arm in about 36 seconds. The candidate
+made no bounded progress and produced no result artifact after approximately
+120 seconds, so only the owned local benchmark process was stopped. Reserving
+the complete public buffer before sending any bytes can wait indefinitely when
+the write exceeds currently available stream or connection flow-control credit;
+the existing chunk path is what permits credit to advance incrementally. The
+candidate was reverted before any ProtocolLab run.
+
+Frozen assemblies, hashes, the completed baseline arm, launcher, logs, and a
+machine-readable negative result are retained under
+`C:\shared\temp\quic-full-write-admission-20260718`. Do not retry whole-buffer
+admission without an incremental reservation and atomic cancellation/terminal
+handoff design. That broader continuation design must also avoid the queue-depth
+and retained-buffer regressions already measured by the rejected reposting
+candidate; simply changing the admission size cannot safely close this gap.
