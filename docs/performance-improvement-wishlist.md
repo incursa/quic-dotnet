@@ -5332,3 +5332,26 @@ eight raw JSON reports are retained under
 `C:\shared\temp\quic-local-first-20260718`. Do not repeat endpoint socket
 lookup lock removal without new evidence that it consumes a materially larger
 share of end-to-end service time.
+
+### Rejected 2026-07-18: direct STREAM frame dispatch
+
+The c16 one-MiB download diagnostic attributed about 4.5 seconds of a
+five-second saturated shard to packet-received work. The application packet
+parser reaches the common STREAM frame after probing the earlier control-frame
+codecs, so a bounded candidate recognized the one-byte STREAM frame-type range
+and skipped those failed probes without changing any parser or error path.
+
+A dedicated allocation-free ShortRun benchmark measured the previous probe
+chain at 163.09 ns and direct STREAM dispatch at 34.44 ns, a 78.9% mechanism
+improvement. The absolute saving was only 128.65 ns per STREAM frame, however.
+Even incorrectly charging that saving to all 127,355 packet-received work items
+in the diagnostic sample explains about 16.4 ms, less than 0.4% of the measured
+run and less in reality because many packets carried ACK or control frames.
+
+The candidate therefore lacked enough attributed cost to justify an
+end-to-end campaign while a multi-fold transport gap remains. The runtime and
+benchmark-only changes were reverted, and ProtocolLab was not run. BDN Dry and
+Short artifacts are retained under
+`C:\shared\temp\quic-local-first-20260718\bdn-frame-dispatch-*`. Do not repeat
+frame-dispatch ordering variants unless a future workload materially changes
+the frame mix or measured absolute parser cost.
