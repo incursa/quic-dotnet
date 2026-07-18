@@ -5383,3 +5383,46 @@ collection perturbs the single-connection actor. Focused bounded-tag metrics
 coverage passed, the benchmark project built with zero warnings, and the raw
 diagnostic JSON is retained under
 `C:\shared\temp\quic-local-first-20260718\transport-download-c16-packet-phase-attribution-v4.json`.
+
+### Rejected 2026-07-18: reuse parsed acknowledged STREAM IDs
+
+Receive-phase attribution showed that ACK-range processing was a substantial
+part of sender actor time. Each acknowledged sent STREAM packet reparsed its
+retained plaintext once to remove the packet from the outstanding-stream index
+and again to suppress obsolete RESET_STREAM retransmission. A bounded candidate
+made the index removal return the exact distinct non-empty STREAM IDs it had
+already parsed and reused those IDs for RESET_STREAM suppression. It preserved
+zero-length FIN handling, packet ownership, recovery and congestion accounting,
+and retransmission behavior. Focused ownership and index tests passed 14/14.
+
+An allocation-free BenchmarkDotNet ShortRun showed that the mechanism itself
+was real: at 64, 256, and 1,024 packets, parsing once and reusing IDs took
+1.993, 7.857, and 31.267 microseconds versus 3.925, 15.378, and 61.320
+microseconds for two parses, a consistent 49% reduction with zero managed
+allocation. Frozen source-backed local benchmark assemblies had SHA-256 values
+`5782C2A457DB403CCF11C424F30331E0712CD163BEA853162323CB683D3C1F80`
+for baseline and
+`177E8EFF1E90A64AA0F7A95A2321773DDED239775EC931EEF2E7584830E5253C`
+for candidate.
+
+The broad A/B/B/A one-MiB download campaign experienced monotonic shared-host
+drift and was retained only as disturbed diagnostic evidence. A tighter
+A/B/A/B/A/B c16 campaign then ran five exact samples per arm, with zero payload,
+length, EOF, request, or process failures. Across fifteen samples per variant:
+
+| Variant | Median MiB/s | Range MiB/s | CV | Median p95 | Median allocation |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| baseline | 22.83 | 17.24-26.01 | 12.45% | 873.88 ms | 467,003 B/op |
+| candidate | 17.93 | 15.16-26.30 | 19.10% | 988.91 ms | 485,631 B/op |
+
+The candidate was 21.5% slower by aggregate median, 13.2% worse at p95, and
+4.0% higher in allocation. Same-neighborhood A/B throughput deltas were
+-15.6%, -2.1%, and -10.0%, so host drift does not rescue the candidate. The
+runtime, benchmark, and candidate-only test changes were reverted, and
+ProtocolLab was not run. BDN, frozen assemblies, hashes, target logs, raw
+reports, and aggregate evidence are retained under
+`C:\shared\temp\quic-ack-stream-id-reuse-20260718`. Together with the earlier
+tracked-bound ACK-range candidate, this rejects minor ACK-ledger parsing
+variants as the next route to closing the multi-fold gap. Reassess the broader
+serial actor and recovery-flush mechanism before attempting more ACK ledger
+micro-optimizations.
