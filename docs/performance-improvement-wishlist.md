@@ -4902,3 +4902,37 @@ results are retained under
 progress across receive packets again without a design that preserves prompt
 application-data scheduling; the run-length metric remains as attribution for
 materially different packet-processing designs.
+
+### Rejected 2026-07-18: in-place 1-RTT packet protection
+
+The c16 one-MiB duplex diagnostics attributed 243,716 rents and about 304 MB of
+pooled traffic to outbound packet protection in roughly five seconds. The
+application packet path formatted plaintext into one pooled lease and then
+rented a second lease for ciphertext. A bounded candidate reserved tag capacity
+in the first lease and encrypted the payload in place. It preserved packet
+numbers, header protection, AEAD usage accounting, congestion and amplification
+checks, recovery ownership, and send completion. A focused bit-for-bit test
+covered AES-128-GCM, AES-256-GCM, AES-128-CCM, and ChaCha20-Poly1305.
+
+Diagnostics confirmed the mechanism: outbound packet-protection rents per
+completed request fell about 49.6%, and rented bytes per request fell about
+49.8%. Those instrumented runs were used only for attribution. The exact c16
+duplex A/B/B/A campaign produced ten samples per variant and zero failures:
+
+| Variant | Median MiB/s | Range MiB/s | CV | Median p95 ms | Median allocated B/request |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| baseline | 52.527 | 45.842-53.695 | 5.39% | 685.85 | 876,854 |
+| candidate | 52.400 | 42.110-54.400 | 7.56% | 695.91 | 916,169 |
+
+Large fixed, upload, and duplex controls at c1, c4, and c16 were otherwise
+mostly neutral, but upload required a focused repeat. Across ten A/B/B/A samples
+per variant, upload throughput was 62.18 versus 59.78 MiB/s at c1 (-3.9%) and
+70.19 versus 66.80 MiB/s at c16 (-4.8%). The c1 median p95 regressed from 18.00
+to 19.15 ms (+6.4%), while managed allocation was unchanged. The candidate
+therefore failed the local timing gate despite materially reducing pooled rent
+traffic. Runtime and focused-test changes were reverted, and ProtocolLab was not
+run. Evidence, frozen source and binaries, hashes, raw JSON, logs, BDN smoke
+reports, and the candidate diff are under
+`C:\shared\temp\quic-inplace-protection-20260718`. Do not retry exact in-place
+packet protection without new evidence that explains the upload tradeoff and
+predicts an end-to-end timing gain.
