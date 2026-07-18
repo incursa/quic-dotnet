@@ -4425,3 +4425,34 @@ The CPU trace and metrics evidence are retained under
 `C:\shared\temp\quic-http3-local-first-20260718`. The earlier intermittent c16
 ordinary-packet failure did not reproduce in 60 additional exact duplex
 samples, so no speculative PMTU fix was made. No ProtocolLab run was launched.
+
+### Accepted diagnosis 2026-07-18: validate a larger path datagram ceiling
+
+The cross-scenario one-MiB c16 diagnostic run showed that Incursa's HTTP/3
+upload path received 478,006,135 bytes in 324,745 datagrams, or 1,471.94 bytes
+per datagram, while download and duplex responses remained constrained by the
+runtime's permanent 1,200-byte path ceiling. This broad workload attribution
+was sufficient to test the packet-count mechanism without changing any QUIC
+recovery, scheduling, or stream behavior.
+
+A reversible candidate changed only the initial path ceiling from 1,200 to
+1,472 bytes. Committed baseline and candidate assemblies ran in A/B/B/A order,
+with five exact one-MiB c16 samples per variant and shape. All 40 samples passed
+payload, content-length, EOF, and protocol validation:
+
+| Workload | Baseline median | Candidate median | Throughput delta | Baseline p95 | Candidate p95 | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| fixed response | 47.03 MiB/s | 60.46 MiB/s | +28.6% | 423.68 ms | 295.50 ms | -17.4% |
+| duplex | 64.77 MiB/s | 74.05 MiB/s | +14.3% | 549.95 ms | 491.79 ms | -3.4% |
+
+Fixed-response coefficient of variation was 9.33% baseline and 8.19%
+candidate; duplex was 2.21% and 2.17%. The mechanism passes the local timing
+gate, but an unconditional 1,472-byte default would assume an unvalidated path
+MTU and was reverted. The accepted product direction is a bounded DPLPMTUD
+probe: ordinary traffic must remain at 1,200 bytes until an exact padded probe
+is acknowledged, and loss must leave the ceiling unchanged. No ProtocolLab run
+was launched for the unsafe default candidate.
+
+Evidence, assembly hashes, commands, per-sample results, and the combined
+summary are retained under
+`C:\shared\temp\quic-http3-local-first-20260718\pmtu-1472-experiment`.
