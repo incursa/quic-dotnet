@@ -4193,3 +4193,37 @@ HTTP/3 server and streaming-reader suite passed 83/83; the broader HTTP/3 run
 passed 1,119 tests before two close-observation timeouts, both of which then
 passed 5/5 in isolation. The final Release solution run passed 9,625 tests with
 four intentional skips and no failures. Nothing was deployed or published.
+
+### Local-first attribution 2026-07-17: correct the HTTP/3 allocation boundary
+
+The broad local HTTP/3 harness completed fixed, streaming, upload, and duplex
+workloads for 1 KiB, 64 KiB, and one-MiB payloads at c1, c4, and c16 with zero
+validation failures. The one-MiB streaming and duplex rows plateaued at c16,
+with medians of 46.90 and 68.36 MiB/s and p95 latencies of 351.56 and 527.93 ms.
+The complete 18-shape result is retained at
+`C:\shared\temp\quic-http3-broad-local-20260717\current-c73c88c9.json`.
+
+Review found that each measured sample created its per-worker client receive
+buffers after the allocation counter started. That setup is not request-path
+work and distorted large-payload allocation most severely at high concurrency.
+The corrected harness creates those buffers before starting allocation and
+timing measurement. A five-sample one-MiB c16 check retained exact HTTP/3,
+content-length, and payload validation with zero failures. Streaming allocation
+fell from about 532.7 KiB to 178.4 KiB per request, confirming that most of the
+previous growth was harness setup. Duplex remained about 1.12 MiB per request,
+so its allocation pressure is not explained by that artifact. Corrected evidence
+is retained under
+`C:\shared\temp\quic-http3-broad-local-20260717\harness-boundary-corrected`.
+
+A five-second verbose allocation trace of exact one-MiB c16 duplex traffic then
+completed 144 requests with zero failures. Trace-instrumented throughput is
+attribution-only. The largest stack was 89.36 MB of ACK-only protected-datagram
+copies in `TryProtectAndAccountApplicationPayload`, followed by 33.65 MB of the
+now-excluded harness receive-buffer setup, 18.18 MB of pooled stream receive
+buffers, 11.25 MB of receive-ring buffers, and 5.41 MB of buffered-segment list
+growth. The ACK-only copy alone was about 46% of the 195.75 MB sampled total and
+is large enough to justify a bounded hosted-send ownership experiment. The trace
+is retained under
+`C:\shared\temp\quic-http3-broad-local-20260717\duplex-1mb-c16-attribution`;
+its SHA-256 is
+`8da796fe6211936fb7ac20cc4b83f11702cd3239393325f5aab989c9215777ff`.

@@ -120,6 +120,12 @@ internal static class Http3LoopbackPerformanceHarness
         TimeSpan duration,
         bool collectMetrics)
     {
+        WorkerState[] workerStates = new WorkerState[concurrency];
+        for (int workerIndex = 0; workerIndex < workerStates.Length; workerIndex++)
+        {
+            workerStates[workerIndex] = new WorkerState(server.ExpectedResponseBody.Length);
+        }
+
         long allocatedBefore = collectMetrics ? GC.GetTotalAllocatedBytes(precise: true) : 0;
         int gen0Before = collectMetrics ? GC.CollectionCount(0) : 0;
         int gen1Before = collectMetrics ? GC.CollectionCount(1) : 0;
@@ -130,7 +136,7 @@ internal static class Http3LoopbackPerformanceHarness
         Task<WorkerResult>[] workers = new Task<WorkerResult>[concurrency];
         for (int workerIndex = 0; workerIndex < workers.Length; workerIndex++)
         {
-            workers[workerIndex] = RunWorkerAsync(server, deadline);
+            workers[workerIndex] = RunWorkerAsync(server, deadline, workerStates[workerIndex]);
         }
 
         WorkerResult[] workerResults = await Task.WhenAll(workers).ConfigureAwait(false);
@@ -163,10 +169,11 @@ internal static class Http3LoopbackPerformanceHarness
 
     private static async Task<WorkerResult> RunWorkerAsync(
         LoopbackServer server,
-        long deadline)
+        long deadline,
+        WorkerState state)
     {
-        byte[] receivedBody = GC.AllocateUninitializedArray<byte>(server.ExpectedResponseBody.Length);
-        List<double> latencies = new(capacity: 1024);
+        byte[] receivedBody = state.ReceivedBody;
+        List<double> latencies = state.LatenciesMilliseconds;
         int requests = 0;
         int failures = 0;
 
@@ -637,6 +644,13 @@ internal static class Http3LoopbackPerformanceHarness
     }
 
     private sealed record WorkerResult(int Requests, int Failures, List<double> LatenciesMilliseconds);
+
+    private sealed class WorkerState(int responseBodyLength)
+    {
+        internal List<double> LatenciesMilliseconds { get; } = new(capacity: 1024);
+
+        internal byte[] ReceivedBody { get; } = GC.AllocateUninitializedArray<byte>(responseBodyLength);
+    }
 
     private enum ScenarioKind
     {
