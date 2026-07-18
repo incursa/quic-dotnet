@@ -5036,3 +5036,19 @@ errors. One-connection c1/c4 controls retained the platform 64 KiB buffer and
 showed no regression beyond 5%; exact fixed, streaming, upload, and duplex
 HTTP/3 controls had zero failures. Evidence and commands are retained under
 `C:\shared\temp\quic-connection-topology-20260718`.
+
+The candidate then passed the smallest matching source-backed ProtocolLab
+confirmation. An A/B/B/A campaign compared parent `9f67fcfd` with accepted
+commit `0650d1b7` using
+`quic.transport.duplex-streams.16x1mb`, 16 connections, 16 concurrent streams
+per connection, five repetitions per arm, and exact bidirectional byte
+validation. Across ten samples per variant, baseline throughput was 120.23
+MiB/s median (112.10-126.40, 4.04% CV) versus 139.68 MiB/s for the candidate
+(127.53-141.44, 2.87% CV), a 16.2% gain. Median p95 fell from 2,428.89 to
+1,954.32 ms (-19.5%), and median p99 fell from 2,454.64 to 1,991.48 ms
+(-18.9%). All 20 cells passed validation with 2 GiB sent and received per
+cell, zero failed requests, and zero timeouts. ProtocolLab classifies the
+single-host process-backed evidence as diagnostic and comparable with
+warnings; it is confirmation of the local signal, not isolated-hardware or
+publishable peer proof. Artifacts are retained under
+`C:\shared\temp\pl-adaptive-ingress-20260718`.
