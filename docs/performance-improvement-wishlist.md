@@ -4273,3 +4273,34 @@ run because the candidate failed local controls.
 Matched results are retained under
 `C:\shared\temp\quic-http3-hosted-ack-owner-20260717`. The candidate trace SHA-256
 is `8fb1ea2eb735e00e0a3fdde3f96565d9b1774fcc56a981256fbaa668c98de3ee`.
+
+### Rejected 2026-07-17: lazily create public-stream completion delegates
+
+The established public-stream allocation profile attributed about 23% more
+managed allocation to Incursa than to System.Net.Quic. Sampled stacks included
+three bound completion delegates created eagerly by every `QuicStream`, even
+though a stream normally uses only one public write API family. A bounded
+candidate created each delegate on first use after acquiring the existing write
+gate. It preserved callback identity, delayed completion, cancellation,
+disposal, exception propagation, and write serialization; the focused stream
+and write suite passed 93/93.
+
+Separate baseline `b38937bf` and candidate assemblies ran in A/B/B/A/A/B order
+through the established one-KiB request/response profile. Each variant produced
+six measured samples with one or two thousand operations per sample:
+
+| Variant | Median ms/op | Range ms/op | CV | Median managed B/op | Allocation range |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Baseline | 0.5545 | 0.528-0.601 | 4.36% | 4,051 | 4,024-4,082 |
+| Candidate | 0.6015 | 0.570-0.650 | 5.03% | 3,794 | 3,765-3,817 |
+
+The candidate reduced managed allocation by only 6.3% and regressed median
+time by 8.5%. The harness reports aggregate operation time rather than a tail
+latency distribution, so no tail claim is made. The candidate missed both the
+allocation and end-to-end local gates and was reverted. Broader HTTP/3 controls
+and ProtocolLab were intentionally not run.
+
+Evidence is retained under
+`C:\shared\temp\quic-stream-lazy-delegates-20260717`. The next investigation
+must target a mechanism large enough to explain a substantial cross-layer gap,
+not another per-stream micro-allocation.
