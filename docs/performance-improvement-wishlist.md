@@ -5520,3 +5520,50 @@ per received packet or the number of packet transitions by enough to explain a
 substantial fraction of the peer gap, while preserving prompt application-send
 progress, packet ordering, ACK deadlines, recovery, flow control, cancellation,
 and bounded memory.
+
+### Rejected 2026-07-18: zero-copy Windows UDP segmentation
+
+The retained copied UDP-segmentation candidate had reduced isolated socket time
+but added a pooled concatenation buffer and full payload copy. A materially
+different probe used one synchronous `WSASendTo` scatter/gather call over four
+independent 1,472-byte arrays with `UDP_SEND_MSG_SIZE=1472`. Across seven
+interleaved repetitions, repeated sends took 162.01 ms median, copied contiguous
+segmentation took 91.78 ms, and zero-copy scatter/gather took 94.04 ms. The
+zero-copy primitive was 42.0% faster than repeated sends and only 2.5% slower
+than the copied form. Each mode preserved exact length and order for 140,000
+datagrams, 420,000 datagrams total.
+
+The bounded runtime candidate exposed consecutive hosted send updates through a
+synchronous batch observer, retained all detached packet owners through the
+native call, and combined only groups of four same-path, same-ECN, exact-size
+Windows IPv4 listener datagrams. Custom senders, IPv6, mixed or short runs, and
+other platforms retained individual sends. The permanent IPv4 PMTU ceiling is
+already 1,472 bytes, so enabling the socket option did not split smaller normal
+sends. The solution built with zero warnings, and nine focused socket and owner
+lifetime tests passed before measurement.
+
+Frozen baseline and candidate executables first ran A/B/B/A one-MiB downloads
+at c1, c4, and c16 with ten exact samples per variant and cell. All 60 samples
+passed payload, length, EOF, and protocol validation:
+
+| Shape | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| c1 | 44.57 | 44.17 | -0.9% | +1.6% | -1.1% |
+| c4 | 31.59 | 31.27 | -1.0% | +4.3% | +3.5% |
+| c16 | 24.43 | 23.42 | -4.1% | +5.5% | +4.7% |
+
+Because the broad run had shared-host drift, a tighter c16 A/B/A/B/A/B sequence
+ran fifteen exact samples per variant. Baseline measured 25.13 MiB/s, 701.62 ms
+p95, and 402,714 B/op; candidate measured 24.47 MiB/s, 695.20 ms p95, and
+417,124 B/op. The candidate was 2.6% slower, p95 was effectively flat (-0.9%),
+and allocation rose 3.6%. No promotion gate passed.
+
+The runtime and candidate-only tests were reverted, and ProtocolLab was not
+run. Frozen binaries, hashes, all raw reports, logs, source snapshot, patch,
+standalone probe, and machine-readable negative result are retained under
+`C:\shared\temp\quic-zero-copy-udp-segmentation-20260718` and
+`C:\shared\temp\udp-segmentation-scatter-probe-20260718`. Together with the
+copied listener segmentation and Linux `sendmmsg` negatives, this closes
+listener-side socket batching as the next route to the multi-fold gap. Do not
+retry another send wrapper or segmentation variant unless a future broader
+trace shows socket submission has become dominant after actor work is reduced.
