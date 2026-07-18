@@ -198,6 +198,7 @@ internal static class QuicMetrics
     private static readonly Histogram<long> ApplicationSendRecoveryFlushedDatagrams = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.recovery.flushed.datagrams", unit: "datagrams");
     private static readonly Histogram<long> ApplicationSendRecoveryQueueBefore = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.recovery.queue.before", unit: "writes");
     private static readonly Histogram<long> ApplicationSendRecoveryQueueAfter = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.recovery.queue.after", unit: "writes");
+    private static readonly Counter<long> RuntimeDetectedPacketLosses = Meter.CreateCounter<long>("incursa.quic.runtime.losses.detected", unit: "packets");
     private static readonly Histogram<double> StreamWriteCompletion = Meter.CreateHistogram<double>("incursa.quic.runtime.stream_write.completion.ms", unit: "ms");
     private static readonly long[] BufferPoolRentCounts = new long[BufferPoolBucketCount];
     private static readonly long[] BufferPoolRequestedRentCounts = new long[BufferPoolBucketCount];
@@ -332,6 +333,27 @@ internal static class QuicMetrics
         tags.Add("role", GetRoleTag(role));
         tags.Add("packet_type", NormalizePacketType(packetType));
         PacketsDropped.Add(1, in tags);
+    }
+
+    internal static void RecordRuntimeDetectedPacketLoss(
+        QuicTlsRole role,
+        QuicPacketNumberSpace packetNumberSpace)
+    {
+        if (!RuntimeDetectedPacketLosses.Enabled)
+        {
+            return;
+        }
+
+        TagList tags = default;
+        tags.Add("role", GetRoleTag(role));
+        tags.Add("packet_number_space", packetNumberSpace switch
+        {
+            QuicPacketNumberSpace.Initial => "initial",
+            QuicPacketNumberSpace.Handshake => "handshake",
+            QuicPacketNumberSpace.ApplicationData => "application_data",
+            _ => "unknown",
+        });
+        RuntimeDetectedPacketLosses.Add(1, in tags);
     }
 
     internal static void RecordFlowControlBlocked(QuicTlsRole role)

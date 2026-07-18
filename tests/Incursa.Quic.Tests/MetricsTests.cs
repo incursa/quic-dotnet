@@ -913,6 +913,25 @@ public class MetricsTests
 
     [Fact]
     [Requirement("REQ-QUIC-CRT-0155")]
+    public void RuntimeDetectedPacketLossUsesBoundedRoleAndPacketSpaceTags()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(
+            QuicMetrics.MeterName,
+            "incursa.quic.runtime.losses.detected");
+
+        QuicMetrics.RecordRuntimeDetectedPacketLoss(
+            QuicTlsRole.Client,
+            QuicPacketNumberSpace.ApplicationData);
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.losses.detected"
+            && measurement.Value == 1
+            && measurement.HasTag("role", "client")
+            && measurement.HasTag("packet_number_space", "application_data"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
     public async Task RecoveryProgressEmitsApplicationSendRecoveryMetrics()
     {
         using MetricsRecorder recorder = MetricsRecorder.Start(

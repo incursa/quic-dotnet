@@ -113,6 +113,10 @@ internal static class QuicTransportLoopbackPerformanceHarness
                                 clientOptions).ConfigureAwait(false),
                             _ => throw new ArgumentOutOfRangeException(nameof(implementation)),
                         };
+                        await using QuicRuntimeDiagnosticsCollector? diagnostics =
+                            options.Diagnostics && implementation == Implementation.Incursa
+                                ? QuicRuntimeDiagnosticsCollector.Start()
+                                : null;
 
                         Console.Error.WriteLine($"  c{concurrency}: warmup");
                         await RunSampleAsync(
@@ -122,7 +126,8 @@ internal static class QuicTransportLoopbackPerformanceHarness
                             responsePayload,
                             concurrency,
                             TimeSpan.FromSeconds(options.WarmupSeconds),
-                            collectMetrics: false).ConfigureAwait(false);
+                            collectMetrics: false,
+                            diagnostics: null).ConfigureAwait(false);
 
                         List<SampleResult> samples = new(options.Samples);
                         for (int sampleIndex = 0; sampleIndex < options.Samples; sampleIndex++)
@@ -137,7 +142,8 @@ internal static class QuicTransportLoopbackPerformanceHarness
                                 responsePayload,
                                 concurrency,
                                 TimeSpan.FromSeconds(options.DurationSeconds),
-                                collectMetrics: true).ConfigureAwait(false));
+                                collectMetrics: true,
+                                diagnostics).ConfigureAwait(false));
                         }
 
                         results.Add(Summarize(
@@ -162,6 +168,7 @@ internal static class QuicTransportLoopbackPerformanceHarness
             DurationSeconds: options.DurationSeconds,
             WarmupSeconds: options.WarmupSeconds,
             Samples: options.Samples,
+            DiagnosticsEnabled: options.Diagnostics,
             Results: results);
     }
 
@@ -172,7 +179,8 @@ internal static class QuicTransportLoopbackPerformanceHarness
         byte[] responsePayload,
         int concurrency,
         TimeSpan duration,
-        bool collectMetrics)
+        bool collectMetrics,
+        QuicRuntimeDiagnosticsCollector? diagnostics)
     {
         WorkerState[] states = new WorkerState[concurrency];
         for (int index = 0; index < states.Length; index++)
@@ -180,6 +188,7 @@ internal static class QuicTransportLoopbackPerformanceHarness
             states[index] = new WorkerState(requestPayload.Length, responsePayload.Length);
         }
 
+        diagnostics?.BeginSample();
         long allocatedBefore = collectMetrics ? GC.GetTotalAllocatedBytes(precise: true) : 0;
         int gen0Before = collectMetrics ? GC.CollectionCount(0) : 0;
         int gen1Before = collectMetrics ? GC.CollectionCount(1) : 0;
@@ -199,8 +208,19 @@ internal static class QuicTransportLoopbackPerformanceHarness
                 states[index]);
         }
 
-        WorkerResult[] workerResults = await Task.WhenAll(workers).ConfigureAwait(false);
-        TimeSpan elapsed = Stopwatch.GetElapsedTime(started);
+        WorkerResult[] workerResults;
+        QuicRuntimeDiagnosticsResult? runtimeDiagnostics;
+        TimeSpan elapsed;
+        try
+        {
+            workerResults = await Task.WhenAll(workers).ConfigureAwait(false);
+            elapsed = Stopwatch.GetElapsedTime(started);
+        }
+        finally
+        {
+            runtimeDiagnostics = diagnostics?.CompleteSample();
+        }
+
         long allocatedAfter = collectMetrics ? GC.GetTotalAllocatedBytes(precise: true) : 0;
 
         int operations = workerResults.Sum(static result => result.Operations);
@@ -229,7 +249,9 @@ internal static class QuicTransportLoopbackPerformanceHarness
                 : 0,
             Gen0Collections: collectMetrics ? GC.CollectionCount(0) - gen0Before : 0,
             Gen1Collections: collectMetrics ? GC.CollectionCount(1) - gen1Before : 0,
-            Gen2Collections: collectMetrics ? GC.CollectionCount(2) - gen2Before : 0);
+            Gen2Collections: collectMetrics ? GC.CollectionCount(2) - gen2Before : 0,
+            MetricsInstrumentationEnabled: diagnostics is not null,
+            RuntimeDiagnostics: runtimeDiagnostics);
     }
 
     private static async Task<WorkerResult> RunWorkerAsync(
@@ -368,7 +390,7 @@ internal static class QuicTransportLoopbackPerformanceHarness
             "Usage: --transport-loopback [--implementations incursa,systemnet] " +
             "[--scenarios download,upload,duplex] [--payload-sizes 1024,65536,1048576] " +
             "[--concurrency 1,4,16] [--samples 5] [--duration-seconds 2] " +
-            "[--warmup-seconds 1] [--label name] [--json path]");
+            "[--warmup-seconds 1] [--diagnostics true|false] [--label name] [--json path]");
     }
 
     private static string FormatImplementation(Implementation implementation) => implementation switch
@@ -685,7 +707,9 @@ internal static class QuicTransportLoopbackPerformanceHarness
         double AllocatedBytesPerOperation,
         int Gen0Collections,
         int Gen1Collections,
-        int Gen2Collections);
+        int Gen2Collections,
+        bool MetricsInstrumentationEnabled,
+        QuicRuntimeDiagnosticsResult? RuntimeDiagnostics);
 
     private sealed record ShapeResult(
         string Implementation,
@@ -715,6 +739,7 @@ internal static class QuicTransportLoopbackPerformanceHarness
         int DurationSeconds,
         int WarmupSeconds,
         int Samples,
+        bool DiagnosticsEnabled,
         List<ShapeResult> Results);
 
     private sealed record Options(
@@ -725,6 +750,7 @@ internal static class QuicTransportLoopbackPerformanceHarness
         int Samples,
         int DurationSeconds,
         int WarmupSeconds,
+        bool Diagnostics,
         string Label,
         string? JsonPath)
     {
@@ -737,6 +763,7 @@ internal static class QuicTransportLoopbackPerformanceHarness
             int samples = 5;
             int durationSeconds = 2;
             int warmupSeconds = 1;
+            bool diagnostics = false;
             string label = "local";
             string? jsonPath = null;
 
@@ -767,6 +794,9 @@ internal static class QuicTransportLoopbackPerformanceHarness
                     case "--warmup-seconds":
                         warmupSeconds = ParsePositiveInteger(value, option);
                         break;
+                    case "--diagnostics":
+                        diagnostics = ParseBoolean(value, option);
+                        break;
                     case "--label":
                         label = value;
                         break;
@@ -786,6 +816,7 @@ internal static class QuicTransportLoopbackPerformanceHarness
                 samples,
                 durationSeconds,
                 warmupSeconds,
+                diagnostics,
                 label,
                 jsonPath);
         }
@@ -851,6 +882,11 @@ internal static class QuicTransportLoopbackPerformanceHarness
 
             return parsed;
         }
+
+        private static bool ParseBoolean(string value, string option)
+            => bool.TryParse(value, out bool parsed)
+                ? parsed
+                : throw new ArgumentException($"Option '{option}' must be true or false.");
 
         private static string[] Split(string value)
         {

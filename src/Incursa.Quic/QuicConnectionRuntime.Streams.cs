@@ -3316,6 +3316,7 @@ internal sealed partial class QuicConnectionRuntime
         bool stateChanged = false;
         foreach (QuicLostPacket lostPacket in lostPackets)
         {
+            QuicMetrics.RecordRuntimeDetectedPacketLoss(tlsState.Role, lostPacket.PacketNumberSpace);
             if (lostPacket.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
                 && pathMtuProbePathsByPacketNumber.Remove(
                     lostPacket.PacketNumber,

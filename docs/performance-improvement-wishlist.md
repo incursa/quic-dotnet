@@ -4521,3 +4521,57 @@ This confirmation is shared-host local-lab evidence, not isolated-hardware or
 peer-comparison proof, and no public claim is made. Repeated PMTU search with
 bounded retry/backoff remains future work; do not replace the safe initial
 ceiling or repeat the rejected trigger placements.
+
+### Local-first diagnosis 2026-07-18: c16 upload congestion-window growth stalls without loss
+
+The transport loopback harness now has an opt-in `--diagnostics true` mode for
+Incursa samples. It captures bounded summaries from the existing runtime,
+buffer-pool, byte, and datagram meters and marks every instrumented sample as
+diagnostic-only. The normal benchmark path remains uninstrumented. A new
+bounded runtime counter records detected packet losses by endpoint role and
+packet-number space so congestion-window attribution no longer has to infer
+loss from retained packet state.
+
+A fresh uninstrumented five-repetition one-MiB c1/c4/c16 peer campaign retained
+Incursa's competitive c1 result but reproduced the c16 collapse. At c16,
+Incursa produced 24.81 MiB/s download, 21.99 MiB/s upload, and 31.67 MiB/s
+duplex while System.Net.Quic produced 185.98, 190.30, and 212.71 MiB/s. Incursa
+allocated 17.74x, 18.30x, and 20.24x as many managed bytes per operation in
+those three lanes. All payload and protocol validation passed. The evidence is
+`C:\shared\temp\quic-transport-local-first-20260718\post-pmtu-peer\1mb-c1-c4-c16-r5.json`.
+
+The c16 upload CPU trace did not expose a single hot method large enough to
+explain the gap. The process spent most of the interval waiting; runtime inbox
+consumption accounted for about 5.96% inclusive CPU, packet receive for about
+2.29%, endpoint send for about 1.73%, listener send for about 1.21%, and socket
+send for about 0.3%. This points to queueing or send-credit progression rather
+than a CPU-bound send primitive. Trace artifacts are under
+`C:\shared\temp\quic-transport-local-first-20260718\post-pmtu-cpu`.
+
+Instrumented c1 and c16 one-MiB upload samples then isolated the mechanism. The
+c16 sample spent the measured interval with a weighted congestion-window mean
+of about 338 KiB and a maximum of about 460 KiB, while bytes in flight averaged
+about 337 KiB and available send budget averaged only 738 bytes. It recorded
+32,808 congestion-limited flushes, an application-send queue mean of 20.4
+writes and maximum of 27, about 660 KiB average retained application data, and
+about 298 average retained sent packets. Stream-write completion averaged
+34.2 ms and reached about 42.8 ms at p95; sender queue delay averaged about
+22 ms and reached about 33 ms at p95. The comparable c1 sample grew its window
+from about 6.8 MiB to 50.5 MiB and had roughly 1 ms write completion and queue
+delay.
+
+The loss-instrumented repeat recorded zero detected packet losses at both c1
+and c16. Therefore the small c16 window was not a loss response: it remained
+full but failed to grow. The current congestion helper subtracts acknowledged
+bytes before deciding whether `bytes_in_flight < congestion_window`, which
+makes a previously full sender appear underutilized after every ACK unless a
+separate pacing-limited signal happens to be present. The next bounded
+candidate is to evaluate congestion-window utilization from the pre-ACK state,
+while preserving explicit application-limited and flow-control-limited
+suppression. This is a standards/correctness hypothesis that requires focused
+RFC 9002 tests and adjacent local A/B evidence before acceptance. No
+ProtocolLab run has been launched.
+
+Instrumented evidence is retained under
+`C:\shared\temp\quic-transport-local-first-20260718\runtime-diagnostics` and
+`C:\shared\temp\quic-transport-local-first-20260718\runtime-loss-diagnostics`.
