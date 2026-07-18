@@ -5184,3 +5184,32 @@ write serialization for already-cached immutable fixed responses without
 repeating the rejected 32 KiB boundary or raw burst experiments. Evidence is
 under `C:\shared\temp\quic-h3-local-first-next-20260718\external-trace` and the
 two `external-*-fixed-1mb.json` files in its parent. ProtocolLab was not run.
+
+### Rejected 2026-07-18: one-call cached fixed-response final write
+
+A bounded cross-layer candidate submitted an already-cached immutable HTTP/3
+HEADERS+DATA response sequence through one final stream API write instead of
+re-entering the public stream write path at each 16 KiB boundary. It retained
+the existing frame bytes, 16 KiB DATA framing, flow control, congestion control,
+and transport-owned 32 KiB chunking. This was materially different from the
+rejected 32 KiB HTTP/3 frame/write boundary: it reduced API and write-gate entry
+while leaving the serialized transport work-item size unchanged.
+
+Frozen source-backed target binaries ran A/B/B/A over exact one-MiB fixed
+responses at c1, c4, and c16. Three samples per pass produced six samples per
+variant and cell, all with exact HTTP/3, content-length, EOF, and payload proof:
+
+| Shape | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| c1 | 44.13 | 46.35 | +5.0% | -4.5% | -3.7% |
+| c4 | 43.68 | 44.32 | +1.5% | +0.4% | -2.2% |
+| c16 | 39.48 | 37.63 | -4.7% | +4.7% | -0.1% |
+
+The candidate did not reach the local timing or allocation gate and moved the
+important c16 shape in the wrong direction. The runtime change was reverted and
+ProtocolLab was not run. Frozen assemblies, hashes, target logs, and all four
+JSON reports are under
+`C:\shared\temp\quic-h3-fixed-finalwrite-20260718`. Do not repeat a large
+single-call fixed-response write or another response-write-size variant without
+new attribution. Reducing HTTP/3 API entries alone does not raise the actor's
+packet service capacity.
