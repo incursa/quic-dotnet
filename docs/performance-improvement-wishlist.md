@@ -5052,3 +5052,59 @@ single-host process-backed evidence as diagnostic and comparable with
 warnings; it is confirmation of the local signal, not isolated-hardware or
 publishable peer proof. Artifacts are retained under
 `C:\shared\temp\pl-adaptive-ingress-20260718`.
+
+### Accepted 2026-07-18: coalesced HTTP/3 streaming frame writes
+
+Fresh exact one-MiB HTTP/3 diagnostics showed that streaming and simultaneous
+duplex responses submitted about 129 serialized stream writes per completed
+request. Each DATA frame header and its first 16 KiB payload chunk used
+separate QUIC writes even though they belonged to one HTTP/3 frame. The
+candidate adds an internal two-segment stream write that carries the header
+and first payload chunk through the existing runtime work item and formats
+both directly into one retransmittable STREAM payload. It does not allocate an
+intermediate combined application buffer. Flow-control retries copy both
+segments into the existing owned retry buffer, and the write retains one
+completion source, cancellation registration, and write-gate acquisition.
+
+Instrumented c16 one-MiB runs confirmed the mechanism without being used as
+timing evidence. Streaming response writes fell from 22,704 across 176
+requests to 11,440 across 176 requests, and duplex response writes fell from
+15,609 across 121 requests to 8,320 across 128 requests. Both are approximately
+129 to 65 writes per request. Per-action queue and completion latency rose
+because each action now carries more bytes; the gain comes from halving the
+number of serialized actions, not from making each action cheaper.
+
+Frozen baseline `0beb7582` and candidate executables then ran in A/B/B/A order
+across exact one-MiB fixed, streaming, upload, and simultaneous duplex lanes at
+c1, c4, and c16. Five samples per pass produced ten samples per variant and
+cell, 240 measured samples total, with zero payload, content-length, EOF, or
+protocol failures. The targeted streaming lane improved from 43.32 to 47.73
+MiB/s at c1 (+10.2%), 42.63 to 46.56 MiB/s at c4 (+9.2%), and 40.38 to 42.73
+MiB/s at c16 (+5.8%). Streaming p95 improved 9.7%, 6.5%, and 4.5%
+respectively. Duplex throughput improved 6.6%, 3.6%, and 1.9%, while duplex
+p95 improved 7.2%, 6.0%, and 7.7%. Fixed-response throughput stayed within
+1.9% of baseline. Upload, which does not use the new path, stayed within 4.6%;
+its noisier p99 and duplex c4 allocation were not correlated with an added
+per-request allocation in the candidate. Local evidence, diagnostics, logs,
+and aggregate comparisons are retained under
+`C:\shared\temp\pl-h3-segmented-write-20260718`.
+
+The candidate passed the smallest matching source-backed ProtocolLab
+confirmation on `http3.payload.stream.100x16kb` at c16. A/B/B/A order with
+five repetitions per arm produced ten samples per variant. Baseline throughput
+was 40.22 MiB/s median (37.76-43.07, 3.65% CV) versus 42.36 MiB/s for the
+candidate (39.70-44.31, 4.13% CV), a 5.3% gain. Median p50, p95, and p99 fell
+4.5%, 4.7%, and 5.0%. All 20 cells passed exact HTTP/3, status, content type,
+and 1,638,400-byte body validation with zero failed requests or timeouts.
+Source-hash verification bound every arm to its requested QUIC worktree.
+ProtocolLab classifies this localhost process-backed evidence as diagnostic
+and comparable with warnings because target and generator share the host and
+the generator may be saturated. It is confirmation of the local result, not
+publishable peer proof. Artifacts are under
+`C:\shared\temp\pl-h3-segmented-write-20260718\protocol-lab`.
+
+Focused framing, work-item layout, delayed `ValueTask` consumption,
+cancellation, write-gate serialization, pooled retry ownership, final-write,
+and HTTP/3 streaming tests passed 50/50. The full Release suite passed 9,643
+tests with four intentional skips. No ProtocolLab repo files, packages,
+deployments, registrations, or published results changed.

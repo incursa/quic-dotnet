@@ -205,6 +205,7 @@ internal sealed record QuicConnectionStreamActionEvent(
     QuicStreamType? StreamType = null,
     ulong? StreamId = null,
     ReadOnlyMemory<byte> StreamData = default,
+    ReadOnlyMemory<byte> StreamDataSuffix = default,
     ulong? ApplicationErrorCode = null)
     : QuicConnectionEvent(QuicConnectionEventKind.StreamAction, ObservedAtTicks);
 

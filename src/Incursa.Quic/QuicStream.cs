@@ -445,12 +445,20 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
 
     internal ValueTask<bool> TryWriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
     {
-        return TryWriteCoreAsync(buffer, finishWrites: false, cancellationToken);
+        return TryWriteCoreAsync(buffer, ReadOnlyMemory<byte>.Empty, finishWrites: false, cancellationToken);
+    }
+
+    internal ValueTask<bool> TryWriteSequenceAsync(
+        ReadOnlyMemory<byte> prefix,
+        ReadOnlyMemory<byte> suffix,
+        CancellationToken cancellationToken)
+    {
+        return TryWriteCoreAsync(prefix, suffix, finishWrites: false, cancellationToken);
     }
 
     internal ValueTask<bool> TryWriteFinalAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
     {
-        return TryWriteCoreAsync(buffer, finishWrites: true, cancellationToken);
+        return TryWriteCoreAsync(buffer, ReadOnlyMemory<byte>.Empty, finishWrites: true, cancellationToken);
     }
 
     public override long Seek(long offset, SeekOrigin origin)
@@ -1044,6 +1052,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
 
     private ValueTask<bool> TryWriteCoreAsync(
         ReadOnlyMemory<byte> buffer,
+        ReadOnlyMemory<byte> bufferSuffix,
         bool finishWrites,
         CancellationToken cancellationToken)
     {
@@ -1067,7 +1076,7 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
             return new ValueTask<bool>(false);
         }
 
-        if (buffer.IsEmpty && !finishWrites)
+        if (buffer.IsEmpty && bufferSuffix.IsEmpty && !finishWrites)
         {
             return new ValueTask<bool>(true);
         }
@@ -1075,25 +1084,27 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
         ValueTask gateWait = WaitForWriteGateAsync(cancellationToken);
         if (!gateWait.IsCompletedSuccessfully)
         {
-            return TryWriteCoreAfterGateWaitAsync(gateWait, buffer, finishWrites, cancellationToken);
+            return TryWriteCoreAfterGateWaitAsync(gateWait, buffer, bufferSuffix, finishWrites, cancellationToken);
         }
 
         gateWait.GetAwaiter().GetResult();
-        return TryWriteCoreAfterGate(buffer, finishWrites, cancellationToken);
+        return TryWriteCoreAfterGate(buffer, bufferSuffix, finishWrites, cancellationToken);
     }
 
     private async ValueTask<bool> TryWriteCoreAfterGateWaitAsync(
         ValueTask gateWait,
         ReadOnlyMemory<byte> buffer,
+        ReadOnlyMemory<byte> bufferSuffix,
         bool finishWrites,
         CancellationToken cancellationToken)
     {
         await gateWait.ConfigureAwait(false);
-        return await TryWriteCoreAfterGate(buffer, finishWrites, cancellationToken).ConfigureAwait(false);
+        return await TryWriteCoreAfterGate(buffer, bufferSuffix, finishWrites, cancellationToken).ConfigureAwait(false);
     }
 
     private ValueTask<bool> TryWriteCoreAfterGate(
         ReadOnlyMemory<byte> buffer,
+        ReadOnlyMemory<byte> bufferSuffix,
         bool finishWrites,
         CancellationToken cancellationToken)
     {
@@ -1110,6 +1121,16 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
             {
                 ReleaseWriteGate();
                 return new ValueTask<bool>(false);
+            }
+
+            if (!bufferSuffix.IsEmpty)
+            {
+                return currentRuntime.TryWriteStreamSequenceAsync(
+                    streamId,
+                    buffer,
+                    bufferSuffix,
+                    releaseTryWriteGateAction,
+                    cancellationToken);
             }
 
             return finishWrites

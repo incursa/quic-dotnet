@@ -107,6 +107,7 @@ internal sealed partial class QuicConnectionRuntime
                     streamActionEvent.RequestId,
                     streamActionEvent.StreamId.Value,
                     streamActionEvent.StreamData,
+                    streamActionEvent.StreamDataSuffix,
                     finishWrites: false,
                     ref effects),
             QuicConnectionStreamActionKind.Finish
@@ -116,6 +117,7 @@ internal sealed partial class QuicConnectionRuntime
                     streamActionEvent.RequestId,
                     streamActionEvent.StreamId.Value,
                     streamActionEvent.StreamData,
+                    streamActionEvent.StreamDataSuffix,
                     finishWrites: true,
                     ref effects),
             QuicConnectionStreamActionKind.Reset
@@ -308,6 +310,7 @@ internal sealed partial class QuicConnectionRuntime
                         requestId,
                         completion.StreamId,
                         completion.GetOwnedStreamDataMemory(),
+                        ReadOnlyMemory<byte>.Empty,
                         completion.ActionKind == QuicConnectionStreamActionKind.Finish,
                         ref effects))
                 {
@@ -439,6 +442,7 @@ internal sealed partial class QuicConnectionRuntime
         long requestId,
         ulong streamId,
         ReadOnlyMemory<byte> streamData,
+        ReadOnlyMemory<byte> streamDataSuffix,
         bool finishWrites,
         ref QuicConnectionEffectAccumulator effects)
     {
@@ -458,7 +462,7 @@ internal sealed partial class QuicConnectionRuntime
 
             QuicConnectionStreamWritePreparationStatus preparationStatus = streamRegistry.Bookkeeping.PrepareStreamWrite(
                 streamId,
-                streamData.Length,
+                checked(streamData.Length + streamDataSuffix.Length),
                 finishWrites,
                 out QuicConnectionStreamWritePreparation preparation,
                 out QuicDataBlockedFrame dataBlockedFrame,
@@ -512,7 +516,7 @@ internal sealed partial class QuicConnectionRuntime
             {
                 if (dataBlockedFrame.MaximumData != 0 || streamDataBlockedFrame.MaximumStreamData != 0)
                 {
-                    completion.EnsureOwnedStreamData(streamData.Span);
+                    completion.EnsureOwnedStreamData(streamData.Span, streamDataSuffix.Span);
                     QueuePendingStreamWriteRetry(requestId, completion);
                     _ = TryEmitFlowControlBlockedSignal(dataBlockedFrame, streamDataBlockedFrame, ref effects);
                     return true;
@@ -534,7 +538,7 @@ internal sealed partial class QuicConnectionRuntime
             if (ApplicationSendDebugEnabled)
             {
                 Console.Error.WriteLine(
-                    $"app-tx role={tlsState.Role} stream={streamId} offset={writeOffset} length={streamData.Length} fin={finishWrites} " +
+                    $"app-tx role={tlsState.Role} stream={streamId} offset={writeOffset} length={checked(streamData.Length + streamDataSuffix.Length)} fin={finishWrites} " +
                     $"queue={applicationSendQueue.Count} retrans={sendRuntime.PendingRetransmissionCount} " +
                     $"ackInFlight={sendRuntime.HasAckElicitingPacketsInFlight} validated={(activePath?.AmplificationState.IsAddressValidated ?? false)} " +
                     $"oneRtt={tlsState.OneRttProtectPacketProtectionMaterial.HasValue} handshakeConfirmed={HandshakeConfirmed}.");
@@ -546,6 +550,7 @@ internal sealed partial class QuicConnectionRuntime
                 completion,
                 streamId,
                 streamData,
+                streamDataSuffix,
                 finishWrites,
                 writeOffset,
                 preparation.SendStateBeforeWrite,
@@ -569,6 +574,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionRuntime.StreamActionRequestCompletionSource completion,
         ulong streamId,
         ReadOnlyMemory<byte> streamData,
+        ReadOnlyMemory<byte> streamDataSuffix,
         bool finishWrites,
         ulong writeOffset,
         QuicConnectionStreamSendStateSnapshot sendStateBeforeWrite,
@@ -577,7 +583,10 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlySpan<byte> committedStreamData = completion.HasOwnedStreamData
             ? completion.GetOwnedStreamDataSpan()
             : streamData.Span;
-        int committedStreamDataLength = committedStreamData.Length;
+        ReadOnlySpan<byte> committedStreamDataSuffix = completion.HasOwnedStreamData
+            ? ReadOnlySpan<byte>.Empty
+            : streamDataSuffix.Span;
+        int committedStreamDataLength = checked(committedStreamData.Length + committedStreamDataSuffix.Length);
 
         LogApplicationSend(
             $"app-tx reserved role={tlsState.Role} stream={streamId} offset={writeOffset} length={committedStreamDataLength} fin={finishWrites} queue={applicationSendQueue.Count}.");
@@ -653,6 +662,7 @@ internal sealed partial class QuicConnectionRuntime
                 committedStreamDataLength,
                 QuicBufferPoolOwner.QueuedRawStreamData);
             committedStreamData.CopyTo(queuedStreamData);
+            committedStreamDataSuffix.CopyTo(queuedStreamData.AsSpan(committedStreamData.Length));
             completion.ReleaseOwnedStreamData();
 
             if (!streamRegistry.Bookkeeping.TryGetStreamPriority(streamId, out int oversizedStreamPriority))
@@ -693,6 +703,7 @@ internal sealed partial class QuicConnectionRuntime
                 streamId,
                 writeOffset,
                 committedStreamData,
+                committedStreamDataSuffix,
                 finishWrites,
                 out byte[] streamPayload,
                 out int streamPayloadLength))
@@ -5296,6 +5307,23 @@ internal sealed partial class QuicConnectionRuntime
         bool fin,
         out byte[] payload,
         out int payloadLength)
+        => TryBuildOutboundStreamPayload(
+            streamId,
+            offset,
+            streamData,
+            ReadOnlySpan<byte>.Empty,
+            fin,
+            out payload,
+            out payloadLength);
+
+    private bool TryBuildOutboundStreamPayload(
+        ulong streamId,
+        ulong offset,
+        ReadOnlySpan<byte> streamData,
+        ReadOnlySpan<byte> streamDataSuffix,
+        bool fin,
+        out byte[] payload,
+        out int payloadLength)
     {
         payload = [];
         payloadLength = 0;
@@ -5311,7 +5339,8 @@ internal sealed partial class QuicConnectionRuntime
             frameType |= QuicStreamFrameBits.FinBitMask;
         }
 
-        if (!TryGetOutboundStreamFrameLength(frameType, streamId, offset, streamData.Length, out int frameLength))
+        int streamDataLength = checked(streamData.Length + streamDataSuffix.Length);
+        if (!TryGetOutboundStreamFrameLength(frameType, streamId, offset, streamDataLength, out int frameLength))
         {
             return false;
         }
@@ -5327,6 +5356,7 @@ internal sealed partial class QuicConnectionRuntime
                 streamId,
                 offset,
                 streamData,
+                streamDataSuffix,
                 bufferLease.Span,
                 out int frameBytesWritten))
             {

@@ -220,7 +220,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         long requestId,
         QuicConnectionStreamActionKind actionKind,
         ulong streamId,
-        ReadOnlyMemory<byte> streamData)
+        ReadOnlyMemory<byte> streamData,
+        ReadOnlyMemory<byte> streamDataSuffix = default)
     {
         ArgumentNullException.ThrowIfNull(runtime);
 
@@ -240,7 +241,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             requestId,
             actionKind,
             streamId,
-            streamData));
+            streamData,
+            streamDataSuffix));
     }
 
     /// <summary>
@@ -584,6 +586,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                         workItem.StreamActionKind,
                         workItem.StreamId,
                         workItem.StreamData,
+                        workItem.StreamDataSuffix,
                         clock.Ticks),
                 _ => runtime.Transition(workItem.ConnectionEvent!, clock.Ticks),
             };

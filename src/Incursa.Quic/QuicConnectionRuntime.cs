@@ -169,7 +169,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private Func<bool>? streamCapacityReleaseDispatcher;
     private Func<bool>? flowControlCreditUpdateDispatcher;
     private Func<long, QuicStreamType, bool>? streamOpenDispatcher;
-    private Func<long, QuicConnectionStreamActionKind, ulong, ReadOnlyMemory<byte>, bool>? streamWriteDispatcher;
+    private Func<long, QuicConnectionStreamActionKind, ulong, ReadOnlyMemory<byte>, ReadOnlyMemory<byte>, bool>? streamWriteDispatcher;
     private Action<int, int>? streamCapacityObserver;
     private bool scheduledPeerStreamCapacityReleaseEventPending;
     private bool scheduledFlowControlCreditUpdatePending;
@@ -227,7 +227,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
     }
 
-    private sealed class StreamActionRequestCompletionSource : IValueTaskSource<bool>, IValueTaskSource
+    internal sealed class StreamActionRequestCompletionSource : IValueTaskSource<bool>, IValueTaskSource
     {
         private readonly QuicConnectionRuntime owner;
         private ManualResetValueTaskSourceCore<bool> source;
@@ -332,24 +332,26 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 ? ReadOnlyMemory<byte>.Empty
                 : new ReadOnlyMemory<byte>(ownedStreamData, 0, StreamDataLength);
 
-        internal void EnsureOwnedStreamData(ReadOnlySpan<byte> streamData)
+        internal void EnsureOwnedStreamData(ReadOnlySpan<byte> streamData, ReadOnlySpan<byte> streamDataSuffix)
         {
-            if (streamData.IsEmpty)
+            int streamDataLength = checked(streamData.Length + streamDataSuffix.Length);
+            if (streamDataLength == 0)
             {
                 StreamDataLength = 0;
                 return;
             }
 
-            if (ownedStreamData is null || ownedStreamData.Length < streamData.Length)
+            if (ownedStreamData is null || ownedStreamData.Length < streamDataLength)
             {
                 ReleaseOwnedStreamData();
                 ownedStreamData = QuicBufferPool.RentBytes(
-                    streamData.Length,
+                    streamDataLength,
                     QuicBufferPoolOwner.StreamWriteRequest);
             }
 
             streamData.CopyTo(ownedStreamData);
-            StreamDataLength = streamData.Length;
+            streamDataSuffix.CopyTo(ownedStreamData.AsSpan(streamData.Length));
+            StreamDataLength = streamDataLength;
         }
 
         internal void ReleaseOwnedStreamData()
@@ -1619,7 +1621,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         streamOpenDispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
     }
 
-    internal void SetStreamWriteDispatcher(Func<long, QuicConnectionStreamActionKind, ulong, ReadOnlyMemory<byte>, bool> dispatcher)
+    internal void SetStreamWriteDispatcher(Func<long, QuicConnectionStreamActionKind, ulong, ReadOnlyMemory<byte>, ReadOnlyMemory<byte>, bool> dispatcher)
     {
         streamWriteDispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
     }
@@ -2124,6 +2126,21 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             completionAction ?? throw new ArgumentNullException(nameof(completionAction)),
             cancellationToken);
 
+    internal ValueTask<bool> TryWriteStreamSequenceAsync(
+        ulong streamId,
+        ReadOnlyMemory<byte> prefix,
+        ReadOnlyMemory<byte> suffix,
+        Action<bool> completionAction,
+        CancellationToken cancellationToken = default)
+        => WriteStreamAsyncCore(
+            streamId,
+            prefix,
+            suffix,
+            finishWrites: false,
+            suppressTerminalException: true,
+            completionAction,
+            cancellationToken);
+
     internal ValueTask WriteFinalStreamAsync(
         ulong streamId,
         ReadOnlyMemory<byte> buffer,
@@ -2220,7 +2237,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         QuicConnectionStreamActionKind actionKind = finishWrites ? QuicConnectionStreamActionKind.Finish : QuicConnectionStreamActionKind.Write;
-        bool posted = streamWriteDispatcher?.Invoke(requestId, actionKind, streamId, buffer)
+        bool posted = streamWriteDispatcher?.Invoke(requestId, actionKind, streamId, buffer, ReadOnlyMemory<byte>.Empty)
             ?? TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
                 clock.Ticks,
                 requestId,
@@ -2277,6 +2294,23 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         bool suppressTerminalException,
         Action<bool>? completionAction,
         CancellationToken cancellationToken)
+        => WriteStreamAsyncCore(
+            streamId,
+            buffer,
+            ReadOnlyMemory<byte>.Empty,
+            finishWrites,
+            suppressTerminalException,
+            completionAction,
+            cancellationToken);
+
+    private ValueTask<bool> WriteStreamAsyncCore(
+        ulong streamId,
+        ReadOnlyMemory<byte> buffer,
+        ReadOnlyMemory<byte> bufferSuffix,
+        bool finishWrites,
+        bool suppressTerminalException,
+        Action<bool>? completionAction,
+        CancellationToken cancellationToken)
     {
         ThrowIfDisposed();
 
@@ -2293,14 +2327,22 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (buffer.IsEmpty && !finishWrites)
+        if (buffer.IsEmpty && bufferSuffix.IsEmpty && !finishWrites)
         {
             completionAction?.Invoke(true);
             return new ValueTask<bool>(true);
         }
 
-        if (buffer.Length > MaximumStreamWriteChunkBytes)
+        int totalLength = checked(buffer.Length + bufferSuffix.Length);
+        if (totalLength > MaximumStreamWriteChunkBytes)
         {
+            if (!bufferSuffix.IsEmpty)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(bufferSuffix),
+                    $"A segmented stream write cannot exceed {MaximumStreamWriteChunkBytes} bytes.");
+            }
+
             ValueTask<bool> chunkWriteTask = WriteStreamChunksAsync(
                 streamId,
                 buffer,
@@ -2313,14 +2355,14 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         LogApplicationSend(
-            $"app-tx api-write role={tlsState.Role} stream={streamId} length={buffer.Length} fin={finishWrites}.");
+            $"app-tx api-write role={tlsState.Role} stream={streamId} length={totalLength} fin={finishWrites}.");
 
         long requestId = Interlocked.Increment(ref nextStreamActionRequestId);
         StreamActionRequestCompletionSource completion = RentStreamActionRequestCompletionSource();
         completion.ConfigureWrite(
             finishWrites ? QuicConnectionStreamActionKind.Finish : QuicConnectionStreamActionKind.Write,
             streamId,
-            buffer.Length);
+            totalLength);
         if (completionAction is not null)
         {
             completion.ConfigureResultCompletionAction(completionAction);
@@ -2344,13 +2386,14 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         QuicConnectionStreamActionKind actionKind = finishWrites ? QuicConnectionStreamActionKind.Finish : QuicConnectionStreamActionKind.Write;
-        bool posted = streamWriteDispatcher?.Invoke(requestId, actionKind, streamId, buffer)
+        bool posted = streamWriteDispatcher?.Invoke(requestId, actionKind, streamId, buffer, bufferSuffix)
             ?? TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
                 clock.Ticks,
                 requestId,
                 actionKind,
                 StreamId: streamId,
-                StreamData: buffer));
+                StreamData: buffer,
+                StreamDataSuffix: bufferSuffix));
         if (!posted)
         {
             TryRemovePendingStreamActionRequest(requestId, out _);
@@ -2551,6 +2594,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 requestId,
                 QuicConnectionStreamActionKind.Finish,
                 streamId,
+                ReadOnlyMemory<byte>.Empty,
                 ReadOnlyMemory<byte>.Empty)
             ?? TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
                 clock.Ticks,
@@ -2624,6 +2668,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 requestId,
                 QuicConnectionStreamActionKind.Finish,
                 streamId,
+                ReadOnlyMemory<byte>.Empty,
                 ReadOnlyMemory<byte>.Empty)
             ?? TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
                 clock.Ticks,
@@ -2930,6 +2975,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         QuicConnectionStreamActionKind actionKind,
         ulong streamId,
         ReadOnlyMemory<byte> streamData,
+        ReadOnlyMemory<byte> streamDataSuffix,
         long nowTicks)
     {
         QuicConnectionPhase previousPhase = phase;
@@ -2942,6 +2988,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             requestId,
             streamId,
             streamData,
+            streamDataSuffix,
             actionKind == QuicConnectionStreamActionKind.Finish,
             ref effects);
 

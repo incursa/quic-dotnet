@@ -10,7 +10,7 @@ public sealed class QuicConnectionRuntimeShardWorkItemLayoutTests
     [Fact]
     public void LayoutRemainsCompact()
     {
-        Assert.Equal(128, Unsafe.SizeOf<QuicConnectionRuntimeShardWorkItem>());
+        Assert.Equal(144, Unsafe.SizeOf<QuicConnectionRuntimeShardWorkItem>());
     }
 
     [Theory]
@@ -73,6 +73,7 @@ public sealed class QuicConnectionRuntimeShardWorkItemLayoutTests
         Assert.Null(item.OwnedDatagramBuffer);
         Assert.Equal(0, item.RequestId);
         Assert.True(item.StreamData.IsEmpty);
+        Assert.True(item.StreamDataSuffix.IsEmpty);
     }
 
     [Fact]
@@ -104,6 +105,7 @@ public sealed class QuicConnectionRuntimeShardWorkItemLayoutTests
         Assert.Null(item.ConnectionEvent);
         Assert.Equal(0, item.RequestId);
         Assert.True(item.StreamData.IsEmpty);
+        Assert.True(item.StreamDataSuffix.IsEmpty);
     }
 
     [Fact]
@@ -116,13 +118,15 @@ public sealed class QuicConnectionRuntimeShardWorkItemLayoutTests
             long.MinValue,
             (QuicStreamType)byte.MaxValue);
         byte[] streamData = [4, 5, 6];
+        byte[] streamDataSuffix = [7, 8];
         QuicConnectionRuntimeShardWorkItem write = new QuicConnectionRuntimeShardWorkItem(
             new QuicConnectionHandle(8),
             runtime,
             long.MaxValue,
             QuicConnectionStreamActionKind.Write,
             ulong.MaxValue,
-            streamData) with
+            streamData,
+            streamDataSuffix) with
         {
             EnqueuedTimestamp = long.MaxValue - 1,
         };
@@ -135,6 +139,7 @@ public sealed class QuicConnectionRuntimeShardWorkItemLayoutTests
         Assert.Equal(QuicConnectionStreamActionKind.Write, write.StreamActionKind);
         Assert.Equal(ulong.MaxValue, write.StreamId);
         Assert.True(write.StreamData.Span.SequenceEqual(streamData));
+        Assert.True(write.StreamDataSuffix.Span.SequenceEqual(streamDataSuffix));
         Assert.Equal(long.MaxValue - 1, write.EnqueuedTimestamp);
         Assert.Equal(default, write.PacketReceived);
         Assert.Null(write.ConnectionEvent);

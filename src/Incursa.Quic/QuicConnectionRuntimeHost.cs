@@ -245,7 +245,8 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
         long requestId,
         QuicConnectionStreamActionKind actionKind,
         ulong streamId,
-        ReadOnlyMemory<byte> streamData)
+        ReadOnlyMemory<byte> streamData,
+        ReadOnlyMemory<byte> streamDataSuffix = default)
     {
         if (Volatile.Read(ref disposed) != 0)
         {
@@ -268,7 +269,8 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
             requestId,
             actionKind,
             streamId,
-            streamData);
+            streamData,
+            streamDataSuffix);
     }
 
     /// <summary>

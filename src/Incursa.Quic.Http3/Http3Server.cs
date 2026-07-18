@@ -2107,18 +2107,15 @@ public sealed class Http3Server : IAsyncDisposable
             {
                 int count = Math.Min(framePayloadSize, current.Length - offset);
                 byte[] dataFrameHeader = GetDataFrameHeader(count);
-                if (!await WriteFrameBytesAsync(stream, dataFrameHeader, cancellationToken).ConfigureAwait(false))
-                {
-                    return false;
-                }
-
                 int payloadOffset = 0;
                 while (payloadOffset < count)
                 {
                     int writeCount = Math.Min(ResponseWriteChunkSize, count - payloadOffset);
-                    if (!await stream.TryWriteAsync(
-                        current.Slice(offset + payloadOffset, writeCount),
-                        cancellationToken).ConfigureAwait(false))
+                    ReadOnlyMemory<byte> payload = current.Slice(offset + payloadOffset, writeCount);
+                    bool written = payloadOffset == 0
+                        ? await stream.TryWriteSequenceAsync(dataFrameHeader, payload, cancellationToken).ConfigureAwait(false)
+                        : await stream.TryWriteAsync(payload, cancellationToken).ConfigureAwait(false);
+                    if (!written)
                     {
                         return false;
                     }
