@@ -5463,3 +5463,60 @@ admission without an incremental reservation and atomic cancellation/terminal
 handoff design. That broader continuation design must also avoid the queue-depth
 and retained-buffer regressions already measured by the rejected reposting
 candidate; simply changing the admission size cannot safely close this gap.
+
+### Local-first diagnosis 2026-07-18: single-connection packet actor service ceiling
+
+A fresh uninstrumented loopback campaign compared Incursa with
+`System.Net.Quic` in the same process and campaign. It used one established
+connection, exact one-MiB payload validation, five samples per cell, and upload,
+download, and simultaneous duplex shapes at c1, c4, and c16. Every operation
+completed without a payload or protocol failure. Incursa remained competitive
+at c1, then stopped scaling on the single connection while `System.Net.Quic`
+continued to use the available host capacity:
+
+| Shape | Incursa c1/c4/c16 MiB/s | System.Net.Quic c1/c4/c16 MiB/s | Incursa/System.Net at c16 | Incursa/System.Net allocation at c16 |
+| --- | ---: | ---: | ---: | ---: |
+| upload | 37.16 / 28.21 / 22.87 | 30.86 / 210.98 / 139.22 | 0.16x | 25.18x |
+| download | 45.43 / 30.51 / 25.84 | 24.66 / 202.42 / 197.34 | 0.13x | 17.97x |
+| duplex | 43.24 / 40.29 / 29.53 | 44.53 / 237.67 / 230.97 | 0.13x | 22.09x |
+
+Incursa c16 p95 latency was 5.46x, 6.77x, and 7.45x the corresponding
+`System.Net.Quic` upload, download, and duplex result. The exact uninstrumented
+reports are
+`C:\shared\temp\quic-local-first-20260718\current-peer-1mb-upload-duplex-c1-c4-c16-r5.json`
+and
+`C:\shared\temp\quic-local-first-20260718\current-peer-1mb-download-c1-c4-c16-r5.json`.
+The existing multi-connection HTTP/3 control reached 218-234 MiB/s at 16
+connections, so this is not a process-wide thread-pool, socket-host, or machine
+ceiling. It is specific to many active streams sharing one connection actor.
+
+A diagnostic-only three-shape c16 repeat quantified the queue mechanism. On the
+active sender shard, packet-receive depth reached 649 for upload, 614 for
+download, and 636 for duplex. Packet p95 queue delay reached 32.78, 41.89, and
+36.26 ms, while individual packet service p95 was only 0.15, 0.09, and 0.14 ms.
+Stream-write p95 queue delay reached 29.88, 41.81, and 35.99 ms. The active
+shard processed 45,600-69,483 packet work items in a representative sample;
+thousands of individually cheap serialized transitions consume the actor and
+strand writes behind packet runs. Outstanding pooled storage simultaneously
+peaked at roughly 1,442-1,492 buffers in the 4 KiB-or-smaller bucket and up to
+45 buffers in the 64 KiB-or-smaller bucket. These instrumented timings are
+attribution only, not performance evidence. The report is
+`C:\shared\temp\quic-local-first-20260718\current-incursa-1mb-c16-attribution-r3.json`.
+
+A ten-second sampled-thread upload trace reproduced 22.43 MiB/s with exact
+validation. Runtime inbox consumption was the main active Incursa stack;
+application packet processing and synchronous datagram submission were the
+largest bounded components, but no single managed method was large enough to
+explain the 6-8x c16 peer gap. The trace and Speedscope conversion are under
+`C:\shared\temp\quic-local-first-20260718\cpu-upload-c16`.
+
+No runtime candidate was introduced and ProtocolLab was not run. The local
+inner loop now reproduces the decisive gap in minutes and supplies exact peer,
+queue, buffer, write-completion, and CPU evidence. Do not resume socket-wrapper,
+minor ACK-ledger, PMTU-timing, fixed burst, write-size, channel-publication, or
+send-flush variants already rejected above. The next runtime candidate must be
+a materially different design that can reduce the amount of serial actor work
+per received packet or the number of packet transitions by enough to explain a
+substantial fraction of the peer gap, while preserving prompt application-send
+progress, packet ordering, ACK deadlines, recovery, flow control, cancellation,
+and bounded memory.
