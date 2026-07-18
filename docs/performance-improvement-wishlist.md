@@ -4773,3 +4773,50 @@ reverted and ProtocolLab was not run. Frozen binaries and all four JSON reports
 are retained under `C:\shared\temp\quic-http3-write32k-20260718`. Do not retry
 larger HTTP/3 response write or DATA-frame boundaries without new attribution
 that explains the fixed-response regression and predicts a broader gain.
+
+### Rejected 2026-07-18: Windows UDP segmentation for listener send batches
+
+The saturated c16 one-MiB duplex CPU trace attributed about 4.87 seconds to
+`QuicListenerHost.SendDatagram`, including about 2.46 seconds in native socket
+send and 1.96 seconds in GC polling. A standalone exact Windows loopback probe
+combined four 1472-byte payloads with `UDP_SEND_MSG_SIZE` and reduced median
+sender time from 180.35 ms to 105.58 ms (-41.5%) across seven interleaved
+repetitions. All 140,000 measured datagrams preserved exact length and order.
+This was materially different from the rejected Linux `sendmmsg` path because
+it used one buffer and one socket call without native per-datagram allocation.
+
+A bounded QUIC candidate added a synchronous contiguous send-batch observer
+that retained detached packet owners until callback completion. The Windows
+IPv4 listener combined only consecutive same-path, same-ECN, exact-1472-byte
+datagrams, up to the UDP payload limit. Custom senders, Linux packet-info,
+IPv6-sized packets, mixed runs, and singleton sends retained the existing path.
+The build had zero warnings; ten focused socket and pooled-owner tests and ten
+large, concurrent, upload, and System.Net.Quic HTTP/3 tests passed.
+
+Frozen A/B/B/A executables then ran exact one-MiB fixed, streaming, and duplex
+workloads at c1, c4, and c16. Five samples per pass produced ten samples per
+variant and lane. All 180 samples passed payload, content-length, EOF, and
+protocol validation:
+
+| Lane | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| fixed c1 | 47.41 | 46.73 | -1.4% | +2.6% | -3.9% |
+| fixed c4 | 46.55 | 47.07 | +1.1% | -1.9% | +0.1% |
+| fixed c16 | 42.91 | 42.54 | -0.9% | +0.7% | +1.8% |
+| streaming c1 | 43.46 | 43.01 | -1.0% | +1.2% | +2.5% |
+| streaming c4 | 43.78 | 42.99 | -1.8% | -1.7% | +5.7% |
+| streaming c16 | 40.44 | 40.68 | +0.6% | -0.9% | +2.5% |
+| duplex c1 | 54.74 | 54.97 | +0.4% | +0.8% | +0.3% |
+| duplex c4 | 55.23 | 55.31 | +0.1% | +1.5% | +7.0% |
+| duplex c16 | 52.31 | 51.65 | -1.3% | +4.0% | +19.0% |
+
+The socket-only gain did not translate to HTTP/3, and duplex c16 allocation
+rose materially. Real transitions likely expose too few compatible consecutive
+datagrams to offset the pooled concatenation buffer and full payload copy. The
+candidate was reverted and ProtocolLab was not run. Frozen executables, all
+four JSON reports, logs, hashes, and the design record are retained under
+`C:\shared\temp\quic-http3-windows-udp-segmentation-20260718`; the standalone
+probe is under `C:\shared\temp\udp-segmentation-probe-20260718`. Do not repeat
+listener-level datagram aggregation without evidence of materially larger
+compatible runs and a zero-copy lifetime design. Reassess above the socket-send
+layer for a broader HTTP/3 mechanism.
