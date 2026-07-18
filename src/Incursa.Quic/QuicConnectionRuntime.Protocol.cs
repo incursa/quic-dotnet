@@ -3032,6 +3032,10 @@ internal sealed partial class QuicConnectionRuntime
         ulong sentAtMicros,
         bool ackOnlyPacket)
     {
+        QuicMetrics.RecordApplicationAckSent(
+            tlsState.Role,
+            ackOnlyPacket,
+            applicationSendQueue.Count);
         applicationAckState.MarkAckFrameSent(
             sendRuntime.FlowController,
             ackFrame,

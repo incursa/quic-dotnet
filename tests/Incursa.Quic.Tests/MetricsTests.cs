@@ -321,6 +321,69 @@ public class MetricsTests
 
     [Fact]
     [Requirement("REQ-QUIC-CRT-0155")]
+    public void ApplicationAckMetricsClassifyStandaloneAndPiggybackedSends()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+
+        QuicMetrics.RecordApplicationAckSent(
+            QuicTlsRole.Server,
+            ackOnlyPacket: true,
+            queuedApplicationWrites: 3);
+        QuicMetrics.RecordApplicationAckSent(
+            QuicTlsRole.Client,
+            ackOnlyPacket: false,
+            queuedApplicationWrites: 0);
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_ack.sends"
+            && measurement.Value == 1
+            && measurement.HasTag("role", "server")
+            && measurement.HasTag("packet_kind", "standalone")
+            && measurement.HasTag("queued_application_data", "present"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_ack.queued_writes"
+            && measurement.Value == 3
+            && measurement.HasTag("packet_kind", "standalone"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_ack.sends"
+            && measurement.Value == 1
+            && measurement.HasTag("role", "client")
+            && measurement.HasTag("packet_kind", "piggybacked")
+            && measurement.HasTag("queued_application_data", "empty"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public async Task ApplicationAckMetricsObserveRuntimePiggybackedSend()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+        using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            _ = runtime.Transition(connectionEvent);
+            return true;
+        });
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        QuicS13AckPiggybackTestSupport.RecordPendingApplicationAck(
+            runtime,
+            packetNumber: 9,
+            receivedAtMicros: 10);
+
+        byte[] streamData = Enumerable.Range(0, 40).Select(static value => (byte)value).ToArray();
+        await stream.WriteAsync(streamData, 0, streamData.Length);
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_ack.sends"
+            && measurement.Value == 1
+            && measurement.HasTag("role", "client")
+            && measurement.HasTag("packet_kind", "piggybacked")
+            && measurement.HasTag("queued_application_data", "empty"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
     public async Task QuicRuntimeShardMetricsEmitBoundedTagsForEnqueueAndDequeue()
     {
         using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);

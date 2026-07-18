@@ -4657,3 +4657,61 @@ new attribution. Two distinct bounded flush-progression designs have now
 failed the local gate. Reassess the broader end-to-end HTTP/3 traces for a
 cross-layer queue, copy, write-completion, or API-usage mechanism before
 changing raw send progression again.
+
+### Diagnosed 2026-07-18: current HTTP/3 upload and duplex allocation paths
+
+Fresh post-PMTU EventPipe traces used the current accepted runtime rather than
+the superseded response-cache and buffered-request candidates. Exact one-MiB
+c16 upload completed 276 requests with zero failures. Its dominant sampled
+allocation was the one exact owned request-body array created by
+`ReadBufferedRequestAsync`; that copy is required by the durable
+`Http3Request.Body` lifetime, while the high-throughput streaming handler used
+by ProtocolLab bypasses it. Pooling or removing that copy without changing the
+public ownership contract is not a valid candidate. Evidence is under
+`C:\shared\temp\quic-http3-current-upload-20260718`; the nettrace SHA-256 is
+`63887582b83d9abb23ed17b760b7ae922955b1d23206754286bebab23ac3f21d`.
+
+Exact one-MiB c16 duplex completed 128 requests with zero failures. Its largest
+sampled runtime stack was 84.54 MB of frequent small ACK-only ownership copies
+in `TryProtectAndAccountApplicationPayload`, reached from
+`TrySendPendingApplicationAck`. This confirms the broader-workload mechanism
+after the PMTU change without repeating the rejected hosted ACK-owner design.
+Evidence is under `C:\shared\temp\quic-http3-current-duplex-20260718`; the
+nettrace SHA-256 is
+`d3ae513d075572428998d8dc182c9788eff8897168cf7e70da0af2e9dda9ea8e`.
+
+Diagnostic-only runtime metrics now classify application ACK sends as
+standalone or piggybacked and record queued application-write depth at emission.
+The instruments exit before tag construction when disabled. A five-second c16
+duplex sample recorded 39,288 standalone ACKs, including 12,127 emitted while
+application data was already queued (median queue depth 2, p95 9), and 12,153
+piggybacked ACKs. The baseline diagnostics are retained under
+`C:\shared\temp\quic-http3-ack-policy-20260718`.
+
+### Rejected 2026-07-18: prefer one queued DATA packet when an ACK is due
+
+A reversible policy candidate used one existing queued application send to
+carry a due ACK before falling back to a standalone ACK-only packet. It kept the
+ACK deadline, congestion and amplification checks, retransmission priority, and
+the one-datagram local bound. It did not transfer ACK buffer ownership or change
+the rejected timer continuation. Focused ACK, RFC 9000 piggyback, send-delay,
+and metrics tests passed 35/35.
+
+The focused A/B/B/A c16 one-MiB duplex campaign used separate baseline and
+candidate assemblies and ten exact samples per variant. All samples passed:
+
+| Variant | Median MiB/s | Range MiB/s | CV | Median p95 ms | Median allocated B/request |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| baseline | 52.11 | 37.45-54.46 | 12.54% | 709.87 | 956,052 |
+| candidate | 53.38 | 38.73-54.58 | 11.50% | 692.61 | 953,642 |
+
+The candidate improved median throughput 2.4%, p95 2.4%, and allocation 0.25%,
+which is below the local promotion gate. A diagnostic candidate run confirmed
+the mechanism: standalone ACKs emitted with queued data fell from 12,127 to
+zero, while piggybacked ACKs with queued data rose from 11,989 to 15,659. The
+policy change and its test were reverted. ProtocolLab was not run.
+
+Evidence, frozen assemblies, hashes, candidate diff, diagnostics, transcripts,
+per-pass JSON, and aggregate statistics are retained under
+`C:\shared\temp\quic-http3-ack-policy-20260718`. Do not repeat minor standalone
+ACK scheduling variants without a mechanism likely to exceed the local gate.

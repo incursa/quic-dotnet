@@ -198,6 +198,8 @@ internal static class QuicMetrics
     private static readonly Histogram<long> ApplicationSendRecoveryFlushedDatagrams = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.recovery.flushed.datagrams", unit: "datagrams");
     private static readonly Histogram<long> ApplicationSendRecoveryQueueBefore = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.recovery.queue.before", unit: "writes");
     private static readonly Histogram<long> ApplicationSendRecoveryQueueAfter = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.recovery.queue.after", unit: "writes");
+    private static readonly Counter<long> ApplicationAckSends = Meter.CreateCounter<long>("incursa.quic.runtime.application_ack.sends", unit: "packets");
+    private static readonly Histogram<long> ApplicationAckQueuedWrites = Meter.CreateHistogram<long>("incursa.quic.runtime.application_ack.queued_writes", unit: "writes");
     private static readonly Counter<long> RuntimeDetectedPacketLosses = Meter.CreateCounter<long>("incursa.quic.runtime.losses.detected", unit: "packets");
     private static readonly Histogram<double> StreamWriteCompletion = Meter.CreateHistogram<double>("incursa.quic.runtime.stream_write.completion.ms", unit: "ms");
     private static readonly long[] BufferPoolRentCounts = new long[BufferPoolBucketCount];
@@ -643,6 +645,24 @@ internal static class QuicMetrics
             QuicSendPolicyBlockedReason.InvalidQueuedApplicationSend => "invalid_queued_application_send",
             _ => throw new ArgumentOutOfRangeException(nameof(blockedReason)),
         };
+
+    internal static void RecordApplicationAckSent(
+        QuicTlsRole role,
+        bool ackOnlyPacket,
+        int queuedApplicationWrites)
+    {
+        if (!ApplicationAckSends.Enabled && !ApplicationAckQueuedWrites.Enabled)
+        {
+            return;
+        }
+
+        TagList tags = default;
+        tags.Add("role", GetRoleTag(role));
+        tags.Add("packet_kind", ackOnlyPacket ? "standalone" : "piggybacked");
+        tags.Add("queued_application_data", queuedApplicationWrites > 0 ? "present" : "empty");
+        ApplicationAckSends.Add(1, in tags);
+        ApplicationAckQueuedWrites.Record(Math.Max(0, queuedApplicationWrites), in tags);
+    }
 
     private static ulong ComputeAvailableSendBytes(QuicSendPolicySnapshot snapshot)
     {
