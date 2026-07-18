@@ -12,6 +12,7 @@ public sealed class Http3ServerResponse
 {
     private const int MinimumStatusCode = 100;
     private const int MaximumStatusCode = 999;
+    private readonly object cacheGate = new();
     private byte[]? cachedHeadersFrame;
     private byte[]? cachedSingleDataFrame;
     private byte[]? cachedCompleteResponseFrame;
@@ -184,6 +185,8 @@ public sealed class Http3ServerResponse
     public bool CloseConnectionAfterResponse { get; }
 
     internal bool CacheEncodedHeaders { get; }
+
+    internal object CacheGate => cacheGate;
 
     internal byte[]? GetCachedHeadersFrame() => Volatile.Read(ref cachedHeadersFrame);
 

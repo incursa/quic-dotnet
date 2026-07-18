@@ -120,6 +120,33 @@ cost can be separated from runtime completion cost. Treat the phase output as
 diagnostic attribution for choosing the next code-review target, not as a
 standalone performance claim.
 
+## Local HTTP/3 Loopback
+
+Use the local HTTP/3 harness for repeated end-to-end development measurements
+before escalating a candidate to ProtocolLab:
+
+```powershell
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- `
+  --http3-loopback `
+  --payload-sizes 65536,1048576 `
+  --concurrency 1,4,16 `
+  --samples 5 `
+  --duration-seconds 3 `
+  --warmup-seconds 1 `
+  --label candidate `
+  --json .artifacts/perf/http3-local/candidate.json
+```
+
+Certificate generation, listener startup, and connection warmup are outside
+measured samples. Every response must use exact HTTP/3, declare the expected
+content length, and match every expected payload byte. The JSON report includes
+per-sample throughput, request rate, p50/p95/p99 latency, process-wide managed
+allocation, collection counts, median/range, and coefficient of variation.
+The client and server share one process and host, so use the harness for rapid
+A/B development evidence rather than isolated-hardware or peer claims. When
+separate source roots are required, build each benchmark binary and run them in
+an interleaved A/B/B/A order before comparing results.
+
 ## Black-Box External Lane
 
 For public cross-implementation work, use an external client-driven benchmark

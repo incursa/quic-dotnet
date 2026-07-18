@@ -276,6 +276,64 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    public async Task ImmutableLargeResponse_CachesCompleteSerializedFrameSequence()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        byte[] body = CreateDeterministicBytes(65_536);
+        Http3ServerResponse serverResponse = Http3ServerResponse.CreateFromImmutableBody(
+            200,
+            body,
+            [new QPackFieldLine("content-length", body.Length.ToString())]);
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            new FixedResponseHandler(serverResponse));
+
+        Task<Http3Response>[] responseTasks = Enumerable.Range(0, 8)
+            .Select(index => context.GetAsync($"/large?request={index}").AsTask())
+            .ToArray();
+        Http3Response[] responses = await Task.WhenAll(responseTasks);
+        byte[]? firstCachedFrame = serverResponse.GetCachedCompleteResponseFrame();
+
+        Assert.All(responses, response =>
+        {
+            Assert.Equal(body, response.Body);
+            Assert.True(response.StreamCompleted);
+        });
+        Assert.NotNull(firstCachedFrame);
+        Assert.True(firstCachedFrame.Length > body.Length);
+
+        Http3Response laterResponse = await context.GetAsync("/large?request=later");
+        Assert.Equal(body, laterResponse.Body);
+        Assert.Same(firstCachedFrame, serverResponse.GetCachedCompleteResponseFrame());
+    }
+
+    [Fact]
+    public async Task ImmutableResponseAboveCompleteCacheLimit_RemainsUncached()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        byte[] body = CreateDeterministicBytes((2 * 1024 * 1024) + 1);
+        Http3ServerResponse serverResponse = Http3ServerResponse.CreateFromImmutableBody(
+            200,
+            body,
+            [new QPackFieldLine("content-length", body.Length.ToString())]);
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            new FixedResponseHandler(serverResponse));
+
+        Http3Response response = await context.GetAsync("/large");
+
+        Assert.Equal(body, response.Body);
+        Assert.True(response.StreamCompleted);
+        Assert.Null(serverResponse.GetCachedCompleteResponseFrame());
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9114-S9-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -3279,6 +3337,18 @@ public sealed class Http3MinimalServerTests
         {
             Body = request.Body.ToArray();
             return ValueTask.FromResult(new Http3ServerResponse(200, "ok"u8.ToArray()));
+        }
+    }
+
+    private sealed class FixedResponseHandler(Http3ServerResponse response) : IHttp3RequestHandler
+    {
+        public ValueTask<Http3ServerResponse> HandleAsync(
+            Http3Request request,
+            CancellationToken cancellationToken = default)
+        {
+            _ = request;
+            cancellationToken.ThrowIfCancellationRequested();
+            return ValueTask.FromResult(response);
         }
     }
 

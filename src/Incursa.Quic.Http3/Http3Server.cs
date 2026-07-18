@@ -24,6 +24,7 @@ public sealed class Http3Server : IAsyncDisposable
     // frame payload is submitted without four separate transport writes.
     private const int ResponseDataFrameChunkSize = 16 * 1024;
     private const int ResponseWriteChunkSize = ResponseDataFrameChunkSize;
+    private const int MaximumCachedCompleteResponseBytes = 2 * 1024 * 1024;
     private const int FieldSectionRequiredInsertCountPrefixBits = 8;
     private const int FieldSectionBasePrefixBits = 7;
     private const int MaxWebSocketControlPayloadLength = 125;
@@ -1918,12 +1919,12 @@ public sealed class Http3Server : IAsyncDisposable
             return false;
         }
 
-        int framePayloadSize = response.DataFramePayloadSize ?? ResponseDataFrameChunkSize;
-        if (!CanCacheSingleResponseDataFrame(response, framePayloadSize))
+        if (!response.CacheEncodedHeaders)
         {
             return false;
         }
 
+        int framePayloadSize = response.DataFramePayloadSize ?? ResponseDataFrameChunkSize;
         byte[]? cachedFrame = response.GetCachedCompleteResponseFrame();
         if (cachedFrame is not null)
         {
@@ -1931,18 +1932,54 @@ public sealed class Http3Server : IAsyncDisposable
             return true;
         }
 
-        byte[] dataFrame = response.GetCachedSingleDataFrame()
-            ?? response.CacheSingleDataFrame(Http3FrameWriter.WriteData(response.Body.Span));
-        if (headersFrame.Length > ResponseWriteChunkSize - dataFrame.Length)
+        int completeResponseLength = headersFrame.Length;
+        int bodyOffset = 0;
+        while (bodyOffset < response.Body.Length)
         {
-            return false;
+            int payloadLength = Math.Min(framePayloadSize, response.Body.Length - bodyOffset);
+            completeResponseLength = checked(
+                completeResponseLength
+                + Http3FrameWriter.GetFrameLength((ulong)Http3FrameType.Data, payloadLength));
+            if (completeResponseLength > MaximumCachedCompleteResponseBytes)
+            {
+                return false;
+            }
+
+            bodyOffset += payloadLength;
         }
 
-        byte[] combinedFrame = GC.AllocateUninitializedArray<byte>(headersFrame.Length + dataFrame.Length);
-        headersFrame.CopyTo(combinedFrame, 0);
-        dataFrame.CopyTo(combinedFrame, headersFrame.Length);
-        completeResponseFrame = response.CacheCompleteResponseFrame(combinedFrame);
-        return true;
+        lock (response.CacheGate)
+        {
+            cachedFrame = response.GetCachedCompleteResponseFrame();
+            if (cachedFrame is not null)
+            {
+                completeResponseFrame = cachedFrame;
+                return true;
+            }
+
+            byte[] combinedFrame = GC.AllocateUninitializedArray<byte>(completeResponseLength);
+            headersFrame.CopyTo(combinedFrame, 0);
+            int destinationOffset = headersFrame.Length;
+            bodyOffset = 0;
+            while (bodyOffset < response.Body.Length)
+            {
+                int payloadLength = Math.Min(framePayloadSize, response.Body.Length - bodyOffset);
+                byte[] dataFrameHeader = GetDataFrameHeader(payloadLength);
+                dataFrameHeader.CopyTo(combinedFrame, destinationOffset);
+                destinationOffset += dataFrameHeader.Length;
+                response.Body.Span.Slice(bodyOffset, payloadLength).CopyTo(combinedFrame.AsSpan(destinationOffset));
+                destinationOffset += payloadLength;
+                bodyOffset += payloadLength;
+            }
+
+            if (destinationOffset != combinedFrame.Length)
+            {
+                throw new InvalidOperationException("The cached HTTP/3 response length did not match the serialized frame sequence.");
+            }
+
+            completeResponseFrame = response.CacheCompleteResponseFrame(combinedFrame);
+            return true;
+        }
     }
 
     private async ValueTask<bool> WriteTunnelResponseHeadersAsync(

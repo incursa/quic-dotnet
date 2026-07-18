@@ -4051,3 +4051,60 @@ Trace and negative evidence are retained under
 `diagnostic-h3-ipv6loopback-c16-r5-direct-package-cell`, and
 `negative-results` directories. These are shared-host diagnostics. Nothing was
 deployed or published.
+
+### Accepted 2026-07-17: cache bounded immutable HTTP/3 response frame sequences
+
+The c16 one-MiB HTTP/3 trace showed paired small header writes and 16 KiB DATA
+payload writes contributing separate stream actions, queue entries, and retained
+buffers for every response frame. Immutable fixed responses already cached their
+encoded headers and, for tiny bodies, one complete HEADERS-plus-DATA sequence.
+The accepted change extends that existing ownership contract to cache the full
+serialized HEADERS and DATA frame sequence for immutable fixed responses up to
+2 MiB. Later requests submit bounded 16 KiB slices from that reusable sequence
+without rebuilding every DATA header or copying the immutable body into fresh
+frame arrays. Dynamic and streaming responses retain their existing behavior.
+
+The cache has an explicit 2 MiB cap and a per-response construction gate.
+Responses above the cap remain uncached, and immutable-body ownership is still
+required. HTTP/3 frame boundaries, diagnostics, cancellation, final-write
+semantics, content length, payload bytes, and FIN behavior are unchanged.
+
+The development loop was moved to a new repo-local exact HTTP/3 harness rather
+than continuing speculative ProtocolLab runs. It keeps certificate generation,
+server startup, and warmup outside measured samples; validates exact HTTP/3,
+content length, and every response byte; and reports five repeated samples for
+64 KiB and one-MiB payloads at c1, c4, and c16. Separate baseline and candidate
+binaries were run in A/B/B/A order. Combining ten samples per variant produced:
+
+| Payload / concurrency | Baseline MiB/s | Candidate MiB/s | Throughput delta | Baseline/Candidate CV | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 64 KiB / c1 | 41.18 | 47.58 | +15.5% | 20.0% / 18.9% | -11.4% | -14.1% |
+| 64 KiB / c4 | 49.17 | 51.52 | +4.8% | 1.9% / 1.9% | -5.5% | -13.7% |
+| 64 KiB / c16 | 46.30 | 47.09 | +1.7% | 2.8% / 5.1% | +4.2% | -13.4% |
+| 1 MiB / c1 | 50.96 | 54.82 | +7.6% | 6.9% / 2.2% | -8.8% | -13.8% |
+| 1 MiB / c4 | 53.30 | 53.15 | -0.3% | 1.3% / 5.8% | +1.6% | -21.0% |
+| 1 MiB / c16 | 47.27 | 50.53 | +6.9% | 3.7% / 2.7% | -9.1% | -16.9% |
+
+All 120 measured samples completed with zero failures. The noisy 64 KiB c1 row
+is retained but not used alone as an acceptance claim. The stable rows show no
+control regression beyond 5%, while the candidate reduces allocation in every
+shape and meets the 20% allocation gate at one-MiB c4 without a timing
+regression. The duplicate candidate passes differed by only 0.6-3.5% at c4/c16.
+
+Earlier source-verified focused ProtocolLab candidate runs under
+`C:\shared\temp\pl-h3-peer-current-20260717` also passed exact validation with
+zero failures or timeouts and were directionally positive, but their detached
+baseline changed from roughly 48 to 34 MiB/s during one campaign. Those lab
+numbers are retained as shared-host confirmation and variance evidence, not as
+the primary effect-size claim. A final c1 baseline that was already running when
+the workflow changed completed cleanly; its candidate counterpart was
+intentionally not launched.
+
+The new cache concurrency, upper-bound, repeated large-response, and native
+System.Net HTTP/3 concurrency tests passed 5/5. The full Release solution
+completed with 9,623 passing tests, five skips, and one previously documented
+incomplete-content close-observation timeout; that exact test then passed 5/5. Local
+A/B artifacts are retained under
+`C:\shared\temp\quic-http3-local-cache-20260717`. The local harness is a
+same-process development surface, not isolated peer evidence. Nothing was
+deployed or published.
