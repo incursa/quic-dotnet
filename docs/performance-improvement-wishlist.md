@@ -4108,3 +4108,20 @@ A/B artifacts are retained under
 `C:\shared\temp\quic-http3-local-cache-20260717`. The local harness is a
 same-process development surface, not isolated peer evidence. Nothing was
 deployed or published.
+
+### Local-first workflow 2026-07-17: cover broad HTTP/3 workload shapes
+
+The repo-local exact loopback harness now covers fixed downloads, streaming
+downloads, buffered uploads, and simultaneous streaming request/response echo.
+It supports 1 KiB, 64 KiB, and one-MiB payloads plus c1/c4/c16 development
+shapes without ProtocolLab orchestration. Upload handlers validate every request
+byte, all clients validate exact HTTP/3, content length, and response bytes, and
+duplex throughput accounts for both directions.
+
+A 64 KiB c1 smoke completed every workload with zero failures. The single
+diagnostic sample reported about 16-22 KiB allocated per request for fixed,
+streaming, and duplex, but about 390 KiB per buffered upload plus 22 gen2
+collections in one second. That one-second sample is not a performance claim;
+it selects buffered upload for the next local allocation/exception trace before
+any runtime candidate is proposed. ProtocolLab remains reserved for confirming
+candidates that first pass the local gate.

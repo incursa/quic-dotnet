@@ -23,6 +23,8 @@ namespace Incursa.Quic.Benchmarks;
 [SupportedOSPlatform("macos")]
 internal static class Http3LoopbackPerformanceHarness
 {
+    private const int StreamingChunkSize = 16 * 1024;
+    private static readonly byte[] UploadResponseBody = "ok"u8.ToArray();
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
         WriteIndented = true,
@@ -70,31 +72,32 @@ internal static class Http3LoopbackPerformanceHarness
         foreach (int payloadSize in options.PayloadSizes)
         {
             byte[] expectedBody = CreateDeterministicBytes(payloadSize);
-            await using LoopbackServer server = await LoopbackServer.StartAsync(expectedBody).ConfigureAwait(false);
-
-            foreach (int concurrency in options.ConcurrencyLevels)
+            foreach (ScenarioKind scenario in options.Scenarios)
             {
-                await RunSampleAsync(
-                    server,
-                    expectedBody,
-                    concurrency,
-                    TimeSpan.FromSeconds(options.WarmupSeconds),
-                    collectMetrics: false).ConfigureAwait(false);
+                await using LoopbackServer server = await LoopbackServer.StartAsync(scenario, expectedBody).ConfigureAwait(false);
 
-                List<SampleResult> samples = new(options.Samples);
-                for (int sampleIndex = 0; sampleIndex < options.Samples; sampleIndex++)
+                foreach (int concurrency in options.ConcurrencyLevels)
                 {
-                    GC.Collect(2, GCCollectionMode.Forced, blocking: true, compacting: false);
-                    GC.WaitForPendingFinalizers();
-                    samples.Add(await RunSampleAsync(
+                    await RunSampleAsync(
                         server,
-                        expectedBody,
                         concurrency,
-                        TimeSpan.FromSeconds(options.DurationSeconds),
-                        collectMetrics: true).ConfigureAwait(false));
-                }
+                        TimeSpan.FromSeconds(options.WarmupSeconds),
+                        collectMetrics: false).ConfigureAwait(false);
 
-                results.Add(Summarize(payloadSize, concurrency, samples));
+                    List<SampleResult> samples = new(options.Samples);
+                    for (int sampleIndex = 0; sampleIndex < options.Samples; sampleIndex++)
+                    {
+                        GC.Collect(2, GCCollectionMode.Forced, blocking: true, compacting: false);
+                        GC.WaitForPendingFinalizers();
+                        samples.Add(await RunSampleAsync(
+                            server,
+                            concurrency,
+                            TimeSpan.FromSeconds(options.DurationSeconds),
+                            collectMetrics: true).ConfigureAwait(false));
+                    }
+
+                    results.Add(Summarize(scenario, payloadSize, concurrency, samples));
+                }
             }
         }
 
@@ -113,7 +116,6 @@ internal static class Http3LoopbackPerformanceHarness
 
     private static async Task<SampleResult> RunSampleAsync(
         LoopbackServer server,
-        byte[] expectedBody,
         int concurrency,
         TimeSpan duration,
         bool collectMetrics)
@@ -128,7 +130,7 @@ internal static class Http3LoopbackPerformanceHarness
         Task<WorkerResult>[] workers = new Task<WorkerResult>[concurrency];
         for (int workerIndex = 0; workerIndex < workers.Length; workerIndex++)
         {
-            workers[workerIndex] = RunWorkerAsync(server, expectedBody, deadline);
+            workers[workerIndex] = RunWorkerAsync(server, deadline);
         }
 
         WorkerResult[] workerResults = await Task.WhenAll(workers).ConfigureAwait(false);
@@ -140,7 +142,7 @@ internal static class Http3LoopbackPerformanceHarness
         double[] latencies = workerResults.SelectMany(static item => item.LatenciesMilliseconds).ToArray();
         Array.Sort(latencies);
         double elapsedSeconds = elapsed.TotalSeconds;
-        double throughputBytesPerSecond = requests * (double)expectedBody.Length / elapsedSeconds;
+        double throughputBytesPerSecond = requests * (double)server.TransferredBytesPerRequest / elapsedSeconds;
 
         return new SampleResult(
             Requests: requests,
@@ -161,10 +163,9 @@ internal static class Http3LoopbackPerformanceHarness
 
     private static async Task<WorkerResult> RunWorkerAsync(
         LoopbackServer server,
-        byte[] expectedBody,
         long deadline)
     {
-        byte[] receivedBody = GC.AllocateUninitializedArray<byte>(expectedBody.Length);
+        byte[] receivedBody = GC.AllocateUninitializedArray<byte>(server.ExpectedResponseBody.Length);
         List<double> latencies = new(capacity: 1024);
         int requests = 0;
         int failures = 0;
@@ -174,11 +175,16 @@ internal static class Http3LoopbackPerformanceHarness
             long requestStarted = Stopwatch.GetTimestamp();
             try
             {
-                using HttpRequestMessage request = new(HttpMethod.Get, server.RequestUri)
+                using HttpRequestMessage request = new(server.Method, server.RequestUri)
                 {
                     Version = HttpVersion.Version30,
                     VersionPolicy = HttpVersionPolicy.RequestVersionExact,
                 };
+                if (server.RequestBody is not null)
+                {
+                    request.Content = new ByteArrayContent(server.RequestBody);
+                }
+
                 using HttpResponseMessage response = await server.Client.SendAsync(
                     request,
                     HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
@@ -189,7 +195,7 @@ internal static class Http3LoopbackPerformanceHarness
                         $"Unexpected response status/version: {(int)response.StatusCode}/{response.Version}.");
                 }
 
-                if (response.Content.Headers.ContentLength != expectedBody.Length)
+                if (response.Content.Headers.ContentLength != server.ExpectedResponseBody.Length)
                 {
                     throw new InvalidOperationException(
                         $"Unexpected content length: {response.Content.Headers.ContentLength}.");
@@ -202,7 +208,7 @@ internal static class Http3LoopbackPerformanceHarness
                     throw new InvalidOperationException("The response exceeded its declared content length.");
                 }
 
-                if (!receivedBody.AsSpan().SequenceEqual(expectedBody))
+                if (!receivedBody.AsSpan().SequenceEqual(server.ExpectedResponseBody))
                 {
                     throw new InvalidOperationException("The response payload did not match the expected bytes.");
                 }
@@ -239,7 +245,11 @@ internal static class Http3LoopbackPerformanceHarness
         }
     }
 
-    private static ShapeResult Summarize(int payloadSize, int concurrency, List<SampleResult> samples)
+    private static ShapeResult Summarize(
+        ScenarioKind scenario,
+        int payloadSize,
+        int concurrency,
+        List<SampleResult> samples)
     {
         double[] throughputs = samples.Select(static item => item.ThroughputMebibytesPerSecond).Order().ToArray();
         double mean = throughputs.Average();
@@ -248,6 +258,7 @@ internal static class Http3LoopbackPerformanceHarness
         int failures = samples.Sum(static item => item.Failures);
 
         return new ShapeResult(
+            Scenario: GetScenarioName(scenario),
             PayloadSizeBytes: payloadSize,
             Concurrency: concurrency,
             MedianThroughputMebibytesPerSecond: Percentile(throughputs, 0.50),
@@ -287,20 +298,26 @@ internal static class Http3LoopbackPerformanceHarness
     private static void WriteUsage()
     {
         Console.Error.WriteLine(
-            "Usage: --http3-loopback [--payload-sizes 65536,1048576] [--concurrency 1,4,16] " +
+            "Usage: --http3-loopback [--scenarios fixed,streaming,upload,duplex] " +
+            "[--payload-sizes 1024,65536,1048576] [--concurrency 1,4,16] " +
             "[--samples 5] [--duration-seconds 3] [--warmup-seconds 1] [--label name] [--json path]");
     }
+
+    private static string GetScenarioName(ScenarioKind scenario) => scenario switch
+    {
+        ScenarioKind.FixedDownload => "fixed",
+        ScenarioKind.StreamingDownload => "streaming",
+        ScenarioKind.Upload => "upload",
+        ScenarioKind.Duplex => "duplex",
+        _ => throw new ArgumentOutOfRangeException(nameof(scenario)),
+    };
 
     private sealed class FixedBodyHandler(byte[] body) : IHttp3RequestHandler
     {
         private readonly Http3ServerResponse response = Http3ServerResponse.CreateFromImmutableBodyAndHeaders(
             200,
             body,
-            [
-                new QPackFieldLine("content-type", "application/octet-stream"),
-                new QPackFieldLine("content-length", body.Length.ToString(CultureInfo.InvariantCulture)),
-                new QPackFieldLine("server", "Incursa.Quic.Http3"),
-            ]);
+            BuildBinaryHeaders(body.Length));
 
         public ValueTask<Http3ServerResponse> HandleAsync(
             Http3Request request,
@@ -309,6 +326,101 @@ internal static class Http3LoopbackPerformanceHarness
             _ = request;
             cancellationToken.ThrowIfCancellationRequested();
             return ValueTask.FromResult(response);
+        }
+    }
+
+    private sealed class StreamingBodyHandler(byte[] body) : IHttp3RequestHandler
+    {
+        public ValueTask<Http3ServerResponse> HandleAsync(
+            Http3Request request,
+            CancellationToken cancellationToken = default)
+        {
+            _ = request;
+            cancellationToken.ThrowIfCancellationRequested();
+            return ValueTask.FromResult(Http3ServerResponse.CreateStreaming(
+                200,
+                StreamBodyAsync(body, cancellationToken),
+                BuildBinaryHeaders(body.Length),
+                dataFramePayloadSize: StreamingChunkSize));
+        }
+    }
+
+    private sealed class UploadHandler(byte[] expectedBody) : IHttp3RequestHandler
+    {
+        private readonly Http3ServerResponse response = Http3ServerResponse.CreateFromImmutableBodyAndHeaders(
+            200,
+            UploadResponseBody,
+            BuildBinaryHeaders(UploadResponseBody.Length));
+
+        public ValueTask<Http3ServerResponse> HandleAsync(
+            Http3Request request,
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!request.Body.Span.SequenceEqual(expectedBody))
+            {
+                throw new InvalidOperationException("The uploaded request body did not match the expected bytes.");
+            }
+
+            return ValueTask.FromResult(response);
+        }
+    }
+
+    private sealed class DuplexHandler : IHttp3RequestHandler, IHttp3StreamingRequestHandler
+    {
+        public bool CanHandleStreaming(Http3StreamingRequest request)
+            => request.Path == "/duplex";
+
+        public bool RetainStreamingRequestBodyChunks(Http3StreamingRequest request)
+            => false;
+
+        public ValueTask<Http3ServerResponse> HandleAsync(
+            Http3Request request,
+            CancellationToken cancellationToken = default)
+            => throw new InvalidOperationException("The duplex workload must use the streaming request path.");
+
+        public ValueTask<Http3ServerResponse> HandleStreamingAsync(
+            Http3StreamingRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            int contentLength = int.Parse(
+                request.Headers.First(static header => header.Name == "content-length").Value,
+                NumberStyles.None,
+                CultureInfo.InvariantCulture);
+            return ValueTask.FromResult(Http3ServerResponse.CreateStreaming(
+                200,
+                EchoBodyAsync(request.Body, cancellationToken),
+                BuildBinaryHeaders(contentLength),
+                dataFramePayloadSize: StreamingChunkSize));
+        }
+    }
+
+    private static QPackFieldLine[] BuildBinaryHeaders(int contentLength) =>
+    [
+        new QPackFieldLine("content-type", "application/octet-stream"),
+        new QPackFieldLine("content-length", contentLength.ToString(CultureInfo.InvariantCulture)),
+        new QPackFieldLine("server", "Incursa.Quic.Http3"),
+    ];
+
+    private static async IAsyncEnumerable<ReadOnlyMemory<byte>> StreamBodyAsync(
+        byte[] body,
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        await Task.CompletedTask.ConfigureAwait(false);
+        for (int offset = 0; offset < body.Length; offset += StreamingChunkSize)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            yield return body.AsMemory(offset, Math.Min(StreamingChunkSize, body.Length - offset));
+        }
+    }
+
+    private static async IAsyncEnumerable<ReadOnlyMemory<byte>> EchoBodyAsync(
+        IAsyncEnumerable<ReadOnlyMemory<byte>> requestBody,
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        await foreach (ReadOnlyMemory<byte> chunk in requestBody.WithCancellation(cancellationToken).ConfigureAwait(false))
+        {
+            yield return chunk;
         }
     }
 
@@ -325,21 +437,45 @@ internal static class Http3LoopbackPerformanceHarness
             CancellationTokenSource shutdown,
             Task serverTask,
             IPEndPoint endPoint,
-            HttpClient client)
+            HttpClient client,
+            ScenarioKind scenario,
+            byte[] payload)
         {
             this.certificate = certificate;
             this.server = server;
             this.shutdown = shutdown;
             this.serverTask = serverTask;
             Client = client;
-            RequestUri = new Uri($"https://127.0.0.1:{endPoint.Port}/fixed");
+            Method = scenario is ScenarioKind.Upload or ScenarioKind.Duplex ? HttpMethod.Post : HttpMethod.Get;
+            string path = scenario switch
+            {
+                ScenarioKind.FixedDownload => "/fixed",
+                ScenarioKind.StreamingDownload => "/streaming",
+                ScenarioKind.Upload => "/upload",
+                ScenarioKind.Duplex => "/duplex",
+                _ => throw new ArgumentOutOfRangeException(nameof(scenario)),
+            };
+            RequestUri = new Uri($"https://127.0.0.1:{endPoint.Port}{path}");
+            RequestBody = scenario is ScenarioKind.Upload or ScenarioKind.Duplex ? payload : null;
+            ExpectedResponseBody = scenario == ScenarioKind.Upload ? UploadResponseBody : payload;
+            TransferredBytesPerRequest = scenario == ScenarioKind.Duplex
+                ? checked(payload.Length * 2)
+                : payload.Length;
         }
 
         internal HttpClient Client { get; }
 
+        internal byte[] ExpectedResponseBody { get; }
+
+        internal HttpMethod Method { get; }
+
+        internal byte[]? RequestBody { get; }
+
         internal Uri RequestUri { get; }
 
-        internal static async Task<LoopbackServer> StartAsync(byte[] body)
+        internal int TransferredBytesPerRequest { get; }
+
+        internal static async Task<LoopbackServer> StartAsync(ScenarioKind scenario, byte[] payload)
         {
             X509Certificate2 certificate = QuicPublicApiLoopbackBenchmarkSupport.CreateServerCertificate();
             IPEndPoint endPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
@@ -370,9 +506,15 @@ internal static class Http3LoopbackPerformanceHarness
                 ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(serverOptions),
             };
 
-            Http3Server server = await Http3Server.ListenAsync(
-                listenerOptions,
-                new FixedBodyHandler(body)).ConfigureAwait(false);
+            IHttp3RequestHandler handler = scenario switch
+            {
+                ScenarioKind.FixedDownload => new FixedBodyHandler(payload),
+                ScenarioKind.StreamingDownload => new StreamingBodyHandler(payload),
+                ScenarioKind.Upload => new UploadHandler(payload),
+                ScenarioKind.Duplex => new DuplexHandler(),
+                _ => throw new ArgumentOutOfRangeException(nameof(scenario)),
+            };
+            Http3Server server = await Http3Server.ListenAsync(listenerOptions, handler).ConfigureAwait(false);
             CancellationTokenSource shutdown = new(TimeSpan.FromMinutes(10));
             Task serverTask = server.ServeAsync(shutdown.Token);
             SocketsHttpHandler socketsHandler = new()
@@ -387,7 +529,7 @@ internal static class Http3LoopbackPerformanceHarness
             {
                 Timeout = TimeSpan.FromSeconds(30),
             };
-            return new LoopbackServer(certificate, server, shutdown, serverTask, endPoint, client);
+            return new LoopbackServer(certificate, server, shutdown, serverTask, endPoint, client, scenario, payload);
         }
 
         public async ValueTask DisposeAsync()
@@ -402,6 +544,7 @@ internal static class Http3LoopbackPerformanceHarness
     }
 
     private sealed record Options(
+        ScenarioKind[] Scenarios,
         int[] PayloadSizes,
         int[] ConcurrencyLevels,
         int Samples,
@@ -423,7 +566,8 @@ internal static class Http3LoopbackPerformanceHarness
                 values[args[index]] = args[index + 1];
             }
 
-            int[] payloadSizes = ParsePositiveList(values.GetValueOrDefault("--payload-sizes", "65536,1048576"), "payload sizes");
+            ScenarioKind[] scenarios = ParseScenarios(values.GetValueOrDefault("--scenarios", "fixed"));
+            int[] payloadSizes = ParsePositiveList(values.GetValueOrDefault("--payload-sizes", "1024,65536,1048576"), "payload sizes");
             int[] concurrency = ParsePositiveList(values.GetValueOrDefault("--concurrency", "1,4,16"), "concurrency");
             int samples = ParsePositive(values.GetValueOrDefault("--samples", "5"), "samples");
             int durationSeconds = ParsePositive(values.GetValueOrDefault("--duration-seconds", "3"), "duration seconds");
@@ -432,7 +576,7 @@ internal static class Http3LoopbackPerformanceHarness
             string? jsonPath = values.GetValueOrDefault("--json");
 
             string[] known = [
-                "--payload-sizes", "--concurrency", "--samples", "--duration-seconds",
+                "--scenarios", "--payload-sizes", "--concurrency", "--samples", "--duration-seconds",
                 "--warmup-seconds", "--label", "--json",
             ];
             string? unknown = values.Keys.FirstOrDefault(key => !known.Contains(key, StringComparer.OrdinalIgnoreCase));
@@ -441,7 +585,29 @@ internal static class Http3LoopbackPerformanceHarness
                 throw new ArgumentException($"Unknown option '{unknown}'.");
             }
 
-            return new Options(payloadSizes, concurrency, samples, durationSeconds, warmupSeconds, label, jsonPath);
+            return new Options(scenarios, payloadSizes, concurrency, samples, durationSeconds, warmupSeconds, label, jsonPath);
+        }
+
+        private static ScenarioKind[] ParseScenarios(string value)
+        {
+            ScenarioKind[] parsed = value
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(static item => item.ToLowerInvariant() switch
+                {
+                    "fixed" => ScenarioKind.FixedDownload,
+                    "streaming" => ScenarioKind.StreamingDownload,
+                    "upload" => ScenarioKind.Upload,
+                    "duplex" => ScenarioKind.Duplex,
+                    _ => throw new ArgumentException($"Unknown HTTP/3 loopback scenario '{item}'."),
+                })
+                .Distinct()
+                .ToArray();
+            if (parsed.Length == 0)
+            {
+                throw new ArgumentException("At least one HTTP/3 loopback scenario is required.");
+            }
+
+            return parsed;
         }
 
         private static int[] ParsePositiveList(string value, string name)
@@ -472,6 +638,14 @@ internal static class Http3LoopbackPerformanceHarness
 
     private sealed record WorkerResult(int Requests, int Failures, List<double> LatenciesMilliseconds);
 
+    private enum ScenarioKind
+    {
+        FixedDownload,
+        StreamingDownload,
+        Upload,
+        Duplex,
+    }
+
     private sealed record SampleResult(
         int Requests,
         int Failures,
@@ -489,6 +663,7 @@ internal static class Http3LoopbackPerformanceHarness
         int Gen2Collections);
 
     private sealed record ShapeResult(
+        string Scenario,
         int PayloadSizeBytes,
         int Concurrency,
         double MedianThroughputMebibytesPerSecond,

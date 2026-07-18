@@ -128,7 +128,8 @@ before escalating a candidate to ProtocolLab:
 ```powershell
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- `
   --http3-loopback `
-  --payload-sizes 65536,1048576 `
+  --scenarios fixed,streaming,upload,duplex `
+  --payload-sizes 1024,65536,1048576 `
   --concurrency 1,4,16 `
   --samples 5 `
   --duration-seconds 3 `
@@ -139,7 +140,11 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- `
 
 Certificate generation, listener startup, and connection warmup are outside
 measured samples. Every response must use exact HTTP/3, declare the expected
-content length, and match every expected payload byte. The JSON report includes
+content length, and match every expected payload byte. Upload handlers also
+validate every received request byte, while duplex responses echo the streaming
+request body and therefore prove both directions. Throughput counts response
+bytes for fixed/streaming downloads, request bytes for uploads, and both
+directions for duplex. The JSON report includes
 per-sample throughput, request rate, p50/p95/p99 latency, process-wide managed
 allocation, collection counts, median/range, and coefficient of variation.
 The client and server share one process and host, so use the harness for rapid
