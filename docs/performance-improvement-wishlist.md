@@ -4614,3 +4614,46 @@ and the candidate diagnostic run are retained under
 variants without new evidence. The next highest-confidence mechanism is the
 runtime's bounded flush progression and whether it schedules enough follow-up
 work after reaching the four-datagram burst cap.
+
+### Rejected 2026-07-18: timer-driven bounded application-send continuation
+
+A reversible candidate replaced the application-send timer's single-datagram
+continuation with the existing bounded four-datagram recovery flush policy. It
+kept the established per-transition cap and 1 ms follow-up timer, so it did not
+repeat the rejected larger fixed burst or ACK-byte-credit designs. A focused
+requirement-home test proved that one timer expiration emitted exactly one
+additional bounded tranche. The stream API, standalone FIN scheduling, and
+send-policy set passed 32/32 tests after congestion-blocked timer re-arming was
+preserved.
+
+Frozen baseline and candidate assemblies had SHA-256
+`4446ab41938ddbcea959a3b4cced805b6dc67ca8de9ec106bdff3cab0b24d5e0`
+and `574918ecdcc34a8798caeffd69305083bd7693ac96383c6c231e7dca26f26c2d`.
+Two successful passes per variant covered exact one-MiB upload and duplex at
+c1, c4, and c16, producing ten successful samples per variant and cell:
+
+| Lane | Baseline median | Candidate median | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| upload c1 | 36.87 MiB/s | 35.40 MiB/s | -4.0% | +2.4% | -2.5% |
+| upload c4 | 28.59 MiB/s | 27.68 MiB/s | -3.2% | +3.7% | -1.6% |
+| upload c16 | 21.12 MiB/s | 22.10 MiB/s | +4.6% | -6.4% | -7.7% |
+| duplex c1 | 39.67 MiB/s | 44.21 MiB/s | +11.4% | -7.2% | -11.1% |
+| duplex c4 | 39.24 MiB/s | 39.81 MiB/s | +1.5% | -2.9% | -1.6% |
+| duplex c16 | 32.62 MiB/s | 29.55 MiB/s | -9.4% | +18.2% | -5.1% |
+
+The candidate failed the local gate because c16 duplex throughput regressed
+9.4% and p95 latency regressed 18.2%. Low-concurrency upload also regressed.
+The runtime and test changes were reverted and ProtocolLab was not run. The
+campaign additionally retained one baseline attempt that aborted at the first
+c16 duplex sample with `The requested path cannot send an ordinary packet`;
+two subsequent baseline passes completed, so this is intermittent baseline
+fragility rather than a candidate-only failure.
+
+Evidence, frozen binaries, hashes, candidate diff, exact commands, successful
+per-pass JSON, aggregate statistics, and the failed-baseline record are under
+`C:\shared\temp\quic-timer-burst-20260718`. Do not retry a timer-driven
+multi-datagram continuation or another minor burst variant without materially
+new attribution. Two distinct bounded flush-progression designs have now
+failed the local gate. Reassess the broader end-to-end HTTP/3 traces for a
+cross-layer queue, copy, write-completion, or API-usage mechanism before
+changing raw send progression again.
