@@ -4715,3 +4715,31 @@ Evidence, frozen assemblies, hashes, candidate diff, diagnostics, transcripts,
 per-pass JSON, and aggregate statistics are retained under
 `C:\shared\temp\quic-http3-ack-policy-20260718`. Do not repeat minor standalone
 ACK scheduling variants without a mechanism likely to exceed the local gate.
+
+### Rejected 2026-07-18: dedicated bounded ACK datagram pool
+
+A materially different follow-up to the rejected hosted ACK-owner transfer
+copied protected ACK-only datagrams into a dedicated bounded `ArrayPool<byte>`
+and returned the general protected-packet buffer immediately. Hosted sends
+carried explicit pool ownership through the existing synchronous send observer;
+direct transition results retained exact owned arrays. A focused hosted ACK
+deadline test verified packet protection, owner classification, and release.
+
+The local A/B/B/A c16 one-MiB simultaneous duplex campaign used frozen baseline
+and candidate assemblies, five exact samples per pass, and ten samples per
+variant. All samples completed with zero payload-validation failures:
+
+| Variant | Median MiB/s | Range MiB/s | CV | Median p95 ms | Median allocated B/request |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| baseline | 51.58 | 30.86-54.89 | 13.77% | 729.35 | 807,278 |
+| candidate | 50.11 | 32.92-54.03 | 13.23% | 731.20 | 912,893 |
+
+The candidate regressed median throughput 2.9%, did not improve latency, and
+increased median process allocation 13.1%. It therefore failed both the timing
+and allocation gates. The runtime and focused-test changes were reverted, and
+ProtocolLab was not run. Frozen candidate binaries and all four per-pass JSON
+reports are retained under
+`C:\shared\temp\quic-http3-ack-dedicated-pool-20260718`. Do not repeat ACK
+storage-pool or hosted ACK-owner variants without new attribution that explains
+why they would improve the saturated single-shard actor rather than only move
+buffer ownership.
