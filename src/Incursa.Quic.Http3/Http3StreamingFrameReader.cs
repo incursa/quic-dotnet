@@ -1,6 +1,8 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Runtime.InteropServices;
+
 namespace Incursa.Quic.Http3;
 
 internal sealed class Http3StreamingFrameReader : IDisposable
@@ -93,6 +95,42 @@ internal sealed class Http3StreamingFrameReader : IDisposable
         {
             throw new Http3Exception(Http3ErrorCode.FrameError, "The HTTP/3 stream ended with a truncated frame.");
         }
+    }
+
+    public void ReleaseData(ReadOnlyMemory<byte> data)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+        if (data.IsEmpty)
+        {
+            return;
+        }
+
+        if (!MemoryMarshal.TryGetArray(data, out ArraySegment<byte> segment) || segment.Array is null)
+        {
+            throw new InvalidOperationException("The HTTP/3 DATA segment is not backed by a releasable pooled buffer.");
+        }
+
+        List<byte[]>? buffers = rentedDataBuffers;
+        if (buffers is null)
+        {
+            throw new InvalidOperationException("The HTTP/3 DATA segment has already been released.");
+        }
+
+        for (int index = 0; index < buffers.Count; index++)
+        {
+            if (!ReferenceEquals(buffers[index], segment.Array))
+            {
+                continue;
+            }
+
+            int lastIndex = buffers.Count - 1;
+            buffers[index] = buffers[lastIndex];
+            buffers.RemoveAt(lastIndex);
+            QuicBufferPool.ReturnBytes(segment.Array);
+            return;
+        }
+
+        throw new InvalidOperationException("The HTTP/3 DATA segment has already been released.");
     }
 
     public void Dispose()

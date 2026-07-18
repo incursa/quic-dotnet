@@ -65,8 +65,11 @@ public sealed class Http3StreamingRequest
     /// Gets the single-use sequence of owned request DATA payload chunks.
     /// </summary>
     /// <remarks>
-    /// Chunks remain valid after the next move. The sequence is valid only
-    /// while the server is handling this request and may be enumerated once.
+    /// Chunks remain valid after the next move by default. A streaming handler that returns
+    /// <see langword="false" /> from
+    /// <see cref="IHttp3StreamingRequestHandler.RetainStreamingRequestBodyChunks(Http3StreamingRequest)" />
+    /// must finish consuming each chunk before advancing the enumerator. The sequence is valid
+    /// only while the server is handling this request and may be enumerated once.
     /// </remarks>
     public IAsyncEnumerable<ReadOnlyMemory<byte>> Body { get; }
 }

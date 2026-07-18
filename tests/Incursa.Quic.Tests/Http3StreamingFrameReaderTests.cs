@@ -87,6 +87,21 @@ public sealed class Http3StreamingFrameReaderTests
         Assert.Equal(secondPayload.Length, data.FramePayloadLength);
     }
 
+    [Fact]
+    public void ReleasedDataSegment_IsNotReturnedAgainDuringDispose()
+    {
+        byte[] payload = CreatePayload(777);
+        byte[] encoded = Http3FrameWriter.WriteData(payload);
+        using Http3StreamingFrameReader reader = new();
+        Queue<Http3StreamingFramePart> parts = [];
+        reader.Read(encoded, parts);
+
+        Http3StreamingFramePart part = Assert.Single(parts);
+        reader.ReleaseData(part.Data);
+
+        Assert.Throws<InvalidOperationException>(() => reader.ReleaseData(part.Data));
+    }
+
     [Theory]
     [InlineData(1)]
     [InlineData(3)]

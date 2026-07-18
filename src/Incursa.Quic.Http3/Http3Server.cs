@@ -840,6 +840,8 @@ public sealed class Http3Server : IAsyncDisposable
             {
                 if (streamingHandler.CanHandleStreaming(streamingReader.Request))
                 {
+                    streamingReader.SetRetainBodyChunks(
+                        streamingHandler.RetainStreamingRequestBodyChunks(streamingReader.Request));
                     return Http3RequestReadResult.FromStreaming(streamingReader.Request, streamingReader);
                 }
 
@@ -1228,6 +1230,7 @@ public sealed class Http3Server : IAsyncDisposable
         private int disposed;
         private bool bodyDataObserved;
         private bool completed;
+        private bool retainBodyChunks = true;
 
         private Http3StreamingRequestBodyReader(
             Http3Server owner,
@@ -1272,6 +1275,16 @@ public sealed class Http3Server : IAsyncDisposable
             }
 
             return EnumerateAsync(cancellationToken).GetAsyncEnumerator(cancellationToken);
+        }
+
+        public void SetRetainBodyChunks(bool retain)
+        {
+            if (Volatile.Read(ref enumerated) != 0)
+            {
+                throw new InvalidOperationException("The HTTP/3 request body retention mode cannot change after enumeration starts.");
+            }
+
+            retainBodyChunks = retain;
         }
 
         public async ValueTask<Http3Request> ReadBufferedRequestAsync(CancellationToken cancellationToken)
@@ -1351,7 +1364,17 @@ public sealed class Http3Server : IAsyncDisposable
         {
             while (await ReadNextDataAsync(cancellationToken).ConfigureAwait(false) is { HasData: true } next)
             {
-                yield return next.Data;
+                try
+                {
+                    yield return next.Data;
+                }
+                finally
+                {
+                    if (!retainBodyChunks)
+                    {
+                        frameReader.ReleaseData(next.Data);
+                    }
+                }
             }
         }
 

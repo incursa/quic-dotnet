@@ -2010,6 +2010,30 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    public async Task SequentialStreamingHandler_HashesLargeBodyWithoutRetainingChunks()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        byte[] body = CreateDeterministicBytes((256 * 1024) + 17);
+        SequentialHashStreamingHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WritePostRequestAsync(requestStream, "/hash", body, includeContentLength: true);
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.Equal(System.Security.Cryptography.SHA256.HashData(body), response.Body);
+        Assert.Equal(1, handler.StreamingCalls);
+    }
+
+    [Fact]
     public async Task StreamingCapableHandler_HandlesConcurrentBodylessRequests()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -3268,8 +3292,13 @@ public sealed class Http3MinimalServerTests
 
         public int StreamingCalls { get; private set; }
 
+        public bool RetainBodyChunks { get; init; } = true;
+
         public bool CanHandleStreaming(Http3StreamingRequest request)
             => request.Path == "/duplex";
+
+        public bool RetainStreamingRequestBodyChunks(Http3StreamingRequest request)
+            => RetainBodyChunks;
 
         public ValueTask<Http3ServerResponse> HandleAsync(Http3Request request, CancellationToken cancellationToken = default)
         {
@@ -3306,6 +3335,37 @@ public sealed class Http3MinimalServerTests
             {
                 yield return chunk;
             }
+        }
+    }
+
+    private sealed class SequentialHashStreamingHandler : IHttp3RequestHandler, IHttp3StreamingRequestHandler
+    {
+        public int StreamingCalls { get; private set; }
+
+        public bool CanHandleStreaming(Http3StreamingRequest request)
+            => request.Path == "/hash";
+
+        public bool RetainStreamingRequestBodyChunks(Http3StreamingRequest request)
+            => false;
+
+        public ValueTask<Http3ServerResponse> HandleAsync(
+            Http3Request request,
+            CancellationToken cancellationToken = default)
+            => throw new InvalidOperationException("The hash request must use the streaming handler.");
+
+        public async ValueTask<Http3ServerResponse> HandleStreamingAsync(
+            Http3StreamingRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            StreamingCalls++;
+            using System.Security.Cryptography.IncrementalHash hash =
+                System.Security.Cryptography.IncrementalHash.CreateHash(System.Security.Cryptography.HashAlgorithmName.SHA256);
+            await foreach (ReadOnlyMemory<byte> chunk in request.Body.WithCancellation(cancellationToken))
+            {
+                hash.AppendData(chunk.Span);
+            }
+
+            return new Http3ServerResponse(200, hash.GetHashAndReset());
         }
     }
 
