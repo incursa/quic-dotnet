@@ -4847,3 +4847,58 @@ run. The probe source and JSON are retained under
 synchronous listener send with `SendToAsync` without a materially different OS
 mechanism and new end-to-end attribution. Continue above the socket layer with
 packet-count and per-packet actor-service work.
+
+### Diagnosed 2026-07-18: same-connection receive packet runs
+
+The exact one-MiB c16 simultaneous HTTP/3 duplex workload confirmed that the
+single connection actor usually has several receive packets ready together. A
+disabled-by-default histogram now records consecutive same-runtime packet runs
+and their bounded termination reason. In a five-second diagnostic sample,
+98,025 packet-receive work items formed 9,133 runs terminated by another work
+item: mean 10.73 packets, median 4, p95 55, p99 135, and maximum 732. The same
+sample completed 95 exact requests with no failures and recorded 23,097
+application-send recovery flushes. The diagnostic evidence is retained under
+`C:\shared\temp\quic-http3-packet-runs-20260718`; do not infer a batching gain
+from this trace because metric collection materially perturbs the actor.
+
+The disabled instrumentation path was also checked separately against the
+clean `b17880ff` baseline. Frozen `Incursa.Quic.dll` SHA-256 values were
+`BCEB0730FBD7F34FE9E16415CF890C98D4B88894D9B5410A76AB36A7FBC5DD7E`
+and `E70CF48060C5B3C53FB9294B83F69C81839E5E6E258FFC2677A532EEAE408AA7`.
+An A/B/B/A campaign produced ten exact c16 duplex samples per variant: baseline
+50.36 MiB/s median, 26.63-52.49 range, 17.67% CV, and 736.14 ms p95 versus
+instrumentation 50.65 MiB/s median, 40.54-52.26 range, 7.96% CV, and 720.13 ms
+p95. The disabled path therefore showed no timing or allocation regression.
+Raw evidence is under
+`C:\shared\temp\quic-packet-run-instrumentation-20260718`.
+
+### Rejected 2026-07-18: defer application-send recovery flushes across packet runs
+
+A bounded candidate used channel lookahead to defer only application-send
+recovery flushing across at most eight consecutive packets for the same
+connection. Packet decryption, frame handling, stream delivery, ACK generation,
+ACK deadlines, retransmission processing, flow-control updates, timer handling,
+and effect publication remained per packet. Twelve focused ACK, recovery-flush,
+and metrics tests passed.
+
+The frozen baseline and candidate `Incursa.Quic.dll` SHA-256 values were
+`BCEB0730FBD7F34FE9E16415CF890C98D4B88894D9B5410A76AB36A7FBC5DD7E`
+and `96B4B3E0080D0F0C4F868DCE9E3C762145B435D1274338A5B65FD95CADA16972`.
+An A/B/B/A campaign ran five exact three-second one-MiB c16 duplex samples per
+pass, for ten samples per variant and no payload or protocol failures:
+
+| Variant | Median MiB/s | Range MiB/s | CV | Median p95 ms | Median allocated B/request |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| baseline | 50.16 | 38.92-54.39 | 10.38% | 705.24 | 924,343 |
+| candidate | 52.34 | 32.33-53.81 | 16.10% | 875.47 | 660,794 |
+
+Although median throughput improved 4.3% and allocation fell 28.5%, p95 latency
+regressed 24.1% and throughput variance increased materially. The candidate
+therefore failed the local timing and stability gates and was reverted.
+ProtocolLab was not run. Frozen binaries, raw A/B/B/A JSON, logs, and diagnostic
+results are retained under
+`C:\shared\temp\quic-packet-flush-batch-20260718` and
+`C:\shared\temp\quic-http3-packet-runs-20260718`. Do not defer send-queue
+progress across receive packets again without a design that preserves prompt
+application-data scheduling; the run-length metric remains as attribution for
+materially different packet-processing designs.

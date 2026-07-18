@@ -328,11 +328,15 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         bool hasActiveWakeCycle = false;
         bool activeWakeCompletedSynchronously = false;
         var productiveWorkItemsInWakeCycle = 0;
+        bool measurePacketRuns = false;
+        QuicConnectionRuntime? packetRunRuntime = null;
+        var packetRunLength = 0;
 
         try
         {
             while (true)
             {
+                measurePacketRuns = QuicMetrics.RuntimeShardPacketRunMetricsEnabled;
                 // CONTEXT: The shard loop drains timer expirations before and after inbox reads because
                 // both timer completion and connection work share this single-reader path; that keeps
                 // due timers from waiting on a separate wake-up when the shard is already active.
@@ -347,12 +351,16 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     QuicMetrics.RecordRuntimeShardWorkItemDequeued(metricsRegistration, in workItem);
                     if (IsDeadlineWakeWorkItem(workItem))
                     {
+                        RecordPacketRunBoundary("deadline_wake");
                         continue;
                     }
 
+                    TrackPacketRun(in workItem);
                     productiveWorkItemsInWakeCycle++;
                     ProcessWorkItem(workItem, transitionObserver, effectObserver, sendDatagramObserver);
                 }
+
+                RecordPacketRunBoundary("drain_end");
 
                 EnqueueDueEntries(clock.Ticks);
                 if (reader.TryRead(out QuicConnectionRuntimeShardWorkItem queuedTimerWorkItem))
@@ -360,11 +368,14 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     QuicMetrics.RecordRuntimeShardWorkItemDequeued(metricsRegistration, in queuedTimerWorkItem);
                     if (IsDeadlineWakeWorkItem(queuedTimerWorkItem))
                     {
+                        RecordPacketRunBoundary("deadline_wake");
                         continue;
                     }
 
+                    TrackPacketRun(in queuedTimerWorkItem);
                     productiveWorkItemsInWakeCycle++;
                     ProcessWorkItem(queuedTimerWorkItem, transitionObserver, effectObserver, sendDatagramObserver);
+                    RecordPacketRunBoundary("single_read");
                     continue;
                 }
 
@@ -442,6 +453,42 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 
                 ReleaseWorkItemResources(workItem);
             }
+        }
+
+        void TrackPacketRun(in QuicConnectionRuntimeShardWorkItem workItem)
+        {
+            if (!measurePacketRuns)
+            {
+                return;
+            }
+
+            if (workItem.Kind != QuicConnectionRuntimeShardWorkItemKind.PacketReceived)
+            {
+                RecordPacketRunBoundary("work_item");
+                return;
+            }
+
+            if (ReferenceEquals(packetRunRuntime, workItem.Runtime))
+            {
+                packetRunLength++;
+                return;
+            }
+
+            RecordPacketRunBoundary("runtime_change");
+            packetRunRuntime = workItem.Runtime;
+            packetRunLength = 1;
+        }
+
+        void RecordPacketRunBoundary(string boundary)
+        {
+            if (!measurePacketRuns || packetRunLength == 0)
+            {
+                return;
+            }
+
+            QuicMetrics.RecordRuntimeShardPacketRun(shardIndex, packetRunLength, boundary);
+            packetRunRuntime = null;
+            packetRunLength = 0;
         }
     }
 

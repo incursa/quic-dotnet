@@ -1289,6 +1289,21 @@ public class MetricsTests
             && measurement.HasTag("completion", "async"));
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void RuntimeShardPacketRunMetricsUseBoundedShardAndBoundaryTags()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+
+        QuicMetrics.RecordRuntimeShardPacketRun(shardIndex: 2, packetCount: 7, boundary: "drain_end");
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.packet_run_length"
+            && measurement.Value == 7
+            && measurement.HasTag("shard_index", "2")
+            && measurement.HasTag("boundary", "drain_end"));
+    }
+
     private static QuicConnectionRuntime CreateRuntimeWithActivePath()
     {
         QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
