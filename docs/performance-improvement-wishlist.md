@@ -4338,3 +4338,51 @@ micro-optimization: Incursa is competitive in the one-MiB c1 smoke but loses
 throughput as concurrency exposes roughly 0.4-0.9 MiB of allocation per
 operation. Evidence is retained under
 `C:\shared\temp\quic-transport-local-peer-20260717`. ProtocolLab was not used.
+
+### Rejected 2026-07-18: reuse terminal completion source for ordinary reads
+
+The five-repetition one-MiB peer baseline confirmed that Incursa remains close
+to System.Net.Quic at c1 but loses both throughput and allocation efficiency as
+concurrency rises. At c16, Incursa produced 32.64 MiB/s download, 23.84 MiB/s
+upload, and 33.50 MiB/s duplex while allocating about 404, 530, and 873 KiB per
+operation. System.Net.Quic produced 251, 257, and 273 MiB/s while allocating
+about 22, 22, and 37 KiB per operation. The full matched result is
+`C:\shared\temp\quic-transport-local-peer-20260717\1mb-peer-r5.json`.
+
+An allocation trace of exact one-MiB c16 duplex traffic attributed about
+22.60 MB to the `QuicStream.ReadCoreAsync` state machine, 22.48 MB to
+`SemaphoreSlim.WaitUntilCountOrTimeoutAsync`, 13.20 MB to cancellation promises,
+and 8.75 MB to semaphore task nodes. This was sufficient attribution for a
+bounded candidate that reused the stream's existing `IValueTaskSource<int>` for
+the common single pending ordinary read while preserving the semaphore path for
+concurrent readers. Focused tests covered sequential reuse, delayed ValueTask
+consumption, concurrent-reader fallback, cancellation, abort, FIN, disposal,
+and notification races; all 32 read-lifecycle tests passed.
+
+The isolated pending-read BDN Short row reduced managed allocation from 321 to
+144 B/read (-55.1%). Its three timing iterations were too short and variable for
+an authoritative timing claim, although the candidate median was lower. Exact
+c16 duplex A/B/B/A-style runs then produced five successful samples per clean
+campaign:
+
+| Variant | Median MiB/s | Throughput range | CV | Median p95 ms | Median B/op |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Candidate A | 34.67 | 27.39-38.46 | 11.4% | 958.8 | 109,525 |
+| Baseline B | 39.69 | 29.01-42.32 | 12.7% | 896.7 | 849,914 |
+| Candidate C | 33.89 | 26.50-35.48 | 10.7% | 1,035.2 | 125,688 |
+| Baseline D | 41.78 | 37.56-42.89 | 5.4% | 844.5 | 828,807 |
+
+The candidate removed roughly 85% of measured allocation but regressed adjacent
+median throughput by 12.6% and 18.9%, with worse p95 latency. It therefore
+failed the no-timing-regression condition of the allocation gate and was
+reverted. The first broader baseline attempt also retained an existing c16
+failure, `The requested path cannot send an ordinary packet`, rather than being
+silently discarded. A custom inline continuation was not pursued because it
+would run arbitrary application continuation work on the runtime notification
+path and weaken scheduling isolation and fairness. ProtocolLab was not run.
+
+Candidate, baseline, BDN, failure, and trace artifacts are retained under
+`C:\shared\temp\quic-read-completion-20260718` and
+`C:\shared\temp\quic-transport-local-peer-20260717\incursa-duplex-1mb-c16-trace`.
+The trace SHA-256 is
+`b9c68ff6930b2b3fab80069de2e6cd1dc6c19a532bbeb8780edc73a15ba72772`.
