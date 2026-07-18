@@ -4386,3 +4386,42 @@ Candidate, baseline, BDN, failure, and trace artifacts are retained under
 `C:\shared\temp\quic-transport-local-peer-20260717\incursa-duplex-1mb-c16-trace`.
 The trace SHA-256 is
 `b9c68ff6930b2b3fab80069de2e6cd1dc6c19a532bbeb8780edc73a15ba72772`.
+
+### Local-first coverage 2026-07-18: bounded HTTP/3 runtime diagnostics
+
+The exact HTTP/3 loopback harness now has an opt-in `--diagnostics true` mode
+that records bounded per-series summaries from the existing `Incursa.Quic`
+runtime and buffer-pool metrics. The normal path remains uninstrumented. The
+diagnostic path polls observable gauges every 100 ms and reports queue and
+service delay, work-item depth and rates, wakeups, work per wake, stream-write
+completion, delayed sends by cause, receive/send/retransmission retention,
+buffer-pool pressure by owner and size bucket, and byte/datagram totals.
+Counter output distinguishes event sums from cumulative observable-counter
+deltas. Instrumented samples are explicitly marked diagnostic-only because the
+listener affects timing and allocation.
+
+An uninstrumented one-KiB fixed-response smoke and an instrumented 64-KiB c4
+duplex smoke both passed exact HTTP/3, content-length, payload, and EOF
+validation. The exact one-MiB c16 duplex attribution run then completed 112
+requests with zero failures. Its 42.73 MiB/s timing is not a performance claim.
+All 16 streams shared one connection and one runtime shard. During the
+five-second measured interval that shard processed 119,284 packet-receive work
+items, spending 4,255.76 ms in their measured service intervals, plus 650.14 ms
+on 14,560 stream-write items. Packet-receive queue delay averaged 18.20 ms and
+reached 51.09 ms at p95 in this instrumented run; stream-write completion
+averaged 5.00 ms and reached 12.47 ms at p95. The actor is therefore saturated
+by aggregate per-packet work rather than by wakeup frequency or one isolated
+CPU method.
+
+The server received 122,474,009 bytes in 119,284 datagrams, about 1,027 bytes
+per datagram, and sent 123,225,147 bytes in 164,867 datagrams, about 747 bytes
+per datagram. Buffer-owner counters recorded 49,649 acknowledgment rents,
+119,284 inbound packet-protection rents, and 329,734 outbound packet-protection
+rents. These counts justify investigating general packet count, packetization,
+and ACK/data coalescing mechanisms from broader HTTP/3 evidence. They do not by
+themselves justify weakening ACK behavior or assuming a larger path MTU.
+
+The CPU trace and metrics evidence are retained under
+`C:\shared\temp\quic-http3-local-first-20260718`. The earlier intermittent c16
+ordinary-packet failure did not reproduce in 60 additional exact duplex
+samples, so no speculative PMTU fix was made. No ProtocolLab run was launched.

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Net;
 using System.Net.Http;
@@ -23,6 +24,7 @@ namespace Incursa.Quic.Benchmarks;
 [SupportedOSPlatform("macos")]
 internal static class Http3LoopbackPerformanceHarness
 {
+    private const string QuicMeterName = "Incursa.Quic";
     private const int StreamingChunkSize = 16 * 1024;
     private static readonly byte[] UploadResponseBody = "ok"u8.ToArray();
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
@@ -78,11 +80,15 @@ internal static class Http3LoopbackPerformanceHarness
 
                 foreach (int concurrency in options.ConcurrencyLevels)
                 {
+                    await using RuntimeDiagnosticsCollector? diagnostics = options.Diagnostics
+                        ? RuntimeDiagnosticsCollector.Start()
+                        : null;
                     await RunSampleAsync(
                         server,
                         concurrency,
                         TimeSpan.FromSeconds(options.WarmupSeconds),
-                        collectMetrics: false).ConfigureAwait(false);
+                        collectMetrics: false,
+                        diagnostics: null).ConfigureAwait(false);
 
                     List<SampleResult> samples = new(options.Samples);
                     for (int sampleIndex = 0; sampleIndex < options.Samples; sampleIndex++)
@@ -93,7 +99,8 @@ internal static class Http3LoopbackPerformanceHarness
                             server,
                             concurrency,
                             TimeSpan.FromSeconds(options.DurationSeconds),
-                            collectMetrics: true).ConfigureAwait(false));
+                            collectMetrics: true,
+                            diagnostics).ConfigureAwait(false));
                     }
 
                     results.Add(Summarize(scenario, payloadSize, concurrency, samples));
@@ -111,6 +118,7 @@ internal static class Http3LoopbackPerformanceHarness
             DurationSeconds: options.DurationSeconds,
             WarmupSeconds: options.WarmupSeconds,
             Samples: options.Samples,
+            DiagnosticsEnabled: options.Diagnostics,
             Results: results);
     }
 
@@ -118,7 +126,8 @@ internal static class Http3LoopbackPerformanceHarness
         LoopbackServer server,
         int concurrency,
         TimeSpan duration,
-        bool collectMetrics)
+        bool collectMetrics,
+        RuntimeDiagnosticsCollector? diagnostics)
     {
         WorkerState[] workerStates = new WorkerState[concurrency];
         for (int workerIndex = 0; workerIndex < workerStates.Length; workerIndex++)
@@ -126,6 +135,7 @@ internal static class Http3LoopbackPerformanceHarness
             workerStates[workerIndex] = new WorkerState(server.ExpectedResponseBody.Length);
         }
 
+        diagnostics?.BeginSample();
         long allocatedBefore = collectMetrics ? GC.GetTotalAllocatedBytes(precise: true) : 0;
         int gen0Before = collectMetrics ? GC.CollectionCount(0) : 0;
         int gen1Before = collectMetrics ? GC.CollectionCount(1) : 0;
@@ -139,8 +149,19 @@ internal static class Http3LoopbackPerformanceHarness
             workers[workerIndex] = RunWorkerAsync(server, deadline, workerStates[workerIndex]);
         }
 
-        WorkerResult[] workerResults = await Task.WhenAll(workers).ConfigureAwait(false);
-        TimeSpan elapsed = Stopwatch.GetElapsedTime(started);
+        WorkerResult[] workerResults;
+        RuntimeDiagnosticsResult? runtimeDiagnostics;
+        TimeSpan elapsed;
+        try
+        {
+            workerResults = await Task.WhenAll(workers).ConfigureAwait(false);
+            elapsed = Stopwatch.GetElapsedTime(started);
+        }
+        finally
+        {
+            runtimeDiagnostics = diagnostics?.CompleteSample();
+        }
+
         long allocatedAfter = collectMetrics ? GC.GetTotalAllocatedBytes(precise: true) : 0;
 
         int requests = workerResults.Sum(static item => item.Requests);
@@ -164,7 +185,9 @@ internal static class Http3LoopbackPerformanceHarness
             AllocatedBytesPerRequest: collectMetrics && requests > 0 ? (allocatedAfter - allocatedBefore) / (double)requests : 0,
             Gen0Collections: collectMetrics ? GC.CollectionCount(0) - gen0Before : 0,
             Gen1Collections: collectMetrics ? GC.CollectionCount(1) - gen1Before : 0,
-            Gen2Collections: collectMetrics ? GC.CollectionCount(2) - gen2Before : 0);
+            Gen2Collections: collectMetrics ? GC.CollectionCount(2) - gen2Before : 0,
+            MetricsInstrumentationEnabled: diagnostics is not null,
+            RuntimeDiagnostics: runtimeDiagnostics);
     }
 
     private static async Task<WorkerResult> RunWorkerAsync(
@@ -307,7 +330,8 @@ internal static class Http3LoopbackPerformanceHarness
         Console.Error.WriteLine(
             "Usage: --http3-loopback [--scenarios fixed,streaming,upload,duplex] " +
             "[--payload-sizes 1024,65536,1048576] [--concurrency 1,4,16] " +
-            "[--samples 5] [--duration-seconds 3] [--warmup-seconds 1] [--label name] [--json path]");
+            "[--samples 5] [--duration-seconds 3] [--warmup-seconds 1] " +
+            "[--diagnostics true|false] [--label name] [--json path]");
     }
 
     private static string GetScenarioName(ScenarioKind scenario) => scenario switch
@@ -557,6 +581,7 @@ internal static class Http3LoopbackPerformanceHarness
         int Samples,
         int DurationSeconds,
         int WarmupSeconds,
+        bool Diagnostics,
         string Label,
         string? JsonPath)
     {
@@ -579,12 +604,13 @@ internal static class Http3LoopbackPerformanceHarness
             int samples = ParsePositive(values.GetValueOrDefault("--samples", "5"), "samples");
             int durationSeconds = ParsePositive(values.GetValueOrDefault("--duration-seconds", "3"), "duration seconds");
             int warmupSeconds = ParsePositive(values.GetValueOrDefault("--warmup-seconds", "1"), "warmup seconds");
+            bool diagnostics = ParseBoolean(values.GetValueOrDefault("--diagnostics", "false"), "diagnostics");
             string label = values.GetValueOrDefault("--label", "local");
             string? jsonPath = values.GetValueOrDefault("--json");
 
             string[] known = [
                 "--scenarios", "--payload-sizes", "--concurrency", "--samples", "--duration-seconds",
-                "--warmup-seconds", "--label", "--json",
+                "--warmup-seconds", "--diagnostics", "--label", "--json",
             ];
             string? unknown = values.Keys.FirstOrDefault(key => !known.Contains(key, StringComparer.OrdinalIgnoreCase));
             if (unknown is not null)
@@ -592,7 +618,16 @@ internal static class Http3LoopbackPerformanceHarness
                 throw new ArgumentException($"Unknown option '{unknown}'.");
             }
 
-            return new Options(scenarios, payloadSizes, concurrency, samples, durationSeconds, warmupSeconds, label, jsonPath);
+            return new Options(
+                scenarios,
+                payloadSizes,
+                concurrency,
+                samples,
+                durationSeconds,
+                warmupSeconds,
+                diagnostics,
+                label,
+                jsonPath);
         }
 
         private static ScenarioKind[] ParseScenarios(string value)
@@ -641,6 +676,16 @@ internal static class Http3LoopbackPerformanceHarness
 
             return parsed;
         }
+
+        private static bool ParseBoolean(string value, string name)
+        {
+            if (!bool.TryParse(value, out bool parsed))
+            {
+                throw new ArgumentException($"{name} must be either 'true' or 'false'.");
+            }
+
+            return parsed;
+        }
     }
 
     private sealed record WorkerResult(int Requests, int Failures, List<double> LatenciesMilliseconds);
@@ -674,7 +719,9 @@ internal static class Http3LoopbackPerformanceHarness
         double AllocatedBytesPerRequest,
         int Gen0Collections,
         int Gen1Collections,
-        int Gen2Collections);
+        int Gen2Collections,
+        bool MetricsInstrumentationEnabled,
+        RuntimeDiagnosticsResult? RuntimeDiagnostics);
 
     private sealed record ShapeResult(
         string Scenario,
@@ -701,5 +748,315 @@ internal static class Http3LoopbackPerformanceHarness
         int DurationSeconds,
         int WarmupSeconds,
         int Samples,
+        bool DiagnosticsEnabled,
         IReadOnlyList<ShapeResult> Results);
+
+    private sealed class RuntimeDiagnosticsCollector : IAsyncDisposable
+    {
+        private const int MaximumSamplesPerSeries = 4096;
+        private static readonly TimeSpan ObservablePollInterval = TimeSpan.FromMilliseconds(100);
+        private readonly MeterListener listener = new();
+        private readonly CancellationTokenSource shutdown = new();
+        private readonly object observablePollSync = new();
+        private readonly object sync = new();
+        private readonly Dictionary<MetricSeriesKey, MetricSeriesAccumulator> series = [];
+        private readonly Task pollTask;
+        private bool capturing;
+
+        private RuntimeDiagnosticsCollector()
+        {
+            listener.InstrumentPublished = (instrument, meterListener) =>
+            {
+                if (instrument.Meter.Name == QuicMeterName
+                    && (instrument.Name.StartsWith("incursa.quic.runtime.", StringComparison.Ordinal)
+                        || instrument.Name.StartsWith("incursa.quic.buffer_pool.", StringComparison.Ordinal)
+                        || instrument.Name is "incursa.quic.datagrams.received"
+                            or "incursa.quic.datagrams.sent"
+                            or "incursa.quic.bytes.received"
+                            or "incursa.quic.bytes.sent"))
+                {
+                    meterListener.EnableMeasurementEvents(instrument, this);
+                }
+            };
+            listener.SetMeasurementEventCallback<long>(static (instrument, value, tags, state) =>
+                ((RuntimeDiagnosticsCollector)state!).Record(instrument, value, tags));
+            listener.SetMeasurementEventCallback<double>(static (instrument, value, tags, state) =>
+                ((RuntimeDiagnosticsCollector)state!).Record(instrument, value, tags));
+            listener.Start();
+            pollTask = PollObservableInstrumentsAsync();
+        }
+
+        internal static RuntimeDiagnosticsCollector Start() => new();
+
+        internal void BeginSample()
+        {
+            lock (sync)
+            {
+                series.Clear();
+                capturing = true;
+            }
+
+            lock (observablePollSync)
+            {
+                listener.RecordObservableInstruments();
+            }
+        }
+
+        internal RuntimeDiagnosticsResult CompleteSample()
+        {
+            lock (observablePollSync)
+            {
+                listener.RecordObservableInstruments();
+                lock (sync)
+                {
+                    capturing = false;
+                    MetricSeriesResult[] results = series.Values
+                        .Select(static item => item.ToResult())
+                        .OrderBy(static item => item.Name, StringComparer.Ordinal)
+                        .ThenBy(
+                            static item => string.Join(
+                                '|',
+                                item.Tags.Select(static tag => $"{tag.Key}={tag.Value}")),
+                            StringComparer.Ordinal)
+                        .ToArray();
+                    return new RuntimeDiagnosticsResult(
+                        DiagnosticOnly: true,
+                        ObservablePollIntervalMilliseconds: ObservablePollInterval.TotalMilliseconds,
+                        Series: results);
+                }
+            }
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            shutdown.Cancel();
+            try
+            {
+                await pollTask.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (shutdown.IsCancellationRequested)
+            {
+            }
+
+            listener.Dispose();
+            shutdown.Dispose();
+        }
+
+        private async Task PollObservableInstrumentsAsync()
+        {
+            using PeriodicTimer timer = new(ObservablePollInterval);
+            while (await timer.WaitForNextTickAsync(shutdown.Token).ConfigureAwait(false))
+            {
+                lock (observablePollSync)
+                {
+                    listener.RecordObservableInstruments();
+                }
+            }
+        }
+
+        private void Record(
+            Instrument instrument,
+            double value,
+            ReadOnlySpan<KeyValuePair<string, object?>> tags)
+        {
+            MetricSeriesKey key = MetricSeriesKey.Create(instrument, tags);
+            lock (sync)
+            {
+                if (!capturing)
+                {
+                    return;
+                }
+
+                if (!series.TryGetValue(key, out MetricSeriesAccumulator? accumulator))
+                {
+                    accumulator = new MetricSeriesAccumulator(key, MaximumSamplesPerSeries);
+                    series.Add(key, accumulator);
+                }
+
+                accumulator.Record(value);
+            }
+        }
+    }
+
+    private sealed class MetricSeriesAccumulator
+    {
+        private readonly int maximumSamples;
+        private readonly List<double> samples;
+        private long sampleStride = 1;
+
+        internal MetricSeriesAccumulator(MetricSeriesKey key, int maximumSamples)
+        {
+            Key = key;
+            this.maximumSamples = maximumSamples;
+            samples = new List<double>(maximumSamples);
+        }
+
+        internal MetricSeriesKey Key { get; }
+
+        internal long Count { get; private set; }
+
+        internal double Sum { get; private set; }
+
+        internal double Minimum { get; private set; } = double.PositiveInfinity;
+
+        internal double Maximum { get; private set; } = double.NegativeInfinity;
+
+        internal double First { get; private set; }
+
+        internal double Last { get; private set; }
+
+        internal void Record(double value)
+        {
+            if (Count == 0)
+            {
+                First = value;
+            }
+
+            Count++;
+            Last = value;
+            Sum += value;
+            Minimum = Math.Min(Minimum, value);
+            Maximum = Math.Max(Maximum, value);
+
+            if (Count % sampleStride != 0)
+            {
+                return;
+            }
+
+            if (samples.Count == maximumSamples)
+            {
+                int retainedCount = 0;
+                for (int index = 1; index < samples.Count; index += 2)
+                {
+                    samples[retainedCount++] = samples[index];
+                }
+
+                samples.RemoveRange(retainedCount, samples.Count - retainedCount);
+                sampleStride *= 2;
+                if (Count % sampleStride != 0)
+                {
+                    return;
+                }
+            }
+
+            samples.Add(value);
+        }
+
+        internal MetricSeriesResult ToResult()
+        {
+            double[] sortedSamples = samples.Order().ToArray();
+            bool isObservableCounter = Key.InstrumentType.StartsWith("ObservableCounter", StringComparison.Ordinal)
+                || Key.InstrumentType.StartsWith("ObservableUpDownCounter", StringComparison.Ordinal);
+            bool isEventCounter = Key.InstrumentType.StartsWith("Counter", StringComparison.Ordinal)
+                || Key.InstrumentType.StartsWith("UpDownCounter", StringComparison.Ordinal);
+            return new MetricSeriesResult(
+                Name: Key.InstrumentName,
+                InstrumentType: Key.InstrumentType,
+                Tags: Key.GetTags(),
+                Count: Count,
+                SummaryKind: isObservableCounter
+                    ? "cumulative_delta"
+                    : isEventCounter
+                        ? "event_sum"
+                        : "distribution",
+                IntervalValue: isObservableCounter
+                    ? Last - First
+                    : isEventCounter
+                        ? Sum
+                        : null,
+                First: Count == 0 ? 0 : First,
+                Last: Count == 0 ? 0 : Last,
+                Delta: Count == 0 ? 0 : Last - First,
+                Sum: Sum,
+                Mean: Count == 0 ? 0 : Sum / Count,
+                Minimum: Count == 0 ? 0 : Minimum,
+                Percentile50: Percentile(sortedSamples, 0.50),
+                Percentile95: Percentile(sortedSamples, 0.95),
+                Percentile99: Percentile(sortedSamples, 0.99),
+                Maximum: Count == 0 ? 0 : Maximum,
+                RetainedSampleCount: sortedSamples.Length,
+                SampleStride: sampleStride);
+        }
+    }
+
+    private readonly record struct MetricSeriesKey(
+        string InstrumentName,
+        string InstrumentType,
+        int TagCount,
+        string? Tag1Name,
+        object? Tag1Value,
+        string? Tag2Name,
+        object? Tag2Value,
+        string? Tag3Name,
+        object? Tag3Value,
+        string? Tag4Name,
+        object? Tag4Value)
+    {
+        internal static MetricSeriesKey Create(
+            Instrument instrument,
+            ReadOnlySpan<KeyValuePair<string, object?>> tags)
+        {
+            if (tags.Length > 4)
+            {
+                throw new InvalidOperationException(
+                    $"Runtime diagnostic instrument '{instrument.Name}' emitted {tags.Length} tags; the bounded collector supports four.");
+            }
+
+            return new MetricSeriesKey(
+                instrument.Name,
+                instrument.GetType().Name,
+                tags.Length,
+                tags.Length > 0 ? tags[0].Key : null,
+                tags.Length > 0 ? tags[0].Value : null,
+                tags.Length > 1 ? tags[1].Key : null,
+                tags.Length > 1 ? tags[1].Value : null,
+                tags.Length > 2 ? tags[2].Key : null,
+                tags.Length > 2 ? tags[2].Value : null,
+                tags.Length > 3 ? tags[3].Key : null,
+                tags.Length > 3 ? tags[3].Value : null);
+        }
+
+        internal IReadOnlyDictionary<string, string> GetTags()
+        {
+            Dictionary<string, string> tags = new(TagCount, StringComparer.Ordinal);
+            AddTag(tags, Tag1Name, Tag1Value);
+            AddTag(tags, Tag2Name, Tag2Value);
+            AddTag(tags, Tag3Name, Tag3Value);
+            AddTag(tags, Tag4Name, Tag4Value);
+            return tags;
+        }
+
+        private static void AddTag(Dictionary<string, string> tags, string? name, object? value)
+        {
+            if (name is not null)
+            {
+                tags.Add(name, Convert.ToString(value, CultureInfo.InvariantCulture) ?? string.Empty);
+            }
+        }
+    }
+
+    private sealed record RuntimeDiagnosticsResult(
+        bool DiagnosticOnly,
+        double ObservablePollIntervalMilliseconds,
+        IReadOnlyList<MetricSeriesResult> Series);
+
+    private sealed record MetricSeriesResult(
+        string Name,
+        string InstrumentType,
+        IReadOnlyDictionary<string, string> Tags,
+        long Count,
+        string SummaryKind,
+        double? IntervalValue,
+        double First,
+        double Last,
+        double Delta,
+        double Sum,
+        double Mean,
+        double Minimum,
+        double Percentile50,
+        double Percentile95,
+        double Percentile99,
+        double Maximum,
+        int RetainedSampleCount,
+        long SampleStride);
 }

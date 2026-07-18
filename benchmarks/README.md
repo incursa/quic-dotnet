@@ -138,6 +138,22 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- `
   --json .artifacts/perf/http3-local/candidate.json
 ```
 
+For a separate instrumented attribution run, add `--diagnostics true`. For
+example:
+
+```powershell
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- `
+  --http3-loopback `
+  --scenarios duplex `
+  --payload-sizes 1048576 `
+  --concurrency 16 `
+  --samples 1 `
+  --duration-seconds 5 `
+  --warmup-seconds 1 `
+  --diagnostics true `
+  --json .artifacts/perf/http3-local/duplex-diagnostics.json
+```
+
 Certificate generation, listener startup, and connection warmup are outside
 measured samples. Every response must use exact HTTP/3, declare the expected
 content length, and match every expected payload byte. Upload handlers also
@@ -147,6 +163,13 @@ bytes for fixed/streaming downloads, request bytes for uploads, and both
 directions for duplex. The JSON report includes
 per-sample throughput, request rate, p50/p95/p99 latency, process-wide managed
 allocation, collection counts, median/range, and coefficient of variation.
+Diagnostics are disabled by default. The
+opt-in diagnostics mode adds bounded summaries for the existing runtime and
+buffer-pool metric series, including queue delay, wakeups, work per wake,
+stream-write completion, delayed sends, retained send state, and outstanding
+pooled buffers. Its output is explicitly marked diagnostic-only because metric
+instrumentation affects timing and allocation; use the normal mode for A/B
+performance decisions.
 The client and server share one process and host, so use the harness for rapid
 A/B development evidence rather than isolated-hardware or peer claims. When
 separate source roots are required, build each benchmark binary and run them in
