@@ -4227,3 +4227,49 @@ is retained under
 `C:\shared\temp\quic-http3-broad-local-20260717\duplex-1mb-c16-attribution`;
 its SHA-256 is
 `8da796fe6211936fb7ac20cc4b83f11702cd3239393325f5aab989c9215777ff`.
+
+### Rejected 2026-07-17: transfer ACK-only protected buffers through hosted sends
+
+A hosted-runtime-only experiment transferred the existing pooled protected ACK
+datagram through `QuicConnectionSendDatagramUpdate` and returned it after the
+synchronous socket send. Public transition results retained their existing exact
+owned arrays, and focused ACK timer ownership/return tests passed. The mechanism
+removed the dominant ACK-only `ReadOnlyMemory.ToArray()` stack from the exact
+one-MiB c16 duplex allocation trace.
+
+The focused A/B/B/A lane used ten exact one-second samples per variant after
+warmup. Median duplex throughput moved from 60.53 to 62.24 MiB/s (+2.8%), p95
+improved 6.4%, and measured allocation fell 24.7%. Both variants were noisy,
+with throughput CVs of 17.7% and 20.7%, so this was only an allocation gate and
+not a throughput claim.
+
+The required broader A/B/B/A controls rejected the candidate. Each row combined
+ten samples per variant with exact protocol, content-length, and payload
+validation and zero failures:
+
+| Workload | c | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| fixed 64 KiB | 1 | 38.92 | 37.62 | -3.4% | -10.2% | -0.1% |
+| fixed 64 KiB | 4 | 49.41 | 49.68 | +0.5% | +0.6% | -4.0% |
+| fixed 64 KiB | 16 | 45.02 | 44.83 | -0.4% | +4.1% | -2.8% |
+| streaming 1 MiB | 1 | 37.81 | 39.26 | +3.8% | -21.2% | -4.2% |
+| streaming 1 MiB | 4 | 49.70 | 49.57 | -0.3% | +4.5% | -2.7% |
+| streaming 1 MiB | 16 | 47.77 | 47.30 | -1.0% | -2.9% | -4.3% |
+| upload 1 MiB | 1 | 86.85 | 77.84 | -10.4% | +11.6% | -2.4% |
+| upload 1 MiB | 4 | 98.42 | 98.80 | +0.4% | +8.0% | -2.0% |
+| upload 1 MiB | 16 | 100.15 | 90.70 | -9.4% | +19.3% | +1.5% |
+| duplex 1 MiB | 1 | 45.74 | 49.46 | +8.1% | +1.7% | -13.4% |
+| duplex 1 MiB | 4 | 69.19 | 67.57 | -2.4% | +2.4% | -14.3% |
+| duplex 1 MiB | 16 | 65.46 | 65.71 | +0.4% | -0.8% | -5.1% |
+
+The stable c16 upload regression exceeded the control guardrail. Candidate
+attribution also showed the removed 89.36 MB exact-copy group replaced by about
+106.10 MB of sampled `QuicBufferPool.RentBytes` allocation, versus 18.18 MB in
+the baseline trace. Holding the protected ACK pool owner until hosted send
+completion increased pool misses and moved allocation pressure rather than
+removing it. The runtime and test changes were reverted. ProtocolLab was not
+run because the candidate failed local controls.
+
+Matched results are retained under
+`C:\shared\temp\quic-http3-hosted-ack-owner-20260717`. The candidate trace SHA-256
+is `8fb1ea2eb735e00e0a3fdde3f96565d9b1774fcc56a981256fbaa668c98de3ee`.
