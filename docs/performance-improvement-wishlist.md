@@ -4743,3 +4743,33 @@ reports are retained under
 storage-pool or hosted ACK-owner variants without new attribution that explains
 why they would improve the saturated single-shard actor rather than only move
 buffer ownership.
+
+### Rejected 2026-07-18: align HTTP/3 response writes to 32 KiB
+
+The c16 HTTP/3 diagnostics recorded 11,050 stream-write work items and about
+650 ms of stream-write service in a five-second one-MiB duplex interval. A
+bounded candidate doubled the default HTTP/3 DATA-frame and response-write
+boundary from 16 KiB to the transport's existing 32 KiB maximum. It did not
+change QUIC packetization, transport write limits, flow control, congestion
+control, recovery, or final-write behavior. Eight focused large-response,
+one-MiB, concurrent, streaming, and System.Net HTTP/3 interoperability tests
+passed.
+
+Frozen A/B/B/A assemblies then ran exact one-MiB fixed, streaming, and
+simultaneous duplex workloads at c16, with five samples per pass and ten samples
+per variant and lane. All 60 samples passed payload, content-length, EOF, and
+protocol validation:
+
+| Lane | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| fixed | 41.48 | 38.74 | -6.6% | +5.2% | +0.9% |
+| streaming | 39.29 | 39.72 | +1.1% | -1.6% | -0.1% |
+| duplex | 50.20 | 50.16 | -0.1% | -0.3% | -8.7% |
+
+The fixed-response regression crossed the normal control guardrail, while the
+affected streaming and duplex lanes did not provide a timing gain or the 20%
+allocation reduction needed for promotion. The one-line runtime candidate was
+reverted and ProtocolLab was not run. Frozen binaries and all four JSON reports
+are retained under `C:\shared\temp\quic-http3-write32k-20260718`. Do not retry
+larger HTTP/3 response write or DATA-frame boundaries without new attribution
+that explains the fixed-response regression and predicts a broader gain.
