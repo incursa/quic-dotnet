@@ -5146,3 +5146,41 @@ that separates adapter/API usage and load generation from the library before
 another runtime optimization. ProtocolLab was not run. Build and compatibility,
 explicit-topology, invalid-option, and balanced-shard smokes passed. Evidence is
 under `C:\shared\temp\quic-h3-local-first-next-20260718`.
+
+### Accepted 2026-07-18: local external-target HTTP/3 comparison
+
+The HTTP/3 loopback harness now has a client-only `--target-base-url` mode for
+fixed deterministic byte responses. It preserves explicit connection and
+stream topology while moving the target into a separate process, so target
+startup and target allocation do not contaminate the client measurement.
+External responses must pass exact HTTP/3, status, content-length, EOF, and
+`index % 251` payload validation. The harness rejects target-side diagnostics
+and listener socket options in this mode instead of mislabeling client data.
+
+Five three-second exact samples compared current-source Incursa and
+Kestrel/System.Net.Quic targets over one established connection with 1, 4, or
+16 concurrent request streams:
+
+| Target | c1 MiB/s | c4 MiB/s | c16 MiB/s | c16 CV | c16 p95 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Incursa | 41.11 | 40.30 | 36.05 | 1.31% | 465.50 ms |
+| Kestrel/System.Net.Quic | 66.36 | 133.16 | 168.16 | 1.51% | 103.70 ms |
+
+All 30 samples per target passed with zero failures. The Incursa gap widens
+from 1.61x at c1 to 4.66x at c16 and reproduces the retained ProtocolLab result
+without ProtocolLab orchestration. The retained lab generator allocated 7.93
+GB while reading 399 MB and flagged possible saturation, but this separate
+client path allocates about 133 KB per successful Incursa c16 request and still
+reproduces the target-side ceiling.
+
+A target-only sampled-thread trace and existing runtime metrics attribute the
+fixed-response shape to one connection actor. A five-second c16 sample created
+12,288 stream-write actions for 192 one-MiB responses, exactly 64 actions per
+response. Packet and write work waited about 6.9 and 6.7 ms on the shard, and
+write completion averaged 6.75 ms. Congestion window averaged about 66 MiB
+while bytes in flight averaged only about 275 KiB, ruling out congestion credit
+as the dominant limit. The next bounded candidate should reduce HTTP/3 API
+write serialization for already-cached immutable fixed responses without
+repeating the rejected 32 KiB boundary or raw burst experiments. Evidence is
+under `C:\shared\temp\quic-h3-local-first-next-20260718\external-trace` and the
+two `external-*-fixed-1mb.json` files in its parent. ProtocolLab was not run.

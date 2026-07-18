@@ -47,7 +47,7 @@ internal static class Http3LoopbackPerformanceHarness
             return 2;
         }
 
-        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        if (options.TargetBaseUrl is null && (!QuicConnection.IsSupported || !QuicListener.IsSupported))
         {
             Console.Error.WriteLine("Incursa.Quic loopback support is unavailable on this platform.");
             return 3;
@@ -76,20 +76,24 @@ internal static class Http3LoopbackPerformanceHarness
             byte[] expectedBody = CreateDeterministicBytes(payloadSize);
             foreach (ScenarioKind scenario in options.Scenarios)
             {
-                await using LoopbackServer server = await LoopbackServer.StartAsync(
-                    scenario,
-                    expectedBody,
-                    options.ListenerReceiveBufferBytes,
-                    options.LoadShapes.Max(static shape => shape.Connections)).ConfigureAwait(false);
+                await using LoopbackServer? server = options.TargetBaseUrl is null
+                    ? await LoopbackServer.StartAsync(
+                        scenario,
+                        expectedBody,
+                        options.ListenerReceiveBufferBytes,
+                        options.LoadShapes.Max(static shape => shape.Connections)).ConfigureAwait(false)
+                    : null;
+                RequestSpec request = server?.Request
+                    ?? RequestSpec.CreateExternalFixed(options.TargetBaseUrl!, payloadSize);
 
                 foreach (LoadShape loadShape in options.LoadShapes)
                 {
-                    using LoopbackClients clients = server.CreateClients(loadShape.Connections);
+                    using LoopbackClients clients = LoopbackClients.Create(loadShape.Connections);
                     await using RuntimeDiagnosticsCollector? diagnostics = options.Diagnostics
                         ? RuntimeDiagnosticsCollector.Start()
                         : null;
                     await RunSampleAsync(
-                        server,
+                        request,
                         clients,
                         loadShape.StreamsPerConnection,
                         TimeSpan.FromSeconds(options.WarmupSeconds),
@@ -102,7 +106,7 @@ internal static class Http3LoopbackPerformanceHarness
                         GC.Collect(2, GCCollectionMode.Forced, blocking: true, compacting: false);
                         GC.WaitForPendingFinalizers();
                         samples.Add(await RunSampleAsync(
-                            server,
+                            request,
                             clients,
                             loadShape.StreamsPerConnection,
                             TimeSpan.FromSeconds(options.DurationSeconds),
@@ -116,7 +120,7 @@ internal static class Http3LoopbackPerformanceHarness
         }
 
         return new HarnessResult(
-            SchemaVersion: 2,
+            SchemaVersion: 3,
             Label: options.Label,
             StartedUtc: startedUtc,
             Runtime: System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
@@ -127,11 +131,13 @@ internal static class Http3LoopbackPerformanceHarness
             Samples: options.Samples,
             DiagnosticsEnabled: options.Diagnostics,
             ListenerReceiveBufferBytes: options.ListenerReceiveBufferBytes,
+            TargetMode: options.TargetBaseUrl is null ? "in-process-incursa" : "external",
+            TargetBaseUrl: options.TargetBaseUrl?.ToString(),
             Results: results);
     }
 
     private static async Task<SampleResult> RunSampleAsync(
-        LoopbackServer server,
+        RequestSpec request,
         LoopbackClients clients,
         int streamsPerConnection,
         TimeSpan duration,
@@ -142,7 +148,7 @@ internal static class Http3LoopbackPerformanceHarness
         WorkerState[] workerStates = new WorkerState[concurrency];
         for (int workerIndex = 0; workerIndex < workerStates.Length; workerIndex++)
         {
-            workerStates[workerIndex] = new WorkerState(server.ExpectedResponseBody.Length);
+            workerStates[workerIndex] = new WorkerState(request.ExpectedResponseBody.Length);
         }
 
         diagnostics?.BeginSample();
@@ -160,7 +166,7 @@ internal static class Http3LoopbackPerformanceHarness
             for (int streamIndex = 0; streamIndex < streamsPerConnection; streamIndex++)
             {
                 workers[nextWorkerIndex] = RunWorkerAsync(
-                    server,
+                    request,
                     clients[clientIndex],
                     deadline,
                     workerStates[nextWorkerIndex]);
@@ -188,7 +194,7 @@ internal static class Http3LoopbackPerformanceHarness
         double[] latencies = workerResults.SelectMany(static item => item.LatenciesMilliseconds).ToArray();
         Array.Sort(latencies);
         double elapsedSeconds = elapsed.TotalSeconds;
-        double throughputBytesPerSecond = requests * (double)server.TransferredBytesPerRequest / elapsedSeconds;
+        double throughputBytesPerSecond = requests * (double)request.TransferredBytesPerRequest / elapsedSeconds;
 
         return new SampleResult(
             Requests: requests,
@@ -210,7 +216,7 @@ internal static class Http3LoopbackPerformanceHarness
     }
 
     private static async Task<WorkerResult> RunWorkerAsync(
-        LoopbackServer server,
+        RequestSpec requestSpec,
         HttpClient client,
         long deadline,
         WorkerState state)
@@ -225,14 +231,14 @@ internal static class Http3LoopbackPerformanceHarness
             long requestStarted = Stopwatch.GetTimestamp();
             try
             {
-                using HttpRequestMessage request = new(server.Method, server.RequestUri)
+                using HttpRequestMessage request = new(requestSpec.Method, requestSpec.RequestUri)
                 {
                     Version = HttpVersion.Version30,
                     VersionPolicy = HttpVersionPolicy.RequestVersionExact,
                 };
-                if (server.RequestBody is not null)
+                if (requestSpec.RequestBody is not null)
                 {
-                    request.Content = new ByteArrayContent(server.RequestBody);
+                    request.Content = new ByteArrayContent(requestSpec.RequestBody);
                 }
 
                 using HttpResponseMessage response = await client.SendAsync(
@@ -245,7 +251,7 @@ internal static class Http3LoopbackPerformanceHarness
                         $"Unexpected response status/version: {(int)response.StatusCode}/{response.Version}.");
                 }
 
-                if (response.Content.Headers.ContentLength != server.ExpectedResponseBody.Length)
+                if (response.Content.Headers.ContentLength != requestSpec.ExpectedResponseBody.Length)
                 {
                     throw new InvalidOperationException(
                         $"Unexpected content length: {response.Content.Headers.ContentLength}.");
@@ -258,7 +264,7 @@ internal static class Http3LoopbackPerformanceHarness
                     throw new InvalidOperationException("The response exceeded its declared content length.");
                 }
 
-                if (!receivedBody.AsSpan().SequenceEqual(server.ExpectedResponseBody))
+                if (!receivedBody.AsSpan().SequenceEqual(requestSpec.ExpectedResponseBody))
                 {
                     throw new InvalidOperationException("The response payload did not match the expected bytes.");
                 }
@@ -353,6 +359,7 @@ internal static class Http3LoopbackPerformanceHarness
             "Usage: --http3-loopback [--scenarios fixed,streaming,upload,duplex] " +
             "[--payload-sizes 1024,65536,1048576] [--concurrency 1,4,16] " +
             "[--connections 1,4,16 --streams-per-connection 1] " +
+            "[--target-base-url https://127.0.0.1:5444] " +
             "[--listener-receive-buffer-bytes 0] " +
             "[--samples 5] [--duration-seconds 3] [--warmup-seconds 1] " +
             "[--diagnostics true|false] [--label name] [--json path]");
@@ -499,7 +506,7 @@ internal static class Http3LoopbackPerformanceHarness
             this.server = server;
             this.shutdown = shutdown;
             this.serverTask = serverTask;
-            Method = scenario is ScenarioKind.Upload or ScenarioKind.Duplex ? HttpMethod.Post : HttpMethod.Get;
+            HttpMethod method = scenario is ScenarioKind.Upload or ScenarioKind.Duplex ? HttpMethod.Post : HttpMethod.Get;
             string path = scenario switch
             {
                 ScenarioKind.FixedDownload => "/fixed",
@@ -508,57 +515,20 @@ internal static class Http3LoopbackPerformanceHarness
                 ScenarioKind.Duplex => "/duplex",
                 _ => throw new ArgumentOutOfRangeException(nameof(scenario)),
             };
-            RequestUri = new Uri($"https://127.0.0.1:{endPoint.Port}{path}");
-            RequestBody = scenario is ScenarioKind.Upload or ScenarioKind.Duplex ? payload : null;
-            ExpectedResponseBody = scenario == ScenarioKind.Upload ? UploadResponseBody : payload;
-            TransferredBytesPerRequest = scenario == ScenarioKind.Duplex
+            byte[]? requestBody = scenario is ScenarioKind.Upload or ScenarioKind.Duplex ? payload : null;
+            byte[] expectedResponseBody = scenario == ScenarioKind.Upload ? UploadResponseBody : payload;
+            int transferredBytesPerRequest = scenario == ScenarioKind.Duplex
                 ? checked(payload.Length * 2)
                 : payload.Length;
+            Request = new RequestSpec(
+                method,
+                new Uri($"https://127.0.0.1:{endPoint.Port}{path}"),
+                requestBody,
+                expectedResponseBody,
+                transferredBytesPerRequest);
         }
 
-        internal byte[] ExpectedResponseBody { get; }
-
-        internal HttpMethod Method { get; }
-
-        internal byte[]? RequestBody { get; }
-
-        internal Uri RequestUri { get; }
-
-        internal int TransferredBytesPerRequest { get; }
-
-        internal LoopbackClients CreateClients(int count)
-        {
-            HttpClient[] clients = new HttpClient[count];
-            try
-            {
-                for (int index = 0; index < clients.Length; index++)
-                {
-                    SocketsHttpHandler socketsHandler = new()
-                    {
-                        EnableMultipleHttp3Connections = false,
-                        SslOptions = new SslClientAuthenticationOptions
-                        {
-                            RemoteCertificateValidationCallback = static (_, _, _, _) => true,
-                        },
-                    };
-                    clients[index] = new HttpClient(socketsHandler)
-                    {
-                        Timeout = TimeSpan.FromSeconds(30),
-                    };
-                }
-
-                return new LoopbackClients(clients);
-            }
-            catch
-            {
-                foreach (HttpClient? client in clients)
-                {
-                    client?.Dispose();
-                }
-
-                throw;
-            }
-        }
+        internal RequestSpec Request { get; }
 
         internal static async Task<LoopbackServer> StartAsync(
             ScenarioKind scenario,
@@ -637,6 +607,7 @@ internal static class Http3LoopbackPerformanceHarness
         int WarmupSeconds,
         bool Diagnostics,
         int ListenerReceiveBufferBytes,
+        Uri? TargetBaseUrl,
         string Label,
         string? JsonPath)
     {
@@ -663,6 +634,7 @@ internal static class Http3LoopbackPerformanceHarness
             int listenerReceiveBufferBytes = ParseNonNegative(
                 values.GetValueOrDefault("--listener-receive-buffer-bytes", "0"),
                 "listener receive buffer bytes");
+            Uri? targetBaseUrl = ParseTargetBaseUrl(values.GetValueOrDefault("--target-base-url"));
             string label = values.GetValueOrDefault("--label", "local");
             string? jsonPath = values.GetValueOrDefault("--json");
 
@@ -670,11 +642,32 @@ internal static class Http3LoopbackPerformanceHarness
                 "--scenarios", "--payload-sizes", "--concurrency", "--connections", "--streams-per-connection",
                 "--samples", "--duration-seconds",
                 "--warmup-seconds", "--diagnostics", "--listener-receive-buffer-bytes", "--label", "--json",
+                "--target-base-url",
             ];
             string? unknown = values.Keys.FirstOrDefault(key => !known.Contains(key, StringComparer.OrdinalIgnoreCase));
             if (unknown is not null)
             {
                 throw new ArgumentException($"Unknown option '{unknown}'.");
+            }
+
+            if (targetBaseUrl is not null)
+            {
+                if (scenarios.Any(static scenario => scenario != ScenarioKind.FixedDownload))
+                {
+                    throw new ArgumentException("--target-base-url currently supports the fixed scenario only.");
+                }
+
+                if (diagnostics)
+                {
+                    throw new ArgumentException(
+                        "--diagnostics cannot be combined with --target-base-url because runtime metrics belong to the client process.");
+                }
+
+                if (listenerReceiveBufferBytes != 0)
+                {
+                    throw new ArgumentException(
+                        "--listener-receive-buffer-bytes cannot be combined with --target-base-url.");
+                }
             }
 
             return new Options(
@@ -686,8 +679,25 @@ internal static class Http3LoopbackPerformanceHarness
                 warmupSeconds,
                 diagnostics,
                 listenerReceiveBufferBytes,
+                targetBaseUrl,
                 label,
                 jsonPath);
+        }
+
+        private static Uri? ParseTargetBaseUrl(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return null;
+            }
+
+            if (!Uri.TryCreate(value, UriKind.Absolute, out Uri? uri)
+                || !string.Equals(uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new ArgumentException("--target-base-url must be an absolute HTTPS URL.");
+            }
+
+            return uri;
         }
 
         private static LoadShape[] ParseLoadShapes(Dictionary<string, string> values)
@@ -806,6 +816,40 @@ internal static class Http3LoopbackPerformanceHarness
 
         internal HttpClient this[int index] => clients[index];
 
+        internal static LoopbackClients Create(int count)
+        {
+            HttpClient[] clients = new HttpClient[count];
+            try
+            {
+                for (int index = 0; index < clients.Length; index++)
+                {
+                    SocketsHttpHandler socketsHandler = new()
+                    {
+                        EnableMultipleHttp3Connections = false,
+                        SslOptions = new SslClientAuthenticationOptions
+                        {
+                            RemoteCertificateValidationCallback = static (_, _, _, _) => true,
+                        },
+                    };
+                    clients[index] = new HttpClient(socketsHandler)
+                    {
+                        Timeout = TimeSpan.FromSeconds(30),
+                    };
+                }
+
+                return new LoopbackClients(clients);
+            }
+            catch
+            {
+                foreach (HttpClient? client in clients)
+                {
+                    client?.Dispose();
+                }
+
+                throw;
+            }
+        }
+
         public void Dispose()
         {
             foreach (HttpClient client in clients)
@@ -813,6 +857,36 @@ internal static class Http3LoopbackPerformanceHarness
                 client.Dispose();
             }
         }
+    }
+
+    private sealed record RequestSpec(
+        HttpMethod Method,
+        Uri RequestUri,
+        byte[]? RequestBody,
+        byte[] ExpectedResponseBody,
+        int TransferredBytesPerRequest)
+    {
+        internal static RequestSpec CreateExternalFixed(Uri baseUrl, int payloadSize)
+        {
+            byte[] expectedBody = CreateModulo251Bytes(payloadSize);
+            return new RequestSpec(
+                HttpMethod.Get,
+                new Uri(baseUrl, $"/bytes/{payloadSize.ToString(CultureInfo.InvariantCulture)}"),
+                null,
+                expectedBody,
+                payloadSize);
+        }
+    }
+
+    private static byte[] CreateModulo251Bytes(int length)
+    {
+        byte[] payload = GC.AllocateUninitializedArray<byte>(length);
+        for (int index = 0; index < payload.Length; index++)
+        {
+            payload[index] = (byte)(index % 251);
+        }
+
+        return payload;
     }
 
     private sealed class WorkerState(int responseBodyLength)
@@ -877,6 +951,8 @@ internal static class Http3LoopbackPerformanceHarness
         int Samples,
         bool DiagnosticsEnabled,
         int ListenerReceiveBufferBytes,
+        string TargetMode,
+        string? TargetBaseUrl,
         IReadOnlyList<ShapeResult> Results);
 
     private sealed class RuntimeDiagnosticsCollector : IAsyncDisposable
