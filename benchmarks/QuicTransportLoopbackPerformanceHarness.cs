@@ -9,7 +9,11 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using IncursaClientConnection = global::Incursa.Quic.QuicConnection;
+using IncursaClientConnectionOptions = global::Incursa.Quic.QuicClientConnectionOptions;
 using IncursaListener = global::Incursa.Quic.QuicListener;
+using IncursaListenerOptions = global::Incursa.Quic.QuicListenerOptions;
+using IncursaReceiveWindowSizes = global::Incursa.Quic.QuicReceiveWindowSizes;
+using IncursaServerConnectionOptions = global::Incursa.Quic.QuicServerConnectionOptions;
 using IncursaStream = global::Incursa.Quic.QuicStream;
 using IncursaStreamType = global::Incursa.Quic.QuicStreamType;
 using SystemNetClientConnection = global::System.Net.Quic.QuicConnection;
@@ -96,63 +100,82 @@ internal static class QuicTransportLoopbackPerformanceHarness
 
             foreach (Scenario scenario in options.Scenarios)
             {
-                foreach (int concurrency in options.ConcurrencyLevels)
+                foreach (int connectionCount in options.ConnectionCounts)
                 {
-                    foreach (Implementation implementation in options.Implementations)
+                    foreach (int concurrency in options.ConcurrencyLevels)
                     {
-                        Console.Error.WriteLine(
-                            $"Preparing {FormatImplementation(implementation)} {FormatScenario(scenario)} " +
-                            $"payload={payloadSize:N0} c{concurrency}.");
-                        await using IConnectedPair pair = implementation switch
+                        foreach (Implementation implementation in options.Implementations)
                         {
-                            Implementation.Incursa => await IncursaConnectedPair.CreateAsync(
+                            int totalConcurrency = checked(connectionCount * concurrency);
+                            Console.Error.WriteLine(
+                                $"Preparing {FormatImplementation(implementation)} {FormatScenario(scenario)} " +
+                                $"payload={payloadSize:N0} connections={connectionCount} " +
+                                $"c{concurrency}/connection total-c{totalConcurrency}.");
+                            IConnectedPair[] pairs = await CreateConnectedPairsAsync(
+                                implementation,
+                                connectionCount,
+                                options.SharedListener,
+                                options.IncursaReceiveWindowBytes,
+                                options.IncursaListenerReceiveBufferBytes,
                                 serverOptions,
-                                clientOptions).ConfigureAwait(false),
-                            Implementation.SystemNet => await SystemNetConnectedPair.CreateAsync(
-                                serverOptions,
-                                clientOptions).ConfigureAwait(false),
-                            _ => throw new ArgumentOutOfRangeException(nameof(implementation)),
-                        };
-                        await using QuicRuntimeDiagnosticsCollector? diagnostics =
-                            options.Diagnostics && implementation == Implementation.Incursa
-                                ? QuicRuntimeDiagnosticsCollector.Start()
-                                : null;
+                                clientOptions).ConfigureAwait(false);
+                            try
+                            {
+                                await using QuicRuntimeDiagnosticsCollector? diagnostics =
+                                    options.Diagnostics && implementation == Implementation.Incursa
+                                        ? QuicRuntimeDiagnosticsCollector.Start()
+                                        : null;
 
-                        Console.Error.WriteLine($"  c{concurrency}: warmup");
-                        await RunSampleAsync(
-                            pair,
-                            scenario,
-                            requestPayload,
-                            responsePayload,
-                            concurrency,
-                            TimeSpan.FromSeconds(options.WarmupSeconds),
-                            collectMetrics: false,
-                            diagnostics: null).ConfigureAwait(false);
+                                Console.Error.WriteLine(
+                                    $"  connections={connectionCount} c{concurrency}/connection: warmup");
+                                await RunSampleAsync(
+                                    pairs,
+                                    scenario,
+                                    requestPayload,
+                                    responsePayload,
+                                    concurrency,
+                                    TimeSpan.FromSeconds(options.WarmupSeconds),
+                                    collectMetrics: false,
+                                    diagnostics: null).ConfigureAwait(false);
 
-                        List<SampleResult> samples = new(options.Samples);
-                        for (int sampleIndex = 0; sampleIndex < options.Samples; sampleIndex++)
-                        {
-                            Console.Error.WriteLine($"  c{concurrency}: sample {sampleIndex + 1}/{options.Samples}");
-                            GC.Collect(2, GCCollectionMode.Forced, blocking: true, compacting: false);
-                            GC.WaitForPendingFinalizers();
-                            samples.Add(await RunSampleAsync(
-                                pair,
-                                scenario,
-                                requestPayload,
-                                responsePayload,
-                                concurrency,
-                                TimeSpan.FromSeconds(options.DurationSeconds),
-                                collectMetrics: true,
-                                diagnostics).ConfigureAwait(false));
+                                List<SampleResult> samples = new(options.Samples);
+                                for (int sampleIndex = 0; sampleIndex < options.Samples; sampleIndex++)
+                                {
+                                    Console.Error.WriteLine(
+                                        $"  connections={connectionCount} c{concurrency}/connection: " +
+                                        $"sample {sampleIndex + 1}/{options.Samples}");
+                                    GC.Collect(2, GCCollectionMode.Forced, blocking: true, compacting: false);
+                                    GC.WaitForPendingFinalizers();
+                                    samples.Add(await RunSampleAsync(
+                                        pairs,
+                                        scenario,
+                                        requestPayload,
+                                        responsePayload,
+                                        concurrency,
+                                        TimeSpan.FromSeconds(options.DurationSeconds),
+                                        collectMetrics: true,
+                                        diagnostics).ConfigureAwait(false));
+                                }
+
+                                results.Add(Summarize(
+                                    implementation,
+                                    scenario,
+                                    payloadSize,
+                                    connectionCount,
+                                    concurrency,
+                                    options.SharedListener,
+                                    options.IncursaReceiveWindowBytes,
+                                    options.IncursaListenerReceiveBufferBytes,
+                                    pairs.Max(static pair => pair.ListenerReceiveBufferBytes),
+                                    samples));
+                                Console.Error.WriteLine(
+                                    $"  connections={connectionCount} c{concurrency}/connection: complete");
+                            }
+                            finally
+                            {
+                                await DisposeConnectedPairsAsync(pairs).ConfigureAwait(false);
+                            }
                         }
-
-                        results.Add(Summarize(
-                            implementation,
-                            scenario,
-                            payloadSize,
-                            concurrency,
-                            samples));
-                        Console.Error.WriteLine($"  c{concurrency}: complete");
                     }
                 }
             }
@@ -173,7 +196,7 @@ internal static class QuicTransportLoopbackPerformanceHarness
     }
 
     private static async Task<SampleResult> RunSampleAsync(
-        IConnectedPair pair,
+        IReadOnlyList<IConnectedPair> pairs,
         Scenario scenario,
         byte[] requestPayload,
         byte[] responsePayload,
@@ -182,7 +205,8 @@ internal static class QuicTransportLoopbackPerformanceHarness
         bool collectMetrics,
         QuicRuntimeDiagnosticsCollector? diagnostics)
     {
-        WorkerState[] states = new WorkerState[concurrency];
+        int totalConcurrency = checked(pairs.Count * concurrency);
+        WorkerState[] states = new WorkerState[totalConcurrency];
         for (int index = 0; index < states.Length; index++)
         {
             states[index] = new WorkerState(requestPayload.Length, responsePayload.Length);
@@ -196,11 +220,13 @@ internal static class QuicTransportLoopbackPerformanceHarness
         long started = Stopwatch.GetTimestamp();
         long deadline = started + (long)(duration.TotalSeconds * Stopwatch.Frequency);
 
-        Task<WorkerResult>[] workers = new Task<WorkerResult>[concurrency];
+        Task<WorkerResult>[] workers = new Task<WorkerResult>[totalConcurrency];
         for (int index = 0; index < workers.Length; index++)
         {
             workers[index] = RunWorkerAsync(
-                pair,
+                pairs[index / concurrency],
+                workerIndex: index,
+                pairIndex: index / concurrency,
                 scenario,
                 requestPayload,
                 responsePayload,
@@ -251,11 +277,25 @@ internal static class QuicTransportLoopbackPerformanceHarness
             Gen1Collections: collectMetrics ? GC.CollectionCount(1) - gen1Before : 0,
             Gen2Collections: collectMetrics ? GC.CollectionCount(2) - gen2Before : 0,
             MetricsInstrumentationEnabled: diagnostics is not null,
-            RuntimeDiagnostics: runtimeDiagnostics);
+            RuntimeDiagnostics: runtimeDiagnostics,
+            SlowestWorkers: workerResults
+                .Select(static result => new WorkerSummary(
+                    result.WorkerIndex,
+                    result.PairIndex,
+                    result.Operations,
+                    result.Failures,
+                    result.LatenciesMilliseconds.Count == 0
+                        ? 0
+                        : result.LatenciesMilliseconds.Max()))
+                .OrderByDescending(static result => result.MaximumLatencyMilliseconds)
+                .Take(8)
+                .ToArray());
     }
 
     private static async Task<WorkerResult> RunWorkerAsync(
         IConnectedPair pair,
+        int workerIndex,
+        int pairIndex,
         Scenario scenario,
         byte[] requestPayload,
         byte[] responsePayload,
@@ -289,14 +329,19 @@ internal static class QuicTransportLoopbackPerformanceHarness
         }
         while (Stopwatch.GetTimestamp() < deadline);
 
-        return new WorkerResult(operations, failures, state.LatenciesMilliseconds);
+        return new WorkerResult(workerIndex, pairIndex, operations, failures, state.LatenciesMilliseconds);
     }
 
     private static ShapeResult Summarize(
         Implementation implementation,
         Scenario scenario,
         int payloadSize,
+        int connectionCount,
         int concurrency,
+        bool sharedListener,
+        int incursaReceiveWindowBytes,
+        int incursaListenerReceiveBufferBytes,
+        int actualListenerReceiveBufferBytes,
         List<SampleResult> samples)
     {
         double[] throughputs = samples.Select(static sample => sample.ThroughputMebibytesPerSecond).Order().ToArray();
@@ -308,6 +353,12 @@ internal static class QuicTransportLoopbackPerformanceHarness
             Scenario: FormatScenario(scenario),
             PayloadSizeBytes: payloadSize,
             Concurrency: concurrency,
+            Connections: connectionCount,
+            TotalConcurrency: checked(connectionCount * concurrency),
+            SharedListener: sharedListener,
+            IncursaReceiveWindowBytes: incursaReceiveWindowBytes,
+            IncursaListenerReceiveBufferBytes: incursaListenerReceiveBufferBytes,
+            ActualListenerReceiveBufferBytes: actualListenerReceiveBufferBytes,
             MedianThroughputMebibytesPerSecond: Percentile(throughputs, 0.50),
             MinimumThroughputMebibytesPerSecond: throughputs[0],
             MaximumThroughputMebibytesPerSecond: throughputs[^1],
@@ -354,6 +405,266 @@ internal static class QuicTransportLoopbackPerformanceHarness
         return payload;
     }
 
+    private static async Task<IConnectedPair[]> CreateConnectedPairsAsync(
+        Implementation implementation,
+        int connectionCount,
+        bool sharedListener,
+        int incursaReceiveWindowBytes,
+        int incursaListenerReceiveBufferBytes,
+        SslServerAuthenticationOptions serverOptions,
+        SslClientAuthenticationOptions clientOptions)
+    {
+        if (sharedListener && connectionCount > 1)
+        {
+            return implementation switch
+            {
+                Implementation.Incursa => await CreateSharedIncursaConnectedPairsAsync(
+                    connectionCount,
+                    incursaReceiveWindowBytes,
+                    incursaListenerReceiveBufferBytes,
+                    serverOptions,
+                    clientOptions).ConfigureAwait(false),
+                Implementation.SystemNet => await CreateSharedSystemNetConnectedPairsAsync(
+                    connectionCount,
+                    serverOptions,
+                    clientOptions).ConfigureAwait(false),
+                _ => throw new ArgumentOutOfRangeException(nameof(implementation)),
+            };
+        }
+
+        IConnectedPair[] pairs = new IConnectedPair[connectionCount];
+        int created = 0;
+        try
+        {
+            for (; created < pairs.Length; created++)
+            {
+                pairs[created] = implementation switch
+                {
+                    Implementation.Incursa => await IncursaConnectedPair.CreateAsync(
+                        serverOptions,
+                        clientOptions,
+                        incursaReceiveWindowBytes,
+                        incursaListenerReceiveBufferBytes).ConfigureAwait(false),
+                    Implementation.SystemNet => await SystemNetConnectedPair.CreateAsync(
+                        serverOptions,
+                        clientOptions).ConfigureAwait(false),
+                    _ => throw new ArgumentOutOfRangeException(nameof(implementation)),
+                };
+            }
+
+            return pairs;
+        }
+        catch
+        {
+            await DisposeConnectedPairsAsync(pairs.AsMemory(0, created).ToArray()).ConfigureAwait(false);
+            throw;
+        }
+    }
+
+    private static async Task<IConnectedPair[]> CreateSharedIncursaConnectedPairsAsync(
+        int connectionCount,
+        int incursaReceiveWindowBytes,
+        int incursaListenerReceiveBufferBytes,
+        SslServerAuthenticationOptions serverOptions,
+        SslClientAuthenticationOptions clientOptions)
+    {
+        IPEndPoint listenEndPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
+        IncursaListener? listener = await IncursaListener.ListenAsync(
+            CreateIncursaListenerOptions(
+                listenEndPoint,
+                serverOptions,
+                incursaReceiveWindowBytes)).ConfigureAwait(false);
+        ConfigureIncursaListenerReceiveBuffer(listener, incursaListenerReceiveBufferBytes);
+        IConnectedPair[] pairs = new IConnectedPair[connectionCount];
+        int created = 0;
+        try
+        {
+            for (; created < pairs.Length; created++)
+            {
+                CancellationTokenSource cancellationSource = new(TimeSpan.FromMinutes(10));
+                try
+                {
+                    Task<IncursaClientConnection> acceptTask = listener
+                        .AcceptConnectionAsync(cancellationSource.Token).AsTask();
+                    Task<IncursaClientConnection> connectTask = IncursaClientConnection.ConnectAsync(
+                        CreateIncursaClientOptions(
+                            new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
+                            clientOptions,
+                            incursaReceiveWindowBytes),
+                        cancellationSource.Token).AsTask();
+                    await Task.WhenAll(acceptTask, connectTask).ConfigureAwait(false);
+                    pairs[created] = new IncursaConnectedPair(
+                        created == 0 ? listener : null,
+                        await connectTask.ConfigureAwait(false),
+                        await acceptTask.ConfigureAwait(false),
+                        cancellationSource);
+                }
+                catch
+                {
+                    cancellationSource.Dispose();
+                    throw;
+                }
+            }
+
+            ConfigureIncursaListenerReceiveBuffer(listener, incursaListenerReceiveBufferBytes);
+            listener = null;
+            return pairs;
+        }
+        catch
+        {
+            await DisposeConnectedPairsAsync(pairs.AsMemory(0, created).ToArray()).ConfigureAwait(false);
+            if (listener is not null)
+            {
+                await listener.DisposeAsync().ConfigureAwait(false);
+            }
+
+            throw;
+        }
+    }
+
+    private static async Task<IConnectedPair[]> CreateSharedSystemNetConnectedPairsAsync(
+        int connectionCount,
+        SslServerAuthenticationOptions serverOptions,
+        SslClientAuthenticationOptions clientOptions)
+    {
+        IPEndPoint listenEndPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
+        SystemNetListener? listener = await SystemNetListener.ListenAsync(
+            QuicPublicApiLoopbackBenchmarkSupport.CreateSystemNetListenerOptions(
+                listenEndPoint,
+                serverOptions)).ConfigureAwait(false);
+        IConnectedPair[] pairs = new IConnectedPair[connectionCount];
+        int created = 0;
+        try
+        {
+            for (; created < pairs.Length; created++)
+            {
+                CancellationTokenSource cancellationSource = new(TimeSpan.FromMinutes(10));
+                try
+                {
+                    Task<SystemNetClientConnection> acceptTask = listener
+                        .AcceptConnectionAsync(cancellationSource.Token).AsTask();
+                    Task<SystemNetClientConnection> connectTask = SystemNetClientConnection.ConnectAsync(
+                        QuicPublicApiLoopbackBenchmarkSupport.CreateSystemNetClientOptions(
+                            new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
+                            clientOptions),
+                        cancellationSource.Token).AsTask();
+                    await Task.WhenAll(acceptTask, connectTask).ConfigureAwait(false);
+                    pairs[created] = new SystemNetConnectedPair(
+                        created == 0 ? listener : null,
+                        await connectTask.ConfigureAwait(false),
+                        await acceptTask.ConfigureAwait(false),
+                        cancellationSource);
+                }
+                catch
+                {
+                    cancellationSource.Dispose();
+                    throw;
+                }
+            }
+
+            listener = null;
+            return pairs;
+        }
+        catch
+        {
+            await DisposeConnectedPairsAsync(pairs.AsMemory(0, created).ToArray()).ConfigureAwait(false);
+            if (listener is not null)
+            {
+                await listener.DisposeAsync().ConfigureAwait(false);
+            }
+
+            throw;
+        }
+    }
+
+    private static async ValueTask DisposeConnectedPairsAsync(IReadOnlyList<IConnectedPair> pairs)
+    {
+        List<Exception>? exceptions = null;
+        for (int index = pairs.Count - 1; index >= 0; index--)
+        {
+            try
+            {
+                await pairs[index].DisposeAsync().ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                (exceptions ??= []).Add(exception);
+            }
+        }
+
+        if (exceptions is not null)
+        {
+            throw new AggregateException("One or more loopback connection pairs failed to dispose.", exceptions);
+        }
+    }
+
+    private static IncursaListenerOptions CreateIncursaListenerOptions(
+        IPEndPoint listenEndPoint,
+        SslServerAuthenticationOptions serverOptions,
+        int receiveWindowBytes)
+    {
+        IncursaListenerOptions options = QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaListenerOptions(
+            listenEndPoint,
+            serverOptions);
+        if (receiveWindowBytes <= 0)
+        {
+            return options;
+        }
+
+        Func<IncursaClientConnection, SslClientHelloInfo, CancellationToken, ValueTask<IncursaServerConnectionOptions>>
+            originalCallback = options.ConnectionOptionsCallback;
+        options.ConnectionOptionsCallback = async (connection, hello, cancellationToken) =>
+        {
+            IncursaServerConnectionOptions connectionOptions = await originalCallback(
+                connection,
+                hello,
+                cancellationToken).ConfigureAwait(false);
+            connectionOptions.InitialReceiveWindowSizes = CreateIncursaReceiveWindowSizes(receiveWindowBytes);
+            return connectionOptions;
+        };
+        return options;
+    }
+
+    private static IncursaClientConnectionOptions CreateIncursaClientOptions(
+        IPEndPoint remoteEndPoint,
+        SslClientAuthenticationOptions clientOptions,
+        int receiveWindowBytes)
+    {
+        IncursaClientConnectionOptions options = QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaClientOptions(
+            remoteEndPoint,
+            clientOptions);
+        if (receiveWindowBytes > 0)
+        {
+            options.InitialReceiveWindowSizes = CreateIncursaReceiveWindowSizes(receiveWindowBytes);
+        }
+
+        return options;
+    }
+
+    private static IncursaReceiveWindowSizes CreateIncursaReceiveWindowSizes(int receiveWindowBytes)
+        => new()
+        {
+            Connection = receiveWindowBytes,
+            LocallyInitiatedBidirectionalStream = receiveWindowBytes,
+            RemotelyInitiatedBidirectionalStream = receiveWindowBytes,
+            UnidirectionalStream = receiveWindowBytes,
+        };
+
+    private static void ConfigureIncursaListenerReceiveBuffer(
+        IncursaListener listener,
+        int receiveBufferBytes)
+    {
+        if (receiveBufferBytes <= 0)
+        {
+            return;
+        }
+
+        listener.Host.Socket.ReceiveBufferSize = receiveBufferBytes;
+        Console.Error.WriteLine(
+            $"  Incursa listener UDP receive buffer: requested={receiveBufferBytes:N0} " +
+            $"actual={listener.Host.Socket.ReceiveBufferSize:N0} bytes.");
+    }
+
     private static async Task ReadExactlyAndValidateAsync(
         Stream stream,
         byte[] buffer,
@@ -389,7 +700,10 @@ internal static class QuicTransportLoopbackPerformanceHarness
         Console.Error.WriteLine(
             "Usage: --transport-loopback [--implementations incursa,systemnet] " +
             "[--scenarios download,upload,duplex] [--payload-sizes 1024,65536,1048576] " +
-            "[--concurrency 1,4,16] [--samples 5] [--duration-seconds 2] " +
+            "[--connections 1] [--shared-listener true|false] [--concurrency 1,4,16] " +
+            "[--incursa-receive-window-bytes 0] " +
+            "[--incursa-listener-receive-buffer-bytes 0] " +
+            "[--samples 5] [--duration-seconds 2] " +
             "[--warmup-seconds 1] [--diagnostics true|false] [--label name] [--json path]");
     }
 
@@ -412,6 +726,8 @@ internal static class QuicTransportLoopbackPerformanceHarness
     {
         string Name { get; }
 
+        int ListenerReceiveBufferBytes { get; }
+
         Task TransferAsync(
             Scenario scenario,
             byte[] requestPayload,
@@ -421,34 +737,41 @@ internal static class QuicTransportLoopbackPerformanceHarness
     }
 
     private sealed class IncursaConnectedPair(
-        IncursaListener listener,
+        IncursaListener? listener,
         IncursaClientConnection client,
         IncursaClientConnection server,
         CancellationTokenSource cancellationSource) : IConnectedPair
     {
         public string Name => "Incursa.Quic";
 
+        public int ListenerReceiveBufferBytes => listener?.Host.Socket.ReceiveBufferSize ?? 0;
+
         public static async Task<IncursaConnectedPair> CreateAsync(
             SslServerAuthenticationOptions serverOptions,
-            SslClientAuthenticationOptions clientOptions)
+            SslClientAuthenticationOptions clientOptions,
+            int receiveWindowBytes,
+            int listenerReceiveBufferBytes)
         {
             CancellationTokenSource cancellationSource = new(TimeSpan.FromMinutes(10));
             try
             {
                 IPEndPoint listenEndPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
                 IncursaListener listener = await IncursaListener.ListenAsync(
-                    QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaListenerOptions(
+                    CreateIncursaListenerOptions(
                         listenEndPoint,
-                        serverOptions),
+                        serverOptions,
+                        receiveWindowBytes),
                     cancellationSource.Token).ConfigureAwait(false);
+                ConfigureIncursaListenerReceiveBuffer(listener, listenerReceiveBufferBytes);
                 try
                 {
                     Task<IncursaClientConnection> acceptTask = listener
                         .AcceptConnectionAsync(cancellationSource.Token).AsTask();
                     Task<IncursaClientConnection> connectTask = IncursaClientConnection.ConnectAsync(
-                        QuicPublicApiLoopbackBenchmarkSupport.CreateIncursaClientOptions(
+                        CreateIncursaClientOptions(
                             new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
-                            clientOptions),
+                            clientOptions,
+                            receiveWindowBytes),
                         cancellationSource.Token).AsTask();
                     await Task.WhenAll(acceptTask, connectTask).ConfigureAwait(false);
                     return new IncursaConnectedPair(
@@ -536,7 +859,10 @@ internal static class QuicTransportLoopbackPerformanceHarness
             {
                 await server.DisposeAsync().ConfigureAwait(false);
                 await client.DisposeAsync().ConfigureAwait(false);
-                await listener.DisposeAsync().ConfigureAwait(false);
+                if (listener is not null)
+                {
+                    await listener.DisposeAsync().ConfigureAwait(false);
+                }
                 cancellationSource.Dispose();
             }
         }
@@ -563,11 +889,14 @@ internal static class QuicTransportLoopbackPerformanceHarness
     }
 
     private sealed class SystemNetConnectedPair(
+        SystemNetListener? listener,
         SystemNetClientConnection client,
         SystemNetClientConnection server,
         CancellationTokenSource cancellationSource) : IConnectedPair
     {
         public string Name => "System.Net.Quic";
+
+        public int ListenerReceiveBufferBytes => 0;
 
         public static async Task<SystemNetConnectedPair> CreateAsync(
             SslServerAuthenticationOptions serverOptions,
@@ -581,6 +910,7 @@ internal static class QuicTransportLoopbackPerformanceHarness
                         serverOptions,
                         clientOptions).ConfigureAwait(false);
                 return new SystemNetConnectedPair(
+                    listener: null,
                     client,
                     server,
                     cancellationSource);
@@ -657,6 +987,11 @@ internal static class QuicTransportLoopbackPerformanceHarness
             {
                 await server.DisposeAsync().ConfigureAwait(false);
                 await client.DisposeAsync().ConfigureAwait(false);
+                if (listener is not null)
+                {
+                    await listener.DisposeAsync().ConfigureAwait(false);
+                }
+
                 cancellationSource.Dispose();
             }
         }
@@ -691,7 +1026,19 @@ internal static class QuicTransportLoopbackPerformanceHarness
         public List<double> LatenciesMilliseconds { get; } = [];
     }
 
-    private sealed record WorkerResult(int Operations, int Failures, List<double> LatenciesMilliseconds);
+    private sealed record WorkerResult(
+        int WorkerIndex,
+        int PairIndex,
+        int Operations,
+        int Failures,
+        List<double> LatenciesMilliseconds);
+
+    private sealed record WorkerSummary(
+        int WorkerIndex,
+        int PairIndex,
+        int Operations,
+        int Failures,
+        double MaximumLatencyMilliseconds);
 
     private sealed record SampleResult(
         int Operations,
@@ -709,13 +1056,20 @@ internal static class QuicTransportLoopbackPerformanceHarness
         int Gen1Collections,
         int Gen2Collections,
         bool MetricsInstrumentationEnabled,
-        QuicRuntimeDiagnosticsResult? RuntimeDiagnostics);
+        QuicRuntimeDiagnosticsResult? RuntimeDiagnostics,
+        IReadOnlyList<WorkerSummary> SlowestWorkers);
 
     private sealed record ShapeResult(
         string Implementation,
         string Scenario,
         int PayloadSizeBytes,
         int Concurrency,
+        int Connections,
+        int TotalConcurrency,
+        bool SharedListener,
+        int IncursaReceiveWindowBytes,
+        int IncursaListenerReceiveBufferBytes,
+        int ActualListenerReceiveBufferBytes,
         double MedianThroughputMebibytesPerSecond,
         double MinimumThroughputMebibytesPerSecond,
         double MaximumThroughputMebibytesPerSecond,
@@ -746,11 +1100,15 @@ internal static class QuicTransportLoopbackPerformanceHarness
         IReadOnlyList<Implementation> Implementations,
         IReadOnlyList<Scenario> Scenarios,
         IReadOnlyList<int> PayloadSizes,
+        IReadOnlyList<int> ConnectionCounts,
         IReadOnlyList<int> ConcurrencyLevels,
         int Samples,
         int DurationSeconds,
         int WarmupSeconds,
         bool Diagnostics,
+        bool SharedListener,
+        int IncursaReceiveWindowBytes,
+        int IncursaListenerReceiveBufferBytes,
         string Label,
         string? JsonPath)
     {
@@ -759,11 +1117,15 @@ internal static class QuicTransportLoopbackPerformanceHarness
             IReadOnlyList<Implementation> implementations = [Implementation.Incursa, Implementation.SystemNet];
             IReadOnlyList<Scenario> scenarios = [Scenario.Download, Scenario.Upload, Scenario.Duplex];
             IReadOnlyList<int> payloadSizes = [1024, 64 * 1024, 1024 * 1024];
+            IReadOnlyList<int> connectionCounts = [1];
             IReadOnlyList<int> concurrencyLevels = [1, 4, 16];
             int samples = 5;
             int durationSeconds = 2;
             int warmupSeconds = 1;
             bool diagnostics = false;
+            bool sharedListener = false;
+            int incursaReceiveWindowBytes = 0;
+            int incursaListenerReceiveBufferBytes = 0;
             string label = "local";
             string? jsonPath = null;
 
@@ -785,6 +1147,9 @@ internal static class QuicTransportLoopbackPerformanceHarness
                     case "--concurrency":
                         concurrencyLevels = ParsePositiveIntegers(value, option);
                         break;
+                    case "--connections":
+                        connectionCounts = ParsePositiveIntegers(value, option);
+                        break;
                     case "--samples":
                         samples = ParsePositiveInteger(value, option);
                         break;
@@ -796,6 +1161,15 @@ internal static class QuicTransportLoopbackPerformanceHarness
                         break;
                     case "--diagnostics":
                         diagnostics = ParseBoolean(value, option);
+                        break;
+                    case "--shared-listener":
+                        sharedListener = ParseBoolean(value, option);
+                        break;
+                    case "--incursa-receive-window-bytes":
+                        incursaReceiveWindowBytes = ParseNonNegativeInteger(value, option);
+                        break;
+                    case "--incursa-listener-receive-buffer-bytes":
+                        incursaListenerReceiveBufferBytes = ParseNonNegativeInteger(value, option);
                         break;
                     case "--label":
                         label = value;
@@ -812,11 +1186,15 @@ internal static class QuicTransportLoopbackPerformanceHarness
                 implementations,
                 scenarios,
                 payloadSizes,
+                connectionCounts,
                 concurrencyLevels,
                 samples,
                 durationSeconds,
                 warmupSeconds,
                 diagnostics,
+                sharedListener,
+                incursaReceiveWindowBytes,
+                incursaListenerReceiveBufferBytes,
                 label,
                 jsonPath);
         }
@@ -878,6 +1256,17 @@ internal static class QuicTransportLoopbackPerformanceHarness
             if (parsed <= 0)
             {
                 throw new ArgumentException($"Option '{option}' values must be positive.");
+            }
+
+            return parsed;
+        }
+
+        private static int ParseNonNegativeInteger(string value, string option)
+        {
+            int parsed = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+            if (parsed < 0)
+            {
+                throw new ArgumentException($"Option '{option}' must not be negative.");
             }
 
             return parsed;

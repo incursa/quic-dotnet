@@ -120,6 +120,36 @@ cost can be separated from runtime completion cost. Treat the phase output as
 diagnostic attribution for choosing the next code-review target, not as a
 standalone performance claim.
 
+## Local QUIC Transport Loopback
+
+Use `--transport-loopback` for repeated exact public QUIC transfers against
+Incursa.Quic, System.Net.Quic, or both. The harness supports independent or
+shared listeners, multiple established connections, per-connection
+concurrency, worker-tail reporting, and opt-in runtime diagnostics:
+
+```powershell
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- `
+  --transport-loopback `
+  --implementations incursa,systemnet `
+  --scenarios download,upload,duplex `
+  --payload-sizes 1024,65536,1048576 `
+  --connections 16 `
+  --shared-listener true `
+  --concurrency 1 `
+  --samples 5 `
+  --duration-seconds 2 `
+  --warmup-seconds 1 `
+  --json .artifacts/perf/quic-transport/local.json
+```
+
+`connections * concurrency` is the total worker count. The JSON records both
+the requested and actual Incursa listener UDP receive-buffer size plus the
+slowest workers in every sample. `--incursa-listener-receive-buffer-bytes` and
+`--incursa-receive-window-bytes` are diagnostic overrides for matched causal
+experiments; they are not recommended production configuration. Add
+`--diagnostics true` only for attribution because meter collection perturbs
+timing and allocation.
+
 ## Local HTTP/3 Loopback
 
 Use the local HTTP/3 harness for repeated end-to-end development measurements
@@ -153,6 +183,10 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- `
   --diagnostics true `
   --json .artifacts/perf/http3-local/duplex-diagnostics.json
 ```
+
+`--listener-receive-buffer-bytes` provides the same benchmark-only UDP receive
+buffer override for matched HTTP/3 controls. Leave it at zero to exercise the
+runtime default.
 
 Certificate generation, listener startup, and connection warmup are outside
 measured samples. Every response must use exact HTTP/3, declare the expected

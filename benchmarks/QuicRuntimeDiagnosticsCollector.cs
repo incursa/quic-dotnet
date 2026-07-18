@@ -32,7 +32,11 @@ internal sealed class QuicRuntimeDiagnosticsCollector : IAsyncDisposable
                     || instrument.Name is "incursa.quic.datagrams.received"
                         or "incursa.quic.datagrams.sent"
                         or "incursa.quic.bytes.received"
-                        or "incursa.quic.bytes.sent"))
+                        or "incursa.quic.bytes.sent"
+                        or "incursa.quic.packets.dropped"
+                        or "incursa.quic.udp.errors"
+                        or "incursa.quic.pto.count"
+                        or "incursa.quic.flow_control.blocked"))
             {
                 meterListener.EnableMeasurementEvents(instrument, this);
             }

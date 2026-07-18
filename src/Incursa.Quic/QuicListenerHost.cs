@@ -33,6 +33,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private const int RetryBootstrapReplayValidationFailureTokenValidation = 10;
     private const int RetryBootstrapReplayValidationFailurePacketNumberReset = 11;
     private const int ReceiveBufferBytes = 4096;
+    internal const int DesiredSocketReceiveBufferBytes = 4 * 1024 * 1024;
     private const int MaximumBufferedZeroRttDatagramsPerConnection = 2;
     private static readonly TimeSpan RetryBootstrapTokenLifetime = TimeSpan.FromMinutes(1);
 
@@ -171,6 +172,21 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     internal string? NewTokenValidationTokenHex => newTokenValidationTokenHex;
 
     internal Socket Socket => socket;
+
+    private static void TryIncreaseSocketReceiveBuffer(Socket targetSocket)
+    {
+        try
+        {
+            if (targetSocket.ReceiveBufferSize < DesiredSocketReceiveBufferBytes)
+            {
+                targetSocket.ReceiveBufferSize = DesiredSocketReceiveBufferBytes;
+            }
+        }
+        catch (SocketException)
+        {
+            // The platform default remains functional when an OS policy caps or rejects the request.
+        }
+    }
 
     internal QuicReceiveBufferPoolSnapshot ReceiveBufferPoolSnapshot => receiveBufferPool.Snapshot;
 
@@ -1449,6 +1465,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             if (!connections.TryAdd(handle, new PendingConnectionState(handle, runtime, connection)))
             {
                 return Fail("register-pending-connection", "pending-connection-registration-failed");
+            }
+
+            if (connections.Count > 1)
+            {
+                TryIncreaseSocketReceiveBuffer(socket);
             }
 
             if (!runtime.TryConfigurePeerInitialPacketProtection(initialVersion, initialDestinationConnectionId.Span)

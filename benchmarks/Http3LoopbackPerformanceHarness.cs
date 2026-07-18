@@ -76,7 +76,10 @@ internal static class Http3LoopbackPerformanceHarness
             byte[] expectedBody = CreateDeterministicBytes(payloadSize);
             foreach (ScenarioKind scenario in options.Scenarios)
             {
-                await using LoopbackServer server = await LoopbackServer.StartAsync(scenario, expectedBody).ConfigureAwait(false);
+                await using LoopbackServer server = await LoopbackServer.StartAsync(
+                    scenario,
+                    expectedBody,
+                    options.ListenerReceiveBufferBytes).ConfigureAwait(false);
 
                 foreach (int concurrency in options.ConcurrencyLevels)
                 {
@@ -119,6 +122,7 @@ internal static class Http3LoopbackPerformanceHarness
             WarmupSeconds: options.WarmupSeconds,
             Samples: options.Samples,
             DiagnosticsEnabled: options.Diagnostics,
+            ListenerReceiveBufferBytes: options.ListenerReceiveBufferBytes,
             Results: results);
     }
 
@@ -330,6 +334,7 @@ internal static class Http3LoopbackPerformanceHarness
         Console.Error.WriteLine(
             "Usage: --http3-loopback [--scenarios fixed,streaming,upload,duplex] " +
             "[--payload-sizes 1024,65536,1048576] [--concurrency 1,4,16] " +
+            "[--listener-receive-buffer-bytes 0] " +
             "[--samples 5] [--duration-seconds 3] [--warmup-seconds 1] " +
             "[--diagnostics true|false] [--label name] [--json path]");
     }
@@ -506,7 +511,10 @@ internal static class Http3LoopbackPerformanceHarness
 
         internal int TransferredBytesPerRequest { get; }
 
-        internal static async Task<LoopbackServer> StartAsync(ScenarioKind scenario, byte[] payload)
+        internal static async Task<LoopbackServer> StartAsync(
+            ScenarioKind scenario,
+            byte[] payload,
+            int listenerReceiveBufferBytes)
         {
             X509Certificate2 certificate = QuicPublicApiLoopbackBenchmarkSupport.CreateServerCertificate();
             IPEndPoint endPoint = QuicPublicApiLoopbackBenchmarkSupport.GetUnusedLoopbackEndPoint();
@@ -545,7 +553,16 @@ internal static class Http3LoopbackPerformanceHarness
                 ScenarioKind.Duplex => new DuplexHandler(),
                 _ => throw new ArgumentOutOfRangeException(nameof(scenario)),
             };
-            Http3Server server = await Http3Server.ListenAsync(listenerOptions, handler).ConfigureAwait(false);
+            QuicListener listener = await QuicListener.ListenAsync(listenerOptions).ConfigureAwait(false);
+            if (listenerReceiveBufferBytes > 0)
+            {
+                listener.Host.Socket.ReceiveBufferSize = listenerReceiveBufferBytes;
+                Console.Error.WriteLine(
+                    $"HTTP/3 listener UDP receive buffer: requested={listenerReceiveBufferBytes:N0} " +
+                    $"actual={listener.Host.Socket.ReceiveBufferSize:N0} bytes.");
+            }
+
+            Http3Server server = Http3Server.Attach(listener, handler);
             CancellationTokenSource shutdown = new(TimeSpan.FromMinutes(10));
             Task serverTask = server.ServeAsync(shutdown.Token);
             SocketsHttpHandler socketsHandler = new()
@@ -582,6 +599,7 @@ internal static class Http3LoopbackPerformanceHarness
         int DurationSeconds,
         int WarmupSeconds,
         bool Diagnostics,
+        int ListenerReceiveBufferBytes,
         string Label,
         string? JsonPath)
     {
@@ -605,12 +623,15 @@ internal static class Http3LoopbackPerformanceHarness
             int durationSeconds = ParsePositive(values.GetValueOrDefault("--duration-seconds", "3"), "duration seconds");
             int warmupSeconds = ParsePositive(values.GetValueOrDefault("--warmup-seconds", "1"), "warmup seconds");
             bool diagnostics = ParseBoolean(values.GetValueOrDefault("--diagnostics", "false"), "diagnostics");
+            int listenerReceiveBufferBytes = ParseNonNegative(
+                values.GetValueOrDefault("--listener-receive-buffer-bytes", "0"),
+                "listener receive buffer bytes");
             string label = values.GetValueOrDefault("--label", "local");
             string? jsonPath = values.GetValueOrDefault("--json");
 
             string[] known = [
                 "--scenarios", "--payload-sizes", "--concurrency", "--samples", "--duration-seconds",
-                "--warmup-seconds", "--diagnostics", "--label", "--json",
+                "--warmup-seconds", "--diagnostics", "--listener-receive-buffer-bytes", "--label", "--json",
             ];
             string? unknown = values.Keys.FirstOrDefault(key => !known.Contains(key, StringComparer.OrdinalIgnoreCase));
             if (unknown is not null)
@@ -626,6 +647,7 @@ internal static class Http3LoopbackPerformanceHarness
                 durationSeconds,
                 warmupSeconds,
                 diagnostics,
+                listenerReceiveBufferBytes,
                 label,
                 jsonPath);
         }
@@ -672,6 +694,17 @@ internal static class Http3LoopbackPerformanceHarness
             if (parsed <= 0)
             {
                 throw new ArgumentOutOfRangeException(name, parsed, $"{name} must be positive.");
+            }
+
+            return parsed;
+        }
+
+        private static int ParseNonNegative(string value, string name)
+        {
+            int parsed = int.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
+            if (parsed < 0)
+            {
+                throw new ArgumentOutOfRangeException(name, $"{name} must not be negative.");
             }
 
             return parsed;
@@ -749,6 +782,7 @@ internal static class Http3LoopbackPerformanceHarness
         int WarmupSeconds,
         int Samples,
         bool DiagnosticsEnabled,
+        int ListenerReceiveBufferBytes,
         IReadOnlyList<ShapeResult> Results);
 
     private sealed class RuntimeDiagnosticsCollector : IAsyncDisposable

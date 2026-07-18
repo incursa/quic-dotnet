@@ -4992,3 +4992,47 @@ loopback JSON/logs, the candidate diff, and the full decision record are under
 read-wait source variant without a materially different scheduling mechanism
 that explains why both the direct-read and signal-only designs reduce
 allocation but regress stable timing controls.
+
+### Accepted 2026-07-18: adaptive shared-listener UDP receive capacity
+
+New local multi-connection coverage separated one connection with many streams,
+many independent listener sockets, and many connections behind one shared
+listener. Sixteen independent listeners completed exact one-MiB duplex traffic
+without detected loss, while a shared listener repeatedly stranded a moving
+connection pair for 3-14 seconds. Instrumented shared-listener samples recorded
+561-829 client-side loss detections and 31-39 aggregate PTOs, with zero explicit
+UDP send errors or library packet drops. A single connection at c16 recorded no
+loss, proving that shared socket ingress rather than generic recovery caused
+this failure mode.
+
+Two causal alternatives were rejected. Increasing QUIC connection and stream
+receive windows to 128 MiB did not remove the stalls, so flow-control credit was
+not the primary cause. Fixed 256 KiB and 4 MiB listener buffers stabilized raw
+traffic, but unconditional buffering crossed the HTTP/3 control guardrail: the
+256 KiB c16 upload repeat regressed 22%, and the 4 MiB repeat was borderline at
+-6.4% with higher process-wide allocation per completed request. Those values
+must not be applied unconditionally.
+
+The accepted design preserves the platform socket buffer for one connection
+and best-effort raises the shared listener receive queue to 4 MiB when a second
+connection is registered. The bound is per listener, not per connection, and
+an OS cap or rejected socket option falls back to the functional platform
+default. It does not alter authentication, congestion control, flow control,
+loss recovery, packet scheduling, stream semantics, or application buffers.
+
+The final exact one-MiB, 16-connection, c1-per-connection A/B/B/A campaign used
+five samples per pass and ten per variant:
+
+| Variant | Actual receive buffer | Median MiB/s | Range MiB/s | CV | Median p99 | Worst worker | Median B/op |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| explicit baseline | 64 KiB | 103.51 | 22.15-118.13 | 29.34% | 358.88 ms | 4,623.39 ms | 919,533 |
+| adaptive candidate | 4 MiB | 106.34 | 82.71-111.44 | 9.70% | 311.77 ms | 381.79 ms | 930,264 |
+
+Median throughput improved 2.7%, but the material result is bounded progress:
+throughput variance fell 67%, median p99 fell 13%, and the worst worker tail
+fell 91.7%. A separate adaptive diagnostic sample reported the actual 4 MiB
+buffer and zero client/server loss detections, PTOs, packet drops, and UDP
+errors. One-connection c1/c4 controls retained the platform 64 KiB buffer and
+showed no regression beyond 5%; exact fixed, streaming, upload, and duplex
+HTTP/3 controls had zero failures. Evidence and commands are retained under
+`C:\shared\temp\quic-connection-topology-20260718`.
