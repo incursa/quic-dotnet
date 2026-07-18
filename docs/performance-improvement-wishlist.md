@@ -5250,3 +5250,57 @@ larger fraction of actor service time. The remaining gap still requires a
 mechanism that reduces packet count, synchronous datagram submission cost, or
 the serial actor work required per ACK by substantially more than this ledger
 optimization.
+
+### Rejected 2026-07-18: active-transfer PMTU discovery variants
+
+The fixed one-MiB c16 diagnostic run sent 206,917,272 server bytes in 169,834
+datagrams, only about 1,218 bytes per datagram, while recovery emitted exactly
+four datagrams per application-send flush. Two bounded DPLPMTUD variants tested
+whether raising the active path from QUIC's 1,200-byte floor during sustained
+traffic could reduce packet count and synchronous socket submissions.
+
+The first variant allowed the existing path-MTU timer to send while ordinary
+application data was queued or ACK-eliciting data remained in flight, while
+still deferring behind pending retransmissions. Its focused requirement-home
+coverage passed 9/9. Frozen source-backed targets used baseline SHA-256
+A8C654B3B05BE14ABEF38BED5DCBFE72E0901D7BDA34A47FC524F54932DFCBAC
+and candidate SHA-256
+84155414F03E280E3351E3B34BE3FE7959B911B93C2EA8A6C3C3CE7A59D095D7.
+Six exact A/B/B/A samples per variant and cell produced:
+
+| Shape | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| c1 | 44.08 | 43.60 | -1.1% | +1.9% | -4.2% |
+| c4 | 42.35 | 43.05 | +1.7% | +0.5% | -1.0% |
+| c16 | 38.71 | 38.47 | -0.6% | +1.3% | +1.3% |
+
+An attribution-only instrumented candidate run averaged about 1,226 bytes per
+server datagram. The timer still entered the deeply backlogged actor queue and
+raised the packet size too late to affect most of the transfer. Evidence is
+retained under
+C:\shared\temp\quic-h3-active-pmtu-20260718.
+
+The second, materially different variant emitted the single non-retransmittable
+discovery probe directly in the transition that first acknowledged application
+STREAM data, retaining the timer only as a fallback when immediate prerequisites
+were unavailable. Focused requirement-home coverage passed 10/10. Frozen
+source-backed targets used the same baseline and candidate SHA-256
+666EAF33C17310D3A5BB5442EE65F7B483330DE589C7AFE93862F3C6B976D2DD.
+Six exact A/B/B/A samples per variant and cell produced:
+
+| Shape | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| c1 | 44.43 | 44.73 | +0.7% | +2.8% | -0.9% |
+| c4 | 43.98 | 42.97 | -2.3% | +2.0% | +3.6% |
+| c16 | 39.24 | 38.73 | -1.3% | +0.9% | -1.4% |
+
+All 36 measured samples in each campaign passed exact HTTP/3, content-length,
+EOF, payload, and request validation with zero failures. The direct variant's
+instrumented run averaged about 1,228 bytes per server datagram, so earlier
+discovery still did not materially change the packet shape or performance.
+Both runtime and candidate-only test changes were reverted, and ProtocolLab was
+not run. The second campaign is retained under
+C:\shared\temp\quic-h3-immediate-pmtu-20260718. Do not repeat PMTU timing
+or immediate-probe variants without new evidence that ordinary packets actually
+remain materially larger for most of the measured transfer and that the reduced
+packet count can exceed the cost of the existing actor and socket-send path.
