@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9000-0092",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9000 Timer-Gated Path MTU Discovery",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the bounded runtime integration that validates a larger path datagram ceiling without assuming an unproven MTU or competing with live application and recovery traffic.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0006",
+    "WI-QUIC-RFC9000-0092",
+    "VER-QUIC-RFC9000-0092"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9000-S14P3-0001",
+    "REQ-QUIC-RFC9000-S14P3-0002",
+    "RFC9000-S14-3-P2-S1-R01",
+    "RFC9000-S14-3-P3-S1-R01"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+    "src/Incursa.Quic/QuicDplpmtudState.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0001.cs"
+  ],
+  "design_summary": "Ordinary packets retain the 1200-byte QUIC minimum until a validated active path has acknowledged application stream data. That acknowledgment arms a dedicated one-millisecond runtime timer instead of sending inline. The timer sends one exact PING-plus-PADDING probe only when the same path remains active and validated, no application writes or retransmissions are queued, and no ack-eliciting packet remains in flight. IPv4 and IPv6 targets are 1472 and 1452 bytes respectively and are capped by the peer's max_udp_payload_size. A matching probe acknowledgment promotes only that path's ordinary datagram ceiling; probe loss leaves the ceiling unchanged.",
+  "data_and_state_considerations": "The path record owns the bounded attempted-probe latch. Outstanding probe packet numbers are mapped to path identities and mirrored in the existing DPLPMTUD helper until acknowledgment or loss. The dedicated timer uses the existing generated-deadline machinery and captures the active path identity so migration cannot apply a stale probe to a new path.",
+  "edge_cases_and_constraints": [
+    "The probe target never exceeds the peer's advertised max_udp_payload_size.",
+    "Handshake completion alone does not schedule or send a PMTU probe.",
+    "The timer does not probe while application data, retransmissions, or ack-eliciting packets are outstanding.",
+    "A stale timer for a no-longer-active path cannot send a probe on the replacement path.",
+    "Loss removes outstanding probe tracking and does not raise the ordinary datagram ceiling.",
+    "One discovery attempt is permitted per bounded path record; repeated probing and search-state backoff are separate future work."
+  ],
+  "risks": [
+    "A single lost discovery probe can leave a capable path at the safe 1200-byte ceiling for the lifetime of that path record.",
+    "Common Ethernet targets do not constitute general black-hole discovery or alternative-path search.",
+    "The local loopback result requires matched ProtocolLab confirmation before any public performance claim."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Rejected Trigger Placements",
+      "content": "Immediate post-handshake probing and inline ACK-transition probing improved local throughput but failed recovery and scheduling tests. Posting a follow-on actor event still allowed synchronous dispatcher reentrancy to consume congestion budget before recovery. An idle ACK send avoided that reentrancy but still changed ACK transitions required to emit no datagrams. The dedicated timer is the first trigger placement that preserves those boundaries."
+    }
+  ]
+}

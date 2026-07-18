@@ -2508,7 +2508,9 @@ internal sealed partial class QuicConnectionRuntime
         ulong[]? rentedNewlyAcknowledgedAckElicitingPacketNumbers = null;
         int newlyAcknowledgedAckElicitingPacketNumberCount = 0;
         bool acknowledgedCurrentOneRttKeyPhasePacket = false;
+        bool acknowledgedApplicationStreamDataValue = false;
         ulong largestAcknowledgedPacketSentAtMicros = 0;
+        List<(QuicConnectionPathIdentity PathIdentity, ulong MaximumDatagramSizeBytes)>? acknowledgedPathMtuProbes = null;
 
         bool stateChanged = false;
 
@@ -2528,6 +2530,16 @@ internal sealed partial class QuicConnectionRuntime
                 ulong largestAcknowledged = ackFrame.LargestAcknowledged;
                 ulong smallestAcknowledged = largestAcknowledged - ackFrame.FirstAckRange;
                 ProcessAcknowledgedPacketRange(smallestAcknowledged, largestAcknowledged);
+            }
+
+            if (diagnosticsEnabled && acknowledgedPathMtuProbes is not null)
+            {
+                foreach ((QuicConnectionPathIdentity pathIdentity, ulong maximumDatagramSizeBytes) in acknowledgedPathMtuProbes)
+                {
+                    EmitDiagnostic(
+                        ref effects,
+                        QuicDiagnostics.PmtuUpdated(pathIdentity, maximumDatagramSizeBytes, isProvisional: false));
+                }
             }
 
             stateChanged |= sendRuntime.FlowController.TryFinalizeExternallyRetainedAckFrame(
@@ -2570,6 +2582,12 @@ internal sealed partial class QuicConnectionRuntime
                 AppendLifecycleTimerEffects(ref effects);
             }
 
+            if (acknowledgedApplicationStreamDataValue && TryArmPathMtuProbeTimer(nowTicks))
+            {
+                stateChanged = true;
+                AppendLifecycleTimerEffects(ref effects);
+            }
+
             return stateChanged;
         }
         finally
@@ -2602,6 +2620,12 @@ internal sealed partial class QuicConnectionRuntime
                     {
                         acknowledgedCurrentOneRttKeyPhasePacket = true;
                     }
+                    if (packetNumberSpace == QuicPacketNumberSpace.ApplicationData
+                        && !sentPacket.ProbePacket
+                        && (sentPacket.StreamId.HasValue || sentPacket.StreamIds is { Length: > 0 }))
+                    {
+                        acknowledgedApplicationStreamDataValue = true;
+                    }
 
                     if (sentPacket.AckEliciting)
                     {
@@ -2609,6 +2633,17 @@ internal sealed partial class QuicConnectionRuntime
                             packetNumber,
                             ref rentedNewlyAcknowledgedAckElicitingPacketNumbers,
                             ref newlyAcknowledgedAckElicitingPacketNumberCount);
+                    }
+
+                    if (packetNumberSpace == QuicPacketNumberSpace.ApplicationData
+                        && TryRegisterPathMtuProbeAcknowledged(
+                            packetNumber,
+                            out QuicConnectionPathIdentity pathIdentity,
+                            out ulong maximumDatagramSizeBytes))
+                    {
+                        acknowledgedPathMtuProbes ??= [];
+                        acknowledgedPathMtuProbes.Add((pathIdentity, maximumDatagramSizeBytes));
+                        stateChanged = true;
                     }
                 }
 

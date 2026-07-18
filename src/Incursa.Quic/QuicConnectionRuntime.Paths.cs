@@ -1069,6 +1069,61 @@ internal sealed partial class QuicConnectionRuntime
             resetToInitialWindow: false);
     }
 
+    private bool TryRegisterPathMtuProbeAcknowledged(
+        ulong packetNumber,
+        out QuicConnectionPathIdentity pathIdentity,
+        out ulong maximumDatagramSizeBytes)
+    {
+        pathIdentity = default;
+        maximumDatagramSizeBytes = default;
+        if (!pathMtuProbePathsByPacketNumber.Remove(
+                packetNumber,
+                out pathIdentity)
+            || !dplpmtudState.TryRegisterProbeAcknowledged(pathIdentity, packetNumber))
+        {
+            return false;
+        }
+
+        maximumDatagramSizeBytes = dplpmtudState
+            .GetPathSnapshot(pathIdentity)
+            .MaximumPacketSizeBytes;
+        _ = dplpmtudState.TryRemovePath(pathIdentity);
+        return TryApplyDiscoveredPathMaximumDatagramSize(pathIdentity, maximumDatagramSizeBytes);
+    }
+
+    private bool TryApplyDiscoveredPathMaximumDatagramSize(
+        QuicConnectionPathIdentity pathIdentity,
+        ulong maximumDatagramSizeBytes)
+    {
+        if (activePath is QuicConnectionActivePathRecord activePathValue
+            && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePathValue.Identity, pathIdentity))
+        {
+            return TrySetActivePathMaximumDatagramSize(maximumDatagramSizeBytes);
+        }
+
+        if (candidatePaths.TryGetValue(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
+        {
+            candidatePaths[pathIdentity] = candidatePath with
+            {
+                MaximumDatagramSizeState = candidatePath.MaximumDatagramSizeState
+                    .WithMaximumDatagramSize(maximumDatagramSizeBytes),
+            };
+            return true;
+        }
+
+        if (recentlyValidatedPaths.TryGetValue(pathIdentity, out QuicConnectionValidatedPathRecord validatedPath))
+        {
+            recentlyValidatedPaths[pathIdentity] = validatedPath with
+            {
+                MaximumDatagramSizeState = validatedPath.MaximumDatagramSizeState
+                    .WithMaximumDatagramSize(maximumDatagramSizeBytes),
+            };
+            return true;
+        }
+
+        return false;
+    }
+
     internal bool TryApplyProvisionalIcmpMaximumDatagramSizeReduction(
         QuicConnectionPathIdentity pathIdentity,
         ReadOnlyMemory<byte> quotedPacket,

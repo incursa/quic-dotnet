@@ -53,6 +53,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     // or sibling frame into one 1-RTT packet instead of emitting a second tiny packet.
     private const int ApplicationSendDelayThresholdBytes = 32;
     private const int ApplicationPacketNumberLengthBytes = 4;
+    private const int PathMtuProbeDelayMilliseconds = 1;
+    private const ulong CommonEthernetIpv4QuicDatagramSizeBytes = 1_472;
+    private const ulong CommonEthernetIpv6QuicDatagramSizeBytes = 1_452;
     private const int ApplicationSendBatchAckHeadroomBytes = 64;
     private const int HandshakeEgressChunkBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize;
     private const int MaximumBufferedEstablishmentHandshakePackets = 8;
@@ -98,6 +101,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly QuicDetachedResumptionTicketSnapshot? dormantDetachedResumptionTicketSnapshot;
     private readonly QuicConnectionDiagnosticsState diagnosticsState;
     private readonly QuicConnectionApplicationAckState applicationAckState = new();
+    private readonly QuicDplpmtudState dplpmtudState = new();
+    private readonly Dictionary<ulong, QuicConnectionPathIdentity> pathMtuProbePathsByPacketNumber = [];
     private readonly QuicTransportTlsBridgeState tlsState;
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
     private readonly Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver;
@@ -176,6 +181,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private bool hasObservedHandshakePacketNumber;
     private bool hasObservedCurrentOneRttKeyPhasePacketNumber;
     private bool pendingClientHandshakeAckProbeOnPto;
+    private long? pendingPathMtuProbeDueTicks;
+    private QuicConnectionPathIdentity? pendingPathMtuProbePathIdentity;
 
     private sealed class BufferedEstablishmentHandshakePacket : IDisposable
     {

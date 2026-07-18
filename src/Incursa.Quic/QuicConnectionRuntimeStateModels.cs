@@ -50,6 +50,7 @@ internal enum QuicConnectionTimerKind
     Recovery = 5,
     KeyUpdateRetention = 6,
     AckDelay = 7,
+    PathMtuProbe = 8,
 }
 
 internal enum QuicConnectionStreamOwnership
@@ -97,6 +98,8 @@ internal readonly record struct QuicConnectionPathMaximumDatagramSizeState
 
     internal bool IsProvisional { get; init; }
 
+    internal bool HasDiscoveryProbeBeenSent { get; init; }
+
     internal static QuicConnectionPathMaximumDatagramSizeState CreateInitial()
     {
         return new QuicConnectionPathMaximumDatagramSizeState(MinimumAllowedMaximumDatagramSizeBytes);
@@ -104,7 +107,10 @@ internal readonly record struct QuicConnectionPathMaximumDatagramSizeState
 
     internal QuicConnectionPathMaximumDatagramSizeState WithMaximumDatagramSize(ulong maximumDatagramSizeBytes)
     {
-        return new QuicConnectionPathMaximumDatagramSizeState(maximumDatagramSizeBytes);
+        return new QuicConnectionPathMaximumDatagramSizeState(maximumDatagramSizeBytes)
+        {
+            HasDiscoveryProbeBeenSent = HasDiscoveryProbeBeenSent,
+        };
     }
 
     internal QuicConnectionPathMaximumDatagramSizeState WithProvisionalMaximumDatagramSize(ulong maximumDatagramSizeBytes)
@@ -112,7 +118,13 @@ internal readonly record struct QuicConnectionPathMaximumDatagramSizeState
         return new QuicConnectionPathMaximumDatagramSizeState(maximumDatagramSizeBytes)
         {
             IsProvisional = true,
+            HasDiscoveryProbeBeenSent = HasDiscoveryProbeBeenSent,
         };
+    }
+
+    internal QuicConnectionPathMaximumDatagramSizeState WithDiscoveryProbeSent()
+    {
+        return this with { HasDiscoveryProbeBeenSent = true };
     }
 
     internal bool CanSend(ulong datagramSizeBytes, bool isProbePacket = false)
@@ -370,6 +382,7 @@ internal readonly record struct QuicConnectionTimerDeadlineState(
     QuicConnectionTimerSchedule Recovery,
     QuicConnectionTimerSchedule KeyUpdateRetention,
     QuicConnectionTimerSchedule AckDelay,
+    QuicConnectionTimerSchedule PathMtuProbe,
     ulong NextSequence)
 {
     internal QuicConnectionTimerDeadlineState(
@@ -385,6 +398,7 @@ internal readonly record struct QuicConnectionTimerDeadlineState(
             DrainLifetime,
             PathValidation,
             ApplicationSendDelay,
+            default,
             default,
             default,
             default,
@@ -409,6 +423,7 @@ internal readonly record struct QuicConnectionTimerDeadlineState(
             Recovery,
             default,
             default,
+            default,
             NextSequence)
     {
     }
@@ -420,7 +435,8 @@ internal readonly record struct QuicConnectionTimerDeadlineState(
         || ApplicationSendDelay.DueTicks.HasValue
         || Recovery.DueTicks.HasValue
         || KeyUpdateRetention.DueTicks.HasValue
-        || AckDelay.DueTicks.HasValue;
+        || AckDelay.DueTicks.HasValue
+        || PathMtuProbe.DueTicks.HasValue;
 
     public QuicConnectionTimerPriority CreatePriority(long dueTicks)
     {
@@ -460,6 +476,7 @@ internal readonly record struct QuicConnectionTimerDeadlineState(
             QuicConnectionTimerKind.Recovery => this with { Recovery = schedule },
             QuicConnectionTimerKind.KeyUpdateRetention => this with { KeyUpdateRetention = schedule },
             QuicConnectionTimerKind.AckDelay => this with { AckDelay = schedule },
+            QuicConnectionTimerKind.PathMtuProbe => this with { PathMtuProbe = schedule },
             _ => throw new ArgumentOutOfRangeException(nameof(timerKind)),
         };
     }
@@ -486,6 +503,7 @@ internal readonly record struct QuicConnectionTimerDeadlineState(
             QuicConnectionTimerKind.Recovery => Recovery,
             QuicConnectionTimerKind.KeyUpdateRetention => KeyUpdateRetention,
             QuicConnectionTimerKind.AckDelay => AckDelay,
+            QuicConnectionTimerKind.PathMtuProbe => PathMtuProbe,
             _ => throw new ArgumentOutOfRangeException(nameof(timerKind)),
         };
     }

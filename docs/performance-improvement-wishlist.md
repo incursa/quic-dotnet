@@ -4456,3 +4456,55 @@ was launched for the unsafe default candidate.
 Evidence, assembly hashes, commands, per-sample results, and the combined
 summary are retained under
 `C:\shared\temp\quic-http3-local-first-20260718\pmtu-1472-experiment`.
+
+### Accepted 2026-07-18: timer-gated validated path datagram ceiling
+
+The runtime now keeps ordinary packets at the safe 1,200-byte QUIC minimum and
+uses one bounded DPLPMTUD discovery attempt per validated path record. After
+application stream data is acknowledged, a dedicated one-millisecond timer is
+armed. The timer sends an exact PING-plus-PADDING probe only when the same path
+is still active, no application write or retransmission is queued, and no
+ack-eliciting packet remains in flight. The target is 1,472 bytes for IPv4 and
+1,452 bytes for IPv6 or an unresolved address, capped by the peer's advertised
+`max_udp_payload_size`. Only a matching acknowledgment raises the path's
+ordinary datagram ceiling; loss removes outstanding tracking and leaves the
+ceiling unchanged.
+
+Three trigger placements were rejected before the timer design was accepted.
+Immediate post-handshake probing failed 14 full-suite tests. Inline probing
+from ACK processing failed 9 tests by consuming recovery/application-send
+budget. Posting a follow-on actor event still allowed synchronous dispatcher
+reentrancy, and an idle ACK send still violated ACK transitions that must emit
+no datagram. The timer design passed the focused PMTU/recovery set (44/44) and
+the broader timer/recovery/metrics set (104/104) without weakening those tests.
+
+Committed baseline and final timer-candidate assemblies ran in adjacent
+A/B/B/A order for fixed and duplex one-MiB c16 workloads. Ten exact samples per
+variant and shape produced zero failures:
+
+| Workload | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| fixed 1 MiB c16 | 46.44 | 58.01 | +24.9% | -18.8% | -16.8% |
+| duplex 1 MiB c16 | 65.48 | 73.35 | +12.0% | -10.1% | -2.4% |
+
+The broader baseline/candidate/baseline control campaign covered fixed,
+streaming, upload, and duplex workloads at 1 KiB, 64 KiB, and 1 MiB and c1, c4,
+and c16. All 36 cells and 540 measured samples passed exact protocol, content
+length, payload, and EOF validation. Two short one-second cells crossed the
+approximately five-percent guardrail and were repeated with adjacent
+three-second, seven-sample A/B/A runs. The repeat cleared both concerns: fixed
+1 KiB c1 was +3.3% throughput with p95 +3.9%, and upload 1 MiB c16 was +4.6%
+throughput with p95 +1.3%. No stable control regression remained.
+
+Evidence is retained under
+`C:\shared\temp\quic-http3-local-first-20260718\pmtu-dplpmtud-candidate`,
+including `timer-summary.json`, `timer-control-summary.json`,
+`timer-suspect-summary.json`, hosted smoke/diagnostic results, binaries, logs,
+and focused TRX files. The final Release build completed with zero warnings and
+errors. The full Release test-project rerun passed 9,631 tests with four
+explicit skips and zero failures. Two integration tests that failed once under
+the first full-suite load each passed five immediate isolated reruns before the
+clean full-suite rerun. These are local loopback results. ProtocolLab has not
+yet been run and no public or peer-comparison claim is made. Repeated PMTU
+search with bounded retry/backoff remains future work; do not replace the safe
+initial ceiling or repeat the rejected trigger placements.

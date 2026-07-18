@@ -99,6 +99,7 @@ internal sealed class QuicConnectionLifecycleTimerState
             QuicConnectionTimerKind.KeyUpdateRetention => TimerState.KeyUpdateRetention,
             QuicConnectionTimerKind.ApplicationSendDelay => TimerState.ApplicationSendDelay,
             QuicConnectionTimerKind.AckDelay => TimerState.AckDelay,
+            QuicConnectionTimerKind.PathMtuProbe => TimerState.PathMtuProbe,
             _ => throw new ArgumentOutOfRangeException(nameof(timerKind)),
         };
     }

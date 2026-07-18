@@ -3316,6 +3316,15 @@ internal sealed partial class QuicConnectionRuntime
         bool stateChanged = false;
         foreach (QuicLostPacket lostPacket in lostPackets)
         {
+            if (lostPacket.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                && pathMtuProbePathsByPacketNumber.Remove(
+                    lostPacket.PacketNumber,
+                    out QuicConnectionPathIdentity pathIdentity))
+            {
+                _ = dplpmtudState.TryRegisterProbeLost(pathIdentity, lostPacket.PacketNumber);
+                _ = dplpmtudState.TryRemovePath(pathIdentity);
+            }
+
             stateChanged |= sendRuntime.TryRegisterLoss(
                 lostPacket.PacketNumberSpace,
                 lostPacket.PacketNumber,
