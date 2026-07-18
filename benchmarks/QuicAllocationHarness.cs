@@ -1672,7 +1672,7 @@ internal static class QuicAllocationHarness
         return (listener, client, server);
     }
 
-    private static async Task<(SystemNetClientConnection Client, SystemNetClientConnection Server)> CreateSystemNetConnectedPairAsync(
+    internal static async Task<(SystemNetClientConnection Client, SystemNetClientConnection Server)> CreateSystemNetConnectedPairAsync(
         SslServerAuthenticationOptions serverOptions,
         SslClientAuthenticationOptions clientOptions)
     {

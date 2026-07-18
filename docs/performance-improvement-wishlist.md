@@ -4304,3 +4304,37 @@ Evidence is retained under
 `C:\shared\temp\quic-stream-lazy-delegates-20260717`. The next investigation
 must target a mechanism large enough to explain a substantial cross-layer gap,
 not another per-stream micro-allocation.
+
+### Local-first coverage 2026-07-17: matched established transport workloads
+
+The permanent benchmark executable now exposes `--transport-loopback` for
+matched Incursa.Quic and System.Net.Quic transfers on established connections.
+It covers exact download, upload, and simultaneous duplex bodies at configurable
+payload sizes and c1/c4/c16 concurrency. Certificate generation, listener and
+connection setup, deterministic payload creation, and per-worker receive
+buffers remain outside measurement. Every operation validates exact bytes,
+length through EOF, and all public stream closure signals. Each cell receives a
+fresh connection, and peer implementations run adjacent for the same shape.
+
+Harness validation found two important API-ordering constraints. System.Net.Quic
+does not surface a locally opened stream to the peer until its first write, so
+the client write must start before awaiting server acceptance. Large bodies must
+also be written and read concurrently to avoid normal QUIC flow-control
+deadlock. The final one-KiB all-scenario peer smoke and one-MiB c1/c4/c16 smokes
+completed with zero payload, EOF, stream-lifecycle, or benchmark failures.
+
+The fresh-connection one-MiB c16 diagnostic sample was:
+
+| Workload | Incursa MiB/s | System.Net MiB/s | Incursa B/op | System.Net B/op | Incursa/System.Net allocation |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| download | 25.86 | 224.29 | 393,824 | 22,132 | 17.8x |
+| upload | 33.42 | 205.93 | 412,360 | 21,167 | 19.5x |
+| duplex | 36.64 | 263.34 | 886,147 | 37,892 | 23.4x |
+
+These are single-sample diagnostics, not stable effect-size claims. They select
+one-MiB c16 allocation and execution traces plus a five-repetition peer baseline
+as the next work. The magnitude is sufficient to stop per-stream
+micro-optimization: Incursa is competitive in the one-MiB c1 smoke but loses
+throughput as concurrency exposes roughly 0.4-0.9 MiB of allocation per
+operation. Evidence is retained under
+`C:\shared\temp\quic-transport-local-peer-20260717`. ProtocolLab was not used.
