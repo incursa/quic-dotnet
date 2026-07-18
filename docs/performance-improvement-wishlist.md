@@ -4936,3 +4936,24 @@ reports, and the candidate diff are under
 `C:\shared\temp\quic-inplace-protection-20260718`. Do not retry exact in-place
 packet protection without new evidence that explains the upload tradeoff and
 predicts an end-to-end timing gain.
+
+### Accepted 2026-07-18: split queued and formatted stream-payload attribution
+
+The existing `outbound_stream_payload` pool owner combined two materially
+different lifetimes: the stable copy retained while an oversized public write
+is queued, and each datagram-sized STREAM frame retained by sent-packet state
+for loss recovery. Separate `queued_raw_stream_data` and
+`formatted_stream_payload` owner labels now distinguish those mechanisms
+without changing allocation or send behavior.
+
+One diagnostic-only five-second c16 one-MiB duplex run completed 84 requests
+with exact payload validation and zero failures. It attributed 88,080,384
+requested and rented bytes across 5,376 queued raw buffers, versus 88,774,308
+requested bytes and 132,306,048 rented bytes across 70,056 formatted frame
+buffers. Flow-control retry ownership was only 344,064 bytes across 21 rents.
+The dominant duplication is therefore the raw-write-to-retransmittable-frame
+transition, not retry transfer. The formatted buffers remain live in
+sent-packet state and cannot be removed without preserving loss-recovery
+payload lifetime. The instrumented timing is not performance evidence.
+Artifacts are under
+`C:\shared\temp\quic-stream-owner-attribution-20260718`.

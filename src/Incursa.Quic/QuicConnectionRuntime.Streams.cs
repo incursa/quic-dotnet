@@ -651,7 +651,7 @@ internal sealed partial class QuicConnectionRuntime
         {
             byte[] queuedStreamData = QuicBufferPool.RentBytes(
                 committedStreamDataLength,
-                QuicBufferPoolOwner.OutboundStreamPayload);
+                QuicBufferPoolOwner.QueuedRawStreamData);
             committedStreamData.CopyTo(queuedStreamData);
             completion.ReleaseOwnedStreamData();
 
@@ -5319,7 +5319,7 @@ internal sealed partial class QuicConnectionRuntime
         int bufferLength = Math.Max(ApplicationMinimumProtectedPayloadLength, frameLength);
         QuicBufferLease bufferLease = QuicBufferPool.RentLease(
             bufferLength,
-            QuicBufferPoolOwner.OutboundStreamPayload);
+            QuicBufferPoolOwner.FormattedStreamPayload);
         try
         {
             if (!QuicFrameCodec.TryFormatStreamFrame(

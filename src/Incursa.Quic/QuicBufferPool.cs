@@ -14,6 +14,8 @@ internal enum QuicBufferPoolOwner
     ReceiveSegment,
     StreamWriteRequest,
     OutboundStreamPayload,
+    QueuedRawStreamData,
+    FormattedStreamPayload,
     CombinedApplicationSend,
     InboundPacketProtection,
     OutboundPacketProtection,

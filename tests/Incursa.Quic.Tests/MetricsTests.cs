@@ -887,7 +887,9 @@ public class MetricsTests
     [Theory]
     [InlineData((int)QuicBufferPoolOwner.InboundPacketProtection, "inbound_packet_protection")]
     [InlineData((int)QuicBufferPoolOwner.OutboundPacketProtection, "outbound_packet_protection")]
-    public void BufferPoolOwnerNamesDistinguishApplicationPacketProtection(
+    [InlineData((int)QuicBufferPoolOwner.QueuedRawStreamData, "queued_raw_stream_data")]
+    [InlineData((int)QuicBufferPoolOwner.FormattedStreamPayload, "formatted_stream_payload")]
+    public void BufferPoolOwnerNamesDistinguishHotPathOwners(
         int owner,
         string expected)
     {

@@ -1193,6 +1193,8 @@ internal static class QuicMetrics
             QuicBufferPoolOwner.ReceiveSegment => "receive_segment",
             QuicBufferPoolOwner.StreamWriteRequest => "stream_write_request",
             QuicBufferPoolOwner.OutboundStreamPayload => "outbound_stream_payload",
+            QuicBufferPoolOwner.QueuedRawStreamData => "queued_raw_stream_data",
+            QuicBufferPoolOwner.FormattedStreamPayload => "formatted_stream_payload",
             QuicBufferPoolOwner.CombinedApplicationSend => "combined_application_send",
             QuicBufferPoolOwner.InboundPacketProtection => "inbound_packet_protection",
             QuicBufferPoolOwner.OutboundPacketProtection => "outbound_packet_protection",
