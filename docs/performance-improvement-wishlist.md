@@ -4575,3 +4575,42 @@ ProtocolLab run has been launched.
 Instrumented evidence is retained under
 `C:\shared\temp\quic-transport-local-first-20260718\runtime-diagnostics` and
 `C:\shared\temp\quic-transport-local-first-20260718\runtime-loss-diagnostics`.
+
+### Rejected 2026-07-18: pre-ACK congestion-window utilization classification
+
+A reversible candidate captured whether the congestion window was fully used
+at ACK-frame entry and applied that classification to every packet acknowledged
+by the frame. It preserved application-limited, flow-control-limited, recovery,
+and pacing suppression, and its focused RFC 9002 and runtime ownership set
+passed 24/24 tests. Baseline and candidate assemblies were frozen with SHA-256
+`4446ab41938ddbcea959a3b4cced805b6dc67ca8de9ec106bdff3cab0b24d5e0`
+and `a9413e45c363b1cbd3c614a43350f62deae0abd445bd3d93f343d895685420e7`.
+
+Adjacent A/B/B/A one-MiB upload and duplex runs covered c1, c4, and c16 with
+ten exact samples per variant and cell. All 120 measured samples passed:
+
+| Lane | Baseline median | Candidate median | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| upload c1 | 35.84 MiB/s | 36.31 MiB/s | +1.3% | -3.8% | +1.5% |
+| upload c4 | 27.74 MiB/s | 27.83 MiB/s | +0.3% | -4.4% | +2.4% |
+| upload c16 | 22.32 MiB/s | 22.44 MiB/s | +0.5% | -1.3% | +0.4% |
+| duplex c1 | 42.21 MiB/s | 39.74 MiB/s | -5.9% | +3.2% | +6.7% |
+| duplex c4 | 40.44 MiB/s | 39.85 MiB/s | -1.5% | +3.2% | +0.7% |
+| duplex c16 | 28.19 MiB/s | 30.91 MiB/s | +9.6% | -10.3% | -5.4% |
+
+The candidate failed the local acceptance gate because upload remained flat
+and the c1 duplex control crossed the approximate five-percent guardrail. More
+importantly, an instrumented candidate c16 upload sample proved that the window
+did grow: its observed client window ranged from about 6.1 MiB to 39.9 MiB,
+with tens of MiB of available send credit. Throughput still remained only
+18.82 MiB/s in that diagnostic sample, while 21,602 recovery flushes stopped at
+`burst_limit_reached` and stream-write completion averaged 25.5 ms. The small
+baseline congestion window was therefore real but not the dominant throughput
+limit. The candidate was reverted and ProtocolLab was not run.
+
+Evidence, binaries, hashes, per-pass logs, combined statistics, focused TRX,
+and the candidate diagnostic run are retained under
+`C:\shared\temp\quic-cwnd-preack-20260718`. Do not repeat congestion-growth
+variants without new evidence. The next highest-confidence mechanism is the
+runtime's bounded flush progression and whether it schedules enough follow-up
+work after reaching the four-datagram burst cap.
