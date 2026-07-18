@@ -4820,3 +4820,30 @@ probe is under `C:\shared\temp\udp-segmentation-probe-20260718`. Do not repeat
 listener-level datagram aggregation without evidence of materially larger
 compatible runs and a zero-copy lifetime design. Reassess above the socket-send
 layer for a broader HTTP/3 mechanism.
+
+### Rejected 2026-07-18: immediate asynchronous Windows UDP submission
+
+The c16 one-MiB HTTP/3 duplex CPU trace showed one connection actor saturated,
+with listener datagram submission occupying the largest inclusive runtime
+stack. This materially different follow-up to the rejected sender queue tested
+whether submitting each datagram to Windows immediately with
+`Socket.SendToAsync` could remove synchronous actor cost while keeping recovery
+accounting adjacent to OS submission. It did not add an intermediate queue.
+
+An out-of-repo exact loopback probe compared cached-address synchronous sends
+against 64 bounded outstanding asynchronous sends in sync/async/async/sync
+order. Eight measured samples per mode each sent 10,000 exact 1,200-byte
+datagrams. All 160,000 measured datagrams arrived with exact length and payload:
+
+| Mode | Sender median | Range | CV | End-to-end median | Process CPU median | Allocation median |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| synchronous | 88.11 ms | 81.61-115.30 ms | 11.87% | 88.13 ms | 226.56 ms | 1,440,576 B |
+| asynchronous | 90.83 ms | 86.76-110.14 ms | 8.48% | 90.85 ms | 234.38 ms | 1,442,320 B |
+
+Immediate asynchronous submission was 3.1% slower at the median and did not
+reduce CPU or allocation. No runtime code was changed and ProtocolLab was not
+run. The probe source and JSON are retained under
+`C:\shared\temp\udp-sync-async-send-probe-20260718`. Do not replace the
+synchronous listener send with `SendToAsync` without a materially different OS
+mechanism and new end-to-end attribution. Continue above the socket layer with
+packet-count and per-packet actor-service work.
