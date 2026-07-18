@@ -4957,3 +4957,38 @@ sent-packet state and cannot be removed without preserving loss-recovery
 payload lifetime. The instrumented timing is not performance evidence.
 Artifacts are under
 `C:\shared\temp\quic-stream-owner-attribution-20260718`.
+
+### Rejected 2026-07-18: reusable signal-only public read waiter
+
+A fresh exact one-MiB c16 public QUIC duplex allocation trace reproduced the
+large public read-wait allocation path: excluding harness setup, about 84 MiB
+of sampled allocation came from `ReadCoreAsync`, `SemaphoreSlim.WaitAsync`,
+cancellation promises, task nodes, and continuation invokers. The trace had
+zero lost events. This justified one materially different follow-up to the
+previously rejected direct-read completion source.
+
+The candidate reserved one reusable signal-only `IValueTaskSource` for the
+common single pending read and retained the existing semaphore path for
+overlapping readers. Runtime notification only completed the asynchronous
+signal; stream-state reads, payload copies, flow-control credit, and application
+continuations stayed off the connection actor. Focused cancellation, abort,
+FIN, disposal, notification-race, concurrent-reader, and reuse tests passed
+31/31. BDN Dry moved first-use pending-read allocation from 320 to 280 B/read.
+
+A focused c16 one-MiB duplex A/B/B/A campaign ran ten exact samples per variant
+with zero failures. Median allocation fell from 728,486 to 296,611 B/op
+(-59.3%), throughput moved from 30.42 to 33.22 MiB/s (+9.2%), and p95 moved
+from 1,108.07 to 1,005.03 ms (-9.3%), but throughput CV remained high at 16.7%
+and 17.9%. The required broader A/B/B/A control screen then ran six exact
+samples per variant and cell. Allocation fell 52-60% in every lane, but stable
+c1 duplex throughput regressed 13.3% and p95 regressed 17.8% (baseline CV 4.5%,
+candidate CV 1.8%). Download also regressed 11.8%, 5.6%, and 8.8% at c1, c4,
+and c16, while c16 duplex reversed to -7.7% throughput and +8.1% p95.
+
+The candidate therefore failed the timing and control gates and was reverted.
+ProtocolLab was not run. Frozen binaries, SHA-256 hashes, BDN output, raw
+loopback JSON/logs, the candidate diff, and the full decision record are under
+`C:\shared\temp\quic-read-signal-20260718`. Do not retry another public
+read-wait source variant without a materially different scheduling mechanism
+that explains why both the direct-read and signal-only designs reduce
+allocation but regress stable timing controls.
