@@ -5108,3 +5108,41 @@ cancellation, write-gate serialization, pooled retry ownership, final-write,
 and HTTP/3 streaming tests passed 50/50. The full Release suite passed 9,643
 tests with four intentional skips. No ProtocolLab repo files, packages,
 deployments, registrations, or published results changed.
+
+### Accepted 2026-07-18: explicit local HTTP/3 connection topology
+
+The local HTTP/3 loopback harness previously labeled one connection with N
+concurrent streams only as `concurrency=N`. That shape is useful for
+single-connection actor pressure, but it does not reproduce a ProtocolLab
+`connections=N, streamsPerConnection=1` peer cell. The harness now accepts
+explicit `--connections` and `--streams-per-connection` lists, forms their
+Cartesian product, creates one independent `SocketsHttpHandler` per connection,
+warms every connection before measurement, and records both dimensions plus
+total concurrency in schema version 2 output. The original `--concurrency`
+option remains compatible and means one connection with N streams. Mixed legacy
+and explicit topology options fail rather than silently relabeling a run.
+
+A current-source exact one-MiB connection-fanout baseline ran fixed and
+streaming responses at c1, c4, and c16 with one stream per connection, five
+three-second samples per cell, and zero failures across all 30 samples:
+
+| Lane | c1 MiB/s | c4 MiB/s | c16 MiB/s | c4 CV | c16 CV |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| fixed | 46.35 | 134.11 | 234.33 | 0.50% | 3.24% |
+| streaming | 46.74 | 133.07 | 218.15 | 0.84% | 1.29% |
+
+The c1 fixed cell had one cold sample and 10.87% CV; c4/c16 were stable. A
+separate diagnostic c4 sample proved that four independent server connections
+were active on four shards, with 12,134-12,456 packet-receive work items per
+shard. Certificate generation, listener startup, client construction, and
+connection warmup remained outside measured samples, and every response passed
+exact HTTP/3, content-length, EOF, and payload validation.
+
+This local result is materially above the retained source-backed ProtocolLab
+c16 result of roughly 35-38 MiB/s for the same broad response family. It rejects
+an intrinsic c16 Incursa HTTP/3 transport ceiling as the immediate diagnosis.
+The next local-first step is an out-of-process target/generator reproduction
+that separates adapter/API usage and load generation from the library before
+another runtime optimization. ProtocolLab was not run. Build and compatibility,
+explicit-topology, invalid-option, and balanced-shard smokes passed. Evidence is
+under `C:\shared\temp\quic-h3-local-first-next-20260718`.

@@ -168,6 +168,27 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- `
   --json .artifacts/perf/http3-local/candidate.json
 ```
 
+`--concurrency` retains the original one-connection behavior: each value is the
+number of concurrent streams on one established HTTP/3 connection. To reproduce
+ProtocolLab connection fanout explicitly, replace it with both topology options:
+
+```powershell
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- `
+  --http3-loopback `
+  --scenarios fixed,streaming `
+  --payload-sizes 1048576 `
+  --connections 1,4,16 `
+  --streams-per-connection 1 `
+  --samples 5 `
+  --duration-seconds 3 `
+  --warmup-seconds 1 `
+  --json .artifacts/perf/http3-local/connection-fanout.json
+```
+
+The topology lists form a Cartesian product. Each connection owns a separate
+`SocketsHttpHandler`, every connection is warmed before measurement, and the
+JSON records connections, streams per connection, and total concurrency.
+
 For a separate instrumented attribution run, add `--diagnostics true`. For
 example:
 
