@@ -29,6 +29,7 @@ internal sealed class QuicRuntimeDiagnosticsCollector : IAsyncDisposable
             if (instrument.Meter.Name == QuicMeterName
                 && (instrument.Name.StartsWith("incursa.quic.runtime.", StringComparison.Ordinal)
                     || instrument.Name.StartsWith("incursa.quic.buffer_pool.", StringComparison.Ordinal)
+                    || instrument.Name == "incursa.quic.packet.application.receive.phase_time.ms"
                     || instrument.Name is "incursa.quic.datagrams.received"
                         or "incursa.quic.datagrams.sent"
                         or "incursa.quic.bytes.received"

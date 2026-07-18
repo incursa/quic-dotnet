@@ -37,6 +37,8 @@ internal static class QuicMetrics
     private const string RuntimeShardWorkItemsDequeuedMetricName = "incursa.quic.runtime.shard.work_items.dequeued";
     private const string RuntimeShardQueueDelayMetricName = "incursa.quic.runtime.shard.queue_delay.ms";
     private const string RuntimeShardServiceTimeMetricName = "incursa.quic.runtime.shard.service_time.ms";
+    private const string RuntimeShardPhaseTimeMetricName = "incursa.quic.runtime.shard.phase_time.ms";
+    private const string ApplicationPacketReceivePhaseTimeMetricName = "incursa.quic.packet.application.receive.phase_time.ms";
     private const string RuntimeShardWakeupsMetricName = "incursa.quic.runtime.shard.wakeups";
     private const string RuntimeShardEmptyWakeupsMetricName = "incursa.quic.runtime.shard.empty_wakeups";
     private const string RuntimeShardWorkItemsPerWakeMetricName = "incursa.quic.runtime.shard.work_items_per_wake";
@@ -44,6 +46,9 @@ internal static class QuicMetrics
     private const string RuntimeFollowOnFlushItemsMetricName = "incursa.quic.runtime.follow_on_flush.items";
     private const string RuntimeShardIndexTagName = "shard_index";
     private const string RuntimeShardWorkItemKindTagName = "work_item_kind";
+    private const string RuntimeShardPhaseTagName = "phase";
+    private const string PacketReceiveRoleTagName = "role";
+    private const string PacketReceivePhaseTagName = "phase";
     private const string RuntimeShardWakeCompletionTagName = "completion";
     private const string RuntimeShardPacketRunBoundaryTagName = "boundary";
     private const string QueueCauseTagName = "queue_cause";
@@ -167,6 +172,8 @@ internal static class QuicMetrics
     private static readonly Counter<long> RuntimeShardWorkItemsDequeued = Meter.CreateCounter<long>(RuntimeShardWorkItemsDequeuedMetricName, unit: "work_items");
     private static readonly Histogram<double> RuntimeShardQueueDelay = Meter.CreateHistogram<double>(RuntimeShardQueueDelayMetricName, unit: "ms");
     private static readonly Histogram<double> RuntimeShardServiceTime = Meter.CreateHistogram<double>(RuntimeShardServiceTimeMetricName, unit: "ms");
+    private static readonly Histogram<double> RuntimeShardPhaseTime = Meter.CreateHistogram<double>(RuntimeShardPhaseTimeMetricName, unit: "ms");
+    private static readonly Histogram<double> ApplicationPacketReceivePhaseTime = Meter.CreateHistogram<double>(ApplicationPacketReceivePhaseTimeMetricName, unit: "ms");
     private static readonly Counter<long> RuntimeShardWakeups = Meter.CreateCounter<long>(RuntimeShardWakeupsMetricName, unit: "wakeups");
     private static readonly Counter<long> RuntimeShardEmptyWakeups = Meter.CreateCounter<long>(RuntimeShardEmptyWakeupsMetricName, unit: "wakeups");
     private static readonly Histogram<long> RuntimeShardWorkItemsPerWake = Meter.CreateHistogram<long>(RuntimeShardWorkItemsPerWakeMetricName, unit: "work_items");
@@ -531,6 +538,12 @@ internal static class QuicMetrics
     internal static long GetRuntimeShardServiceStartTimestamp()
         => RuntimeShardServiceTime.Enabled ? Stopwatch.GetTimestamp() : 0;
 
+    internal static long GetRuntimeShardPhaseStartTimestamp()
+        => RuntimeShardPhaseTime.Enabled ? Stopwatch.GetTimestamp() : 0;
+
+    internal static long GetApplicationPacketReceivePhaseStartTimestamp()
+        => ApplicationPacketReceivePhaseTime.Enabled ? Stopwatch.GetTimestamp() : 0;
+
     internal static void RecordRuntimeShardServiceTime(
         int shardIndex,
         in QuicConnectionRuntimeShardWorkItem workItem,
@@ -543,6 +556,40 @@ internal static class QuicMetrics
 
         TagList tags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
         RuntimeShardServiceTime.Record(Stopwatch.GetElapsedTime(startedTimestamp).TotalMilliseconds, in tags);
+    }
+
+    internal static void RecordRuntimeShardPhaseTime(
+        int shardIndex,
+        in QuicConnectionRuntimeShardWorkItem workItem,
+        string phase,
+        long startedTimestamp)
+    {
+        if (!RuntimeShardPhaseTime.Enabled || startedTimestamp == 0)
+        {
+            return;
+        }
+
+        TagList tags = CreateRuntimeShardWorkItemTags(shardIndex, in workItem);
+        tags.Add(RuntimeShardPhaseTagName, phase);
+        RuntimeShardPhaseTime.Record(Stopwatch.GetElapsedTime(startedTimestamp).TotalMilliseconds, in tags);
+    }
+
+    internal static void RecordApplicationPacketReceivePhaseTime(
+        QuicTlsRole role,
+        string phase,
+        long startedTimestamp)
+    {
+        if (!ApplicationPacketReceivePhaseTime.Enabled || startedTimestamp == 0)
+        {
+            return;
+        }
+
+        TagList tags = default;
+        tags.Add(PacketReceiveRoleTagName, role == QuicTlsRole.Server ? "server" : "client");
+        tags.Add(PacketReceivePhaseTagName, phase);
+        ApplicationPacketReceivePhaseTime.Record(
+            Stopwatch.GetElapsedTime(startedTimestamp).TotalMilliseconds,
+            in tags);
     }
 
     internal static void RecordRuntimeShardWakeCycle(

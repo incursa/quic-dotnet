@@ -5355,3 +5355,31 @@ Short artifacts are retained under
 `C:\shared\temp\quic-local-first-20260718\bdn-frame-dispatch-*`. Do not repeat
 frame-dispatch ordering variants unless a future workload materially changes
 the frame mix or measured absolute parser cost.
+
+### Accepted 2026-07-18: opt-in receive-phase attribution
+
+The local transport diagnostics now expose disabled-by-default shard transition
+and effect timing plus bounded application-packet phases by endpoint role. The
+application path partitions packet opening, preparation, ACK and STREAM frame
+handling, post-frame path work, queued-write retry, application-send recovery
+flushes, received-packet accounting, ACK emission, ACK timer maintenance, and
+connection-ID work. The local diagnostics collector records the packet-phase
+histogram only when `--diagnostics true` is active. No packet scheduling,
+recovery, flow-control, congestion-control, or stream behavior changed.
+
+A diagnostic-only five-second one-MiB transport download at c16 attributed the
+successful 1-RTT transition path to roughly 47% frame processing, 37%
+post-frame work, 13% packet opening, and 2% preparation. On the sending server,
+61,824 ACK frames spent 712.59 ms walking acknowledged packet ranges and
+169.14 ms in recovery accounting; 69,597 post-ACK recovery calls spent
+681.16 ms flushing queued application sends. On the receiving client, ACK
+generation spent 373.23 ms. STREAM bookkeeping was materially smaller at
+278.76 ms across 107,632 client STREAM frames. This makes ACK ledger work and
+bounded recovery flushing the next evidence-supported mechanisms, while ruling
+out another parser-dispatch micro-optimization.
+
+The instrumented sample is attribution evidence only because per-event metric
+collection perturbs the single-connection actor. Focused bounded-tag metrics
+coverage passed, the benchmark project built with zero warnings, and the raw
+diagnostic JSON is retained under
+`C:\shared\temp\quic-local-first-20260718\transport-download-c16-packet-phase-attribution-v4.json`.

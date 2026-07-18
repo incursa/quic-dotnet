@@ -392,6 +392,11 @@ public class MetricsTests
         await using QuicConnectionRuntimeShard shard = new(2, clock);
         using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(5));
         TaskCompletionSource firstTransitionProcessed = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        long packetPhaseStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
+        QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+            QuicTlsRole.Server,
+            "frames",
+            packetPhaseStartedTimestamp);
 
         Assert.True(shard.TryPostFlowControlCreditUpdate(new QuicConnectionHandle(1), runtime));
         recorder.RecordObservableInstruments();
@@ -452,6 +457,23 @@ public class MetricsTests
             && measurement.Value >= 0
             && measurement.HasTag("shard_index", "2")
             && measurement.HasTag("work_item_kind", "flow_control_credit_update"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.phase_time.ms"
+            && measurement.Value >= 0
+            && measurement.HasTag("shard_index", "2")
+            && measurement.HasTag("work_item_kind", "flow_control_credit_update")
+            && measurement.HasTag("phase", "transition"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.phase_time.ms"
+            && measurement.Value >= 0
+            && measurement.HasTag("shard_index", "2")
+            && measurement.HasTag("work_item_kind", "flow_control_credit_update")
+            && measurement.HasTag("phase", "effects"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.packet.application.receive.phase_time.ms"
+            && measurement.Value >= 0
+            && measurement.HasTag("role", "server")
+            && measurement.HasTag("phase", "frames"));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.delayed_application_sends"
             && measurement.HasTag("shard_index", "2"));

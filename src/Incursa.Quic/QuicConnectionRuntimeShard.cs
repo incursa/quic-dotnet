@@ -570,6 +570,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 suppressSendDatagramEffects: suppressHostedTimerEffectObjects && sendDatagramObserver is not null);
             flushMeasurementStarted = runtime.BeginRuntimeWorkItemFlushMeasurement();
 
+            long transitionStartedTimestamp = QuicMetrics.GetRuntimeShardPhaseStartTimestamp();
             QuicConnectionTransitionResult result = workItem.Kind switch
             {
                 QuicConnectionRuntimeShardWorkItemKind.PacketReceived
@@ -592,39 +593,56 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             };
             transitionObserver?.Invoke(workItem.Handle, result);
             runtime.ApplyPendingHostedTimerUpdates(workItem.Handle, deadlineScheduler);
+            QuicMetrics.RecordRuntimeShardPhaseTime(
+                shardIndex,
+                in workItem,
+                "transition",
+                transitionStartedTimestamp);
 
-            for (int index = 0; index < result.EffectCount; index++)
+            long effectsStartedTimestamp = QuicMetrics.GetRuntimeShardPhaseStartTimestamp();
+            try
             {
-                QuicConnectionEffect effect = result.GetEffect(index);
-                if (effect is QuicConnectionHostedSendDatagramMarkerEffect)
+                for (int index = 0; index < result.EffectCount; index++)
                 {
-                    if (!runtime.TryTakePendingHostedSendDatagramUpdate(out QuicConnectionSendDatagramUpdate update))
+                    QuicConnectionEffect effect = result.GetEffect(index);
+                    if (effect is QuicConnectionHostedSendDatagramMarkerEffect)
                     {
-                        throw new InvalidOperationException(
-                            "The hosted send-datagram marker did not have a matching value update.");
+                        if (!runtime.TryTakePendingHostedSendDatagramUpdate(out QuicConnectionSendDatagramUpdate update))
+                        {
+                            throw new InvalidOperationException(
+                                "The hosted send-datagram marker did not have a matching value update.");
+                        }
+
+                        try
+                        {
+                            if (sendDatagramObserver is not null)
+                            {
+                                sendDatagramObserver(workItem.Handle, update);
+                            }
+                            else
+                            {
+                                effectObserver?.Invoke(workItem.Handle, update.ToEffect());
+                            }
+                        }
+                        finally
+                        {
+                            update.ReleaseDatagramOwner();
+                        }
+
+                        continue;
                     }
 
-                    try
-                    {
-                        if (sendDatagramObserver is not null)
-                        {
-                            sendDatagramObserver(workItem.Handle, update);
-                        }
-                        else
-                        {
-                            effectObserver?.Invoke(workItem.Handle, update.ToEffect());
-                        }
-                    }
-                    finally
-                    {
-                        update.ReleaseDatagramOwner();
-                    }
-
-                    continue;
+                    deadlineScheduler.Apply(workItem.Handle, runtime, effect);
+                    effectObserver?.Invoke(workItem.Handle, effect);
                 }
-
-                deadlineScheduler.Apply(workItem.Handle, runtime, effect);
-                effectObserver?.Invoke(workItem.Handle, effect);
+            }
+            finally
+            {
+                QuicMetrics.RecordRuntimeShardPhaseTime(
+                    shardIndex,
+                    in workItem,
+                    "effects",
+                    effectsStartedTimestamp);
             }
 
             QuicMetrics.RecordRuntimePressureSnapshot(shardIndex, runtime);
