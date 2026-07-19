@@ -50,14 +50,14 @@ Public package manifest fields:
   "packageId": "quic-dotnet-dev",
   "packageVersion": "dev-20260607T120000Z-local",
   "kind": "implementation",
-  "displayName": "QUIC.NET development build",
+  "displayName": "Incursa.Quic HTTP/3",
   "entryManifests": [
     "implementations/quic-dotnet-dev.yaml"
   ],
   "providedImplementations": [
     {
       "implementationId": "quic-dotnet-dev",
-      "displayName": "QUIC.NET development build",
+      "displayName": "Incursa.Quic HTTP/3",
       "protocols": ["h3"],
       "scenarios": ["http3.payload.bytes.1kb", "http3.payload.bytes.64kb"]
     }

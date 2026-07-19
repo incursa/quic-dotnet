@@ -48,10 +48,12 @@ public sealed class ProtocolLabPackageTemplateTests
         var packageRoot = packageDocument.RootElement;
         Assert.Equal("protocol-lab-package-v2", packageRoot.GetProperty("schemaVersion").GetString());
         Assert.Equal("quic-dotnet-raw-dev", packageRoot.GetProperty("packageId").GetString());
+        Assert.Equal("Incursa.Quic Raw QUIC", packageRoot.GetProperty("displayName").GetString());
         Assert.False(packageRoot.TryGetProperty("sourceRepository", out _));
         Assert.False(packageRoot.TryGetProperty("sourceCommit", out _));
         var providedImplementation = Assert.Single(packageRoot.GetProperty("providedImplementations").EnumerateArray());
         Assert.Equal("quic-dotnet-raw-dev", providedImplementation.GetProperty("implementationId").GetString());
+        Assert.Equal("Incursa.Quic Raw QUIC", providedImplementation.GetProperty("displayName").GetString());
         Assert.Equal(["quic"], ReadJsonStringArray(providedImplementation, "protocols"));
         Assert.Equal(RawQuicScenarioIds, ReadJsonStringArray(providedImplementation, "scenarios"));
         Assert.Equal(RawQuicScenarioIds, ReadJsonStringArray(providedImplementation, "testCaseIds"));
@@ -89,6 +91,7 @@ public sealed class ProtocolLabPackageTemplateTests
 
         var implementationYaml = File.ReadAllText(implementationTemplatePath);
         Assert.Contains("id: quic-dotnet-raw-dev", implementationYaml);
+        Assert.Contains("name: Incursa.Quic Raw QUIC", implementationYaml);
         Assert.Contains("targetContract: adapter-v1", implementationYaml);
         Assert.Contains("executable: pwsh", implementationYaml);
         Assert.Contains("scripts/run-current-platform.ps1", implementationYaml);
@@ -126,10 +129,12 @@ public sealed class ProtocolLabPackageTemplateTests
         using var packageDocument = JsonDocument.Parse(File.ReadAllText(packageTemplatePath));
         Assert.Equal("protocol-lab-package-v2", packageDocument.RootElement.GetProperty("schemaVersion").GetString());
         Assert.Equal("quic-dotnet-dev", packageDocument.RootElement.GetProperty("packageId").GetString());
+        Assert.Equal("Incursa.Quic HTTP/3", packageDocument.RootElement.GetProperty("displayName").GetString());
         Assert.False(packageDocument.RootElement.TryGetProperty("sourceRepository", out _));
         Assert.False(packageDocument.RootElement.TryGetProperty("sourceCommit", out _));
         var providedImplementation = Assert.Single(packageDocument.RootElement.GetProperty("providedImplementations").EnumerateArray());
         Assert.Equal("quic-dotnet-dev", providedImplementation.GetProperty("implementationId").GetString());
+        Assert.Equal("Incursa.Quic HTTP/3", providedImplementation.GetProperty("displayName").GetString());
         Assert.Equal(["h3"], ReadJsonStringArray(providedImplementation, "protocols"));
         Assert.Equal(Http3ScenarioIds, ReadJsonStringArray(providedImplementation, "scenarios"));
         Assert.DoesNotContain("quic.transport.multiplex.100x64kb", ReadJsonStringArray(providedImplementation, "scenarios"));
@@ -147,6 +152,7 @@ public sealed class ProtocolLabPackageTemplateTests
 
         var implementationYaml = File.ReadAllText(implementationTemplatePath);
         Assert.Contains("id: quic-dotnet-dev", implementationYaml);
+        Assert.Contains("name: Incursa.Quic HTTP/3", implementationYaml);
         Assert.Contains("h3", ReadYamlList(implementationYaml, "supportedProtocols"));
         Assert.Contains("http.application", ReadYamlList(implementationYaml, "supportedWorkloadFamilies"));
         Assert.Equal(Http3ScenarioIds, ReadYamlList(implementationYaml, "supportedScenarios"));

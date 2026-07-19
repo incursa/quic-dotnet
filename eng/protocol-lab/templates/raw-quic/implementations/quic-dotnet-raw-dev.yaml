@@ -1,5 +1,5 @@
 id: quic-dotnet-raw-dev
-name: QUIC.NET Development Raw QUIC
+name: Incursa.Quic Raw QUIC
 description: Package-carried ProtocolLab raw QUIC adapter and Incursa raw QUIC server built from the developer working tree.
 image: ""
 targetKind: process

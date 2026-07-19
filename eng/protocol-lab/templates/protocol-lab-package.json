@@ -3,14 +3,14 @@
   "packageId": "quic-dotnet-dev",
   "packageVersion": "__PACKAGE_VERSION__",
   "kind": "implementation",
-  "displayName": "QUIC.NET development HTTP/3 sample",
+  "displayName": "Incursa.Quic HTTP/3",
   "entryManifests": [
     "implementations/quic-dotnet-dev.yaml"
   ],
   "providedImplementations": [
     {
       "implementationId": "quic-dotnet-dev",
-      "displayName": "QUIC.NET development HTTP/3 sample",
+      "displayName": "Incursa.Quic HTTP/3",
       "protocols": [
         "h3"
       ],

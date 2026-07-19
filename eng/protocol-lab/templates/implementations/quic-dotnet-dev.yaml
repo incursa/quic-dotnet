@@ -1,5 +1,5 @@
 id: quic-dotnet-dev
-name: QUIC.NET Development HTTP/3
+name: Incursa.Quic HTTP/3
 description: Package-carried Incursa QUIC.NET HTTP/3 sample built from the developer working tree.
 image: ""
 targetKind: process

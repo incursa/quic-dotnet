@@ -3,14 +3,14 @@
   "packageId": "quic-dotnet-raw-dev",
   "packageVersion": "__PACKAGE_VERSION__",
   "kind": "implementation",
-  "displayName": "QUIC.NET development raw QUIC adapter",
+  "displayName": "Incursa.Quic Raw QUIC",
   "entryManifests": [
     "implementations/quic-dotnet-raw-dev.yaml"
   ],
   "providedImplementations": [
     {
       "implementationId": "quic-dotnet-raw-dev",
-      "displayName": "QUIC.NET development raw QUIC adapter",
+      "displayName": "Incursa.Quic Raw QUIC",
       "protocols": [
         "quic"
       ],
