@@ -5803,3 +5803,35 @@ retained generic yield, bounded drain, and deferred-flush results, this closes
 minor shard scheduling-order changes as the next route to the multi-fold gap.
 Reassess the amount and lifetime of actor-owned work in a full HTTP/3 response
 before changing queue order again.
+
+### Accepted 2026-07-18: one-command local HTTP/3 target profiling loop
+
+`scripts/perf/Invoke-LocalHttp3TargetProfile.ps1` now makes target-only local
+profiling a repeatable inner development loop. It launches an explicit frozen
+or source-built Incursa HTTP/3 endpoint, proves that the launched PID owns the
+selected UDP port, runs the exact external HTTP/3 loopback harness, optionally
+captures target-only CPU or GC EventPipe evidence, analyzes GC allocation
+traces, and shuts down the exact child processes. Each run records the target
+SHA-256, exact commands, configuration, logs, strict benchmark result, trace,
+analysis, and manifest. Fixed, streaming, upload, and duplex shapes support
+1 KiB, 64 KiB, and 1 MiB payloads with independent connection and stream
+counts. An uninstrumented mode is available for timing campaigns; traced
+timings remain attribution-only.
+
+The acceptance smoke profiled the frozen `c5070522` target with one established
+connection, sixteen concurrent streams, and exact one-MiB fixed responses. It
+completed 192 responses at 36.78 MiB/s with zero validation failures while a
+target-only GC trace recorded 166 allocation ticks, no lost events, and call
+stacks. The largest estimated groups were listener receive buffers (4.40 MB),
+listener address parsing (3.51 MB of `UInt16[]` plus 1.17 MB of `IPAddress`),
+general buffer-pool arrays (1.60 MB), the one-time fixed-response cache
+(1.05 MB), packet-protection output (0.96 MB), and ACK range arrays (0.75 MB).
+These mechanisms overlap retained negative experiments or one-time setup and
+do not support another runtime candidate by themselves. No ProtocolLab run was
+launched.
+
+Acceptance evidence is retained under
+`C:\shared\temp\quic-local-http3-profile-wrapper-20260718`, including parser
+validation, exact benchmark JSON, target-only trace, allocation report, command
+logs, target hash, and run manifest. Use this wrapper to establish current
+local attribution before proposing the next HTTP/3 runtime change.

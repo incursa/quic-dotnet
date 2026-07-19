@@ -3,6 +3,36 @@
 This folder contains local performance and ProtocolLab integration helpers for
 `quic-dotnet` development.
 
+## Local HTTP/3 Target Profiling
+
+Use `Invoke-LocalHttp3TargetProfile.ps1` for the normal inner development loop.
+It launches an explicit frozen or source-built Incursa HTTP/3 endpoint, verifies
+that the launched process owns the selected UDP port, runs the exact local
+HTTP/3 loopback harness, captures target-only EventPipe evidence, and shuts the
+target down. A GC trace is analyzed automatically with the repo's allocation
+attribution tool.
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-LocalHttp3TargetProfile.ps1 `
+  -TargetPath C:\path\to\Incursa.ProtocolLab.Adapters.IncursaHttp3.exe `
+  -Scenario fixed `
+  -PayloadSizeBytes 1048576 `
+  -Connections 1 `
+  -StreamsPerConnection 16 `
+  -Samples 5 `
+  -DurationSeconds 3 `
+  -WarmupSeconds 1 `
+  -TraceProfile gc-verbose
+```
+
+Supported scenarios are `fixed`, `streaming`, `upload`, and `duplex`; payloads
+are 1 KiB, 64 KiB, and 1 MiB. Use `cpu-sampling` for target CPU traces or
+`none` for an uninstrumented timing campaign. Every run records the target
+SHA-256, exact commands, exact-validation result, raw benchmark JSON, process
+logs, trace, and a run manifest under
+`.artifacts/perf/local-http3-target-profile/{runId}`. Trace-instrumented timing
+is attribution evidence only.
+
 ## Exception Attribution
 
 Use `Invoke-QuicExceptionAttribution.ps1` when you need a repeatable
