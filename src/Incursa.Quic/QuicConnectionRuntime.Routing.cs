@@ -18,6 +18,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandlePacketReceived(
         QuicConnectionPacketReceivedContext packetReceivedEvent,
         long nowTicks,
+        bool deferApplicationAckFinalization,
         ref QuicConnectionEffectAccumulator effects)
     {
         if (SendingMode == QuicConnectionSendingMode.None)
@@ -86,7 +87,11 @@ internal sealed partial class QuicConnectionRuntime
         }
         else
         {
-            stateChanged |= TryHandleReceivedPacketDatagram(packetReceivedEvent, nowTicks, ref effects);
+            stateChanged |= TryHandleReceivedPacketDatagram(
+                packetReceivedEvent,
+                nowTicks,
+                deferApplicationAckFinalization,
+                ref effects);
         }
 
         bool flushedHandshakePackets = TryFlushHandshakePackets(ref effects);
@@ -191,6 +196,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryHandleReceivedPacketDatagram(
         QuicConnectionPacketReceivedContext packetReceivedEvent,
         long nowTicks,
+        bool deferApplicationAckFinalization,
         ref QuicConnectionEffectAccumulator effects)
     {
         bool stateChanged = false;
@@ -240,11 +246,19 @@ internal sealed partial class QuicConnectionRuntime
                     // runtime flips fully active, so this path must not gate short-header ingress on phase alone.
                     // SEE: code:src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs#TryHandleApplicationPacketReceived
                     // SEE: code:src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs#HandlePeerHandshakeTranscriptCompleted
-                    stateChanged |= TryHandleApplicationPacketReceived(packetEvent, nowTicks, ref effects);
+                    stateChanged |= TryHandleApplicationPacketReceived(
+                        packetEvent,
+                        nowTicks,
+                        deferApplicationAckFinalization,
+                        ref effects);
                     break;
 
                 case QuicConnectionPhase.Active:
-                    stateChanged |= TryHandleApplicationPacketReceived(packetEvent, nowTicks, ref effects);
+                    stateChanged |= TryHandleApplicationPacketReceived(
+                        packetEvent,
+                        nowTicks,
+                        deferApplicationAckFinalization,
+                        ref effects);
                     break;
 
                 case QuicConnectionPhase.Closing:

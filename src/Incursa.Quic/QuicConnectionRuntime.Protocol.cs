@@ -1164,6 +1164,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryHandleApplicationPacketReceived(
         QuicConnectionPacketReceivedContext packetReceivedEvent,
         long nowTicks,
+        bool deferApplicationAckFinalization,
         ref QuicConnectionEffectAccumulator effects)
     {
         if (IsVersion1ZeroRttPacket(packetReceivedEvent.Datagram))
@@ -2132,26 +2133,10 @@ internal sealed partial class QuicConnectionRuntime
             phaseStartedTimestamp);
         phaseStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
 
-        long ackSegmentStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
-        if (TrySendPendingApplicationAck(nowTicks, ref effects))
+        if (!deferApplicationAckFinalization)
         {
-            stateChanged = true;
+            stateChanged |= FinalizePendingApplicationAck(nowTicks, ref effects);
         }
-        QuicMetrics.RecordApplicationPacketReceivePhaseTime(
-            tlsState.Role,
-            "post_send_ack",
-            ackSegmentStartedTimestamp);
-        ackSegmentStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
-
-        if (UpdateApplicationAckDelayTimer(nowTicks))
-        {
-            stateChanged = true;
-            AppendLifecycleTimerEffects(ref effects);
-        }
-        QuicMetrics.RecordApplicationPacketReceivePhaseTime(
-            tlsState.Role,
-            "post_ack_timer",
-            ackSegmentStartedTimestamp);
 
         QuicMetrics.RecordApplicationPacketReceivePhaseTime(
             tlsState.Role,
@@ -3112,6 +3097,44 @@ internal sealed partial class QuicConnectionRuntime
         bool timerUpdated = UpdateApplicationAckDelayTimer(nowTicks);
         AppendLifecycleTimerEffects(ref effects);
         return sentAck || timerUpdated;
+    }
+
+    private bool FinalizePendingApplicationAck(
+        long nowTicks,
+        ref QuicConnectionEffectAccumulator effects,
+        bool recordReceivePhaseMetrics = true)
+    {
+        bool stateChanged = false;
+        long ackSegmentStartedTimestamp = recordReceivePhaseMetrics
+            ? QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp()
+            : 0;
+        if (TrySendPendingApplicationAck(nowTicks, ref effects))
+        {
+            stateChanged = true;
+        }
+        if (recordReceivePhaseMetrics)
+        {
+            QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+                tlsState.Role,
+                "post_send_ack",
+                ackSegmentStartedTimestamp);
+            ackSegmentStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
+        }
+
+        if (UpdateApplicationAckDelayTimer(nowTicks))
+        {
+            stateChanged = true;
+            AppendLifecycleTimerEffects(ref effects);
+        }
+        if (recordReceivePhaseMetrics)
+        {
+            QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+                tlsState.Role,
+                "post_ack_timer",
+                ackSegmentStartedTimestamp);
+        }
+
+        return stateChanged;
     }
 
     private bool UpdateApplicationAckDelayTimer(long nowTicks)

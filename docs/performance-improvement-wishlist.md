@@ -6294,3 +6294,62 @@ Raw JSON, logs, focused TRX files, frozen hashes, the rejected patch and emitter
 source, and `negative-result.json` are retained under
 `C:\shared\temp\quic-connection-local-emitter-20260719`. No package,
 deployment, registration, publication, or ProtocolLab state changed.
+
+### Accepted 2026-07-19: bounded same-connection ACK finalization batching
+
+Detailed actor attribution found that an exact one-MiB fixed response generated
+about 114 standalone application ACK datagrams per completed response. Packet
+runs averaged about four items and almost always ended immediately before a
+same-connection stream write, so the actor emitted an ACK-only datagram just
+before it could have carried the same ACK on application data.
+
+The accepted runtime uses one queued work item as lookahead. It defers only
+application ACK emission and ACK-delay timer finalization across at most eight
+already-queued packets for the same runtime and at most the immediately
+following stream write. Packet parsing, receipt recording, ACK-ledger and loss
+recovery work, pending-write retries, application-send progress, flow control,
+congestion control, queue order, cancellation, and disposal still execute for
+every packet. The final packet at a drain, runtime, timer, event, or work-kind
+boundary finalizes normally. A following stream write gets the existing
+piggyback opportunity and then finalizes the ACK state and timer in the same
+actor transition. Public and non-hosted transitions preserve the old immediate
+behavior.
+
+Matched local A/B/A/B evidence used the exact final candidate and detached
+`1db6a657` baseline binaries, five samples per leg, exact payload and EOF
+validation, and no runtime diagnostics. The combined ten samples per
+implementation produced:
+
+| Exact one-MiB lane | Baseline MiB/s | Candidate MiB/s | Throughput | p95 | Allocation |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| HTTP/3 fixed `1 x 1` | 54.08 | 62.34 | +15.3% | -16.3% | -7.2% |
+| HTTP/3 fixed `1 x 4` | 54.52 | 63.71 | +16.8% | -13.6% | -5.8% |
+| HTTP/3 fixed `1 x 16` | 50.88 | 59.39 | +16.7% | -14.2% | -8.2% |
+| Public QUIC download `1 x 16` | 22.89 | 35.82 | +56.5% | -35.7% | -24.8% |
+| Public QUIC duplex `1 x 16` | 29.87 | 51.43 | +72.2% | -41.6% | -12.6% |
+
+All timed samples passed. Transport samples retained high shared-host variance,
+but the candidate improved every repeated median by margins much larger than
+that variance and the independent HTTP/3 campaign was stable at `1 x 4` and
+`1 x 16`. A final diagnostic-only sample completed 208 exact responses at
+39.73 MiB/s and recorded 62 standalone ACKs total, 13,088 ACKs piggybacked on
+queued application data, and 210 other piggybacked ACKs. The retained baseline
+attribution had recorded about 114 standalone ACKs per response.
+
+Focused ACK, shard, large-response, and one-MiB HTTP/3 coverage passed 65 tests.
+The mixed focused run reproduced the retained
+`DroppedServerFinIsRecoveredAndShardContinuesProcessing` timing assertion in
+both baseline and candidate; the candidate passed ten isolated reruns. The full
+Release suite completed 9,650 passes and four intentional skips with one
+occurrence of the retained load-sensitive incomplete-content close timeout.
+Both baseline and candidate passed that exact case ten isolated reruns out of
+ten. No new correctness failure was attributable to the candidate.
+
+Evidence, raw logs, final A/B summaries, diagnostic metrics, TRX files, and
+binary hashes are retained under
+`C:\shared\temp\quic-ack-finalization-batch-20260719`. ProtocolLab was not run
+because this slice used the approved local-first inner loop. No package,
+deployment, registration, or publication state changed. The next
+same-connection investigation should re-profile the accepted runtime before
+selecting another mechanism; do not add broader ACK deferral or repeat rejected
+egress and queue-order variants.

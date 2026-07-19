@@ -14,6 +14,7 @@ namespace Incursa.Quic;
 /// </remarks>
 internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 {
+    private const int MaximumDeferredApplicationAckPacketCount = 8;
     private static readonly TimerCallback DeadlineWakeTimerCallback = static state =>
     {
         DeadlineWakeTimerState timerState = (DeadlineWakeTimerState)state!;
@@ -348,18 +349,54 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 // a separate wake-up when the shard is already active.
                 EnqueueDueEntries(clock.Ticks);
 
-                while (reader.TryRead(out QuicConnectionRuntimeShardWorkItem workItem))
+                // Keep one item as lookahead so ACK finalization is deferred only when the
+                // next same-connection packet or stream write is already queued.
+                bool hasBufferedWorkItem = false;
+                QuicConnectionRuntimeShardWorkItem bufferedWorkItem = default;
+                bool finalizeBufferedApplicationAck = false;
+                var deferredApplicationAckPacketCount = 0;
+                while (hasBufferedWorkItem || reader.TryRead(out bufferedWorkItem))
                 {
+                    QuicConnectionRuntimeShardWorkItem workItem = bufferedWorkItem;
+                    bool finalizePendingApplicationAck = finalizeBufferedApplicationAck;
+                    hasBufferedWorkItem = false;
+                    finalizeBufferedApplicationAck = false;
                     QuicMetrics.RecordRuntimeShardWorkItemDequeued(metricsRegistration, in workItem);
                     if (IsDeadlineWakeWorkItem(workItem))
                     {
+                        deferredApplicationAckPacketCount = 0;
                         RecordPacketRunBoundary("deadline_wake");
                         continue;
                     }
 
+                    bool deferApplicationAckFinalization = false;
+                    if (workItem.Kind == QuicConnectionRuntimeShardWorkItemKind.PacketReceived
+                        && workItem.Runtime is not null
+                        && deferredApplicationAckPacketCount < MaximumDeferredApplicationAckPacketCount)
+                    {
+                        hasBufferedWorkItem = reader.TryRead(out bufferedWorkItem);
+                        if (hasBufferedWorkItem)
+                        {
+                            deferApplicationAckFinalization = ShouldDeferApplicationAckFinalization(
+                                in workItem,
+                                in bufferedWorkItem,
+                                deferredApplicationAckPacketCount,
+                                out finalizeBufferedApplicationAck);
+                        }
+                    }
+
                     TrackPacketRun(in workItem);
                     productiveWorkItemsInWakeCycle++;
-                    ProcessWorkItem(workItem, transitionObserver, effectObserver, sendDatagramObserver);
+                    ProcessWorkItem(
+                        workItem,
+                        transitionObserver,
+                        effectObserver,
+                        sendDatagramObserver,
+                        deferApplicationAckFinalization,
+                        finalizePendingApplicationAck);
+                    deferredApplicationAckPacketCount = deferApplicationAckFinalization
+                        ? deferredApplicationAckPacketCount + 1
+                        : 0;
                 }
 
                 RecordPacketRunBoundary("drain_end");
@@ -546,7 +583,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         QuicConnectionRuntimeShardWorkItem workItem,
         Action<QuicConnectionHandle, QuicConnectionTransitionResult>? transitionObserver,
         Action<QuicConnectionHandle, QuicConnectionEffect>? effectObserver,
-        Action<QuicConnectionHandle, QuicConnectionSendDatagramUpdate>? sendDatagramObserver)
+        Action<QuicConnectionHandle, QuicConnectionSendDatagramUpdate>? sendDatagramObserver,
+        bool deferApplicationAckFinalization = false,
+        bool finalizePendingApplicationAck = false)
     {
         long serviceStartedTimestamp = QuicMetrics.GetRuntimeShardServiceStartTimestamp();
         QuicConnectionRuntime? runtime = workItem.Runtime;
@@ -574,7 +613,10 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             QuicConnectionTransitionResult result = workItem.Kind switch
             {
                 QuicConnectionRuntimeShardWorkItemKind.PacketReceived
-                    => runtime.TransitionPacketReceived(workItem.PacketReceived, clock.Ticks),
+                    => runtime.TransitionPacketReceived(
+                        workItem.PacketReceived,
+                        clock.Ticks,
+                        deferApplicationAckFinalization),
                 QuicConnectionRuntimeShardWorkItemKind.StreamCapacityRelease
                     => runtime.TransitionStreamCapacityRelease(clock.Ticks),
                 QuicConnectionRuntimeShardWorkItemKind.FlowControlCreditUpdate
@@ -588,7 +630,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                         workItem.StreamId,
                         workItem.StreamData,
                         workItem.StreamDataSuffix,
-                        clock.Ticks),
+                        clock.Ticks,
+                        finalizePendingApplicationAck),
                 _ => runtime.Transition(workItem.ConnectionEvent!, clock.Ticks),
             };
             transitionObserver?.Invoke(workItem.Handle, result);
@@ -689,6 +732,35 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 
     private static bool IsDeadlineWakeWorkItem(QuicConnectionRuntimeShardWorkItem workItem)
         => workItem.Runtime is null && workItem.ConnectionEvent is null && workItem.Kind == QuicConnectionRuntimeShardWorkItemKind.Event;
+
+    internal static bool ShouldDeferApplicationAckFinalization(
+        in QuicConnectionRuntimeShardWorkItem current,
+        in QuicConnectionRuntimeShardWorkItem next,
+        int deferredPacketCount,
+        out bool finalizeAfterNext)
+    {
+        finalizeAfterNext = false;
+        if (deferredPacketCount >= MaximumDeferredApplicationAckPacketCount
+            || current.Kind != QuicConnectionRuntimeShardWorkItemKind.PacketReceived
+            || current.Runtime is null
+            || !ReferenceEquals(current.Runtime, next.Runtime))
+        {
+            return false;
+        }
+
+        if (next.Kind == QuicConnectionRuntimeShardWorkItemKind.PacketReceived)
+        {
+            return true;
+        }
+
+        if (next.Kind == QuicConnectionRuntimeShardWorkItemKind.StreamWrite)
+        {
+            finalizeAfterNext = true;
+            return true;
+        }
+
+        return false;
+    }
 
     private static void ReleaseWorkItemResources(QuicConnectionRuntimeShardWorkItem workItem)
     {

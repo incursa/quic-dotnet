@@ -2853,7 +2853,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             QuicConnectionFlowControlCreditUpdatedEvent flowControlCreditUpdatedEvent
                 => HandleFlowControlCreditUpdated(flowControlCreditUpdatedEvent, ref effects),
             QuicConnectionPacketReceivedEvent packetReceivedEvent
-                => HandlePacketReceived(new QuicConnectionPacketReceivedContext(packetReceivedEvent), nowTicks, ref effects),
+                => HandlePacketReceived(
+                    new QuicConnectionPacketReceivedContext(packetReceivedEvent),
+                    nowTicks,
+                    deferApplicationAckFinalization: false,
+                    ref effects),
             QuicConnectionVersionNegotiationReceivedEvent versionNegotiationReceivedEvent
                 => HandleVersionNegotiationReceived(versionNegotiationReceivedEvent, nowTicks, ref effects),
             QuicConnectionIcmpMaximumDatagramSizeReductionEvent icmpMaximumDatagramSizeReductionEvent
@@ -2891,14 +2895,19 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal QuicConnectionTransitionResult TransitionPacketReceived(
         QuicConnectionPacketReceivedContext packetReceived,
-        long nowTicks)
+        long nowTicks,
+        bool deferApplicationAckFinalization = false)
     {
         QuicConnectionPhase previousPhase = phase;
         lastTransitionTicks = nowTicks;
         transitionSequence++;
 
         QuicConnectionEffectAccumulator effects = default;
-        bool stateChanged = HandlePacketReceived(packetReceived, nowTicks, ref effects);
+        bool stateChanged = HandlePacketReceived(
+            packetReceived,
+            nowTicks,
+            deferApplicationAckFinalization,
+            ref effects);
 
         return new QuicConnectionTransitionResult(
             transitionSequence,
@@ -2976,7 +2985,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         ulong streamId,
         ReadOnlyMemory<byte> streamData,
         ReadOnlyMemory<byte> streamDataSuffix,
-        long nowTicks)
+        long nowTicks,
+        bool finalizePendingApplicationAck = false)
     {
         QuicConnectionPhase previousPhase = phase;
         lastTransitionTicks = nowTicks;
@@ -2991,6 +3001,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             streamDataSuffix,
             actionKind == QuicConnectionStreamActionKind.Finish,
             ref effects);
+        if (finalizePendingApplicationAck)
+        {
+            stateChanged |= FinalizePendingApplicationAck(
+                nowTicks,
+                ref effects,
+                recordReceivePhaseMetrics: false);
+        }
 
         return new QuicConnectionTransitionResult(
             transitionSequence,

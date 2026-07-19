@@ -144,4 +144,70 @@ public sealed class QuicConnectionRuntimeShardWorkItemLayoutTests
         Assert.Equal(default, write.PacketReceived);
         Assert.Null(write.ConnectionEvent);
     }
+
+    [Fact]
+    public void AckFinalizationDeferralRequiresSameRuntimePacketOrStreamWrite()
+    {
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        using QuicConnectionRuntime otherRuntime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicConnectionRuntimeShardWorkItem packet = CreatePacketWorkItem(runtime);
+        QuicConnectionRuntimeShardWorkItem sameRuntimePacket = CreatePacketWorkItem(runtime);
+        QuicConnectionRuntimeShardWorkItem otherRuntimePacket = CreatePacketWorkItem(otherRuntime);
+        QuicConnectionRuntimeShardWorkItem streamWrite = new(
+            new QuicConnectionHandle(8),
+            runtime,
+            requestId: 1,
+            QuicConnectionStreamActionKind.Write,
+            streamId: 0,
+            new byte[] { 1 });
+        QuicConnectionRuntimeShardWorkItem streamOpen = new(
+            new QuicConnectionHandle(8),
+            runtime,
+            requestId: 2,
+            QuicStreamType.Bidirectional);
+
+        Assert.True(QuicConnectionRuntimeShard.ShouldDeferApplicationAckFinalization(
+            in packet,
+            in sameRuntimePacket,
+            deferredPacketCount: 0,
+            out bool finalizeAfterPacket));
+        Assert.False(finalizeAfterPacket);
+
+        Assert.True(QuicConnectionRuntimeShard.ShouldDeferApplicationAckFinalization(
+            in packet,
+            in streamWrite,
+            deferredPacketCount: 7,
+            out bool finalizeAfterWrite));
+        Assert.True(finalizeAfterWrite);
+
+        Assert.False(QuicConnectionRuntimeShard.ShouldDeferApplicationAckFinalization(
+            in packet,
+            in otherRuntimePacket,
+            deferredPacketCount: 0,
+            out _));
+        Assert.False(QuicConnectionRuntimeShard.ShouldDeferApplicationAckFinalization(
+            in packet,
+            in streamOpen,
+            deferredPacketCount: 0,
+            out _));
+        Assert.False(QuicConnectionRuntimeShard.ShouldDeferApplicationAckFinalization(
+            in packet,
+            in sameRuntimePacket,
+            deferredPacketCount: 8,
+            out _));
+    }
+
+    private static QuicConnectionRuntimeShardWorkItem CreatePacketWorkItem(QuicConnectionRuntime runtime)
+    {
+        QuicConnectionPacketReceivedContext packet = new(
+            ObservedAtTicks: 1,
+            new QuicConnectionPathIdentity("remote"),
+            new byte[] { 1 });
+        return new QuicConnectionRuntimeShardWorkItem(
+            new QuicConnectionHandle(6),
+            runtime,
+            packet,
+            ownedDatagramBuffer: null,
+            ownedDatagramBufferOwnership: default);
+    }
 }
