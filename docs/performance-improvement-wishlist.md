@@ -5830,6 +5830,13 @@ These mechanisms overlap retained negative experiments or one-time setup and
 do not support another runtime candidate by themselves. No ProtocolLab run was
 launched.
 
+The wrapper's `cpu-sampling` option now maps to dotnet-trace's current
+`dotnet-sampled-thread-time` collection profile. The compatibility fix was
+verified with a source-backed exact one-MiB `1 x 16` run retained under
+`C:\shared\temp\quic-same-connection-post-tranche-profile-20260718\fixed-1mb-1x16-cpu-post-tranche-v2`.
+The run completed without validation failures and produced a readable
+target-only trace; its instrumented timing remains attribution-only.
+
 Acceptance evidence is retained under
 `C:\shared\temp\quic-local-http3-profile-wrapper-20260718`, including parser
 validation, exact benchmark JSON, target-only trace, allocation report, command

@@ -208,6 +208,7 @@ try {
 
     $tracePath = Join-Path $runRoot "target.nettrace"
     if ($TraceProfile -ne "none") {
+        $dotnetTraceProfile = if ($TraceProfile -eq "cpu-sampling") { "dotnet-sampled-thread-time" } else { $TraceProfile }
         $traceDurationSeconds = [Math]::Max(10, ($Samples * ($DurationSeconds + $WarmupSeconds)) + 8)
         $traceDuration = [TimeSpan]::FromSeconds($traceDurationSeconds).ToString(
             "hh\:mm\:ss",
@@ -215,7 +216,7 @@ try {
         $traceArguments = @(
             "tool", "run", "dotnet-trace", "--", "collect",
             "--process-id", $target.Process.Id.ToString([Globalization.CultureInfo]::InvariantCulture),
-            "--profile", $TraceProfile,
+            "--profile", $dotnetTraceProfile,
             "--duration", $traceDuration,
             "--output", $tracePath)
         $trace = Start-CapturedProcess `
