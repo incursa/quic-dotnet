@@ -6514,6 +6514,19 @@ worker. Closing a connection or stream must stop admission, complete pending
 operations, drain and release owned buffers, and make stale queued work fail a
 generation check.
 
+Keep the execution policy adaptive instead of charging every connection for
+the multi-stream machinery. New connections should start on the direct actor
+path. Promote to the stream-executor path only after runtime evidence shows
+multiple simultaneously runnable streams or sustained packet/stream queue
+pressure. The first implementation should use one-way promotion for the
+connection lifetime, or an explicit drain barrier plus substantial hysteresis,
+so work cannot oscillate between owners. Promotion must be driven by bounded
+signals such as runnable-stream count, queue depth and delay, retained bytes,
+and actor service time, never benchmark scenario names, payload constants, or
+fixed test concurrency values. Upload- and download-heavy behavior may tune
+budgets independently, but must share the same connection-state authority and
+correctness implementation.
+
 Use explicit packet-buffer ownership. Parsed STREAM frames should initially
 hold slices of a reference-counted decrypted packet owner. Contiguous data that
 can satisfy a pending read may use that storage directly; out-of-order or
@@ -6537,6 +6550,14 @@ different from the rejected stream-action lock split: ownership moves to a
 bounded stream executor only after connection-wide packet processing, rather
 than allowing multiple callers to mutate the existing connection state under
 different locks.
+
+Use proportional acceptance gates. A broad ownership or execution-model change
+normally requires at least a repeated ten-percent multi-stream gain. A smaller,
+bounded mechanism may still be accepted at a stable seven-to-eight-percent gain
+when attribution is clear, variance and tail latency remain controlled, c1/c4
+and protocol guardrails stay within about five percent, and the maintenance and
+correctness cost is proportionate. ProtocolLab remains a confirmation step only
+after the local gate passes.
 
 ### Planned 2026-07-19: bounded packet-batch egress pipeline
 
@@ -6680,3 +6701,46 @@ loss-rebuild, HTTP/3 interop, and minimal-server coverage passed 22/22. The
 segmentation regression verifies that enabled sockets preserve ordinary
 1,200-, 1,452-, and 1,472-byte sends as single datagrams and that a two-packet
 contiguous submission arrives as two exact datagrams in order.
+
+### Rejected 2026-07-19: unconditional client UDP segmentation
+
+A bounded follow-up enabled the already accepted contiguous packet construction
+and Windows UDP segmentation path on the migration-capable client endpoint.
+It re-enabled the socket option after rebinding and fell back to individual
+sends whenever path-specific packet information was required. Packet numbers,
+congestion and flow-control admission, recovery, ordering, ownership, and path
+state remained unchanged. Focused build and endpoint socket coverage passed
+7/7, including exact segment ordering and path, ECN, ownership, and contiguity
+boundaries.
+
+BenchmarkDotNet Dry and Short jobs ran before end-to-end testing. For the same
+packet construction and unconnected `SendTo` mechanism used by the client,
+four-packet time fell from 45.92 to 24.78 microseconds and twelve-packet time
+fell from 137.13 to 62.57 microseconds, with no managed allocation in either
+variant. The isolated mechanism therefore had ample capacity to matter.
+
+The public transport upload screen used one established connection, exact
+one-MiB payload validation, five samples per cell, and zero failures. Two
+candidate passes repeated approximately 105.62-109.50 MiB/s at c1 and
+107.80-108.84 MiB/s at c4, but both measured only 46.90-46.91 MiB/s at c16.
+The adjacent detached `1df86287` baseline measured 71.55, 56.15, and 60.98
+MiB/s at c1, c4, and c16. Candidate c16 CV was low at 1.33-2.21 percent and
+median p95 was 350.95-361.19 ms, versus 280.83 ms for the adjacent baseline.
+An immediately preceding baseline also measured 47.03 MiB/s at c16, so the
+honest conclusion is no repeatable c16 gain and a credible high-pressure
+regression, not a stable low-concurrency-only win.
+
+The runtime and test candidate was reverted and ProtocolLab was not run.
+Artifacts are retained under
+`C:\shared\temp\quic-client-egress-batch-20260719`; the detached baseline is
+`C:\shared\temp\quic-client-egress-baseline-1df86287`.
+
+Do not repeat unconditional client segmentation. The opposite low- and
+high-pressure directions are evidence for an adaptive egress policy: preserve
+the cheap segmented path while pressure is sparse, then promote away from it
+when sustained queue delay, runnable-stream count, delayed write completions,
+or actor service time shows multiplexing pressure. Promotion must use measured
+runtime pressure with one-way ownership transfer or strong hysteresis, not a
+hardcoded c16 or payload-size rule. The next experiment must first expose the
+minimum pressure signal that predicts this reversal without charging c1 for
+the multiplexed policy.
