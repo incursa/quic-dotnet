@@ -6661,9 +6661,18 @@ split larger ACK-bearing packets into separate UDP datagrams. The corrected
 current IPv4/IPv6 path policy permits, so sub-sized datagrams remain single
 datagrams and only exact contiguous 1,472-byte runs are grouped.
 
-ProtocolLab has not yet been run for this slice. The local gate is satisfied;
-the next step is one focused matched ProtocolLab HTTP/3 fixed one-MiB campaign
-before any broader peer or c1-c128 matrix.
+The focused source-backed ProtocolLab confirmation used the exact one-MiB
+HTTP/3 fixed-response lane at `c1-s16`, five repetitions per source tree, and
+passed payload validation and benchmark execution in every cell. Run
+`egress-baseline-a5e64082-h3-large-body-v1` measured 20.685 MiB/s median with
+3.01% CV and 24.540 ms median p95. Run
+`egress-candidate-0937826c-h3-large-body-v1` measured 28.520 MiB/s median with
+18.24% CV and 21.931 ms median p95: +37.9% median throughput and -10.6% median
+p95. The 212 baseline and 273 candidate requests all succeeded with zero
+failures or timeouts. Artifacts are retained under
+`C:\shared\temp\pl-egress-batch-20260719\runs`. The candidate's bimodal
+shared-host samples keep this diagnostic rather than publishable evidence, but
+the matched lab direction confirms the larger and more stable local A/B result.
 
 The final Release suite passed 9,663 tests with four intentional skips and no
 failures. Focused packet-destination, segmentation, sent-packet ownership,
