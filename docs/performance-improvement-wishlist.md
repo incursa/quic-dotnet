@@ -5765,3 +5765,41 @@ targets, exact Incursa and Kestrel JSON, blocked peer attempts, upload allocatio
 trace and attribution, and the fixed 1 x 16 CPU trace plus TopN reports.
 ProtocolLab was not run, and no package, deployment, registration, or
 publication changed.
+
+### Rejected 2026-07-18: connection-local sender progress scheduling window
+
+The exact HTTP/3 topology campaign showed that one connection with sixteen
+streams was limited to 38.93 MiB/s while sixteen real connections reached
+206.62 MiB/s. Retained packet-run diagnostics also showed long same-runtime
+receive runs and delayed stream-write service. A reversible scheduler candidate
+therefore staged at most 64 already-queued shard work items and allowed one
+sender-progress turn per connection to move ahead of that connection's later
+packet run. Packet order remained unchanged, general events and timers were
+never crossed, and all work still executed through the existing single shard
+consumer. This did not introduce another send queue, timer bypass, mutating
+thread, generic shard yield, or bounded-drain policy.
+
+Focused ordering, buffer-return, fault-drain, timer-inbox, and concurrent-post
+tests passed 9/9. The local A/B gate used the same external HTTP/3 client,
+target port, one-MiB exact fixed response, one established connection, five
+samples per cell, and one, four, and sixteen concurrent streams. All 30 samples
+passed payload, content-length, EOF, status, and protocol validation:
+
+| Streams | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | 45.71 | 45.25 | -1.0% | +2.8% | +0.5% |
+| 4 | 43.51 | 43.07 | -1.0% | +1.9% | -0.7% |
+| 16 | 39.07 | 38.52 | -1.4% | +1.8% | +2.2% |
+
+The one-stream cells each contained one startup-disturbed low sample, while the
+four- and sixteen-stream cells were stable. No local promotion gate passed,
+and the decisive sixteen-stream cell moved in the wrong direction. The runtime
+and candidate-only tests were reverted, and ProtocolLab was not run. Frozen
+target binaries, SHA-256 hashes, raw baseline/candidate JSON, the candidate
+patch, focused TRX, and `negative-result.json` are retained under
+`C:\shared\temp\quic-progress-priority-20260718`. Do not repeat a bounded
+look-ahead or connection-local progress-priority variant. Together with the
+retained generic yield, bounded drain, and deferred-flush results, this closes
+minor shard scheduling-order changes as the next route to the multi-fold gap.
+Reassess the amount and lifetime of actor-owned work in a full HTTP/3 response
+before changing queue order again.
