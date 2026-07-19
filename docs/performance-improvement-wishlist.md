@@ -6060,3 +6060,33 @@ probe source/output, and `negative-result.json` are retained under
 `C:\shared\temp\quic-dualmode-1472-segmentation-probe-20260718`. Do not repeat
 socket-wrapper or UDP segmentation variants unless broader trace evidence
 attributes a substantially larger end-to-end cost than this campaign did.
+
+### Rejected 2026-07-18: consecutive stream-write flush deferral
+
+The same-connection trace showed that every oversized stream-write work item
+immediately drained the application-send queue, so the existing scheduler saw
+only one stream at a time. A bounded shard candidate used one-item lookahead
+over already-consecutive `Write` items for the same runtime. It preserved FIFO
+work-item order, stopped at FIN, packet, timer, event, credit, runtime, and
+sixteen-item boundaries, and deferred only the existing oversized-write queue
+flush until the last adjacent write.
+
+The activation trace rejected the mechanism before a matched throughput
+campaign. In an exact fixed one-MiB, one-connection, sixteen-stream diagnostic
+run, burst-limited queue depth rose to a p50 of four, p95 of twelve, and maximum
+of twenty-one, but both combined and single-write send batches still reported
+exactly one stream at p50, p95, and maximum. The retained oversized raw-stream
+request remained at the queue head while its fragments consumed the full
+twelve-datagram actor tranche. Diagnostic throughput was only 34.99 MiB/s,
+p95 latency was 701.38 ms, and stream-write completion p50/p95 rose to
+6.57/11.72 ms with no validation failures.
+
+The candidate therefore increased waiting without changing stream selection.
+It was reverted without ProtocolLab or a full A/B campaign. The activation
+JSON, rejected patch, hashes, and negative-result record are retained under
+`C:\shared\temp\quic-consecutive-stream-write-batch-20260718`. Do not repeat
+shard-level write accumulation unless the send queue can actually rotate among
+eligible streams. The next bounded mechanism is fair rotation of a partially
+drained oversized raw-stream request inside the existing priority scheduler,
+with priority, per-stream ordering, retransmission precedence, congestion,
+flow control, cancellation, and completion semantics held unchanged.
