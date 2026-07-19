@@ -163,6 +163,11 @@ internal sealed class QuicCongestionControlState
     /// </summary>
     internal ulong BytesInFlightBytes { get; private set; }
 
+    /// <summary>
+    /// Gets bytes reserved for packets prepared for emission but not yet accepted by the socket.
+    /// </summary>
+    internal ulong ReservedSendBytes { get; private set; }
+
     internal ulong[] EcnCeCounters => ecnCeCounters;
 
     /// <summary>
@@ -327,6 +332,7 @@ internal sealed class QuicCongestionControlState
     {
         UpdateMaxDatagramSize(MaxDatagramSizeBytes, resetToInitialWindow: true);
         BytesInFlightBytes = 0;
+        ReservedSendBytes = 0;
         Array.Clear(ecnCeCounters);
     }
 
@@ -340,8 +346,81 @@ internal sealed class QuicCongestionControlState
             return true;
         }
 
-        return BytesInFlightBytes <= ulong.MaxValue - sentBytes
-            && BytesInFlightBytes + sentBytes <= CongestionWindowBytes;
+        if (BytesInFlightBytes > ulong.MaxValue - ReservedSendBytes)
+        {
+            return false;
+        }
+
+        ulong committedAndReservedBytes = BytesInFlightBytes + ReservedSendBytes;
+        return committedAndReservedBytes <= ulong.MaxValue - sentBytes
+            && committedAndReservedBytes + sentBytes <= CongestionWindowBytes;
+    }
+
+    /// <summary>
+    /// Reserves congestion capacity without reporting bytes as in flight.
+    /// </summary>
+    internal bool TryReservePacketSend(
+        ulong sentBytes,
+        bool isAckOnlyPacket = false,
+        bool isProbePacket = false)
+    {
+        if (!CanSend(sentBytes, isAckOnlyPacket, isProbePacket))
+        {
+            return false;
+        }
+
+        if (!isAckOnlyPacket)
+        {
+            if (ReservedSendBytes > ulong.MaxValue - sentBytes)
+            {
+                return false;
+            }
+
+            ReservedSendBytes += sentBytes;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Converts a prepared-send reservation into sent bytes after full socket acceptance.
+    /// </summary>
+    internal bool TryCommitReservedPacketSend(
+        ulong sentBytes,
+        bool isAckOnlyPacket = false,
+        bool isProbePacket = false)
+    {
+        if (!isAckOnlyPacket)
+        {
+            if (ReservedSendBytes < sentBytes)
+            {
+                return false;
+            }
+
+            ReservedSendBytes -= sentBytes;
+        }
+
+        RegisterPacketSent(sentBytes, isAckOnlyPacket, isProbePacket);
+        return true;
+    }
+
+    /// <summary>
+    /// Releases congestion capacity for a packet that was not accepted by the socket.
+    /// </summary>
+    internal bool TryReleasePacketSendReservation(ulong sentBytes, bool isAckOnlyPacket = false)
+    {
+        if (isAckOnlyPacket)
+        {
+            return true;
+        }
+
+        if (ReservedSendBytes < sentBytes)
+        {
+            return false;
+        }
+
+        ReservedSendBytes -= sentBytes;
+        return true;
     }
 
     /// <summary>
@@ -1036,6 +1115,56 @@ internal sealed class QuicSenderFlowController
             packetProtectionLevel,
             oneRttKeyPhase);
     }
+
+    internal bool TryRecordReservedPacketSent(
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong packetNumber,
+        ulong sentBytes,
+        ulong sentAtMicros,
+        bool ackEliciting,
+        bool isAckOnlyPacket = false,
+        bool isProbePacket = false,
+        QuicTlsEncryptionLevel? packetProtectionLevel = null,
+        ulong? oneRttKeyPhase = null,
+        bool retainPacketState = true)
+    {
+        if (!CongestionControlState.TryCommitReservedPacketSend(
+            sentBytes,
+            isAckOnlyPacket,
+            isProbePacket))
+        {
+            return false;
+        }
+
+        if (isAckOnlyPacket || !retainPacketState)
+        {
+            return true;
+        }
+
+        SortedList<ulong, SentPacketState> sentPackets = GetOrCreateSentPackets(packetNumberSpace);
+        sentPackets[packetNumber] = new SentPacketState(
+            sentBytes,
+            sentAtMicros,
+            ackEliciting,
+            InFlight: true,
+            isProbePacket,
+            packetProtectionLevel,
+            oneRttKeyPhase);
+        return true;
+    }
+
+    internal bool TryReservePacketSend(
+        QuicPacketNumberSpace packetNumberSpace,
+        ulong sentBytes,
+        bool isAckOnlyPacket = false,
+        bool isProbePacket = false)
+    {
+        _ = packetNumberSpace;
+        return CongestionControlState.TryReservePacketSend(sentBytes, isAckOnlyPacket, isProbePacket);
+    }
+
+    internal bool TryReleasePacketSendReservation(ulong sentBytes, bool isAckOnlyPacket = false)
+        => CongestionControlState.TryReleasePacketSendReservation(sentBytes, isAckOnlyPacket);
 
     /// <summary>
     /// Processes an incoming ACK frame and advances congestion state.

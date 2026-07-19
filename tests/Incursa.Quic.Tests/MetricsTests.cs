@@ -58,6 +58,12 @@ public class MetricsTests
                 "incursa.quic.buffer_pool.returns",
                 "size_bucket",
                 sizeBucket) >= returnsBefore + 1);
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.phase_time.ms"
+            && measurement.Value >= 0
+            && measurement.HasTag("shard_index", "0")
+            && measurement.HasTag("work_item_kind", "stream_capacity_release")
+            && measurement.HasTag("phase", "send_datagram_effect"));
 
         InvalidOperationException disposeFailure = await Assert.ThrowsAsync<InvalidOperationException>(
             () => shard.DisposeAsync().AsTask());
@@ -321,6 +327,69 @@ public class MetricsTests
 
     [Fact]
     [Requirement("REQ-QUIC-CRT-0155")]
+    public void ApplicationAckMetricsClassifyStandaloneAndPiggybackedSends()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+
+        QuicMetrics.RecordApplicationAckSent(
+            QuicTlsRole.Server,
+            ackOnlyPacket: true,
+            queuedApplicationWrites: 3);
+        QuicMetrics.RecordApplicationAckSent(
+            QuicTlsRole.Client,
+            ackOnlyPacket: false,
+            queuedApplicationWrites: 0);
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_ack.sends"
+            && measurement.Value == 1
+            && measurement.HasTag("role", "server")
+            && measurement.HasTag("packet_kind", "standalone")
+            && measurement.HasTag("queued_application_data", "present"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_ack.queued_writes"
+            && measurement.Value == 3
+            && measurement.HasTag("packet_kind", "standalone"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_ack.sends"
+            && measurement.Value == 1
+            && measurement.HasTag("role", "client")
+            && measurement.HasTag("packet_kind", "piggybacked")
+            && measurement.HasTag("queued_application_data", "empty"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public async Task ApplicationAckMetricsObserveRuntimePiggybackedSend()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+        using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            _ = runtime.Transition(connectionEvent);
+            return true;
+        });
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        QuicS13AckPiggybackTestSupport.RecordPendingApplicationAck(
+            runtime,
+            packetNumber: 9,
+            receivedAtMicros: 10);
+
+        byte[] streamData = Enumerable.Range(0, 40).Select(static value => (byte)value).ToArray();
+        await stream.WriteAsync(streamData, 0, streamData.Length);
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_ack.sends"
+            && measurement.Value == 1
+            && measurement.HasTag("role", "client")
+            && measurement.HasTag("packet_kind", "piggybacked")
+            && measurement.HasTag("queued_application_data", "empty"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
     public async Task QuicRuntimeShardMetricsEmitBoundedTagsForEnqueueAndDequeue()
     {
         using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
@@ -329,6 +398,11 @@ public class MetricsTests
         await using QuicConnectionRuntimeShard shard = new(2, clock);
         using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(5));
         TaskCompletionSource firstTransitionProcessed = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        long packetPhaseStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
+        QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+            QuicTlsRole.Server,
+            "frames",
+            packetPhaseStartedTimestamp);
 
         Assert.True(shard.TryPostFlowControlCreditUpdate(new QuicConnectionHandle(1), runtime));
         recorder.RecordObservableInstruments();
@@ -389,6 +463,23 @@ public class MetricsTests
             && measurement.Value >= 0
             && measurement.HasTag("shard_index", "2")
             && measurement.HasTag("work_item_kind", "flow_control_credit_update"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.phase_time.ms"
+            && measurement.Value >= 0
+            && measurement.HasTag("shard_index", "2")
+            && measurement.HasTag("work_item_kind", "flow_control_credit_update")
+            && measurement.HasTag("phase", "transition"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.phase_time.ms"
+            && measurement.Value >= 0
+            && measurement.HasTag("shard_index", "2")
+            && measurement.HasTag("work_item_kind", "flow_control_credit_update")
+            && measurement.HasTag("phase", "effects"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.packet.application.receive.phase_time.ms"
+            && measurement.Value >= 0
+            && measurement.HasTag("role", "server")
+            && measurement.HasTag("phase", "frames"));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.delayed_application_sends"
             && measurement.HasTag("shard_index", "2"));
@@ -824,7 +915,9 @@ public class MetricsTests
     [Theory]
     [InlineData((int)QuicBufferPoolOwner.InboundPacketProtection, "inbound_packet_protection")]
     [InlineData((int)QuicBufferPoolOwner.OutboundPacketProtection, "outbound_packet_protection")]
-    public void BufferPoolOwnerNamesDistinguishApplicationPacketProtection(
+    [InlineData((int)QuicBufferPoolOwner.QueuedRawStreamData, "queued_raw_stream_data")]
+    [InlineData((int)QuicBufferPoolOwner.FormattedStreamPayload, "formatted_stream_payload")]
+    public void BufferPoolOwnerNamesDistinguishHotPathOwners(
         int owner,
         string expected)
     {
@@ -909,6 +1002,25 @@ public class MetricsTests
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.application_send.recovery.queue.after"
             && measurement.Value == 5);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void RuntimeDetectedPacketLossUsesBoundedRoleAndPacketSpaceTags()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(
+            QuicMetrics.MeterName,
+            "incursa.quic.runtime.losses.detected");
+
+        QuicMetrics.RecordRuntimeDetectedPacketLoss(
+            QuicTlsRole.Client,
+            QuicPacketNumberSpace.ApplicationData);
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.losses.detected"
+            && measurement.Value == 1
+            && measurement.HasTag("role", "client")
+            && measurement.HasTag("packet_number_space", "application_data"));
     }
 
     [Fact]
@@ -1205,6 +1317,21 @@ public class MetricsTests
         Assert.DoesNotContain(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.shard.empty_wakeups"
             && measurement.HasTag("completion", "async"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void RuntimeShardPacketRunMetricsUseBoundedShardAndBoundaryTags()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+
+        QuicMetrics.RecordRuntimeShardPacketRun(shardIndex: 2, packetCount: 7, boundary: "drain_end");
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.packet_run_length"
+            && measurement.Value == 7
+            && measurement.HasTag("shard_index", "2")
+            && measurement.HasTag("boundary", "drain_end"));
     }
 
     private static QuicConnectionRuntime CreateRuntimeWithActivePath()

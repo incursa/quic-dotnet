@@ -18,6 +18,7 @@ public class QuicSocketReceivePathBenchmarks
     private readonly byte[] receiveBuffer = new byte[4096];
     private Socket sender = null!;
     private Socket receiver = null!;
+    private SocketAsyncEventArgs receiveMessageEventArgs = null!;
     private EndPoint receiverEndPoint = null!;
     private QuicReusableReceiveEndPoint messageRemoteEndPoint = null!;
     private QuicReusableReceiveEndPoint remoteEndPoint = null!;
@@ -37,6 +38,11 @@ public class QuicSocketReceivePathBenchmarks
         messageRemoteEndPoint = new QuicReusableReceiveEndPoint(AddressFamily.InterNetwork);
         remoteEndPoint = new QuicReusableReceiveEndPoint(AddressFamily.InterNetwork);
         socketAddressRemoteEndPoint = new QuicReusableReceiveEndPoint(AddressFamily.InterNetwork);
+        receiveMessageEventArgs = new SocketAsyncEventArgs
+        {
+            RemoteEndPoint = messageRemoteEndPoint,
+        };
+        receiveMessageEventArgs.SetBuffer(receiveBuffer);
     }
 
     /// <summary>
@@ -45,6 +51,7 @@ public class QuicSocketReceivePathBenchmarks
     [GlobalCleanup]
     public void GlobalCleanup()
     {
+        receiveMessageEventArgs.Dispose();
         sender.Dispose();
         receiver.Dispose();
     }
@@ -62,6 +69,28 @@ public class QuicSocketReceivePathBenchmarks
             SocketFlags.None,
             messageRemoteEndPoint);
         return result.ReceivedBytes;
+    }
+
+    /// <summary>
+    /// Measures the direct reusable event-args form of the ancillary-data receive path.
+    /// </summary>
+    [Benchmark]
+    public int ReceiveMessageFromReusableEventArgs()
+    {
+        messageRemoteEndPoint.PrepareForReceive();
+        sender.SendTo(sendBuffer, SocketFlags.None, receiverEndPoint);
+        if (receiver.ReceiveMessageFromAsync(receiveMessageEventArgs))
+        {
+            throw new InvalidOperationException("The pre-queued loopback datagram did not complete synchronously.");
+        }
+
+        if (receiveMessageEventArgs.SocketError != SocketError.Success)
+        {
+            throw new SocketException((int)receiveMessageEventArgs.SocketError);
+        }
+
+        GC.KeepAlive(receiveMessageEventArgs.ReceiveMessageFromPacketInfo);
+        return receiveMessageEventArgs.BytesTransferred;
     }
 
     /// <summary>

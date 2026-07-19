@@ -267,6 +267,8 @@ internal readonly record struct QuicConnectionRetransmissionPlan(
     byte[]? PlaintextPayloadOwner = null,
     byte[]? PacketBytesOwner = null);
 
+internal readonly record struct QuicConnectionPendingSendReservation(ulong Sequence);
+
 /// <summary>
 /// Owns connection-scoped send state, PTO bookkeeping, and retransmission planning.
 /// </summary>
@@ -282,6 +284,10 @@ internal sealed class QuicConnectionSendRuntime
     private QuicOutstandingSentStreamPacketIndex outstandingSentStreamPacketIndex = new();
     private QuicEcnValidationState ecnValidationState;
     private QuicConnectionSentPacketKey? latestTrackedPacketKey;
+    private QuicConnectionSentPacket pendingSendPacket;
+    private ulong pendingSendReservationSequence;
+    private ulong nextPendingSendReservationSequence;
+    private bool hasPendingSendReservation;
 
     public QuicConnectionSendRuntime(
         QuicSenderFlowController? flowController = null,
@@ -524,6 +530,7 @@ internal sealed class QuicConnectionSendRuntime
 
     internal void ResetPathRecoveryState()
     {
+        ReleasePendingSendReservation();
         rttEstimator.Reset();
         ecnValidationState = new QuicEcnValidationState();
         flowController.CongestionControlState.Reset();
@@ -545,15 +552,136 @@ internal sealed class QuicConnectionSendRuntime
         }
     }
 
-    public void TrackSentPacket(QuicConnectionSentPacket packet)
+    internal bool TryReserveSentPacket(
+        QuicConnectionSentPacket packet,
+        out QuicConnectionPendingSendReservation reservation)
     {
-        if (packet.ProbePacket && (packet.AckOnlyPacket || !packet.AckEliciting))
+        reservation = default;
+        if (hasPendingSendReservation)
         {
-            throw new ArgumentException("Probe packets must be ack-eliciting packets.", nameof(packet));
+            return false;
         }
 
+        ValidateSentPacket(packet);
         packet = NormalizePacketProtectionLevel(packet);
         ValidateCryptoMetadata(packet);
+        if (!flowController.TryReservePacketSend(
+            packet.PacketNumberSpace,
+            packet.PayloadBytes,
+            packet.AckOnlyPacket,
+            packet.ProbePacket))
+        {
+            return false;
+        }
+
+        nextPendingSendReservationSequence++;
+        if (nextPendingSendReservationSequence == 0)
+        {
+            nextPendingSendReservationSequence++;
+        }
+
+        pendingSendPacket = packet;
+        pendingSendReservationSequence = nextPendingSendReservationSequence;
+        hasPendingSendReservation = true;
+        reservation = new QuicConnectionPendingSendReservation(pendingSendReservationSequence);
+        return true;
+    }
+
+    internal bool TryCommitReservedSentPacket(
+        QuicConnectionPendingSendReservation reservation,
+        ulong sentAtMicros)
+    {
+        if (!TryTakePendingSendReservation(reservation, out QuicConnectionSentPacket packet))
+        {
+            return false;
+        }
+
+        packet = packet with { SentAtMicros = sentAtMicros };
+        if (!TrackSentPacketCore(packet, reservedSend: true))
+        {
+            ReleasePacketOwners(packet);
+            return false;
+        }
+
+        return true;
+    }
+
+    internal bool TryReleaseReservedSentPacket(QuicConnectionPendingSendReservation reservation)
+    {
+        if (!TryTakePendingSendReservation(reservation, out QuicConnectionSentPacket packet))
+        {
+            return false;
+        }
+
+        bool released = flowController.TryReleasePacketSendReservation(
+            packet.PayloadBytes,
+            packet.AckOnlyPacket);
+        ReleasePacketOwners(packet);
+        return released;
+    }
+
+    private bool TryTakePendingSendReservation(
+        QuicConnectionPendingSendReservation reservation,
+        out QuicConnectionSentPacket packet)
+    {
+        if (!hasPendingSendReservation
+            || reservation.Sequence == 0
+            || reservation.Sequence != pendingSendReservationSequence)
+        {
+            packet = default;
+            return false;
+        }
+
+        packet = pendingSendPacket;
+        pendingSendPacket = default;
+        pendingSendReservationSequence = 0;
+        hasPendingSendReservation = false;
+        return true;
+    }
+
+    private void ReleasePendingSendReservation()
+    {
+        if (!hasPendingSendReservation)
+        {
+            return;
+        }
+
+        QuicConnectionSentPacket packet = pendingSendPacket;
+        pendingSendPacket = default;
+        pendingSendReservationSequence = 0;
+        hasPendingSendReservation = false;
+        _ = flowController.TryReleasePacketSendReservation(
+            packet.PayloadBytes,
+            packet.AckOnlyPacket);
+        ReleasePacketOwners(packet);
+    }
+
+    public void TrackSentPacket(QuicConnectionSentPacket packet)
+    {
+        _ = TrackSentPacketCore(packet, reservedSend: false);
+    }
+
+    private bool TrackSentPacketCore(QuicConnectionSentPacket packet, bool reservedSend)
+    {
+        ValidateSentPacket(packet);
+        packet = NormalizePacketProtectionLevel(packet);
+        ValidateCryptoMetadata(packet);
+        if (reservedSend
+            && !flowController.TryRecordReservedPacketSent(
+                packet.PacketNumberSpace,
+                packet.PacketNumber,
+                packet.PayloadBytes,
+                packet.SentAtMicros,
+                packet.AckEliciting,
+                packet.AckOnlyPacket,
+                packet.ProbePacket,
+                packet.PacketProtectionLevel,
+                packet.OneRttKeyPhase,
+                retainPacketState: false))
+        {
+            return false;
+        }
+
         ecnValidationState.RecordPacketSent(packet.PacketNumberSpace, CurrentEcnMarking);
         QuicConnectionSentPacketKey key = new(packet.PacketNumberSpace, packet.PacketNumber);
         if (TryRemoveSentPacket(key, out QuicConnectionSentPacket replacedPacket))
@@ -567,21 +695,25 @@ internal sealed class QuicConnectionSendRuntime
             outstandingSentStreamPacketIndex.Add(packet);
             latestTrackedPacketKey = key;
         }
-        flowController.RecordPacketSent(
-            packet.PacketNumberSpace,
-            packet.PacketNumber,
-            packet.PayloadBytes,
-            packet.SentAtMicros,
-            packet.AckEliciting,
-            packet.AckOnlyPacket,
-            packet.ProbePacket,
-            packet.PacketProtectionLevel,
-            packet.OneRttKeyPhase,
-            retainPacketState: false);
+        if (!reservedSend)
+        {
+            flowController.RecordPacketSent(
+                packet.PacketNumberSpace,
+                packet.PacketNumber,
+                packet.PayloadBytes,
+                packet.SentAtMicros,
+                packet.AckEliciting,
+                packet.AckOnlyPacket,
+                packet.ProbePacket,
+                packet.PacketProtectionLevel,
+                packet.OneRttKeyPhase,
+                retainPacketState: false);
+        }
+
         if (packet.AckOnlyPacket)
         {
             ReleasePacketOwners(packet);
-            return;
+            return true;
         }
 
         if (packet.AckEliciting && !packet.ProbePacket)
@@ -591,6 +723,8 @@ internal sealed class QuicConnectionSendRuntime
                 ackElicitingPacketSent: true);
             LossDetectionDeadlineMicros = null;
         }
+
+        return true;
     }
 
     internal bool TryDetachLatestRebuildablePacketBytes(
@@ -1188,6 +1322,14 @@ internal sealed class QuicConnectionSendRuntime
         {
             PacketProtectionLevel = packetProtectionLevel,
         };
+    }
+
+    private static void ValidateSentPacket(QuicConnectionSentPacket packet)
+    {
+        if (packet.ProbePacket && (packet.AckOnlyPacket || !packet.AckEliciting))
+        {
+            throw new ArgumentException("Probe packets must be ack-eliciting packets.", nameof(packet));
+        }
     }
 
     private static void ValidateCryptoMetadata(QuicConnectionSentPacket packet)

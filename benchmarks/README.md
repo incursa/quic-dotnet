@@ -120,6 +120,144 @@ cost can be separated from runtime completion cost. Treat the phase output as
 diagnostic attribution for choosing the next code-review target, not as a
 standalone performance claim.
 
+## Local QUIC Transport Loopback
+
+Use `--transport-loopback` for repeated exact public QUIC transfers against
+Incursa.Quic, System.Net.Quic, or both. The harness supports independent or
+shared listeners, multiple established connections, per-connection
+concurrency, worker-tail reporting, and opt-in runtime diagnostics:
+
+```powershell
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- `
+  --transport-loopback `
+  --implementations incursa,systemnet `
+  --scenarios download,upload,duplex `
+  --payload-sizes 1024,65536,1048576 `
+  --connections 16 `
+  --shared-listener true `
+  --concurrency 1 `
+  --samples 5 `
+  --duration-seconds 2 `
+  --warmup-seconds 1 `
+  --json .artifacts/perf/quic-transport/local.json
+```
+
+`connections * concurrency` is the total worker count. The JSON records both
+the requested and actual Incursa listener UDP receive-buffer size plus the
+slowest workers in every sample. `--incursa-listener-receive-buffer-bytes` and
+`--incursa-receive-window-bytes` are diagnostic overrides for matched causal
+experiments; they are not recommended production configuration. Add
+`--diagnostics true` only for attribution because meter collection perturbs
+timing and allocation.
+
+## Local HTTP/3 Loopback
+
+Use the local HTTP/3 harness for repeated end-to-end development measurements
+before escalating a candidate to ProtocolLab:
+
+```powershell
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- `
+  --http3-loopback `
+  --scenarios fixed,streaming,upload,duplex `
+  --payload-sizes 1024,65536,1048576 `
+  --concurrency 1,4,16 `
+  --samples 5 `
+  --duration-seconds 3 `
+  --warmup-seconds 1 `
+  --label candidate `
+  --json .artifacts/perf/http3-local/candidate.json
+```
+
+`--concurrency` retains the original one-connection behavior: each value is the
+number of concurrent streams on one established HTTP/3 connection. To reproduce
+ProtocolLab connection fanout explicitly, replace it with both topology options:
+
+```powershell
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- `
+  --http3-loopback `
+  --scenarios fixed,streaming `
+  --payload-sizes 1048576 `
+  --connections 1,4,16 `
+  --streams-per-connection 1 `
+  --samples 5 `
+  --duration-seconds 3 `
+  --warmup-seconds 1 `
+  --json .artifacts/perf/http3-local/connection-fanout.json
+```
+
+The topology lists form a Cartesian product. Each connection owns a separate
+`SocketsHttpHandler`, every connection is warmed before measurement, and the
+JSON records connections, streams per connection, and total concurrency.
+
+For a locally hosted external HTTP/3 target, add `--target-base-url`. This
+client-only mode supports fixed and streaming deterministic downloads, sink
+uploads, and simultaneous duplex echo while keeping target startup and target
+allocations outside the measured process:
+
+```powershell
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- `
+  --http3-loopback `
+  --scenarios fixed,streaming,upload,duplex `
+  --payload-sizes 1048576 `
+  --connections 1 `
+  --streams-per-connection 1,4,16 `
+  --target-base-url https://127.0.0.1:5444 `
+  --samples 5 `
+  --duration-seconds 3 `
+  --warmup-seconds 1 `
+  --json .artifacts/perf/http3-local/external-target.json
+```
+
+The external target contract uses `/bytes/{size}`, `/stream/bytes`, `/sink`,
+and `/duplex/echo` with the ProtocolLab deterministic `index % 251` payload.
+Client-only runs still require exact HTTP/3, status, EOF, and payload
+validation. Content length is also exact where the endpoint declares it;
+streaming downloads intentionally validate exact bytes and EOF without
+requiring that header. Runtime diagnostics and listener socket controls are
+rejected in this mode because they would describe the client process, not the
+external target.
+
+For a separate instrumented attribution run, add `--diagnostics true`. For
+example:
+
+```powershell
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- `
+  --http3-loopback `
+  --scenarios duplex `
+  --payload-sizes 1048576 `
+  --concurrency 16 `
+  --samples 1 `
+  --duration-seconds 5 `
+  --warmup-seconds 1 `
+  --diagnostics true `
+  --json .artifacts/perf/http3-local/duplex-diagnostics.json
+```
+
+`--listener-receive-buffer-bytes` provides the same benchmark-only UDP receive
+buffer override for matched HTTP/3 controls. Leave it at zero to exercise the
+runtime default.
+
+Certificate generation, listener startup, and connection warmup are outside
+measured samples. Every response must use exact HTTP/3, declare the expected
+content length, and match every expected payload byte. Upload handlers also
+validate every received request byte, while duplex responses echo the streaming
+request body and therefore prove both directions. Throughput counts response
+bytes for fixed/streaming downloads, request bytes for uploads, and both
+directions for duplex. The JSON report includes
+per-sample throughput, request rate, p50/p95/p99 latency, process-wide managed
+allocation, collection counts, median/range, and coefficient of variation.
+Diagnostics are disabled by default. The
+opt-in diagnostics mode adds bounded summaries for the existing runtime and
+buffer-pool metric series, including queue delay, wakeups, work per wake,
+stream-write completion, delayed sends, retained send state, and outstanding
+pooled buffers. Its output is explicitly marked diagnostic-only because metric
+instrumentation affects timing and allocation; use the normal mode for A/B
+performance decisions.
+The client and server share one process and host, so use the harness for rapid
+A/B development evidence rather than isolated-hardware or peer claims. When
+separate source roots are required, build each benchmark binary and run them in
+an interleaved A/B/B/A order before comparing results.
+
 ## Black-Box External Lane
 
 For public cross-implementation work, use an external client-driven benchmark

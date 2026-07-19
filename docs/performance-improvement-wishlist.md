@@ -3176,6 +3176,35 @@ The next raw runtime tranche should target the absolute c16-c128 gap in the
 shared receive/send pipeline, especially datagram send cost, stream receive
 locking, and packet scheduling, rather than retuning small-write heuristics.
 
+### Rejected 2026-07-17: per-datagram ECN lookup and direct Windows send
+
+The retained c64 CPU trace attributed 3.16% exclusive CPU to the listener
+datagram-send method, with the native socket send accounting for only part of
+that sampled stack. Two bounded candidates tested whether avoidable socket
+bookkeeping or managed endpoint marshalling explained the gap.
+
+The current runtime emits `NotEct` while the managed receive path cannot read
+ECN metadata. Avoiding creation and lookup of fresh per-socket ECN state reduced
+the isolated marking helper from 9.650 ns to 2.179 ns (-77.4%) with zero
+allocation. The absolute saving is only 7.471 ns per datagram, too small to
+explain the multiplex collapse or justify a full c1-c128 campaign. The helper
+change was not retained; the permanent benchmark and raw reports remain under
+`C:\shared\temp\quic-ecn-notect-*20260717`.
+
+A Windows `sendto` P/Invoke candidate then reused the cached `SocketAddress`
+buffer and `SafeSocketHandle` to bypass the managed overload. The matched
+loopback benchmark measured 7.246 us for `Socket.SendTo` and 7.216 us for the
+direct primitive, ratio 1.00 within noise, with zero allocation for both. The
+candidate and benchmark were removed. Evidence remains under
+`C:\shared\temp\quic-direct-sendto-20260717`.
+
+Neither primitive passed the independent gate, so ProtocolLab cells were not
+run and no end-to-end improvement is claimed. Do not repeat a direct Windows
+send wrapper or minor ECN lookup variant without materially different evidence.
+The next target is packet scheduling and queue service capacity; asynchronous
+listener send decoupling remains rejected because socket emission must stay
+coupled to congestion and recovery accounting.
+
 ### Rejected 2026-07-16: split stream-action lifecycle and processing gates
 
 The 100x1 KiB multiplex ladder falls after c16: 7.28 MiB/s at c1, 17.65 at
@@ -3236,3 +3265,3135 @@ improvement. Do not repeat another minor lock split. The next diagnosis should
 target the unchanged queue peaks, pooled-buffer retention, and the pre-existing
 221-byte truncated-response and upload idle-timeout failures before another
 runtime scheduling design is attempted.
+
+### Rejected 2026-07-17: collapse STREAM receive delivery decisions
+
+Sampled c64 CPU evidence from the retained multiplex campaign attributed 4.27%
+exclusive CPU to `Monitor.Enter_Slowpath`. The largest project-attributed
+groups were stream snapshots, pending stream-action ownership, stream priority,
+peer stream-capacity release, application reads, and STREAM-frame receipt.
+The 1-RTT and 0-RTT receive loops applied each accepted STREAM frame under the
+connection-wide stream-state lock, then reacquired the same lock twice for
+completion/readability snapshots and once more to mark first peer delivery.
+
+Candidate commit `b982ed85` returned completion, readability, and first-accept
+decisions from the original receive transaction while preserving the legacy
+bookkeeping entry point. Revert `1fe495a2` removes it from the active runtime.
+Receive-buffer tests passed 21/21. A broader runtime, stream-state, and RFC 9000
+filter passed 4,476, skipped three intentional ProtocolLab-sized cases, and had
+zero failures.
+
+All 40 uninstrumented source-backed ProtocolLab cells used exact 100x1 KiB
+multiplex validation, identical executor package 0.1.14, alternating AB/BA
+ordering, five observations per variant and shape, and zero validation,
+request, or timeout failures. The initial c16 gate favored the candidate, but
+the required higher-concurrency gates did not:
+
+| Shape | Baseline | Candidate | Throughput delta | Baseline p95 | Candidate p95 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| c16 | 17.51 MiB/s | 25.97 MiB/s | +48.3% | 63.94 ms | 58.01 ms |
+| c64, immediate alternation | 14.54 MiB/s | 12.90 MiB/s | -11.3% | 298.22 ms | 282.87 ms |
+| c64, 30-second cooldown | 18.80 MiB/s | 17.17 MiB/s | -8.7% | 266.06 ms | 281.04 ms |
+| c128, 30-second cooldown | 9.28 MiB/s | 8.86 MiB/s | -4.5% | 723.98 ms | 784.18 ms |
+
+The shared host remained highly variable at c64-c128. The cooled candidate
+range was 31.4% at c64 and 106.7% at c128; its c128 p99 was 953.27 ms versus
+833.80 ms baseline. The c64 generator CPU also tracked achieved throughput,
+confirming that slow cells left the generator waiting rather than proving a
+generator saturation ceiling. Cooldown removed the strongest immediate-order
+bias but did not produce a repeated high-concurrency win.
+
+Evidence is retained under:
+
+- `C:\shared\temp\pl-receive-result-candidate-20260717`;
+- `C:\shared\temp\pl-receive-result-candidate-c64-cooldown-20260717`;
+- `C:\shared\temp\pl-receive-result-candidate-c128-cooldown-20260717`.
+
+This candidate is rejected because it improves c16 without improving the actual
+c64-c128 collapse and worsens high-concurrency tail latency. Do not repeat
+another variation that only folds receive-state snapshots into the existing
+connection-wide stream lock. The next evidence-supported target is the
+independent datagram send cost, followed by packet scheduling and receive-state
+ownership changes that shorten or remove the connection-wide critical section
+rather than doing more work inside it.
+
+### Rejected 2026-07-17: payload-sized ProtocolLab echo receive buffers
+
+The raw Incursa ProtocolLab server rented a 64 KiB echo buffer for every active
+stream, including the 100x1 KiB multiplex lane. A bounded harness candidate
+instead sized non-download receive buffers from the declared payload length,
+which would reduce the nominal active-stream rental from 64 KiB to 1 KiB in
+that lane without changing runtime flow control, packet scheduling, write
+ordering, or FIN behavior.
+
+The first matched source-backed c16 gate completed five exact repetitions per
+variant with zero validation failures, request failures, or timeouts. The
+baseline median was 28,884.40 requests/s (28.21 MiB/s), 53.60 ms p95, and
+76.24 ms p99. The candidate median was 27,418.40 requests/s (26.78 MiB/s),
+56.24 ms p95, and 104.69 ms p99: -5.1 percent throughput and +37.3 percent
+p99. One candidate repetition also fell to 12,146.40 requests/s, confirming
+that the shared-host batch was not stable enough to support a memory claim.
+
+The run's adapter working-set metric was captured before load, and both
+variants reported unavailable QUIC buffer-pool counters because the counter
+stream was empty. The experiment therefore neither passed the performance gate
+nor produced proof of lower peak working set or pooled-buffer retention. The
+candidate was reverted without spending the c1-c128 matrix. Evidence remains
+under `C:\shared\temp\pl-receive-buffer-size-20260717`. Do not repeat
+payload-sized harness rentals without load-window process-memory or pool-counter
+instrumentation and a materially different explanation for the tail-latency
+regression.
+
+### Accepted 2026-07-17: coalesce bounded small echo data and FIN
+
+The raw Incursa ProtocolLab server previously issued `WriteAsync` followed by
+`CompleteWritesAsync` for every bidirectional echo. The runtime already exposes
+an internal `WriteFinalAsync` operation that preserves the write gate,
+cancellation, delayed `ValueTask` consumption, exception propagation, and FIN
+ordering while representing data plus FIN as one stream action. The accepted
+harness change uses that operation only when the peer contract declares a
+positive payload no larger than the existing 1 KiB small-application-write
+policy. Duplex behavior and payloads above 1 KiB retain the incremental read,
+write, and completion path. The bounded path requires peer EOF before writing
+the response and rejects requests with bytes beyond the declared payload, so
+truncated and oversized requests do not become successful benchmark samples.
+
+The matched 100x1 KiB source-backed campaign used the same executor package,
+exact payload validation, five repetitions per shape, and zero failures or
+timeouts in all 60 baseline/candidate cells:
+
+| Shape | Baseline | Candidate | Throughput delta | Baseline p95 | Candidate p95 | p95 delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| c1 | 9.17 MiB/s | 10.65 MiB/s | +16.2% | 11.19 ms | 9.47 ms | -15.4% |
+| c4 | 20.05 MiB/s | 26.38 MiB/s | +31.6% | 20.71 ms | 16.77 ms | -19.0% |
+| c16 | 26.77 MiB/s | 32.29 MiB/s | +20.6% | 59.29 ms | 52.22 ms | -11.9% |
+| c32 | 21.86 MiB/s | 30.02 MiB/s | +37.4% | 129.15 ms | 94.83 ms | -26.6% |
+| c64 | 17.32 MiB/s | 20.54 MiB/s | +18.6% | 285.73 ms | 220.89 ms | -22.7% |
+| c128 | 10.54 MiB/s | 13.84 MiB/s | +31.3% | 695.23 ms | 465.83 ms | -33.0% |
+
+The candidate materially reduces scheduling pressure at every measured shape
+but does not close Incursa's absolute c128 peer gap. Candidate p99 improved at
+c4, c32, c64, and c128; it regressed 12.9% at c1 and 15.2% at c16 on the
+shared host, while p95 and throughput improved at both shapes.
+Matched unaffected controls remained within the throughput guardrail: 64 KiB
+single-stream upload -0.4%, fixed-total 256x64 KiB upload -3.3%, 16-stream
+duplex -1.3%, and 16x1 MiB multiplex -0.8%. Each control had five exact
+baseline and candidate repetitions with no request failures or timeouts.
+
+One diagnostic-only c16 counter pair supports the mechanism rather than being
+used as a throughput claim. At higher achieved throughput, the final EOF-first
+candidate reduced the observed runtime queue peak from 209 to 94, stream-write
+queue peak from 124 to 41, packet-receive queue peak from 99 to 67,
+delayed-send peak from 103 to 90, receive-retained-buffer peak from 129 to 123,
+and sampled pool-rent volume from 4.37 million to 3.44 million. Peak
+outstanding pooled buffers fell from 1,259 to 496. The counter
+aggregation is sampling-based, so these values are attribution signals, not
+exact per-request accounting.
+
+An initial 64 KiB fast-path bound is explicitly rejected. At c16 it regressed
+median 100x64 KiB throughput from 72.12 to 66.29 MiB/s (-8.1%) and raised p99
+10.7%, showing that incremental read/write overlap matters for larger payloads.
+After narrowing the bound to the existing 1 KiB policy, a five-repetition c16
+rerun produced 74.16 MiB/s (+2.8%) and 11.9% lower p99 versus the same baseline.
+The c1 narrowed rerun was -5.0% with a 7.6% candidate range on the shared host;
+because the large-payload path is unchanged and c16 recovered, it is retained
+as a variance caveat rather than evidence for the candidate.
+
+An earlier small-payload variant wrote the response before checking peer EOF.
+It produced larger headline gains but could respond before rejecting an
+oversized request, so it is rejected as a semantic shortcut. Its artifacts are
+retained alongside the accepted EOF-first matrix and are not used for the
+accepted throughput claim.
+
+Evidence is retained under `C:\shared\temp\pl-final-write-20260717`, including
+the full c1-c128 matrix, control runs, counter captures, the rejected broad
+64 KiB bound, and the narrowed 64 KiB reruns. A fixed-total 16,384x1 KiB upload
+attempt did not exercise the candidate and is not an idle-timeout result: the
+0.1.14 raw load executor rejected `sustained-stream-16384x1kb` as unsupported.
+That artifact is retained as an executor-coverage gap and no performance claim
+is made from it.
+
+Focused final-write, cancellation, concurrency, FIN-scheduling, and harness
+tests passed 42/42. The full solution run passed 9,603, skipped five, and
+reproduced two previously documented broad-run timing failures: the HTTP/3
+incomplete-content close timeout and the dropped-server-FIN resilience
+assertion. Both passed together on exact rerun; the dropped-FIN case then
+passed 10/10 consecutive isolated reruns. After the EOF-order correction, the
+full suite produced the same 9,603 passes, five skips, and same two broad-run
+failures; both exact tests then passed together in 10/10 consecutive reruns.
+`git diff --check` passed. No package was registered and nothing was deployed
+or published.
+
+The accepted clean source at `90e1416e` was subsequently packaged locally as
+`quic-dotnet-raw-dev@0.0.0-final-write-90e1416e` for both `linux-x64` and
+`win-x64`. Its immutable SHA-256 is
+`70149e61f22e9553e0fadde923e7e97c5a4d22897093b2a68de2b61cadb1d372`.
+The external attestation and embedded provenance both identify full commit
+`90e1416e84d0af898a8760e81af86a15e098c944`, a clean package-input scope, and
+source/package parity eligibility. Recomputed archive hashing matched the
+attestation, all four platform adapter/server payloads were present, and the
+extracted Windows package entrypoint reported adapter status `ready` before its
+validation process tree was stopped. Retain the package, attestation, extracted
+validation payload, and health logs under
+`C:\shared\temp\pl-final-write-20260717\packages`. The package was not uploaded
+or registered, and nothing was deployed or published.
+
+### Rejected 2026-07-17: direct due-timer processing during bounded shard drains
+
+The c64 queue diagnostics suggested that the shard's complete inbox drain can
+postpone ACK, recovery, idle, and application-send deadline checks while the
+channel remains continuously nonempty. A bounded-drain candidate alternated 64
+inbox work items with already-due timer events and passed a focused test that
+preloaded 256 local work items before an idle deadline.
+
+The design was rejected before ProtocolLab measurement because it processed
+timer events directly instead of re-entering them through the same serialized
+inbox. That violates `REQ-QUIC-CRT-0054` and the deadline-scheduler architecture
+even though runtime mutation remained single-threaded. The code and candidate
+test were reverted. A future deadline-fairness design must retain one queued
+ordering surface for network, local API, and timer events; do not repeat direct
+timer dispatch or treat queue serialization alone as equivalent to the required
+same-queue contract.
+
+### Rejected 2026-07-17: bounded Linux listener `sendmmsg` batches
+
+The published Linux raw QUIC peer report and the current 64 KiB echo trace
+justified testing the dormant `QuicSocketSendBatch` primitive at the listener
+boundary. The candidate accumulated at most 32 already-protected datagrams per
+runtime shard, preserved routed-handle and datagram order, retained detached
+packet owners until the synchronous batch callback completed, and kept packet
+information, custom sender, Windows, and unsupported native paths on the
+existing single-send implementation. Focused ownership, observer-failure,
+runtime-shard, listener-host, and socket-batch tests passed 47/47. A second
+variant used single sends below four datagrams to avoid native setup cost for
+small batches.
+
+Same-host Debian 12 source builds used the current accepted `90e1416e` source,
+the same freshly built `quic-go-raw-load` executable, 64 KiB bidirectional echo,
+one stream per connection, two seconds of warmup, 15 seconds of measurement,
+and five repetitions. The accepted baseline measured 27.910 MiB/s at c16 and
+34.997 MiB/s at c64. Unconditionally batching two or more datagrams measured
+27.210 MiB/s at c16 (-2.5%) and 37.976 MiB/s at c64 (+8.5%). Requiring at least
+four datagrams measured 26.882 MiB/s at c16 (-3.7%) and 37.224 MiB/s at c64
+(+6.4%). Every cell completed with zero failed or timed-out requests, but both
+variants regressed the documented c16 gap and remained below the normal 10%
+throughput bar at c64. No c1-c128 or control campaign was justified.
+
+The runtime and test changes were reverted. Retain local evidence under
+`C:\shared\temp\pl-linux-sendmmsg-20260717` and the copied SUT evidence under
+`/home/samuel/quic-perf/evidence/{baseline-90e1416e-c16-c64-20260717,candidate-sendmmsg-batch-c16-c64-20260717,candidate-sendmmsg-min4-c16-c64-20260717}`.
+Do not retry listener-level `sendmmsg` batching without a materially cheaper
+native buffer-lifetime design or evidence that the deployment path produces
+larger batches without c16 loss.
+
+### Rejected 2026-07-17: queue-preserving bounded shard drains
+
+The prior direct timer-dispatch experiment was replaced with a contract-safe
+design that processed at most 64 inbox items before re-entering the shard loop.
+Newly due ACK, recovery, idle, and application-send timers were still appended
+to the same serialized inbox required by `REQ-QUIC-CRT-0054`; no timer bypassed
+the channel and existing work retained its order. A requirement-home test
+proved that a deadline becoming due under a continuously nonempty inbox was
+discovered between drain windows. Focused timer, deadline, idle, application
+send, and runtime-shard tests passed 80/80.
+
+The current accepted `90e1416e` Linux source baseline completed the 64 KiB
+bidirectional echo lane at c1, c4, c16, c32, c64, and c128 with five
+repetitions and zero failed or timed-out requests. Its c16 and c64 medians were
+28.406 MiB/s and 36.382 MiB/s. The bounded-drain candidate measured 28.463
+MiB/s at c16 (+0.2%) and 33.373 MiB/s at c64 (-8.3%); median p95 latency was
+essentially unchanged at c16 and worsened from 88.43 ms to 91.19 ms at c64.
+The c64 candidate range also widened to 27.624-35.541 MiB/s. These direct
+same-host source runs were sequential diagnostic gates, not matched
+publishable evidence, but the clear c64 regression made a full campaign
+unnecessary.
+
+The runtime and test changes were reverted. Retain the accepted-source ladder
+under `C:\shared\temp\pl-current-raw-baseline-20260717`, the candidate gate
+under `C:\shared\temp\pl-bounded-drain-20260717`, and the copied SUT evidence
+under `/home/samuel/quic-perf/evidence/{baseline-90e1416e-c1-c128-20260717,candidate-bounded-drain-c16-c64-20260717}`.
+Do not retry bounded inbox drains without evidence for a different fairness
+mechanism that avoids the c64 throughput and variance penalty.
+
+### Rejected 2026-07-17: direct Linux `sendto` wrapper
+
+A fresh current-source Linux c16 trace for the 64 KiB bidirectional echo lane
+attributed 5.15 percent inclusive sampled time to listener datagram send. The
+managed `SocketPal.TryCompleteSendTo` portion was 3.0 percent and native
+`sendmsg` was 2.14 percent, so a Linux-specific direct syscall was tested before
+changing production code. The isolated gate reused one UDP socket, the same
+cached native socket address, a 1,200-byte payload, pinned payload/address
+memory, seven alternating 100,000-datagram rounds, and a dedicated loopback
+receiver.
+
+Managed `Socket.SendTo` measured a stable 11.300 microseconds per datagram;
+direct libc `sendto` measured 10.276 microseconds, a 9.1 percent primitive
+reduction. Applied to the traced 5.15 percent send share, the upper-bound
+whole-process benefit is approximately 0.5 percent before accounting for
+SafeHandle, platform, error-mapping, and maintenance costs. That does not meet
+the end-to-end gate and does not justify replacing the framework socket path.
+No production or test files changed and no ProtocolLab matrix was spent.
+
+Retain the diagnostic trace under
+`C:\shared\temp\pl-current-linux-trace-20260717`, the isolated benchmark source
+under `C:\shared\temp\linux-sendto-gate-20260717`, and the SUT copies under
+`/home/samuel/quic-perf/evidence/baseline-90e1416e-c16-linux-trace-20260717`
+and `/home/samuel/quic-perf/linux-sendto-gate-20260717`. Do not retry a direct
+single-datagram syscall wrapper without a materially larger measured managed
+overhead or a safe zero-copy batch design that also clears the c16 guardrail.
+
+### Rejected 2026-07-17: derive packet-number length after one header mask
+
+The current short-header packet-open path tries packet-number lengths one
+through four. Because the QUIC header-protection sample begins four bytes after
+the packet-number offset regardless of the encoded packet-number length, a
+candidate generated one header-protection mask per connection-ID candidate,
+derived the encoded length from the unmasked first byte, and retained the same
+fixed-bit, reserved-bit, AEAD, key-phase, packet-number expansion, and payload
+validation. Both allocating and pooled-lease paths were changed. The Release
+solution build passed with zero warnings, and focused RFC 9001, short-header,
+captured-interoperability, and grease-bit tests passed 436/436.
+
+The accepted `90e1416e` Linux source baseline measured 28.406 MiB/s at c16 and
+36.382 MiB/s at c64 in the 64 KiB bidirectional echo lane. Five candidate
+repetitions measured 28.538 MiB/s at c16 (+0.46%) and 35.509 MiB/s at c64
+(-2.40%). Median p95 latency moved from 38.36 to 37.88 ms at c16 and from 88.43
+to 86.64 ms at c64. Candidate throughput ranged from 27.118 to 29.748 MiB/s at
+c16 and from 30.668 to 38.747 MiB/s at c64. All ten cells completed with zero
+failed or timed-out requests, but the throughput movement was immaterial and
+did not justify a full c1-c128 campaign. A repository BenchmarkDotNet row was
+also non-decisive because its iteration setup forces one invocation and
+produces iterations far below the recommended measurement duration.
+
+The runtime change was reverted. Retain local candidate evidence under
+`C:\shared\temp\pl-header-pn-20260717` and the SUT evidence under
+`/home/samuel/quic-perf/evidence/candidate-header-pn-c16-c64-20260717`.
+Do not retry this packet-number derivation unless a materially different packet
+open design has direct attribution and can clear the end-to-end c16 guardrail.
+
+### Rejected 2026-07-17: raise raw-server ThreadPool minimum to 64
+
+The retained c16 traces combine deep shard queues, low target CPU, and an empty
+ThreadPool queue. A diagnostic-only raw-server candidate raised both worker and
+completion-port minimums to 64 on the 16-core Linux target to test whether slow
+worker injection or continuation scheduling explained the queue service gap.
+It did not change the QUIC runtime, protocol behavior, or load shape.
+
+Against the accepted `90e1416e` 64 KiB bidirectional echo baseline, five
+candidate repetitions measured 27.642 MiB/s at c16 versus 28.406 MiB/s
+(-2.69%) and 34.977 MiB/s at c64 versus 36.382 MiB/s (-3.86%). Median p95 moved
+from 38.36 to 38.58 ms at c16 and from 88.43 to 86.95 ms at c64. Candidate
+throughput ranged from 26.375 to 28.889 MiB/s at c16 and 34.754 to 36.571 MiB/s
+at c64. All ten cells completed with zero failed or timed-out requests.
+
+The temporary server setting was removed. Retain local evidence under
+`C:\shared\temp\pl-minthreads64-20260717` and the SUT evidence under
+`/home/samuel/quic-perf/evidence/diagnostic-minthreads64-c16-c64-20260717`.
+Do not use global ThreadPool minimum tuning as the next queue-service candidate;
+investigate queue ownership, service ordering, and the reproducible truncated
+response or upload idle-timeout paths instead.
+
+### Rejected 2026-07-17: one-millisecond deadline wake floor
+
+Fresh accepted-source counter captures localized the apparent empty-wakeup
+pressure to the shard deadline timer rather than the channel itself. At c64,
+one shard peaked at 30,520 `deadline_wake` enqueues and 29,814 empty async wake
+cycles per second while the inbox peaked at 84 work items. A bounded candidate
+rounded only future sub-millisecond waits up to one millisecond before arming
+the operating-system timer. It preserved absolute due ticks, same-inbox timer
+serialization, cancellation, timer ordering, and generation checks. Focused
+deadline, shard-serialization, and metrics tests passed 35/35.
+
+The counter gate proved the mechanism but also exposed its tradeoff. At c64,
+the maximum sampled deadline-wake rate fell from 30,520 to 247 per second and
+the inbox peak fell from 84 to 56. However, the counter-attached throughput
+dropped from 28.71 to 16.08 MiB/s, retained pooled memory rose from 1.10 to
+1.49 MiB, and the oldest retained sent-packet age rose from 2.61 to 4.12
+seconds. Counter-attached throughput is not an acceptance metric, but the
+retention movement made a complete uninstrumented gate necessary.
+
+The uninstrumented 64 KiB bidirectional echo gate used the same Linux SUT,
+load executable, source-backed server, two-second warmup, 15-second duration,
+exact payload validation, and five repetitions per c1/c4/c16/c32/c64/c128
+point. Candidate median throughput versus accepted `90e1416e` was +2.27%,
++2.33%, -2.59%, +2.56%, +1.48%, and +21.49% respectively. The c128 comparison
+was not stable evidence: baseline CV was 48.33%, candidate CV was 65.36%, and
+the candidate had two severely disturbed cells at 2.32 and 6.42 MiB/s. Stable
+c1-c64 points remained below the normal 10% acceptance bar, while c16 regressed
+and c128 stability worsened. All 30 candidate cells completed with zero failed
+or timed-out requests.
+
+The full solution run passed 9,605 tests, skipped five, and reproduced the
+previously documented HTTP/3 incomplete-content close timeout. The exact test
+then passed 5/5 consecutive reruns. The runtime and focused-test changes were
+reverted. Retain local evidence under
+`C:\shared\temp\pl-deadline-wake-20260717` and SUT evidence under
+`/home/samuel/quic-perf/evidence/{candidate-deadline-wake-c16-c64-counters-20260717,candidate-deadline-wake-c16-c64-20260717,candidate-deadline-wake-c1-c128-20260717}`.
+Do not retry a coarse timer floor without a deadline mechanism that avoids both
+early-wake churn and millisecond-scale ACK, recovery, and application-send
+deferral.
+
+### Rejected 2026-07-17: cumulative `MAX_STREAMS` release batching
+
+The 100x1 KiB multiplex trace showed repeated peer-stream capacity releases and
+provided a plausible general packet-scheduling candidate: replace one protected
+`MAX_STREAMS` packet per closed peer stream with one cumulative update per
+direction. The implementation prepared and committed each group atomically,
+preserved congestion/protection failure retry, and retained the existing
+per-stream path for invalid or small groups. Focused stream-capacity,
+concurrency, retry, and RFC tests passed 29/29, and the raw server Release build
+completed with zero warnings.
+
+The first matched source-backed c1-c128 campaign batched every eligible group.
+It completed all 60 cells with five repetitions per baseline/candidate shape,
+exact payload validation, and zero failures or timeouts. The candidate was
++2.8%, +4.8%, -7.4%, +0.2%, +17.5%, and +1.7% at c1, c4, c16, c32, c64, and
+c128. Despite the c64 gain and lower c64 p95/p99, the 7.4% c16 regression
+rejected that design. A diagnostic batch-size histogram then showed median
+groups of five at c16 and six at c64, while c64 p95/p99 groups reached 23/37.
+
+A second design retained the original individual path below 16 releasable
+streams per direction. Its matched c16/c64 gate also used five interleaved
+baseline and candidate repetitions, the same source-backed runner and load
+tool, exact payload validation, and zero failures, timeouts, validation errors,
+or detected generator saturation. At c16, median throughput improved from
+30.14 to 31.69 MiB/s (+5.1%), p95 improved 1.6%, and p99 improved 2.8%. At c64,
+median throughput fell from 19.77 to 16.97 MiB/s (-14.2%), while p95 improved
+4.3% and p99 improved 35.5%. The repeated c64 throughput regression rejects
+the thresholded design and shows that the first campaign's c64 gain was not a
+stable basis for retaining the added state and packet-building complexity.
+
+The runtime, metrics, helper, and tests were reverted. Retain the unthresholded
+campaign, counter capture, and thresholded gate under
+`C:\shared\temp\pl-maxstreams-batch-20260717`. These are shared-host diagnostic
+results, not publishable isolated-hardware proof. Do not retry cumulative
+`MAX_STREAMS` release batching without new attribution that separates control
+packet cost from the dominant stream/data scheduling path and explains the
+opposite c64 outcomes.
+
+### Accepted 2026-07-17: keep HTTP/3 response payload writes in one state machine
+
+A source-backed `gc-verbose` ProtocolLab trace of the 1 MiB fixed response at
+c16 attributed 6.91 MiB of sampled allocation to
+`Http3Server.WritePayloadBytesSlowAsync`. The 1.6 MiB streaming response was
+more pronounced: its per-chunk `WriteResponseDataFramesAsync` state machines
+accounted for 178.79 MiB in one 15-second diagnostic cell. Both helpers were
+entered once per HTTP/3 DATA-frame payload even though the surrounding fixed or
+streaming response method already owned an asynchronous state machine.
+
+The accepted change keeps the existing 16 KiB DATA-frame boundaries, 4 KiB
+QUIC write size, final-write behavior, cancellation, flow control, and frame
+diagnostics. It only moves the bounded payload sub-write loops into the existing
+per-response state machines. The removed allocation groups no longer appeared
+in candidate traces. The candidate streaming response state machine itself was
+1.83 MiB, versus 178.79 MiB for the removed per-chunk state machines. Trace
+cells are attribution evidence only and are not used as throughput claims.
+
+Five clean baseline and candidate repetitions were run for each lane on the
+same shared host. All 40 cells passed exact protocol and payload validation with
+zero request failures:
+
+| Lane | Baseline median | Candidate median | Throughput delta | p95 delta | Baseline range | Candidate range |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 MiB fixed response, c16 | 43.18 MiB/s | 48.33 MiB/s | +11.9% | -20.4% | 36.3% | 8.7% |
+| 1.6 MiB streaming response, c16 | 43.57 MiB/s | 46.51 MiB/s | +6.7% | -9.8% | 28.1% | 8.5% |
+| 100x1 KiB multiplex control | 0.18 MiB/s | 0.19 MiB/s | +7.2% | -11.5% | 45.5% | 2.7% |
+| 1 MiB simultaneous duplex control | 3.19 MiB/s | 3.07 MiB/s | -3.9% | +4.1% | 17.7% | 41.2% |
+
+The shared-host campaign remains diagnostic, and the wide baseline ranges make
+small throughput deltas non-authoritative. The allocation mechanism is direct,
+the two affected workload medians improved, and the duplex control stayed
+inside the 5% guardrail. Focused large-response, streaming-response, frame
+boundary, and simultaneous duplex tests passed 6/6. The full solution passed
+9,605 tests, skipped five, and failed zero.
+
+Evidence is retained under
+`C:\shared\temp\pl-h3-crosslayer-20260717`, including clean repeated runs
+prefixed `baseline-h3-` and `candidate-h3-`, plus the fixed and streaming
+trace runs. The same streaming trace still attributed about 701 MiB to
+`System.Byte[]` from the ProtocolLab deterministic streaming-body generator.
+That adapter-owned payload churn is the next separate cross-layer/API-usage
+candidate; it is not credited to this library change. Nothing was deployed or
+published.
+
+### Accepted 2026-07-17: reuse fragmented HTTP/3 frame pending storage
+
+The sustained simultaneous request/response trace identified a second general
+HTTP/3 allocation mechanism after the response-write state-machine change. A
+16 KiB server read commonly ended after the 16 KiB DATA payload but before the
+frame header and payload were both complete. `Http3FrameReader` appended the
+next read to a newly allocated array and then allocated again to retain the
+unconsumed suffix. The accepted change retains one bounded per-reader pending
+buffer, compacts unconsumed bytes in place, and releases capacities above 64
+KiB once the buffered frame has been consumed. Frame payloads remain owned by
+their returned frame objects; parsing, truncation errors, and frame validation
+semantics are unchanged.
+
+The permanent 64-frame fragmentation benchmark measured 3.01 MiB allocated per
+operation on `12e05b5c` and 1.05 MiB with the candidate, a 65.1% reduction.
+Median time moved from 322.3 to 163.0 microseconds, but benchmark timing was
+noisy and is supporting evidence rather than the primary acceptance claim. In
+the sustained duplex trace, normalized `System.Byte[]` attribution fell from
+4.331 MiB per exact 1 MiB bidirectional transfer to 1.259 MiB, a 70.9%
+reduction. Trace-instrumented throughput is not used as a performance claim.
+
+Five clean sustained-duplex repetitions improved median throughput from 22.70
+to 23.93 MiB/s (+5.4%) and median p95 from 37.4 to 36.5 ms (-2.4%), with 614
+candidate transfers and no failures. The first c16 control campaign was visibly
+disturbed, so the complete baseline/candidate sequence was repeated. In the
+final matched baseline/candidate pair, the 1 MiB fixed response was flat at
+42.95 versus 42.92 requests/s, the 1.6 MiB streaming response was flat at 27.48
+versus 27.65 requests/s, and the 64 KiB upload echo was flat at 403.10 versus
+400.47 requests/s with improved p95. The 1 MiB upload sink improved from 53.59
+to 81.30 requests/s (+51.7%) while p95 fell from 532.2 to 318.6 ms. All 40
+cells in the final baseline/candidate pair passed exact protocol and payload
+validation with zero failures or timeouts.
+
+Focused frame-layer tests passed 38/38. The full solution passed 9,605 tests,
+skipped five, and failed zero. Evidence is retained under
+`C:\shared\temp\pl-h3-crosslayer-20260717`, including the A/B/A/B control
+campaigns, sustained-duplex repetitions, traces, and benchmark output. These
+shared-host results remain diagnostic. Nothing was deployed or published.
+
+### Rejected 2026-07-17: borrowed HTTP/3 DATA-frame payload views
+
+The post-`7ff46d04` buffered-upload trace attributed about 8.02 GiB of sampled
+`System.Byte[]` allocation while validating 1.07 GiB of request payload. A
+candidate added internal borrowed frame-payload views for buffered server and
+client consumers while preserving the public owning parser API, diagnostics,
+frame validation, payload ordering, and streaming-body ownership. The direct
+64-frame fragmentation benchmark fell from 1,077.55 KiB to 48.2 KiB allocated
+per operation, a 95.5% reduction.
+
+The first integration intentionally retained the owning path whenever frame
+diagnostics were enabled and therefore did not affect the ProtocolLab target.
+The second emitted the same frame type, raw type, stream ID, and payload length
+directly from borrowed views, but initially traded the owned payload copy for a
+partial-frame suffix copy. A third design retained an unread offset and delayed
+compaction until the next read. The trace then exposed the actual adapter path:
+handlers that support any streaming route first create a streaming body reader,
+and non-streaming `/echo`, `/hash`, `/sink`, and `/upload` requests buffer
+through that reader. The final candidate covered that fallback as well.
+
+Even after all real paths were covered, sampled byte-array allocation changed
+only from 7.301 to 7.155 MiB per completed 1 MiB upload, about 2%. The clean c16
+upload-sink gate completed five valid candidate cells with zero failures or
+timeouts, but median throughput regressed from the accepted `7ff46d04` result
+of 81.30 to 75.79 requests/s (-6.8%). Median p95 moved from 318.6 to 324.2 ms,
+and relative throughput range worsened from 4.0% to 12.1%. The source and test
+changes were reverted.
+
+Retain the baseline, intermediate traces, clean candidate run, and machine-
+readable negative result under `C:\shared\temp\pl-h3-crosslayer-20260717`.
+Do not retry borrowed parser views without call-stack attribution showing that
+owned HTTP/3 frame payloads are a material fraction of an end-to-end workload,
+or a design that removes a broader copy boundary than frame parsing alone.
+
+### Accepted 2026-07-17: retain server-owned buffered HTTP/3 request bodies
+
+Call-stack analysis of the post-`7ff46d04` 1 MiB upload trace explained why
+borrowed parser views had little end-to-end effect. In addition to fragmented
+frame storage and the owned DATA payload, the non-streaming adapter fallback
+copied that payload into an `ArrayBufferWriter<byte>` and then copied the
+completed body again into `Http3Request`. The accepted change keeps public
+request constructors defensively copying caller memory, but lets the server
+retain memory it exclusively owns. A single non-empty DATA frame is transferred
+directly into the request; multiple frames are concatenated only after the
+second segment arrives, and the resulting owned writer memory is retained
+without a final copy. Empty frames, frame ordering, content-length validation,
+diagnostics, streaming handlers, cancellation, and transport behavior are
+unchanged.
+
+The matched c16 `gc-verbose` upload trace completed exact payload validation
+with zero failures. Sampled `System.Byte[]` attribution fell from 8.406 to
+5.435 billion bytes while completed requests rose from 1,098 to 1,245.
+Normalized attribution therefore fell from 7.301 to 4.164 MiB per 1 MiB
+request, a 43.0% reduction. The removed top stacks were request-body aggregation
+and the final `Http3Request` copy. Trace throughput is attribution evidence only.
+
+The first clean five-repetition candidate run was +10.6% versus the prior
+accepted upload baseline but had 12.9% range, so a fresh parent-commit baseline
+at `dcfaa8de` and second candidate run were executed back-to-back. Median upload
+throughput improved from 89.30 to 92.21 requests/s (+3.3%), p95 improved from
+277.1 to 272.5 ms (-1.7%), and candidate range was 5.4%. All ten cells passed
+exact validation with zero failures or timeouts. The substantial allocation
+reduction, rather than the modest shared-host throughput movement, is the
+primary acceptance evidence.
+
+Fresh five-repetition controls remained inside the normal guardrail:
+
+| Lane | Baseline median | Candidate median | Throughput delta | p95 delta |
+| --- | ---: | ---: | ---: | ---: |
+| 1 MiB fixed response, c16 | 46.68 requests/s | 45.21 requests/s | -3.2% | -3.2% |
+| 1.6 MiB streaming response, c16 | 28.22 requests/s | 28.05 requests/s | -0.6% | +1.6% |
+| 64 KiB upload echo, c16, isolated rerun | 387.70 requests/s | 421.98 requests/s | +8.8% | -1.3% |
+| 1 MiB simultaneous duplex, c1 | 23.43 requests/s | 25.63 requests/s | +9.4% | -1.9% |
+| 100-stream multiplex, c1/s100 | 192.78 requests/s | 195.75 requests/s | +1.5% | +0.4% |
+
+The initial mixed control command incorrectly forced the sustained duplex lane
+to c16 even though that load tool is defined for one persistent connection; its
+nonzero exits are preserved in `baseline2-h3-owned-controls-r5-h3-local-v1` and
+are not treated as runtime evidence. Correct c1 duplex baseline/candidate runs
+then passed all ten cells. Focused request ownership, empty-body, multi-frame,
+and coalesced-body tests passed 6/6. The full Release solution passed 9,606
+tests and skipped five, with one unrelated server-FIN recovery assertion failing
+once before passing 5/5 exact reruns.
+
+Evidence is retained under
+`C:\shared\temp\pl-h3-crosslayer-20260717`, including the trace, two upload
+candidate campaigns, fresh parent/candidate controls, corrected duplex runs,
+multiplex runs, and the malformed-shape evidence. These are local shared-host
+diagnostics, not isolated publishable claims. Nothing was deployed or
+published.
+
+### Accepted 2026-07-17: stream bounded HTTP/3 request DATA segments
+
+ProtocolLab call-stack attribution on the accepted `9d9f86aa` source showed
+that large request bodies were still assembled as complete `Http3DataFrame`
+payloads before either a streaming handler or the buffered fallback could
+consume them. At c16, the one-MiB upload trace attributed the dominant sampled
+allocation to repeated `Http3FrameReader.Read` growth and final payload copies.
+The sustained duplex trace showed the same whole-frame boundary in the direct
+request-to-response streaming path.
+
+The accepted reader parses frame headers incrementally, retains non-DATA frame
+behavior, and emits DATA as owned segments bounded to 64 KiB. Buffered handlers
+retain those owned segments and perform one exact final concatenation only when
+more than one segment exists. Streaming handlers can consume segments before
+the complete DATA frame arrives. Frame ordering, trailing headers, declared
+frame diagnostics, content-length validation, truncation errors, cancellation,
+single-enumeration behavior, and owned-memory lifetime remain intact.
+
+The first implementation exposed two correctness and performance issues that
+are retained as negative evidence. Its buffered fallback accidentally reused
+an empty first-segment sentinel after aggregation began and omitted one 16 KiB
+segment; ProtocolLab rejected the request with exact expected/received lengths.
+After that fix, 16 KiB parser segments moved buffered cost into repeated
+`ArrayBufferWriter` growth and increased duplex iterator pressure. The final
+design retains segments and groups parser output at 64 KiB instead of trusting
+remote Content-Length for eager allocation.
+
+Final matched local diagnostics on the same shared host produced:
+
+| Lane | Baseline median | Candidate median | Throughput delta | Baseline p95 | Candidate p95 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 MiB upload sink, c16 | 89.30 requests/s | 97.73 requests/s | +9.4% | 277.1 ms | 234.6 ms |
+| 1 MiB simultaneous duplex, c1 | 23.43 MiB/s | 27.89 MiB/s | +19.0% | 35.0 ms | 33.6 ms |
+| 1 MiB fixed response, c16 | 46.68 requests/s | 47.58 requests/s | +1.9% | 421.2 ms | 356.6 ms |
+| 100x16 KiB streaming response, c16 | 28.22 requests/s | 30.50 requests/s | +8.1% | 698.5 ms | 548.0 ms |
+| 64 KiB upload echo, c16 | 438.22 requests/s | 492.20 requests/s | +12.3% | 69.4 ms | 41.8 ms |
+| 100-stream multiplex, c1/s100 | 192.78 requests/s | 198.25 requests/s | +2.8% | 101.3 ms | 100.0 ms |
+
+Every valid candidate cell passed exact HTTP/3 and payload validation with zero
+failed or timed-out requests. The c16 duplex load tool failed in all five
+baseline and all five candidate cells, so that invalid shape is preserved but
+excluded from comparison. An initial multiplex campaign was visibly disturbed
+at 138.6-197.9 requests/s; the immediate repeat tightened to 192.0-202.4 and is
+the reported diagnostic. A fresh detached baseline attempt failed before
+readiness because ProtocolLab's source-root adapter `.deps.json` omitted the
+source-backed QUIC assemblies; it is infrastructure evidence, not benchmark
+evidence.
+
+Final trace attribution is not used as a throughput claim. It reduced sampled
+`System.Byte[]` allocation from 4.23 to 2.27 MiB per completed upload and from
+1.26 to 1.07 MiB per duplex transfer. Exception event counts were unchanged.
+Focused parser, large-body fallback, streaming, and System.Net HTTP/3 tests
+passed 9/9 before the full regression gate.
+
+Evidence is retained under
+`C:\shared\temp\pl-h3-crosslayer-20260717`, including every failed validation,
+intermediate 16 KiB trace and campaign, final repeated campaign, final trace,
+disturbed multiplex run, and failed source-root baseline attempt. These are
+shared-host diagnostics, not publishable isolated-hardware claims. Nothing was
+deployed or published.
+
+### Accepted 2026-07-17: lazily grow HTTP/3 request read buffers
+
+The current 100-stream HTTP/3 multiplex call-stack trace showed that every
+`Http3StreamingRequestBodyReader` eagerly rented its configured 16 KiB buffer,
+including bodyless requests handled by the buffered fallback. The accepted
+change starts each reader with at most 4 KiB and promotes it to the configured
+size only after the first DATA segment is observed. Large uploads and duplex
+requests therefore retain the sustained-body buffer size after their first
+segment, while 100 simultaneously active bodyless readers request about
+1.17 MiB less pooled capacity in aggregate.
+
+The trace also preserved important non-candidates. Its runtime counter
+collector allocated about 38 MiB of `Int32[][]`, and the forced counter stop
+left a truncated output file, so trace allocation samples and trace throughput
+are not used as an acceptance claim. The exception stream contained nine
+HTTP/3 shutdown/control-path exceptions plus one channel-close and one
+object-disposed event; that volume and attribution did not justify exception
+path tuning. No raw QUIC transport change was attempted.
+
+Fresh five-repetition shared-host diagnostics produced:
+
+| Lane | Baseline median | Candidate median | Throughput delta | Baseline p95 | Candidate p95 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 100-stream multiplex, c1/s100 | 188.16 requests/s | 192.78 requests/s | +2.5% | 107.01 ms | 100.14 ms |
+| 1 MiB fixed response, c16 | 32.01 requests/s | 32.58 requests/s | +1.8% | 532.89 ms | 494.85 ms |
+| 100x16 KiB streaming response, c16 | 19.56 requests/s | 20.67 requests/s | +5.7% | 846.23 ms | 772.38 ms |
+| 1 MiB upload sink, c16 | 64.30 requests/s | 65.12 requests/s | +1.3% | 384.23 ms | 367.48 ms |
+| 1 MiB simultaneous duplex, baseline first | 18.42 requests/s | 17.50 requests/s | -5.0% | 51.22 ms | 50.31 ms |
+| 1 MiB simultaneous duplex, candidate first | 16.51 requests/s | 17.84 requests/s | +8.1% | 53.03 ms | 51.50 ms |
+
+All 40 baseline and 40 candidate cells passed exact protocol and payload
+validation with zero failures or timeouts. The duplex throughput result changed
+sign with execution order, while p95 improved in both orders; it is retained as
+order-sensitive neutral evidence rather than an improvement claim. Multiplex
+range narrowed from 11.6% to 5.8%. Other candidate ranges remained above the
+publishable threshold, including 14.9% for upload and 12.8% for the reversed
+duplex run.
+
+A new 32-stream bodyless-request concurrency test passed. The first selected
+HTTP/3 invocation passed 80 tests, skipped one, and retained one control-stream
+close-observation timeout. The repeat passed 79, skipped one, and retained that
+timeout plus an incomplete-content-length close timeout. Each exact close test
+then passed 5/5 in isolation. The full Release solution passed 9,614 tests and
+skipped five, with the incomplete-content-length close test timing out once;
+its immediate post-suite rerun passed 5/5. These timing failures remain
+explicit rather than being reported as a completely green invocation.
+
+Evidence is retained under
+`C:\shared\temp\pl-h3-crosslayer-20260717` in the
+`baseline-h3-lazy-body-buffer-*`, `candidate-h3-lazy-body-buffer-*`,
+`baseline2-h3-lazy-body-buffer-*`, and
+`candidate2-h3-lazy-body-buffer-*` runs, plus the baseline and candidate
+multiplex call-stack traces. These are shared-host diagnostics, not publishable
+isolated-hardware claims. Nothing was deployed or published.
+
+### Evidence correction 2026-07-17: HTTP/3 16 KiB response-write boundary remains unassessed
+
+The current c16 fixed-response and streaming-response traces showed that the
+HTTP/3 adapter creates 16 KiB DATA frames but submits each payload to QUIC as
+four 4 KiB writes. A bounded experiment aligned the adapter write boundary to
+the existing 16 KiB DATA-frame boundary. Focused source tests passed exact
+delivery for 128 concurrent one-MiB HTTP/3 responses and for queued final writes
+across 16 transport streams.
+
+The associated ProtocolLab campaign cannot assess the candidate. Its target
+adapter loaded package-backed QUIC and HTTP/3 assemblies dated 2026-05-31, not
+the requested source tree containing the candidate. The recorded 7,303 truncated
+responses remain useful evidence about that stale package build, but they do not
+prove a candidate regression or a transport completion defect. The candidate is
+reverted pending a correctly provenance-verified Release campaign.
+
+Do not accept, reject, or tune adjacent write boundaries from this invalid
+campaign. Any future source-backed run must verify that the source-built QPACK,
+QUIC, and HTTP/3 assembly hashes exactly match the assemblies copied beside the
+ProtocolLab adapter before load begins.
+
+The failed campaign and machine-readable negative result are retained under
+`C:\shared\temp\pl-h3-crosslayer-20260717\candidate-h3-16kb-write-boundary-r5-h3-local-v1`
+and `C:\shared\temp\pl-h3-crosslayer-20260717\negative-results`. A correction
+addendum is retained beside the original negative record. These are shared-host
+diagnostic artifacts. Nothing was deployed or published.
+
+### Accepted 2026-07-17: align HTTP/3 response writes to 16 KiB DATA payloads
+
+A corrected Release campaign verified the source-built QPACK, QUIC, and HTTP/3
+assembly hashes against the binaries copied beside the ProtocolLab adapter
+before load. Five-repetition baseline/candidate runs then exercised fixed 1 KiB,
+64 KiB, and one-MiB responses, 1.6 MiB streaming responses, one-MiB uploads, and
+simultaneous one-MiB request/response streaming.
+
+At c1, the 16 KiB boundary improved median throughput or request rate by 16.6%
+for 1 KiB, 20.4% for 64 KiB, 16.9% for one-MiB, 29.0% for streaming, and 10.5%
+for duplex. Upload request rate declined 2.5%. At c16, 1 KiB was neutral at
+-0.2%, while 64 KiB improved 17.2%, one-MiB 6.0%, streaming 3.7%, and upload
+2.9%. Every valid candidate cell had zero failed or timed-out requests. The c1
+shared-host runs had material variance, so these are diagnostic medians rather
+than isolated-hardware claims; the lower-variance c16 runs confirm no broad
+regression and a substantial 64 KiB gain.
+
+The requested c16 duplex shape was excluded because the load tool correctly
+requires one connection and one stream for exact simultaneous-duplex proof; all
+five valid c1 duplex repetitions passed. The focused source suite passed exact
+queued final-write delivery and 128 concurrent one-MiB HTTP/3 responses. A broad
+HTTP/3 run passed 1,115 tests with one skip and one known close-observation
+timeout; that timing-sensitive test then passed 5/5 in isolation.
+The final Release solution run passed 9,618 tests with five skips and no
+failures.
+
+Evidence is retained under
+`C:\shared\temp\pl-h3-crosslayer-verified-20260717`, including per-run source
+verification JSON. Nothing was deployed or published.
+
+### Rejected 2026-07-17: bypass wildcard packet-information receive for HTTP/3
+
+The accepted `f31b5979` response-write change was followed by a source-verified,
+instrumented c16 one-MiB HTTP/3 run. It completed 489 exact responses with zero
+failures or timeouts. Metrics instrumentation dominated sampled allocation, so
+the instrumented throughput is attribution-only evidence. The first substantial
+non-instrumentation allocation group was the wildcard UDP packet-information
+path under `Socket.ReceiveMessageFromAsync`, principally `UInt16[]` and
+`IPAddress` instances.
+
+A reversible ProtocolLab adapter experiment bound the Incursa endpoint to the
+concrete IPv6 loopback address, bypassing wildcard packet-information receipt
+without changing the QUIC runtime. Five exact c16 repetitions regressed median
+throughput from 38.04 to 37.21 MiB/s (-2.2%) and p95 latency from 439.91 to
+450.27 ms. Both campaigns had zero failures and timeouts. The temporary adapter
+change was reverted; the packet-information allocations are real but do not
+justify a native receive rewrite from this evidence.
+
+The same trace gives a stronger cross-layer direction: one active runtime shard
+reached queue depth 69, 70 delayed application sends, about 558 KiB of retained
+application-send payload, and mean STREAM-write completion around 5.5 ms.
+Investigate application-send queue ownership, service ordering, wakeup
+coalescing, and bounded batching next. Return to socket receive only if another
+broad workload attributes a material end-to-end cost and supplies a plausible
+mechanism.
+
+Trace and negative evidence are retained under
+`C:\shared\temp\pl-h3-crosslayer-verified-20260717` in the
+`post-f31b-h3-1mb-c16-trace-direct-package-cell`,
+`diagnostic-h3-ipv6loopback-c16-r5-direct-package-cell`, and
+`negative-results` directories. These are shared-host diagnostics. Nothing was
+deployed or published.
+
+### Accepted 2026-07-17: cache bounded immutable HTTP/3 response frame sequences
+
+The c16 one-MiB HTTP/3 trace showed paired small header writes and 16 KiB DATA
+payload writes contributing separate stream actions, queue entries, and retained
+buffers for every response frame. Immutable fixed responses already cached their
+encoded headers and, for tiny bodies, one complete HEADERS-plus-DATA sequence.
+The accepted change extends that existing ownership contract to cache the full
+serialized HEADERS and DATA frame sequence for immutable fixed responses up to
+2 MiB. Later requests submit bounded 16 KiB slices from that reusable sequence
+without rebuilding every DATA header or copying the immutable body into fresh
+frame arrays. Dynamic and streaming responses retain their existing behavior.
+
+The cache has an explicit 2 MiB cap and a per-response construction gate.
+Responses above the cap remain uncached, and immutable-body ownership is still
+required. HTTP/3 frame boundaries, diagnostics, cancellation, final-write
+semantics, content length, payload bytes, and FIN behavior are unchanged.
+
+The development loop was moved to a new repo-local exact HTTP/3 harness rather
+than continuing speculative ProtocolLab runs. It keeps certificate generation,
+server startup, and warmup outside measured samples; validates exact HTTP/3,
+content length, and every response byte; and reports five repeated samples for
+64 KiB and one-MiB payloads at c1, c4, and c16. Separate baseline and candidate
+binaries were run in A/B/B/A order. Combining ten samples per variant produced:
+
+| Payload / concurrency | Baseline MiB/s | Candidate MiB/s | Throughput delta | Baseline/Candidate CV | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 64 KiB / c1 | 41.18 | 47.58 | +15.5% | 20.0% / 18.9% | -11.4% | -14.1% |
+| 64 KiB / c4 | 49.17 | 51.52 | +4.8% | 1.9% / 1.9% | -5.5% | -13.7% |
+| 64 KiB / c16 | 46.30 | 47.09 | +1.7% | 2.8% / 5.1% | +4.2% | -13.4% |
+| 1 MiB / c1 | 50.96 | 54.82 | +7.6% | 6.9% / 2.2% | -8.8% | -13.8% |
+| 1 MiB / c4 | 53.30 | 53.15 | -0.3% | 1.3% / 5.8% | +1.6% | -21.0% |
+| 1 MiB / c16 | 47.27 | 50.53 | +6.9% | 3.7% / 2.7% | -9.1% | -16.9% |
+
+All 120 measured samples completed with zero failures. The noisy 64 KiB c1 row
+is retained but not used alone as an acceptance claim. The stable rows show no
+control regression beyond 5%, while the candidate reduces allocation in every
+shape and meets the 20% allocation gate at one-MiB c4 without a timing
+regression. The duplicate candidate passes differed by only 0.6-3.5% at c4/c16.
+
+Earlier source-verified focused ProtocolLab candidate runs under
+`C:\shared\temp\pl-h3-peer-current-20260717` also passed exact validation with
+zero failures or timeouts and were directionally positive, but their detached
+baseline changed from roughly 48 to 34 MiB/s during one campaign. Those lab
+numbers are retained as shared-host confirmation and variance evidence, not as
+the primary effect-size claim. A final c1 baseline that was already running when
+the workflow changed completed cleanly; its candidate counterpart was
+intentionally not launched.
+
+The new cache concurrency, upper-bound, repeated large-response, and native
+System.Net HTTP/3 concurrency tests passed 5/5. The full Release solution
+completed with 9,623 passing tests, five skips, and one previously documented
+incomplete-content close-observation timeout; that exact test then passed 5/5. Local
+A/B artifacts are retained under
+`C:\shared\temp\quic-http3-local-cache-20260717`. The local harness is a
+same-process development surface, not isolated peer evidence. Nothing was
+deployed or published.
+
+### Local-first workflow 2026-07-17: cover broad HTTP/3 workload shapes
+
+The repo-local exact loopback harness now covers fixed downloads, streaming
+downloads, buffered uploads, and simultaneous streaming request/response echo.
+It supports 1 KiB, 64 KiB, and one-MiB payloads plus c1/c4/c16 development
+shapes without ProtocolLab orchestration. Upload handlers validate every request
+byte, all clients validate exact HTTP/3, content length, and response bytes, and
+duplex throughput accounts for both directions.
+
+A 64 KiB c1 smoke completed every workload with zero failures. The single
+diagnostic sample reported about 16-22 KiB allocated per request for fixed,
+streaming, and duplex, but about 390 KiB per buffered upload plus 22 gen2
+collections in one second. That one-second sample is not a performance claim;
+it selects buffered upload for the next local allocation/exception trace before
+any runtime candidate is proposed. ProtocolLab remains reserved for confirming
+candidates that first pass the local gate.
+
+### Accepted 2026-07-17: reuse the streaming frame parser for buffered request bodies
+
+A five-second local 64 KiB buffered-upload trace at baseline `246fe779`
+attributed nearly all managed allocation to three server-side byte-array paths:
+761.55 MB copying complete HTTP/3 frame payloads, 481.66 MB repeatedly growing
+the buffered request body, and 207.44 MB growing the frame reader's pending
+buffer. The exact workload completed 3,144 requests at 39.04 MiB/s, allocated
+about 390.3 KiB per request, and incurred 179 gen0, 89 gen1, and 89 gen2
+collections. The trace and stack attribution are retained under
+`C:\shared\temp\quic-http3-local-upload-trace-20260717`; the trace SHA-256 is
+`9a006ba696b4234192b33538dd8ef5d4fbe7bf568f8e2bc76e1c998eadb99feb`.
+
+The accepted change routes ordinary buffered request bodies through the existing
+pooled streaming frame parser, then makes the one exact owned body copy required
+by the buffered `Http3Request.Body` lifetime. It preserves the existing
+headers-only fast path, streaming-handler selection and retention contract,
+frame diagnostics, content-length validation, cancellation, and connection
+error behavior. A first version that routed bodyless requests through the
+streaming reader was immediately rejected after a quick local control showed a
+roughly 24% fixed-download regression; it was refined rather than retained.
+
+Separate baseline and candidate assemblies ran in A/B/B/A order. Each pass used
+five exact one-second samples after warmup for 1 KiB, 64 KiB, and one-MiB
+uploads at c1/c4/c16, plus 64 KiB fixed-download controls. Across 240 measured
+samples there were no payload, content-length, protocol, or request failures.
+Combined ten-sample medians were:
+
+| Workload | Baseline MiB/s | Candidate MiB/s | Throughput delta | Baseline/Candidate CV | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 KiB upload / c1 | 2.24 | 2.08 | -7.0% | 27.1% / 26.2% | +3.5% | -14.8% |
+| 1 KiB upload / c4 | 9.70 | 9.72 | +0.2% | 3.6% / 2.6% | -4.5% | -14.1% |
+| 1 KiB upload / c16 | 13.36 | 13.02 | -2.5% | 3.1% / 7.5% | -5.1% | -15.0% |
+| 64 KiB upload / c1 | 51.67 | 54.44 | +5.3% | 3.1% / 4.2% | -23.0% | -80.3% |
+| 64 KiB upload / c4 | 85.48 | 90.11 | +5.4% | 6.8% / 2.0% | -10.5% | -80.3% |
+| 64 KiB upload / c16 | 85.02 | 88.10 | +3.6% | 2.1% / 2.1% | -1.0% | -80.3% |
+| 1 MiB upload / c1 | 80.69 | 86.72 | +7.5% | 11.3% / 2.8% | -5.0% | -82.2% |
+| 1 MiB upload / c4 | 90.08 | 100.15 | +11.2% | 3.9% / 4.1% | -23.7% | -82.3% |
+| 1 MiB upload / c16 | 89.91 | 90.95 | +1.2% | 3.2% / 11.1% | -18.6% | -81.8% |
+| 64 KiB fixed / c1 | 37.19 | 36.82 | -1.0% | 33.7% / 32.1% | -2.4% | -1.3% |
+| 64 KiB fixed / c4 | 51.24 | 49.31 | -3.8% | 3.0% / 4.6% | +8.2% | -0.3% |
+| 64 KiB fixed / c16 | 47.17 | 46.54 | -1.3% | 2.5% / 3.6% | +1.1% | -0.3% |
+
+The noisy c1 1 KiB and fixed rows are retained but are not used alone as effect
+claims. Stable controls remain within the approximately 5% throughput guardrail.
+The candidate passes the local gate through its repeated 80-82% large-upload
+allocation reduction, removal of hundreds of gen2 collections, stable timing,
+and the c4 one-MiB throughput and tail-latency gains.
+
+A matching candidate trace reported about 76.8 KiB allocated per 64 KiB
+request with no gen2 collections. The three baseline copy/growth stacks were
+absent; the dominant remaining allocation was the single exact owned request
+body array. Its trace SHA-256 is
+`82d8ad285c03776ee2c41f3839eccfa67dfde233c039a27a3d602955c063b484`.
+Baseline and candidate exception traces were identical: 19 shutdown-time
+abort/cancellation exceptions each and no new steady-state exception pressure.
+Candidate A/B, trace, allocation, and exception artifacts are retained under
+`C:\shared\temp\quic-http3-buffered-reader-20260717`.
+
+The existing ProtocolLab Incursa upload adapter intentionally selects
+`IHttp3StreamingRequestHandler` for hash, sink, echo, upload, and duplex paths,
+so those scenarios bypass this buffered API and cannot confirm its effect.
+No ProtocolLab run was launched and no benchmark-only adapter switch was added.
+The normal one-MiB exact-body test is now active rather than opt-in. The focused
+HTTP/3 server and streaming-reader suite passed 83/83; the broader HTTP/3 run
+passed 1,119 tests before two close-observation timeouts, both of which then
+passed 5/5 in isolation. The final Release solution run passed 9,625 tests with
+four intentional skips and no failures. Nothing was deployed or published.
+
+### Local-first attribution 2026-07-17: correct the HTTP/3 allocation boundary
+
+The broad local HTTP/3 harness completed fixed, streaming, upload, and duplex
+workloads for 1 KiB, 64 KiB, and one-MiB payloads at c1, c4, and c16 with zero
+validation failures. The one-MiB streaming and duplex rows plateaued at c16,
+with medians of 46.90 and 68.36 MiB/s and p95 latencies of 351.56 and 527.93 ms.
+The complete 18-shape result is retained at
+`C:\shared\temp\quic-http3-broad-local-20260717\current-c73c88c9.json`.
+
+Review found that each measured sample created its per-worker client receive
+buffers after the allocation counter started. That setup is not request-path
+work and distorted large-payload allocation most severely at high concurrency.
+The corrected harness creates those buffers before starting allocation and
+timing measurement. A five-sample one-MiB c16 check retained exact HTTP/3,
+content-length, and payload validation with zero failures. Streaming allocation
+fell from about 532.7 KiB to 178.4 KiB per request, confirming that most of the
+previous growth was harness setup. Duplex remained about 1.12 MiB per request,
+so its allocation pressure is not explained by that artifact. Corrected evidence
+is retained under
+`C:\shared\temp\quic-http3-broad-local-20260717\harness-boundary-corrected`.
+
+A five-second verbose allocation trace of exact one-MiB c16 duplex traffic then
+completed 144 requests with zero failures. Trace-instrumented throughput is
+attribution-only. The largest stack was 89.36 MB of ACK-only protected-datagram
+copies in `TryProtectAndAccountApplicationPayload`, followed by 33.65 MB of the
+now-excluded harness receive-buffer setup, 18.18 MB of pooled stream receive
+buffers, 11.25 MB of receive-ring buffers, and 5.41 MB of buffered-segment list
+growth. The ACK-only copy alone was about 46% of the 195.75 MB sampled total and
+is large enough to justify a bounded hosted-send ownership experiment. The trace
+is retained under
+`C:\shared\temp\quic-http3-broad-local-20260717\duplex-1mb-c16-attribution`;
+its SHA-256 is
+`8da796fe6211936fb7ac20cc4b83f11702cd3239393325f5aab989c9215777ff`.
+
+### Rejected 2026-07-17: transfer ACK-only protected buffers through hosted sends
+
+A hosted-runtime-only experiment transferred the existing pooled protected ACK
+datagram through `QuicConnectionSendDatagramUpdate` and returned it after the
+synchronous socket send. Public transition results retained their existing exact
+owned arrays, and focused ACK timer ownership/return tests passed. The mechanism
+removed the dominant ACK-only `ReadOnlyMemory.ToArray()` stack from the exact
+one-MiB c16 duplex allocation trace.
+
+The focused A/B/B/A lane used ten exact one-second samples per variant after
+warmup. Median duplex throughput moved from 60.53 to 62.24 MiB/s (+2.8%), p95
+improved 6.4%, and measured allocation fell 24.7%. Both variants were noisy,
+with throughput CVs of 17.7% and 20.7%, so this was only an allocation gate and
+not a throughput claim.
+
+The required broader A/B/B/A controls rejected the candidate. Each row combined
+ten samples per variant with exact protocol, content-length, and payload
+validation and zero failures:
+
+| Workload | c | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| fixed 64 KiB | 1 | 38.92 | 37.62 | -3.4% | -10.2% | -0.1% |
+| fixed 64 KiB | 4 | 49.41 | 49.68 | +0.5% | +0.6% | -4.0% |
+| fixed 64 KiB | 16 | 45.02 | 44.83 | -0.4% | +4.1% | -2.8% |
+| streaming 1 MiB | 1 | 37.81 | 39.26 | +3.8% | -21.2% | -4.2% |
+| streaming 1 MiB | 4 | 49.70 | 49.57 | -0.3% | +4.5% | -2.7% |
+| streaming 1 MiB | 16 | 47.77 | 47.30 | -1.0% | -2.9% | -4.3% |
+| upload 1 MiB | 1 | 86.85 | 77.84 | -10.4% | +11.6% | -2.4% |
+| upload 1 MiB | 4 | 98.42 | 98.80 | +0.4% | +8.0% | -2.0% |
+| upload 1 MiB | 16 | 100.15 | 90.70 | -9.4% | +19.3% | +1.5% |
+| duplex 1 MiB | 1 | 45.74 | 49.46 | +8.1% | +1.7% | -13.4% |
+| duplex 1 MiB | 4 | 69.19 | 67.57 | -2.4% | +2.4% | -14.3% |
+| duplex 1 MiB | 16 | 65.46 | 65.71 | +0.4% | -0.8% | -5.1% |
+
+The stable c16 upload regression exceeded the control guardrail. Candidate
+attribution also showed the removed 89.36 MB exact-copy group replaced by about
+106.10 MB of sampled `QuicBufferPool.RentBytes` allocation, versus 18.18 MB in
+the baseline trace. Holding the protected ACK pool owner until hosted send
+completion increased pool misses and moved allocation pressure rather than
+removing it. The runtime and test changes were reverted. ProtocolLab was not
+run because the candidate failed local controls.
+
+Matched results are retained under
+`C:\shared\temp\quic-http3-hosted-ack-owner-20260717`. The candidate trace SHA-256
+is `8fb1ea2eb735e00e0a3fdde3f96565d9b1774fcc56a981256fbaa668c98de3ee`.
+
+### Rejected 2026-07-17: lazily create public-stream completion delegates
+
+The established public-stream allocation profile attributed about 23% more
+managed allocation to Incursa than to System.Net.Quic. Sampled stacks included
+three bound completion delegates created eagerly by every `QuicStream`, even
+though a stream normally uses only one public write API family. A bounded
+candidate created each delegate on first use after acquiring the existing write
+gate. It preserved callback identity, delayed completion, cancellation,
+disposal, exception propagation, and write serialization; the focused stream
+and write suite passed 93/93.
+
+Separate baseline `b38937bf` and candidate assemblies ran in A/B/B/A/A/B order
+through the established one-KiB request/response profile. Each variant produced
+six measured samples with one or two thousand operations per sample:
+
+| Variant | Median ms/op | Range ms/op | CV | Median managed B/op | Allocation range |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Baseline | 0.5545 | 0.528-0.601 | 4.36% | 4,051 | 4,024-4,082 |
+| Candidate | 0.6015 | 0.570-0.650 | 5.03% | 3,794 | 3,765-3,817 |
+
+The candidate reduced managed allocation by only 6.3% and regressed median
+time by 8.5%. The harness reports aggregate operation time rather than a tail
+latency distribution, so no tail claim is made. The candidate missed both the
+allocation and end-to-end local gates and was reverted. Broader HTTP/3 controls
+and ProtocolLab were intentionally not run.
+
+Evidence is retained under
+`C:\shared\temp\quic-stream-lazy-delegates-20260717`. The next investigation
+must target a mechanism large enough to explain a substantial cross-layer gap,
+not another per-stream micro-allocation.
+
+### Local-first coverage 2026-07-17: matched established transport workloads
+
+The permanent benchmark executable now exposes `--transport-loopback` for
+matched Incursa.Quic and System.Net.Quic transfers on established connections.
+It covers exact download, upload, and simultaneous duplex bodies at configurable
+payload sizes and c1/c4/c16 concurrency. Certificate generation, listener and
+connection setup, deterministic payload creation, and per-worker receive
+buffers remain outside measurement. Every operation validates exact bytes,
+length through EOF, and all public stream closure signals. Each cell receives a
+fresh connection, and peer implementations run adjacent for the same shape.
+
+Harness validation found two important API-ordering constraints. System.Net.Quic
+does not surface a locally opened stream to the peer until its first write, so
+the client write must start before awaiting server acceptance. Large bodies must
+also be written and read concurrently to avoid normal QUIC flow-control
+deadlock. The final one-KiB all-scenario peer smoke and one-MiB c1/c4/c16 smokes
+completed with zero payload, EOF, stream-lifecycle, or benchmark failures.
+
+The fresh-connection one-MiB c16 diagnostic sample was:
+
+| Workload | Incursa MiB/s | System.Net MiB/s | Incursa B/op | System.Net B/op | Incursa/System.Net allocation |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| download | 25.86 | 224.29 | 393,824 | 22,132 | 17.8x |
+| upload | 33.42 | 205.93 | 412,360 | 21,167 | 19.5x |
+| duplex | 36.64 | 263.34 | 886,147 | 37,892 | 23.4x |
+
+These are single-sample diagnostics, not stable effect-size claims. They select
+one-MiB c16 allocation and execution traces plus a five-repetition peer baseline
+as the next work. The magnitude is sufficient to stop per-stream
+micro-optimization: Incursa is competitive in the one-MiB c1 smoke but loses
+throughput as concurrency exposes roughly 0.4-0.9 MiB of allocation per
+operation. Evidence is retained under
+`C:\shared\temp\quic-transport-local-peer-20260717`. ProtocolLab was not used.
+
+### Rejected 2026-07-18: reuse terminal completion source for ordinary reads
+
+The five-repetition one-MiB peer baseline confirmed that Incursa remains close
+to System.Net.Quic at c1 but loses both throughput and allocation efficiency as
+concurrency rises. At c16, Incursa produced 32.64 MiB/s download, 23.84 MiB/s
+upload, and 33.50 MiB/s duplex while allocating about 404, 530, and 873 KiB per
+operation. System.Net.Quic produced 251, 257, and 273 MiB/s while allocating
+about 22, 22, and 37 KiB per operation. The full matched result is
+`C:\shared\temp\quic-transport-local-peer-20260717\1mb-peer-r5.json`.
+
+An allocation trace of exact one-MiB c16 duplex traffic attributed about
+22.60 MB to the `QuicStream.ReadCoreAsync` state machine, 22.48 MB to
+`SemaphoreSlim.WaitUntilCountOrTimeoutAsync`, 13.20 MB to cancellation promises,
+and 8.75 MB to semaphore task nodes. This was sufficient attribution for a
+bounded candidate that reused the stream's existing `IValueTaskSource<int>` for
+the common single pending ordinary read while preserving the semaphore path for
+concurrent readers. Focused tests covered sequential reuse, delayed ValueTask
+consumption, concurrent-reader fallback, cancellation, abort, FIN, disposal,
+and notification races; all 32 read-lifecycle tests passed.
+
+The isolated pending-read BDN Short row reduced managed allocation from 321 to
+144 B/read (-55.1%). Its three timing iterations were too short and variable for
+an authoritative timing claim, although the candidate median was lower. Exact
+c16 duplex A/B/B/A-style runs then produced five successful samples per clean
+campaign:
+
+| Variant | Median MiB/s | Throughput range | CV | Median p95 ms | Median B/op |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Candidate A | 34.67 | 27.39-38.46 | 11.4% | 958.8 | 109,525 |
+| Baseline B | 39.69 | 29.01-42.32 | 12.7% | 896.7 | 849,914 |
+| Candidate C | 33.89 | 26.50-35.48 | 10.7% | 1,035.2 | 125,688 |
+| Baseline D | 41.78 | 37.56-42.89 | 5.4% | 844.5 | 828,807 |
+
+The candidate removed roughly 85% of measured allocation but regressed adjacent
+median throughput by 12.6% and 18.9%, with worse p95 latency. It therefore
+failed the no-timing-regression condition of the allocation gate and was
+reverted. The first broader baseline attempt also retained an existing c16
+failure, `The requested path cannot send an ordinary packet`, rather than being
+silently discarded. A custom inline continuation was not pursued because it
+would run arbitrary application continuation work on the runtime notification
+path and weaken scheduling isolation and fairness. ProtocolLab was not run.
+
+Candidate, baseline, BDN, failure, and trace artifacts are retained under
+`C:\shared\temp\quic-read-completion-20260718` and
+`C:\shared\temp\quic-transport-local-peer-20260717\incursa-duplex-1mb-c16-trace`.
+The trace SHA-256 is
+`b9c68ff6930b2b3fab80069de2e6cd1dc6c19a532bbeb8780edc73a15ba72772`.
+
+### Local-first coverage 2026-07-18: bounded HTTP/3 runtime diagnostics
+
+The exact HTTP/3 loopback harness now has an opt-in `--diagnostics true` mode
+that records bounded per-series summaries from the existing `Incursa.Quic`
+runtime and buffer-pool metrics. The normal path remains uninstrumented. The
+diagnostic path polls observable gauges every 100 ms and reports queue and
+service delay, work-item depth and rates, wakeups, work per wake, stream-write
+completion, delayed sends by cause, receive/send/retransmission retention,
+buffer-pool pressure by owner and size bucket, and byte/datagram totals.
+Counter output distinguishes event sums from cumulative observable-counter
+deltas. Instrumented samples are explicitly marked diagnostic-only because the
+listener affects timing and allocation.
+
+An uninstrumented one-KiB fixed-response smoke and an instrumented 64-KiB c4
+duplex smoke both passed exact HTTP/3, content-length, payload, and EOF
+validation. The exact one-MiB c16 duplex attribution run then completed 112
+requests with zero failures. Its 42.73 MiB/s timing is not a performance claim.
+All 16 streams shared one connection and one runtime shard. During the
+five-second measured interval that shard processed 119,284 packet-receive work
+items, spending 4,255.76 ms in their measured service intervals, plus 650.14 ms
+on 14,560 stream-write items. Packet-receive queue delay averaged 18.20 ms and
+reached 51.09 ms at p95 in this instrumented run; stream-write completion
+averaged 5.00 ms and reached 12.47 ms at p95. The actor is therefore saturated
+by aggregate per-packet work rather than by wakeup frequency or one isolated
+CPU method.
+
+The server received 122,474,009 bytes in 119,284 datagrams, about 1,027 bytes
+per datagram, and sent 123,225,147 bytes in 164,867 datagrams, about 747 bytes
+per datagram. Buffer-owner counters recorded 49,649 acknowledgment rents,
+119,284 inbound packet-protection rents, and 329,734 outbound packet-protection
+rents. These counts justify investigating general packet count, packetization,
+and ACK/data coalescing mechanisms from broader HTTP/3 evidence. They do not by
+themselves justify weakening ACK behavior or assuming a larger path MTU.
+
+The CPU trace and metrics evidence are retained under
+`C:\shared\temp\quic-http3-local-first-20260718`. The earlier intermittent c16
+ordinary-packet failure did not reproduce in 60 additional exact duplex
+samples, so no speculative PMTU fix was made. No ProtocolLab run was launched.
+
+### Accepted diagnosis 2026-07-18: validate a larger path datagram ceiling
+
+The cross-scenario one-MiB c16 diagnostic run showed that Incursa's HTTP/3
+upload path received 478,006,135 bytes in 324,745 datagrams, or 1,471.94 bytes
+per datagram, while download and duplex responses remained constrained by the
+runtime's permanent 1,200-byte path ceiling. This broad workload attribution
+was sufficient to test the packet-count mechanism without changing any QUIC
+recovery, scheduling, or stream behavior.
+
+A reversible candidate changed only the initial path ceiling from 1,200 to
+1,472 bytes. Committed baseline and candidate assemblies ran in A/B/B/A order,
+with five exact one-MiB c16 samples per variant and shape. All 40 samples passed
+payload, content-length, EOF, and protocol validation:
+
+| Workload | Baseline median | Candidate median | Throughput delta | Baseline p95 | Candidate p95 | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| fixed response | 47.03 MiB/s | 60.46 MiB/s | +28.6% | 423.68 ms | 295.50 ms | -17.4% |
+| duplex | 64.77 MiB/s | 74.05 MiB/s | +14.3% | 549.95 ms | 491.79 ms | -3.4% |
+
+Fixed-response coefficient of variation was 9.33% baseline and 8.19%
+candidate; duplex was 2.21% and 2.17%. The mechanism passes the local timing
+gate, but an unconditional 1,472-byte default would assume an unvalidated path
+MTU and was reverted. The accepted product direction is a bounded DPLPMTUD
+probe: ordinary traffic must remain at 1,200 bytes until an exact padded probe
+is acknowledged, and loss must leave the ceiling unchanged. No ProtocolLab run
+was launched for the unsafe default candidate.
+
+Evidence, assembly hashes, commands, per-sample results, and the combined
+summary are retained under
+`C:\shared\temp\quic-http3-local-first-20260718\pmtu-1472-experiment`.
+
+### Accepted 2026-07-18: timer-gated validated path datagram ceiling
+
+The runtime now keeps ordinary packets at the safe 1,200-byte QUIC minimum and
+uses one bounded DPLPMTUD discovery attempt per validated path record. After
+application stream data is acknowledged, a dedicated one-millisecond timer is
+armed. The timer sends an exact PING-plus-PADDING probe only when the same path
+is still active, no application write or retransmission is queued, and no
+ack-eliciting packet remains in flight. The target is 1,472 bytes for IPv4 and
+1,452 bytes for IPv6 or an unresolved address, capped by the peer's advertised
+`max_udp_payload_size`. Only a matching acknowledgment raises the path's
+ordinary datagram ceiling; loss removes outstanding tracking and leaves the
+ceiling unchanged.
+
+Three trigger placements were rejected before the timer design was accepted.
+Immediate post-handshake probing failed 14 full-suite tests. Inline probing
+from ACK processing failed 9 tests by consuming recovery/application-send
+budget. Posting a follow-on actor event still allowed synchronous dispatcher
+reentrancy, and an idle ACK send still violated ACK transitions that must emit
+no datagram. The timer design passed the focused PMTU/recovery set (44/44) and
+the broader timer/recovery/metrics set (104/104) without weakening those tests.
+
+Committed baseline and final timer-candidate assemblies ran in adjacent
+A/B/B/A order for fixed and duplex one-MiB c16 workloads. Ten exact samples per
+variant and shape produced zero failures:
+
+| Workload | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| fixed 1 MiB c16 | 46.44 | 58.01 | +24.9% | -18.8% | -16.8% |
+| duplex 1 MiB c16 | 65.48 | 73.35 | +12.0% | -10.1% | -2.4% |
+
+The broader baseline/candidate/baseline control campaign covered fixed,
+streaming, upload, and duplex workloads at 1 KiB, 64 KiB, and 1 MiB and c1, c4,
+and c16. All 36 cells and 540 measured samples passed exact protocol, content
+length, payload, and EOF validation. Two short one-second cells crossed the
+approximately five-percent guardrail and were repeated with adjacent
+three-second, seven-sample A/B/A runs. The repeat cleared both concerns: fixed
+1 KiB c1 was +3.3% throughput with p95 +3.9%, and upload 1 MiB c16 was +4.6%
+throughput with p95 +1.3%. No stable control regression remained.
+
+Evidence is retained under
+`C:\shared\temp\quic-http3-local-first-20260718\pmtu-dplpmtud-candidate`,
+including `timer-summary.json`, `timer-control-summary.json`,
+`timer-suspect-summary.json`, hosted smoke/diagnostic results, binaries, logs,
+and focused TRX files. The final Release build completed with zero warnings and
+errors. The full Release test-project rerun passed 9,631 tests with four
+explicit skips and zero failures. Two integration tests that failed once under
+the first full-suite load each passed five immediate isolated reruns before the
+clean full-suite rerun.
+
+The smallest matching ProtocolLab confirmation then ran the one-MiB c16 HTTP/3
+scenario in adjacent baseline/candidate/baseline order with five repetitions
+per pass. Source assembly verification proved clean `9eeaecd2` baseline and
+`f6acad6b` candidate inputs. Across the ten baseline and five candidate cells,
+median throughput increased from 52.36 to 61.79 requests/s (+18.0%) and median
+p95 latency fell from 315.77 to 267.80 ms (-15.2%). Throughput CV was 2.14%
+baseline and 1.64% candidate. All 15 cells passed exact HTTP/3 validation with
+zero failed or timed-out requests. The confirmation summary and normal evidence
+bundles are retained under
+`C:\shared\temp\pl-h3-pmtu-confirmation-20260718`.
+
+This confirmation is shared-host local-lab evidence, not isolated-hardware or
+peer-comparison proof, and no public claim is made. Repeated PMTU search with
+bounded retry/backoff remains future work; do not replace the safe initial
+ceiling or repeat the rejected trigger placements.
+
+### Local-first diagnosis 2026-07-18: c16 upload congestion-window growth stalls without loss
+
+The transport loopback harness now has an opt-in `--diagnostics true` mode for
+Incursa samples. It captures bounded summaries from the existing runtime,
+buffer-pool, byte, and datagram meters and marks every instrumented sample as
+diagnostic-only. The normal benchmark path remains uninstrumented. A new
+bounded runtime counter records detected packet losses by endpoint role and
+packet-number space so congestion-window attribution no longer has to infer
+loss from retained packet state.
+
+A fresh uninstrumented five-repetition one-MiB c1/c4/c16 peer campaign retained
+Incursa's competitive c1 result but reproduced the c16 collapse. At c16,
+Incursa produced 24.81 MiB/s download, 21.99 MiB/s upload, and 31.67 MiB/s
+duplex while System.Net.Quic produced 185.98, 190.30, and 212.71 MiB/s. Incursa
+allocated 17.74x, 18.30x, and 20.24x as many managed bytes per operation in
+those three lanes. All payload and protocol validation passed. The evidence is
+`C:\shared\temp\quic-transport-local-first-20260718\post-pmtu-peer\1mb-c1-c4-c16-r5.json`.
+
+The c16 upload CPU trace did not expose a single hot method large enough to
+explain the gap. The process spent most of the interval waiting; runtime inbox
+consumption accounted for about 5.96% inclusive CPU, packet receive for about
+2.29%, endpoint send for about 1.73%, listener send for about 1.21%, and socket
+send for about 0.3%. This points to queueing or send-credit progression rather
+than a CPU-bound send primitive. Trace artifacts are under
+`C:\shared\temp\quic-transport-local-first-20260718\post-pmtu-cpu`.
+
+Instrumented c1 and c16 one-MiB upload samples then isolated the mechanism. The
+c16 sample spent the measured interval with a weighted congestion-window mean
+of about 338 KiB and a maximum of about 460 KiB, while bytes in flight averaged
+about 337 KiB and available send budget averaged only 738 bytes. It recorded
+32,808 congestion-limited flushes, an application-send queue mean of 20.4
+writes and maximum of 27, about 660 KiB average retained application data, and
+about 298 average retained sent packets. Stream-write completion averaged
+34.2 ms and reached about 42.8 ms at p95; sender queue delay averaged about
+22 ms and reached about 33 ms at p95. The comparable c1 sample grew its window
+from about 6.8 MiB to 50.5 MiB and had roughly 1 ms write completion and queue
+delay.
+
+The loss-instrumented repeat recorded zero detected packet losses at both c1
+and c16. Therefore the small c16 window was not a loss response: it remained
+full but failed to grow. The current congestion helper subtracts acknowledged
+bytes before deciding whether `bytes_in_flight < congestion_window`, which
+makes a previously full sender appear underutilized after every ACK unless a
+separate pacing-limited signal happens to be present. The next bounded
+candidate is to evaluate congestion-window utilization from the pre-ACK state,
+while preserving explicit application-limited and flow-control-limited
+suppression. This is a standards/correctness hypothesis that requires focused
+RFC 9002 tests and adjacent local A/B evidence before acceptance. No
+ProtocolLab run has been launched.
+
+Instrumented evidence is retained under
+`C:\shared\temp\quic-transport-local-first-20260718\runtime-diagnostics` and
+`C:\shared\temp\quic-transport-local-first-20260718\runtime-loss-diagnostics`.
+
+### Rejected 2026-07-18: pre-ACK congestion-window utilization classification
+
+A reversible candidate captured whether the congestion window was fully used
+at ACK-frame entry and applied that classification to every packet acknowledged
+by the frame. It preserved application-limited, flow-control-limited, recovery,
+and pacing suppression, and its focused RFC 9002 and runtime ownership set
+passed 24/24 tests. Baseline and candidate assemblies were frozen with SHA-256
+`4446ab41938ddbcea959a3b4cced805b6dc67ca8de9ec106bdff3cab0b24d5e0`
+and `a9413e45c363b1cbd3c614a43350f62deae0abd445bd3d93f343d895685420e7`.
+
+Adjacent A/B/B/A one-MiB upload and duplex runs covered c1, c4, and c16 with
+ten exact samples per variant and cell. All 120 measured samples passed:
+
+| Lane | Baseline median | Candidate median | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| upload c1 | 35.84 MiB/s | 36.31 MiB/s | +1.3% | -3.8% | +1.5% |
+| upload c4 | 27.74 MiB/s | 27.83 MiB/s | +0.3% | -4.4% | +2.4% |
+| upload c16 | 22.32 MiB/s | 22.44 MiB/s | +0.5% | -1.3% | +0.4% |
+| duplex c1 | 42.21 MiB/s | 39.74 MiB/s | -5.9% | +3.2% | +6.7% |
+| duplex c4 | 40.44 MiB/s | 39.85 MiB/s | -1.5% | +3.2% | +0.7% |
+| duplex c16 | 28.19 MiB/s | 30.91 MiB/s | +9.6% | -10.3% | -5.4% |
+
+The candidate failed the local acceptance gate because upload remained flat
+and the c1 duplex control crossed the approximate five-percent guardrail. More
+importantly, an instrumented candidate c16 upload sample proved that the window
+did grow: its observed client window ranged from about 6.1 MiB to 39.9 MiB,
+with tens of MiB of available send credit. Throughput still remained only
+18.82 MiB/s in that diagnostic sample, while 21,602 recovery flushes stopped at
+`burst_limit_reached` and stream-write completion averaged 25.5 ms. The small
+baseline congestion window was therefore real but not the dominant throughput
+limit. The candidate was reverted and ProtocolLab was not run.
+
+Evidence, binaries, hashes, per-pass logs, combined statistics, focused TRX,
+and the candidate diagnostic run are retained under
+`C:\shared\temp\quic-cwnd-preack-20260718`. Do not repeat congestion-growth
+variants without new evidence. The next highest-confidence mechanism is the
+runtime's bounded flush progression and whether it schedules enough follow-up
+work after reaching the four-datagram burst cap.
+
+### Rejected 2026-07-18: timer-driven bounded application-send continuation
+
+A reversible candidate replaced the application-send timer's single-datagram
+continuation with the existing bounded four-datagram recovery flush policy. It
+kept the established per-transition cap and 1 ms follow-up timer, so it did not
+repeat the rejected larger fixed burst or ACK-byte-credit designs. A focused
+requirement-home test proved that one timer expiration emitted exactly one
+additional bounded tranche. The stream API, standalone FIN scheduling, and
+send-policy set passed 32/32 tests after congestion-blocked timer re-arming was
+preserved.
+
+Frozen baseline and candidate assemblies had SHA-256
+`4446ab41938ddbcea959a3b4cced805b6dc67ca8de9ec106bdff3cab0b24d5e0`
+and `574918ecdcc34a8798caeffd69305083bd7693ac96383c6c231e7dca26f26c2d`.
+Two successful passes per variant covered exact one-MiB upload and duplex at
+c1, c4, and c16, producing ten successful samples per variant and cell:
+
+| Lane | Baseline median | Candidate median | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| upload c1 | 36.87 MiB/s | 35.40 MiB/s | -4.0% | +2.4% | -2.5% |
+| upload c4 | 28.59 MiB/s | 27.68 MiB/s | -3.2% | +3.7% | -1.6% |
+| upload c16 | 21.12 MiB/s | 22.10 MiB/s | +4.6% | -6.4% | -7.7% |
+| duplex c1 | 39.67 MiB/s | 44.21 MiB/s | +11.4% | -7.2% | -11.1% |
+| duplex c4 | 39.24 MiB/s | 39.81 MiB/s | +1.5% | -2.9% | -1.6% |
+| duplex c16 | 32.62 MiB/s | 29.55 MiB/s | -9.4% | +18.2% | -5.1% |
+
+The candidate failed the local gate because c16 duplex throughput regressed
+9.4% and p95 latency regressed 18.2%. Low-concurrency upload also regressed.
+The runtime and test changes were reverted and ProtocolLab was not run. The
+campaign additionally retained one baseline attempt that aborted at the first
+c16 duplex sample with `The requested path cannot send an ordinary packet`;
+two subsequent baseline passes completed, so this is intermittent baseline
+fragility rather than a candidate-only failure.
+
+Evidence, frozen binaries, hashes, candidate diff, exact commands, successful
+per-pass JSON, aggregate statistics, and the failed-baseline record are under
+`C:\shared\temp\quic-timer-burst-20260718`. Do not retry a timer-driven
+multi-datagram continuation or another minor burst variant without materially
+new attribution. Two distinct bounded flush-progression designs have now
+failed the local gate. Reassess the broader end-to-end HTTP/3 traces for a
+cross-layer queue, copy, write-completion, or API-usage mechanism before
+changing raw send progression again.
+
+### Diagnosed 2026-07-18: current HTTP/3 upload and duplex allocation paths
+
+Fresh post-PMTU EventPipe traces used the current accepted runtime rather than
+the superseded response-cache and buffered-request candidates. Exact one-MiB
+c16 upload completed 276 requests with zero failures. Its dominant sampled
+allocation was the one exact owned request-body array created by
+`ReadBufferedRequestAsync`; that copy is required by the durable
+`Http3Request.Body` lifetime, while the high-throughput streaming handler used
+by ProtocolLab bypasses it. Pooling or removing that copy without changing the
+public ownership contract is not a valid candidate. Evidence is under
+`C:\shared\temp\quic-http3-current-upload-20260718`; the nettrace SHA-256 is
+`63887582b83d9abb23ed17b760b7ae922955b1d23206754286bebab23ac3f21d`.
+
+Exact one-MiB c16 duplex completed 128 requests with zero failures. Its largest
+sampled runtime stack was 84.54 MB of frequent small ACK-only ownership copies
+in `TryProtectAndAccountApplicationPayload`, reached from
+`TrySendPendingApplicationAck`. This confirms the broader-workload mechanism
+after the PMTU change without repeating the rejected hosted ACK-owner design.
+Evidence is under `C:\shared\temp\quic-http3-current-duplex-20260718`; the
+nettrace SHA-256 is
+`d3ae513d075572428998d8dc182c9788eff8897168cf7e70da0af2e9dda9ea8e`.
+
+Diagnostic-only runtime metrics now classify application ACK sends as
+standalone or piggybacked and record queued application-write depth at emission.
+The instruments exit before tag construction when disabled. A five-second c16
+duplex sample recorded 39,288 standalone ACKs, including 12,127 emitted while
+application data was already queued (median queue depth 2, p95 9), and 12,153
+piggybacked ACKs. The baseline diagnostics are retained under
+`C:\shared\temp\quic-http3-ack-policy-20260718`.
+
+### Rejected 2026-07-18: prefer one queued DATA packet when an ACK is due
+
+A reversible policy candidate used one existing queued application send to
+carry a due ACK before falling back to a standalone ACK-only packet. It kept the
+ACK deadline, congestion and amplification checks, retransmission priority, and
+the one-datagram local bound. It did not transfer ACK buffer ownership or change
+the rejected timer continuation. Focused ACK, RFC 9000 piggyback, send-delay,
+and metrics tests passed 35/35.
+
+The focused A/B/B/A c16 one-MiB duplex campaign used separate baseline and
+candidate assemblies and ten exact samples per variant. All samples passed:
+
+| Variant | Median MiB/s | Range MiB/s | CV | Median p95 ms | Median allocated B/request |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| baseline | 52.11 | 37.45-54.46 | 12.54% | 709.87 | 956,052 |
+| candidate | 53.38 | 38.73-54.58 | 11.50% | 692.61 | 953,642 |
+
+The candidate improved median throughput 2.4%, p95 2.4%, and allocation 0.25%,
+which is below the local promotion gate. A diagnostic candidate run confirmed
+the mechanism: standalone ACKs emitted with queued data fell from 12,127 to
+zero, while piggybacked ACKs with queued data rose from 11,989 to 15,659. The
+policy change and its test were reverted. ProtocolLab was not run.
+
+Evidence, frozen assemblies, hashes, candidate diff, diagnostics, transcripts,
+per-pass JSON, and aggregate statistics are retained under
+`C:\shared\temp\quic-http3-ack-policy-20260718`. Do not repeat minor standalone
+ACK scheduling variants without a mechanism likely to exceed the local gate.
+
+### Rejected 2026-07-18: dedicated bounded ACK datagram pool
+
+A materially different follow-up to the rejected hosted ACK-owner transfer
+copied protected ACK-only datagrams into a dedicated bounded `ArrayPool<byte>`
+and returned the general protected-packet buffer immediately. Hosted sends
+carried explicit pool ownership through the existing synchronous send observer;
+direct transition results retained exact owned arrays. A focused hosted ACK
+deadline test verified packet protection, owner classification, and release.
+
+The local A/B/B/A c16 one-MiB simultaneous duplex campaign used frozen baseline
+and candidate assemblies, five exact samples per pass, and ten samples per
+variant. All samples completed with zero payload-validation failures:
+
+| Variant | Median MiB/s | Range MiB/s | CV | Median p95 ms | Median allocated B/request |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| baseline | 51.58 | 30.86-54.89 | 13.77% | 729.35 | 807,278 |
+| candidate | 50.11 | 32.92-54.03 | 13.23% | 731.20 | 912,893 |
+
+The candidate regressed median throughput 2.9%, did not improve latency, and
+increased median process allocation 13.1%. It therefore failed both the timing
+and allocation gates. The runtime and focused-test changes were reverted, and
+ProtocolLab was not run. Frozen candidate binaries and all four per-pass JSON
+reports are retained under
+`C:\shared\temp\quic-http3-ack-dedicated-pool-20260718`. Do not repeat ACK
+storage-pool or hosted ACK-owner variants without new attribution that explains
+why they would improve the saturated single-shard actor rather than only move
+buffer ownership.
+
+### Rejected 2026-07-18: align HTTP/3 response writes to 32 KiB
+
+The c16 HTTP/3 diagnostics recorded 11,050 stream-write work items and about
+650 ms of stream-write service in a five-second one-MiB duplex interval. A
+bounded candidate doubled the default HTTP/3 DATA-frame and response-write
+boundary from 16 KiB to the transport's existing 32 KiB maximum. It did not
+change QUIC packetization, transport write limits, flow control, congestion
+control, recovery, or final-write behavior. Eight focused large-response,
+one-MiB, concurrent, streaming, and System.Net HTTP/3 interoperability tests
+passed.
+
+Frozen A/B/B/A assemblies then ran exact one-MiB fixed, streaming, and
+simultaneous duplex workloads at c16, with five samples per pass and ten samples
+per variant and lane. All 60 samples passed payload, content-length, EOF, and
+protocol validation:
+
+| Lane | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| fixed | 41.48 | 38.74 | -6.6% | +5.2% | +0.9% |
+| streaming | 39.29 | 39.72 | +1.1% | -1.6% | -0.1% |
+| duplex | 50.20 | 50.16 | -0.1% | -0.3% | -8.7% |
+
+The fixed-response regression crossed the normal control guardrail, while the
+affected streaming and duplex lanes did not provide a timing gain or the 20%
+allocation reduction needed for promotion. The one-line runtime candidate was
+reverted and ProtocolLab was not run. Frozen binaries and all four JSON reports
+are retained under `C:\shared\temp\quic-http3-write32k-20260718`. Do not retry
+larger HTTP/3 response write or DATA-frame boundaries without new attribution
+that explains the fixed-response regression and predicts a broader gain.
+
+### Rejected 2026-07-18: Windows UDP segmentation for listener send batches
+
+The saturated c16 one-MiB duplex CPU trace attributed about 4.87 seconds to
+`QuicListenerHost.SendDatagram`, including about 2.46 seconds in native socket
+send and 1.96 seconds in GC polling. A standalone exact Windows loopback probe
+combined four 1472-byte payloads with `UDP_SEND_MSG_SIZE` and reduced median
+sender time from 180.35 ms to 105.58 ms (-41.5%) across seven interleaved
+repetitions. All 140,000 measured datagrams preserved exact length and order.
+This was materially different from the rejected Linux `sendmmsg` path because
+it used one buffer and one socket call without native per-datagram allocation.
+
+A bounded QUIC candidate added a synchronous contiguous send-batch observer
+that retained detached packet owners until callback completion. The Windows
+IPv4 listener combined only consecutive same-path, same-ECN, exact-1472-byte
+datagrams, up to the UDP payload limit. Custom senders, Linux packet-info,
+IPv6-sized packets, mixed runs, and singleton sends retained the existing path.
+The build had zero warnings; ten focused socket and pooled-owner tests and ten
+large, concurrent, upload, and System.Net.Quic HTTP/3 tests passed.
+
+Frozen A/B/B/A executables then ran exact one-MiB fixed, streaming, and duplex
+workloads at c1, c4, and c16. Five samples per pass produced ten samples per
+variant and lane. All 180 samples passed payload, content-length, EOF, and
+protocol validation:
+
+| Lane | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| fixed c1 | 47.41 | 46.73 | -1.4% | +2.6% | -3.9% |
+| fixed c4 | 46.55 | 47.07 | +1.1% | -1.9% | +0.1% |
+| fixed c16 | 42.91 | 42.54 | -0.9% | +0.7% | +1.8% |
+| streaming c1 | 43.46 | 43.01 | -1.0% | +1.2% | +2.5% |
+| streaming c4 | 43.78 | 42.99 | -1.8% | -1.7% | +5.7% |
+| streaming c16 | 40.44 | 40.68 | +0.6% | -0.9% | +2.5% |
+| duplex c1 | 54.74 | 54.97 | +0.4% | +0.8% | +0.3% |
+| duplex c4 | 55.23 | 55.31 | +0.1% | +1.5% | +7.0% |
+| duplex c16 | 52.31 | 51.65 | -1.3% | +4.0% | +19.0% |
+
+The socket-only gain did not translate to HTTP/3, and duplex c16 allocation
+rose materially. Real transitions likely expose too few compatible consecutive
+datagrams to offset the pooled concatenation buffer and full payload copy. The
+candidate was reverted and ProtocolLab was not run. Frozen executables, all
+four JSON reports, logs, hashes, and the design record are retained under
+`C:\shared\temp\quic-http3-windows-udp-segmentation-20260718`; the standalone
+probe is under `C:\shared\temp\udp-segmentation-probe-20260718`. Do not repeat
+listener-level datagram aggregation without evidence of materially larger
+compatible runs and a zero-copy lifetime design. Reassess above the socket-send
+layer for a broader HTTP/3 mechanism.
+
+### Rejected 2026-07-18: immediate asynchronous Windows UDP submission
+
+The c16 one-MiB HTTP/3 duplex CPU trace showed one connection actor saturated,
+with listener datagram submission occupying the largest inclusive runtime
+stack. This materially different follow-up to the rejected sender queue tested
+whether submitting each datagram to Windows immediately with
+`Socket.SendToAsync` could remove synchronous actor cost while keeping recovery
+accounting adjacent to OS submission. It did not add an intermediate queue.
+
+An out-of-repo exact loopback probe compared cached-address synchronous sends
+against 64 bounded outstanding asynchronous sends in sync/async/async/sync
+order. Eight measured samples per mode each sent 10,000 exact 1,200-byte
+datagrams. All 160,000 measured datagrams arrived with exact length and payload:
+
+| Mode | Sender median | Range | CV | End-to-end median | Process CPU median | Allocation median |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| synchronous | 88.11 ms | 81.61-115.30 ms | 11.87% | 88.13 ms | 226.56 ms | 1,440,576 B |
+| asynchronous | 90.83 ms | 86.76-110.14 ms | 8.48% | 90.85 ms | 234.38 ms | 1,442,320 B |
+
+Immediate asynchronous submission was 3.1% slower at the median and did not
+reduce CPU or allocation. No runtime code was changed and ProtocolLab was not
+run. The probe source and JSON are retained under
+`C:\shared\temp\udp-sync-async-send-probe-20260718`. Do not replace the
+synchronous listener send with `SendToAsync` without a materially different OS
+mechanism and new end-to-end attribution. Continue above the socket layer with
+packet-count and per-packet actor-service work.
+
+### Diagnosed 2026-07-18: same-connection receive packet runs
+
+The exact one-MiB c16 simultaneous HTTP/3 duplex workload confirmed that the
+single connection actor usually has several receive packets ready together. A
+disabled-by-default histogram now records consecutive same-runtime packet runs
+and their bounded termination reason. In a five-second diagnostic sample,
+98,025 packet-receive work items formed 9,133 runs terminated by another work
+item: mean 10.73 packets, median 4, p95 55, p99 135, and maximum 732. The same
+sample completed 95 exact requests with no failures and recorded 23,097
+application-send recovery flushes. The diagnostic evidence is retained under
+`C:\shared\temp\quic-http3-packet-runs-20260718`; do not infer a batching gain
+from this trace because metric collection materially perturbs the actor.
+
+The disabled instrumentation path was also checked separately against the
+clean `b17880ff` baseline. Frozen `Incursa.Quic.dll` SHA-256 values were
+`BCEB0730FBD7F34FE9E16415CF890C98D4B88894D9B5410A76AB36A7FBC5DD7E`
+and `E70CF48060C5B3C53FB9294B83F69C81839E5E6E258FFC2677A532EEAE408AA7`.
+An A/B/B/A campaign produced ten exact c16 duplex samples per variant: baseline
+50.36 MiB/s median, 26.63-52.49 range, 17.67% CV, and 736.14 ms p95 versus
+instrumentation 50.65 MiB/s median, 40.54-52.26 range, 7.96% CV, and 720.13 ms
+p95. The disabled path therefore showed no timing or allocation regression.
+Raw evidence is under
+`C:\shared\temp\quic-packet-run-instrumentation-20260718`.
+
+### Rejected 2026-07-18: defer application-send recovery flushes across packet runs
+
+A bounded candidate used channel lookahead to defer only application-send
+recovery flushing across at most eight consecutive packets for the same
+connection. Packet decryption, frame handling, stream delivery, ACK generation,
+ACK deadlines, retransmission processing, flow-control updates, timer handling,
+and effect publication remained per packet. Twelve focused ACK, recovery-flush,
+and metrics tests passed.
+
+The frozen baseline and candidate `Incursa.Quic.dll` SHA-256 values were
+`BCEB0730FBD7F34FE9E16415CF890C98D4B88894D9B5410A76AB36A7FBC5DD7E`
+and `96B4B3E0080D0F0C4F868DCE9E3C762145B435D1274338A5B65FD95CADA16972`.
+An A/B/B/A campaign ran five exact three-second one-MiB c16 duplex samples per
+pass, for ten samples per variant and no payload or protocol failures:
+
+| Variant | Median MiB/s | Range MiB/s | CV | Median p95 ms | Median allocated B/request |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| baseline | 50.16 | 38.92-54.39 | 10.38% | 705.24 | 924,343 |
+| candidate | 52.34 | 32.33-53.81 | 16.10% | 875.47 | 660,794 |
+
+Although median throughput improved 4.3% and allocation fell 28.5%, p95 latency
+regressed 24.1% and throughput variance increased materially. The candidate
+therefore failed the local timing and stability gates and was reverted.
+ProtocolLab was not run. Frozen binaries, raw A/B/B/A JSON, logs, and diagnostic
+results are retained under
+`C:\shared\temp\quic-packet-flush-batch-20260718` and
+`C:\shared\temp\quic-http3-packet-runs-20260718`. Do not defer send-queue
+progress across receive packets again without a design that preserves prompt
+application-data scheduling; the run-length metric remains as attribution for
+materially different packet-processing designs.
+
+### Rejected 2026-07-18: in-place 1-RTT packet protection
+
+The c16 one-MiB duplex diagnostics attributed 243,716 rents and about 304 MB of
+pooled traffic to outbound packet protection in roughly five seconds. The
+application packet path formatted plaintext into one pooled lease and then
+rented a second lease for ciphertext. A bounded candidate reserved tag capacity
+in the first lease and encrypted the payload in place. It preserved packet
+numbers, header protection, AEAD usage accounting, congestion and amplification
+checks, recovery ownership, and send completion. A focused bit-for-bit test
+covered AES-128-GCM, AES-256-GCM, AES-128-CCM, and ChaCha20-Poly1305.
+
+Diagnostics confirmed the mechanism: outbound packet-protection rents per
+completed request fell about 49.6%, and rented bytes per request fell about
+49.8%. Those instrumented runs were used only for attribution. The exact c16
+duplex A/B/B/A campaign produced ten samples per variant and zero failures:
+
+| Variant | Median MiB/s | Range MiB/s | CV | Median p95 ms | Median allocated B/request |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| baseline | 52.527 | 45.842-53.695 | 5.39% | 685.85 | 876,854 |
+| candidate | 52.400 | 42.110-54.400 | 7.56% | 695.91 | 916,169 |
+
+Large fixed, upload, and duplex controls at c1, c4, and c16 were otherwise
+mostly neutral, but upload required a focused repeat. Across ten A/B/B/A samples
+per variant, upload throughput was 62.18 versus 59.78 MiB/s at c1 (-3.9%) and
+70.19 versus 66.80 MiB/s at c16 (-4.8%). The c1 median p95 regressed from 18.00
+to 19.15 ms (+6.4%), while managed allocation was unchanged. The candidate
+therefore failed the local timing gate despite materially reducing pooled rent
+traffic. Runtime and focused-test changes were reverted, and ProtocolLab was not
+run. Evidence, frozen source and binaries, hashes, raw JSON, logs, BDN smoke
+reports, and the candidate diff are under
+`C:\shared\temp\quic-inplace-protection-20260718`. Do not retry exact in-place
+packet protection without new evidence that explains the upload tradeoff and
+predicts an end-to-end timing gain.
+
+### Accepted 2026-07-18: split queued and formatted stream-payload attribution
+
+The existing `outbound_stream_payload` pool owner combined two materially
+different lifetimes: the stable copy retained while an oversized public write
+is queued, and each datagram-sized STREAM frame retained by sent-packet state
+for loss recovery. Separate `queued_raw_stream_data` and
+`formatted_stream_payload` owner labels now distinguish those mechanisms
+without changing allocation or send behavior.
+
+One diagnostic-only five-second c16 one-MiB duplex run completed 84 requests
+with exact payload validation and zero failures. It attributed 88,080,384
+requested and rented bytes across 5,376 queued raw buffers, versus 88,774,308
+requested bytes and 132,306,048 rented bytes across 70,056 formatted frame
+buffers. Flow-control retry ownership was only 344,064 bytes across 21 rents.
+The dominant duplication is therefore the raw-write-to-retransmittable-frame
+transition, not retry transfer. The formatted buffers remain live in
+sent-packet state and cannot be removed without preserving loss-recovery
+payload lifetime. The instrumented timing is not performance evidence.
+Artifacts are under
+`C:\shared\temp\quic-stream-owner-attribution-20260718`.
+
+### Rejected 2026-07-18: reusable signal-only public read waiter
+
+A fresh exact one-MiB c16 public QUIC duplex allocation trace reproduced the
+large public read-wait allocation path: excluding harness setup, about 84 MiB
+of sampled allocation came from `ReadCoreAsync`, `SemaphoreSlim.WaitAsync`,
+cancellation promises, task nodes, and continuation invokers. The trace had
+zero lost events. This justified one materially different follow-up to the
+previously rejected direct-read completion source.
+
+The candidate reserved one reusable signal-only `IValueTaskSource` for the
+common single pending read and retained the existing semaphore path for
+overlapping readers. Runtime notification only completed the asynchronous
+signal; stream-state reads, payload copies, flow-control credit, and application
+continuations stayed off the connection actor. Focused cancellation, abort,
+FIN, disposal, notification-race, concurrent-reader, and reuse tests passed
+31/31. BDN Dry moved first-use pending-read allocation from 320 to 280 B/read.
+
+A focused c16 one-MiB duplex A/B/B/A campaign ran ten exact samples per variant
+with zero failures. Median allocation fell from 728,486 to 296,611 B/op
+(-59.3%), throughput moved from 30.42 to 33.22 MiB/s (+9.2%), and p95 moved
+from 1,108.07 to 1,005.03 ms (-9.3%), but throughput CV remained high at 16.7%
+and 17.9%. The required broader A/B/B/A control screen then ran six exact
+samples per variant and cell. Allocation fell 52-60% in every lane, but stable
+c1 duplex throughput regressed 13.3% and p95 regressed 17.8% (baseline CV 4.5%,
+candidate CV 1.8%). Download also regressed 11.8%, 5.6%, and 8.8% at c1, c4,
+and c16, while c16 duplex reversed to -7.7% throughput and +8.1% p95.
+
+The candidate therefore failed the timing and control gates and was reverted.
+ProtocolLab was not run. Frozen binaries, SHA-256 hashes, BDN output, raw
+loopback JSON/logs, the candidate diff, and the full decision record are under
+`C:\shared\temp\quic-read-signal-20260718`. Do not retry another public
+read-wait source variant without a materially different scheduling mechanism
+that explains why both the direct-read and signal-only designs reduce
+allocation but regress stable timing controls.
+
+### Accepted 2026-07-18: adaptive shared-listener UDP receive capacity
+
+New local multi-connection coverage separated one connection with many streams,
+many independent listener sockets, and many connections behind one shared
+listener. Sixteen independent listeners completed exact one-MiB duplex traffic
+without detected loss, while a shared listener repeatedly stranded a moving
+connection pair for 3-14 seconds. Instrumented shared-listener samples recorded
+561-829 client-side loss detections and 31-39 aggregate PTOs, with zero explicit
+UDP send errors or library packet drops. A single connection at c16 recorded no
+loss, proving that shared socket ingress rather than generic recovery caused
+this failure mode.
+
+Two causal alternatives were rejected. Increasing QUIC connection and stream
+receive windows to 128 MiB did not remove the stalls, so flow-control credit was
+not the primary cause. Fixed 256 KiB and 4 MiB listener buffers stabilized raw
+traffic, but unconditional buffering crossed the HTTP/3 control guardrail: the
+256 KiB c16 upload repeat regressed 22%, and the 4 MiB repeat was borderline at
+-6.4% with higher process-wide allocation per completed request. Those values
+must not be applied unconditionally.
+
+The accepted design preserves the platform socket buffer for one connection
+and best-effort raises the shared listener receive queue to 4 MiB when a second
+connection is registered. The bound is per listener, not per connection, and
+an OS cap or rejected socket option falls back to the functional platform
+default. It does not alter authentication, congestion control, flow control,
+loss recovery, packet scheduling, stream semantics, or application buffers.
+
+The final exact one-MiB, 16-connection, c1-per-connection A/B/B/A campaign used
+five samples per pass and ten per variant:
+
+| Variant | Actual receive buffer | Median MiB/s | Range MiB/s | CV | Median p99 | Worst worker | Median B/op |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| explicit baseline | 64 KiB | 103.51 | 22.15-118.13 | 29.34% | 358.88 ms | 4,623.39 ms | 919,533 |
+| adaptive candidate | 4 MiB | 106.34 | 82.71-111.44 | 9.70% | 311.77 ms | 381.79 ms | 930,264 |
+
+Median throughput improved 2.7%, but the material result is bounded progress:
+throughput variance fell 67%, median p99 fell 13%, and the worst worker tail
+fell 91.7%. A separate adaptive diagnostic sample reported the actual 4 MiB
+buffer and zero client/server loss detections, PTOs, packet drops, and UDP
+errors. One-connection c1/c4 controls retained the platform 64 KiB buffer and
+showed no regression beyond 5%; exact fixed, streaming, upload, and duplex
+HTTP/3 controls had zero failures. Evidence and commands are retained under
+`C:\shared\temp\quic-connection-topology-20260718`.
+
+The candidate then passed the smallest matching source-backed ProtocolLab
+confirmation. An A/B/B/A campaign compared parent `9f67fcfd` with accepted
+commit `0650d1b7` using
+`quic.transport.duplex-streams.16x1mb`, 16 connections, 16 concurrent streams
+per connection, five repetitions per arm, and exact bidirectional byte
+validation. Across ten samples per variant, baseline throughput was 120.23
+MiB/s median (112.10-126.40, 4.04% CV) versus 139.68 MiB/s for the candidate
+(127.53-141.44, 2.87% CV), a 16.2% gain. Median p95 fell from 2,428.89 to
+1,954.32 ms (-19.5%), and median p99 fell from 2,454.64 to 1,991.48 ms
+(-18.9%). All 20 cells passed validation with 2 GiB sent and received per
+cell, zero failed requests, and zero timeouts. ProtocolLab classifies the
+single-host process-backed evidence as diagnostic and comparable with
+warnings; it is confirmation of the local signal, not isolated-hardware or
+publishable peer proof. Artifacts are retained under
+`C:\shared\temp\pl-adaptive-ingress-20260718`.
+
+### Accepted 2026-07-18: coalesced HTTP/3 streaming frame writes
+
+Fresh exact one-MiB HTTP/3 diagnostics showed that streaming and simultaneous
+duplex responses submitted about 129 serialized stream writes per completed
+request. Each DATA frame header and its first 16 KiB payload chunk used
+separate QUIC writes even though they belonged to one HTTP/3 frame. The
+candidate adds an internal two-segment stream write that carries the header
+and first payload chunk through the existing runtime work item and formats
+both directly into one retransmittable STREAM payload. It does not allocate an
+intermediate combined application buffer. Flow-control retries copy both
+segments into the existing owned retry buffer, and the write retains one
+completion source, cancellation registration, and write-gate acquisition.
+
+Instrumented c16 one-MiB runs confirmed the mechanism without being used as
+timing evidence. Streaming response writes fell from 22,704 across 176
+requests to 11,440 across 176 requests, and duplex response writes fell from
+15,609 across 121 requests to 8,320 across 128 requests. Both are approximately
+129 to 65 writes per request. Per-action queue and completion latency rose
+because each action now carries more bytes; the gain comes from halving the
+number of serialized actions, not from making each action cheaper.
+
+Frozen baseline `0beb7582` and candidate executables then ran in A/B/B/A order
+across exact one-MiB fixed, streaming, upload, and simultaneous duplex lanes at
+c1, c4, and c16. Five samples per pass produced ten samples per variant and
+cell, 240 measured samples total, with zero payload, content-length, EOF, or
+protocol failures. The targeted streaming lane improved from 43.32 to 47.73
+MiB/s at c1 (+10.2%), 42.63 to 46.56 MiB/s at c4 (+9.2%), and 40.38 to 42.73
+MiB/s at c16 (+5.8%). Streaming p95 improved 9.7%, 6.5%, and 4.5%
+respectively. Duplex throughput improved 6.6%, 3.6%, and 1.9%, while duplex
+p95 improved 7.2%, 6.0%, and 7.7%. Fixed-response throughput stayed within
+1.9% of baseline. Upload, which does not use the new path, stayed within 4.6%;
+its noisier p99 and duplex c4 allocation were not correlated with an added
+per-request allocation in the candidate. Local evidence, diagnostics, logs,
+and aggregate comparisons are retained under
+`C:\shared\temp\pl-h3-segmented-write-20260718`.
+
+The candidate passed the smallest matching source-backed ProtocolLab
+confirmation on `http3.payload.stream.100x16kb` at c16. A/B/B/A order with
+five repetitions per arm produced ten samples per variant. Baseline throughput
+was 40.22 MiB/s median (37.76-43.07, 3.65% CV) versus 42.36 MiB/s for the
+candidate (39.70-44.31, 4.13% CV), a 5.3% gain. Median p50, p95, and p99 fell
+4.5%, 4.7%, and 5.0%. All 20 cells passed exact HTTP/3, status, content type,
+and 1,638,400-byte body validation with zero failed requests or timeouts.
+Source-hash verification bound every arm to its requested QUIC worktree.
+ProtocolLab classifies this localhost process-backed evidence as diagnostic
+and comparable with warnings because target and generator share the host and
+the generator may be saturated. It is confirmation of the local result, not
+publishable peer proof. Artifacts are under
+`C:\shared\temp\pl-h3-segmented-write-20260718\protocol-lab`.
+
+Focused framing, work-item layout, delayed `ValueTask` consumption,
+cancellation, write-gate serialization, pooled retry ownership, final-write,
+and HTTP/3 streaming tests passed 50/50. The full Release suite passed 9,643
+tests with four intentional skips. No ProtocolLab repo files, packages,
+deployments, registrations, or published results changed.
+
+### Accepted 2026-07-18: explicit local HTTP/3 connection topology
+
+The local HTTP/3 loopback harness previously labeled one connection with N
+concurrent streams only as `concurrency=N`. That shape is useful for
+single-connection actor pressure, but it does not reproduce a ProtocolLab
+`connections=N, streamsPerConnection=1` peer cell. The harness now accepts
+explicit `--connections` and `--streams-per-connection` lists, forms their
+Cartesian product, creates one independent `SocketsHttpHandler` per connection,
+warms every connection before measurement, and records both dimensions plus
+total concurrency in schema version 2 output. The original `--concurrency`
+option remains compatible and means one connection with N streams. Mixed legacy
+and explicit topology options fail rather than silently relabeling a run.
+
+A current-source exact one-MiB connection-fanout baseline ran fixed and
+streaming responses at c1, c4, and c16 with one stream per connection, five
+three-second samples per cell, and zero failures across all 30 samples:
+
+| Lane | c1 MiB/s | c4 MiB/s | c16 MiB/s | c4 CV | c16 CV |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| fixed | 46.35 | 134.11 | 234.33 | 0.50% | 3.24% |
+| streaming | 46.74 | 133.07 | 218.15 | 0.84% | 1.29% |
+
+The c1 fixed cell had one cold sample and 10.87% CV; c4/c16 were stable. A
+separate diagnostic c4 sample proved that four independent server connections
+were active on four shards, with 12,134-12,456 packet-receive work items per
+shard. Certificate generation, listener startup, client construction, and
+connection warmup remained outside measured samples, and every response passed
+exact HTTP/3, content-length, EOF, and payload validation.
+
+This local result is materially above the retained source-backed ProtocolLab
+c16 result of roughly 35-38 MiB/s for the same broad response family. It rejects
+an intrinsic c16 Incursa HTTP/3 transport ceiling as the immediate diagnosis.
+The next local-first step is an out-of-process target/generator reproduction
+that separates adapter/API usage and load generation from the library before
+another runtime optimization. ProtocolLab was not run. Build and compatibility,
+explicit-topology, invalid-option, and balanced-shard smokes passed. Evidence is
+under `C:\shared\temp\quic-h3-local-first-next-20260718`.
+
+### Accepted 2026-07-18: local external-target HTTP/3 comparison
+
+The HTTP/3 loopback harness now has a client-only `--target-base-url` mode for
+fixed deterministic byte responses. It preserves explicit connection and
+stream topology while moving the target into a separate process, so target
+startup and target allocation do not contaminate the client measurement.
+External responses must pass exact HTTP/3, status, content-length, EOF, and
+`index % 251` payload validation. The harness rejects target-side diagnostics
+and listener socket options in this mode instead of mislabeling client data.
+
+Five three-second exact samples compared current-source Incursa and
+Kestrel/System.Net.Quic targets over one established connection with 1, 4, or
+16 concurrent request streams:
+
+| Target | c1 MiB/s | c4 MiB/s | c16 MiB/s | c16 CV | c16 p95 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Incursa | 41.11 | 40.30 | 36.05 | 1.31% | 465.50 ms |
+| Kestrel/System.Net.Quic | 66.36 | 133.16 | 168.16 | 1.51% | 103.70 ms |
+
+All 30 samples per target passed with zero failures. The Incursa gap widens
+from 1.61x at c1 to 4.66x at c16 and reproduces the retained ProtocolLab result
+without ProtocolLab orchestration. The retained lab generator allocated 7.93
+GB while reading 399 MB and flagged possible saturation, but this separate
+client path allocates about 133 KB per successful Incursa c16 request and still
+reproduces the target-side ceiling.
+
+A target-only sampled-thread trace and existing runtime metrics attribute the
+fixed-response shape to one connection actor. A five-second c16 sample created
+12,288 stream-write actions for 192 one-MiB responses, exactly 64 actions per
+response. Packet and write work waited about 6.9 and 6.7 ms on the shard, and
+write completion averaged 6.75 ms. Congestion window averaged about 66 MiB
+while bytes in flight averaged only about 275 KiB, ruling out congestion credit
+as the dominant limit. The next bounded candidate should reduce HTTP/3 API
+write serialization for already-cached immutable fixed responses without
+repeating the rejected 32 KiB boundary or raw burst experiments. Evidence is
+under `C:\shared\temp\quic-h3-local-first-next-20260718\external-trace` and the
+two `external-*-fixed-1mb.json` files in its parent. ProtocolLab was not run.
+
+### Rejected 2026-07-18: one-call cached fixed-response final write
+
+A bounded cross-layer candidate submitted an already-cached immutable HTTP/3
+HEADERS+DATA response sequence through one final stream API write instead of
+re-entering the public stream write path at each 16 KiB boundary. It retained
+the existing frame bytes, 16 KiB DATA framing, flow control, congestion control,
+and transport-owned 32 KiB chunking. This was materially different from the
+rejected 32 KiB HTTP/3 frame/write boundary: it reduced API and write-gate entry
+while leaving the serialized transport work-item size unchanged.
+
+Frozen source-backed target binaries ran A/B/B/A over exact one-MiB fixed
+responses at c1, c4, and c16. Three samples per pass produced six samples per
+variant and cell, all with exact HTTP/3, content-length, EOF, and payload proof:
+
+| Shape | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| c1 | 44.13 | 46.35 | +5.0% | -4.5% | -3.7% |
+| c4 | 43.68 | 44.32 | +1.5% | +0.4% | -2.2% |
+| c16 | 39.48 | 37.63 | -4.7% | +4.7% | -0.1% |
+
+The candidate did not reach the local timing or allocation gate and moved the
+important c16 shape in the wrong direction. The runtime change was reverted and
+ProtocolLab was not run. Frozen assemblies, hashes, target logs, and all four
+JSON reports are under
+`C:\shared\temp\quic-h3-fixed-finalwrite-20260718`. Do not repeat a large
+single-call fixed-response write or another response-write-size variant without
+new attribution. Reducing HTTP/3 API entries alone does not raise the actor's
+packet service capacity.
+
+### Rejected 2026-07-18: clamp ACK walks to tracked packet bounds
+
+The external one-MiB fixed-response trace showed ACK packet handling competing
+with stream writes on the single connection actor. A bounded candidate scanned
+the authoritative sent-packet and retransmission ledgers once per ACK and
+clamped each encoded ACK range to the smallest and largest packet numbers still
+tracked. This preserved range order, congestion and recovery accounting,
+retransmission cancellation, packet-owner release, and spurious-loss handling,
+while avoiding dictionary misses below or above the live ledger. Focused
+sent-packet ownership and ledger tests passed 11/11.
+
+Frozen source-backed target binaries had SHA-256 values
+`A8C654B3B05BE14ABEF38BED5DCBFE72E0901D7BDA34A47FC524F54932DFCBAC`
+for baseline and
+`9021DC8777FC1111C6F7C9619C091EDCCEFCAC8A02E426D6301F47F3F28D38D9`
+for candidate. An A/B/B/A campaign ran six exact three-second samples per
+variant at c1, c4, and c16, with zero HTTP/3, content-length, EOF, payload, or
+request failures:
+
+| Shape | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| c1 | 45.33 | 45.35 | +0.0% | -2.2% | +5.6% |
+| c4 | 43.60 | 43.30 | -0.7% | -0.1% | +0.2% |
+| c16 | 39.22 | 40.42 | +3.1% | -4.2% | -0.9% |
+
+The c16 direction was favorable and stable, but the gain was below the normal
+5-10% end-to-end gate and no material allocation reduction appeared. The
+runtime and candidate-only test changes were reverted, and ProtocolLab was not
+run. The launcher, frozen assemblies, hashes, four raw JSON reports, target
+logs, and aggregate statistics are retained under
+`C:\shared\temp\quic-h3-ack-bounds-20260718`. Do not repeat packet-bound
+clamping alone without evidence that historical ACK-range misses have become a
+larger fraction of actor service time. The remaining gap still requires a
+mechanism that reduces packet count, synchronous datagram submission cost, or
+the serial actor work required per ACK by substantially more than this ledger
+optimization.
+
+### Rejected 2026-07-18: active-transfer PMTU discovery variants
+
+The fixed one-MiB c16 diagnostic run sent 206,917,272 server bytes in 169,834
+datagrams, only about 1,218 bytes per datagram, while recovery emitted exactly
+four datagrams per application-send flush. Two bounded DPLPMTUD variants tested
+whether raising the active path from QUIC's 1,200-byte floor during sustained
+traffic could reduce packet count and synchronous socket submissions.
+
+The first variant allowed the existing path-MTU timer to send while ordinary
+application data was queued or ACK-eliciting data remained in flight, while
+still deferring behind pending retransmissions. Its focused requirement-home
+coverage passed 9/9. Frozen source-backed targets used baseline SHA-256
+A8C654B3B05BE14ABEF38BED5DCBFE72E0901D7BDA34A47FC524F54932DFCBAC
+and candidate SHA-256
+84155414F03E280E3351E3B34BE3FE7959B911B93C2EA8A6C3C3CE7A59D095D7.
+Six exact A/B/B/A samples per variant and cell produced:
+
+| Shape | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| c1 | 44.08 | 43.60 | -1.1% | +1.9% | -4.2% |
+| c4 | 42.35 | 43.05 | +1.7% | +0.5% | -1.0% |
+| c16 | 38.71 | 38.47 | -0.6% | +1.3% | +1.3% |
+
+An attribution-only instrumented candidate run averaged about 1,226 bytes per
+server datagram. The timer still entered the deeply backlogged actor queue and
+raised the packet size too late to affect most of the transfer. Evidence is
+retained under
+C:\shared\temp\quic-h3-active-pmtu-20260718.
+
+The second, materially different variant emitted the single non-retransmittable
+discovery probe directly in the transition that first acknowledged application
+STREAM data, retaining the timer only as a fallback when immediate prerequisites
+were unavailable. Focused requirement-home coverage passed 10/10. Frozen
+source-backed targets used the same baseline and candidate SHA-256
+666EAF33C17310D3A5BB5442EE65F7B483330DE589C7AFE93862F3C6B976D2DD.
+Six exact A/B/B/A samples per variant and cell produced:
+
+| Shape | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| c1 | 44.43 | 44.73 | +0.7% | +2.8% | -0.9% |
+| c4 | 43.98 | 42.97 | -2.3% | +2.0% | +3.6% |
+| c16 | 39.24 | 38.73 | -1.3% | +0.9% | -1.4% |
+
+All 36 measured samples in each campaign passed exact HTTP/3, content-length,
+EOF, payload, and request validation with zero failures. The direct variant's
+instrumented run averaged about 1,228 bytes per server datagram, so earlier
+discovery still did not materially change the packet shape or performance.
+Both runtime and candidate-only test changes were reverted, and ProtocolLab was
+not run. The second campaign is retained under
+C:\shared\temp\quic-h3-immediate-pmtu-20260718. Do not repeat PMTU timing
+or immediate-probe variants without new evidence that ordinary packets actually
+remain materially larger for most of the measured transfer and that the reduced
+packet count can exceed the cost of the existing actor and socket-send path.
+
+### Rejected 2026-07-18: lock-free endpoint receive socket lookup
+
+A sampled-thread trace of the local one-MiB transport download at c16 attributed
+76 samples to `QuicConnectionEndpointHost.GetSocketBinding` entering
+`socketGate` once per received datagram. A bounded candidate replaced that
+receive-side monitor with a volatile socket-reference read and published a
+port-rebinding replacement with a volatile write before disposing the old
+socket. Socket replacement, sends, shutdown wakeup, and disposal remained under
+the existing gate, preserving rebinding and receive-loop wakeup behavior.
+
+Frozen pre-change and candidate benchmark outputs ran contemporaneously in
+A/B/B/A followed by A/B/A/B order. The longer five-second campaign used five
+exact one-MiB download samples per arm at c16 with zero failures:
+
+| Variant | Campaign medians | Median p95 | Median allocation |
+| --- | ---: | ---: | ---: |
+| baseline | 24.98, 25.27 MiB/s | 699.15 ms | 428,239 B/op |
+| candidate | 24.32, 24.61 MiB/s | 684.67 ms | 414,392 B/op |
+
+The candidate regressed median throughput by about 2.6%, while p95 and
+allocation improved only about 2-3%. Lower candidate variance did not satisfy a
+timing, allocation, or tail-latency acceptance gate. The runtime change was
+reverted and ProtocolLab was not run. Frozen assemblies, SHA-256 hashes, and all
+eight raw JSON reports are retained under
+`C:\shared\temp\quic-local-first-20260718`. Do not repeat endpoint socket
+lookup lock removal without new evidence that it consumes a materially larger
+share of end-to-end service time.
+
+### Rejected 2026-07-18: direct STREAM frame dispatch
+
+The c16 one-MiB download diagnostic attributed about 4.5 seconds of a
+five-second saturated shard to packet-received work. The application packet
+parser reaches the common STREAM frame after probing the earlier control-frame
+codecs, so a bounded candidate recognized the one-byte STREAM frame-type range
+and skipped those failed probes without changing any parser or error path.
+
+A dedicated allocation-free ShortRun benchmark measured the previous probe
+chain at 163.09 ns and direct STREAM dispatch at 34.44 ns, a 78.9% mechanism
+improvement. The absolute saving was only 128.65 ns per STREAM frame, however.
+Even incorrectly charging that saving to all 127,355 packet-received work items
+in the diagnostic sample explains about 16.4 ms, less than 0.4% of the measured
+run and less in reality because many packets carried ACK or control frames.
+
+The candidate therefore lacked enough attributed cost to justify an
+end-to-end campaign while a multi-fold transport gap remains. The runtime and
+benchmark-only changes were reverted, and ProtocolLab was not run. BDN Dry and
+Short artifacts are retained under
+`C:\shared\temp\quic-local-first-20260718\bdn-frame-dispatch-*`. Do not repeat
+frame-dispatch ordering variants unless a future workload materially changes
+the frame mix or measured absolute parser cost.
+
+### Accepted 2026-07-18: opt-in receive-phase attribution
+
+The local transport diagnostics now expose disabled-by-default shard transition
+and effect timing plus bounded application-packet phases by endpoint role. The
+application path partitions packet opening, preparation, ACK and STREAM frame
+handling, post-frame path work, queued-write retry, application-send recovery
+flushes, received-packet accounting, ACK emission, ACK timer maintenance, and
+connection-ID work. The local diagnostics collector records the packet-phase
+histogram only when `--diagnostics true` is active. No packet scheduling,
+recovery, flow-control, congestion-control, or stream behavior changed.
+
+A diagnostic-only five-second one-MiB transport download at c16 attributed the
+successful 1-RTT transition path to roughly 47% frame processing, 37%
+post-frame work, 13% packet opening, and 2% preparation. On the sending server,
+61,824 ACK frames spent 712.59 ms walking acknowledged packet ranges and
+169.14 ms in recovery accounting; 69,597 post-ACK recovery calls spent
+681.16 ms flushing queued application sends. On the receiving client, ACK
+generation spent 373.23 ms. STREAM bookkeeping was materially smaller at
+278.76 ms across 107,632 client STREAM frames. This makes ACK ledger work and
+bounded recovery flushing the next evidence-supported mechanisms, while ruling
+out another parser-dispatch micro-optimization.
+
+The instrumented sample is attribution evidence only because per-event metric
+collection perturbs the single-connection actor. Focused bounded-tag metrics
+coverage passed, the benchmark project built with zero warnings, and the raw
+diagnostic JSON is retained under
+`C:\shared\temp\quic-local-first-20260718\transport-download-c16-packet-phase-attribution-v4.json`.
+
+### Rejected 2026-07-18: reuse parsed acknowledged STREAM IDs
+
+Receive-phase attribution showed that ACK-range processing was a substantial
+part of sender actor time. Each acknowledged sent STREAM packet reparsed its
+retained plaintext once to remove the packet from the outstanding-stream index
+and again to suppress obsolete RESET_STREAM retransmission. A bounded candidate
+made the index removal return the exact distinct non-empty STREAM IDs it had
+already parsed and reused those IDs for RESET_STREAM suppression. It preserved
+zero-length FIN handling, packet ownership, recovery and congestion accounting,
+and retransmission behavior. Focused ownership and index tests passed 14/14.
+
+An allocation-free BenchmarkDotNet ShortRun showed that the mechanism itself
+was real: at 64, 256, and 1,024 packets, parsing once and reusing IDs took
+1.993, 7.857, and 31.267 microseconds versus 3.925, 15.378, and 61.320
+microseconds for two parses, a consistent 49% reduction with zero managed
+allocation. Frozen source-backed local benchmark assemblies had SHA-256 values
+`5782C2A457DB403CCF11C424F30331E0712CD163BEA853162323CB683D3C1F80`
+for baseline and
+`177E8EFF1E90A64AA0F7A95A2321773DDED239775EC931EEF2E7584830E5253C`
+for candidate.
+
+The broad A/B/B/A one-MiB download campaign experienced monotonic shared-host
+drift and was retained only as disturbed diagnostic evidence. A tighter
+A/B/A/B/A/B c16 campaign then ran five exact samples per arm, with zero payload,
+length, EOF, request, or process failures. Across fifteen samples per variant:
+
+| Variant | Median MiB/s | Range MiB/s | CV | Median p95 | Median allocation |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| baseline | 22.83 | 17.24-26.01 | 12.45% | 873.88 ms | 467,003 B/op |
+| candidate | 17.93 | 15.16-26.30 | 19.10% | 988.91 ms | 485,631 B/op |
+
+The candidate was 21.5% slower by aggregate median, 13.2% worse at p95, and
+4.0% higher in allocation. Same-neighborhood A/B throughput deltas were
+-15.6%, -2.1%, and -10.0%, so host drift does not rescue the candidate. The
+runtime, benchmark, and candidate-only test changes were reverted, and
+ProtocolLab was not run. BDN, frozen assemblies, hashes, target logs, raw
+reports, and aggregate evidence are retained under
+`C:\shared\temp\quic-ack-stream-id-reuse-20260718`. Together with the earlier
+tracked-bound ACK-range candidate, this rejects minor ACK-ledger parsing
+variants as the next route to closing the multi-fold gap. Reassess the broader
+serial actor and recovery-flush mechanism before attempting more ACK ledger
+micro-optimizations.
+
+### Rejected 2026-07-18: admit a complete public write in one actor action
+
+The permanent local peer harness reproduced the single-connection scaling gap
+with exact one-MiB downloads and five uninstrumented samples per cell. Incursa
+measured 45.43, 30.51, and 25.84 MiB/s at c1, c4, and c16, while
+`System.Net.Quic` measured 24.66, 202.42, and 197.34 MiB/s. Incursa p95 was
+8.23x and 6.77x higher at c4 and c16, and allocation per operation was 19.05x
+and 17.97x higher. The source-backed result is retained at
+`C:\shared\temp\quic-local-first-20260718\current-peer-1mb-download-c1-c4-c16-r5.json`.
+
+The current Incursa path turns one one-MiB public write into thirty-two
+separately posted and awaited 32 KiB actor requests. A materially different
+candidate removed that API-side chunk continuation and admitted the complete
+buffer as one actor request, relying on the accepted semantic raw-send queue to
+fragment the payload when packets were scheduled. This did not repeat the
+rejected 64 KiB work-item boundary or the prior one-request design that reposted
+each 32 KiB continuation. Focused flow-control, cancellation, stream-write, and
+queued-final-write tests passed 167/167, and the candidate built with zero
+warnings.
+
+The candidate nevertheless failed the first end-to-end correctness gate. The
+clean baseline completed its A1 c1/c4/c16 arm in about 36 seconds. The candidate
+made no bounded progress and produced no result artifact after approximately
+120 seconds, so only the owned local benchmark process was stopped. Reserving
+the complete public buffer before sending any bytes can wait indefinitely when
+the write exceeds currently available stream or connection flow-control credit;
+the existing chunk path is what permits credit to advance incrementally. The
+candidate was reverted before any ProtocolLab run.
+
+Frozen assemblies, hashes, the completed baseline arm, launcher, logs, and a
+machine-readable negative result are retained under
+`C:\shared\temp\quic-full-write-admission-20260718`. Do not retry whole-buffer
+admission without an incremental reservation and atomic cancellation/terminal
+handoff design. That broader continuation design must also avoid the queue-depth
+and retained-buffer regressions already measured by the rejected reposting
+candidate; simply changing the admission size cannot safely close this gap.
+
+### Local-first diagnosis 2026-07-18: single-connection packet actor service ceiling
+
+A fresh uninstrumented loopback campaign compared Incursa with
+`System.Net.Quic` in the same process and campaign. It used one established
+connection, exact one-MiB payload validation, five samples per cell, and upload,
+download, and simultaneous duplex shapes at c1, c4, and c16. Every operation
+completed without a payload or protocol failure. Incursa remained competitive
+at c1, then stopped scaling on the single connection while `System.Net.Quic`
+continued to use the available host capacity:
+
+| Shape | Incursa c1/c4/c16 MiB/s | System.Net.Quic c1/c4/c16 MiB/s | Incursa/System.Net at c16 | Incursa/System.Net allocation at c16 |
+| --- | ---: | ---: | ---: | ---: |
+| upload | 37.16 / 28.21 / 22.87 | 30.86 / 210.98 / 139.22 | 0.16x | 25.18x |
+| download | 45.43 / 30.51 / 25.84 | 24.66 / 202.42 / 197.34 | 0.13x | 17.97x |
+| duplex | 43.24 / 40.29 / 29.53 | 44.53 / 237.67 / 230.97 | 0.13x | 22.09x |
+
+Incursa c16 p95 latency was 5.46x, 6.77x, and 7.45x the corresponding
+`System.Net.Quic` upload, download, and duplex result. The exact uninstrumented
+reports are
+`C:\shared\temp\quic-local-first-20260718\current-peer-1mb-upload-duplex-c1-c4-c16-r5.json`
+and
+`C:\shared\temp\quic-local-first-20260718\current-peer-1mb-download-c1-c4-c16-r5.json`.
+The existing multi-connection HTTP/3 control reached 218-234 MiB/s at 16
+connections, so this is not a process-wide thread-pool, socket-host, or machine
+ceiling. It is specific to many active streams sharing one connection actor.
+
+A diagnostic-only three-shape c16 repeat quantified the queue mechanism. On the
+active sender shard, packet-receive depth reached 649 for upload, 614 for
+download, and 636 for duplex. Packet p95 queue delay reached 32.78, 41.89, and
+36.26 ms, while individual packet service p95 was only 0.15, 0.09, and 0.14 ms.
+Stream-write p95 queue delay reached 29.88, 41.81, and 35.99 ms. The active
+shard processed 45,600-69,483 packet work items in a representative sample;
+thousands of individually cheap serialized transitions consume the actor and
+strand writes behind packet runs. Outstanding pooled storage simultaneously
+peaked at roughly 1,442-1,492 buffers in the 4 KiB-or-smaller bucket and up to
+45 buffers in the 64 KiB-or-smaller bucket. These instrumented timings are
+attribution only, not performance evidence. The report is
+`C:\shared\temp\quic-local-first-20260718\current-incursa-1mb-c16-attribution-r3.json`.
+
+A ten-second sampled-thread upload trace reproduced 22.43 MiB/s with exact
+validation. Runtime inbox consumption was the main active Incursa stack;
+application packet processing and synchronous datagram submission were the
+largest bounded components, but no single managed method was large enough to
+explain the 6-8x c16 peer gap. The trace and Speedscope conversion are under
+`C:\shared\temp\quic-local-first-20260718\cpu-upload-c16`.
+
+No runtime candidate was introduced and ProtocolLab was not run. The local
+inner loop now reproduces the decisive gap in minutes and supplies exact peer,
+queue, buffer, write-completion, and CPU evidence. Do not resume socket-wrapper,
+minor ACK-ledger, PMTU-timing, fixed burst, write-size, channel-publication, or
+send-flush variants already rejected above. The next runtime candidate must be
+a materially different design that can reduce the amount of serial actor work
+per received packet or the number of packet transitions by enough to explain a
+substantial fraction of the peer gap, while preserving prompt application-send
+progress, packet ordering, ACK deadlines, recovery, flow control, cancellation,
+and bounded memory.
+
+### Rejected 2026-07-18: zero-copy Windows UDP segmentation
+
+The retained copied UDP-segmentation candidate had reduced isolated socket time
+but added a pooled concatenation buffer and full payload copy. A materially
+different probe used one synchronous `WSASendTo` scatter/gather call over four
+independent 1,472-byte arrays with `UDP_SEND_MSG_SIZE=1472`. Across seven
+interleaved repetitions, repeated sends took 162.01 ms median, copied contiguous
+segmentation took 91.78 ms, and zero-copy scatter/gather took 94.04 ms. The
+zero-copy primitive was 42.0% faster than repeated sends and only 2.5% slower
+than the copied form. Each mode preserved exact length and order for 140,000
+datagrams, 420,000 datagrams total.
+
+The bounded runtime candidate exposed consecutive hosted send updates through a
+synchronous batch observer, retained all detached packet owners through the
+native call, and combined only groups of four same-path, same-ECN, exact-size
+Windows IPv4 listener datagrams. Custom senders, IPv6, mixed or short runs, and
+other platforms retained individual sends. The permanent IPv4 PMTU ceiling is
+already 1,472 bytes, so enabling the socket option did not split smaller normal
+sends. The solution built with zero warnings, and nine focused socket and owner
+lifetime tests passed before measurement.
+
+Frozen baseline and candidate executables first ran A/B/B/A one-MiB downloads
+at c1, c4, and c16 with ten exact samples per variant and cell. All 60 samples
+passed payload, length, EOF, and protocol validation:
+
+| Shape | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| c1 | 44.57 | 44.17 | -0.9% | +1.6% | -1.1% |
+| c4 | 31.59 | 31.27 | -1.0% | +4.3% | +3.5% |
+| c16 | 24.43 | 23.42 | -4.1% | +5.5% | +4.7% |
+
+Because the broad run had shared-host drift, a tighter c16 A/B/A/B/A/B sequence
+ran fifteen exact samples per variant. Baseline measured 25.13 MiB/s, 701.62 ms
+p95, and 402,714 B/op; candidate measured 24.47 MiB/s, 695.20 ms p95, and
+417,124 B/op. The candidate was 2.6% slower, p95 was effectively flat (-0.9%),
+and allocation rose 3.6%. No promotion gate passed.
+
+The runtime and candidate-only tests were reverted, and ProtocolLab was not
+run. Frozen binaries, hashes, all raw reports, logs, source snapshot, patch,
+standalone probe, and machine-readable negative result are retained under
+`C:\shared\temp\quic-zero-copy-udp-segmentation-20260718` and
+`C:\shared\temp\udp-segmentation-scatter-probe-20260718`. Together with the
+copied listener segmentation and Linux `sendmmsg` negatives, this closes
+listener-side socket batching as the next route to the multi-fold gap. Do not
+retry another send wrapper or segmentation variant unless a future broader
+trace shows socket submission has become dominant after actor work is reduced.
+
+### Rejected 2026-07-18: detach receive segments before application copy
+
+The c16 transport trace attributed `Monitor.Enter_Slowpath` to a meaningful
+share of the single-connection actor's active time. `TryReadStreamData` copied
+application bytes and returned pooled receive owners while holding the
+connection-wide stream-state lock. A bounded ownership candidate detached up
+to four fully consumed segments under the lock, updated stream and flow-control
+state there, copied and returned the owners after releasing the lock, and
+repeated bounded batches within the same read so existing contiguous-read
+semantics remained intact. Partial segments stayed on the locked path because
+their unread tail shared the same pooled owner.
+
+The first four-segment-only design correctly failed five existing receive
+buffer tests because it shortened reads that were expected to drain all
+currently contiguous bytes. That version was not benchmarked. The revised
+batched design passed all 50 focused `TryReadStreamData` tests and all 19
+`QuicStreamReceiveBufferTests`, including concurrent interleaved-stream and
+thread-handoff cases. BenchmarkDotNet Dry validated the two receive/drain
+mechanisms. ShortRun showed no allocation change and only small sequential
+timing differences: repeated four-segment bursts moved from 5.992 to 5.831
+microseconds, and independent interleaved streams moved from 202.038 to
+199.338 microseconds.
+
+Frozen baseline and candidate executables then ran immediate A/B/B/A local
+campaigns. One-MiB transport downloads showed a real c16 benefit while c1 and
+c4 remained effectively flat:
+
+| Shape | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| c1 download | 40.37 | 40.29 | -0.2% | noisy | approximately flat |
+| c4 download | 30.18 | 30.66 | +1.6% | approximately flat | approximately flat |
+| c16 download | 21.30 | 26.29 | +23.4% | -20.7% | -17.4% |
+
+Matched one-MiB upload controls improved 1-3%. Combined duplex results were
+approximately flat at c1 and c16, while c4 was 5.3% lower amid substantial
+baseline drift. This was enough to proceed to the required cross-layer local
+guardrail, but not to accept the candidate.
+
+The HTTP/3 A/B/B/A matrix covered fixed, streaming, upload, and simultaneous
+request/response bodies at c1, c4, and c16 with five exact samples per run.
+Streaming and duplex stayed within 2%, and upload c16 was 3.5% lower. Fixed
+HTTP/3 responses at c16 failed decisively in both candidate runs:
+
+| Metric | Baseline | Candidate | Delta |
+| --- | ---: | ---: | ---: |
+| throughput | 42.12 MiB/s | 37.22 MiB/s | -11.6% |
+| p95 latency | 384.5 ms | 437.0 ms | +13.7% |
+| allocation | 150,598 B/request | 172,978 B/request | +14.9% |
+| per-run CV | 0.8%, 1.3% | 8.9%, 10.1% | unstable |
+
+The broad fixed-response regression outweighed the narrower transport gain.
+The runtime candidate was reverted and ProtocolLab was not run. Frozen
+assemblies, SHA-256 hashes, the exact patch, BDN reports, every raw transport
+and HTTP/3 result, and `negative-result.json` are retained under
+`C:\shared\temp\quic-receive-detach-20260718`. Do not repeat receive-owner
+detachment or another design that advances application-visible read state
+before the copy. A future receive-lock candidate needs broader HTTP/3
+attribution and should shorten critical sections without changing buffer
+ownership or increasing fixed-response scheduling variance.
+
+### Rejected 2026-07-18: borrow non-retained HTTP/3 request DATA segments
+
+The simultaneous request/response workload explicitly opts out of retaining
+streaming request chunks, but `Http3StreamingFrameReader` still copied every
+DATA byte into pooled segments before yielding it. A bounded candidate let
+non-retaining handlers borrow slices of the body reader's owned read buffer.
+Retaining handlers kept the existing copied ownership. Each frame part carried
+ownership metadata so data copied before the handler selected its retention
+mode could still be released correctly.
+
+The first candidate binary exposed an important mode-transition bug before any
+timing result was accepted. If request headers and a DATA prefix arrived in the
+same read, switching to borrowed mode skipped the already-buffered prefix and
+the exact duplex smoke failed with HTTP/3 error `0x10e`. The repair completed
+that partially owned segment before borrowing later input. Eight focused frame
+reader tests and exact c1/c16 duplex smoke then passed.
+
+BenchmarkDotNet Dry validated the retained and borrowed mechanisms. ShortRun
+measured one MiB of streaming DATA parsing at 23.897 microseconds and 504 bytes
+allocated for retained segments versus 1.738 microseconds and 320 bytes for
+borrowed segments. The 13.7x mechanism improvement saved only about 22
+microseconds per MiB, which was too small by itself to explain the end-to-end
+gap.
+
+Frozen baseline `73707498` and candidate binaries then ran a focused A/B/B/A
+one-MiB duplex campaign at one connection and 16 streams. Five three-second
+samples per pass produced ten exact samples per variant with zero failures:
+
+| Metric | Baseline | Candidate | Delta |
+| --- | ---: | ---: | ---: |
+| throughput | 52.36 MiB/s | 52.57 MiB/s | +0.4% |
+| throughput CV | 9.24% | 15.36% | noisier |
+| p95 latency | 677.5 ms | 681.2 ms | +0.5% |
+| allocation | 951,699 B/request | 977,441 B/request | +2.7% |
+
+No local promotion gate passed. The runtime, benchmark, and candidate-only
+tests were reverted, and ProtocolLab was not run. The patch, frozen binaries,
+BDN reports, failed-transition evidence, all A/B reports, hashes, and
+`negative-result.json` are retained under
+`C:\shared\temp\quic-h3-borrowed-request-20260718`. Do not repeat borrowed
+request DATA delivery unless a future broader trace shows the copy or pooled
+segment retention has become a material end-to-end cost. The result reinforces
+that the remaining large-body gap is dominated by actor queueing and packet
+service, not HTTP/3 frame-parser copying.
+
+### Accepted 2026-07-18: external-target HTTP/3 upload and duplex coverage
+
+The local HTTP/3 harness previously supported a separate target process only
+for fixed deterministic downloads. That left upload and duplex allocation
+figures contaminated by running the client and Incursa server in one process.
+External mode now covers the source-backed endpoint's fixed `/bytes/{size}`,
+streaming `/stream/bytes`, sink-upload `/sink`, and simultaneous
+`/duplex/echo` contracts. It preserves established connection topology,
+`index % 251` payload generation, exact HTTP/3 and status validation, exact
+content length where declared, exact body bytes, EOF proof, and transferred-byte
+accounting. Target startup and target allocation remain outside the measured
+client operation.
+
+A source-backed Incursa target built directly against the current QUIC
+worktree and passed a one-MiB four-shape smoke. A five-repetition baseline then
+ran fixed, streaming, upload, and duplex at c1, c4, and c16 in a separate
+process, 60 measured samples total, with zero protocol, content, EOF, payload,
+request, or timeout failures:
+
+| Shape | c1 MiB/s | c4 MiB/s | c16 MiB/s | c16 CV | c16 p95 | c16 client B/request |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| fixed | 44.86 | 43.06 | 38.93 | 5.63% | 424.40 ms | 145,905 |
+| streaming | 45.19 | 42.41 | 39.36 | 0.74% | 419.55 ms | 168,285 |
+| upload | 63.46 | 59.27 | 55.20 | 2.18% | 317.87 ms | 5,692 |
+| duplex | 55.48 | 55.62 | 49.32 | 1.02% | 710.83 ms | 170,369 |
+
+The client-only upload allocation is about 5.7 KiB/request rather than the
+roughly one-payload allocation reported by the in-process run. That proves the
+large upload allocation is target-side buffering rather than load-client
+construction. Duplex remains roughly 170 KiB/request on the client while the
+target streams the request and response concurrently. The next local-first
+step is target-process allocation and sampled CPU attribution for upload and
+duplex, not another speculative actor continuation. The exact source-backed
+target build, smoke, repeated JSON, and log are retained under
+`C:\shared\temp\quic-h3-external-local-20260718`. ProtocolLab orchestration was
+not run and no package, registration, deployment, or publication changed.
+
+### Local-first diagnosis 2026-07-18: exact HTTP/3 connection topology and current peer gap
+
+The external-target harness was used to separate actual connections from
+concurrent streams on one connection. This matters because the retained
+ProtocolLab managed HTTP/3 load tool reports a requested c16 shape but also
+warns that it cannot guarantee the requested connection count. Its Incursa
+one-MiB fixed-response result of about 38 MiB/s matches the local one-connection,
+16-stream result rather than the real 16-connection result.
+
+Five exact local samples per cell compared the source-built Incursa target with
+Kestrel/System.Net.Quic through the same HTTP/3 client and validation path:
+
+| Real connections x streams | Incursa fixed MiB/s | Kestrel fixed MiB/s | Incursa/Kestrel | Incursa p95 | Kestrel p95 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 x 1 | 42.62 | 68.85 | 61.9% | 27.02 ms | 15.98 ms |
+| 4 x 1 | 122.16 | 221.62 | 55.1% | 35.92 ms | 21.85 ms |
+| 16 x 1 | 206.62 | 522.57 | 39.5% | 88.00 ms | 45.56 ms |
+| 1 x 16 | 38.93 | 174.78 | 22.3% | 424.40 ms | 99.79 ms |
+
+Every accepted fixed-response cell validated HTTP/3, status, exact content
+length, exact `index % 251` payload bytes, and EOF. The 16-connection Kestrel
+cell had one disturbed low sample and a 7.87% CV, but its 522.57 MiB/s median
+was supported by four samples above 511 MiB/s. The Incursa 16-connection median
+was 206.62 MiB/s with 1.03% CV. Incursa therefore has both a general per-packet
+gap and a much larger same-connection serialization ceiling.
+
+The strict local harness also rejected two nominal peer lanes before accepting
+metrics. Kestrel's streaming fixture restarts its deterministic pattern for
+every chunk instead of producing one continuous payload, and its upload JSON
+response omits `Content-Length`. These are fixture-comparability blockers, not
+Incursa failures; validation was not weakened to admit them.
+
+A target-only sampled-thread trace of the exact Incursa 1 x 16 fixed workload
+completed 448 one-MiB responses in 12.08 seconds at 37.08 MiB/s with zero
+failures. `QuicConnectionRuntimeShard.ConsumeInboxAsync` was the active actor
+stack, while synchronous `QuicListenerHost.SendDatagram` accounted for 3.66%
+inclusive and 3.13% exclusive of all sampled thread time. The other sampled
+threads were predominantly idle waits; no isolated managed micro-hotspot was
+large enough to explain the 4.5x same-connection peer gap.
+
+The allocation trace for an exact c16 upload confirmed two already-retained
+mechanisms: wildcard packet-information address materialization and small
+ACK-only ownership copies. Concrete binding, two ACK ownership designs, and an
+ACK piggyback policy have already failed broader local gates, so this evidence
+does not reopen them. Likewise, the sampled send cost does not justify repeating
+the rejected send queue, immediate asynchronous send, copied segmentation, or
+exact-1472 zero-copy segmentation designs without a materially different
+mechanism and proof that the actual packet shape can benefit.
+
+Evidence is retained under
+`C:\shared\temp\quic-h3-external-local-20260718`, including the source-built
+targets, exact Incursa and Kestrel JSON, blocked peer attempts, upload allocation
+trace and attribution, and the fixed 1 x 16 CPU trace plus TopN reports.
+ProtocolLab was not run, and no package, deployment, registration, or
+publication changed.
+
+### Rejected 2026-07-18: connection-local sender progress scheduling window
+
+The exact HTTP/3 topology campaign showed that one connection with sixteen
+streams was limited to 38.93 MiB/s while sixteen real connections reached
+206.62 MiB/s. Retained packet-run diagnostics also showed long same-runtime
+receive runs and delayed stream-write service. A reversible scheduler candidate
+therefore staged at most 64 already-queued shard work items and allowed one
+sender-progress turn per connection to move ahead of that connection's later
+packet run. Packet order remained unchanged, general events and timers were
+never crossed, and all work still executed through the existing single shard
+consumer. This did not introduce another send queue, timer bypass, mutating
+thread, generic shard yield, or bounded-drain policy.
+
+Focused ordering, buffer-return, fault-drain, timer-inbox, and concurrent-post
+tests passed 9/9. The local A/B gate used the same external HTTP/3 client,
+target port, one-MiB exact fixed response, one established connection, five
+samples per cell, and one, four, and sixteen concurrent streams. All 30 samples
+passed payload, content-length, EOF, status, and protocol validation:
+
+| Streams | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | 45.71 | 45.25 | -1.0% | +2.8% | +0.5% |
+| 4 | 43.51 | 43.07 | -1.0% | +1.9% | -0.7% |
+| 16 | 39.07 | 38.52 | -1.4% | +1.8% | +2.2% |
+
+The one-stream cells each contained one startup-disturbed low sample, while the
+four- and sixteen-stream cells were stable. No local promotion gate passed,
+and the decisive sixteen-stream cell moved in the wrong direction. The runtime
+and candidate-only tests were reverted, and ProtocolLab was not run. Frozen
+target binaries, SHA-256 hashes, raw baseline/candidate JSON, the candidate
+patch, focused TRX, and `negative-result.json` are retained under
+`C:\shared\temp\quic-progress-priority-20260718`. Do not repeat a bounded
+look-ahead or connection-local progress-priority variant. Together with the
+retained generic yield, bounded drain, and deferred-flush results, this closes
+minor shard scheduling-order changes as the next route to the multi-fold gap.
+Reassess the amount and lifetime of actor-owned work in a full HTTP/3 response
+before changing queue order again.
+
+### Accepted 2026-07-18: one-command local HTTP/3 target profiling loop
+
+`scripts/perf/Invoke-LocalHttp3TargetProfile.ps1` now makes target-only local
+profiling a repeatable inner development loop. It launches an explicit frozen
+or source-built Incursa HTTP/3 endpoint, proves that the launched PID owns the
+selected UDP port, runs the exact external HTTP/3 loopback harness, optionally
+captures target-only CPU or GC EventPipe evidence, analyzes GC allocation
+traces, and shuts down the exact child processes. Each run records the target
+SHA-256, exact commands, configuration, logs, strict benchmark result, trace,
+analysis, and manifest. Fixed, streaming, upload, and duplex shapes support
+1 KiB, 64 KiB, and 1 MiB payloads with independent connection and stream
+counts. An uninstrumented mode is available for timing campaigns; traced
+timings remain attribution-only.
+
+The acceptance smoke profiled the frozen `c5070522` target with one established
+connection, sixteen concurrent streams, and exact one-MiB fixed responses. It
+completed 192 responses at 36.78 MiB/s with zero validation failures while a
+target-only GC trace recorded 166 allocation ticks, no lost events, and call
+stacks. The largest estimated groups were listener receive buffers (4.40 MB),
+listener address parsing (3.51 MB of `UInt16[]` plus 1.17 MB of `IPAddress`),
+general buffer-pool arrays (1.60 MB), the one-time fixed-response cache
+(1.05 MB), packet-protection output (0.96 MB), and ACK range arrays (0.75 MB).
+These mechanisms overlap retained negative experiments or one-time setup and
+do not support another runtime candidate by themselves. No ProtocolLab run was
+launched.
+
+The wrapper's `cpu-sampling` option now maps to dotnet-trace's current
+`dotnet-sampled-thread-time` collection profile. The compatibility fix was
+verified with a source-backed exact one-MiB `1 x 16` run retained under
+`C:\shared\temp\quic-same-connection-post-tranche-profile-20260718\fixed-1mb-1x16-cpu-post-tranche-v2`.
+The run completed without validation failures and produced a readable
+target-only trace; its instrumented timing remains attribution-only.
+
+Acceptance evidence is retained under
+`C:\shared\temp\quic-local-http3-profile-wrapper-20260718`, including parser
+validation, exact benchmark JSON, target-only trace, allocation report, command
+logs, target hash, and run manifest. Use this wrapper to establish current
+local attribution before proposing the next HTTP/3 runtime change.
+
+### Rejected 2026-07-18: single-request oversized-write admission
+
+The public transport loopback reproduced a large write-shape gap on one
+established connection. At one MiB and c16, Incursa measured 18-27 MiB/s in
+current retained runs versus about 207 MiB/s for System.Net.Quic. The public
+Incursa write path split every oversized call into 32 KiB requests through an
+async state machine, creating one pooled completion and one actor event per
+fragment. Two bounded designs tested whether one public request could retain
+the caller's memory and let the actor admit its fragments.
+
+The first design admitted one fragment per ACK or flow-control recovery turn.
+It produced 41.88-42.11 MiB/s at c16 versus adjacent baselines of 25.94-26.74
+MiB/s and reduced median allocation from about 390 KiB/op to 295-306 KiB/op.
+It was rejected because it changed completion semantics: a 64 KiB write with
+ample send credit waited indefinitely in the synthetic recovery test until an
+ACK arrived. The full suite reached 8,285 passes and four expected skips before
+the same case stopped making progress; the isolated test reproduced the hang.
+
+The second design preserved completion semantics by admitting every currently
+available fragment inside the original actor operation. Focused cancellation,
+disposal, final-write, write-gate, and PTO retransmission tests passed 5/5. Its
+reverse-order c16 download medians remained materially better at 35.35 and
+42.90 MiB/s versus 24.70 and 26.07 MiB/s for the frozen baseline. It also
+improved the first matched c16 upload and duplex medians by 22.4% and 29.9%,
+respectively. One KiB, 64 KiB, and one-MiB c1 download controls were within
+1.1% of baseline.
+
+The longer reverse-order duplex control nevertheless failed the no-regression
+gate. At c4, throughput improved 5.7% and p50 fell from 202.56 ms to 190.76 ms,
+but p95 rose consistently from 212.79 ms to 233.01 ms, a 9.5% regression. This
+matches the fairness risk of retaining the stream-action gate while draining a
+whole oversized request. The implementation and candidate-only tests were
+reverted. Do not repeat the retained one-request continuation repost, generic
+stream-action lock split, ACK-gated completion, or whole-request locked-drain
+variants without a materially different ownership and fairness design.
+
+The initial ACK-gated candidate was also neutral through the exact one-MiB,
+one-connection, sixteen-stream fixed HTTP/3 path: 36.63-37.67 MiB/s candidate
+versus 36.49-38.47 MiB/s baseline. The current HTTP/3 responder writes 32 KiB
+chunks and therefore does not enter this oversized public-call mechanism. No
+ProtocolLab run was launched because the stable local tail-latency gate failed.
+Frozen baseline and both candidate binaries, SHA-256 hashes, raw A/B/B/A JSON,
+HTTP/3 results, the rejected patch, and logs are retained under
+`C:\shared\temp\quic-local-first-oversized-write-20260718`.
+
+### Rejected 2026-07-18: reusable receive-message event args
+
+A target-only allocation trace attributed repeated listener receive-path
+allocation to `Socket.ReceiveMessageFromAsync`, including address and packet
+information materialization. A direct BenchmarkDotNet mechanism test confirmed
+that reusing one `SocketAsyncEventArgs` reduced the receive operation from 208
+to 112 bytes per operation (-46.2%) while remaining timing-neutral (7.748 us
+versus 7.586 us). A runtime candidate therefore reused one event-args operation
+per listener or connected receive loop while preserving packet information,
+remote endpoint parsing, cancellation, disposal, and one outstanding receive.
+
+The first runtime version cleared and rebound the receive buffer for every
+datagram and regressed the 1 KiB fixed-response controls by 7.6-8.7%. Removing
+that per-packet rebinding eliminated those regressions. The corrected A/B/B/A
+campaign used ten exact samples per variant and had no protocol, content,
+length, EOF, request, or timeout failures:
+
+| Shape | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| fixed 1 MiB, c1 | 66.06 | 67.58 | +2.3% | -4.6% | +1.8% |
+| fixed 1 MiB, c4 | 63.01 | 63.56 | +0.9% | -2.7% | +1.2% |
+| fixed 1 MiB, c16 | 57.75 | 61.63 | +6.7% | -7.2% | +3.5% |
+| duplex 1 MiB, c16 | 73.10 | 77.02 | +5.4% | -11.2% | -48.3% |
+| upload 1 MiB, c16 | 78.24 | 91.24 | +16.6% | -14.0% | -29.3% |
+
+The upload cell was not promotable because baseline and candidate CV were
+19.53% and 34.02%. The decisive fixed one-connection, sixteen-stream lane
+missed the 10% throughput gate and increased measured allocation. The runtime
+wrapper and candidate-only tests were reverted. The reusable direct socket
+microbenchmark remains as a bounded mechanism probe, but it is not evidence of
+an end-to-end actor improvement. ProtocolLab was not run.
+
+Frozen binaries and hashes, BDN Dry and Short reports, raw campaigns, summary
+JSON, and the negative-result record are retained under
+`C:\shared\temp\quic-local-first-receive-eventargs-20260718`. Do not repeat a
+reusable receive-message event-args wrapper unless a materially different
+design connects the receive allocation to actor service time or passes the
+same-connection fixed-response gate.
+
+### Accepted 2026-07-18: HTTP/3 packet receive-phase attribution
+
+The local HTTP/3 diagnostics collector now records the existing
+`incursa.quic.packet.application.receive.phase_time.ms` measurements alongside
+runtime queue, buffer-pool, and datagram metrics. This makes the exact external
+HTTP/3 workload report packet open, frame, ACK, recovery, send preparation,
+timer, and post-recovery phase costs without adding runtime instrumentation.
+
+An attribution-only one-MiB fixed-response run over one established connection
+and sixteen streams completed 160 exact responses with zero failures. It
+processed 50,798 packet-received actor items and 10,400 stream-write items. The
+packet transition and effect phases consumed 2,073.55 ms and 1,871.90 ms,
+respectively; stream-write transition and effect phases consumed 387.71 ms and
+684.78 ms. Packet frame work consumed 636.48 ms, including 583.42 ms for ACK
+frames, 295.31 ms for ACK ranges, and 174.77 ms for recovery. Post-recovery
+consumed 635.80 ms, of which 585.83 ms was send flushing. The actor had only two
+asynchronous wakes and remained continuously busy, so the retained evidence
+points to per-packet actor service and synchronous send effects rather than
+wakeup starvation.
+
+This trace is diagnostic-only and its 29.64 MiB/s timing is not a promotion
+metric. Evidence is retained at
+`C:\shared\temp\quic-local-first-h3-phase-20260718\current-fixed-1x16-packet-phases.json`.
+The next step is to compare actor turns and phase cost per completed response at
+one, four, and sixteen streams before changing runtime behavior.
+
+### Accepted 2026-07-18: established congestion-bounded send tranche
+
+The cross-shape actor comparison confirmed a same-connection queueing limit.
+One-MiB fixed responses used about 269 packet-receive actor items and 65
+stream-write items per response at one, four, and sixteen streams. Median queue
+delay rose from roughly 0.3-0.8 ms at one stream to 4.6-5.5 ms at sixteen while
+the actor remained continuously busy. Packet ACK, recovery, and post-recovery
+send flushing accounted for enough actor service to explain a meaningful part
+of the gap. Evidence is retained under
+`C:\shared\temp\quic-same-connection-actor-20260718`.
+
+Two bounded variants were rejected before accepting the runtime change. A
+draft ACK_FREQUENCY implementation correctly retained the four-datagram
+fallback with System.Net.Quic, which did not advertise draft support; fixed
+one-MiB `1 x 16` therefore moved only 1.0%. The draft code was removed and the
+negative result is retained under
+`C:\shared\temp\quic-ack-frequency-negotiated-20260718`. An established
+sixteen-datagram tranche improved fixed `1 x 16` by 10.6%, but transport upload
+fell 5.8% and p95 rose from 528.31 ms to 718.55 ms. That variant was rejected
+and is recorded in `negative-16-datagram.json` in the accepted evidence root.
+
+The accepted policy keeps the pre-handshake cap at four datagrams and allows an
+established actor turn to consume up to twelve datagrams from the existing
+congestion and anti-amplification budget. It does not change send-queue order,
+stream selection, packet order, retransmission priority, congestion control,
+flow control, cancellation, disposal, or public write completion. Fifteen
+frozen-baseline and ten candidate samples produced the following exact local
+HTTP/3 fixed-response medians:
+
+| Streams on one connection | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | 65.85 | 75.29 | +14.3% | -18.5% | -22.1% |
+| 4 | 64.58 | 76.44 | +18.4% | -17.6% | -22.1% |
+| 16 | 60.49 | 71.47 | +18.2% | -15.7% | -24.3% |
+
+All fixed-response samples passed HTTP/3, status, exact content length, exact
+payload, and EOF validation. Two successful public-transport runs per variant
+showed download within -1.5%, upload +16.4%, and duplex +13.2%; upload and
+duplex p95 improved 10.6% and 12.7%. Those transport cells remain noisy shared-
+host guardrails rather than precise speed claims. Two of three frozen-baseline
+transport attempts also failed during duplex with `The requested path cannot
+send an ordinary packet`, while both candidate runs completed; the failed logs
+were retained instead of excluded silently.
+
+Focused scheduler, write, cancellation, final-write, and recovery tests passed
+55/55. The full regression rerun passed 9,645 tests with four expected skips
+and no failures. Exact binaries, hashes, raw A/B evidence, summaries, failed
+baseline logs, TRX files, and `acceptance.json` are retained under
+`C:\shared\temp\quic-established-send-tranche-20260718`. The initial local
+acceptance did not run ProtocolLab, and no package, deployment, registration,
+or publication state changed.
+
+A subsequent source-backed ProtocolLab A/B/B/A confirmation used the nearest
+exact named same-connection shape,
+`quic.transport.multiplex.16x1mb`: one connection, sixteen concurrent streams,
+and one MiB sent in each direction per stream. Ten baseline cells at commit
+`a62daa72` produced a 34.800 MiB/s median with 1.94% CV; ten candidate cells at
+commit `0f55e163` produced 35.635 MiB/s with 2.31% CV. The resulting +2.4%
+throughput and -2.2% p95 changes are neutral confirmation evidence, not a
+second 10% acceptance signal. All twenty cells passed exact byte, stream,
+failure, timeout, and benchmark validation.
+
+The ProtocolLab adapter records its own repository as target provenance, so
+the campaign also retained independent child-server verification after every
+leg. The built and executed `Incursa.Quic.dll` hashes matched the detached
+baseline and candidate source roots exactly. Evidence, including all raw
+cells, A/B/B/A summary, and source-verification records, is retained under
+`C:\shared\temp\quic-send-tranche-protocollab-20260718\matched-abba`. This
+lane is bidirectional multiplexing rather than the pure fixed-response or
+server-to-client download shape used by the local acceptance campaign. It
+therefore neither reproduces nor contradicts the local HTTP/3 +18.2% result.
+No package, deployment, registration, publication, controller, or lab-machine
+state changed.
+
+### Rejected 2026-07-18: corrected dual-mode UDP segmentation
+
+Post-tranche CPU sampling attributed 2.72% of target process samples
+exclusively to synchronous listener datagram submission, about 62% of the
+sampled active actor stack. The retained four-datagram UDP segmentation
+candidate had required an IPv4 socket, so it never enabled on the profiled
+dual-mode listener. A materially different candidate enabled Windows UDP
+segmentation on IPv4 and dual-mode IPv6 sockets and combined variable
+same-path, same-ECN runs of two through twelve exact 1472-byte datagrams while
+preserving owner lifetime and falling back for mixed sizes, tails, custom
+senders, unsupported platforms, and send failures.
+
+A dual-mode IPv4-mapped loopback probe validated 336,000 exact datagrams and
+their order. Twelve-segment submission fell from a 221.33 ms median to 110.74
+ms (-50.0%), although both paths were noisy. Focused socket and detached-owner
+tests passed 48/48. The end-to-end A/B/B/A campaign nevertheless showed that
+the primitive was not large enough to explain the same-connection gap:
+
+| Streams on one connection | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | 53.43 | 53.13 | -0.6% | -0.7% | -5.0% |
+| 4 | 54.07 | 53.81 | -0.5% | -0.5% | -1.0% |
+| 16 | 49.47 | 50.30 | +1.7% | -0.5% | +0.2% |
+
+All twenty fixed-response samples per stream count passed exact HTTP/3 status,
+content-length, payload, and EOF validation. The candidate missed the 10%
+local gate, so it was reverted without transport or ProtocolLab runs. Raw
+results, frozen assemblies and hashes, patch, helper source, focused TRX,
+probe source/output, and `negative-result.json` are retained under
+`C:\shared\temp\quic-dualmode-udp-segmentation-20260718` and
+`C:\shared\temp\quic-dualmode-1472-segmentation-probe-20260718`. Do not repeat
+socket-wrapper or UDP segmentation variants unless broader trace evidence
+attributes a substantially larger end-to-end cost than this campaign did.
+
+### Rejected 2026-07-18: consecutive stream-write flush deferral
+
+The same-connection trace showed that every oversized stream-write work item
+immediately drained the application-send queue, so the existing scheduler saw
+only one stream at a time. A bounded shard candidate used one-item lookahead
+over already-consecutive `Write` items for the same runtime. It preserved FIFO
+work-item order, stopped at FIN, packet, timer, event, credit, runtime, and
+sixteen-item boundaries, and deferred only the existing oversized-write queue
+flush until the last adjacent write.
+
+The activation trace rejected the mechanism before a matched throughput
+campaign. In an exact fixed one-MiB, one-connection, sixteen-stream diagnostic
+run, burst-limited queue depth rose to a p50 of four, p95 of twelve, and maximum
+of twenty-one, but both combined and single-write send batches still reported
+exactly one stream at p50, p95, and maximum. The retained oversized raw-stream
+request remained at the queue head while its fragments consumed the full
+twelve-datagram actor tranche. Diagnostic throughput was only 34.99 MiB/s,
+p95 latency was 701.38 ms, and stream-write completion p50/p95 rose to
+6.57/11.72 ms with no validation failures.
+
+The candidate therefore increased waiting without changing stream selection.
+It was reverted without ProtocolLab or a full A/B campaign. The activation
+JSON, rejected patch, hashes, and negative-result record are retained under
+`C:\shared\temp\quic-consecutive-stream-write-batch-20260718`. Do not repeat
+shard-level write accumulation unless the send queue can actually rotate among
+eligible streams. The next bounded mechanism is fair rotation of a partially
+drained oversized raw-stream request inside the existing priority scheduler,
+with priority, per-stream ordering, retransmission precedence, congestion,
+flow control, cancellation, and completion semantics held unchanged.
+
+### Rejected 2026-07-18: same-priority raw-stream rotation
+
+A materially different follow-up combined the bounded adjacent-write
+accumulation with send-queue rotation. After a successful single-stream send,
+the queue selected the earliest request from another stream at the same
+priority before returning to the previous stream. Higher-priority writes still
+won, per-stream sequence stayed unchanged, retransmission precedence was not
+modified, and FIN and every non-write actor item remained hard boundaries.
+
+Queue, priority, FIN, cancellation, queued-final delivery, and concurrent
+public-stream tests passed 60/60. A matched uninstrumented A/B/B/A campaign
+then ran ten exact samples per variant on fixed one-MiB responses over one
+connection and sixteen streams. Baseline median throughput was 51.53 MiB/s
+(5.45% CV) versus 50.60 MiB/s (5.68% CV) for the candidate, a 1.8% regression.
+Median p95 rose from 323.13 to 327.39 ms (+1.3%), and allocation rose from
+104,650 to 140,166 bytes per response (+33.9%). All samples passed exact HTTP/3
+status, content-length, payload, EOF, request, and timeout validation.
+
+The candidate improved queue fairness but did not reduce packets, actor turns,
+or per-packet work, and its additional selection and retention cost was
+counterproductive. It was reverted. The primary lane failed before c1/c4,
+transport controls, or ProtocolLab were justified. Frozen binaries, hashes,
+raw A/B/B/A JSON and logs, the activation trace, focused TRX, rejected patch,
+runner, and negative-result record are retained under
+`C:\shared\temp\quic-consecutive-stream-write-batch-20260718`. Do not repeat
+adjacent-write accumulation or same-priority queue rotation without a design
+that reduces the number of actor transitions or datagrams rather than merely
+redistributing them.
+
+### Accepted 2026-07-19: same-connection hosted-send effect attribution
+
+The retained topology comparison confirmed that the current fixed-response
+path is limited by serialized per-connection actor service rather than wakeup
+starvation. In the diagnostic one-connection, sixteen-stream sample, 216 exact
+one-MiB responses completed at 43.14 MiB/s. Packet-receive and stream-write
+service consumed 8.29 and 13.82 ms per response respectively, or about
+22.11 ms of actor service per response. That service budget predicts roughly
+45 responses/s before other work, close to the measured result. A companion
+sixteen-connection, one-stream diagnostic completed 471 responses at
+93.09 MiB/s by distributing connections across actors. Its absolute per-item
+times were inflated by shared-host contention, so only the topology and work
+distribution are used as attribution evidence.
+
+The shard phase histogram now breaks the hosted effect loop into synchronous
+send-datagram callback time and other-effect time. This is disabled unless a
+metrics listener enables the existing runtime phase histogram and does not
+change runtime ordering, send ownership, recovery, congestion control, flow
+control, cancellation, disposal, or public behavior.
+
+An attribution-only exact one-MiB, one-connection, sixteen-stream run completed
+176 responses with no validation failures. Its instrumented 34.20 MiB/s and
+735.32 ms p95 are not promotion metrics. The actor spent approximately
+12.56 ms per response in transitions and 14.80 ms per response in effects.
+Hosted datagram callbacks accounted for 13.89 ms per response, 93.8 percent of
+effect time, across about 884 callbacks per response. Packet ACK processing
+accounted for 2.92 ms per response, including 1.51 ms walking ACK ranges and
+0.85 ms in recovery. Stream-write transitions accounted for 4.73 ms per
+response. The combined measured actor service predicts about 36.6 responses/s,
+close to the instrumented 34.2 responses/s.
+
+This evidence is large enough to justify an architectural egress investigation
+but not another socket wrapper, UDP segmentation, asynchronous submission,
+minor ACK-ledger, queue-order, or write-rotation variant. Those mechanisms have
+retained negative evidence. The next candidate must keep actual socket emission
+coupled to sent-packet and loss-recovery accounting, bound pending datagram
+ownership, preserve exact send order, and provide deterministic dropped-send,
+PTO, cancellation, disposal, and FIN recovery proof before end-to-end timing.
+Build that proof surface before changing the hosted runtime. Do not reuse the
+rejected per-shard sender queue, which accounted packets before delayed socket
+emission and failed `DroppedServerFinIsRecoveredAndShardContinuesProcessing`.
+The required reservation, completion, ACK-race, ownership, and staged promotion
+rules are defined in `docs/performance-same-connection-egress-design.md`.
+
+Evidence is retained under
+`C:\shared\temp\quic-actor-topology-attribution-20260719` and
+`C:\shared\temp\quic-actor-effect-attribution-20260719`. The detailed trace
+and derived summary SHA-256 values are
+`1FFEFB6F862DC61762690C9D2FC479818477DB876BAB6DCFB33B15D9231C8C66` and
+`DE4CCAD009F929FF294E0F9698BD24F5487D3FFADF3D4087ED5BA64DA388D105`.
+Focused metrics tests passed 38/38. ProtocolLab was not run, and no package,
+deployment, registration, or publication changed.
+
+### Accepted 2026-07-19: completion-coupled egress accounting foundation
+
+The first proof slice adds a dormant, allocation-free prepared-send reservation
+to the authoritative sent-packet runtime. A reservation consumes congestion
+capacity without increasing `bytes_in_flight`, entering the ACK/loss ledger,
+updating ECN state, or starting recovery. A successful commit converts the
+reserved bytes to in-flight bytes exactly once using the supplied socket
+acceptance timestamp. Release returns capacity and packet owners exactly once.
+Path recovery reset invalidates the pending token and returns its ownership.
+
+The token is an allocation-free sequence value backed by one connection-owned
+pending slot. A second reservation is refused until the first is committed or
+released. This bound is deliberate: the initial reference-token prototype was
+removed before commit because allocating one object per datagram would add
+roughly 884 allocations per one-MiB response on the attributed path.
+
+This is a correctness prerequisite, not an enabled runtime candidate and not a
+performance result. Hosted transitions can prepare several datagrams before
+their effects execute, while ACK piggyback state, anti-amplification budget,
+recovery timers, and owners are currently committed during packet construction.
+The live synchronous slice must therefore carry prepared packet metadata beside
+each send effect and reserve only immediately before its socket callback. It
+must not infer metadata from the latest sent packet or reintroduce pre-emission
+recovery accounting. Short or transient failed retransmittable sends must
+explicitly return plaintext or rebuild metadata to the actor recovery path.
+
+Focused reservation, packet ownership, FIN recovery, and standalone FIN tests
+passed 35/35. The full Release suite completed 9,648 passes and four intentional
+skips, with one occurrence of the retained load-sensitive
+`DroppedServerFinIsRecoveredAndShardContinuesProcessing` assertion: the FIN was
+dropped, but the test did not observe its retransmission before completion. The
+same test passed in the focused gate and then passed ten isolated reruns out of
+ten. The full and focused TRX files are under
+`tests/Incursa.Quic.Tests/TestResults/same-connection-egress-*`. ProtocolLab was
+not run, and no package, deployment, registration, or publication changed.
+
+### Rejected 2026-07-19: synchronous completion-coupled hosted send accounting
+
+The live synchronous proof carried prepared packet accounting beside every
+hosted application-send update, reserved all packets built in one actor turn,
+committed each packet after the socket callback using a post-callback timestamp,
+and refreshed recovery timers after the effect batch. It also added a strict
+hosted-actor ownership barrier so runtime disposal could not release a prepared
+packet or pooled datagram while the shard was still inside the send callback.
+Direct protocol and control effects retained their existing immediate accounting
+path. Focused reservation, ownership, listener-send, disposal-race, and large
+response coverage passed 38/38, and the repeated exact large-response test
+passed ten isolated reruns out of ten.
+
+Matched local A/B/B/A evidence nevertheless rejected the synchronous design.
+Each leg ran five exact HTTP/3 fixed one-MiB samples over one established
+connection at one, four, and sixteen concurrent streams. All samples passed
+HTTP/3 status, content-length, payload, EOF, failure, and timeout validation.
+
+| Streams on one connection | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | 51.00 | 49.81 | -2.3% | +6.7% | +7.7% |
+| 4 | 53.32 | 49.30 | -7.5% | +8.9% | +6.2% |
+| 16 | 50.29 | 46.25 | -8.0% | +9.6% | +9.1% |
+
+The candidate therefore added material per-datagram bookkeeping to the already
+saturated connection actor without removing synchronous socket submission. The
+full Release suite also recorded one load-only timeout in
+`PostDataRequest_WithIncompleteContentLength_ClosesConnectionWithMessageError`:
+9,650 tests passed, four were intentionally skipped, and one failed while
+waiting for the peer close. Both the frozen baseline and candidate then passed
+that exact test ten isolated reruns out of ten, so the timeout is retained as a
+load-sensitive signal rather than attributed solely to this candidate.
+
+The live slice was reverted. Do not repeat completion-coupled accounting while
+socket emission remains synchronous unless a materially different design avoids
+the added hot-path reservation, commit, owner-transfer, and timer-refresh cost.
+The next candidate must remove actor-owned socket work or substantially reduce
+actor turns in the same change; a correctness prerequisite that independently
+regresses the target lane is not acceptable. Raw results, logs, binary hashes,
+TRX files, the rejected patch, and `negative-result.json` are retained under
+`C:\shared\temp\quic-completion-coupled-send-20260719`. ProtocolLab was not run,
+and no package, deployment, registration, or publication state changed.
+
+### Rejected 2026-07-19: connection-local completion-coupled send emitter
+
+A materially different follow-up combined the prepared-send accounting proof
+with one bounded emitter per connection rather than the previously rejected
+per-shard sender queue. Established retransmittable one-RTT application packets
+transferred protected-buffer ownership to a 64-datagram connection-local queue.
+One ThreadPool worker preserved queue order, performed the actual socket calls,
+published emission timestamps before posting a batched actor wake, and returned
+protected buffers only after the send completed. The actor committed emitted
+packets before ordinary transitions, and authenticated ACK processing could
+commit an emitted reservation inline when its completion wake had not yet run.
+Disposal waited for the emitter before releasing pending packet state.
+
+The first activation attempt exposed an invalid full-queue fallback: sending a
+newer datagram synchronously while older datagrams remained queued could reorder
+emission. That run failed after eight successful responses and was stopped. The
+fallback was replaced with bounded producer backpressure, after which focused
+reservation, ACK-race, ownership, listener-send, disposal, FIN-recovery, and
+large-response tests passed 40/40.
+
+The corrected mechanism still failed the local performance gate. Five exact
+HTTP/3 fixed one-MiB `1 x 16` samples passed status, content-length, payload,
+EOF, failure, and timeout validation, but produced a 36.83 MiB/s median, 61.43%
+CV, 895.86 ms p95, and 163,953 allocated bytes per response. Removing an
+unnecessary pending-reservation lock from the normal ACK-ledger hit path did not
+recover the design: the next five validated samples fell to an 8.32 MiB/s
+median, 97.86% CV, 6,147.72 ms p95, and 159,634 allocated bytes per response.
+The matched clean-source reference was 50.29 MiB/s, 330.60 ms p95, and 98,225
+allocated bytes per response.
+
+The connection-local worker therefore moved socket work off the actor but
+replaced it with completion latency, reservation synchronization, extra wakeups,
+and severe tail stalls. The candidate was reverted before transport controls,
+the full suite, or ProtocolLab. Do not repeat asynchronous sender queues,
+completion wake variants, direct `SendToAsync`, or minor queue-bound changes
+without a materially different OS submission and recovery model. Two designs
+for this attribution have now failed the local gate, so the next investigation
+must reassess actor transition cost rather than continue egress-queue variants.
+Raw JSON, logs, focused TRX files, frozen hashes, the rejected patch and emitter
+source, and `negative-result.json` are retained under
+`C:\shared\temp\quic-connection-local-emitter-20260719`. No package,
+deployment, registration, publication, or ProtocolLab state changed.
+
+### Accepted 2026-07-19: bounded same-connection ACK finalization batching
+
+Detailed actor attribution found that an exact one-MiB fixed response generated
+about 114 standalone application ACK datagrams per completed response. Packet
+runs averaged about four items and almost always ended immediately before a
+same-connection stream write, so the actor emitted an ACK-only datagram just
+before it could have carried the same ACK on application data.
+
+The accepted runtime uses one queued work item as lookahead. It defers only
+application ACK emission and ACK-delay timer finalization across at most eight
+already-queued packets for the same runtime and at most the immediately
+following stream write. Packet parsing, receipt recording, ACK-ledger and loss
+recovery work, pending-write retries, application-send progress, flow control,
+congestion control, queue order, cancellation, and disposal still execute for
+every packet. The final packet at a drain, runtime, timer, event, or work-kind
+boundary finalizes normally. A following stream write gets the existing
+piggyback opportunity and then finalizes the ACK state and timer in the same
+actor transition. Public and non-hosted transitions preserve the old immediate
+behavior.
+
+Matched local A/B/A/B evidence used the exact final candidate and detached
+`1db6a657` baseline binaries, five samples per leg, exact payload and EOF
+validation, and no runtime diagnostics. The combined ten samples per
+implementation produced:
+
+| Exact one-MiB lane | Baseline MiB/s | Candidate MiB/s | Throughput | p95 | Allocation |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| HTTP/3 fixed `1 x 1` | 54.08 | 62.34 | +15.3% | -16.3% | -7.2% |
+| HTTP/3 fixed `1 x 4` | 54.52 | 63.71 | +16.8% | -13.6% | -5.8% |
+| HTTP/3 fixed `1 x 16` | 50.88 | 59.39 | +16.7% | -14.2% | -8.2% |
+| Public QUIC download `1 x 16` | 22.89 | 35.82 | +56.5% | -35.7% | -24.8% |
+| Public QUIC duplex `1 x 16` | 29.87 | 51.43 | +72.2% | -41.6% | -12.6% |
+
+All timed samples passed. Transport samples retained high shared-host variance,
+but the candidate improved every repeated median by margins much larger than
+that variance and the independent HTTP/3 campaign was stable at `1 x 4` and
+`1 x 16`. A final diagnostic-only sample completed 208 exact responses at
+39.73 MiB/s and recorded 62 standalone ACKs total, 13,088 ACKs piggybacked on
+queued application data, and 210 other piggybacked ACKs. The retained baseline
+attribution had recorded about 114 standalone ACKs per response.
+
+Focused ACK, shard, large-response, and one-MiB HTTP/3 coverage passed 65 tests.
+The mixed focused run reproduced the retained
+`DroppedServerFinIsRecoveredAndShardContinuesProcessing` timing assertion in
+both baseline and candidate; the candidate passed ten isolated reruns. The full
+Release suite completed 9,650 passes and four intentional skips with one
+occurrence of the retained load-sensitive incomplete-content close timeout.
+Both baseline and candidate passed that exact case ten isolated reruns out of
+ten. No new correctness failure was attributable to the candidate.
+
+Evidence, raw logs, final A/B summaries, diagnostic metrics, TRX files, and
+binary hashes are retained under
+`C:\shared\temp\quic-ack-finalization-batch-20260719`. ProtocolLab was not run
+because this slice used the approved local-first inner loop. No package,
+deployment, registration, or publication state changed. The next
+same-connection investigation should re-profile the accepted runtime before
+selecting another mechanism; do not add broader ACK deferral or repeat rejected
+egress and queue-order variants.
+
+The follow-up source-backed ProtocolLab confirmation used exact
+`quic.transport.multiplex.16x1mb` validation on one connection with sixteen
+concurrent bidirectional one-MiB streams. An A/B/A/B campaign ran five
+repetitions per leg against detached `1db6a657` baseline and committed
+`e85dd63d` candidate sources. All 20 cells passed exact byte, stream-count,
+failure, and timeout validation. Across the ten samples per implementation,
+median throughput increased from 24.93 to 31.52 MiB/s (+26.4%), median p95
+latency fell from 708.65 to 571.67 ms (-19.3%), and throughput CV was 2.85%
+baseline versus 2.71% candidate. This confirms the local signal on an
+independent exact same-connection transport workload.
+
+ProtocolLab's ordinary fixed-response HTTP/3 load tool did not confirm the
+requested topology: its retained baseline leg achieved concurrency one and
+explicitly warns that it cannot guarantee `streamsPerConnection`. The named
+download-only raw QUIC scenario likewise correctly rejected a sixteen-stream
+override because its scenario contract defines one stream. Neither result is
+used as `1 x 16` evidence. The exact local HTTP/3 and download-only acceptance
+campaign remains authoritative for those shapes, while the ProtocolLab
+bidirectional multiplex campaign is corroborating shared-host diagnostic
+evidence. Artifacts and the derived summary are retained under
+`C:\shared\temp\pl-ack-finalization-confirmation-20260719`; the summary SHA-256
+is `C2965764471DEFD5CFDEEAA9616E450B9E412D11F274E92C8B6B4B157198B615`.
+Nothing was deployed, registered, or published.
+
+Post-acceptance actor attribution confirms that the accepted mechanism reduced
+the measured serialized service estimate from 27.36 to 23.36 ms per response
+(-14.6%). Packet-receive transition time fell from 7.82 to 5.99 ms per response
+and standalone ACK sends fell from approximately 114 to 0.30 per response. The
+remaining dominant serialized work is now stream-write packet construction and
+synchronous datagram effects: stream-write transition time is 5.19 ms per
+response and its send-datagram effects consume 11.33 ms per response. Mean
+packet and stream-write queue delays are 6.33 and 6.06 ms respectively, while
+retention remains bounded at 231 sent packets and 267 small pooled buffers
+(552,960 bytes at peak). This leaves no second candidate with a measured
+ten-percent mechanism among the retained chunk-size, admission, sender-queue,
+direct-send, segmentation, in-place protection, and queue-order negatives.
+Further same-connection work should require a materially different mechanism,
+such as true OS-level batched datagram submission or negotiated peer support
+for ACK frequency, before changing runtime behavior again. The derived
+attribution summary is retained at
+`C:\shared\temp\pl-ack-finalization-confirmation-20260719\post-acceptance-attribution-summary.json`
+with SHA-256
+`2984064CD79960D632E044106AA915B0448A64A56E6C7D33867EBB68C5C50AB5`.

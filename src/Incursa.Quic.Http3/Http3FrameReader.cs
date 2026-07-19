@@ -8,8 +8,12 @@ namespace Incursa.Quic.Http3;
 /// </summary>
 public sealed class Http3FrameReader
 {
+    private const int CapacityGrowthFactor = 2;
+    private const int MaxRetainedPendingCapacity = 64 * 1024;
+
     private readonly Func<ulong, Http3Exception?>? frameTypeValidator;
     private byte[] pending = [];
+    private int pendingCount;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Http3FrameReader" /> class.
@@ -22,19 +26,19 @@ public sealed class Http3FrameReader
     /// <summary>
     /// Gets the number of buffered bytes that have not yet formed a complete frame.
     /// </summary>
-    public int PendingByteCount => pending.Length;
+    public int PendingByteCount => pendingCount;
 
     /// <summary>
     /// Parses all complete frames available in <paramref name="source" />.
     /// </summary>
     public Http3Frame[] Read(ReadOnlySpan<byte> source, bool endOfStream = false)
     {
-        bool hadPending = pending.Length != 0;
+        bool hadPending = pendingCount != 0;
         ReadOnlySpan<byte> readable;
         if (hadPending)
         {
-            pending = Append(pending, source);
-            readable = pending;
+            AppendPending(source);
+            readable = pending.AsSpan(0, pendingCount);
         }
         else
         {
@@ -91,18 +95,20 @@ public sealed class Http3FrameReader
 
         if (index == readable.Length)
         {
-            pending = [];
+            ClearPending();
         }
         else if (hadPending)
         {
-            pending = SlicePending(pending, index);
+            int remaining = readable.Length - index;
+            readable[index..].CopyTo(pending);
+            pendingCount = remaining;
         }
         else
         {
-            pending = readable[index..].ToArray();
+            StorePending(readable[index..]);
         }
 
-        if (endOfStream && pending.Length != 0)
+        if (endOfStream && pendingCount != 0)
         {
             throw new Http3Exception(Http3ErrorCode.FrameError, "The HTTP/3 stream ended with a truncated frame.");
         }
@@ -131,7 +137,7 @@ public sealed class Http3FrameReader
         return Read([], endOfStream: true);
     }
 
-    private static Http3Frame ParseFrame(ulong frameType, byte[] payload)
+    internal static Http3Frame ParseFrame(ulong frameType, byte[] payload)
     {
         return frameType switch
         {
@@ -222,21 +228,50 @@ public sealed class Http3FrameReader
         return false;
     }
 
-    private static byte[] Append(byte[] pendingBytes, ReadOnlySpan<byte> source)
+    private void AppendPending(ReadOnlySpan<byte> source)
     {
         if (source.IsEmpty)
         {
-            return pendingBytes;
+            return;
         }
 
-        byte[] combined = new byte[pendingBytes.Length + source.Length];
-        pendingBytes.CopyTo(combined, 0);
-        source.CopyTo(combined.AsSpan(pendingBytes.Length));
-        return combined;
+        int requiredCapacity = checked(pendingCount + source.Length);
+        EnsurePendingCapacity(requiredCapacity);
+        source.CopyTo(pending.AsSpan(pendingCount));
+        pendingCount = requiredCapacity;
     }
 
-    private static byte[] SlicePending(byte[] pendingBytes, int consumed)
+    private void StorePending(ReadOnlySpan<byte> source)
     {
-        return consumed == 0 ? pendingBytes : pendingBytes.AsSpan(consumed).ToArray();
+        EnsurePendingCapacity(source.Length);
+        source.CopyTo(pending);
+        pendingCount = source.Length;
+    }
+
+    private void EnsurePendingCapacity(int requiredCapacity)
+    {
+        if (pending.Length >= requiredCapacity)
+        {
+            return;
+        }
+
+        int doubledCapacity = requiredCapacity;
+        if (pending.Length != 0)
+        {
+            doubledCapacity = pending.Length <= int.MaxValue / CapacityGrowthFactor
+                ? pending.Length * CapacityGrowthFactor
+                : int.MaxValue;
+        }
+
+        Array.Resize(ref pending, Math.Max(requiredCapacity, doubledCapacity));
+    }
+
+    private void ClearPending()
+    {
+        pendingCount = 0;
+        if (pending.Length > MaxRetainedPendingCapacity)
+        {
+            pending = [];
+        }
     }
 }

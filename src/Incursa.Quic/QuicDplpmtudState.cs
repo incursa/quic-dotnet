@@ -119,6 +119,13 @@ internal sealed class QuicDplpmtudState
         return true;
     }
 
+    internal bool TryRemovePath(QuicConnectionPathIdentity pathIdentity)
+    {
+        return paths.TryGetValue(pathIdentity, out PathState? path)
+            && path.OutstandingProbeSizes.Count == 0
+            && paths.Remove(pathIdentity);
+    }
+
     private PathState GetOrCreatePathState(QuicConnectionPathIdentity pathIdentity)
     {
         if (!paths.TryGetValue(pathIdentity, out PathState? path))

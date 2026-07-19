@@ -6,6 +6,99 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicConnectionSendRuntimePacketOwnershipTests
 {
     [Fact]
+    public void ReserveSentPacket_ConsumesCapacityWithoutExposingPacketAsSent()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        ulong congestionWindow = runtime.FlowController.CongestionControlState.CongestionWindowBytes;
+
+        Assert.True(runtime.TryReserveSentPacket(
+            CreatePacket(packetNumber: 7, payloadBytes: congestionWindow),
+            out QuicConnectionPendingSendReservation reservation));
+
+        Assert.NotEqual(default, reservation);
+        Assert.Empty(runtime.SentPackets);
+        Assert.Equal(0UL, runtime.FlowController.CongestionControlState.BytesInFlightBytes);
+        Assert.Equal(congestionWindow, runtime.FlowController.CongestionControlState.ReservedSendBytes);
+        Assert.False(runtime.FlowController.CanSend(
+            QuicPacketNumberSpace.ApplicationData,
+            sentBytes: 1));
+        Assert.False(runtime.TryAcknowledgePacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 7,
+            handshakeConfirmed: true));
+        Assert.False(runtime.TryReserveSentPacket(
+            CreatePacket(packetNumber: 8, payloadBytes: 1),
+            out QuicConnectionPendingSendReservation secondReservation));
+        Assert.Equal(default, secondReservation);
+
+        Assert.True(runtime.TryReleaseReservedSentPacket(reservation));
+        Assert.Equal(0UL, runtime.FlowController.CongestionControlState.ReservedSendBytes);
+        Assert.True(runtime.FlowController.CanSend(
+            QuicPacketNumberSpace.ApplicationData,
+            sentBytes: congestionWindow));
+    }
+
+    [Fact]
+    public void CommitReservedSentPacket_ConvertsReservationWithoutDoubleCharging()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        Assert.True(runtime.TryReserveSentPacket(
+            CreatePacket(packetNumber: 7, payloadBytes: 1_200, sentAtMicros: 100),
+            out QuicConnectionPendingSendReservation reservation));
+
+        Assert.NotEqual(default, reservation);
+        Assert.True(runtime.TryCommitReservedSentPacket(reservation, sentAtMicros: 900));
+
+        QuicConnectionSentPacket packet = Assert.Single(runtime.SentPackets).Value;
+        Assert.Equal(900UL, packet.SentAtMicros);
+        Assert.Equal(0UL, runtime.FlowController.CongestionControlState.ReservedSendBytes);
+        Assert.Equal(1_200UL, runtime.FlowController.CongestionControlState.BytesInFlightBytes);
+        Assert.False(runtime.TryCommitReservedSentPacket(reservation, sentAtMicros: 901));
+        Assert.False(runtime.TryReleaseReservedSentPacket(reservation));
+        Assert.Single(runtime.SentPackets);
+        Assert.Equal(1_200UL, runtime.FlowController.CongestionControlState.BytesInFlightBytes);
+    }
+
+    [Fact]
+    public void ResetInvalidatesReservedPacketAccountingBeforeCommit()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        Assert.True(runtime.TryReserveSentPacket(
+            CreatePacket(packetNumber: 7, payloadBytes: 1_200),
+            out QuicConnectionPendingSendReservation reservation));
+
+        Assert.NotEqual(default, reservation);
+        runtime.ResetPathRecoveryState();
+
+        Assert.Equal(0UL, runtime.FlowController.CongestionControlState.ReservedSendBytes);
+        Assert.False(runtime.TryCommitReservedSentPacket(reservation, sentAtMicros: 900));
+        Assert.Empty(runtime.SentPackets);
+        Assert.Equal(0UL, runtime.FlowController.CongestionControlState.BytesInFlightBytes);
+    }
+
+    [Fact]
+    public void AckOnlyReservation_DoesNotConsumeCongestionCapacity()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        QuicConnectionSentPacket packet = CreatePacket(packetNumber: 7, payloadBytes: 64) with
+        {
+            AckEliciting = false,
+            AckOnlyPacket = true,
+            Retransmittable = false,
+        };
+
+        Assert.True(runtime.TryReserveSentPacket(
+            packet,
+            out QuicConnectionPendingSendReservation reservation));
+        Assert.NotEqual(default, reservation);
+        Assert.Equal(0UL, runtime.FlowController.CongestionControlState.ReservedSendBytes);
+
+        Assert.True(runtime.TryCommitReservedSentPacket(reservation, sentAtMicros: 900));
+        Assert.Empty(runtime.SentPackets);
+        Assert.Equal(0UL, runtime.FlowController.CongestionControlState.BytesInFlightBytes);
+    }
+
+    [Fact]
     public void StorageSnapshotReportsCapacityOccupancyAndPerSpaceSpan()
     {
         QuicConnectionSendRuntime runtime = new();

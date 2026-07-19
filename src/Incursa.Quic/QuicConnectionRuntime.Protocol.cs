@@ -1164,6 +1164,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryHandleApplicationPacketReceived(
         QuicConnectionPacketReceivedContext packetReceivedEvent,
         long nowTicks,
+        bool deferApplicationAckFinalization,
         ref QuicConnectionEffectAccumulator effects)
     {
         if (IsVersion1ZeroRttPacket(packetReceivedEvent.Datagram))
@@ -1193,6 +1194,7 @@ internal sealed partial class QuicConnectionRuntime
         bool openedPacketOwned = false;
         try
         {
+            long phaseStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
             if (handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacketLease(
                     packetReceivedEvent.Datagram.Span,
                     tlsState.OneRttOpenPacketProtectionMaterial!.Value,
@@ -1319,6 +1321,12 @@ internal sealed partial class QuicConnectionRuntime
                 }
             }
 
+        QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+            tlsState.Role,
+            "open",
+            phaseStartedTimestamp);
+        phaseStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
+
         QuicAeadKeyLifecycle? openedKeyLifecycle = openedWithRetainedOldOpenMaterial
             ? tlsState.RetainedOldOneRttOpenKeyLifecycle
             : tlsState.CurrentOneRttOpenKeyLifecycle;
@@ -1417,9 +1425,15 @@ internal sealed partial class QuicConnectionRuntime
         bool receivedOnlyProbingFrames = ContainsOnlyProbingFrames(
             openedPacket.Span.Slice(payloadOffset, payloadLength));
         int offset = payloadOffset;
+        QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+            tlsState.Role,
+            "prepare",
+            phaseStartedTimestamp);
+        phaseStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
 
         while (offset < payloadEnd)
         {
+            long frameStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
             ReadOnlySpan<byte> remaining = openedPacket.Span.Slice(offset, payloadEnd - offset);
             ReadOnlyMemory<byte> remainingMemory = openedPacket.Memory.Slice(offset, payloadEnd - offset);
             if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
@@ -1466,6 +1480,10 @@ internal sealed partial class QuicConnectionRuntime
 
                 processedApplicationAckFrame = true;
                 offset += ackBytesConsumed;
+                QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+                    tlsState.Role,
+                    "frame_ack",
+                    frameStartedTimestamp);
                 continue;
             }
 
@@ -1994,7 +2012,18 @@ internal sealed partial class QuicConnectionRuntime
             stateChanged = true;
             offset += streamFrame.ConsumedLength;
             packetAckEliciting = true;
+            QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+                tlsState.Role,
+                "frame_stream",
+                frameStartedTimestamp);
         }
+
+        QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+            tlsState.Role,
+            "frames",
+            phaseStartedTimestamp);
+        phaseStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
+        long postFramesStartedTimestamp = phaseStartedTimestamp;
 
         if (packetNumberAdvancesTheHighestObservedValue
             && !receivedOnlyProbingFrames
@@ -2046,14 +2075,36 @@ internal sealed partial class QuicConnectionRuntime
             stateChanged = true;
         }
 
+        QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+            tlsState.Role,
+            "post_path",
+            phaseStartedTimestamp);
+        phaseStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
+
         if (processedApplicationAckFrame || applicationSendCreditUpdated)
         {
+            long recoverySegmentStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
             stateChanged |= TryRetryPendingStreamWriteRequests(nowTicks, ref effects);
+            QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+                tlsState.Role,
+                "post_retry_writes",
+                recoverySegmentStartedTimestamp);
+            recoverySegmentStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
             if (TryFlushPendingApplicationSendsAfterRecoveryProgress(nowTicks, ref effects))
             {
                 stateChanged = true;
             }
+            QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+                tlsState.Role,
+                "post_flush_sends",
+                recoverySegmentStartedTimestamp);
         }
+
+        QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+            tlsState.Role,
+            "post_recovery",
+            phaseStartedTimestamp);
+        phaseStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
 
         RecordIncomingPacket(
             QuicPacketNumberSpace.ApplicationData,
@@ -2076,18 +2127,33 @@ internal sealed partial class QuicConnectionRuntime
             hasObservedCurrentOneRttKeyPhasePacketNumber = true;
         }
 
-        if (TrySendPendingApplicationAck(nowTicks, ref effects))
+        QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+            tlsState.Role,
+            "post_receipt",
+            phaseStartedTimestamp);
+        phaseStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
+
+        if (!deferApplicationAckFinalization)
         {
-            stateChanged = true;
+            stateChanged |= FinalizePendingApplicationAck(nowTicks, ref effects);
         }
 
-        if (UpdateApplicationAckDelayTimer(nowTicks))
-        {
-            stateChanged = true;
-            AppendLifecycleTimerEffects(ref effects);
-        }
+        QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+            tlsState.Role,
+            "post_ack",
+            phaseStartedTimestamp);
+        phaseStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
 
         stateChanged |= TryHandlePreviouslyUnusedIssuedConnectionId(packetReceivedEvent, ref effects);
+
+        QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+            tlsState.Role,
+            "post_connection_id",
+            phaseStartedTimestamp);
+        QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+            tlsState.Role,
+            "post_frames",
+            postFramesStartedTimestamp);
 
         return processedStreamFrame || processedCryptoFrame || stateChanged;
         }
@@ -2508,9 +2574,14 @@ internal sealed partial class QuicConnectionRuntime
         ulong[]? rentedNewlyAcknowledgedAckElicitingPacketNumbers = null;
         int newlyAcknowledgedAckElicitingPacketNumberCount = 0;
         bool acknowledgedCurrentOneRttKeyPhasePacket = false;
+        bool acknowledgedApplicationStreamDataValue = false;
         ulong largestAcknowledgedPacketSentAtMicros = 0;
+        List<(QuicConnectionPathIdentity PathIdentity, ulong MaximumDatagramSizeBytes)>? acknowledgedPathMtuProbes = null;
 
         bool stateChanged = false;
+        long ackPhaseStartedTimestamp = packetNumberSpace == QuicPacketNumberSpace.ApplicationData
+            ? QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp()
+            : 0;
 
         try
         {
@@ -2528,6 +2599,24 @@ internal sealed partial class QuicConnectionRuntime
                 ulong largestAcknowledged = ackFrame.LargestAcknowledged;
                 ulong smallestAcknowledged = largestAcknowledged - ackFrame.FirstAckRange;
                 ProcessAcknowledgedPacketRange(smallestAcknowledged, largestAcknowledged);
+            }
+
+            QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+                tlsState.Role,
+                "frame_ack_ranges",
+                ackPhaseStartedTimestamp);
+            ackPhaseStartedTimestamp = packetNumberSpace == QuicPacketNumberSpace.ApplicationData
+                ? QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp()
+                : 0;
+
+            if (diagnosticsEnabled && acknowledgedPathMtuProbes is not null)
+            {
+                foreach ((QuicConnectionPathIdentity pathIdentity, ulong maximumDatagramSizeBytes) in acknowledgedPathMtuProbes)
+                {
+                    EmitDiagnostic(
+                        ref effects,
+                        QuicDiagnostics.PmtuUpdated(pathIdentity, maximumDatagramSizeBytes, isProvisional: false));
+                }
             }
 
             stateChanged |= sendRuntime.FlowController.TryFinalizeExternallyRetainedAckFrame(
@@ -2560,6 +2649,14 @@ internal sealed partial class QuicConnectionRuntime
                 stateChanged = true;
             }
 
+            QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+                tlsState.Role,
+                "frame_ack_recovery",
+                ackPhaseStartedTimestamp);
+            ackPhaseStartedTimestamp = packetNumberSpace == QuicPacketNumberSpace.ApplicationData
+                ? QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp()
+                : 0;
+
             if (TryFlushPendingRetransmissions(
                     packetNumberSpace,
                     nowTicks,
@@ -2569,6 +2666,17 @@ internal sealed partial class QuicConnectionRuntime
                 stateChanged = true;
                 AppendLifecycleTimerEffects(ref effects);
             }
+
+            if (acknowledgedApplicationStreamDataValue && TryArmPathMtuProbeTimer(nowTicks))
+            {
+                stateChanged = true;
+                AppendLifecycleTimerEffects(ref effects);
+            }
+
+            QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+                tlsState.Role,
+                "frame_ack_flush",
+                ackPhaseStartedTimestamp);
 
             return stateChanged;
         }
@@ -2602,6 +2710,12 @@ internal sealed partial class QuicConnectionRuntime
                     {
                         acknowledgedCurrentOneRttKeyPhasePacket = true;
                     }
+                    if (packetNumberSpace == QuicPacketNumberSpace.ApplicationData
+                        && !sentPacket.ProbePacket
+                        && (sentPacket.StreamId.HasValue || sentPacket.StreamIds is { Length: > 0 }))
+                    {
+                        acknowledgedApplicationStreamDataValue = true;
+                    }
 
                     if (sentPacket.AckEliciting)
                     {
@@ -2609,6 +2723,17 @@ internal sealed partial class QuicConnectionRuntime
                             packetNumber,
                             ref rentedNewlyAcknowledgedAckElicitingPacketNumbers,
                             ref newlyAcknowledgedAckElicitingPacketNumberCount);
+                    }
+
+                    if (packetNumberSpace == QuicPacketNumberSpace.ApplicationData
+                        && TryRegisterPathMtuProbeAcknowledged(
+                            packetNumber,
+                            out QuicConnectionPathIdentity pathIdentity,
+                            out ulong maximumDatagramSizeBytes))
+                    {
+                        acknowledgedPathMtuProbes ??= [];
+                        acknowledgedPathMtuProbes.Add((pathIdentity, maximumDatagramSizeBytes));
+                        stateChanged = true;
                     }
                 }
 
@@ -2974,6 +3099,44 @@ internal sealed partial class QuicConnectionRuntime
         return sentAck || timerUpdated;
     }
 
+    private bool FinalizePendingApplicationAck(
+        long nowTicks,
+        ref QuicConnectionEffectAccumulator effects,
+        bool recordReceivePhaseMetrics = true)
+    {
+        bool stateChanged = false;
+        long ackSegmentStartedTimestamp = recordReceivePhaseMetrics
+            ? QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp()
+            : 0;
+        if (TrySendPendingApplicationAck(nowTicks, ref effects))
+        {
+            stateChanged = true;
+        }
+        if (recordReceivePhaseMetrics)
+        {
+            QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+                tlsState.Role,
+                "post_send_ack",
+                ackSegmentStartedTimestamp);
+            ackSegmentStartedTimestamp = QuicMetrics.GetApplicationPacketReceivePhaseStartTimestamp();
+        }
+
+        if (UpdateApplicationAckDelayTimer(nowTicks))
+        {
+            stateChanged = true;
+            AppendLifecycleTimerEffects(ref effects);
+        }
+        if (recordReceivePhaseMetrics)
+        {
+            QuicMetrics.RecordApplicationPacketReceivePhaseTime(
+                tlsState.Role,
+                "post_ack_timer",
+                ackSegmentStartedTimestamp);
+        }
+
+        return stateChanged;
+    }
+
     private bool UpdateApplicationAckDelayTimer(long nowTicks)
     {
         ulong nowMicros = GetElapsedMicros(nowTicks);
@@ -2997,6 +3160,10 @@ internal sealed partial class QuicConnectionRuntime
         ulong sentAtMicros,
         bool ackOnlyPacket)
     {
+        QuicMetrics.RecordApplicationAckSent(
+            tlsState.Role,
+            ackOnlyPacket,
+            applicationSendQueue.Count);
         applicationAckState.MarkAckFrameSent(
             sendRuntime.FlowController,
             ackFrame,

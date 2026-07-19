@@ -14,6 +14,7 @@ namespace Incursa.Quic;
 /// </remarks>
 internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 {
+    private const int MaximumDeferredApplicationAckPacketCount = 8;
     private static readonly TimerCallback DeadlineWakeTimerCallback = static state =>
     {
         DeadlineWakeTimerState timerState = (DeadlineWakeTimerState)state!;
@@ -220,7 +221,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         long requestId,
         QuicConnectionStreamActionKind actionKind,
         ulong streamId,
-        ReadOnlyMemory<byte> streamData)
+        ReadOnlyMemory<byte> streamData,
+        ReadOnlyMemory<byte> streamDataSuffix = default)
     {
         ArgumentNullException.ThrowIfNull(runtime);
 
@@ -240,7 +242,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             requestId,
             actionKind,
             streamId,
-            streamData));
+            streamData,
+            streamDataSuffix));
     }
 
     /// <summary>
@@ -328,11 +331,15 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         bool hasActiveWakeCycle = false;
         bool activeWakeCompletedSynchronously = false;
         var productiveWorkItemsInWakeCycle = 0;
+        bool measurePacketRuns = false;
+        QuicConnectionRuntime? packetRunRuntime = null;
+        var packetRunLength = 0;
 
         try
         {
             while (true)
             {
+                measurePacketRuns = QuicMetrics.RuntimeShardPacketRunMetricsEnabled;
                 // CONTEXT: The shard loop drains timer expirations before and after inbox reads because
                 // both timer completion and connection work share this single-reader path; that keeps
                 // due timers from waiting on a separate wake-up when the shard is already active.
@@ -342,17 +349,57 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 // a separate wake-up when the shard is already active.
                 EnqueueDueEntries(clock.Ticks);
 
-                while (reader.TryRead(out QuicConnectionRuntimeShardWorkItem workItem))
+                // Keep one item as lookahead so ACK finalization is deferred only when the
+                // next same-connection packet or stream write is already queued.
+                bool hasBufferedWorkItem = false;
+                QuicConnectionRuntimeShardWorkItem bufferedWorkItem = default;
+                bool finalizeBufferedApplicationAck = false;
+                var deferredApplicationAckPacketCount = 0;
+                while (hasBufferedWorkItem || reader.TryRead(out bufferedWorkItem))
                 {
+                    QuicConnectionRuntimeShardWorkItem workItem = bufferedWorkItem;
+                    bool finalizePendingApplicationAck = finalizeBufferedApplicationAck;
+                    hasBufferedWorkItem = false;
+                    finalizeBufferedApplicationAck = false;
                     QuicMetrics.RecordRuntimeShardWorkItemDequeued(metricsRegistration, in workItem);
                     if (IsDeadlineWakeWorkItem(workItem))
                     {
+                        deferredApplicationAckPacketCount = 0;
+                        RecordPacketRunBoundary("deadline_wake");
                         continue;
                     }
 
+                    bool deferApplicationAckFinalization = false;
+                    if (workItem.Kind == QuicConnectionRuntimeShardWorkItemKind.PacketReceived
+                        && workItem.Runtime is not null
+                        && deferredApplicationAckPacketCount < MaximumDeferredApplicationAckPacketCount)
+                    {
+                        hasBufferedWorkItem = reader.TryRead(out bufferedWorkItem);
+                        if (hasBufferedWorkItem)
+                        {
+                            deferApplicationAckFinalization = ShouldDeferApplicationAckFinalization(
+                                in workItem,
+                                in bufferedWorkItem,
+                                deferredApplicationAckPacketCount,
+                                out finalizeBufferedApplicationAck);
+                        }
+                    }
+
+                    TrackPacketRun(in workItem);
                     productiveWorkItemsInWakeCycle++;
-                    ProcessWorkItem(workItem, transitionObserver, effectObserver, sendDatagramObserver);
+                    ProcessWorkItem(
+                        workItem,
+                        transitionObserver,
+                        effectObserver,
+                        sendDatagramObserver,
+                        deferApplicationAckFinalization,
+                        finalizePendingApplicationAck);
+                    deferredApplicationAckPacketCount = deferApplicationAckFinalization
+                        ? deferredApplicationAckPacketCount + 1
+                        : 0;
                 }
+
+                RecordPacketRunBoundary("drain_end");
 
                 EnqueueDueEntries(clock.Ticks);
                 if (reader.TryRead(out QuicConnectionRuntimeShardWorkItem queuedTimerWorkItem))
@@ -360,11 +407,14 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     QuicMetrics.RecordRuntimeShardWorkItemDequeued(metricsRegistration, in queuedTimerWorkItem);
                     if (IsDeadlineWakeWorkItem(queuedTimerWorkItem))
                     {
+                        RecordPacketRunBoundary("deadline_wake");
                         continue;
                     }
 
+                    TrackPacketRun(in queuedTimerWorkItem);
                     productiveWorkItemsInWakeCycle++;
                     ProcessWorkItem(queuedTimerWorkItem, transitionObserver, effectObserver, sendDatagramObserver);
+                    RecordPacketRunBoundary("single_read");
                     continue;
                 }
 
@@ -443,6 +493,42 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 ReleaseWorkItemResources(workItem);
             }
         }
+
+        void TrackPacketRun(in QuicConnectionRuntimeShardWorkItem workItem)
+        {
+            if (!measurePacketRuns)
+            {
+                return;
+            }
+
+            if (workItem.Kind != QuicConnectionRuntimeShardWorkItemKind.PacketReceived)
+            {
+                RecordPacketRunBoundary("work_item");
+                return;
+            }
+
+            if (ReferenceEquals(packetRunRuntime, workItem.Runtime))
+            {
+                packetRunLength++;
+                return;
+            }
+
+            RecordPacketRunBoundary("runtime_change");
+            packetRunRuntime = workItem.Runtime;
+            packetRunLength = 1;
+        }
+
+        void RecordPacketRunBoundary(string boundary)
+        {
+            if (!measurePacketRuns || packetRunLength == 0)
+            {
+                return;
+            }
+
+            QuicMetrics.RecordRuntimeShardPacketRun(shardIndex, packetRunLength, boundary);
+            packetRunRuntime = null;
+            packetRunLength = 0;
+        }
     }
 
     /// <summary>
@@ -497,7 +583,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         QuicConnectionRuntimeShardWorkItem workItem,
         Action<QuicConnectionHandle, QuicConnectionTransitionResult>? transitionObserver,
         Action<QuicConnectionHandle, QuicConnectionEffect>? effectObserver,
-        Action<QuicConnectionHandle, QuicConnectionSendDatagramUpdate>? sendDatagramObserver)
+        Action<QuicConnectionHandle, QuicConnectionSendDatagramUpdate>? sendDatagramObserver,
+        bool deferApplicationAckFinalization = false,
+        bool finalizePendingApplicationAck = false)
     {
         long serviceStartedTimestamp = QuicMetrics.GetRuntimeShardServiceStartTimestamp();
         QuicConnectionRuntime? runtime = workItem.Runtime;
@@ -521,10 +609,14 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 suppressSendDatagramEffects: suppressHostedTimerEffectObjects && sendDatagramObserver is not null);
             flushMeasurementStarted = runtime.BeginRuntimeWorkItemFlushMeasurement();
 
+            long transitionStartedTimestamp = QuicMetrics.GetRuntimeShardPhaseStartTimestamp();
             QuicConnectionTransitionResult result = workItem.Kind switch
             {
                 QuicConnectionRuntimeShardWorkItemKind.PacketReceived
-                    => runtime.TransitionPacketReceived(workItem.PacketReceived, clock.Ticks),
+                    => runtime.TransitionPacketReceived(
+                        workItem.PacketReceived,
+                        clock.Ticks,
+                        deferApplicationAckFinalization),
                 QuicConnectionRuntimeShardWorkItemKind.StreamCapacityRelease
                     => runtime.TransitionStreamCapacityRelease(clock.Ticks),
                 QuicConnectionRuntimeShardWorkItemKind.FlowControlCreditUpdate
@@ -537,44 +629,81 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                         workItem.StreamActionKind,
                         workItem.StreamId,
                         workItem.StreamData,
-                        clock.Ticks),
+                        workItem.StreamDataSuffix,
+                        clock.Ticks,
+                        finalizePendingApplicationAck),
                 _ => runtime.Transition(workItem.ConnectionEvent!, clock.Ticks),
             };
             transitionObserver?.Invoke(workItem.Handle, result);
             runtime.ApplyPendingHostedTimerUpdates(workItem.Handle, deadlineScheduler);
+            QuicMetrics.RecordRuntimeShardPhaseTime(
+                shardIndex,
+                in workItem,
+                "transition",
+                transitionStartedTimestamp);
 
-            for (int index = 0; index < result.EffectCount; index++)
+            long effectsStartedTimestamp = QuicMetrics.GetRuntimeShardPhaseStartTimestamp();
+            try
             {
-                QuicConnectionEffect effect = result.GetEffect(index);
-                if (effect is QuicConnectionHostedSendDatagramMarkerEffect)
+                for (int index = 0; index < result.EffectCount; index++)
                 {
-                    if (!runtime.TryTakePendingHostedSendDatagramUpdate(out QuicConnectionSendDatagramUpdate update))
+                    QuicConnectionEffect effect = result.GetEffect(index);
+                    if (effect is QuicConnectionHostedSendDatagramMarkerEffect)
                     {
-                        throw new InvalidOperationException(
-                            "The hosted send-datagram marker did not have a matching value update.");
+                        if (!runtime.TryTakePendingHostedSendDatagramUpdate(out QuicConnectionSendDatagramUpdate update))
+                        {
+                            throw new InvalidOperationException(
+                                "The hosted send-datagram marker did not have a matching value update.");
+                        }
+
+                        long sendDatagramStartedTimestamp = QuicMetrics.GetRuntimeShardPhaseStartTimestamp();
+                        try
+                        {
+                            if (sendDatagramObserver is not null)
+                            {
+                                sendDatagramObserver(workItem.Handle, update);
+                            }
+                            else
+                            {
+                                effectObserver?.Invoke(workItem.Handle, update.ToEffect());
+                            }
+                        }
+                        finally
+                        {
+                            QuicMetrics.RecordRuntimeShardPhaseTime(
+                                shardIndex,
+                                in workItem,
+                                "send_datagram_effect",
+                                sendDatagramStartedTimestamp);
+                            update.ReleaseDatagramOwner();
+                        }
+
+                        continue;
                     }
 
+                    long otherEffectStartedTimestamp = QuicMetrics.GetRuntimeShardPhaseStartTimestamp();
                     try
                     {
-                        if (sendDatagramObserver is not null)
-                        {
-                            sendDatagramObserver(workItem.Handle, update);
-                        }
-                        else
-                        {
-                            effectObserver?.Invoke(workItem.Handle, update.ToEffect());
-                        }
+                        deadlineScheduler.Apply(workItem.Handle, runtime, effect);
+                        effectObserver?.Invoke(workItem.Handle, effect);
                     }
                     finally
                     {
-                        update.ReleaseDatagramOwner();
+                        QuicMetrics.RecordRuntimeShardPhaseTime(
+                            shardIndex,
+                            in workItem,
+                            "other_effect",
+                            otherEffectStartedTimestamp);
                     }
-
-                    continue;
                 }
-
-                deadlineScheduler.Apply(workItem.Handle, runtime, effect);
-                effectObserver?.Invoke(workItem.Handle, effect);
+            }
+            finally
+            {
+                QuicMetrics.RecordRuntimeShardPhaseTime(
+                    shardIndex,
+                    in workItem,
+                    "effects",
+                    effectsStartedTimestamp);
             }
 
             QuicMetrics.RecordRuntimePressureSnapshot(shardIndex, runtime);
@@ -603,6 +732,35 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 
     private static bool IsDeadlineWakeWorkItem(QuicConnectionRuntimeShardWorkItem workItem)
         => workItem.Runtime is null && workItem.ConnectionEvent is null && workItem.Kind == QuicConnectionRuntimeShardWorkItemKind.Event;
+
+    internal static bool ShouldDeferApplicationAckFinalization(
+        in QuicConnectionRuntimeShardWorkItem current,
+        in QuicConnectionRuntimeShardWorkItem next,
+        int deferredPacketCount,
+        out bool finalizeAfterNext)
+    {
+        finalizeAfterNext = false;
+        if (deferredPacketCount >= MaximumDeferredApplicationAckPacketCount
+            || current.Kind != QuicConnectionRuntimeShardWorkItemKind.PacketReceived
+            || current.Runtime is null
+            || !ReferenceEquals(current.Runtime, next.Runtime))
+        {
+            return false;
+        }
+
+        if (next.Kind == QuicConnectionRuntimeShardWorkItemKind.PacketReceived)
+        {
+            return true;
+        }
+
+        if (next.Kind == QuicConnectionRuntimeShardWorkItemKind.StreamWrite)
+        {
+            finalizeAfterNext = true;
+            return true;
+        }
+
+        return false;
+    }
 
     private static void ReleaseWorkItemResources(QuicConnectionRuntimeShardWorkItem workItem)
     {

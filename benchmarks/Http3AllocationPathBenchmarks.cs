@@ -34,6 +34,7 @@ public class Http3AllocationPathBenchmarks
     private byte[] plaintextResponseFieldSection = [];
     private byte[] jsonResponseFieldSection = [];
     private byte[] largeDataFramePayload = [];
+    private byte[] largeDataFrame = [];
     private byte[] plaintextHeadersFrame = [];
     private byte[] jsonHeadersFrame = [];
     private byte[] plaintextDataFrame = [];
@@ -91,6 +92,7 @@ public class Http3AllocationPathBenchmarks
         plaintextResponseFieldSection = QPackEncoder.EncodeFieldSection(plaintextResponseHeaders);
         jsonResponseFieldSection = QPackEncoder.EncodeFieldSection(jsonResponseHeaders);
         largeDataFramePayload = CreateDeterministicBytes(16 * 1024);
+        largeDataFrame = Http3FrameWriter.WriteData(largeDataFramePayload);
 
         plaintextHeadersFrame = Http3FrameWriter.WriteHeaders(plaintextResponseFieldSection);
         jsonHeadersFrame = Http3FrameWriter.WriteHeaders(jsonResponseFieldSection);
@@ -179,6 +181,24 @@ public class Http3AllocationPathBenchmarks
         Http3Frame[] first = reader.Read(plaintextRequestHeadersFrame.AsSpan(0, split));
         Http3Frame[] second = reader.Read(plaintextRequestHeadersFrame.AsSpan(split));
         return CountFramePayloadBytes(first) ^ CountFramePayloadBytes(second) ^ reader.PendingByteCount;
+    }
+
+    /// <summary>
+    /// Measures a sustained request-body shape where every 16 KiB DATA frame crosses a 16 KiB read boundary.
+    /// </summary>
+    [Benchmark]
+    public int FrameReader_ReadRepeatedFragmentedDataFrames16Kb()
+    {
+        Http3FrameReader reader = new();
+        int payloadBytes = 0;
+        for (int index = 0; index < 64; index++)
+        {
+            Http3Frame[] first = reader.Read(largeDataFrame.AsSpan(0, DefaultServerReadBufferSize));
+            Http3Frame[] second = reader.Read(largeDataFrame.AsSpan(DefaultServerReadBufferSize));
+            payloadBytes += CountFramePayloadBytes(first) + CountFramePayloadBytes(second);
+        }
+
+        return payloadBytes ^ reader.PendingByteCount;
     }
 
     /// <summary>

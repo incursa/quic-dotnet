@@ -76,6 +76,32 @@ public sealed class QuicSendPolicyTests
     }
 
     [Fact]
+    public void ComputeQueuedApplicationSendBudget_UsesEstablishedBurstWithinCongestionBudget()
+    {
+        QuicQueuedApplicationSendBudget budget = QuicSendPolicy.ComputeQueuedApplicationSendBudget(
+            CreateSnapshot(
+                queuedApplicationSendCount: 16,
+                congestionWindowBytes: 128_000,
+                maximumQueuedApplicationSendBurstDatagrams: QuicSendPolicy.EstablishedQueuedApplicationSendBurstDatagrams));
+
+        Assert.True(budget.CanSendQueuedApplicationData);
+        Assert.Equal(QuicSendPolicy.EstablishedQueuedApplicationSendBurstDatagrams, budget.MaxDatagrams);
+    }
+
+    [Fact]
+    public void ComputeQueuedApplicationSendBudget_BoundsEstablishedBurstByCongestionAvailability()
+    {
+        QuicQueuedApplicationSendBudget budget = QuicSendPolicy.ComputeQueuedApplicationSendBudget(
+            CreateSnapshot(
+                queuedApplicationSendCount: 16,
+                congestionWindowBytes: 2_400,
+                maximumQueuedApplicationSendBurstDatagrams: QuicSendPolicy.EstablishedQueuedApplicationSendBurstDatagrams));
+
+        Assert.True(budget.CanSendQueuedApplicationData);
+        Assert.Equal(2, budget.MaxDatagrams);
+    }
+
+    [Fact]
     public void ComputeQueuedApplicationSendBudget_LimitsDatagramsByLowCongestionAvailability()
     {
         QuicQueuedApplicationSendBudget budget = QuicSendPolicy.ComputeQueuedApplicationSendBudget(
@@ -127,7 +153,8 @@ public sealed class QuicSendPolicyTests
         bool isAddressValidated = true,
         bool handshakeConfirmed = true,
         bool hasOneRttProtection = true,
-        int queuedApplicationSendCount = 8)
+        int queuedApplicationSendCount = 8,
+        int maximumQueuedApplicationSendBurstDatagrams = QuicSendPolicy.MeasuredQueuedApplicationSendBurstDatagrams)
         => new(
             hasActivePath,
             canSendOrdinaryPackets,
@@ -141,5 +168,6 @@ public sealed class QuicSendPolicyTests
             isAddressValidated,
             handshakeConfirmed,
             hasOneRttProtection,
-            queuedApplicationSendCount);
+            queuedApplicationSendCount,
+            maximumQueuedApplicationSendBurstDatagrams);
 }

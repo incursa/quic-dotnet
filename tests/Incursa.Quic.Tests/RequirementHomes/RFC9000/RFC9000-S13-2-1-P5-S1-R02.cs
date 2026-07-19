@@ -55,6 +55,34 @@ public sealed class RFC9000_S13_2_1_P5_S1_R02
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void DeferredAckFinalizationFlushesAtTheNextPacketBoundary()
+    {
+        using QuicConnectionRuntime runtime =
+            QuicS13AckPiggybackTestSupport.CreateAckDelayRuntimeWithValidatedActivePath(localMaxAckDelayMicros: 0);
+
+        QuicConnectionTransitionResult deferredPacket = QuicS13AckPiggybackTestSupport.ReceiveOneRttPing(
+            runtime,
+            observedAtTicks: 10,
+            packetNumber: 1,
+            deferApplicationAckFinalization: true);
+        Assert.Empty(deferredPacket.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
+
+        QuicConnectionTransitionResult boundaryPacket = QuicS13AckPiggybackTestSupport.ReceiveOneRttPing(
+            runtime,
+            observedAtTicks: 11,
+            packetNumber: 2);
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+            boundaryPacket.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        byte[] payload = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
+        Assert.True(QuicFrameCodec.TryParseAckFrame(payload, out QuicAckFrame ackFrame, out _));
+        Assert.Equal(2UL, ackFrame.LargestAcknowledged);
+        Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void MarkAckFrameSent_DoesNotPermitDuplicateAckOnlyTriggerForTheSameAckElicitingPacket()

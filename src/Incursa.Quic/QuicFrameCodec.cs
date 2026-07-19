@@ -798,6 +798,23 @@ internal static class QuicFrameCodec
         ReadOnlySpan<byte> streamData,
         Span<byte> destination,
         out int bytesWritten)
+        => TryFormatStreamFrame(
+            frameType,
+            streamId,
+            offset,
+            streamData,
+            ReadOnlySpan<byte>.Empty,
+            destination,
+            out bytesWritten);
+
+    internal static bool TryFormatStreamFrame(
+        byte frameType,
+        ulong streamId,
+        ulong offset,
+        ReadOnlySpan<byte> streamData,
+        ReadOnlySpan<byte> streamDataSuffix,
+        Span<byte> destination,
+        out int bytesWritten)
     {
         bytesWritten = default;
 
@@ -814,7 +831,8 @@ internal static class QuicFrameCodec
             return false;
         }
 
-        if (offset > QuicVariableLengthInteger.MaxValue - (ulong)streamData.Length)
+        int streamDataLength = checked(streamData.Length + streamDataSuffix.Length);
+        if (offset > QuicVariableLengthInteger.MaxValue - (ulong)streamDataLength)
         {
             return false;
         }
@@ -831,18 +849,19 @@ internal static class QuicFrameCodec
             return false;
         }
 
-        if (hasLength && !TryWriteVarint((ulong)streamData.Length, destination, ref index))
+        if (hasLength && !TryWriteVarint((ulong)streamDataLength, destination, ref index))
         {
             return false;
         }
 
-        if (destination.Length < index + streamData.Length)
+        if (destination.Length < index + streamDataLength)
         {
             return false;
         }
 
         streamData.CopyTo(destination[index..]);
-        bytesWritten = index + streamData.Length;
+        streamDataSuffix.CopyTo(destination[(index + streamData.Length)..]);
+        bytesWritten = index + streamDataLength;
         return true;
     }
 

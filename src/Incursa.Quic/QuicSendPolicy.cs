@@ -30,7 +30,8 @@ internal readonly record struct QuicSendPolicySnapshot(
     bool IsAddressValidated,
     bool HandshakeConfirmed,
     bool HasOneRttProtection,
-    int QueuedApplicationSendCount);
+    int QueuedApplicationSendCount,
+    int MaximumQueuedApplicationSendBurstDatagrams = QuicSendPolicy.MeasuredQueuedApplicationSendBurstDatagrams);
 
 internal readonly record struct QuicQueuedApplicationSendBudget(
     bool CanSendQueuedApplicationData,
@@ -70,6 +71,10 @@ internal static class QuicSendPolicy
     // the send-policy pilot has enough ProtocolLab evidence across multiplexed
     // and duplex workloads.
     internal const int MeasuredQueuedApplicationSendBurstDatagrams = 4;
+    // Once the handshake is confirmed, let one actor turn consume more of the
+    // already-computed congestion and amplification budget. The scheduler and
+    // packet ordering remain unchanged.
+    internal const int EstablishedQueuedApplicationSendBurstDatagrams = 12;
 
     internal static QuicQueuedApplicationSendBudget ComputeQueuedApplicationSendBudget(
         QuicSendPolicySnapshot snapshot)
@@ -101,7 +106,9 @@ internal static class QuicSendPolicy
                 shouldPrioritizeRetransmission: true);
         }
 
-        if (snapshot.MaximumDatagramSizeBytes == 0 || snapshot.MaximumApplicationPayloadBytes <= 0)
+        if (snapshot.MaximumDatagramSizeBytes == 0
+            || snapshot.MaximumApplicationPayloadBytes <= 0
+            || snapshot.MaximumQueuedApplicationSendBurstDatagrams <= 0)
         {
             return QuicQueuedApplicationSendBudget.Blocked(QuicSendPolicyBlockedReason.InvalidPayloadBudget);
         }
@@ -137,7 +144,7 @@ internal static class QuicSendPolicy
         }
 
         ulong maxDatagrams = Math.Min(
-            (ulong)MeasuredQueuedApplicationSendBurstDatagrams,
+            (ulong)snapshot.MaximumQueuedApplicationSendBurstDatagrams,
             datagramsBySendBudget);
         int maxPayloadBytes = (int)Math.Min(
             (ulong)snapshot.MaximumApplicationPayloadBytes,

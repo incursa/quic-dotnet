@@ -251,19 +251,24 @@ internal static class QuicS13AckPiggybackTestSupport
     internal static QuicConnectionTransitionResult ReceiveOneRttPing(
         QuicConnectionRuntime runtime,
         long observedAtTicks,
-        ulong packetNumber = 1)
+        ulong packetNumber = 1,
+        bool deferApplicationAckFinalization = false)
     {
         byte[] protectedPacket = BuildProtectedOneRttPacket(
             runtime,
             QuicS12P3TestSupport.CreatePingPayload(),
             packetNumber);
 
-        return runtime.Transition(
-            new QuicConnectionPacketReceivedEvent(
-                ObservedAtTicks: observedAtTicks,
-                runtime.ActivePath!.Value.Identity,
-                protectedPacket),
-            nowTicks: observedAtTicks);
+        QuicConnectionPacketReceivedEvent packetReceived = new(
+            ObservedAtTicks: observedAtTicks,
+            runtime.ActivePath!.Value.Identity,
+            protectedPacket);
+        return deferApplicationAckFinalization
+            ? runtime.TransitionPacketReceived(
+                new QuicConnectionPacketReceivedContext(packetReceived),
+                observedAtTicks,
+                deferApplicationAckFinalization: true)
+            : runtime.Transition(packetReceived, nowTicks: observedAtTicks);
     }
 
     internal static QuicConnectionTransitionResult ReceiveOneRttAckOnly(

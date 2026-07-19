@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9000-0092",
+  "artifact_type": "work_item",
+  "title": "QUIC RFC 9000 Timer-Gated Path MTU Discovery Work Item",
+  "domain": "quic",
+  "status": "complete",
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0006",
+    "ARC-QUIC-RFC9000-0092",
+    "VER-QUIC-RFC9000-0092"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9000-S14P3-0001",
+    "REQ-QUIC-RFC9000-S14P3-0002",
+    "RFC9000-S14-3-P2-S1-R01",
+    "RFC9000-S14-3-P3-S1-R01"
+  ],
+  "summary": "Integrate the existing DPLPMTUD helper with the connection runtime using a bounded timer-gated probe that safely validates common Ethernet datagram sizes before ordinary traffic uses them.",
+  "planned_changes": "- Keep ordinary path traffic at 1200 bytes until a matching PMTU probe is acknowledged.\n- Arm a dedicated PMTU timer only after application stream data is acknowledged.\n- Send one exact PING-plus-PADDING probe only on an idle, still-current validated path.\n- Cap IPv4 and IPv6 Ethernet targets by peer max_udp_payload_size.\n- Promote active, candidate, or recently validated path state only on a matching acknowledgment.\n- Remove outstanding DPLPMTUD state on loss without promoting the path ceiling.\n- Add focused path-size, timer, packet-shape, acknowledgment, and recovery-regression proof.\n- Validate the candidate with adjacent local HTTP/3 baseline/candidate evidence before ProtocolLab confirmation.",
+  "verification_plan": "Run focused S14P3 and recovery/timer tests, run the broader timer/recovery/metrics filter, execute matched local HTTP/3 A/B/B/A and control campaigns, validate SpecTrace JSON, run the Release build and full Release suite, and check the diff.",
+  "verification_links": [
+    "VER-QUIC-RFC9000-0092"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9000-0092"
+  ],
+  "out_of_scope": [
+    "Repeated PMTU probe search and retry backoff.",
+    "Operating-system ICMP ingress changes.",
+    "Alternative-path MTU search.",
+    "Public or ranked performance claims before matched ProtocolLab confirmation.",
+    "Changes to authentication, congestion control, flow control, loss recovery, or fairness rules."
+  ],
+  "completion_notes": "Implemented the timer-gated probe integration after rejecting three trigger placements that interfered with recovery or ACK-transition behavior. The final local candidate passed focused correctness and matched HTTP/3 performance gates with zero workload failures."
+}

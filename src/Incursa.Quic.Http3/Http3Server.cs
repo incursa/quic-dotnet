@@ -1,7 +1,6 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -20,12 +19,11 @@ public sealed class Http3Server : IAsyncDisposable
     // SEE: spec:REQ-QUIC-RFC9114-S9-0001
     // SEE: code:src/Incursa.Quic.Http3/Http3FrameWriter.cs#WriteFrame
     // SEE: code:src/Incursa.Quic.Http3/Http3Server.cs#WriteFinalFrameBytesAsync
-    // ResponseDataFrameChunkSize caps HTTP/3 DATA payloads, while
-    // ResponseWriteChunkSize only caps each QUIC write call. Keeping them
-    // separate preserves frame boundaries and keeps the final-frame path able
-    // to use WriteFinalAsync on the last chunk.
-    private const int ResponseWriteChunkSize = 4 * 1024;
+    // Keep the HTTP/3 DATA payload and QUIC write boundaries aligned so each
+    // frame payload is submitted without four separate transport writes.
     private const int ResponseDataFrameChunkSize = 16 * 1024;
+    private const int ResponseWriteChunkSize = ResponseDataFrameChunkSize;
+    private const int MaximumCachedCompleteResponseBytes = 2 * 1024 * 1024;
     private const int FieldSectionRequiredInsertCountPrefixBits = 8;
     private const int FieldSectionBasePrefixBits = 7;
     private const int MaxWebSocketControlPayloadLength = 125;
@@ -45,8 +43,6 @@ public sealed class Http3Server : IAsyncDisposable
 
     private static readonly string[] ResponseStatusCodeStrings = CreateResponseStatusCodeStrings();
     private static readonly byte[] EmptyDataFrame = Http3FrameWriter.WriteData(ReadOnlySpan<byte>.Empty);
-    private static readonly byte[] ResponseWriteChunkDataFrameHeader =
-        WriteFrameHeader((ulong)Http3FrameType.Data, ResponseWriteChunkSize);
     private static readonly byte[] ResponseDataFrameChunkDataFrameHeader =
         WriteFrameHeader((ulong)Http3FrameType.Data, ResponseDataFrameChunkSize);
     private const byte QPackIntegerContinuationValueMask = 0x7F;
@@ -707,6 +703,14 @@ public sealed class Http3Server : IAsyncDisposable
                 {
                     await streamingBodyReader.DrainAsync(cancellationToken).ConfigureAwait(false);
                 }
+                else if (requestResult.RequiresRequestDrain)
+                {
+                    await DrainHeadersOnlyRequestAsync(
+                        stream,
+                        requestResult.HeadersOnlyRequest.Headers,
+                        qpackState,
+                        cancellationToken).ConfigureAwait(false);
+                }
 
                 if (response.SendGoAwayAfterResponse)
                 {
@@ -824,42 +828,82 @@ public sealed class Http3Server : IAsyncDisposable
         ConnectionQPackState qpackState,
         CancellationToken cancellationToken)
     {
-        if (handler is IHttp3StreamingRequestHandler streamingHandler)
+        Http3StreamingRequestBodyReader streamingReader;
+        // Keep bodyless requests on the direct fast path; body-bearing requests reuse
+        // the pooled streaming parser and make only the final owned-body copy.
+        if (handler is not IHttp3StreamingRequestHandler
+            && !IsDiagnosticEnabled(diagnosticsSink, Http3DiagnosticKind.FrameReceived))
         {
-            Http3StreamingRequestBodyReader streamingReader = await Http3StreamingRequestBodyReader.CreateAsync(
+            byte[] initialBuffer = QuicBufferPool.RentBytes(readBufferSize);
+            try
+            {
+                int bytesRead = await stream.TryReadTerminalAsync(
+                    initialBuffer.AsMemory(0, readBufferSize),
+                    cancellationToken).ConfigureAwait(false);
+                if (bytesRead != 0
+                    && await TryReadHeadersOnlyRequestFastPathAsync(
+                        initialBuffer.AsMemory(0, bytesRead),
+                        stream.Id,
+                        qpackState,
+                        cancellationToken).ConfigureAwait(false) is { } fastPathRequest)
+                {
+                    return Http3RequestReadResult.FromHeadersOnly(fastPathRequest, requiresRequestDrain: true);
+                }
+
+                streamingReader = await Http3StreamingRequestBodyReader.CreateAsync(
+                    this,
+                    stream,
+                    qpackState,
+                    readBufferSize,
+                    initialBuffer.AsMemory(0, bytesRead),
+                    bytesRead == 0,
+                    cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                QuicBufferPool.ReturnBytes(initialBuffer);
+            }
+        }
+        else
+        {
+            streamingReader = await Http3StreamingRequestBodyReader.CreateAsync(
                 this,
                 stream,
                 qpackState,
                 readBufferSize,
                 cancellationToken).ConfigureAwait(false);
-            try
-            {
-                if (streamingHandler.CanHandleStreaming(streamingReader.Request))
-                {
-                    return Http3RequestReadResult.FromStreaming(streamingReader.Request, streamingReader);
-                }
-
-                Http3Request bufferedRequest = await streamingReader.ReadBufferedRequestAsync(cancellationToken).ConfigureAwait(false);
-                await streamingReader.DisposeAsync().ConfigureAwait(false);
-                return Http3RequestReadResult.FromRequest(bufferedRequest);
-            }
-            catch
-            {
-                await streamingReader.DisposeAsync().ConfigureAwait(false);
-                throw;
-            }
         }
 
-        Http3FrameReader? frameReader = null;
-        Http3RequestMessageValidator? validator = null;
-        ArrayBufferWriter<byte>? body = null;
-        // CONTEXT: Request read buffering
-        // SEE: spec:REQ-QUIC-RFC9114-S4-0002
-        // SEE: code:src/Incursa.Quic.Http3/Http3FrameReader.cs#Read
-        // SEE: code:src/Incursa.Quic.Http3/Http3RequestMessageValidator.cs#ReceiveData
-        // A pooled buffer is used here because frame parsing spans multiple
-        // awaited reads and the frame reader may hold partial bytes until it
-        // can complete a frame.
+        try
+        {
+            if (handler is IHttp3StreamingRequestHandler streamingHandler
+                && streamingHandler.CanHandleStreaming(streamingReader.Request))
+            {
+                streamingReader.SetRetainBodyChunks(
+                    streamingHandler.RetainStreamingRequestBodyChunks(streamingReader.Request));
+                return Http3RequestReadResult.FromStreaming(streamingReader.Request, streamingReader);
+            }
+
+            Http3Request bufferedRequest = await streamingReader.ReadBufferedRequestAsync(cancellationToken).ConfigureAwait(false);
+            await streamingReader.DisposeAsync().ConfigureAwait(false);
+            return Http3RequestReadResult.FromRequest(bufferedRequest);
+        }
+        catch
+        {
+            await streamingReader.DisposeAsync().ConfigureAwait(false);
+            throw;
+        }
+    }
+
+    private async ValueTask DrainHeadersOnlyRequestAsync(
+        QuicStream stream,
+        IReadOnlyList<QPackFieldLine> headers,
+        ConnectionQPackState qpackState,
+        CancellationToken cancellationToken)
+    {
+        Http3FrameReader frameReader = new(ValidateRequestStreamFrameType);
+        Http3RequestMessageValidator validator = new();
+        validator.ReceiveOwnedHeaders(headers);
         byte[] buffer = QuicBufferPool.RentBytes(readBufferSize);
 
         try
@@ -867,59 +911,22 @@ public sealed class Http3Server : IAsyncDisposable
             while (true)
             {
                 int bytesRead = await stream.TryReadTerminalAsync(buffer.AsMemory(0, readBufferSize), cancellationToken).ConfigureAwait(false);
-                if (bytesRead == 0)
-                {
-                    if (frameReader is not null)
-                    {
-                        foreach (Http3Frame frame in frameReader.Complete())
-                        {
-                            EmitFrame(Http3DiagnosticKind.FrameReceived, stream.Id, frame);
-                            validator ??= new Http3RequestMessageValidator();
-                            body = await ProcessRequestFrameAsync(frame, validator, body, stream.Id, qpackState, cancellationToken).ConfigureAwait(false);
-                        }
-                    }
+                IEnumerable<Http3Frame> frames = bytesRead == 0
+                    ? frameReader.Complete()
+                    : frameReader.Read(buffer.AsSpan(0, bytesRead));
 
-                    break;
-                }
-
-                if (frameReader is null
-                    && !IsDiagnosticEnabled(diagnosticsSink, Http3DiagnosticKind.FrameReceived)
-                    && await TryReadHeadersOnlyRequestFastPathAsync(
-                        buffer.AsMemory(0, bytesRead),
-                        stream.Id,
-                        qpackState,
-                        cancellationToken).ConfigureAwait(false) is { } fastPathRequest)
-                {
-                    return Http3RequestReadResult.FromHeadersOnly(fastPathRequest);
-                }
-
-                frameReader ??= new Http3FrameReader(ValidateRequestStreamFrameType);
-                validator ??= new Http3RequestMessageValidator();
-                foreach (Http3Frame frame in frameReader.Read(buffer.AsSpan(0, bytesRead)))
+                foreach (Http3Frame frame in frames)
                 {
                     EmitFrame(Http3DiagnosticKind.FrameReceived, stream.Id, frame);
-                    body = await ProcessRequestFrameAsync(frame, validator, body, stream.Id, qpackState, cancellationToken).ConfigureAwait(false);
+                    await ProcessDrainedRequestFrameAsync(frame, validator, stream.Id, qpackState, cancellationToken).ConfigureAwait(false);
                 }
 
-                if (TryCreateHeadersOnlyRequest(validator.Headers, out Http3HeadersOnlyRequest request))
+                if (bytesRead == 0)
                 {
-                    return Http3RequestReadResult.FromHeadersOnly(request);
+                    validator.Complete();
+                    return;
                 }
             }
-
-            if (validator is null)
-            {
-                throw new Http3Exception(Http3ErrorCode.MessageError, "HTTP/3 request stream ended without request headers.");
-            }
-
-            validator.Complete();
-            IReadOnlyList<QPackFieldLine>? headers = validator.Headers;
-            if (headers is null)
-            {
-                throw new Http3Exception(Http3ErrorCode.MessageError, "The HTTP/3 request did not contain a HEADERS frame.");
-            }
-
-            return Http3RequestReadResult.FromRequest(CreateRequest(headers, body?.WrittenMemory ?? ReadOnlyMemory<byte>.Empty));
         }
         finally
         {
@@ -1033,10 +1040,9 @@ public sealed class Http3Server : IAsyncDisposable
         return false;
     }
 
-    private async ValueTask<ArrayBufferWriter<byte>?> ProcessRequestFrameAsync(
+    private async ValueTask ProcessDrainedRequestFrameAsync(
         Http3Frame frame,
         Http3RequestMessageValidator validator,
-        ArrayBufferWriter<byte>? body,
         long streamId,
         ConnectionQPackState qpackState,
         CancellationToken cancellationToken)
@@ -1049,14 +1055,12 @@ public sealed class Http3Server : IAsyncDisposable
                         headersFrame.EncodedFieldSection,
                         cancellationToken).ConfigureAwait(false);
                 validator.ReceiveOwnedHeaders(fieldSection);
-                return body;
+                break;
             case Http3DataFrame dataFrame:
                 validator.ReceiveData(checked((ulong)dataFrame.Data.Length));
-                body ??= new ArrayBufferWriter<byte>();
-                body.Write(dataFrame.Data.Span);
-                return body;
+                break;
             case Http3UnknownFrame:
-                return body;
+                break;
             default:
                 throw new Http3Exception(Http3ErrorCode.FrameUnexpected, "The request stream contained an invalid frame type.");
         }
@@ -1129,25 +1133,23 @@ public sealed class Http3Server : IAsyncDisposable
         }
     }
 
-    private static Http3Request CreateRequest(IReadOnlyList<QPackFieldLine> headers, ReadOnlyMemory<byte> body)
-    {
-        Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, checked((ulong)body.Length));
-        return new Http3Request(result.Method!, result.Scheme ?? string.Empty, result.Authority ?? string.Empty, result.Path ?? string.Empty, result.Protocol, headers, body);
-    }
-
     private sealed class Http3StreamingRequestBodyReader : IAsyncEnumerable<ReadOnlyMemory<byte>>, IAsyncDisposable
     {
+        private const int InitialReadBufferSize = 4 * 1024;
         private readonly Http3Server owner;
         private readonly QuicStream stream;
         private readonly ConnectionQPackState qpackState;
-        private readonly Http3FrameReader frameReader = new(ValidateRequestStreamFrameType);
+        private readonly int readBufferSize;
+        private readonly Http3StreamingFrameReader frameReader = new(ValidateRequestStreamFrameType);
         private readonly Http3RequestMessageValidator validator = new();
-        private readonly Queue<Http3Frame> pendingFrames = [];
+        private readonly Queue<Http3StreamingFramePart> pendingParts = [];
         private readonly SemaphoreSlim readGate = new(1, 1);
-        private readonly byte[] buffer;
+        private byte[] buffer;
         private int enumerated;
         private int disposed;
+        private bool bodyDataObserved;
         private bool completed;
+        private bool retainBodyChunks = true;
 
         private Http3StreamingRequestBodyReader(
             Http3Server owner,
@@ -1158,7 +1160,8 @@ public sealed class Http3Server : IAsyncDisposable
             this.owner = owner;
             this.stream = stream;
             this.qpackState = qpackState;
-            buffer = QuicBufferPool.RentBytes(readBufferSize);
+            this.readBufferSize = readBufferSize;
+            buffer = QuicBufferPool.RentBytes(Math.Min(readBufferSize, InitialReadBufferSize));
         }
 
         public Http3StreamingRequest Request { get; private set; } = null!;
@@ -1183,6 +1186,28 @@ public sealed class Http3Server : IAsyncDisposable
             }
         }
 
+        public static async ValueTask<Http3StreamingRequestBodyReader> CreateAsync(
+            Http3Server owner,
+            QuicStream stream,
+            ConnectionQPackState qpackState,
+            int readBufferSize,
+            ReadOnlyMemory<byte> initialBytes,
+            bool endOfStream,
+            CancellationToken cancellationToken)
+        {
+            Http3StreamingRequestBodyReader reader = new(owner, stream, qpackState, readBufferSize);
+            try
+            {
+                await reader.ReadInitialHeadersAsync(initialBytes, endOfStream, cancellationToken).ConfigureAwait(false);
+                return reader;
+            }
+            catch
+            {
+                await reader.DisposeAsync().ConfigureAwait(false);
+                throw;
+            }
+        }
+
         public IAsyncEnumerator<ReadOnlyMemory<byte>> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {
             if (Interlocked.Exchange(ref enumerated, 1) != 0)
@@ -1193,15 +1218,76 @@ public sealed class Http3Server : IAsyncDisposable
             return EnumerateAsync(cancellationToken).GetAsyncEnumerator(cancellationToken);
         }
 
-        public async ValueTask<Http3Request> ReadBufferedRequestAsync(CancellationToken cancellationToken)
+        public void SetRetainBodyChunks(bool retain)
         {
-            ArrayBufferWriter<byte> body = new();
-            while (await ReadNextDataAsync(cancellationToken).ConfigureAwait(false) is { HasData: true } next)
+            if (Volatile.Read(ref enumerated) != 0)
             {
-                body.Write(next.Data.Span);
+                throw new InvalidOperationException("The HTTP/3 request body retention mode cannot change after enumeration starts.");
             }
 
-            return CreateRequest(Request.Headers, body.WrittenMemory);
+            retainBodyChunks = retain;
+        }
+
+        public async ValueTask<Http3Request> ReadBufferedRequestAsync(CancellationToken cancellationToken)
+        {
+            ReadOnlyMemory<byte> firstSegment = default;
+            List<ReadOnlyMemory<byte>>? bodySegments = null;
+            int bodyLength = 0;
+            while (await ReadNextDataAsync(cancellationToken).ConfigureAwait(false) is { HasData: true } next)
+            {
+                if (next.Data.IsEmpty)
+                {
+                    continue;
+                }
+
+                if (bodySegments is not null)
+                {
+                    bodySegments.Add(next.Data);
+                    bodyLength = checked(bodyLength + next.Data.Length);
+                    continue;
+                }
+
+                if (firstSegment.IsEmpty)
+                {
+                    firstSegment = next.Data;
+                    continue;
+                }
+
+                bodySegments = [firstSegment, next.Data];
+                bodyLength = checked(firstSegment.Length + next.Data.Length);
+                firstSegment = default;
+            }
+
+            if (bodySegments is null)
+            {
+                return CreateOwnedRequest(
+                    Request.Headers,
+                    firstSegment.IsEmpty ? ReadOnlyMemory<byte>.Empty : firstSegment.ToArray());
+            }
+
+            byte[] body = GC.AllocateUninitializedArray<byte>(bodyLength);
+            int offset = 0;
+            foreach (ReadOnlyMemory<byte> segment in bodySegments)
+            {
+                segment.Span.CopyTo(body.AsSpan(offset));
+                offset += segment.Length;
+            }
+
+            return CreateOwnedRequest(Request.Headers, body);
+        }
+
+        private static Http3Request CreateOwnedRequest(IReadOnlyList<QPackFieldLine> headers, ReadOnlyMemory<byte> body)
+        {
+            Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, checked((ulong)body.Length));
+            return new Http3Request(
+                result.Method!,
+                result.Scheme ?? string.Empty,
+                result.Authority ?? string.Empty,
+                result.Path ?? string.Empty,
+                result.Protocol,
+                headers,
+                body,
+                copyBody: false);
         }
 
         public async ValueTask DrainAsync(CancellationToken cancellationToken)
@@ -1220,6 +1306,7 @@ public sealed class Http3Server : IAsyncDisposable
         {
             if (Interlocked.Exchange(ref disposed, 1) == 0)
             {
+                frameReader.Dispose();
                 QuicBufferPool.ReturnBytes(buffer);
                 readGate.Dispose();
             }
@@ -1232,30 +1319,60 @@ public sealed class Http3Server : IAsyncDisposable
         {
             while (await ReadNextDataAsync(cancellationToken).ConfigureAwait(false) is { HasData: true } next)
             {
-                yield return next.Data;
+                try
+                {
+                    yield return next.Data;
+                }
+                finally
+                {
+                    if (!retainBodyChunks)
+                    {
+                        frameReader.ReleaseData(next.Data);
+                    }
+                }
             }
         }
 
         private async ValueTask ReadInitialHeadersAsync(CancellationToken cancellationToken)
         {
+            await ReadInitialHeadersAsync(ReadOnlyMemory<byte>.Empty, endOfStream: false, cancellationToken).ConfigureAwait(false);
+        }
+
+        private async ValueTask ReadInitialHeadersAsync(
+            ReadOnlyMemory<byte> initialBytes,
+            bool endOfStream,
+            CancellationToken cancellationToken)
+        {
+            if (!initialBytes.IsEmpty)
+            {
+                frameReader.Read(initialBytes, pendingParts);
+                await ProcessInitialPartsAsync(cancellationToken).ConfigureAwait(false);
+            }
+
+            if (endOfStream)
+            {
+                frameReader.Complete();
+                if (Request is null)
+                {
+                    throw new Http3Exception(Http3ErrorCode.MessageError, "HTTP/3 request stream ended without request headers.");
+                }
+
+                return;
+            }
+
             while (Request is null)
             {
                 int bytesRead = await stream.TryReadTerminalAsync(buffer, cancellationToken).ConfigureAwait(false);
-                Http3Frame[] frames = bytesRead == 0
-                    ? frameReader.Complete()
-                    : frameReader.Read(buffer.AsSpan(0, bytesRead));
-                foreach (Http3Frame frame in frames)
+                if (bytesRead == 0)
                 {
-                    owner.EmitFrame(Http3DiagnosticKind.FrameReceived, stream.Id, frame);
-                    if (Request is null)
-                    {
-                        await ProcessInitialFrameAsync(frame, cancellationToken).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        pendingFrames.Enqueue(frame);
-                    }
+                    frameReader.Complete();
                 }
+                else
+                {
+                    frameReader.Read(buffer.AsMemory(0, bytesRead), pendingParts);
+                }
+
+                await ProcessInitialPartsAsync(cancellationToken).ConfigureAwait(false);
 
                 if (bytesRead == 0 && Request is null)
                 {
@@ -1264,8 +1381,24 @@ public sealed class Http3Server : IAsyncDisposable
             }
         }
 
-        private async ValueTask ProcessInitialFrameAsync(Http3Frame frame, CancellationToken cancellationToken)
+        private async ValueTask ProcessInitialPartsAsync(CancellationToken cancellationToken)
         {
+            while (Request is null && pendingParts.TryDequeue(out Http3StreamingFramePart part))
+            {
+                EmitFrame(part);
+                await ProcessInitialPartAsync(part, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        private async ValueTask ProcessInitialPartAsync(Http3StreamingFramePart part, CancellationToken cancellationToken)
+        {
+            if (part.IsData)
+            {
+                validator.ReceiveData(checked((ulong)part.Data.Length));
+                return;
+            }
+
+            Http3Frame frame = part.Frame!;
             switch (frame)
             {
                 case Http3HeadersFrame headersFrame:
@@ -1284,9 +1417,6 @@ public sealed class Http3Server : IAsyncDisposable
                         headers,
                         this);
                     break;
-                case Http3DataFrame dataFrame:
-                    validator.ReceiveData(checked((ulong)dataFrame.Data.Length));
-                    break;
                 case Http3UnknownFrame:
                     break;
                 default:
@@ -1302,9 +1432,10 @@ public sealed class Http3Server : IAsyncDisposable
             {
                 while (!completed)
                 {
-                    if (pendingFrames.TryDequeue(out Http3Frame? pending))
+                    if (pendingParts.TryDequeue(out Http3StreamingFramePart pending))
                     {
-                        StreamingBodyReadResult result = await ProcessBodyFrameAsync(pending, cancellationToken).ConfigureAwait(false);
+                        EmitFrame(pending);
+                        StreamingBodyReadResult result = await ProcessBodyPartAsync(pending, cancellationToken).ConfigureAwait(false);
                         if (result.HasData)
                         {
                             return result;
@@ -1313,17 +1444,18 @@ public sealed class Http3Server : IAsyncDisposable
                         continue;
                     }
 
+                    EnsureBodyReadBuffer();
                     int bytesRead = await stream.TryReadTerminalAsync(buffer, cancellationToken).ConfigureAwait(false);
-                    Http3Frame[] frames = bytesRead == 0
-                        ? frameReader.Complete()
-                        : frameReader.Read(buffer.AsSpan(0, bytesRead));
-                    foreach (Http3Frame frame in frames)
+                    if (bytesRead == 0)
                     {
-                        owner.EmitFrame(Http3DiagnosticKind.FrameReceived, stream.Id, frame);
-                        pendingFrames.Enqueue(frame);
+                        frameReader.Complete();
+                    }
+                    else
+                    {
+                        frameReader.Read(buffer.AsMemory(0, bytesRead), pendingParts);
                     }
 
-                    if (bytesRead == 0 && pendingFrames.Count == 0)
+                    if (bytesRead == 0 && pendingParts.Count == 0)
                     {
                         validator.Complete();
                         completed = true;
@@ -1338,15 +1470,20 @@ public sealed class Http3Server : IAsyncDisposable
             }
         }
 
-        private async ValueTask<StreamingBodyReadResult> ProcessBodyFrameAsync(
-            Http3Frame frame,
+        private async ValueTask<StreamingBodyReadResult> ProcessBodyPartAsync(
+            Http3StreamingFramePart part,
             CancellationToken cancellationToken)
         {
+            if (part.IsData)
+            {
+                bodyDataObserved = true;
+                validator.ReceiveData(checked((ulong)part.Data.Length));
+                return new StreamingBodyReadResult(true, part.Data);
+            }
+
+            Http3Frame frame = part.Frame!;
             switch (frame)
             {
-                case Http3DataFrame dataFrame:
-                    validator.ReceiveData(checked((ulong)dataFrame.Data.Length));
-                    return new StreamingBodyReadResult(true, dataFrame.Data);
                 case Http3HeadersFrame headersFrame:
                     IReadOnlyList<QPackFieldLine> headers = await qpackState.DecodeRequestHeadersAsync(
                             checked((ulong)stream.Id),
@@ -1359,6 +1496,33 @@ public sealed class Http3Server : IAsyncDisposable
                 default:
                     throw new Http3Exception(Http3ErrorCode.FrameUnexpected, "The request stream contained an invalid frame type.");
             }
+        }
+
+        private void EnsureBodyReadBuffer()
+        {
+            if (!bodyDataObserved || buffer.Length >= readBufferSize)
+            {
+                return;
+            }
+
+            byte[] priorBuffer = buffer;
+            buffer = QuicBufferPool.RentBytes(readBufferSize);
+            QuicBufferPool.ReturnBytes(priorBuffer);
+        }
+
+        private void EmitFrame(Http3StreamingFramePart part)
+        {
+            if (part.IsData)
+            {
+                if (part.EndsFrame)
+                {
+                    owner.EmitFrame(Http3DiagnosticKind.FrameReceived, stream.Id, Http3FrameType.Data, part.FramePayloadLength);
+                }
+
+                return;
+            }
+
+            owner.EmitFrame(Http3DiagnosticKind.FrameReceived, stream.Id, part.Frame!);
         }
 
         private readonly record struct StreamingBodyReadResult(bool HasData, ReadOnlyMemory<byte> Data);
@@ -1374,18 +1538,22 @@ public sealed class Http3Server : IAsyncDisposable
             Http3Request? request,
             Http3StreamingRequest? streamingRequest,
             Http3StreamingRequestBodyReader? streamingBodyReader,
-            bool isHeadersOnly)
+            bool isHeadersOnly,
+            bool requiresRequestDrain)
         {
             HeadersOnlyRequest = headersOnlyRequest;
             this.request = request;
             this.streamingRequest = streamingRequest;
             StreamingBodyReader = streamingBodyReader;
             IsHeadersOnly = isHeadersOnly;
+            RequiresRequestDrain = requiresRequestDrain;
         }
 
         public Http3HeadersOnlyRequest HeadersOnlyRequest { get; }
 
         public bool IsHeadersOnly { get; }
+
+        public bool RequiresRequestDrain { get; }
 
         public bool IsStreaming => streamingRequest is not null;
 
@@ -1419,11 +1587,13 @@ public sealed class Http3Server : IAsyncDisposable
             }
         }
 
-        public static Http3RequestReadResult FromHeadersOnly(Http3HeadersOnlyRequest request)
-            => new(request, null, null, null, isHeadersOnly: true);
+        public static Http3RequestReadResult FromHeadersOnly(
+            Http3HeadersOnlyRequest request,
+            bool requiresRequestDrain = false)
+            => new(request, null, null, null, isHeadersOnly: true, requiresRequestDrain);
 
         public static Http3RequestReadResult FromRequest(Http3Request request)
-            => new(default, request ?? throw new ArgumentNullException(nameof(request)), null, null, isHeadersOnly: false);
+            => new(default, request ?? throw new ArgumentNullException(nameof(request)), null, null, isHeadersOnly: false, requiresRequestDrain: false);
 
         public static Http3RequestReadResult FromStreaming(
             Http3StreamingRequest request,
@@ -1433,7 +1603,8 @@ public sealed class Http3Server : IAsyncDisposable
                 null,
                 request ?? throw new ArgumentNullException(nameof(request)),
                 bodyReader ?? throw new ArgumentNullException(nameof(bodyReader)),
-                isHeadersOnly: false);
+                isHeadersOnly: false,
+                requiresRequestDrain: false);
 
         public Http3Request ToRequest()
         {
@@ -1732,12 +1903,12 @@ public sealed class Http3Server : IAsyncDisposable
             return false;
         }
 
-        int framePayloadSize = response.DataFramePayloadSize ?? ResponseDataFrameChunkSize;
-        if (!CanCacheSingleResponseDataFrame(response, framePayloadSize))
+        if (!response.CacheEncodedHeaders)
         {
             return false;
         }
 
+        int framePayloadSize = response.DataFramePayloadSize ?? ResponseDataFrameChunkSize;
         byte[]? cachedFrame = response.GetCachedCompleteResponseFrame();
         if (cachedFrame is not null)
         {
@@ -1745,18 +1916,54 @@ public sealed class Http3Server : IAsyncDisposable
             return true;
         }
 
-        byte[] dataFrame = response.GetCachedSingleDataFrame()
-            ?? response.CacheSingleDataFrame(Http3FrameWriter.WriteData(response.Body.Span));
-        if (headersFrame.Length > ResponseWriteChunkSize - dataFrame.Length)
+        int completeResponseLength = headersFrame.Length;
+        int bodyOffset = 0;
+        while (bodyOffset < response.Body.Length)
         {
-            return false;
+            int payloadLength = Math.Min(framePayloadSize, response.Body.Length - bodyOffset);
+            completeResponseLength = checked(
+                completeResponseLength
+                + Http3FrameWriter.GetFrameLength((ulong)Http3FrameType.Data, payloadLength));
+            if (completeResponseLength > MaximumCachedCompleteResponseBytes)
+            {
+                return false;
+            }
+
+            bodyOffset += payloadLength;
         }
 
-        byte[] combinedFrame = GC.AllocateUninitializedArray<byte>(headersFrame.Length + dataFrame.Length);
-        headersFrame.CopyTo(combinedFrame, 0);
-        dataFrame.CopyTo(combinedFrame, headersFrame.Length);
-        completeResponseFrame = response.CacheCompleteResponseFrame(combinedFrame);
-        return true;
+        lock (response.CacheGate)
+        {
+            cachedFrame = response.GetCachedCompleteResponseFrame();
+            if (cachedFrame is not null)
+            {
+                completeResponseFrame = cachedFrame;
+                return true;
+            }
+
+            byte[] combinedFrame = GC.AllocateUninitializedArray<byte>(completeResponseLength);
+            headersFrame.CopyTo(combinedFrame, 0);
+            int destinationOffset = headersFrame.Length;
+            bodyOffset = 0;
+            while (bodyOffset < response.Body.Length)
+            {
+                int payloadLength = Math.Min(framePayloadSize, response.Body.Length - bodyOffset);
+                byte[] dataFrameHeader = GetDataFrameHeader(payloadLength);
+                dataFrameHeader.CopyTo(combinedFrame, destinationOffset);
+                destinationOffset += dataFrameHeader.Length;
+                response.Body.Span.Slice(bodyOffset, payloadLength).CopyTo(combinedFrame.AsSpan(destinationOffset));
+                destinationOffset += payloadLength;
+                bodyOffset += payloadLength;
+            }
+
+            if (destinationOffset != combinedFrame.Length)
+            {
+                throw new InvalidOperationException("The cached HTTP/3 response length did not match the serialized frame sequence.");
+            }
+
+            completeResponseFrame = response.CacheCompleteResponseFrame(combinedFrame);
+            return true;
+        }
     }
 
     private async ValueTask<bool> WriteTunnelResponseHeadersAsync(
@@ -1833,10 +2040,26 @@ public sealed class Http3Server : IAsyncDisposable
             int count = Math.Min(framePayloadSize, body.Length - offset);
             bool isFinalFrame = offset + count == body.Length;
             byte[] dataFrameHeader = GetDataFrameHeader(count);
-            if (!await WriteFrameBytesAsync(stream, dataFrameHeader, cancellationToken).ConfigureAwait(false)
-                || !await WritePayloadBytesAsync(stream, body.Slice(offset, count), isFinalFrame, cancellationToken).ConfigureAwait(false))
+            if (!await WriteFrameBytesAsync(stream, dataFrameHeader, cancellationToken).ConfigureAwait(false))
             {
                 return false;
+            }
+
+            int payloadOffset = 0;
+            while (payloadOffset < count)
+            {
+                int writeCount = Math.Min(ResponseWriteChunkSize, count - payloadOffset);
+                ReadOnlyMemory<byte> chunk = body.Slice(offset + payloadOffset, writeCount);
+                bool isFinalWrite = isFinalFrame && payloadOffset + writeCount == count;
+                bool written = isFinalWrite
+                    ? await stream.TryWriteFinalAsync(chunk, cancellationToken).ConfigureAwait(false)
+                    : await stream.TryWriteAsync(chunk, cancellationToken).ConfigureAwait(false);
+                if (!written)
+                {
+                    return false;
+                }
+
+                payloadOffset += writeCount;
             }
 
             offset += count;
@@ -1877,14 +2100,31 @@ public sealed class Http3Server : IAsyncDisposable
         await using IAsyncEnumerator<ReadOnlyMemory<byte>> enumerator = body.GetAsyncEnumerator(cancellationToken);
         while (await enumerator.MoveNextAsync().ConfigureAwait(false))
         {
-            if (!await WriteResponseDataFramesAsync(
-                stream,
-                enumerator.Current,
-                dataFramePayloadSize,
-                cancellationToken,
-                finalFrame: false).ConfigureAwait(false))
+            ReadOnlyMemory<byte> current = enumerator.Current;
+            int framePayloadSize = dataFramePayloadSize ?? ResponseDataFrameChunkSize;
+            int offset = 0;
+            while (offset < current.Length)
             {
-                return false;
+                int count = Math.Min(framePayloadSize, current.Length - offset);
+                byte[] dataFrameHeader = GetDataFrameHeader(count);
+                int payloadOffset = 0;
+                while (payloadOffset < count)
+                {
+                    int writeCount = Math.Min(ResponseWriteChunkSize, count - payloadOffset);
+                    ReadOnlyMemory<byte> payload = current.Slice(offset + payloadOffset, writeCount);
+                    bool written = payloadOffset == 0
+                        ? await stream.TryWriteSequenceAsync(dataFrameHeader, payload, cancellationToken).ConfigureAwait(false)
+                        : await stream.TryWriteAsync(payload, cancellationToken).ConfigureAwait(false);
+                    if (!written)
+                    {
+                        return false;
+                    }
+
+                    payloadOffset += writeCount;
+                }
+
+                EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Data, count);
+                offset += count;
             }
         }
 
@@ -1894,48 +2134,6 @@ public sealed class Http3Server : IAsyncDisposable
         }
 
         EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Data, 0);
-        return true;
-    }
-
-    private async ValueTask<bool> WriteResponseDataFramesAsync(
-        QuicStream stream,
-        ReadOnlyMemory<byte> body,
-        int? dataFramePayloadSize,
-        CancellationToken cancellationToken,
-        bool finalFrame = true)
-    {
-        if (body.IsEmpty)
-        {
-            if (finalFrame)
-            {
-                if (!await WriteFinalFrameBytesAsync(stream, EmptyDataFrame, cancellationToken).ConfigureAwait(false))
-                {
-                    return false;
-                }
-
-                EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Data, 0);
-            }
-
-            return true;
-        }
-
-        int framePayloadSize = dataFramePayloadSize ?? ResponseDataFrameChunkSize;
-        int offset = 0;
-        while (offset < body.Length)
-        {
-            int count = Math.Min(framePayloadSize, body.Length - offset);
-            bool isFinalFrame = finalFrame && offset + count == body.Length;
-            byte[] dataFrameHeader = GetDataFrameHeader(count);
-            if (!await WriteFrameBytesAsync(stream, dataFrameHeader, cancellationToken).ConfigureAwait(false)
-                || !await WritePayloadBytesAsync(stream, body.Slice(offset, count), isFinalFrame, cancellationToken).ConfigureAwait(false))
-            {
-                return false;
-            }
-
-            EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Data, count);
-            offset += count;
-        }
-
         return true;
     }
 
@@ -1964,59 +2162,6 @@ public sealed class Http3Server : IAsyncDisposable
             if (!await stream.TryWriteAsync(frameBytes.AsMemory(offset, count), cancellationToken).ConfigureAwait(false))
             {
                 return false;
-            }
-
-            offset += count;
-        }
-
-        return true;
-    }
-
-    private static ValueTask<bool> WritePayloadBytesAsync(
-        QuicStream stream,
-        ReadOnlyMemory<byte> payload,
-        bool finalFrame,
-        CancellationToken cancellationToken)
-    {
-        if (payload.IsEmpty)
-        {
-            return new ValueTask<bool>(true);
-        }
-
-        if (payload.Length <= ResponseWriteChunkSize)
-        {
-            return finalFrame
-                ? stream.TryWriteFinalAsync(payload, cancellationToken)
-                : stream.TryWriteAsync(payload, cancellationToken);
-        }
-
-        return WritePayloadBytesSlowAsync(stream, payload, finalFrame, cancellationToken);
-    }
-
-    private static async ValueTask<bool> WritePayloadBytesSlowAsync(
-        QuicStream stream,
-        ReadOnlyMemory<byte> payload,
-        bool finalFrame,
-        CancellationToken cancellationToken)
-    {
-        int offset = 0;
-        while (offset < payload.Length)
-        {
-            int count = Math.Min(ResponseWriteChunkSize, payload.Length - offset);
-            ReadOnlyMemory<byte> chunk = payload.Slice(offset, count);
-            if (finalFrame && offset + count == payload.Length)
-            {
-                if (!await stream.TryWriteFinalAsync(chunk, cancellationToken).ConfigureAwait(false))
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (!await stream.TryWriteAsync(chunk, cancellationToken).ConfigureAwait(false))
-                {
-                    return false;
-                }
             }
 
             offset += count;
@@ -2638,7 +2783,6 @@ public sealed class Http3Server : IAsyncDisposable
     {
         return payloadLength switch
         {
-            ResponseWriteChunkSize => ResponseWriteChunkDataFrameHeader,
             ResponseDataFrameChunkSize => ResponseDataFrameChunkDataFrameHeader,
             _ => WriteFrameHeader((ulong)Http3FrameType.Data, payloadLength),
         };

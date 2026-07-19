@@ -418,6 +418,9 @@ internal sealed partial class QuicConnectionRuntime
             ? pendingApplicationSendDelayDueTicks
             : null;
         long? applicationAckDelayDueTicks = GetApplicationAckDelayDueTicks();
+        long? pathMtuProbeDueTicks = phase == QuicConnectionPhase.Active
+            ? pendingPathMtuProbeDueTicks
+            : null;
 
         long? closeDueTicks = phase == QuicConnectionPhase.Closing ? lifecycleTimerState.TerminalEndTicks : null;
         long? drainDueTicks = phase == QuicConnectionPhase.Draining ? lifecycleTimerState.TerminalEndTicks : null;
@@ -430,6 +433,7 @@ internal sealed partial class QuicConnectionRuntime
         AppendTimerDeadlineEffect(ref effects, QuicConnectionTimerKind.KeyUpdateRetention, keyUpdateRetentionDueTicks);
         AppendTimerDeadlineEffect(ref effects, QuicConnectionTimerKind.ApplicationSendDelay, applicationSendDelayDueTicks);
         AppendTimerDeadlineEffect(ref effects, QuicConnectionTimerKind.AckDelay, applicationAckDelayDueTicks);
+        AppendTimerDeadlineEffect(ref effects, QuicConnectionTimerKind.PathMtuProbe, pathMtuProbeDueTicks);
     }
 
     private long? GetApplicationAckDelayDueTicks()

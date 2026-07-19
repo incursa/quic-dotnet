@@ -10,7 +10,7 @@ public sealed class QuicConnectionRuntimeShardWorkItemLayoutTests
     [Fact]
     public void LayoutRemainsCompact()
     {
-        Assert.Equal(128, Unsafe.SizeOf<QuicConnectionRuntimeShardWorkItem>());
+        Assert.Equal(144, Unsafe.SizeOf<QuicConnectionRuntimeShardWorkItem>());
     }
 
     [Theory]
@@ -73,6 +73,7 @@ public sealed class QuicConnectionRuntimeShardWorkItemLayoutTests
         Assert.Null(item.OwnedDatagramBuffer);
         Assert.Equal(0, item.RequestId);
         Assert.True(item.StreamData.IsEmpty);
+        Assert.True(item.StreamDataSuffix.IsEmpty);
     }
 
     [Fact]
@@ -104,6 +105,7 @@ public sealed class QuicConnectionRuntimeShardWorkItemLayoutTests
         Assert.Null(item.ConnectionEvent);
         Assert.Equal(0, item.RequestId);
         Assert.True(item.StreamData.IsEmpty);
+        Assert.True(item.StreamDataSuffix.IsEmpty);
     }
 
     [Fact]
@@ -116,13 +118,15 @@ public sealed class QuicConnectionRuntimeShardWorkItemLayoutTests
             long.MinValue,
             (QuicStreamType)byte.MaxValue);
         byte[] streamData = [4, 5, 6];
+        byte[] streamDataSuffix = [7, 8];
         QuicConnectionRuntimeShardWorkItem write = new QuicConnectionRuntimeShardWorkItem(
             new QuicConnectionHandle(8),
             runtime,
             long.MaxValue,
             QuicConnectionStreamActionKind.Write,
             ulong.MaxValue,
-            streamData) with
+            streamData,
+            streamDataSuffix) with
         {
             EnqueuedTimestamp = long.MaxValue - 1,
         };
@@ -135,8 +139,75 @@ public sealed class QuicConnectionRuntimeShardWorkItemLayoutTests
         Assert.Equal(QuicConnectionStreamActionKind.Write, write.StreamActionKind);
         Assert.Equal(ulong.MaxValue, write.StreamId);
         Assert.True(write.StreamData.Span.SequenceEqual(streamData));
+        Assert.True(write.StreamDataSuffix.Span.SequenceEqual(streamDataSuffix));
         Assert.Equal(long.MaxValue - 1, write.EnqueuedTimestamp);
         Assert.Equal(default, write.PacketReceived);
         Assert.Null(write.ConnectionEvent);
+    }
+
+    [Fact]
+    public void AckFinalizationDeferralRequiresSameRuntimePacketOrStreamWrite()
+    {
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        using QuicConnectionRuntime otherRuntime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicConnectionRuntimeShardWorkItem packet = CreatePacketWorkItem(runtime);
+        QuicConnectionRuntimeShardWorkItem sameRuntimePacket = CreatePacketWorkItem(runtime);
+        QuicConnectionRuntimeShardWorkItem otherRuntimePacket = CreatePacketWorkItem(otherRuntime);
+        QuicConnectionRuntimeShardWorkItem streamWrite = new(
+            new QuicConnectionHandle(8),
+            runtime,
+            requestId: 1,
+            QuicConnectionStreamActionKind.Write,
+            streamId: 0,
+            new byte[] { 1 });
+        QuicConnectionRuntimeShardWorkItem streamOpen = new(
+            new QuicConnectionHandle(8),
+            runtime,
+            requestId: 2,
+            QuicStreamType.Bidirectional);
+
+        Assert.True(QuicConnectionRuntimeShard.ShouldDeferApplicationAckFinalization(
+            in packet,
+            in sameRuntimePacket,
+            deferredPacketCount: 0,
+            out bool finalizeAfterPacket));
+        Assert.False(finalizeAfterPacket);
+
+        Assert.True(QuicConnectionRuntimeShard.ShouldDeferApplicationAckFinalization(
+            in packet,
+            in streamWrite,
+            deferredPacketCount: 7,
+            out bool finalizeAfterWrite));
+        Assert.True(finalizeAfterWrite);
+
+        Assert.False(QuicConnectionRuntimeShard.ShouldDeferApplicationAckFinalization(
+            in packet,
+            in otherRuntimePacket,
+            deferredPacketCount: 0,
+            out _));
+        Assert.False(QuicConnectionRuntimeShard.ShouldDeferApplicationAckFinalization(
+            in packet,
+            in streamOpen,
+            deferredPacketCount: 0,
+            out _));
+        Assert.False(QuicConnectionRuntimeShard.ShouldDeferApplicationAckFinalization(
+            in packet,
+            in sameRuntimePacket,
+            deferredPacketCount: 8,
+            out _));
+    }
+
+    private static QuicConnectionRuntimeShardWorkItem CreatePacketWorkItem(QuicConnectionRuntime runtime)
+    {
+        QuicConnectionPacketReceivedContext packet = new(
+            ObservedAtTicks: 1,
+            new QuicConnectionPathIdentity("remote"),
+            new byte[] { 1 });
+        return new QuicConnectionRuntimeShardWorkItem(
+            new QuicConnectionHandle(6),
+            runtime,
+            packet,
+            ownedDatagramBuffer: null,
+            ownedDatagramBufferOwnership: default);
     }
 }

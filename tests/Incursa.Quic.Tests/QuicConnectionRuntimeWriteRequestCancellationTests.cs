@@ -335,6 +335,95 @@ public sealed class QuicConnectionRuntimeWriteRequestCancellationTests
     }
 
     [Fact]
+    public async Task QuicStreamTryWriteSequenceAsync_PreservesSegmentsAndReleasesGateBeforeConsumption()
+    {
+        await using QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
+
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+
+        Queue<QuicConnectionStreamActionEvent> postedWrites = new();
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            if (connectionEvent is QuicConnectionStreamActionEvent
+                {
+                    ActionKind: QuicConnectionStreamActionKind.Write,
+                } writeEvent)
+            {
+                postedWrites.Enqueue(writeEvent);
+            }
+
+            return true;
+        });
+
+        QuicStream stream = new(runtime.StreamRegistry.Bookkeeping, streamId.Value, runtime);
+        ValueTask<bool> firstWrite = stream.TryWriteSequenceAsync(
+            new byte[] { 0x00, 0x03 },
+            new byte[] { 0x61, 0x62, 0x63 },
+            CancellationToken.None);
+        Assert.False(firstWrite.IsCompleted);
+        QuicConnectionStreamActionEvent firstEvent = postedWrites.Dequeue();
+        Assert.True(firstEvent.StreamData.Span.SequenceEqual(new byte[] { 0x00, 0x03 }));
+        Assert.True(firstEvent.StreamDataSuffix.Span.SequenceEqual(new byte[] { 0x61, 0x62, 0x63 }));
+
+        _ = runtime.Transition(firstEvent);
+
+        ValueTask<bool> secondWrite = stream.TryWriteAsync(new byte[] { 0x64 }, CancellationToken.None);
+        Assert.False(secondWrite.IsCompleted);
+        _ = runtime.Transition(postedWrites.Dequeue());
+
+        Assert.True(await secondWrite);
+        Assert.True(await firstWrite);
+    }
+
+    [Fact]
+    public async Task QuicStreamTryWriteSequenceAsync_ObservesCancellationWhilePending()
+    {
+        await using QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
+
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+
+        runtime.SetLocalApiEventDispatcher(_ => true);
+        QuicStream stream = new(runtime.StreamRegistry.Bookkeeping, streamId.Value, runtime);
+        using CancellationTokenSource cancellation = new();
+        ValueTask<bool> write = stream.TryWriteSequenceAsync(
+            new byte[] { 0x00, 0x01 },
+            new byte[] { 0x61 },
+            cancellation.Token);
+
+        await cancellation.CancelAsync();
+
+        await Assert.ThrowsAsync<OperationCanceledException>(() => write.AsTask());
+    }
+
+    [Fact]
+    public async Task StreamActionRequestCompletionSource_OwnsBothSequenceSegmentsForRetry()
+    {
+        await using QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
+        QuicConnectionRuntime.StreamActionRequestCompletionSource completion = new(runtime);
+        completion.Prepare();
+        byte[] prefix = [0x00, 0x03];
+        byte[] suffix = [0x61, 0x62, 0x63];
+
+        completion.EnsureOwnedStreamData(prefix, suffix);
+        prefix.AsSpan().Fill(0xFF);
+        suffix.AsSpan().Fill(0xEE);
+
+        Assert.True(completion.HasOwnedStreamData);
+        Assert.Equal(5, completion.StreamDataLength);
+        Assert.True(completion.GetOwnedStreamDataSpan().SequenceEqual(new byte[] { 0x00, 0x03, 0x61, 0x62, 0x63 }));
+
+        completion.ReleaseOwnedStreamData();
+        Assert.False(completion.HasOwnedStreamData);
+        Assert.True(completion.GetOwnedStreamDataSpan().IsEmpty);
+    }
+
+    [Fact]
     public async Task QuicStreamTryWriteFinalAsync_CompletesWritesBeforeDelayedValueTaskConsumption()
     {
         await using QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();

@@ -33,6 +33,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private const int RetryBootstrapReplayValidationFailureTokenValidation = 10;
     private const int RetryBootstrapReplayValidationFailurePacketNumberReset = 11;
     private const int ReceiveBufferBytes = 4096;
+    internal const int DesiredSocketReceiveBufferBytes = 4 * 1024 * 1024;
     private const int MaximumBufferedZeroRttDatagramsPerConnection = 2;
     private static readonly TimeSpan RetryBootstrapTokenLifetime = TimeSpan.FromMinutes(1);
 
@@ -171,6 +172,21 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     internal string? NewTokenValidationTokenHex => newTokenValidationTokenHex;
 
     internal Socket Socket => socket;
+
+    private static void TryIncreaseSocketReceiveBuffer(Socket targetSocket)
+    {
+        try
+        {
+            if (targetSocket.ReceiveBufferSize < DesiredSocketReceiveBufferBytes)
+            {
+                targetSocket.ReceiveBufferSize = DesiredSocketReceiveBufferBytes;
+            }
+        }
+        catch (SocketException)
+        {
+            // The platform default remains functional when an OS policy caps or rejects the request.
+        }
+    }
 
     internal QuicReceiveBufferPoolSnapshot ReceiveBufferPoolSnapshot => receiveBufferPool.Snapshot;
 
@@ -1444,11 +1460,16 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             runtime.SetStreamCapacityReleaseDispatcher(() => endpoint.Host.TryPostStreamCapacityRelease(handle));
             runtime.SetFlowControlCreditUpdateDispatcher(() => endpoint.Host.TryPostFlowControlCreditUpdate(handle));
             runtime.SetStreamOpenDispatcher((requestId, streamType) => endpoint.Host.TryPostStreamOpen(handle, requestId, streamType));
-            runtime.SetStreamWriteDispatcher((requestId, actionKind, streamId, streamData) => endpoint.Host.TryPostStreamWrite(handle, requestId, actionKind, streamId, streamData));
+            runtime.SetStreamWriteDispatcher((requestId, actionKind, streamId, streamData, streamDataSuffix) => endpoint.Host.TryPostStreamWrite(handle, requestId, actionKind, streamId, streamData, streamDataSuffix));
 
             if (!connections.TryAdd(handle, new PendingConnectionState(handle, runtime, connection)))
             {
                 return Fail("register-pending-connection", "pending-connection-registration-failed");
+            }
+
+            if (connections.Count > 1)
+            {
+                TryIncreaseSocketReceiveBuffer(socket);
             }
 
             if (!runtime.TryConfigurePeerInitialPacketProtection(initialVersion, initialDestinationConnectionId.Span)

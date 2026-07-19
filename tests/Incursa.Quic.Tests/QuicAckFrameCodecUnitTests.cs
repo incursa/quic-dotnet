@@ -148,6 +148,29 @@ public sealed class QuicAckFrameCodecUnitTests
         Assert.True(streamData.AsSpan().SequenceEqual(streamFrame.StreamData));
     }
 
+    [Fact]
+    public void TryFormatStreamFrame_TwoSegments_PreservesExactOrdering()
+    {
+        byte[] prefix = [0x00, 0x04];
+        byte[] suffix = [0x11, 0x22, 0x33, 0x44];
+        Span<byte> streamBuffer = stackalloc byte[32];
+
+        Assert.True(QuicFrameCodec.TryFormatStreamFrame(
+            0x0F,
+            streamId: 4,
+            offset: 0,
+            prefix,
+            suffix,
+            streamBuffer,
+            out int streamBytesWritten));
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            streamBuffer[..streamBytesWritten],
+            out QuicStreamFrame streamFrame));
+
+        Assert.Equal(6, streamFrame.StreamDataLength);
+        Assert.True(streamFrame.StreamData.SequenceEqual([.. prefix, .. suffix]));
+    }
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

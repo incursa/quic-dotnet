@@ -4,6 +4,28 @@
 using System.Reflection;
 using BenchmarkDotNet.Running;
 
+if (args is ["--http3-loopback", ..])
+{
+    if (!OperatingSystem.IsWindows() && !OperatingSystem.IsLinux() && !OperatingSystem.IsMacOS())
+    {
+        Console.Error.WriteLine("The HTTP/3 loopback harness supports Windows, Linux, and macOS.");
+        return 3;
+    }
+
+    return await Incursa.Quic.Benchmarks.Http3LoopbackPerformanceHarness.RunAsync(args[1..]);
+}
+
+if (args is ["--transport-loopback", ..])
+{
+    if (!OperatingSystem.IsWindows() && !OperatingSystem.IsLinux() && !OperatingSystem.IsMacOS())
+    {
+        Console.Error.WriteLine("The QUIC transport loopback harness supports Windows, Linux, and macOS.");
+        return 3;
+    }
+
+    return await Incursa.Quic.Benchmarks.QuicTransportLoopbackPerformanceHarness.RunAsync(args[1..]);
+}
+
 if (args is ["--harness", ..] or ["--leak", ..] or ["--help", ..] or ["--profile", ..] or ["--profile-connect", ..] or ["--profile-runtime", ..] or ["--profile-handshake", ..] or ["--profile-stream", ..] or ["--profile-stream-phases", ..])
 {
     ExtractJsonPath(args);

@@ -36,6 +36,7 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
     private readonly object? connectionEventOrOwnedDatagramBuffer;
     private readonly QuicConnectionPathIdentity packetPathIdentity;
     private readonly ReadOnlyMemory<byte> packetDatagramOrStreamData;
+    private readonly ReadOnlyMemory<byte> streamDataSuffix;
     private readonly long observedAtTicksOrRequestId;
     private readonly ulong routedConnectionIdOrStreamId;
     private readonly int streamTypeOrActionKind;
@@ -111,7 +112,8 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
         long requestId,
         QuicConnectionStreamActionKind actionKind,
         ulong streamId,
-        ReadOnlyMemory<byte> streamData)
+        ReadOnlyMemory<byte> streamData,
+        ReadOnlyMemory<byte> streamDataSuffix = default)
     {
         if (actionKind is not QuicConnectionStreamActionKind.Write and not QuicConnectionStreamActionKind.Finish)
         {
@@ -125,6 +127,7 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
         streamTypeOrActionKind = (int)actionKind;
         routedConnectionIdOrStreamId = streamId;
         packetDatagramOrStreamData = streamData;
+        this.streamDataSuffix = streamDataSuffix;
     }
 
     internal QuicConnectionRuntimeShardWorkItemKind Kind { get; }
@@ -169,6 +172,10 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
 
     internal ReadOnlyMemory<byte> StreamData => Kind == QuicConnectionRuntimeShardWorkItemKind.StreamWrite
         ? packetDatagramOrStreamData
+        : default;
+
+    internal ReadOnlyMemory<byte> StreamDataSuffix => Kind == QuicConnectionRuntimeShardWorkItemKind.StreamWrite
+        ? streamDataSuffix
         : default;
 
     internal long EnqueuedTimestamp { get; init; }

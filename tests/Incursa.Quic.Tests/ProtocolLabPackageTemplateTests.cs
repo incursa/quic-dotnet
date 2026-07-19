@@ -337,6 +337,16 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("return SmallApplicationWriteSizeBytes;", source);
         Assert.Contains("offset += downloadWriteSizeBytes", source);
         Assert.Contains("await stream.WriteAsync(downloadPayload.AsMemory(offset, count), cancellationToken);", source);
+        Assert.Contains("ResolveBoundedFinalEchoBytes", source);
+        Assert.Contains("var trailingBytes = await stream.TryReadTerminalAsync", source);
+        Assert.Contains("await stream.WriteFinalAsync(buffer.AsMemory(0, expectedEchoBytes), cancellationToken);", source);
+        Assert.Contains("behavior?.StartsWith(\"duplex-streams\"", source);
+        Assert.Contains("payloadSize is <= 0 or > SmallApplicationWriteSizeBytes", source);
+        Assert.Contains("stream.CanWrite && !completedWrites", source);
+        Assert.True(
+            source.IndexOf("var trailingBytes = await stream.TryReadTerminalAsync", StringComparison.Ordinal)
+                < source.IndexOf("await stream.WriteFinalAsync(buffer.AsMemory(0, expectedEchoBytes)", StringComparison.Ordinal),
+            "The bounded echo path must validate peer EOF before sending its response.");
         Assert.DoesNotContain("connection.AcceptInboundStreamAsync", source);
         Assert.DoesNotContain("stream.ReadAsync(buffer.AsMemory", source);
     }

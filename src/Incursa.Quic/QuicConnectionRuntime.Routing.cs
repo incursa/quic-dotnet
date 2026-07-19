@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Buffers;
+using System.Diagnostics;
+using System.Net;
 using System.Security.Cryptography;
 
 namespace Incursa.Quic;
@@ -16,6 +18,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandlePacketReceived(
         QuicConnectionPacketReceivedContext packetReceivedEvent,
         long nowTicks,
+        bool deferApplicationAckFinalization,
         ref QuicConnectionEffectAccumulator effects)
     {
         if (SendingMode == QuicConnectionSendingMode.None)
@@ -84,7 +87,11 @@ internal sealed partial class QuicConnectionRuntime
         }
         else
         {
-            stateChanged |= TryHandleReceivedPacketDatagram(packetReceivedEvent, nowTicks, ref effects);
+            stateChanged |= TryHandleReceivedPacketDatagram(
+                packetReceivedEvent,
+                nowTicks,
+                deferApplicationAckFinalization,
+                ref effects);
         }
 
         bool flushedHandshakePackets = TryFlushHandshakePackets(ref effects);
@@ -189,6 +196,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryHandleReceivedPacketDatagram(
         QuicConnectionPacketReceivedContext packetReceivedEvent,
         long nowTicks,
+        bool deferApplicationAckFinalization,
         ref QuicConnectionEffectAccumulator effects)
     {
         bool stateChanged = false;
@@ -238,11 +246,19 @@ internal sealed partial class QuicConnectionRuntime
                     // runtime flips fully active, so this path must not gate short-header ingress on phase alone.
                     // SEE: code:src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs#TryHandleApplicationPacketReceived
                     // SEE: code:src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs#HandlePeerHandshakeTranscriptCompleted
-                    stateChanged |= TryHandleApplicationPacketReceived(packetEvent, nowTicks, ref effects);
+                    stateChanged |= TryHandleApplicationPacketReceived(
+                        packetEvent,
+                        nowTicks,
+                        deferApplicationAckFinalization,
+                        ref effects);
                     break;
 
                 case QuicConnectionPhase.Active:
-                    stateChanged |= TryHandleApplicationPacketReceived(packetEvent, nowTicks, ref effects);
+                    stateChanged |= TryHandleApplicationPacketReceived(
+                        packetEvent,
+                        nowTicks,
+                        deferApplicationAckFinalization,
+                        ref effects);
                     break;
 
                 case QuicConnectionPhase.Closing:
@@ -923,6 +939,8 @@ internal sealed partial class QuicConnectionRuntime
                 return HandleRecoveryTimerExpired(nowTicks, ref effects);
             case QuicConnectionTimerKind.KeyUpdateRetention:
                 return HandleKeyUpdateRetentionTimerExpired(ref effects);
+            case QuicConnectionTimerKind.PathMtuProbe:
+                return HandlePathMtuProbeTimerExpired(ref effects);
             default:
                 throw new ArgumentOutOfRangeException(nameof(timerExpiredEvent), "TimerKind was not recognized.");
         }
@@ -1706,6 +1724,149 @@ internal sealed partial class QuicConnectionRuntime
             currentPath.Identity,
             protectedPacket));
         return true;
+    }
+
+    private bool TrySendPathMtuProbe(ref QuicConnectionEffectAccumulator effects)
+    {
+        if (activePath is not QuicConnectionActivePathRecord currentPath
+            || !currentPath.IsValidated
+            || !currentPath.AmplificationState.IsAddressValidated
+            || !HandshakeConfirmed
+            || (tlsState.Role == QuicTlsRole.Server && !handshakeDonePacketSent)
+            || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue
+            || currentPath.MaximumDatagramSizeState.HasDiscoveryProbeBeenSent)
+        {
+            return false;
+        }
+
+        ulong probeSizeBytes = GetPathMtuProbeSize(
+            currentPath.Identity,
+            tlsState.PeerTransportParameters?.MaxUdpPayloadSize
+                ?? QuicTransportParameters.DefaultMaxUdpPayloadSize);
+        if (!currentPath.MaximumDatagramSizeState.CanSend(probeSizeBytes, isProbePacket: true))
+        {
+            return false;
+        }
+
+        if (TryHandlePacketNumberExhaustion(QuicPacketNumberSpace.ApplicationData, ref effects))
+        {
+            return true;
+        }
+
+        int fixedPacketBytes = 1
+            + handshakeFlowCoordinator.DestinationConnectionId.Length
+            + ApplicationPacketNumberLengthBytes
+            + QuicInitialPacketProtection.AuthenticationTagLength;
+        int payloadBytes = checked((int)probeSizeBytes - fixedPacketBytes);
+        if (payloadBytes < ApplicationMinimumProtectedPayloadLength)
+        {
+            return false;
+        }
+
+        Span<byte> applicationPayload = stackalloc byte[payloadBytes];
+        applicationPayload.Clear();
+        if (!QuicFrameCodec.TryFormatPingFrame(applicationPayload, out int bytesWritten)
+            || bytesWritten <= 0)
+        {
+            return false;
+        }
+
+        if (!TryPrepareOneRttProtectionForAeadLimit(
+                "The connection runtime could not protect the path MTU probe packet.",
+                ref effects,
+                out _))
+        {
+            return false;
+        }
+
+        if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
+                applicationPayload,
+                tlsState.OneRttProtectPacketProtectionMaterial!.Value,
+                tlsState.CurrentOneRttKeyPhaseBit,
+                currentPath.SpinBitState.StoredValue,
+                PeerSupportsGreasedQuicBit,
+                out ulong packetNumber,
+                out byte[] protectedPacket))
+        {
+            return false;
+        }
+
+        if (!tlsState.TryRecordCurrentOneRttProtectionUse())
+        {
+            return false;
+        }
+
+        if ((ulong)protectedPacket.Length != probeSizeBytes
+            || !currentPath.AmplificationState.TryConsumeSendBudget(
+                protectedPacket.Length,
+                out QuicConnectionPathAmplificationState updatedAmplificationState)
+            || !dplpmtudState.TryTrackProbe(currentPath.Identity, packetNumber, probeSizeBytes))
+        {
+            return false;
+        }
+
+        pathMtuProbePathsByPacketNumber.Add(packetNumber, currentPath.Identity);
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+            MaximumDatagramSizeState = currentPath.MaximumDatagramSizeState.WithDiscoveryProbeSent(),
+        };
+
+        TrackApplicationPacket(packetNumber, protectedPacket, retransmittable: false, probePacket: true);
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+        return true;
+    }
+
+    private bool TryArmPathMtuProbeTimer(long nowTicks)
+    {
+        if (pendingPathMtuProbeDueTicks.HasValue
+            || activePath is not QuicConnectionActivePathRecord currentPath
+            || currentPath.MaximumDatagramSizeState.HasDiscoveryProbeBeenSent)
+        {
+            return false;
+        }
+
+        long delayTicks = Math.Max(1, Stopwatch.Frequency * PathMtuProbeDelayMilliseconds / 1_000);
+        pendingPathMtuProbeDueTicks = nowTicks > long.MaxValue - delayTicks
+            ? long.MaxValue
+            : nowTicks + delayTicks;
+        pendingPathMtuProbePathIdentity = currentPath.Identity;
+        return true;
+    }
+
+    private bool HandlePathMtuProbeTimerExpired(ref QuicConnectionEffectAccumulator effects)
+    {
+        QuicConnectionPathIdentity? scheduledPathIdentity = pendingPathMtuProbePathIdentity;
+        pendingPathMtuProbeDueTicks = null;
+        pendingPathMtuProbePathIdentity = null;
+
+        if (scheduledPathIdentity is not QuicConnectionPathIdentity scheduledPath
+            || activePath is not QuicConnectionActivePathRecord currentPath
+            || !EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(currentPath.Identity, scheduledPath)
+            || applicationSendQueue.Count > 0
+            || sendRuntime.HasAckElicitingPacketsInFlight
+            || sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData))
+        {
+            AppendLifecycleTimerEffects(ref effects);
+            return false;
+        }
+
+        bool sent = TrySendPathMtuProbe(ref effects);
+        AppendLifecycleTimerEffects(ref effects);
+        return sent;
+    }
+
+    internal static ulong GetPathMtuProbeSize(
+        QuicConnectionPathIdentity pathIdentity,
+        ulong peerMaximumUdpPayloadSize = QuicTransportParameters.DefaultMaxUdpPayloadSize)
+    {
+        ulong addressFamilyTarget = IPAddress.TryParse(pathIdentity.RemoteAddress, out IPAddress? remoteAddress)
+            && remoteAddress.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork
+                ? CommonEthernetIpv4QuicDatagramSizeBytes
+                : CommonEthernetIpv6QuicDatagramSizeBytes;
+        return Math.Min(addressFamilyTarget, peerMaximumUdpPayloadSize);
     }
 
     private bool DiscardConnection(
