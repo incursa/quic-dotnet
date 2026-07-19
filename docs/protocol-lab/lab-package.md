@@ -25,7 +25,13 @@ pwsh ./eng/protocol-lab/New-QuicDotNetProtocolLabPackage.ps1 `
   -Force
 ```
 
-The script writes generated files under `artifacts/protocol-lab/` and returns JSON with the package path and SHA-256.
+The script writes generated files under `artifacts/protocol-lab/` and returns
+JSON with the package path, SHA-256, build-attestation path, source commit, and
+parity eligibility. Clean package inputs produce deterministic archives with
+embedded provenance and a matching external build attestation. A dirty package
+scope is rejected unless `-AllowDirtySource` is supplied; those packages are
+explicitly diagnostic-only and are not eligible for source/package parity or
+publication.
 
 Build the raw QUIC package explicitly:
 
@@ -62,7 +68,13 @@ pwsh ./eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1 `
   -LoadProfileId smoke
 ```
 
-The raw package manifest and implementation manifest advertise protocol `quic`, workload family `quic.transport`, scenarios `quic.transport.stream-throughput.1mb`, `quic.transport.multiplex.100x64kb`, and `quic.transport.duplex-streams`, and the `quicTransport`, `quicStreams`, `quicMultiplexing`, and `quicDuplex` capabilities. The package requires worker-installed `dotnet` and `pwsh`, does not require `bash`, and still requires the worker environment primitive `libmsquic`.
+The raw package manifest and implementation manifest advertise protocol `quic`,
+workload family `quic.transport`, cold handshake, connection churn, stream
+throughput, multiplex, duplex, and peer-matrix scenarios, plus the
+`quicTransport`, `quicStreams`, `quicMultiplexing`, and `quicDuplex`
+capabilities. The package requires worker-installed `dotnet` and `pwsh`, does
+not require `bash`, and still requires the worker environment primitive
+`libmsquic`.
 
 For raw QUIC, the run helper also builds and uploads the public ProtocolLab raw QUIC test-executor and scenario-pack packages with the `quic-dotnet-raw-dev` implementation package. Use `-PackageReference` to append prebuilt or environment-specific component package references when the controller should resolve an additional package that has already been uploaded. Use `-UsePackageReferenceOnly` when all selected packages have already been admitted by the controller and the helper should submit pinned package references without rebuilding or uploading.
 

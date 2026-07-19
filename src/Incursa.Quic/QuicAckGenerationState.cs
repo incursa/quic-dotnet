@@ -113,7 +113,7 @@ internal sealed class QuicAckGenerationState
         QuicEcnCounts? ecnCounts = null)
     {
         SpaceState state = GetOrCreateSpaceState(packetNumberSpace);
-        if (ackEliciting && TryGetAckElicitingStats(state, out ulong previousLargestAckElicitingPacketNumber, out _, out _))
+        if (ackEliciting && state.LargestAckElicitingPacketNumber is ulong previousLargestAckElicitingPacketNumber)
         {
             if (packetNumber < previousLargestAckElicitingPacketNumber
                 || (packetNumber > previousLargestAckElicitingPacketNumber
@@ -123,10 +123,24 @@ internal sealed class QuicAckGenerationState
             }
         }
 
+        bool replacesLargestAckElicitingPacket = !ackEliciting
+            && state.LargestAckElicitingPacketNumber == packetNumber
+            && state.Receipts.TryGetValue(packetNumber, out QuicPacketReceipt previousReceipt)
+            && previousReceipt.AckEliciting;
         state.Receipts.Set(packetNumber, new QuicPacketReceipt(
             receivedAtMicros,
             bufferingDelayMicros,
             ackEliciting));
+        if (ackEliciting
+            && (!state.LargestAckElicitingPacketNumber.HasValue
+                || packetNumber > state.LargestAckElicitingPacketNumber.Value))
+        {
+            state.LargestAckElicitingPacketNumber = packetNumber;
+        }
+        else if (replacesLargestAckElicitingPacket)
+        {
+            RefreshLargestAckElicitingPacketNumber(state);
+        }
 
         if (ecnCounts.HasValue)
         {
@@ -223,13 +237,14 @@ internal sealed class QuicAckGenerationState
         ackElicitingPacketCount = 0;
 
         bool found = false;
-        for (int index = 0; index < state.Receipts.Count; index++)
+        int startIndex = state.LastAckFrameTriggerPacketNumber is ulong lastAckFrameTriggerPacketNumber
+            ? state.Receipts.FindFirstIndexGreaterThan(lastAckFrameTriggerPacketNumber)
+            : 0;
+        for (int index = startIndex; index < state.Receipts.Count; index++)
         {
             ulong packetNumber = state.Receipts.GetPacketNumber(index);
             QuicPacketReceipt receipt = state.Receipts.GetReceipt(index);
-            if (!receipt.AckEliciting
-                || (state.LastAckFrameTriggerPacketNumber.HasValue
-                    && packetNumber <= state.LastAckFrameTriggerPacketNumber.Value))
+            if (!receipt.AckEliciting)
             {
                 continue;
             }
@@ -346,7 +361,7 @@ internal sealed class QuicAckGenerationState
         state.LastAckFrameSentAtMicros = sentAtMicros;
         state.ImmediateAckRequired = false;
 
-        if (TryGetAckElicitingStats(state, out ulong largestAckElicitingPacketNumber, out _, out _))
+        if (state.LargestAckElicitingPacketNumber is ulong largestAckElicitingPacketNumber)
         {
             state.LastAckFrameTriggerPacketNumber = largestAckElicitingPacketNumber;
         }
@@ -484,6 +499,8 @@ internal sealed class QuicAckGenerationState
             RemoveRange(state.Receipts, range);
         }
 
+        RefreshLargestAckElicitingPacketNumber(state);
+
         ReturnAckFrameRanges(sentAckFrame.AckedRanges);
 
         if (state.Receipts.Count == 0)
@@ -560,6 +577,11 @@ internal sealed class QuicAckGenerationState
 
     private void TrimOldestRangesIfNeeded(SpaceState state)
     {
+        if (state.Receipts.RangeCount <= maximumRetainedAckRanges)
+        {
+            return;
+        }
+
         PacketRange[]? rentedRanges = null;
         Span<PacketRange> ranges = stackalloc PacketRange[StackPacketRangeCapacity + 1];
         if (maximumRetainedAckRanges > StackPacketRangeCapacity)
@@ -581,6 +603,8 @@ internal sealed class QuicAckGenerationState
             {
                 RemoveRange(state.Receipts, ranges[rangeIndex]);
             }
+
+            RefreshLargestAckElicitingPacketNumber(state);
         }
         finally
         {
@@ -612,17 +636,9 @@ internal sealed class QuicAckGenerationState
         return spaces.TryGetValue(packetNumberSpace, out state);
     }
 
-    private static bool TryGetAckElicitingStats(
-        SpaceState state,
-        out ulong largestAckElicitingPacketNumber,
-        out ulong largestAckElicitingReceivedAtMicros,
-        out int ackElicitingPacketCount)
+    private static void RefreshLargestAckElicitingPacketNumber(SpaceState state)
     {
-        largestAckElicitingPacketNumber = default;
-        largestAckElicitingReceivedAtMicros = default;
-        ackElicitingPacketCount = 0;
-
-        bool found = false;
+        state.LargestAckElicitingPacketNumber = null;
         for (int index = 0; index < state.Receipts.Count; index++)
         {
             QuicPacketReceipt receipt = state.Receipts.GetReceipt(index);
@@ -631,13 +647,8 @@ internal sealed class QuicAckGenerationState
                 continue;
             }
 
-            ackElicitingPacketCount++;
-            largestAckElicitingPacketNumber = state.Receipts.GetPacketNumber(index);
-            largestAckElicitingReceivedAtMicros = receipt.ReceivedAtMicros;
-            found = true;
+            state.LargestAckElicitingPacketNumber = state.Receipts.GetPacketNumber(index);
         }
-
-        return found;
     }
 
     private static ulong GetElapsedMicros(ulong laterMicros, ulong earlierMicros)
@@ -680,6 +691,8 @@ internal sealed class QuicAckGenerationState
 
         internal ulong? LastAckFrameTriggerPacketNumber { get; set; }
 
+        internal ulong? LargestAckElicitingPacketNumber { get; set; }
+
         internal QuicEcnCounts? EcnCounts { get; set; }
 
         internal void Clear()
@@ -694,6 +707,7 @@ internal sealed class QuicAckGenerationState
             ImmediateAckRequired = false;
             LastAckFrameSentAtMicros = null;
             LastAckFrameTriggerPacketNumber = null;
+            LargestAckElicitingPacketNumber = null;
             EcnCounts = null;
         }
     }

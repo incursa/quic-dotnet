@@ -11,6 +11,7 @@ internal sealed class QuicPacketReceiptStore
     private ulong[]? packetNumbers;
     private QuicPacketReceipt[]? receipts;
     private int count;
+    private int rangeCount;
 
     internal QuicPacketReceiptStore(int initialCapacity)
     {
@@ -19,6 +20,8 @@ internal sealed class QuicPacketReceiptStore
     }
 
     internal int Count => count;
+
+    internal int RangeCount => rangeCount;
 
     internal ulong GetPacketNumber(int index)
     {
@@ -42,6 +45,11 @@ internal sealed class QuicPacketReceiptStore
         return receipts![index];
     }
 
+    internal int FindFirstIndexGreaterThan(ulong packetNumber)
+    {
+        return FindFirstGreaterThan(packetNumber, 0);
+    }
+
     internal void Set(ulong packetNumber, QuicPacketReceipt receipt)
     {
         int index = FindIndex(packetNumber);
@@ -52,6 +60,12 @@ internal sealed class QuicPacketReceiptStore
         }
 
         int insertionIndex = ~index;
+        bool joinsPreviousRange = insertionIndex > 0
+            && packetNumbers![insertionIndex - 1] != ulong.MaxValue
+            && packetNumbers[insertionIndex - 1] + 1 == packetNumber;
+        bool joinsNextRange = insertionIndex < count
+            && packetNumber != ulong.MaxValue
+            && packetNumber + 1 == packetNumbers![insertionIndex];
         EnsureCapacity(count + 1);
         if (insertionIndex < count)
         {
@@ -62,6 +76,14 @@ internal sealed class QuicPacketReceiptStore
         packetNumbers![insertionIndex] = packetNumber;
         receipts![insertionIndex] = receipt;
         count++;
+        if (joinsPreviousRange && joinsNextRange)
+        {
+            rangeCount--;
+        }
+        else if (!joinsPreviousRange && !joinsNextRange)
+        {
+            rangeCount++;
+        }
     }
 
     internal bool TryGetValue(ulong packetNumber, out QuicPacketReceipt receipt)
@@ -103,6 +125,7 @@ internal sealed class QuicPacketReceiptStore
         Array.Clear(packetNumbers, newCount, removedCount);
         Array.Clear(receipts!, newCount, removedCount);
         count = newCount;
+        rangeCount = CountRanges();
         return removedCount;
     }
 
@@ -113,6 +136,7 @@ internal sealed class QuicPacketReceiptStore
         packetNumbers = null;
         receipts = null;
         count = 0;
+        rangeCount = 0;
 
         if (packetNumberStorage is not null)
         {
@@ -149,6 +173,29 @@ internal sealed class QuicPacketReceiptStore
         }
 
         return ~low;
+    }
+
+    private int CountRanges()
+    {
+        if (count == 0)
+        {
+            return 0;
+        }
+
+        int ranges = 1;
+        ulong previousPacketNumber = packetNumbers![0];
+        for (int index = 1; index < count; index++)
+        {
+            ulong packetNumber = packetNumbers[index];
+            if (previousPacketNumber == ulong.MaxValue || packetNumber != previousPacketNumber + 1)
+            {
+                ranges++;
+            }
+
+            previousPacketNumber = packetNumber;
+        }
+
+        return ranges;
     }
 
     private int FindFirstAtLeast(ulong packetNumber)

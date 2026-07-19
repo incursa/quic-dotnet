@@ -12,9 +12,28 @@ public sealed class ProtocolLabPackageTemplateTests
 {
     private static readonly string[] RawQuicScenarioIds =
     [
+        "quic.transport.handshake-cold",
+        "quic.transport.latency.echo-1kb",
+        "quic.transport.connection-churn",
+        "quic.transport.stream-churn",
+        "quic.transport.stream-throughput.64kb",
         "quic.transport.stream-throughput.1mb",
+        "quic.transport.stream-download.1mb",
+        "quic.transport.stream-throughput.16mb",
+        "quic.transport.sustained-stream.256x64kb",
+        "quic.transport.sustained-stream.16384x1kb",
+        "quic.transport.sustained-download.256x64kb",
+        "quic.transport.sustained-download.16384x1kb",
+        "quic.transport.sustained-download.4096x1kb",
+        "quic.transport.multiplex.100x1kb",
         "quic.transport.multiplex.100x64kb",
+        "quic.transport.multiplex.16x1mb",
+        "quic.transport.multiplex.mixed-4x16",
+        "quic.transport.stream-limits.100x64kb",
+        "quic.transport.flow-control.slow-reader-16x64kb",
         "quic.transport.duplex-streams",
+        "quic.transport.duplex-streams.16x1mb",
+        "quic.transport.duplex-streams-peer-matrix",
     ];
 
     private static readonly string[] Http3ScenarioIds =
@@ -99,9 +118,22 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("IncursaRawQuicServer", implementationYaml);
         Assert.Contains("quic", ReadYamlList(implementationYaml, "supportedProtocols"));
         Assert.Contains("quic.transport", ReadYamlList(implementationYaml, "supportedWorkloadFamilies"));
+        Assert.Contains("quic.transport.handshake-cold", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.latency.echo-1kb", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.connection-churn", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.stream-churn", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.stream-throughput.1mb", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.sustained-stream.256x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.sustained-stream.16384x1kb", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.sustained-download.256x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.sustained-download.16384x1kb", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.sustained-download.4096x1kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.multiplex.100x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.stream-limits.100x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.flow-control.slow-reader-16x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.duplex-streams", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.duplex-streams-peer-matrix", ReadYamlList(implementationYaml, "supportedScenarios"));
+        Assert.Contains("quic.transport.multiplex.mixed-4x16", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Equal(RawQuicScenarioIds, ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Equal(RawQuicScenarioIds, ReadYamlList(implementationYaml, "supportedTestCaseIds"));
         Assert.DoesNotContain("h3", ReadYamlList(implementationYaml, "supportedProtocols"));
@@ -110,6 +142,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.DoesNotContain("http3.", implementationYaml);
         Assert.DoesNotContain("managed-httpclient-h3-load", implementationYaml);
         Assert.Contains("quicTransport", ReadYamlList(implementationYaml, "capabilities"));
+        Assert.Contains("quicHandshake", ReadYamlList(implementationYaml, "capabilities"));
         Assert.Contains("quicStreams", ReadYamlList(implementationYaml, "capabilities"));
         Assert.Contains("quicMultiplexing", ReadYamlList(implementationYaml, "capabilities"));
         Assert.Contains("quicDuplex", ReadYamlList(implementationYaml, "capabilities"));
@@ -181,6 +214,15 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("Test-NoRestoreRuntimeAssetFailure", builderScript);
         Assert.Contains("Rerun the package build once without -NoRestore", builderScript);
         Assert.Contains("Invoke-GitValue", builderScript);
+        Assert.Contains("Get-PackageSourceScope", builderScript);
+        Assert.Contains("$projectSourceDirectory", builderScript);
+        Assert.Contains("ProtocolLab package inputs are dirty", builderScript);
+        Assert.Contains("protocol-lab.package-build-provenance.v1", builderScript);
+        Assert.Contains("runtimeIdentifier = ($RuntimeIdentifier -join \"+\")", builderScript);
+        Assert.Contains("protocol-lab.package-build-attestation.v1", builderScript);
+        Assert.Contains("New-DeterministicZipArchive", builderScript);
+        Assert.Contains("buildAttestationPath", builderScript);
+        Assert.Contains("parityEligible", builderScript);
         Assert.Contains("$executionManifest.sourceRepository = $sourceRepository", builderScript);
         Assert.Contains("$executionManifest.sourceCommit = $sourceCommit", builderScript);
         Assert.Contains("Remove-Item -LiteralPath $publishRoot", builderScript);
@@ -192,8 +234,33 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("$executionManifest.dependencies.requiresDotNet", builderScript);
         Assert.DoesNotContain("@($RepoRoot, $ProtocolLabRoot)", builderScript, StringComparison.Ordinal);
 
+        var runScript = File.ReadAllText(Path.Combine(repoRoot, "eng", "protocol-lab", "Invoke-QuicDotNetProtocolLabRun.ps1"));
+        Assert.Contains("-AllowDirtySource", runScript);
+
         Assert.True(File.Exists(Path.Combine(repoRoot, "eng", "protocol-lab", "src", "Incursa.ProtocolLab.Adapters.IncursaRawQuic", "Incursa.ProtocolLab.Adapters.IncursaRawQuic.csproj")));
         Assert.True(File.Exists(Path.Combine(repoRoot, "eng", "protocol-lab", "servers", "IncursaRawQuicServer", "IncursaRawQuicServer.csproj")));
+    }
+
+    [Fact]
+    public void Raw_quic_source_backed_launcher_resolves_server_project_from_source_root()
+    {
+        var repoRoot = FindRepoRoot();
+        var launcher = File.ReadAllText(Path.Combine(
+            repoRoot,
+            "eng",
+            "protocol-lab",
+            "src",
+            "Incursa.ProtocolLab.Adapters.IncursaRawQuic",
+            "IncursaRawQuicProtocolEndpointLauncher.cs"));
+
+        Assert.Contains("PROTOCOL_LAB_INCURSA_QUIC_SOURCE_ROOT", launcher);
+        Assert.Contains("var sourceProject = Path.GetFullPath(Path.Combine(", launcher);
+        Assert.Contains("\"eng\"", launcher);
+        Assert.Contains("\"IncursaRawQuicServer.csproj\"", launcher);
+        Assert.Contains("ResolveBuiltServerExecutable(sourceProjectDirectory, sourceAssemblyName)", launcher);
+        Assert.Contains("ResolveBuiltServerDll(sourceProjectDirectory, sourceAssemblyName)", launcher);
+        Assert.Contains("si.ArgumentList.Add(sourceProject);", launcher);
+        Assert.Contains("throw new FileNotFoundException(", launcher);
     }
 
     [Fact]
@@ -220,6 +287,24 @@ public sealed class ProtocolLabPackageTemplateTests
     }
 
     [Fact]
+    public void Raw_quic_adapter_selectors_include_sustained_small_write_download()
+    {
+        var repoRoot = FindRepoRoot();
+        var source = File.ReadAllText(Path.Combine(
+            repoRoot,
+            "eng",
+            "protocol-lab",
+            "src",
+            "Incursa.ProtocolLab.Adapters.IncursaRawQuic",
+            "IncursaRawQuicAdapterRuntime.cs"));
+
+        Assert.Contains("|quic.transport.sustained-download.4096x1kb|", source);
+        Assert.Contains("|quic.transport.sustained-stream.16384x1kb|", source);
+        Assert.Contains("|quic.transport.sustained-download.16384x1kb|", source);
+        Assert.Contains("\"quic.transport.sustained-download.4096x1kb\", \"quic.transport.multiplex.100x1kb\"", source);
+    }
+
+    [Fact]
     public void Raw_quic_server_project_stays_transport_only()
     {
         var repoRoot = FindRepoRoot();
@@ -239,6 +324,19 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.DoesNotContain("PROTOCOL_LAB_INCURSA_RAW_QUIC_QLOG_PATH", source);
         Assert.Contains("TryAcceptInboundStreamAsync", source);
         Assert.Contains("TryReadTerminalAsync", source);
+        Assert.Contains("PLAB-DL1", source);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_SIZE_BYTES", source);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_BEHAVIOR", source);
+        Assert.Contains("const int RawQuicDownloadChunkBytes = 64 * 1024;", source);
+        Assert.Contains("const int SmallApplicationWriteSizeBytes = 1024;", source);
+        Assert.Contains("const int SmallSustainedDownloadPayloadLength = 4 * 1024 * 1024;", source);
+        Assert.Contains("const int FixedTotalSmallSustainedDownloadPayloadLength = 16 * 1024 * 1024;", source);
+        Assert.Contains("const string SmallSustainedDownloadBehavior = \"sustained-download-4096x1kb\";", source);
+        Assert.Contains("const string FixedTotalSmallSustainedDownloadBehavior = \"sustained-download-16384x1kb\";", source);
+        Assert.Contains("return RawQuicDownloadChunkBytes;", source);
+        Assert.Contains("return SmallApplicationWriteSizeBytes;", source);
+        Assert.Contains("offset += downloadWriteSizeBytes", source);
+        Assert.Contains("await stream.WriteAsync(downloadPayload.AsMemory(offset, count), cancellationToken);", source);
         Assert.DoesNotContain("connection.AcceptInboundStreamAsync", source);
         Assert.DoesNotContain("stream.ReadAsync(buffer.AsMemory", source);
     }
@@ -275,9 +373,21 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("TestExecutorId = \"quic-go-raw-load\"", helperScript);
         Assert.Contains("-TestExecutorId", helperScript);
         Assert.Contains("SupportedScenarioIds", helperScript);
+        Assert.Contains("quic.transport.handshake-cold", helperScript);
+        Assert.Contains("quic.transport.latency.echo-1kb", helperScript);
+        Assert.Contains("quic.transport.connection-churn", helperScript);
+        Assert.Contains("quic.transport.stream-churn", helperScript);
         Assert.Contains("quic.transport.stream-throughput.1mb", helperScript);
+        Assert.Contains("quic.transport.sustained-stream.256x64kb", helperScript);
+        Assert.Contains("quic.transport.sustained-stream.16384x1kb", helperScript);
+        Assert.Contains("quic.transport.sustained-download.256x64kb", helperScript);
+        Assert.Contains("quic.transport.sustained-download.16384x1kb", helperScript);
+        Assert.Contains("quic.transport.sustained-download.4096x1kb", helperScript);
         Assert.Contains("quic.transport.multiplex.100x64kb", helperScript);
+        Assert.Contains("quic.transport.stream-limits.100x64kb", helperScript);
+        Assert.Contains("quic.transport.flow-control.slow-reader-16x64kb", helperScript);
         Assert.Contains("quic.transport.duplex-streams", helperScript);
+        Assert.Contains("quic.transport.duplex-streams-peer-matrix", helperScript);
         Assert.Contains("New-ProtocolLabRawQuicComponentPackages.ps1", helperScript);
         Assert.Contains("New-ProtocolLabH3ComponentPackages.ps1", helperScript);
         Assert.Contains("Package-backed raw QUIC jobs require package-provided scenario and test-executor inventory", helperScript);
@@ -321,7 +431,7 @@ public sealed class ProtocolLabPackageTemplateTests
     [Theory]
     [InlineData("h3", "quic.transport.multiplex.100x64kb", "only supports protocol 'quic'")]
     [InlineData("quic", "http1.core.plaintext", "scenario(s) are not declared by the package template")]
-    [InlineData("quic", "quic.transport.handshake-cold", "scenario(s) are not declared by the package template")]
+    [InlineData("quic", "quic.transport.datagrams", "scenario(s) are not declared by the package template")]
     public void Run_helper_rejects_raw_quic_h3_fallback_arguments(string protocol, string scenarioId, string expectedError)
     {
         var repoRoot = FindRepoRoot();

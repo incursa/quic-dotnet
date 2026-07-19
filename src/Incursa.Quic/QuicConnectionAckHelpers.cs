@@ -173,7 +173,9 @@ internal static class QuicConnectionAckHelpers
         }
 
         int computedPiggybackedPayloadLength = checked(ackPayloadLength + payload.Length);
-        QuicBufferLease piggybackedPayloadLease = QuicBufferPool.RentLease(computedPiggybackedPayloadLength);
+        QuicBufferLease piggybackedPayloadLease = QuicBufferPool.RentLease(
+            computedPiggybackedPayloadLength,
+            QuicBufferPoolOwner.Acknowledgment);
         try
         {
             Span<byte> buffer = piggybackedPayloadLease.Span;
@@ -262,7 +264,9 @@ internal static class QuicConnectionAckHelpers
             return false;
         }
 
-        ackFramePayload = QuicBufferPool.RentLease(frameBytesWritten);
+        ackFramePayload = QuicBufferPool.RentLease(
+            frameBytesWritten,
+            QuicBufferPoolOwner.Acknowledgment);
         try
         {
             framePayloadBuffer.Slice(0, frameBytesWritten).CopyTo(ackFramePayload.Span);
@@ -308,7 +312,9 @@ internal static class QuicConnectionAckHelpers
         payload = default;
 
         int payloadBufferLength = Math.Max(minimumPayloadLength, MinimumAckPayloadBufferLength);
-        payload = QuicBufferPool.RentLease(payloadBufferLength);
+        payload = QuicBufferPool.RentLease(
+            payloadBufferLength,
+            QuicBufferPoolOwner.Acknowledgment);
         try
         {
             Span<byte> buffer = payload.Span;

@@ -11,6 +11,7 @@ sender-adjacent stream state, and send-priority ordering:
 - `QuicCongestionControlBenchmarks`
 - `QuicRttEstimatorBenchmarks`
 - `QuicConnectionStreamStateBenchmarks`
+- `QuicStreamWritePreparationBenchmarks`
 - `QuicApplicationSendPriorityBenchmarks`
 
 Run them through the launcher:
@@ -40,9 +41,10 @@ runs:
 - `RawQuicDuplex` runs the same send/parsing suites plus
   `QuicConnectionStreamStateBenchmarks`.
 - `RawQuicSendCore` runs send-priority, queue-sorting, batch-payload,
-  distinct-stream-id, deadline-scheduler, congestion-control, and
-  congestion-discard suites without a ProtocolLab run unless the caller
-  supplies a raw QUIC scenario.
+  distinct-stream-id, outstanding-sent-stream-packet lookup/bookkeeping/
+  lifecycle, deadline-scheduler, congestion-control, and congestion-discard
+  suites without a ProtocolLab run unless the caller supplies a raw QUIC
+  scenario.
 - `CryptoCore` runs packet-protection, key-phase, crypto-buffer, and managed
   X25519 suites without a ProtocolLab run. It is a local microbenchmark surface
   for cryptographic hot paths, not an end-to-end transport benchmark.
@@ -135,6 +137,8 @@ suites above.
 
 The benchmark project also contains the following permanent suites:
 
+- `QuicByteBufferAllocationBenchmarks`, including terminal STREAM receive
+  rows that guard exact retained capacity when final size is known.
 - `QuicPublicApiLoopbackBenchmarks`
 - `QuicPublicApiStreamTransferBenchmarks`
 - `QuicPublicApiSteadyStateStreamBenchmarks`
@@ -179,6 +183,9 @@ The benchmark project also contains the following permanent suites:
 - `QuicRuntimeCollectionBenchmarks`
 - `QuicConnectionSnapshotBenchmarks`
 - `QuicRetransmissionQueueRemovalBenchmarks`
+- `QuicOutstandingSentStreamPacketLookupBenchmarks`
+- `QuicOutstandingSentStreamPacketBookkeepingBenchmarks`
+- `QuicOutstandingSentStreamPacketLifecycleBenchmarks`
 - `QuicCongestionControlDiscardBenchmarks`
 
 Target a specific suite with `--filter` when iterating locally:
@@ -200,6 +207,7 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicRuntimeCollectionBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicConnectionSnapshotBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicRetransmissionQueueRemovalBenchmarks*" --inProcess
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicOutstandingSentStreamPacket*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicCongestionControlDiscardBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAddressValidationTokenBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*DoqPaddingBenchmarks*"

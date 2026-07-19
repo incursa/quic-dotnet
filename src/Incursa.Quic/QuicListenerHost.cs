@@ -1061,7 +1061,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             return false;
         }
 
-        byte[] responseDatagram = QuicBufferPool.RentBytes(datagram.Length);
+        byte[] responseDatagram = QuicBufferPool.RentBytes(
+            datagram.Length,
+            QuicBufferPoolOwner.ListenerResponse);
         try
         {
             if (!QuicVersionNegotiation.TryFormatVersionNegotiationResponse(
@@ -1146,7 +1148,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
     private void TrySendProtocolViolationCloseResponse(QuicConnectionPathIdentity pathIdentity)
     {
-        byte[] closeDatagram = QuicBufferPool.RentBytes(32);
+        byte[] closeDatagram = QuicBufferPool.RentBytes(
+            32,
+            QuicBufferPoolOwner.ListenerResponse);
         try
         {
             if (!QuicFrameCodec.TryFormatConnectionCloseFrame(

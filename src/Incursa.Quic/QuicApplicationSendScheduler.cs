@@ -113,9 +113,7 @@ internal static class QuicApplicationSendScheduler
             return QuicApplicationSendPlan.None(budget.BlockedReason);
         }
 
-        if (!QuicStreamParser.TryParseStreamFrame(
-            firstQueuedWrite.StreamPayload.AsSpan(0, firstQueuedWrite.StreamPayloadLength),
-            out firstStreamFrame))
+        if (!firstQueuedWrite.TryGetStreamFrame(out firstStreamFrame))
         {
             exception = new InvalidOperationException("Queued application stream payload is not a valid STREAM frame.");
             return QuicApplicationSendPlan.None(QuicSendPolicyBlockedReason.InvalidQueuedApplicationSend);
@@ -126,8 +124,7 @@ internal static class QuicApplicationSendScheduler
             budget.MaxPayloadBytes,
             out int fragmentDataLength))
         {
-            exception = new InvalidOperationException("Queued application stream payload cannot be fragmented into the current datagram payload budget.");
-            return QuicApplicationSendPlan.None(QuicSendPolicyBlockedReason.InvalidQueuedApplicationSend);
+            return QuicApplicationSendPlan.None(QuicSendPolicyBlockedReason.InvalidPayloadBudget);
         }
 
         if (fragmentDataLength < firstStreamFrame.StreamDataLength)
@@ -141,7 +138,7 @@ internal static class QuicApplicationSendScheduler
                 firstStreamFrame.StreamId.Value);
         }
 
-        int selectedWriteCount = queuedWriteCount == 1
+        int selectedWriteCount = queuedWriteCount == 1 || firstQueuedWrite.ContainsRawStreamData
             ? 1
             : QuicApplicationSendQueue.SelectQueuedApplicationSendBatchCount(
                 sortedQueuedWrites,

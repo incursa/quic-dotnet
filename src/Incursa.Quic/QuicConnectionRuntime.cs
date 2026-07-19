@@ -71,11 +71,14 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly Channel<QuicConnectionEvent> inbox;
     private readonly ConcurrentDictionary<long, StreamOpenRequestCompletionSource> pendingStreamOpenRequests = new();
     private readonly Dictionary<long, StreamActionRequestCompletionSource> pendingStreamActionRequests = new();
+    private readonly PriorityQueue<long, long> pendingStreamWriteRetryRequests = new();
     private readonly ConcurrentDictionary<long, DatagramSendRequestCompletionSource> pendingDatagramSendRequests = new();
     private readonly ConcurrentQueue<StreamOpenRequestCompletionSource> streamOpenRequestCompletionSourcePool = new();
     private readonly ConcurrentQueue<StreamActionRequestCompletionSource> streamActionRequestCompletionSourcePool = new();
     private readonly ConcurrentQueue<DatagramSendRequestCompletionSource> datagramSendRequestCompletionSourcePool = new();
     private readonly ConcurrentQueue<InboundStreamAcceptCompletionSource> inboundStreamAcceptCompletionSourcePool = new();
+    private long lastRuntimePressureSnapshotTimestamp;
+    private int runtimePressureSnapshotSkippedWorkItems;
     private readonly object pendingStreamActionRequestsGate = new();
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
     private readonly object scheduledFlowControlCreditGate = new();
@@ -227,6 +230,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         private Action<bool>? resultCompletionAction;
         private long writeStartedTimestamp;
         private int completed;
+        private bool queuedForWriteRetry;
 
         internal StreamActionRequestCompletionSource(QuicConnectionRuntime owner)
         {
@@ -254,6 +258,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             resultCompletionAction = null;
             writeStartedTimestamp = 0;
             completed = 0;
+            queuedForWriteRetry = false;
             source.Reset();
         }
 
@@ -331,7 +336,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             if (ownedStreamData is null || ownedStreamData.Length < streamData.Length)
             {
                 ReleaseOwnedStreamData();
-                ownedStreamData = QuicBufferPool.RentBytes(streamData.Length);
+                ownedStreamData = QuicBufferPool.RentBytes(
+                    streamData.Length,
+                    QuicBufferPoolOwner.StreamWriteRequest);
             }
 
             streamData.CopyTo(ownedStreamData);
@@ -345,6 +352,28 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             {
                 QuicBufferPool.ReturnBytes(ownedData);
             }
+        }
+
+        internal bool TryMarkQueuedForWriteRetry()
+        {
+            if (queuedForWriteRetry)
+            {
+                return false;
+            }
+
+            queuedForWriteRetry = true;
+            return true;
+        }
+
+        internal bool TryClearQueuedForWriteRetry()
+        {
+            if (!queuedForWriteRetry)
+            {
+                return false;
+            }
+
+            queuedForWriteRetry = false;
+            return true;
         }
 
         internal void TrySetResult()
@@ -880,6 +909,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         {
             bool removed = pendingStreamActionRequests.Remove(requestId, out StreamActionRequestCompletionSource? removedCompletion);
             completionSource = removedCompletion!;
+            if (removed
+                && completionSource.TryClearQueuedForWriteRetry())
+            {
+                _ = pendingStreamWriteRetryRequests.Remove(requestId, out _, out _);
+            }
+
             return removed;
         }
     }
@@ -1118,6 +1153,31 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     internal bool HasTerminalStreamOperation => IsDisposed || terminalState is not null;
 
     internal int DelayedApplicationSendCount => applicationSendQueue.Count;
+
+    internal bool TryBeginRuntimePressureSnapshot(
+        long timestamp,
+        long minimumIntervalTicks,
+        int maximumWorkItemsPerSnapshot)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(timestamp);
+        ArgumentOutOfRangeException.ThrowIfNegative(minimumIntervalTicks);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maximumWorkItemsPerSnapshot);
+
+        long lastTimestamp = lastRuntimePressureSnapshotTimestamp;
+        int skippedWorkItems = runtimePressureSnapshotSkippedWorkItems;
+        if (lastTimestamp == 0
+            || timestamp < lastTimestamp
+            || timestamp - lastTimestamp >= minimumIntervalTicks
+            || skippedWorkItems >= maximumWorkItemsPerSnapshot - 1)
+        {
+            lastRuntimePressureSnapshotTimestamp = timestamp;
+            runtimePressureSnapshotSkippedWorkItems = 0;
+            return true;
+        }
+
+        runtimePressureSnapshotSkippedWorkItems = skippedWorkItems + 1;
+        return false;
+    }
 
     internal int RetainedSentPacketCount => sendRuntime.SentPackets.Count;
 

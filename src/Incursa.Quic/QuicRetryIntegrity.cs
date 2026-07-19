@@ -294,7 +294,9 @@ internal static class QuicRetryIntegrity
         }
 
         associatedDataLength = 1 + originalDestinationConnectionId.Length + retryPacket.Length;
-        associatedDataBuffer = QuicBufferPool.RentBytes(associatedDataLength);
+        associatedDataBuffer = QuicBufferPool.RentBytes(
+            associatedDataLength,
+            QuicBufferPoolOwner.Handshake);
 
         Span<byte> associatedData = associatedDataBuffer.AsSpan(0, associatedDataLength);
         associatedData[0] = (byte)originalDestinationConnectionId.Length;

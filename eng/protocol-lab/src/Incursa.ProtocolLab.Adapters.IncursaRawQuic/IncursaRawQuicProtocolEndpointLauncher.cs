@@ -29,16 +29,49 @@ internal static class IncursaRawQuicProtocolEndpointLauncher
         var incursaQuicSourceRoot = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_QUIC_SOURCE_ROOT");
         if (!string.IsNullOrWhiteSpace(incursaQuicSourceRoot))
         {
-            si.FileName = "dotnet";
-            si.ArgumentList.Add("run");
-            si.ArgumentList.Add("--configuration");
-            si.ArgumentList.Add("Release");
-            si.ArgumentList.Add("--no-launch-profile");
-            si.ArgumentList.Add("--project");
-            si.ArgumentList.Add(resolvedProject);
-            si.ArgumentList.Add($"-p:IncursaQuicSourceRoot={incursaQuicSourceRoot}");
-            si.ArgumentList.Add("--");
-            si.ArgumentList.Add(port.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            var sourceProject = Path.GetFullPath(Path.Combine(
+                incursaQuicSourceRoot,
+                "eng",
+                "protocol-lab",
+                "servers",
+                "IncursaRawQuicServer",
+                "IncursaRawQuicServer.csproj"));
+            if (!File.Exists(sourceProject))
+            {
+                throw new FileNotFoundException(
+                    "The source-backed Incursa raw QUIC server project was not found.",
+                    sourceProject);
+            }
+
+            var sourceProjectDirectory = Path.GetDirectoryName(sourceProject) ?? incursaQuicSourceRoot;
+            var sourceAssemblyName = Path.GetFileNameWithoutExtension(sourceProject);
+            if (ResolveBuiltServerExecutable(sourceProjectDirectory, sourceAssemblyName) is { } sourceExecutable)
+            {
+                EnsureExecutablePermission(sourceExecutable);
+                si.FileName = sourceExecutable;
+                si.ArgumentList.Add(port.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            }
+            else if (ResolveBuiltServerDll(sourceProjectDirectory, sourceAssemblyName) is { } sourceDll)
+            {
+                si.FileName = "dotnet";
+                si.ArgumentList.Add("exec");
+                si.ArgumentList.Add(sourceDll);
+                si.ArgumentList.Add(port.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            }
+            else
+            {
+                si.FileName = "dotnet";
+                si.ArgumentList.Add("run");
+                si.ArgumentList.Add("--configuration");
+                si.ArgumentList.Add("Release");
+                si.ArgumentList.Add("--no-launch-profile");
+                si.ArgumentList.Add("--project");
+                si.ArgumentList.Add(sourceProject);
+                si.ArgumentList.Add($"-p:IncursaQuicSourceRoot={incursaQuicSourceRoot}");
+                si.ArgumentList.Add("--");
+                si.ArgumentList.Add(port.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            }
+
             si.Environment["PROTOCOL_LAB_INCURSA_QUIC_SOURCE_ROOT"] = incursaQuicSourceRoot;
         }
         else if (ResolveBuiltServerExecutable(projectDirectory, assemblyName) is { } directExec)
@@ -74,6 +107,10 @@ internal static class IncursaRawQuicProtocolEndpointLauncher
         if (!string.IsNullOrWhiteSpace(payloadDirection))
         {
             si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_DIRECTION"] = payloadDirection;
+        }
+        if (plan.Scenario.QuicTransport?.PayloadSizeBytes is > 0 and var payloadSizeBytes)
+        {
+            si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_SIZE_BYTES"] = payloadSizeBytes.ToString(System.Globalization.CultureInfo.InvariantCulture);
         }
 
         var behavior = plan.Scenario.QuicTransport?.Behavior;
@@ -175,30 +212,16 @@ internal static class IncursaRawQuicProtocolEndpointLauncher
     private static string? ResolveNewestBuildOutput(string projectDirectory, IReadOnlyCollection<string> fileNames, bool packageOnly)
     {
         var candidateRoots = new[] { Path.Combine(projectDirectory, "bin", "Release"), Path.Combine(projectDirectory, "bin", "Debug") };
-        foreach (var candidateRoot in candidateRoots)
-        {
-            if (!Directory.Exists(candidateRoot))
-            {
-                continue;
-            }
-
-            var candidates = packageOnly
+        return candidateRoots
+            .Where(Directory.Exists)
+            .SelectMany(candidateRoot => packageOnly
                 ? EnumeratePackageBuildOutputs(candidateRoot, fileNames)
-                : EnumerateFrameworkBuildOutputs(candidateRoot, fileNames);
-
-            var match = candidates
-                .Where(path => fileNames.Contains(Path.GetFileName(path), StringComparer.OrdinalIgnoreCase))
-                .Select(path => new FileInfo(path))
-                .OrderByDescending(info => info.LastWriteTimeUtc)
-                .FirstOrDefault();
-
-            if (match is not null)
-            {
-                return match.FullName;
-            }
-        }
-
-        return null;
+                : EnumerateFrameworkBuildOutputs(candidateRoot, fileNames))
+            .Where(path => fileNames.Contains(Path.GetFileName(path), StringComparer.OrdinalIgnoreCase))
+            .Select(path => new FileInfo(path))
+            .OrderByDescending(info => info.LastWriteTimeUtc)
+            .Select(info => info.FullName)
+            .FirstOrDefault();
     }
 
     private static IEnumerable<string> EnumeratePackageBuildOutputs(string candidateRoot, IReadOnlyCollection<string> fileNames)

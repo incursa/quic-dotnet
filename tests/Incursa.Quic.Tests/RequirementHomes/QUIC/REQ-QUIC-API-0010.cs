@@ -397,6 +397,131 @@ public sealed class REQ_QUIC_API_0010
 
     [Fact]
     [Requirement("REQ-QUIC-API-0010")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task FlowControlBlockedWritesRetryInRequestOrderAndDropCanceledRequests()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
+            connectionReceiveLimit: 4096,
+            connectionSendLimit: 4096,
+            localBidirectionalSendLimit: 64,
+            localBidirectionalReceiveLimit: 2048);
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            _ = runtime.Transition(connectionEvent);
+            return true;
+        });
+
+        await using QuicStream firstStream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        await using QuicStream canceledStream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        await using QuicStream thirdStream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        Assert.Equal(0L, firstStream.Id);
+        Assert.Equal(4L, canceledStream.Id);
+        Assert.Equal(8L, thirdStream.Id);
+        AcknowledgeTrackedPackets(runtime);
+
+        using CancellationTokenSource cancellation = new();
+        byte[] firstPayload = Enumerable.Range(0, 128).Select(static index => (byte)(0x10 + (index % 16))).ToArray();
+        byte[] canceledPayload = Enumerable.Range(0, 128).Select(static index => (byte)(0x20 + (index % 16))).ToArray();
+        byte[] thirdPayload = Enumerable.Range(0, 128).Select(static index => (byte)(0x30 + (index % 16))).ToArray();
+        Task firstWrite = firstStream.WriteAsync(firstPayload, 0, firstPayload.Length);
+        Task canceledWrite = canceledStream.WriteAsync(
+            canceledPayload,
+            0,
+            canceledPayload.Length,
+            cancellation.Token);
+        Task thirdWrite = thirdStream.WriteAsync(thirdPayload, 0, thirdPayload.Length);
+
+        Assert.False(firstWrite.IsCompleted);
+        Assert.False(canceledWrite.IsCompleted);
+        Assert.False(thirdWrite.IsCompleted);
+
+        await cancellation.CancelAsync();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => canceledWrite);
+
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
+        Assert.True(runtime.TlsState.OneRttProtectPacketProtectionMaterial.HasValue);
+
+        byte[] peerCreditPayload =
+        [
+            .. QuicFrameTestData.BuildMaxStreamDataFrame(
+                new QuicMaxStreamDataFrame((ulong)firstStream.Id, (ulong)firstPayload.Length)),
+            .. QuicFrameTestData.BuildMaxStreamDataFrame(
+                new QuicMaxStreamDataFrame((ulong)canceledStream.Id, (ulong)canceledPayload.Length)),
+            .. QuicFrameTestData.BuildMaxStreamDataFrame(
+                new QuicMaxStreamDataFrame((ulong)thirdStream.Id, (ulong)thirdPayload.Length)),
+        ];
+        QuicHandshakeFlowCoordinator peerCoordinator = new(runtime.CurrentHandshakeSourceConnectionId);
+        Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacketForRetransmission(
+            peerCreditPayload,
+            minimumPacketNumberExclusive: 5,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial.Value,
+            keyPhase: false,
+            out _,
+            out byte[] peerPacket));
+
+        QuicConnectionTransitionResult peerResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                runtime.ActivePath.Value.Identity,
+                peerPacket),
+            nowTicks: 10);
+        Assert.True(peerResult.StateChanged);
+
+        List<ulong> emittedStreamIds = [];
+        foreach (QuicConnectionSendDatagramEffect sendEffect in peerResult.Effects.OfType<QuicConnectionSendDatagramEffect>())
+        {
+            QuicHandshakeFlowCoordinator outgoingCoordinator = new(runtime.CurrentPeerDestinationConnectionId);
+            Assert.True(outgoingCoordinator.TryOpenProtectedApplicationDataPacket(
+                sendEffect.Datagram.Span,
+                runtime.TlsState.OneRttProtectPacketProtectionMaterial.Value,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength,
+                out _));
+            emittedStreamIds.AddRange(QuicFramePayloadInspector.GetStreamDataStreamIds(
+                openedPacket.AsSpan(payloadOffset, payloadLength)));
+        }
+
+        Assert.Equal([(ulong)firstStream.Id, (ulong)thirdStream.Id], emittedStreamIds);
+        await firstWrite.WaitAsync(TimeSpan.FromSeconds(5));
+        await thirdWrite.WaitAsync(TimeSpan.FromSeconds(5));
+
+        Task replacementWrite = canceledStream.WriteAsync(canceledPayload, 0, canceledPayload.Length);
+        await replacementWrite.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-API-0010")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task RuntimeDisposalCompletesAWriteQueuedForFlowControlRetry()
+    {
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
+            connectionReceiveLimit: 4096,
+            connectionSendLimit: 4096,
+            localBidirectionalSendLimit: 64,
+            localBidirectionalReceiveLimit: 2048);
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            _ = runtime.Transition(connectionEvent);
+            return true;
+        });
+
+        await using QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        AcknowledgeTrackedPackets(runtime);
+
+        ValueTask pendingWrite = stream.WriteAsync(new byte[128]);
+        Assert.False(pendingWrite.IsCompleted);
+
+        await runtime.DisposeAsync();
+
+        await Assert.ThrowsAsync<ObjectDisposedException>(() => pendingWrite.AsTask());
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-API-0010")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task CompletedWriteReleasesGateBeforeItsValueTaskIsConsumed()

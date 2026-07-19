@@ -375,7 +375,9 @@ internal sealed class QuicRetransmissionQueue
         }
 
         int payloadLength = retransmission.PlaintextPayload.Length;
-        byte[] payloadOwner = QuicBufferPool.RentBytes(payloadLength);
+        byte[] payloadOwner = QuicBufferPool.RentBytes(
+            payloadLength,
+            QuicBufferPoolOwner.Retransmission);
         retransmission.PlaintextPayload.CopyTo(payloadOwner);
         return retransmission with
         {

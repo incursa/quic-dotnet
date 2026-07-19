@@ -189,6 +189,43 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0011
         Assert.False(runtime.SendRuntime.TryDequeueRetransmission(out _));
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0011")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void ResetStreamRetransmissionStopsWhenOnlyFinOnlyStreamFrameRemains()
+    {
+        const ulong streamId = 4;
+        QuicConnectionSendRuntime runtime = new();
+        runtime.TrackSentPacket(CreatePacket(
+            packetNumber: 1,
+            QuicStreamTestData.BuildStreamFrame(0x0A, streamId, [0x11])));
+        runtime.TrackSentPacket(CreatePacket(
+            packetNumber: 2,
+            QuicStreamTestData.BuildStreamFrame(0x0B, streamId, []),
+            streamId));
+        runtime.TrackSentPacket(CreatePacket(
+            packetNumber: 3,
+            QuicFrameTestData.BuildResetStreamFrame(new QuicResetStreamFrame(streamId, 0x99, 1))));
+
+        Assert.True(runtime.TryRegisterLoss(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 3,
+            handshakeConfirmed: true));
+        Assert.Equal(1, runtime.PendingRetransmissionCount);
+
+        Assert.True(runtime.TryAcknowledgePacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 1,
+            handshakeConfirmed: true));
+
+        Assert.Equal(0, runtime.PendingRetransmissionCount);
+        Assert.Contains(
+            runtime.SentPackets,
+            entry => entry.Key.PacketNumber == 2);
+        Assert.False(runtime.TryDequeueRetransmission(out _));
+    }
+
     private static void AcknowledgeTrackedPackets(QuicConnectionRuntime runtime)
     {
         foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> sentPacket in runtime.SendRuntime.SentPackets.ToArray())
@@ -199,4 +236,18 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0011
                 handshakeConfirmed: true));
         }
     }
+
+    private static QuicConnectionSentPacket CreatePacket(
+        ulong packetNumber,
+        ReadOnlyMemory<byte> plaintextPayload,
+        ulong? streamId = null)
+        => new(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber,
+            PayloadBytes: (ulong)plaintextPayload.Length,
+            SentAtMicros: packetNumber,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            StreamId: streamId,
+            PlaintextPayload: plaintextPayload,
+            OneRttKeyPhase: 0);
 }

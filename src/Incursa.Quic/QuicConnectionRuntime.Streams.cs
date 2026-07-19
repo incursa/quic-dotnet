@@ -282,97 +282,40 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref QuicConnectionEffectAccumulator effects)
     {
-        KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource>[]? pendingRequests = null;
-        int pendingRequestCount = 0;
         lock (pendingStreamActionRequestsGate)
         {
-            if (pendingStreamActionRequests.Count == 0)
+            int pendingRetryCount = pendingStreamWriteRetryRequests.Count;
+            if (pendingRetryCount == 0)
             {
                 return false;
             }
 
-            pendingRequestCount = pendingStreamActionRequests.Count;
-            pendingRequests = ArrayPool<KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource>>.Shared.Rent(pendingRequestCount);
-            int snapshotIndex = 0;
-            foreach (KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource> pendingRequest in pendingStreamActionRequests)
-            {
-                pendingRequests[snapshotIndex++] = pendingRequest;
-            }
-
-            SortPendingStreamActionRequests(pendingRequests, pendingRequestCount);
-
             bool stateChanged = false;
-            try
+            for (int index = 0;
+                index < pendingRetryCount && pendingStreamWriteRetryRequests.TryDequeue(out long requestId, out _);
+                index++)
             {
-                for (int index = 0; index < pendingRequestCount; index++)
+                if (!pendingStreamActionRequests.TryGetValue(
+                        requestId,
+                        out QuicConnectionRuntime.StreamActionRequestCompletionSource? completion)
+                    || !completion.TryClearQueuedForWriteRetry())
                 {
-                    KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource> pendingRequest = pendingRequests[index];
-                    QuicConnectionRuntime.StreamActionRequestCompletionSource completion = pendingRequest.Value;
-                    if (completion.ActionKind is not (QuicConnectionStreamActionKind.Write or QuicConnectionStreamActionKind.Finish))
-                    {
-                        continue;
-                    }
-
-                    if (completion.ActionKind == QuicConnectionStreamActionKind.Write
-                        && !completion.HasOwnedStreamData)
-                    {
-                        continue;
-                    }
-
-                    if (completion.ActionKind == QuicConnectionStreamActionKind.Finish
-                        && completion.StreamDataLength > 0
-                        && !completion.HasOwnedStreamData)
-                    {
-                        continue;
-                    }
-
-                    if (!pendingStreamActionRequests.TryGetValue(pendingRequest.Key, out QuicConnectionRuntime.StreamActionRequestCompletionSource? currentCompletion)
-                        || !ReferenceEquals(currentCompletion, completion))
-                    {
-                        continue;
-                    }
-
-                    if (HandleWriteStreamAction(
-                            nowTicks,
-                            pendingRequest.Key,
-                            completion.StreamId,
-                            completion.GetOwnedStreamDataMemory(),
-                            completion.ActionKind == QuicConnectionStreamActionKind.Finish,
-                            ref effects))
-                    {
-                        stateChanged = true;
-                    }
+                    continue;
                 }
 
-                return stateChanged;
-            }
-            finally
-            {
-                if (pendingRequests is not null)
+                if (HandleWriteStreamAction(
+                        nowTicks,
+                        requestId,
+                        completion.StreamId,
+                        completion.GetOwnedStreamDataMemory(),
+                        completion.ActionKind == QuicConnectionStreamActionKind.Finish,
+                        ref effects))
                 {
-                    ArrayPool<KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource>>.Shared.Return(
-                        pendingRequests,
-                        clearArray: true);
+                    stateChanged = true;
                 }
             }
-        }
-    }
 
-    private static void SortPendingStreamActionRequests(
-        KeyValuePair<long, StreamActionRequestCompletionSource>[] pendingRequests,
-        int pendingRequestCount)
-    {
-        for (int index = 1; index < pendingRequestCount; index++)
-        {
-            KeyValuePair<long, StreamActionRequestCompletionSource> item = pendingRequests[index];
-            int insertIndex = index - 1;
-            while (insertIndex >= 0 && pendingRequests[insertIndex].Key > item.Key)
-            {
-                pendingRequests[insertIndex + 1] = pendingRequests[insertIndex];
-                insertIndex--;
-            }
-
-            pendingRequests[insertIndex + 1] = item;
+            return stateChanged;
         }
     }
 
@@ -513,33 +456,35 @@ internal sealed partial class QuicConnectionRuntime
                 return false;
             }
 
-            if (!TryResolveOrOpenLocalWritableStreamSnapshot(
-                    streamId,
-                    out QuicConnectionStreamSnapshot snapshot,
-                    out QuicTransportErrorCode openErrorCode))
+            QuicConnectionStreamWritePreparationStatus preparationStatus = streamRegistry.Bookkeeping.PrepareStreamWrite(
+                streamId,
+                streamData.Length,
+                finishWrites,
+                out QuicConnectionStreamWritePreparation preparation,
+                out QuicDataBlockedFrame dataBlockedFrame,
+                out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+                out QuicTransportErrorCode errorCode);
+            if (preparationStatus == QuicConnectionStreamWritePreparationStatus.Unavailable)
             {
                 pendingStreamActionRequests.Remove(requestId);
-                completion.TrySetException(openErrorCode != default
+                completion.TrySetException(errorCode != default
                     ? new QuicException(
                         QuicError.TransportError,
                         null,
-                        (long)openErrorCode,
+                        (long)errorCode,
                         "The stream write could not be committed.")
                     : new InvalidOperationException("The stream is not available on this connection."));
                 return false;
             }
 
-            if (snapshot.SendState == QuicStreamSendState.None)
+            if (preparationStatus == QuicConnectionStreamWritePreparationStatus.NotWritable)
             {
                 pendingStreamActionRequests.Remove(requestId);
                 completion.TrySetException(new InvalidOperationException("This stream does not have a writable side."));
                 return false;
             }
 
-            if (snapshot.SendState is QuicStreamSendState.DataSent
-                or QuicStreamSendState.DataRecvd
-                or QuicStreamSendState.ResetSent
-                or QuicStreamSendState.ResetRecvd)
+            if (preparationStatus == QuicConnectionStreamWritePreparationStatus.Completed)
             {
                 pendingStreamActionRequests.Remove(requestId);
                 if (finishWrites)
@@ -552,14 +497,40 @@ internal sealed partial class QuicConnectionRuntime
                 return false;
             }
 
-            if (!streamRegistry.Bookkeeping.TryCaptureSendState(streamId, out QuicConnectionStreamSendStateSnapshot sendStateBeforeWrite))
+            if (preparationStatus == QuicConnectionStreamWritePreparationStatus.Error)
+            {
+                pendingStreamActionRequests.Remove(requestId);
+                completion.TrySetException(new QuicException(
+                    QuicError.TransportError,
+                    null,
+                    (long)errorCode,
+                    "The stream write could not be committed."));
+                return false;
+            }
+
+            if (preparationStatus == QuicConnectionStreamWritePreparationStatus.Blocked)
+            {
+                if (dataBlockedFrame.MaximumData != 0 || streamDataBlockedFrame.MaximumStreamData != 0)
+                {
+                    completion.EnsureOwnedStreamData(streamData.Span);
+                    QueuePendingStreamWriteRetry(requestId, completion);
+                    _ = TryEmitFlowControlBlockedSignal(dataBlockedFrame, streamDataBlockedFrame, ref effects);
+                    return true;
+                }
+
+                pendingStreamActionRequests.Remove(requestId);
+                completion.TrySetException(new InvalidOperationException("The stream write could not be committed."));
+                return false;
+            }
+
+            if (preparationStatus != QuicConnectionStreamWritePreparationStatus.Reserved)
             {
                 pendingStreamActionRequests.Remove(requestId);
                 completion.TrySetException(new InvalidOperationException("The stream send state is unavailable."));
                 return false;
             }
 
-            ulong writeOffset = snapshot.UniqueBytesSent;
+            ulong writeOffset = preparation.WriteOffset;
             if (ApplicationSendDebugEnabled)
             {
                 Console.Error.WriteLine(
@@ -567,38 +538,6 @@ internal sealed partial class QuicConnectionRuntime
                     $"queue={applicationSendQueue.Count} retrans={sendRuntime.PendingRetransmissionCount} " +
                     $"ackInFlight={sendRuntime.HasAckElicitingPacketsInFlight} validated={(activePath?.AmplificationState.IsAddressValidated ?? false)} " +
                     $"oneRtt={tlsState.OneRttProtectPacketProtectionMaterial.HasValue} handshakeConfirmed={HandshakeConfirmed}.");
-            }
-
-            if (!streamRegistry.Bookkeeping.TryReserveSendCapacity(
-                streamId,
-                writeOffset,
-                streamData.Length,
-                finishWrites,
-                out QuicDataBlockedFrame dataBlockedFrame,
-                out QuicStreamDataBlockedFrame streamDataBlockedFrame,
-                out QuicTransportErrorCode errorCode))
-            {
-                if (errorCode != default)
-                {
-                    pendingStreamActionRequests.Remove(requestId);
-                    completion.TrySetException(new QuicException(
-                        QuicError.TransportError,
-                        null,
-                        (long)errorCode,
-                        "The stream write could not be committed."));
-                }
-                else if (dataBlockedFrame.MaximumData != 0 || streamDataBlockedFrame.MaximumStreamData != 0)
-                {
-                    completion.EnsureOwnedStreamData(streamData.Span);
-                    _ = TryEmitFlowControlBlockedSignal(dataBlockedFrame, streamDataBlockedFrame, ref effects);
-                }
-                else
-                {
-                    pendingStreamActionRequests.Remove(requestId);
-                    completion.TrySetException(new InvalidOperationException("The stream write could not be committed."));
-                }
-
-                return dataBlockedFrame.MaximumData != 0 || streamDataBlockedFrame.MaximumStreamData != 0;
             }
 
             return HandleWriteStreamActionAfterReservation(
@@ -609,8 +548,18 @@ internal sealed partial class QuicConnectionRuntime
                 streamData,
                 finishWrites,
                 writeOffset,
-                sendStateBeforeWrite,
+                preparation.SendStateBeforeWrite,
                 ref effects);
+        }
+    }
+
+    private void QueuePendingStreamWriteRetry(
+        long requestId,
+        QuicConnectionRuntime.StreamActionRequestCompletionSource completion)
+    {
+        if (completion.TryMarkQueuedForWriteRetry())
+        {
+            pendingStreamWriteRetryRequests.Enqueue(requestId, requestId);
         }
     }
 
@@ -672,6 +621,74 @@ internal sealed partial class QuicConnectionRuntime
             return true;
         }
 
+        byte streamFrameType = OutboundStreamControlFrameType;
+        if (writeOffset != 0)
+        {
+            streamFrameType |= QuicStreamFrameBits.OffsetBitMask;
+        }
+
+        if (finishWrites)
+        {
+            streamFrameType |= QuicStreamFrameBits.FinBitMask;
+        }
+
+        int maximumApplicationPayloadBytes = GetMaximumQueuedApplicationPayloadBytes();
+        if (!TryGetOutboundStreamFrameLength(
+                streamFrameType,
+                streamId,
+                writeOffset,
+                committedStreamDataLength,
+                out int streamFrameLength))
+        {
+            pendingStreamActionRequests.Remove(requestId);
+            return FailWriteAfterRollback(
+                completion,
+                sendStateBeforeWrite,
+                new InvalidOperationException("The connection runtime could not size the stream write payload."));
+        }
+
+        if (streamFrameLength > maximumApplicationPayloadBytes)
+        {
+            byte[] queuedStreamData = QuicBufferPool.RentBytes(
+                committedStreamDataLength,
+                QuicBufferPoolOwner.OutboundStreamPayload);
+            committedStreamData.CopyTo(queuedStreamData);
+            completion.ReleaseOwnedStreamData();
+
+            if (!streamRegistry.Bookkeeping.TryGetStreamPriority(streamId, out int oversizedStreamPriority))
+            {
+                oversizedStreamPriority = 0;
+            }
+
+            bool retransmissionPending = sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData);
+            QueuePendingRawApplicationSend(
+                streamId,
+                oversizedStreamPriority,
+                writeOffset,
+                finishWrites,
+                queuedStreamData,
+                committedStreamDataLength,
+                retransmissionPending
+                    ? QuicApplicationSendQueueCause.PendingRetransmission
+                    : QuicApplicationSendQueueCause.OversizedWrite,
+                nowTicks,
+                tryFlushPendingApplicationSendsAfterEnqueue: true,
+                ref effects);
+            if (retransmissionPending)
+            {
+                _ = TryFlushPendingRetransmissions(
+                    QuicPacketNumberSpace.ApplicationData,
+                    nowTicks,
+                    probePacket: false,
+                    ref effects);
+                AppendLifecycleTimerEffects(ref effects);
+            }
+
+            pendingStreamActionRequests.Remove(requestId);
+            completion.TrySetResult();
+            return true;
+        }
+
         if (!TryBuildOutboundStreamPayload(
                 streamId,
                 writeOffset,
@@ -713,25 +730,6 @@ internal sealed partial class QuicConnectionRuntime
                 probePacket: false,
                 ref effects);
             AppendLifecycleTimerEffects(ref effects);
-            pendingStreamActionRequests.Remove(requestId);
-            completion.TrySetResult();
-            return true;
-        }
-
-        int maximumApplicationPayloadBytes = GetMaximumQueuedApplicationPayloadBytes();
-        if (streamPayloadLength > maximumApplicationPayloadBytes)
-        {
-            LogApplicationSend(
-                $"app-tx branch=oversized-queue role={tlsState.Role} stream={streamId} payloadLength={streamPayloadLength} budget={maximumApplicationPayloadBytes} queue={applicationSendQueue.Count}.");
-            QueuePendingApplicationSend(
-                streamId,
-                streamPriority,
-                streamPayload,
-                streamPayloadLength,
-                QuicApplicationSendQueueCause.OversizedWrite,
-                nowTicks,
-                tryFlushPendingApplicationSendsAfterEnqueue: true,
-                ref effects);
             pendingStreamActionRequests.Remove(requestId);
             completion.TrySetResult();
             return true;
@@ -793,6 +791,9 @@ internal sealed partial class QuicConnectionRuntime
                 pendingStreamActionRequests.Remove(requestId);
                 if (queuedFlushException is not null && !IsTransientApplicationSendPathBlocked(queuedFlushException))
                 {
+                    // The stream state and queued payload are already committed, so this path cannot safely roll
+                    // back. It must still complete the caller instead of orphaning the request after removal.
+                    completion.TrySetException(queuedFlushException);
                     return false;
                 }
 
@@ -853,19 +854,20 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        byte[]? remainderPayload = null;
-        int remainderPayloadLength = 0;
-        if (fragmentDataLength < queuedFrame.StreamDataLength
-            && !TryBuildOutboundStreamPayload(
-                queuedFrame.StreamId.Value,
-                queuedFrame.Offset + (ulong)fragmentDataLength,
-                queuedFrame.StreamData[fragmentDataLength..],
-                fin: queuedFrame.IsFin,
-                out remainderPayload,
-                out remainderPayloadLength))
+        bool hasRemainder = fragmentDataLength < queuedFrame.StreamDataLength;
+        QuicStreamPayloadRemainderLayout remainderLayout = default;
+        if (hasRemainder
+            && !queuedWrite.ContainsRawStreamData
+            && !QuicStreamPayloadSizer.TryCreateRemainderLayout(
+                queuedFrame,
+                queuedWrite.StreamPayloadOffset,
+                fragmentDataLength,
+                ApplicationMinimumProtectedPayloadLength,
+                queuedWrite.StreamPayload.Length,
+                out remainderLayout))
         {
             QuicBufferPool.ReturnBytes(fragmentPayload);
-            exception = new InvalidOperationException("The connection runtime could not build the queued stream write remainder.");
+            exception = new InvalidOperationException("The connection runtime could not plan the queued stream write remainder.");
             return false;
         }
 
@@ -883,22 +885,30 @@ internal sealed partial class QuicConnectionRuntime
                 out exception))
         {
             QuicBufferPool.ReturnBytes(fragmentPayload);
-            if (remainderPayload is not null)
-            {
-                QuicBufferPool.ReturnBytes(remainderPayload);
-            }
-
             return false;
         }
 
-        if (remainderPayload is not null)
+        if (hasRemainder && queuedWrite.ContainsRawStreamData)
         {
-            if (!applicationSendQueue.TryReplaceQueuedWritePayload(
+            if (!applicationSendQueue.TryAdvanceQueuedRawStreamData(
                     queuedWrite.Sequence,
-                    remainderPayload,
-                    remainderPayloadLength))
+                    queuedWrite.StreamPayload,
+                    fragmentDataLength))
             {
-                QuicBufferPool.ReturnBytes(remainderPayload);
+                throw new InvalidOperationException("The connection runtime could not advance the queued raw stream write after a partial send.");
+            }
+        }
+        else if (hasRemainder)
+        {
+            QuicStreamPayloadSizer.ApplyRemainderLayout(
+                queuedWrite.StreamPayload,
+                remainderLayout);
+            if (!applicationSendQueue.TryUpdateQueuedWritePayloadSlice(
+                    queuedWrite.Sequence,
+                    queuedWrite.StreamPayload,
+                    remainderLayout.PayloadOffset,
+                    remainderLayout.PayloadLength))
+            {
                 throw new InvalidOperationException("The connection runtime could not update the queued stream write after a partial send.");
             }
         }
@@ -915,51 +925,6 @@ internal sealed partial class QuicConnectionRuntime
         AppendLifecycleTimerEffects(ref effects);
 
         exception = null;
-        return true;
-    }
-
-    private bool TryResolveOrOpenLocalWritableStreamSnapshot(
-        ulong streamId,
-        out QuicConnectionStreamSnapshot snapshot,
-        out QuicTransportErrorCode errorCode)
-    {
-        if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamId, out snapshot))
-        {
-            errorCode = default;
-            return true;
-        }
-
-        QuicStreamId quicStreamId = new(streamId);
-        if (!streamRegistry.Bookkeeping.TryPeekLocalStream(
-                quicStreamId.IsBidirectional,
-                out QuicStreamId nextStreamId,
-                out _))
-        {
-            snapshot = default;
-            errorCode = QuicTransportErrorCode.StreamLimitError;
-            return false;
-        }
-
-        if (nextStreamId.Value != streamId)
-        {
-            snapshot = default;
-            errorCode = default;
-            return false;
-        }
-
-        if (!streamRegistry.Bookkeeping.TryOpenLocalStream(
-                quicStreamId.IsBidirectional,
-                out QuicStreamId committedStreamId,
-                out _)
-            || committedStreamId.Value != streamId
-            || !streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamId, out snapshot))
-        {
-            snapshot = default;
-            errorCode = QuicTransportErrorCode.StreamStateError;
-            return false;
-        }
-
-        errorCode = default;
         return true;
     }
 
@@ -1037,6 +1002,42 @@ internal sealed partial class QuicConnectionRuntime
         }
     }
 
+    private void QueuePendingRawApplicationSend(
+        ulong streamId,
+        int priority,
+        ulong streamOffset,
+        bool isFinal,
+        byte[] streamData,
+        int streamDataLength,
+        QuicApplicationSendQueueCause queueCause,
+        long nowTicks,
+        bool tryFlushPendingApplicationSendsAfterEnqueue,
+        ref QuicConnectionEffectAccumulator effects)
+    {
+        applicationSendQueue.EnqueueRawStreamData(
+            streamId,
+            priority,
+            streamData,
+            streamDataLength,
+            streamOffset,
+            isFinal,
+            GetElapsedMicros(nowTicks),
+            queueCause);
+
+        if (applicationSendQueue.Count == 1)
+        {
+            pendingApplicationSendDelayDueTicks = SaturatingAdd(
+                nowTicks,
+                ConvertMicrosToTicks(ApplicationSendDelayMicros));
+        }
+
+        AppendLifecycleTimerEffects(ref effects);
+        if (tryFlushPendingApplicationSendsAfterEnqueue)
+        {
+            _ = TryFlushPendingApplicationSendsAfterRecoveryProgress(nowTicks, ref effects, out _);
+        }
+    }
+
     private bool TryPromoteQueuedApplicationSendToFinal(ulong streamId)
     {
         // CONTEXT: When a caller finishes with no new bytes, the latest queued write must be upgraded
@@ -1050,8 +1051,15 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        if (queuedWrite.ContainsRawStreamData)
+        {
+            return applicationSendQueue.TryMarkQueuedWriteFinal(queuedWrite.Sequence);
+        }
+
         if (!QuicStreamParser.TryParseStreamFrame(
-                queuedWrite.StreamPayload.AsSpan(0, queuedWrite.StreamPayloadLength),
+                queuedWrite.StreamPayload.AsSpan(
+                    queuedWrite.StreamPayloadOffset,
+                    queuedWrite.StreamPayloadLength),
                 out QuicStreamFrame frame)
             || !TryBuildOutboundStreamPayload(
                 streamId,
@@ -1130,6 +1138,7 @@ internal sealed partial class QuicConnectionRuntime
         byte[]? combinedPayloadOwner = null;
         ReadOnlySpan<PendingApplicationSendRequest> selectedWrites = default;
         bool hasOnlyQueuedWrite = applicationSendQueue.TryGetOnlyQueuedWrite(out onlyQueuedWrite);
+        bool formattedRawQueuedWrite = false;
 
         try
         {
@@ -1140,7 +1149,7 @@ internal sealed partial class QuicConnectionRuntime
                     schedulerBudget,
                     out QuicStreamFrame onlyQueuedWriteFrame,
                     out exception);
-                if (sendPlan.Kind == QuicApplicationSendPlanKind.None)
+                if (TryHandleNoQueuedApplicationSendPlan(sendPlan, ref exception))
                 {
                     return false;
                 }
@@ -1174,7 +1183,30 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
-                combinedPayload = onlyQueuedWrite.StreamPayload.AsMemory(0, onlyQueuedWrite.StreamPayloadLength);
+                if (onlyQueuedWrite.ContainsRawStreamData)
+                {
+                    if (!TryBuildOutboundStreamPayload(
+                            onlyQueuedWriteFrame.StreamId.Value,
+                            onlyQueuedWriteFrame.Offset,
+                            onlyQueuedWriteFrame.StreamData,
+                            onlyQueuedWriteFrame.IsFin,
+                            out combinedPayloadOwner,
+                            out int formattedPayloadLength))
+                    {
+                        exception = new InvalidOperationException("The connection runtime could not format the queued raw stream write.");
+                        return false;
+                    }
+
+                    combinedPayload = combinedPayloadOwner.AsMemory(0, formattedPayloadLength);
+                    formattedRawQueuedWrite = true;
+                }
+                else
+                {
+                    combinedPayload = onlyQueuedWrite.StreamPayload.AsMemory(
+                        onlyQueuedWrite.StreamPayloadOffset,
+                        onlyQueuedWrite.StreamPayloadLength);
+                }
+
                 payloadStreamId = onlyQueuedWrite.StreamId;
             }
             else
@@ -1190,7 +1222,7 @@ internal sealed partial class QuicConnectionRuntime
                     schedulerBudget,
                     out QuicStreamFrame nextQueuedWriteFrame,
                     out exception);
-                if (nextWritePlan.Kind == QuicApplicationSendPlanKind.None)
+                if (TryHandleNoQueuedApplicationSendPlan(nextWritePlan, ref exception))
                 {
                     return false;
                 }
@@ -1233,7 +1265,7 @@ internal sealed partial class QuicConnectionRuntime
                     schedulerBudget,
                     out QuicStreamFrame firstSelectedWriteFrame,
                     out exception);
-                if (sendPlan.Kind == QuicApplicationSendPlanKind.None)
+                if (TryHandleNoQueuedApplicationSendPlan(sendPlan, ref exception))
                 {
                     return false;
                 }
@@ -1269,29 +1301,56 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
-                int combinedPayloadLength = 0;
-                foreach (PendingApplicationSendRequest queuedWrite in selectedWrites)
+                if (selectedWrites.Length == 1 && selectedWrites[0].ContainsRawStreamData)
                 {
-                    combinedPayloadLength = checked(combinedPayloadLength + queuedWrite.StreamPayloadLength);
-                }
+                    PendingApplicationSendRequest rawQueuedWrite = selectedWrites[0];
+                    if (!rawQueuedWrite.TryGetStreamFrame(out QuicStreamFrame rawQueuedWriteFrame)
+                        || !TryBuildOutboundStreamPayload(
+                            rawQueuedWriteFrame.StreamId.Value,
+                            rawQueuedWriteFrame.Offset,
+                            rawQueuedWriteFrame.StreamData,
+                            rawQueuedWriteFrame.IsFin,
+                            out combinedPayloadOwner,
+                            out int formattedPayloadLength))
+                    {
+                        exception = new InvalidOperationException("The connection runtime could not format the selected queued raw stream write.");
+                        return false;
+                    }
 
-                combinedPayloadOwner = QuicBufferPool.RentBytes(combinedPayloadLength);
-                int copyOffset = 0;
-                foreach (PendingApplicationSendRequest queuedWrite in selectedWrites)
-                {
-                    queuedWrite.StreamPayload.AsSpan(0, queuedWrite.StreamPayloadLength)
-                        .CopyTo(combinedPayloadOwner.AsSpan(copyOffset));
-                    copyOffset += queuedWrite.StreamPayloadLength;
-                }
-
-                combinedPayload = combinedPayloadOwner.AsMemory(0, combinedPayloadLength);
-                if (QuicApplicationSendQueue.TryGetOnlyDistinctStreamId(selectedWrites, out ulong onlyStreamId))
-                {
-                    payloadStreamId = onlyStreamId;
+                    combinedPayload = combinedPayloadOwner.AsMemory(0, formattedPayloadLength);
+                    payloadStreamId = rawQueuedWrite.StreamId;
+                    formattedRawQueuedWrite = true;
                 }
                 else
                 {
-                    streamIds = QuicApplicationSendQueue.BuildDistinctStreamIds(selectedWrites);
+                    int combinedPayloadLength = 0;
+                    foreach (PendingApplicationSendRequest queuedWrite in selectedWrites)
+                    {
+                        combinedPayloadLength = checked(combinedPayloadLength + queuedWrite.StreamPayloadLength);
+                    }
+
+                    combinedPayloadOwner = QuicBufferPool.RentBytes(
+                        combinedPayloadLength,
+                        QuicBufferPoolOwner.CombinedApplicationSend);
+                    int copyOffset = 0;
+                    foreach (PendingApplicationSendRequest queuedWrite in selectedWrites)
+                    {
+                        queuedWrite.StreamPayload.AsSpan(
+                                queuedWrite.StreamPayloadOffset,
+                                queuedWrite.StreamPayloadLength)
+                            .CopyTo(combinedPayloadOwner.AsSpan(copyOffset));
+                        copyOffset += queuedWrite.StreamPayloadLength;
+                    }
+
+                    combinedPayload = combinedPayloadOwner.AsMemory(0, combinedPayloadLength);
+                    if (QuicApplicationSendQueue.TryGetOnlyDistinctStreamId(selectedWrites, out ulong onlyStreamId))
+                    {
+                        payloadStreamId = onlyStreamId;
+                    }
+                    else
+                    {
+                        streamIds = QuicApplicationSendQueue.BuildDistinctStreamIds(selectedWrites);
+                    }
                 }
             }
 
@@ -1302,7 +1361,9 @@ internal sealed partial class QuicConnectionRuntime
 
             if (!TryProtectAndAccountStreamApplicationPayload(
                 combinedPayload,
-                hasOnlyQueuedWrite ? onlyQueuedWrite.StreamPayload : combinedPayloadOwner,
+                formattedRawQueuedWrite || !hasOnlyQueuedWrite
+                    ? combinedPayloadOwner
+                    : onlyQueuedWrite.StreamPayload,
                 "The connection runtime could not protect the queued stream write packet.",
                 QueuedStreamWriteSendBlockedMessage,
                 probePacket,
@@ -1326,7 +1387,19 @@ internal sealed partial class QuicConnectionRuntime
                 return false;
             }
 
-            if (hasOnlyQueuedWrite)
+            if (formattedRawQueuedWrite)
+            {
+                combinedPayloadOwner = null;
+                if (hasOnlyQueuedWrite)
+                {
+                    applicationSendQueue.TryRemoveQueuedWrite(onlyQueuedWrite.Sequence, returnPayloads: true);
+                }
+                else
+                {
+                    applicationSendQueue.TryRemoveQueuedWrites(selectedWrites, returnPayloads: true);
+                }
+            }
+            else if (hasOnlyQueuedWrite)
             {
                 applicationSendQueue.TryRemoveQueuedWritesForStream(onlyQueuedWrite.StreamId);
             }
@@ -1439,31 +1512,73 @@ internal sealed partial class QuicConnectionRuntime
     {
         exception = null;
         bool stateChanged = false;
-        for (int flushCount = 0; applicationSendQueue.Count > 0; flushCount++)
+        int queuedWritesBefore = applicationSendQueue.Count;
+        if (queuedWritesBefore > 0)
         {
-            QuicQueuedApplicationSendBudget sendBudget = QuicSendPolicy.ComputeQueuedApplicationSendBudget(
-                CaptureQueuedApplicationSendPolicySnapshot());
-            if (!sendBudget.CanSendQueuedApplicationData || flushCount >= sendBudget.MaxDatagrams)
+            QuicSendPolicySnapshot policySnapshot = CaptureQueuedApplicationSendPolicySnapshot();
+            QuicQueuedApplicationSendBudget sendBudget =
+                QuicSendPolicy.ComputeQueuedApplicationSendBudget(policySnapshot);
+            QuicApplicationSendRecoveryFlushOutcome outcome =
+                QuicApplicationSendRecoveryFlushOutcome.BudgetBlocked;
+            QuicSendPolicyBlockedReason blockedReason = sendBudget.BlockedReason;
+            int flushedDatagrams = 0;
+            while (applicationSendQueue.Count > 0)
             {
-                break;
+                policySnapshot = CaptureQueuedApplicationSendPolicySnapshot();
+                sendBudget = QuicSendPolicy.ComputeQueuedApplicationSendBudget(policySnapshot);
+                if (!sendBudget.CanSendQueuedApplicationData)
+                {
+                    outcome = QuicApplicationSendRecoveryFlushOutcome.BudgetBlocked;
+                    blockedReason = sendBudget.BlockedReason;
+                    break;
+                }
+
+                if (flushedDatagrams >= sendBudget.MaxDatagrams)
+                {
+                    outcome = QuicApplicationSendRecoveryFlushOutcome.BurstLimitReached;
+                    break;
+                }
+
+                if (!FlushPendingApplicationSends(
+                        nowTicks,
+                        probePacket: false,
+                        sendBudget,
+                        ref effects,
+                        out Exception? flushException))
+                {
+                    exception = flushException;
+                    outcome = IsTransientApplicationSendPathBlocked(flushException)
+                        ? QuicApplicationSendRecoveryFlushOutcome.FlushBlocked
+                        : QuicApplicationSendRecoveryFlushOutcome.FlushFailed;
+                    blockedReason = ClassifyApplicationSendFlushBlockedReason(
+                        flushException,
+                        policySnapshot);
+                    break;
+                }
+
+                flushedDatagrams++;
+                stateChanged = true;
+                if (sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData))
+                {
+                    outcome = QuicApplicationSendRecoveryFlushOutcome.RetransmissionPending;
+                    break;
+                }
             }
 
-            if (!FlushPendingApplicationSends(
-                    nowTicks,
-                    probePacket: false,
-                    sendBudget,
-                    ref effects,
-                    out Exception? flushException))
+            if (applicationSendQueue.Count == 0)
             {
-                exception = flushException;
-                break;
+                outcome = QuicApplicationSendRecoveryFlushOutcome.QueueDrained;
             }
 
-            stateChanged = true;
-            if (sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData))
-            {
-                break;
-            }
+            QuicMetrics.RecordApplicationSendRecoveryFlush(
+                tlsState.Role,
+                policySnapshot,
+                sendBudget,
+                queuedWritesBefore,
+                applicationSendQueue.Count,
+                flushedDatagrams,
+                outcome,
+                blockedReason);
         }
 
         stateChanged |= TryFlushPendingFlowControlCreditUpdates(ref effects);
@@ -1518,6 +1633,24 @@ internal sealed partial class QuicConnectionRuntime
                 StringComparison.Ordinal);
     }
 
+    private static bool TryHandleNoQueuedApplicationSendPlan(
+        QuicApplicationSendPlan sendPlan,
+        ref Exception? exception)
+    {
+        if (sendPlan.Kind != QuicApplicationSendPlanKind.None)
+        {
+            return false;
+        }
+
+        if (exception is null
+            && sendPlan.BlockedReason == QuicSendPolicyBlockedReason.InvalidPayloadBudget)
+        {
+            exception = CongestionControllerExhaustedException;
+        }
+
+        return true;
+    }
+
     private static Exception MaterializeApplicationSendException(Exception exception)
     {
         return ReferenceEquals(exception, CongestionControllerExhaustedException)
@@ -1537,6 +1670,25 @@ internal sealed partial class QuicConnectionRuntime
                     invalidOperationException.Message,
                     QueuedStreamWriteSendBlockedMessage,
                     StringComparison.Ordinal));
+    }
+
+    private static QuicSendPolicyBlockedReason ClassifyApplicationSendFlushBlockedReason(
+        Exception? exception,
+        QuicSendPolicySnapshot snapshot)
+    {
+        if (IsTransientCongestionExhaustion(exception))
+        {
+            return QuicSendPolicyBlockedReason.CongestionLimited;
+        }
+
+        if (IsTransientApplicationSendPathBlocked(exception))
+        {
+            return snapshot.IsAddressValidated
+                ? QuicSendPolicyBlockedReason.OrdinaryPacketsUnavailable
+                : QuicSendPolicyBlockedReason.AntiAmplificationLimited;
+        }
+
+        return QuicSendPolicyBlockedReason.None;
     }
 
     private void TryRemoveQueuedApplicationSendsForStream(ulong streamId, ref QuicConnectionEffectAccumulator effects)
@@ -4816,7 +4968,9 @@ internal sealed partial class QuicConnectionRuntime
         byte[]? plaintextPayloadOwner = null;
         if (!plaintextPayload.IsEmpty)
         {
-            plaintextPayloadOwner = QuicBufferPool.RentBytes(plaintextPayload.Length);
+            plaintextPayloadOwner = QuicBufferPool.RentBytes(
+                plaintextPayload.Length,
+                QuicBufferPoolOwner.SentPacketRetention);
             plaintextPayload.Span.CopyTo(plaintextPayloadOwner.AsSpan(0, plaintextPayload.Length));
             plaintextPayload = plaintextPayloadOwner.AsMemory(0, plaintextPayload.Length);
         }
@@ -5153,7 +5307,9 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         int bufferLength = Math.Max(ApplicationMinimumProtectedPayloadLength, frameLength);
-        QuicBufferLease bufferLease = QuicBufferPool.RentLease(bufferLength);
+        QuicBufferLease bufferLease = QuicBufferPool.RentLease(
+            bufferLength,
+            QuicBufferPoolOwner.OutboundStreamPayload);
         try
         {
             if (!QuicFrameCodec.TryFormatStreamFrame(
@@ -5354,7 +5510,9 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         int maximumPayloadBytes = GetMaximumFlowControlCreditPayloadBytes();
-        byte[] buffer = QuicBufferPool.RentBytes(maximumPayloadBytes);
+        byte[] buffer = QuicBufferPool.RentBytes(
+            maximumPayloadBytes,
+            QuicBufferPoolOwner.ControlFrame);
         int bytesWritten = 0;
         while (payloadCreditCount < streamCredits.Length
             && QuicFrameCodec.TryFormatMaxStreamDataFrame(
@@ -5516,7 +5674,9 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         int payloadLength = Math.Max(ApplicationMinimumProtectedPayloadLength, frameBytes.Length);
-        payloadOwner = QuicBufferPool.RentBytes(payloadLength);
+        payloadOwner = QuicBufferPool.RentBytes(
+            payloadLength,
+            QuicBufferPoolOwner.ControlFrame);
         Span<byte> payloadSpan = payloadOwner.AsSpan(0, payloadLength);
         frameBytes.CopyTo(payloadSpan);
         if (frameBytes.Length < payloadLength)
@@ -5806,6 +5966,7 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             pendingStreamActionRequests.Clear();
+            pendingStreamWriteRetryRequests.Clear();
         }
 
         try

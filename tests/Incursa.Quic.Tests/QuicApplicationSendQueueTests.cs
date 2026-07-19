@@ -6,6 +6,66 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicApplicationSendQueueTests
 {
     [Fact]
+    public void RawStreamDataAdvancesWithoutReformattingOwner()
+    {
+        QuicApplicationSendQueue queue = new();
+        byte[] streamData = QuicBufferPool.RentBytes(32);
+        Enumerable.Range(0, 32).Select(static value => (byte)value).ToArray().CopyTo(streamData, 0);
+        queue.EnqueueRawStreamData(
+            streamId: 4,
+            priority: 2,
+            streamData,
+            streamDataLength: 32,
+            streamOffset: 11,
+            isFinal: true);
+        Assert.True(queue.TryGetLatestQueuedWriteForStream(4, out PendingApplicationSendRequest before));
+
+        Assert.True(queue.TryAdvanceQueuedRawStreamData(before.Sequence, streamData, consumedDataLength: 12));
+        Assert.True(queue.TryGetLatestQueuedWriteForStream(4, out PendingApplicationSendRequest after));
+        Assert.True(after.TryGetStreamFrame(out QuicStreamFrame frame));
+
+        Assert.Same(streamData, after.StreamPayload);
+        Assert.Equal(12, after.StreamPayloadOffset);
+        Assert.Equal(20, after.StreamPayloadLength);
+        Assert.Equal(23UL, after.StreamOffset);
+        Assert.True(after.IsFinal);
+        Assert.Equal(Enumerable.Range(12, 20).Select(static value => (byte)value), frame.StreamData.ToArray());
+        queue.Clear();
+    }
+
+    [Fact]
+    public void RawStreamDataCanBePromotedToFinalInPlace()
+    {
+        QuicApplicationSendQueue queue = new();
+        byte[] streamData = QuicBufferPool.RentBytes(8);
+        queue.EnqueueRawStreamData(4, 0, streamData, 8, streamOffset: 0, isFinal: false);
+        Assert.True(queue.TryGetLatestQueuedWriteForStream(4, out PendingApplicationSendRequest before));
+
+        Assert.True(queue.TryMarkQueuedWriteFinal(before.Sequence));
+        Assert.True(queue.TryGetLatestQueuedWriteForStream(4, out PendingApplicationSendRequest after));
+        Assert.True(after.TryGetStreamFrame(out QuicStreamFrame frame));
+
+        Assert.Same(streamData, after.StreamPayload);
+        Assert.True(after.IsFinal);
+        Assert.True(frame.IsFin);
+        queue.Clear();
+    }
+
+    [Fact]
+    public void EncodedStreamDataCannotBePromotedThroughRawMetadata()
+    {
+        QuicApplicationSendQueue queue = new();
+        byte[] streamPayload = QuicBufferPool.RentBytes(8);
+        queue.Enqueue(streamId: 4, priority: 0, streamPayload, streamPayloadLength: 8);
+        Assert.True(queue.TryGetLatestQueuedWriteForStream(4, out PendingApplicationSendRequest before));
+
+        Assert.False(queue.TryMarkQueuedWriteFinal(before.Sequence));
+        Assert.True(queue.TryGetLatestQueuedWriteForStream(4, out PendingApplicationSendRequest after));
+        Assert.False(after.IsFinal);
+        queue.Clear();
+    }
+
+    [Fact]
     public void CaptureRetentionSnapshotCountsActualPayloadOwnerCapacity()
     {
         QuicApplicationSendQueue queue = new();
@@ -434,6 +494,63 @@ public sealed class QuicApplicationSendQueueTests
     }
 
     [Fact]
+    public void TryUpdateQueuedWritePayloadSlice_PreservesOwnerAndQueueMetadata()
+    {
+        QuicApplicationSendQueue queue = new();
+        byte[] payload = QuicBufferPool.RentBytes(16);
+        payload.AsSpan(4, 3).Fill(0x5A);
+
+        try
+        {
+            queue.Enqueue(
+                streamId: 7,
+                priority: 3,
+                payload,
+                streamPayloadLength: 16,
+                firstEnqueuedAtMicros: 123,
+                QuicApplicationSendQueueCause.OversizedWrite);
+            Assert.True(queue.TryGetOnlyQueuedWrite(out PendingApplicationSendRequest before));
+
+            Assert.True(queue.TryUpdateQueuedWritePayloadSlice(before.Sequence, payload, 4, 3));
+            Assert.True(queue.TryGetOnlyQueuedWrite(out PendingApplicationSendRequest after));
+
+            Assert.Same(payload, after.StreamPayload);
+            Assert.Equal(4, after.StreamPayloadOffset);
+            Assert.Equal(3, after.StreamPayloadLength);
+            Assert.Equal(before.Sequence, after.Sequence);
+            Assert.Equal(before.Priority, after.Priority);
+            Assert.Equal(before.FirstEnqueuedAtMicros, after.FirstEnqueuedAtMicros);
+            Assert.Equal(before.QueueCause, after.QueueCause);
+        }
+        finally
+        {
+            queue.Clear();
+        }
+    }
+
+    [Fact]
+    public void TryUpdateQueuedWritePayloadSlice_RejectsWrongOwnerAndInvalidRangeWithoutChangingQueue()
+    {
+        QuicApplicationSendQueue queue = new();
+        byte[] payload = QuicBufferPool.RentBytes(16);
+
+        try
+        {
+            queue.Enqueue(streamId: 7, priority: 3, payload, streamPayloadLength: 16);
+            Assert.True(queue.TryGetOnlyQueuedWrite(out PendingApplicationSendRequest before));
+
+            Assert.False(queue.TryUpdateQueuedWritePayloadSlice(before.Sequence, new byte[16], 4, 3));
+            Assert.False(queue.TryUpdateQueuedWritePayloadSlice(before.Sequence, payload, 15, 2));
+            Assert.True(queue.TryGetOnlyQueuedWrite(out PendingApplicationSendRequest after));
+            Assert.Equal(before, after);
+        }
+        finally
+        {
+            queue.Clear();
+        }
+    }
+
+    [Fact]
     public void TryGetFragmentDataLength_FindsAPacketSizedPrefixForLargeQueuedStreamPayload()
     {
         byte[] streamData = Enumerable.Range(0, 96).Select(value => (byte)value).ToArray();
@@ -550,6 +667,132 @@ public sealed class QuicApplicationSendQueueTests
 
         Assert.True(fragmentPayloadLength <= MaximumPayloadBytes);
         Assert.Equal(streamData.Length, fragmentDataLength + queuedFrame.StreamData[fragmentDataLength..].Length);
+    }
+
+    [Fact]
+    public void RemainderLayout_AdvancesProtocolLabPayloadWithoutMovingStreamData()
+    {
+        byte[] streamData = Enumerable.Range(0, 65_536).Select(value => (byte)value).ToArray();
+        byte[] queuedPayload = new byte[streamData.Length + 64];
+        const byte FrameType = QuicStreamFrameBits.StreamFrameTypeMinimum
+            | QuicStreamFrameBits.LengthBitMask
+            | QuicStreamFrameBits.FinBitMask;
+
+        Assert.True(QuicFrameCodec.TryFormatStreamFrame(
+            FrameType,
+            streamId: 7,
+            offset: 0,
+            streamData,
+            queuedPayload,
+            out int queuedPayloadLength));
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            queuedPayload.AsSpan(0, queuedPayloadLength),
+            out QuicStreamFrame queuedFrame));
+        int originalHeaderLength = queuedFrame.ConsumedLength - queuedFrame.StreamDataLength;
+
+        Assert.True(QuicStreamPayloadSizer.TryGetFragmentDataLength(
+            queuedFrame,
+            maximumPayloadBytes: 1_150,
+            out int fragmentDataLength));
+        Assert.True(QuicStreamPayloadSizer.TryCreateRemainderLayout(
+            queuedFrame,
+            currentPayloadOffset: 0,
+            fragmentDataLength,
+            minimumPayloadLength: 20,
+            queuedPayload.Length,
+            out QuicStreamPayloadRemainderLayout layout));
+
+        Assert.Equal(originalHeaderLength + fragmentDataLength, layout.StreamDataOffset);
+        Assert.Equal(layout.StreamDataOffset, layout.PayloadOffset + layout.HeaderLength);
+
+        QuicStreamPayloadSizer.ApplyRemainderLayout(queuedPayload, layout);
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            queuedPayload.AsSpan(layout.PayloadOffset, layout.PayloadLength),
+            out QuicStreamFrame remainderFrame));
+        Assert.Equal((ulong)fragmentDataLength, remainderFrame.Offset);
+        Assert.True(remainderFrame.IsFin);
+        Assert.Equal(streamData.AsSpan(fragmentDataLength).ToArray(), remainderFrame.StreamData.ToArray());
+    }
+
+    [Fact]
+    public void RemainderLayout_RepeatedlyAdvancesTheSamePayloadOwner()
+    {
+        byte[] streamData = Enumerable.Range(0, 8_192).Select(value => (byte)value).ToArray();
+        byte[] queuedPayload = new byte[streamData.Length + 64];
+        Assert.True(QuicFrameCodec.TryFormatStreamFrame(
+            (byte)(QuicStreamFrameBits.StreamFrameTypeMinimum
+                | QuicStreamFrameBits.LengthBitMask
+                | QuicStreamFrameBits.FinBitMask),
+            streamId: 11,
+            offset: 0,
+            streamData,
+            queuedPayload,
+            out int payloadLength));
+
+        int payloadOffset = 0;
+        int consumedDataLength = 0;
+        for (int iteration = 0; iteration < 4; iteration++)
+        {
+            Assert.True(QuicStreamParser.TryParseStreamFrame(
+                queuedPayload.AsSpan(payloadOffset, payloadLength),
+                out QuicStreamFrame frame));
+            Assert.True(QuicStreamPayloadSizer.TryGetFragmentDataLength(
+                frame,
+                maximumPayloadBytes: 1_150,
+                out int fragmentDataLength));
+            Assert.True(QuicStreamPayloadSizer.TryCreateRemainderLayout(
+                frame,
+                payloadOffset,
+                fragmentDataLength,
+                minimumPayloadLength: 20,
+                queuedPayload.Length,
+                out QuicStreamPayloadRemainderLayout layout));
+
+            consumedDataLength += fragmentDataLength;
+            QuicStreamPayloadSizer.ApplyRemainderLayout(queuedPayload, layout);
+            payloadOffset = layout.PayloadOffset;
+            payloadLength = layout.PayloadLength;
+
+            Assert.True(QuicStreamParser.TryParseStreamFrame(
+                queuedPayload.AsSpan(payloadOffset, payloadLength),
+                out QuicStreamFrame remainderFrame));
+            Assert.Equal((ulong)consumedDataLength, remainderFrame.Offset);
+            Assert.True(remainderFrame.IsFin);
+            Assert.Equal(streamData.AsSpan(consumedDataLength).ToArray(), remainderFrame.StreamData.ToArray());
+        }
+    }
+
+    [Fact]
+    public void RemainderLayout_RejectsInsufficientCapacityAndOffsetOverflow()
+    {
+        byte[] streamData = new byte[4_096];
+        byte[] queuedPayload = new byte[streamData.Length + 64];
+        Assert.True(QuicFrameCodec.TryFormatStreamFrame(
+            (byte)(QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask),
+            streamId: 11,
+            offset: 0,
+            streamData,
+            queuedPayload,
+            out int payloadLength));
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            queuedPayload.AsSpan(0, payloadLength),
+            out QuicStreamFrame frame));
+
+        Assert.False(QuicStreamPayloadSizer.TryCreateRemainderLayout(
+            frame,
+            currentPayloadOffset: 0,
+            fragmentDataLength: 1_140,
+            minimumPayloadLength: queuedPayload.Length + 1,
+            queuedPayload.Length,
+            out _));
+        Assert.False(QuicStreamPayloadSizer.TryCreateRemainderLayout(
+            frame,
+            currentPayloadOffset: int.MaxValue,
+            fragmentDataLength: 1_140,
+            minimumPayloadLength: 20,
+            bufferCapacity: int.MaxValue,
+            out _));
     }
 
     private static PendingApplicationSendRequest[] CopySortedQueuedWrites(QuicApplicationSendQueue queue)

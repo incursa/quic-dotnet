@@ -4,6 +4,1202 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
 
 ## Progress Notes
 
+- 2026-07-16: the raw receive-buffer ring no longer serializes every socket
+  receive and runtime return through one monitor. A versioned lock-free free
+  list now carries the exact bounded ring index and lease generation in the
+  ownership token, retains the existing ArrayPool fallback, and rejects
+  wrong-index, stale-generation, and duplicate returns. The packed state
+  reserves 12 bits for at most 4,095 ring slots and 52 bits for the generation
+  so long-running wraparound is not a practical service-lifetime risk.
+
+  A permanent ShortRun benchmark compared the pre-change commit `9e643620`
+  with the accepted candidate. Single rent/return improved from 40.88 to
+  33.74 ns (-17.5 percent), and a 64-operation burst improved from 38.75 to
+  32.75 ns per operation (-15.5 percent). Both remained allocation-free.
+  Retain the baseline report under
+  `C:\shared\temp\bdn-receive-pool-baseline-20260716` and the accepted report
+  under
+  `C:\shared\temp\bdn-receive-pool-lockfree-generation-state-20260716`.
+
+  Five alternating, uninstrumented source-backed samples at c1 and c16 used
+  the same packaged `quic-go-raw-load@0.1.15` executor and
+  `raw-quic-transport@0.1.17` scenario. All 20 cells passed exact 4 MiB content
+  validation with zero failures/timeouts. At c1, median throughput changed
+  from 37,902,025 to 39,070,802 B/s (+3.1 percent) and p95 from 149.81 to
+  129.68 ms (-13.4 percent); the baseline throughput CV was 9.53 percent, so
+  this is directional rather than stable evidence. At c16, throughput changed
+  from 190,522,132 to 188,852,425 B/s (-0.9 percent) and p95 from 350.99 to
+  356.03 ms (+1.4 percent), with CVs below 1 percent. The c16 result is neutral
+  shared-host evidence, not a publishable claim. Retain all 20 cells under
+  `C:\shared\temp\protocol-lab-receive-pool-matched-ab-20260716\runs`.
+
+  The retained baseline CPU trace sampled 808
+  `Monitor.Enter_Slowpath <- QuicReceiveBufferPool.Return` edges. Candidate
+  trace `receive-pool-candidate-cpu-c1-20260716` contains no receive-pool
+  monitor frame; remaining monitor samples belong to other runtime locks. This
+  trace predates the generation hardening but proves the same monitor-removal
+  mechanism retained by the accepted implementation. Focused ownership/layout
+  tests passed 23/23, including a copied stale-ownership regression and the
+  concurrent pool stress test. Two final full Release runs each completed
+  9,601 passes and five intentional skips with one different load-sensitive
+  failure: the first hit the known dropped-server-FIN assertion and the second
+  timed out waiting for an HTTP/3 peer close. Each exact failed test then passed
+  10/10 reruns on the same final binary. These unrelated suite-load flakes are
+  retained rather than hidden or used to alter the receive-pool implementation.
+
+  The first direct source-catalog smoke is retained as infrastructure evidence:
+  its bundled `quic-go-raw-load` manifest rejected the server-to-client traffic
+  shape, while the current package-backed executor accepted and completed the
+  exact same cell. Source/package load-tool capability parity is therefore a
+  ProtocolLab coverage repair item. No package, controller, worker,
+  deployment, registration, or publication state changed.
+
+- 2026-07-16: sustained small-write raw QUIC coverage is accepted as an
+  evidence-infrastructure slice. The new
+  `quic.transport.sustained-download.4096x1kb` contract keeps one stable
+  bidirectional stream and requires exactly 4,096 sequential server writes of
+  1,024 bytes, for 4,194,304 exact content-validated bytes. This directly
+  contrasts the existing 256x64 KiB sustained-download lane without changing
+  total payload size.
+
+  Public ProtocolLab commit `7efcec4`, component commit `3e04d81`, internal
+  runner commit `cdf4778`, and Incursa commit `d3644aca` align the authoritative
+  scenario, reusable Go executor and target, runner validation, source
+  adapters, and implementation packages. Component Go tests and all 93 public
+  plus 93 internal component-manifest validations passed. Incursa adapter and
+  server builds passed with 0 warnings and 0 errors, its focused package tests
+  passed 21/21, and the internal exact-scenario tests passed 2/2. The broader
+  internal filter passed 122/127; its five initial failures were two corrected
+  parser expectations and three pre-existing timeout-prone Incursa conformance
+  cases for older 1 MiB download, 16 MiB download, and slow-reader scenarios.
+  Focused parser and execution guardrails then passed 4/4.
+
+  Clean immutable packages were produced without registration:
+
+  - scenario pack `0.1.17`:
+    `b2268f979838f825615fdf258101aadd593ade2a5b5c92ae885b071ecb319a4f`;
+  - quic-go executor Windows `0.1.15`:
+    `24954184259186222a27dc736126c9d3331116ff77250b7c7e02f046133e062c`;
+  - quic-go executor Linux `0.1.15`:
+    `03926cc45d2de001fbb796d89ada62e3de1f3b337b10797a08bcbe9307056988`;
+  - quic-go target `0.1.18`:
+    `834217dca38e9cdadb805c59152b6961928dfafd4bb42f31f6a626af37068129`;
+  - Incursa target `0.0.0-smallwrites-20260716`:
+    `390f6e34a5985c552d7b5ea354e64c5086b3df30ad11348e9845daef258cbe23`;
+    and
+  - MsQuic target `0.0.0-smallwrites-20260716`:
+    `187b4c393d12093d3b28fd87134f65aca806b79d40564d1a3cea4738f25aefeb`.
+
+  Package-backed localhost validation passed for Incursa and quic-go with zero
+  failed or timed-out transfers. In one short diagnostic sample, Incursa
+  completed 20 exact 4 MiB transfers at 39,213,386.37 B/s with 592.84 ms p95;
+  quic-go completed 24 at 49,448,791.74 B/s with 378.91 ms p95. MsQuic was
+  correctly reported unsupported because `System.Net.Quic.IsSupported` is
+  false on this host. The initial evidence incorrectly reported effective
+  concurrency 128 even though the executed commands used four connections and
+  one stream per connection. ProtocolLab internal commit `6cb1e06` now derives
+  packaged raw QUIC requested, effective, and exported concurrency from those
+  actual controls instead of a generic profile default. Its focused regression
+  passed 1/1 and all `LoadToolInvokerTests` passed 241/241. Follow-up run
+  `raw-smallwrites-loadshape-fixed-d-20260716-direct-package-cell` passed
+  validation and benchmark execution with requested/effective concurrency 4,
+  28 exact transfers, 117,440,512 received bytes, and zero failures or timeouts.
+  Treat these shared-host samples as functional proof only.
+
+  No package was uploaded or registered and no rack campaign or publication
+  ran. Next coverage priorities remain controlled RTT/loss/reordering and
+  one-stream-per-connection fanout, followed by an approved five-repetition
+  c1/c4/c16/c32 three-peer campaign with isolated target and generator
+  telemetry.
+
+- 2026-07-16: mixed-size raw QUIC multiplex coverage is accepted as an
+  evidence-infrastructure slice. The new
+  `quic.transport.multiplex.mixed-4x16` contract keeps four stable connections,
+  opens sixteen concurrent bidirectional streams per connection, and applies
+  the deterministic 1 KiB, 16 KiB, 64 KiB, and 1 MiB payload sequence in
+  round-robin order. Exact validation requires 9,052,160 bytes per connection
+  batch rather than inferring a uniform payload from the largest stream.
+
+  Public ProtocolLab commit `8e1d3f4`, component commit `cbcea9f`, internal
+  runner commit `75357a1`, and Incursa commit `e7d23130` align the authoritative
+  scenario, reusable Go executor and target, runner validation, source adapters,
+  implementation packages, and comparison suites. Focused internal tests
+  passed 27/27 after building the adapter executables, and Incursa package
+  tests passed 20/20. Clean immutable Windows packages were produced without
+  registration:
+
+  - scenario pack `0.1.16`:
+    `5b05c883625aabd298a6cf0fa35cd61a169da7bb5ca1d9270f11aba218377ba7`;
+  - quic-go executor `0.1.14`:
+    `83ebb9f3cc86bd031a78f2a75a85adcd4a01f137220e29e41feabdbd7a6a35c2`;
+  - quic-go target `0.1.17`:
+    `1f19d776c82978e8913a8c6b79fe58e3134c231955029d189834ac128acbae97`;
+  - Incursa target `0.0.0-mixed-20260716`:
+    `2588d2e7c9e424c4aa588991bd87f81df88bd85714efb8e153a672ba20f9e8ad`;
+    and
+  - MsQuic target `0.0.0-mixed-20260716`:
+    `403389b33b0692387a51386b5795762936b756a58fa50b4ca3ebf693da97efbf`.
+
+  A short package-backed c4/s16 localhost smoke passed exact validation for
+  Incursa and quic-go with zero failed or timed-out streams. Incursa completed
+  384 streams at 46,946,593.49 B/s and quic-go completed 448 streams at
+  54,075,853.60 B/s. This one-repetition shared-host result is diagnostic only,
+  not a ranking. The MsQuic package advertised the exact scenario, but
+  `System.Net.Quic.IsSupported` was false on this Windows host, so its validation
+  was correctly reported as unavailable rather than passed or failed.
+
+  No package was uploaded or registered and no rack campaign or publication
+  ran. The next coverage priorities are controlled RTT/loss/reordering,
+  sustained small-write pressure, and connection-fanout scaling. Each should be
+  implemented as an exact contract and locally package-proven before requesting
+  an approved five-repetition c4/c16/c32 three-peer rack campaign with isolated
+  target and generator telemetry.
+
+- 2026-07-16: demand-triggered sent-packet dictionary reservation was modeled
+  and rejected before changing the runtime. The permanent
+  `QuicSentPacketDictionaryCapacityBenchmarks` comparison covers the current
+  64-entry start, an intermediate 1,024-entry reserve at 512 retained packets,
+  and a late 2,048-entry reserve at 1,536 retained packets.
+
+  The early reserve cut allocation by 42 percent and population time by 24
+  percent at 1,664 packets, close to the 1,656-packet trace peak, but increased
+  allocation and time by about 25 percent at 1,024 packets. Moving the larger
+  reserve trigger to 1,536 removed that midrange penalty and reduced allocation
+  by 16 percent at 1,664 and 2,048 packets, with population time improving by
+  about 2 and 8 percent. However, its additional per-packet condition measured
+  3-10 percent slower below the trigger in the isolated ledger benchmark.
+
+  Retain the ShortRun artifacts under
+  `C:\shared\temp\quic-bdn-sent-capacity-{expanded,late}-short*-20260716`.
+  Do not add a condition to every packet insertion for this capacity policy.
+  Revisit only with a materially different pressure signal outside the packet
+  insertion hot path or a sent-packet storage design that avoids dictionary
+  growth without penalizing ordinary connections.
+
+- 2026-07-16: the current Incursa raw QUIC package completed a fresh local
+  breadth sweep across all 17 explicitly selected scenarios. Run
+  `incursa-raw-fresh-coverage-all-20260716-quic-transport-v1-comparison`
+  passed exact validation and benchmark execution 17/17, with zero failed or
+  timed-out operations and target/load-tool process telemetry present for every
+  cell. The retained evidence is under
+  `C:\shared\temp\protocol-lab-raw-audit-20260716-v2\diagnostic-runs`.
+
+  The strongest current shapes were 1 KiB echo latency (3,579.7 operations/s,
+  0.59 ms p95), 100x1 KiB multiplexing (5,760.9 operations/s, 31.32 ms p95),
+  and stream churn (3,426.1 operations/s, 0.62 ms p95). The clearest pressure
+  lanes were 100x64 KiB stream limits (15.18 MiB/s, 943.12 ms p95), 100x64 KiB
+  multiplexing (13.53 MiB/s, 1,148.95 ms p95), 16x1 MiB multiplexing
+  (22.48 MiB/s, 920.82 ms p95), and simultaneous 16x1 MiB duplex
+  (24.52 MiB/s, 804.79 ms p95). These are directional measurements, not
+  accepted regressions or peer gaps.
+
+  This sweep is single-repetition, localhost/shared-host, and target saturation
+  warnings are present. The ProtocolLab runner metadata also records unrelated
+  dirty work, while the Incursa target came from the retained clean package.
+  Treat the run only as a current functional and diagnostic baseline. It does
+  not refresh the public site and cannot support a peer ranking. The next
+  coverage gaps remain mixed-size multiplexing across multiple stable
+  connections and controlled RTT/loss/reordering; the next runtime evidence
+  should continue to use 100x64 KiB stream-limit pressure with 1 MiB and
+  100x1 KiB guardrails.
+
+- 2026-07-16: increasing the initial spilled STREAM receive-segment list
+  capacity from 8 to 16 was tested and rejected. The current 100-stream limit
+  trace showed `BufferedSegment[]` as the second-largest allocation group, so
+  the candidate attempted to avoid one geometric list growth without changing
+  flow control, receive buffers, or scheduling. Focused receive-buffer and
+  reordered STREAM tests passed 25/25, but the actual receive-state ShortRun
+  benchmark retained the same 1.72 KiB allocation per operation and regressed
+  from 4.384 to 4.575 microseconds. The runtime change was restored before any
+  ProtocolLab campaign. Retain the benchmark artifacts under
+  `C:\shared\temp\quic-bdn-segment-capacity-{baseline,candidate}-20260716`;
+  do not revisit list pre-sizing without a different measured mechanism.
+
+- 2026-07-16: immediate disposal of completed ProtocolLab raw-server stream
+  facades was tested and rejected. The candidate removed the connection-lifetime
+  `ConcurrentBag<QuicStream>` after confirming that sent-packet payload copies
+  are connection-owned. A new resilience assertion disposed the server facade
+  immediately after a deliberately dropped FIN to test the remaining lifetime
+  dependency directly.
+
+  The performance signal was initially promising but required careful ordering.
+  A sequential five-repetition campaign was contradictory and the first
+  counter-attached c16/s100 sample overstated the gain. Balanced alternating
+  baseline/candidate runs then showed median multiplex throughput changes of
+  +8.5 percent at c4 and +3.0 percent at c16, with p95 changes of -17.9 and
+  -11.1 percent. Canonical workload runs passed validation with zero failures
+  or timeouts and changed median throughput by +2.1 percent for stream churn,
+  +2.9 percent for the c16 slow-reader case, and +2.7 percent for 100-stream
+  limit pressure. A longer 1 MiB guardrail was neutral: 74.26 to 74.70 MiB/s
+  (+0.6 percent), with p95 improving from 17.35 to 16.17 ms.
+
+  The candidate nevertheless failed the correctness gate. The full Release
+  suite reproduced the known timing-sensitive
+  `DroppedServerFinIsRecoveredAndShardContinuesProcessing` failure with
+  `retransmittedFin=0` after immediate disposal. That single failure does not
+  prove causation because the same test has failed under prior full-suite load,
+  but it prevents accepting a lifetime change until deterministic ACK-complete
+  retirement proof exists. The run also contained the existing unrelated
+  incomplete-content HTTP/3 timeout and the solution's missing local
+  trace-analysis project reference; 9,590 tests passed and five were skipped.
+  Runtime and test changes were restored; the dropped-FIN test then passed
+  10/10 focused reruns and the unrelated HTTP/3 timeout passed in isolation.
+  Retain the diagnostic runs under
+  `incursa-raw-retention-*20260716`; do not remove completed-stream retention
+  until ACK-complete stream retirement is modeled explicitly and the
+  dropped-FIN test passes under repeated full-suite pressure.
+
+  Coverage lesson: raw scenario defaults can expand every declared connection
+  shape. The first combined counter sweep therefore attempted slow-reader c1
+  through c128 and recorded a c128 target-start failure. Future focused runs
+  must pin each named workload to its canonical connection and stream shape;
+  matrix-wide ladders remain separate scaling evidence.
+
+- 2026-07-16: raw QUIC peer coverage is expanded and package-proven for the
+  five source-backed workload shapes that were missing from the reusable target
+  inventory: 64 KiB and 16 MiB upload throughput, 100x1 KiB and 16x1 MiB
+  multiplex, and 16x1 MiB simultaneous duplex. Component commit `558a29d`
+  advances the quic-go target to `0.1.16`, the executor to `0.1.13`, and the
+  scenario pack to `0.1.15`; internal commit `6856861` forwards exact
+  `PLAB_SCENARIO_ID` and `PLAB_PROTOCOL` values to target processes.
+
+  The first package smoke exposed and rejected payload-size guessing in the
+  quic-go target: a 64 KiB upload was incorrectly echoed. The accepted target
+  chooses no-echo or 1 KiB/64 KiB/1 MiB echo behavior from the exact scenario
+  identity. Clean immutable packages were built with SHA-256 values
+  `fc5dab790af32350f564b0db392ad2ec83e25e5687a55a8342002f9d2783b894`
+  (Windows executor),
+  `dc8cdba6970bf81c6ed994c4c2f5defadddffd641fc52ba84ae7d117954a3b01`
+  (quic-go target), and
+  `aa456e933441df661a7c2d0c70805abbf7c667e5c4181040543c58877a63f006`
+  (scenario pack). The packaged comparison suite hashes identically to the
+  public authority.
+
+  One-second package-to-package diagnostics completed all five new shapes with
+  zero failed or timed-out operations. Upload lanes received zero response
+  bytes; multiplex and duplex lanes received exact echo bytes. This is package
+  behavior proof, not benchmark evidence or a peer ranking. The live controller
+  still has stale packages and the public site still has no claim-eligible raw
+  QUIC result, so the next gate is an approved package refresh followed by a
+  matched Incursa/quic-go/MsQuic campaign before selecting another runtime
+  optimization from the published numbers.
+
+- 2026-07-16: sustained raw QUIC upload coverage is accepted as an evidence
+  slice. The new `quic.transport.sustained-stream.256x64kb` contract keeps one
+  bidirectional stream open for 256 sequential 64 KiB application writes and
+  validates exactly 16 MiB per operation. Public ProtocolLab commit `f5fccb6`,
+  component commit `60b8023`, internal commit `1d16ae5`, and Incursa commit
+  `6caa4d79` align the contract, reusable quic-go executor and target, runner
+  validation, source adapters, package declarations, and comparison suites.
+
+  Clean package validation produced scenario, Windows executor, Linux executor,
+  and quic-go target SHA-256 values
+  `d52858b4f4c1ef2894eda3fbf77376297d3ce39c99bd440841f8172baf8c3310`,
+  `4a9cc985cf63c641ec7a5716bf0e2c97f70fa4eae62a3b17adb19c61a8707a69`,
+  `b7790532f851ad649d5de6cf899ba50475591acf7b44759597404ca1f38dcc65`,
+  and `c46e8b35bca0bfc1476765811ee6363c021bdad842421f204f6e88c892696de2`.
+  The Incursa raw package built for Windows and Linux with SHA-256
+  `8956ce7340d78fc161cd305fdcdfb79e3a038fb703f6047266956e00bea86997`.
+
+  Matched source-backed local c1/c4/c16 ladders passed exact validation and
+  benchmark execution 5/5 at every load, with zero failed or timed-out
+  operations. Median throughput was 36.94, 128.66, and 230.46 MiB/s; median p95
+  was 511.12, 671.77, and 1,005.24 ms. Relative throughput ranges were 18.9,
+  26.3, and 5.6 percent. These shared-host runs flag possible generator and
+  target saturation and are diagnostic, not publishable peer evidence.
+
+  Counter run `codex-sustained-c16-counters-path-20260716-direct-package-cell`
+  passed exact validation and exposed balanced receive pressure rather than a
+  retention leak. Across eight shards, maximum queue depth ranged from 28 to
+  38; packet-receive queue delay averaged 4.82 to 6.86 ms and peaked at
+  32.44 ms. Delayed application sends, retained application-send buffers, and
+  pending retransmissions remained zero. Outstanding pooled buffers peaked at
+  143/589,824 bytes and drained to zero. The first two capture attempts are
+  retained as negative prerequisite evidence: a restored repo-local tool was
+  invisible from the materialized catalog root until `dotnet-counters` was put
+  explicitly on `PATH`.
+
+  No runtime change is justified from this single trace. The next coverage
+  slices are the same sustained shape in the server-to-client direction and a
+  mixed-size multiplex workload across multiple stable connections. Reproduce
+  receive queue delay with isolated target/generator telemetry before testing a
+  bounded receive-work batching or scheduling change.
+
+  The server-to-client slice is now implemented as
+  `quic.transport.sustained-download.256x64kb` across public `09fdb35`,
+  components `40fc0ae`, internal `2213c24`, and Incursa `1bf25ae7`. Fifteen
+  source-backed cells passed exact content validation and benchmark execution
+  15/15 with zero failures and timeouts. Median throughput at c1/c4/c16 was
+  35.04/105.60/177.10 MiB/s, compared with retained upload medians of
+  36.94/128.66/230.46 MiB/s. Relative ranges were 7.2/27.6/7.3 percent and
+  median p95 was 570.90/675.74/1,340.93 ms. Treat the widening c16 gap as a
+  local directional diagnostic, not a peer comparison.
+
+  Counter run `sd-dl-c16-ctr-20260716-direct-package-cell` passed exact
+  validation for 1 GiB across 64 completed transfers. Unlike upload, every
+  shard observed oversized-write continuation pressure: delayed application
+  sends and retained application-send buffers peaked at 4-10, stream-write
+  queue delay averaged about 6-7 ms and peaked at 24.03 ms, and sent-packet
+  retention peaked at 94-168 packets per shard. Aggregate pooled buffers peaked
+  at 829 / 1.95 MiB and drained to 19 / 3 KiB. Direct-send-blocked,
+  pending-retransmission, and small-write-delay retention stayed zero. This
+  narrows the next runtime investigation to incomplete-write continuation and
+  server send scheduling; do not tune pool sizes as a substitute.
+
+  Oversized-write continuation now advances the unsent STREAM header inside
+  the existing queued owner instead of renting and copying the entire shrinking
+  remainder after every protected fragment. The queued owner, priority,
+  sequence, enqueue timestamp, queue cause, FIN bit, and stream offset remain
+  stable; protection failure does not mutate the queue. A permanent
+  `QuicStreamRemainderLayoutBenchmarks` comparison measured 32 KiB remainder
+  advancement at 35.18 ns versus 679.45 ns for rent-and-rebuild, and 64 KiB at
+  35.38 ns versus 1,298.63 ns, or about 19x and 37x faster for this operation.
+
+  Counter/trace run `sd-dl-zc2-c16-ctr-20260716-direct-package-cell` passed
+  exact 1 GiB validation with zero failures/timeouts. Against the retained
+  traced control, sampled pool-rent rate fell from 106,888 to 84,421 rents/s
+  and sampled rented-byte rate from 664.9 to 206.1 MiB/s. Queue and retention
+  maxima were mixed and sometimes worse, so the trace is mechanism evidence,
+  not a throughput claim. The preceding `sd-dl-zc-c16-ctr-20260716` attempt is
+  retained because counters were honestly unavailable until the manifest-pinned
+  tool was placed explicitly on `PATH`.
+
+  Exact-duration, uninstrumented five-repetition controls and candidates passed
+  30/30 validations. Candidate median throughput changed by +2.0/-3.8/-0.7
+  percent at c1/c4/c16 and median p95 by -5.7/+3.6/-0.3 percent. This is neutral
+  within shared-host variance, so the slice is accepted only as a bounded
+  allocation-path improvement. Focused tests passed 60 with four intentional
+  skips. The full suite passed 9,591 with five skips; its sole failure was the
+  existing dropped-FIN timing assertion, which then passed 10/10 isolated
+  reruns. No package, controller, worker, deployment, or publication changed.
+
+- 2026-07-16: semantic raw STREAM staging removes the pooled-capacity penalty
+  from queued large writes. A public write that exceeds the current packet
+  service budget now queues its unframed application bytes with stream ID,
+  offset, priority, FIN state, enqueue time, and queue cause. STREAM framing is
+  deferred until the scheduler selects a fragment. Packet protection and
+  sent-packet retention still receive an independently owned framed plaintext
+  buffer, preserving PTO rebuild, retransmission, cancellation, ordering, and
+  delayed-consumption behavior. Raw entries are not mixed with other queued
+  writes in this first bounded slice.
+
+  This is materially different from the rejected cursor-only design below. It
+  removes the long-lived encoded payload owner whose 32 KiB data plus STREAM
+  header rounded to a 64 KiB `ArrayPool` bucket; it does not merely advance a
+  cursor through that oversized owner. Counter-attached c128 download evidence
+  passed exact validation and reduced peak pooled capacity from about 62.1 MiB
+  to 21.3 MiB. The 64 KiB bucket fell from 1,003 buffers / 65.1 MiB to
+  235 buffers / 7.4 MiB. Throughput and latency from this instrumented run are
+  diagnostic only.
+
+  Sixty alternating, uninstrumented source-backed 1 MiB download cells passed
+  exact validation with zero failures and timeouts. Candidate median throughput
+  deltas at c1/c4/c16/c32/c64/c128 were +0.8/+4.0/-0.9/+0.4/+1.3/-0.3 percent;
+  p95 deltas were +4.1/-9.1/+10.5/-6.6/-3.7/+0.7 percent. Because the short c16
+  set was noisy, ten longer confirmation cells were run: candidate median
+  throughput was 182.93 versus 177.95 MiB/s and median p95 was 87.99 versus
+  91.91 ms. All confirmation cells also passed exact validation without errors.
+
+  Focused queue, scheduler, API, FIN, high-fanout, and recovery tests pass
+  115/115. One complete-suite run passed 9,596 tests with five intentional
+  skips and only the timing-sensitive dropped-FIN injection assertion failing;
+  that exact test then passed 10/10 isolated reruns. The final full-suite gate
+  passed 9,597 tests with five intentional skips and zero failures. Evidence is
+  retained under
+  `protocol-lab-raw-owner-ab-20260716`. No package, controller, worker,
+  deployment, or publication changed.
+
+- 2026-07-16: fresh raw coverage disproves the stale public summary and narrows
+  the next optimization target. Five-repetition, round-robin, uninstrumented
+  source-backed cells passed exact validation for 1 MiB download at
+  c1/c16/c64/c128, 100 ms slow-reader flow control at c1/c16/c64, stable
+  1,000-stream churn, and 4,096x1 KiB sustained download at c1/c16. All accepted
+  Incursa and quic-go cells had zero failures and timeouts; System.Net.Quic was
+  unsupported on the shared Windows host.
+
+  Incursa is behind quic-go at c1 for 1 MiB download (37.75 versus 59.82 MiB/s),
+  sustained small writes (26.52 versus 49.56 MiB/s), and stream churn
+  (3,533.94 versus 4,540.68 ops/s). It scales strongly at c16 and above: the
+  1 MiB download reaches 180.80 versus 52.38 MiB/s at c16, slow-reader reaches
+  66.49 versus 43.30 MiB/s at c16 and 85.09 versus 42.79 MiB/s at c64, and the
+  sustained small-write lane reaches 179.60 versus 40.74 MiB/s at c16. The next
+  runtime diagnostic therefore targets c1 per-write and stream-lifecycle cost
+  without regressing c16-c128.
+
+  The same campaign found and fixed package source-mode startup. A packaged
+  adapter with `PROTOCOL_LAB_INCURSA_QUIC_SOURCE_ROOT` now resolves the server
+  project under that root and prefers an existing Release executable or DLL.
+  Package tests pass 22/22; a rebuilt diagnostic-only package passed both
+  source-backed and ordinary prebuilt slow-reader cells. The missing-project
+  and cold-build-timeout attempts remain retained as negative evidence. No
+  package was uploaded or registered, and no controller, worker, deployment,
+  or publication changed.
+
+- 2026-07-16: an ACK-proportional queued-send burst was tested and rejected.
+  The candidate retained the four-datagram floor, translated newly acknowledged
+  protected bytes into datagram credit, and bounded one recovery transition at
+  sixteen datagrams. Focused API, congestion, recovery, RFC 9000, and RFC 9002
+  tests passed 1,067/1,067.
+
+  Counter-attached c16/s100 evidence proved that aggregated ACKs raised the
+  budget to 16 and released as many as 13 datagrams. Compared with the fixed-four
+  trace, peak outstanding buffers fell from 1,268 to 1,151 and maximum sampled
+  write completion fell from 70.88 to 68.63 ms. The larger release also raised
+  maximum packet/write queue delay from 62.44/63.19 to 69.38/69.75 ms, delayed
+  sends from 88 to 161, and post-policy blocked flushes from 428 to 483.
+
+  The uninstrumented five-repetition c16/s100 candidate was effectively neutral
+  in throughput and worse in latency: 24.64 MiB/s and 70.40 ms p95 versus the
+  fixed-four control at 24.42 MiB/s and 67.45 ms p95. All five candidate cells
+  passed exact validation with zero failures or timeouts. Runtime and tests were
+  restored before running the download ladder because the multiplex acceptance
+  gate had already failed. Retained run IDs are
+  `raw-multiplex-ack-proportional-metrics-20260716-quic-transport-v1-comparison`
+  and `raw-multiplex-ack-proportional-candidate5-20260716-quic-transport-v1-comparison`.
+  Do not retry ACK-byte credit as a larger immediate burst. The next scheduler
+  candidate needs time-domain pacing or packet coalescing that lowers wakeups
+  without increasing one-transition queue service pressure.
+
+- 2026-07-16: packet-overhead-aware partial congestion budgets were tested and
+  rejected. The candidate reserved 50 bytes of short-header, packet-number, and
+  AEAD overhead before exposing a sub-datagram STREAM payload budget. In the
+  counter-attached c16/s100 diagnostic it moved maximum observed one-second
+  `flush_blocked` decisions from 428 to 2 and `budget_blocked` decisions from
+  10 to 401, while reducing maximum outstanding pooled buffers from 1,268 to
+  940. The intended early-classification mechanism worked, but maximum packet
+  and stream-write queue delay increased from 62.44/63.19 ms to 69.50/78.75 ms.
+
+  Two candidate c16/s100 five-repetition runs around an adjacent control were
+  directionally favorable: candidate medians were 25.60 and 24.97 MiB/s with
+  62.38 and 59.49 ms p95, versus 24.42 MiB/s and 67.45 ms for the control. The
+  required 1 MiB download guardrail did not hold. Compared with retained c1/c4/c16
+  baselines, the candidate was +0.88/-2.65/-7.85 percent in throughput and
+  -10.54/+5.31/+20.96 percent in p95. An immediately adjacent c16 download
+  control narrowed the throughput difference to -0.66 percent but still showed
+  a 9.35 percent p95 regression: 167.02 MiB/s and 118.73 ms candidate versus
+  168.13 MiB/s and 108.58 ms control. Every reported cell passed exact validation
+  5/5 with zero failed or timed-out operations.
+
+  The source and candidate-only tests were removed. Retained run IDs begin with
+  `raw-multiplex-overhead-budget-{candidate5,control5,candidate5b}-20260716`,
+  `raw-download-overhead-budget-c{1,4,16}-candidate5-20260716`, and
+  `raw-download-overhead-budget-c16-control5-20260716`. Do not retry this
+  payload-budget subtraction by itself. The next candidate must preserve useful
+  partial sends while changing release timing through pacing, coalescing, or an
+  ACK-proportional scheduler and must pass both multiplex and bulk-download
+  latency guardrails.
+
+- 2026-07-16: recovery-driven application-send decisions now expose bounded
+  metrics for congestion window, bytes in flight, congestion/anti-amplification
+  available bytes, datagram budget, actual datagrams released, queue depth before
+  and after release, outcome, and blocked reason. The existing stream-write
+  completion metric remains the end-to-end latency signal. Metrics use only
+  bounded `role`, `outcome`, and `blocked_reason` tags; no connection or stream
+  identifier cardinality was added. Focused metrics and RFC recovery tests passed
+  43/43. The full suite passed 9,585 tests with five skips and two suite-load
+  failures; the dropped-FIN timing test and stateless-reset fuzz test each passed
+  5/5 isolated reruns.
+
+  Counter-attached source-backed diagnostics proved ProtocolLab captures the new
+  instruments. `raw-download-recovery-metrics2-20260716-quic-transport-v1-comparison`
+  passed exact c1 download validation with zero failures/timeouts and observed
+  recovery releases of two to four datagrams. The more important
+  `raw-multiplex-recovery-metrics-20260716-quic-transport-v1-comparison` c16/s100
+  diagnostic also passed exact validation with zero failures/timeouts. Under
+  counter overhead it reached 222 queued shard items, 62.44 ms packet-receive
+  queue delay, 63.19 ms stream-write queue delay, 88 delayed sends, 1,268
+  outstanding pooled buffers, and 70.88 ms maximum sampled stream-write
+  completion latency.
+
+  The decision telemetry identified a policy/preflight mismatch rather than a
+  larger fixed-burst opportunity. Maximum observed one-second rates included
+  553 `burst_limit_reached` decisions, 428 `flush_blocked` decisions classified
+  as `congestion_limited`, and ten policy-level `budget_blocked` decisions.
+  The blocked flushes occurred after the policy allowed a one-datagram budget,
+  so the next bounded candidate is to account for packet/header/ACK headroom in
+  partial-datagram congestion budgets before frame selection and protection.
+  These counter-attached shared-host runs are diagnostic only and make no
+  throughput or peer-ranking claim.
+
+- 2026-07-16: increasing the queued application-send recovery burst from four
+  datagrams to the RFC 9002 initial-window count of ten was rejected. A sampled
+  CPU/counter trace of `quic.transport.stream-download.1mb` showed the fixed
+  four-datagram recovery flush as a plausible c1 limiter: target CPU averaged
+  about 1.4 cores, thread-pool queue length peaked at one, delayed sends peaked
+  at 13, retained application bytes peaked at 802,816, and retransmissions
+  remained zero. Five-repetition c1 A/B evidence then improved median throughput
+  from 36.57 to 40.49 MiB/s and p95 from 36.20 to 31.06 ms with the larger cap.
+
+  The result did not scale. At c4, median throughput moved from 104.88 to
+  103.23 MiB/s and p95 from 44.05 to 45.06 ms. At c16, throughput was effectively
+  unchanged at 181.24 versus 181.59 MiB/s, while candidate variance increased.
+  More importantly, the c16/s100 1 KiB multiplex candidate reached 24.60 MiB/s
+  with 69.05 ms p95 and 34.12 percent throughput range. Its immediately adjacent
+  four-datagram control reached 24.04 MiB/s with 64.13 ms p95 and 10.18 percent
+  range, while the earlier post-FIN-fix four-datagram run reached 25.45 MiB/s.
+  All measured cells passed exact validation 5/5 with zero failures/timeouts,
+  so this is a scaling/variance result rather than a correctness failure.
+
+  The candidate passed 37 focused tests and 889 broad transport/RFC tests. The
+  full suite passed 9,583 tests with five skips and two timing failures that each
+  passed 5/5 isolated reruns. The source and tests were restored to the proven
+  four-datagram behavior. Retained run IDs are
+  `raw-download-*-burst{4,10}-*-20260716-quic-transport-v1-comparison`,
+  `raw-multiplex-c16s100-burst10-candidate-20260716-quic-transport-v1-comparison`,
+  and `raw-multiplex-c16s100-burst4-control2-20260716-quic-transport-v1-comparison`.
+  Do not retry a larger fixed burst cap without a materially different scheduler.
+  The next candidate must use measured congestion/recovery state, packet pacing
+  or send coalescing, and write-completion telemetry so it can improve c16-c128
+  without trading away multiplex latency or stability.
+
+- 2026-07-16: true server-to-client raw QUIC coverage is now implemented end to
+  end as `quic.transport.stream-download.1mb`. The contract uses a 16-byte
+  `PLAB-DL1` request prelude, excludes that control traffic from payload
+  metrics, requires exactly 1 MiB of response data per operation, and validates
+  every response byte against the deterministic `offset % 251` pattern.
+  Public ProtocolLab commit `63242f4`, component commit `0032d2a`, internal
+  commit `42f937b`, and Incursa commit `a450928a` align the contract, reusable
+  executor, quic-go target, Incursa and MsQuic source adapters, package
+  templates, runner validation, and campaign declarations.
+
+  Focused ProtocolLab validation passed 116/116 tests, the Incursa package
+  contract passed 20/20 tests, all 92 component manifest pairs validated, and
+  the Go executor and quic-go target suites passed. Fresh one-repetition local
+  c1 diagnostics all completed with exact bytes and zero failures/timeouts:
+  MsQuic reached 181.44 MiB/s with 6.49 ms p95, quic-go reached 61.79 MiB/s
+  with 17.59 ms p95, and Incursa reached 38.21 MiB/s with 29.68 ms p95. These
+  are sequential shared-host smokes, not a matched five-repetition campaign or
+  a publishable ranking. They are sufficient to prioritize Incursa's isolated
+  server-to-client send scheduling and completion path for trace diagnosis.
+  No package was uploaded or registered, no lab service changed, and no result
+  was published.
+
+- 2026-07-16: Incursa commit `52701dcb` fixes the intermittent c16/s100
+  raw QUIC EOF failure exposed by the expanded matrix. A new 16-connection,
+  100-stream-per-connection integration proof reproduced the defect as
+  `CompleteWritesAsync` requests that remained incomplete after all response
+  payload bytes and FINs had reached the clients. The queued request ledger was
+  already empty. The direct-send fallback had removed the request after
+  classifying a valid FIN-only STREAM frame as invalid when congestion left a
+  positive payload budget too small to fit the frame header.
+
+  The scheduler now reports that boundary as a transient invalid payload
+  budget, the runtime retains and retries the queued FIN after congestion
+  recovery, and genuine non-transient post-queue failures complete the caller
+  with an exception instead of orphaning it. The exact high-fanout test passed
+  20/20 stress repetitions. Scheduler, standalone-FIN, listener-resilience,
+  public API, and RFC 9000 focused gates passed 29 and 34 tests respectively.
+  The broad test project passed 9,584 of 9,590 tests with five skips and one
+  unrelated HTTP/3 close-notification timeout; that exact timeout then passed
+  5/5 isolated reruns. The solution-level command also reported the pre-existing
+  absent `eng/tools/Incursa.Quic.TraceAnalysis` project in this worktree.
+
+  Source-backed ProtocolLab run
+  `local-raw-c16-100x1kb-budget-fix-20260716-quic-transport-v1-comparison`
+  then passed exact validation and benchmark execution 5/5 with zero failed or
+  timed-out requests. Median throughput was 25.45 MiB/s and median p95 latency
+  was 64.35 ms. This is shared-host diagnostic evidence, not a publishable
+  comparison or a throughput-improvement claim. The next contract priority is
+  true download-only raw QUIC, followed by mixed-size, asymmetric, and
+  minutes-scale bounded-memory workloads; no package, controller, worker,
+  deployment, or publication action was performed.
+
+- 2026-07-16: the expanded source-backed raw QUIC matrix completed 75 measured
+  runs across five scenarios, c1/c4/c16, and five repetitions per cell. Large
+  single-stream throughput remained healthy and stable at c16: 16 MiB upload
+  reached a 236.47 MiB/s median with a 3.3 percent range. High fanout was the
+  distinct weak shape: 16x1 MiB multiplex passed exact validation 5/5 but fell
+  to 37.68 MiB/s with 6,463 ms p95, while 100x1 KiB multiplex had only 3/5
+  validation passes and 2/5 benchmark successes. A fresh five-repetition run
+  with internal commit `2e30595` identified three EOF timeouts at varying
+  coordinates (`14/40`, `8/35`, and `0/81`); both measured failures delivered
+  the exact 1,638,400 aggregate bytes before one of 1,600 streams missed EOF.
+  Internal commit `4518a22` now also records the QUIC stream ID and per-stream
+  received/expected bytes without changing the output schema. A following
+  three-repetition run passed 3/3, confirming intermittency rather than a fixed
+  stream-index defect.
+
+  Incursa commit `608b5d86` adds a 100-stream integration proof that silently
+  discards one server FIN-only datagram, requires every exact payload and EOF,
+  and then proves the connection remains usable. It passed 10 consecutive
+  runs and the complete 18-test listener resilience class passed. Ordinary
+  tail loss and retransmission therefore work in that bounded shape; no
+  runtime change is justified from the current trace alone. Retained runs are
+  under `C:\shared\temp\protocol-lab-local-raw-20260716` and
+  `protocol-lab-internal\.artifacts\runs\local-raw-c16-100x1kb-*`. All are
+  shared-host diagnostics and non-publishable. The next coverage priority is
+  a download-only lane, followed by a multi-connection high-fanout integration
+  proof and lightweight server-side completion attribution.
+
+- 2026-07-16: raw QUIC workload coverage now separates payload-size, stream-count,
+  aggregate-byte, and simultaneous-read/write effects instead of relying on the
+  stale 1 MiB throughput and 100x64 KiB multiplex rows. Public ProtocolLab
+  commit `a5ac2dd`, component-package commit `8ce81ff`, and internal runner
+  commit `bcfda50` add 64 KiB and 16 MiB single-stream throughput, 100x1 KiB and
+  16x1 MiB multiplex, and 16x1 MiB duplex scenarios with exact byte validation.
+  Focused internal coverage passed 81/81, component manifest validation passed
+  91/91, the reusable Go executor tests passed, and clean local scenario and
+  executor packages were produced. Four of five first source-backed Incursa
+  smokes passed; `quic.transport.multiplex.100x1kb` had one warmup read timeout
+  and then passed an isolated rerun. Treat that lane as a variance/reliability
+  signal until repeated runs establish its failure rate. No package was
+  registered, no lab service changed, and no result is publishable. The next
+  optimization gate is a repeated c1/c4/c16 ladder with target and generator
+  health retained, followed by traces only for the shapes that reproduce the
+  pressure.
+
+- 2026-07-16: current source-backed raw QUIC coverage reproduced the existing
+  high-concurrency pressure with the corrected 100-stream multiplex contract.
+  A c1 stream-churn counter run completed 31,000 streams with zero failures at
+  3,029.84 streams/s, maximum shard depth 2, and no delayed-send or
+  retransmission buildup. In contrast, c16/s100 multiplex completed exact
+  payload validation but reached 821 queued shard items, 944 ms packet-receive
+  queue delay, 915 ms STREAM-write queue delay, and 14,897 outstanding 4 KiB
+  pooled buffers. A GC trace attributed 664.89 MB of sampled allocation to
+  `System.Byte[]`, followed by receive `BufferedSegment` lists and sent-packet
+  dictionary entries.
+
+  The previously rejected 16-shard default was repeated before the retained
+  negative record was rediscovered. It improved uninstrumented c16 median
+  throughput from 65.69 to 93.20 MiB/s and did not regress a five-repetition c1
+  A/B, but the matched c16 counter run increased peak pooled buffers from
+  14,897 to 25,704 and worsened maximum packet/write queue delay to
+  1,380/1,228 ms. Combined with the retained c128 timeout/pressure failure, this
+  confirms that more shard consumers increase offered work without fixing
+  receive-segment lifetime or producer backpressure. The runtime candidate was
+  reverted. Evidence remains under
+  `C:\shared\temp\protocol-lab-local-raw-20260716`; it is diagnostic,
+  shared-host, and non-publishable. Do not retry the shard-count change without
+  a materially different bounded receive/backpressure design.
+
+- 2026-07-15: raw QUIC peer coverage repair is accepted as an evidence-enabling
+  slice. The public contract now distinguishes fresh-connection churn from
+  repeated stream churn on a stable connection, and a dimension-neutral
+  five-repetition comparison suite selects cold handshake, connection churn,
+  1 MiB throughput, 100-stream multiplex, and duplex peer workloads across the
+  scenario-owned c1/c4/c16/c32/c64/c128 ladders. The reusable quic-go executor
+  was advanced to the lifecycle-aware implementation already proven in the
+  internal lab, with explicit behavior validation, cold-handshake execution,
+  fresh-connection churn, connect-time metrics, tight-window duplex handling,
+  timeout classification, and requested/effective load echo.
+
+  Clean immutable scenario, target, and Windows/Linux executor packages built
+  successfully with external attestations. Their SHA-256 values are recorded
+  in `docs/raw-quic-performance-evidence-plan.md`. The Incursa,
+  MsQuic/System.Net.Quic, and quic-go manifests now share all five peer scenario
+  IDs offline. A package-to-package Windows diagnostic completed 232 connection
+  churn operations and 300 cold handshakes in bounded 250 ms windows with zero
+  failures/timeouts and exact churn byte symmetry. Public contract health,
+  84 component manifest pairs, both quic-go Go test suites, and 70 focused
+  internal tests passed. No package was uploaded, no controller or worker was
+  changed, and no result was published. The next gate is operator-approved
+  package registration and a three-target matrix preview; runtime optimization
+  must wait for fresh matched rack evidence.
+
+- 2026-07-15: replacing the per-chunk incomplete-write async state machine
+  with one pooled STREAM-action request for the complete public write was
+  rejected. The candidate preserved the 32 KiB runtime work-item boundary and
+  reposted each continuation chunk under the original request identifier. Its
+  focused lifecycle tests passed 21/21, and the broader cancellation,
+  flow-control, and RFC 9002 PTO set passed 63/63.
+
+  A matched source-backed c64 counter and sampled-CPU diagnostic passed exact
+  validation on both sides. The intended mechanism was visible: the former
+  `WriteStreamChunksAsync` continuation accounted for 5.03 percent inclusive
+  sampled CPU and its companion await path 1.72 percent in the baseline, while
+  pending-request insertion fell from 3.23 to 1.41 percent and exclusive
+  `Monitor.Enter_Slowpath` fell from 10.90 to 7.48 percent. However, traced
+  throughput fell 2.58 percent, mean CPU rose 3.34 percent, allocation rate rose
+  1.27 percent, and p95 rose 0.44 percent. Maximum per-shard queue depth rose
+  from 1,321 to 2,283, the sum of per-shard maxima rose from 7,592 to 9,929,
+  and peak outstanding pooled buffers/bytes rose from 32,150/263.43 MB to
+  39,740/325.57 MB. Instrumented results are diagnostic, not throughput claims.
+
+  Independent ownership review also found that a continuation post failure
+  could violate `TryWrite*` terminal suppression after a partial write, that
+  the design extended inline completion callbacks under the stream-action lock
+  to multi-chunk writes, and that cancellation could race the next chunk post.
+  Correcting all three safely requires a broader completion-dispatch ownership
+  design rather than another local state-machine removal. The runtime and
+  candidate-only tests were reverted without starting a clean repetition
+  matrix. Retained evidence is under
+  `.artifacts/protocol-lab/single-request-c64-cpu-20260715a` and the matching
+  `quic-single-request-{baseline,candidate}-c64-cpu-20260715a-*` ProtocolLab
+  runs. Do not repeat this one-request continuation design without first moving
+  completion callbacks outside the stream-action lock and defining an atomic
+  cancellation/terminal handoff between chunks. No result was uploaded,
+  deployed, or published.
+
+- 2026-07-15: atomic STREAM-write preparation is accepted as a bounded
+  runtime-path optimization. The runtime previously acquired the stream-state
+  lock separately to resolve or open the local stream, capture rollback state,
+  and reserve flow-control capacity. `PrepareStreamWrite` now performs those
+  operations under one lock while preserving the 32 KiB runtime chunk, public
+  write-gate serialization, rollback state, flow-control retry ownership,
+  cancellation, disposal, exception propagation, and the later priority read.
+  Focused regression coverage preserves the prior unavailable result and
+  default transport error for missing local and peer-initiated stream IDs.
+
+  The permanent `QuicStreamWritePreparationBenchmarks` ShortRun reduced 64-
+  operation preparation from 5.421 to 3.938 microseconds and 256-operation
+  preparation from 20.741 to 15.629 microseconds, about 27 and 25 percent,
+  respectively, with zero managed allocation on both paths. The suite is also
+  part of `Invoke-QuicBaseline.ps1`; its final dry invocation passed through
+  that checked-in runner.
+
+  A matched c64 counter and CPU diagnostic passed exact validation on both
+  sides. Maximum per-shard queue depth fell from 1,718 to 1,058, the sum of
+  per-shard maxima from 8,895 to 6,112, mean packet-receive queue delay from
+  94.54 to 87.46 ms, mean packet service from 1.761 to 1.573 ms, mean
+  STREAM-write queue delay from 108.58 to 98.95 ms, and mean STREAM-write
+  service from 0.504 to 0.436 ms. Peak outstanding pooled buffers fell from
+  37,965 to 36,272. The trace removed the former write-path capture and reserve
+  calls, but exclusive `Monitor.Enter_Slowpath` rose from 8.70 to 9.43 percent,
+  mean write completion moved from 1,825 to 1,964 ms, and delayed application
+  sends and retained sent packets were slightly higher. These instrumented
+  results are diagnostic and are not throughput claims.
+
+  Sixty post-fix, uninstrumented source-backed ProtocolLab cells passed exact
+  payload validation and benchmark execution with zero failed or timed-out
+  requests. Five deterministic alternating pairs at c4 and c16 moved aggregate
+  request-rate medians by +6.72 and +0.09 percent and same-pair medians by
+  +6.02 and +1.06 percent. Ten pairs at c32 and c64 moved aggregate medians by
+  +0.14 and -0.27 percent and same-pair medians by +0.82 and -0.92 percent.
+  The two c32 campaigns individually disagreed (-3.16 and +4.95 percent), so
+  only the combined flat result is accepted. Combined c32/c64 p95 medians moved
+  -1.66/+0.92 percent, with same-pair medians at -1.65/-0.48 percent. This is
+  accepted for lower write-preparation cost and no demonstrated scaling
+  regression, not for a broad c16-c64 throughput gain. Evidence remains under
+  `.artifacts/protocol-lab/atomic-write-preparation-*` and matching ProtocolLab
+  run roots. Shared-host results remain diagnostic and non-publishable.
+
+  Focused preparation, write-cancellation, flow-control, RFC 9000, and RFC 9002
+  coverage passed 836/836 before the final contract correction; the corrected
+  preparation tests passed 5/5. The final all-up run completed 9,577 passes and
+  five intentional skips with only the standing incomplete-content peer-close
+  timeout; that exact test passed ten consecutive isolated reruns against the
+  final binaries. No result was uploaded, deployed, or published.
+
+- 2026-07-15: a lazy per-stream index of retained packets carrying non-empty
+  STREAM data is accepted. RESET_STREAM acknowledgment handling previously
+  scanned and reparsed every retained packet to determine whether the
+  acknowledged stream still had outstanding data. The runtime now parses each
+  tracked packet on insertion and removal, counts each distinct stream once per
+  packet, and performs an O(1) count lookup before consulting the retransmission
+  queue. Every replacement, acknowledgment, loss, packet-number-space discard,
+  protection-level discard, and key-phase discard uses the indexed removal
+  path. Zero-length STREAM frames, including FIN-only frames, remain excluded
+  from outstanding-data ownership.
+
+  Permanent BenchmarkDotNet coverage measures lookup, equal-parser-work
+  bookkeeping, and the complete acknowledgment lifecycle. At 64/256/1,024
+  retained packets, lookup fell from 1,138/4,875/19,555 ns to
+  4.15/3.86/3.80 ns. The complete former scan-after-every-ACK lifecycle fell
+  from 35.81/601.75/10,054.57 microseconds to 5.64/23.54/93.66 microseconds.
+  Index add/remove cost, including the same two payload parses, was 1.89/1.21/
+  1.20 times the parse-only baseline; fresh-index allocation was 4,624/22,312/
+  102,216 bytes. The accepted trade therefore pays bounded dictionary work at
+  packet lifecycle boundaries to remove the quadratic acknowledgment scan.
+
+  Fifty-eight of 59 uninstrumented source-backed ProtocolLab cells passed exact
+  validation, and those successful cells reported zero request failures or
+  request timeouts. Five
+  deterministic alternating pairs at c1/c4/c16/c32 moved aggregate median
+  request rate by +4.45/+4.55/+9.38/+7.80 percent and same-pair medians by
+  +2.91/+3.91/+9.35/+7.34 percent; aggregate p50 moved -1.61/-3.56/-4.84/
+  -5.32 percent. At c64, the aggregate request-rate median moved -0.90 percent
+  while the same-pair median moved +4.63 percent; one fully valid candidate
+  outlier is retained rather than discarded. Four valid c128 pairs moved the
+  aggregate request-rate median +0.67 percent but the same-pair median
+  -2.36 percent, with aggregate/paired p50 at +1.14/+1.10 percent. Both c64 and
+  c128 showed possible target saturation. The fifth c128 baseline cell then
+  failed raw load validation with a network-inactivity timeout and four recorded
+  errors, so its candidate counterpart was not run and c128 is not used for an
+  acceptance percentage claim. The 59-cell summary and all raw evidence remain
+  under `.artifacts/protocol-lab/sent-stream-index-pairs-20260715a` and the
+  corresponding ProtocolLab run roots. These are shared-host diagnostics, not
+  publishable rankings.
+
+  Focused index and RFC 9000 RESET_STREAM tests passed, including packet
+  replacement, every removal path, repeated/multi-stream packets, and FIN-only
+  behavior. The final logged all-up test run completed 9,572 passes and five
+  intentional skips with only the standing incomplete-content peer-close
+  timeout; that exact test passed ten consecutive isolated reruns. An earlier
+  candidate all-up run completed 9,571 passes and reproduced only the standing
+  dropped-server-FIN timing failure, which also passed ten consecutive isolated
+  reruns. No result was uploaded, deployed, or published.
+
+  Packet-mailbox batching was also rejected before implementation. The matched
+  CPU trace attributed only about 0.24 percent exclusive CPU to channel
+  publication while packet transition and service work dominated. Do not add a
+  mailbox batch merely to remove channel writes unless a materially different
+  trace shows publication or wake-up cost has become significant.
+
+- 2026-07-14: releasing `pendingStreamActionRequestsGate` during expensive
+  STREAM-write processing through pooled completion-source processing leases
+  was rejected. The candidate kept each request visible during processing,
+  delayed pool reuse until both processing and `ValueTask` consumption ended,
+  made the short gate the cancellation linearization point, preserved terminal
+  cleanup and write-gate serialization, and deferred busy retry entries so a
+  low request ID could not starve ready work. Focused ownership, cancellation,
+  lifecycle, retry-fairness, and RFC tests passed 72/72 in ten consecutive
+  runs. The final all-up test run passed 9,572 tests with five intentional
+  skips and reproduced only the standing dropped-server-FIN timing failure;
+  that exact test then passed ten consecutive reruns.
+
+  Current source-backed c64 CPU diagnostics
+  `quic-queue-lease-current-{baseline,candidate}-c64-cpu-20260714a-quic-transport-v1-comparison`
+  both passed exact 12,800-stream and 838,860,800-byte validation with zero
+  failures or timeouts. Sampled exclusive `Monitor.Enter_Slowpath` fell from
+  8.52 to 5.01 percent, but traced request rate fell from 974.16 to 950.18 per
+  second and p50/p99 latency rose from 5,224.79/6,192.35 to
+  5,411.92/6,579.81 ms. Candidate final counter samples also retained 16,453
+  pooled buffers versus zero in the matched baseline; the earlier candidate
+  diagnostic ended with 15,149. Counter timing includes load-phase boundaries,
+  so this is not asserted as a leak, but the design did not prove improved
+  backlog drain. Instrumented trace movement is diagnostic, not acceptance
+  evidence.
+
+  Fifty deterministic alternating, uninstrumented source-backed cells at c1,
+  c4, c16, c32, and c64 all passed exact validation with zero failed requests
+  and zero timeouts. Candidate median request-rate deltas were
+  -1.57/-5.08/+0.32/-3.29/+1.54 percent. Median p50 deltas were
+  -2.28/-0.77/+2.45/+3.58/+4.25 percent. Same-repetition median request-rate
+  deltas were +0.39/-5.08/-1.18/-1.21/-1.41 percent, so the apparent c64
+  aggregate median gain was not stable within matched pairs. Evidence remains
+  under `quic-queue-lease-matched-20260714a-*`, with the combined summary and
+  transcript under `.artifacts/campaigns`.
+
+  The runtime implementation and candidate-only tests were reverted. Do not
+  repeat another pending-action processing barrier or lease that only shortens
+  this monitor: three materially different barrier designs have now reduced
+  lock hold time without improving queue service capacity. A future candidate
+  must reduce per-write service work or bound producer ingress before runtime
+  work-item creation, and must improve c16-c64 without regressing c1-c4. No
+  result was uploaded or published.
+
+- 2026-07-14: increasing the runtime STREAM-write work-item chunk from 32 KiB
+  to 64 KiB was rejected. The candidate targeted the two sequential shard
+  work items created by each 64 KiB ProtocolLab application write; packet
+  fragmentation, congestion control, flow control, and the public write gate
+  were unchanged. A source-backed c64 counter/GC run passed exact validation
+  and reduced mean sampled STREAM-write queue delay from 127.75 to 116.33 ms,
+  mean STREAM-write service time from 0.567 to 0.409 ms, successful write
+  completion time from 2,019.13 to 1,327.67 ms, and outstanding 64 KiB buffer
+  count from 1,843 to 1,029. The same diagnostic raised maximum STREAM-write
+  queue depth from 229 to 269, maximum total shard depth from 1,346 to 1,704,
+  delayed application sends from 211 to 301, and outstanding 64 KiB capacity
+  from 64.16 to 67.24 MB. Instrumented throughput is not an acceptance claim.
+
+  Fifty alternating, uninstrumented source-backed cells at c1, c4, c16, c32,
+  and c64 all passed exact payload validation with zero failures and zero
+  timeouts. Candidate median request-rate deltas were -0.56/-0.42/+1.16/
+  +2.32/+0.02 percent respectively. Median p95 deltas were +0.66/-17.21/
+  -2.15/-2.48/+0.25 percent, and p99 deltas were +1.46/-11.03/-3.69/-2.65/
+  +0.46 percent. Evidence remains under the `quic-runtime-chunk64-gate-*` and
+  `quic-runtime-chunk64-matrix-*` ProtocolLab runs.
+
+  Correctness blocked acceptance. The full candidate test project completed
+  9,566 passes and five intentional skips, but deterministically failed two
+  RFC 9002 PTO tests: the 64 KiB finished-stream probe was not retained as a
+  probe packet, and PTO emitted only the repair fragments instead of both the
+  repair and queued stream data. Both failures reproduced in an isolated
+  candidate run; the exact two tests passed 2/2 at baseline commit `9addb6e0`.
+  The runtime change was reverted. Do not increase the application-to-runtime
+  STREAM-write chunk unless a materially different design preserves PTO repair
+  and queued-data probe behavior under the existing recovery tests. No result
+  was uploaded or published.
+
+- 2026-07-14: per-connection admission of oversized application writes was
+  rejected after five bounded designs. The candidate kept caller memory
+  borrowed until the public `ValueTask` completed, retained already-owned
+  flow-control retries without another pool rent, serialized release in
+  request order, preserved the stream write gate, and covered cancellation,
+  disposal, flow-control requeue, ordering, and delayed consumption. A fixed
+  cap of 32 reduced the c64 diagnostic peak from 211 to 34 delayed application
+  buffers and from 64.16 to 52.72 MB of outstanding 64 KiB pool capacity, but
+  raised maximum shard depth from 1,346 to 1,740. A cap of 64 retained 72
+  buffers and 36.21 MB of 64 KiB pool capacity, but still imposed admission on
+  lower-load traffic. These instrumented observations prove a lifetime bound;
+  they do not prove throughput.
+
+  Clean source-backed gates rejected both fixed caps. Cap 32 improved c64
+  median request rate by 4.44 percent, but its c1/c4/c16/c32 guardrail matrix
+  included a c4 p95 regression of 12.41 percent and a c32 request-rate
+  regression of 2.52 percent with 43.77 percent candidate range. Cap 64 moved
+  median request rate by -2.67/-2.97/+2.38 percent at c4/c32/c64 and regressed
+  c4 p95 by 26.21 percent. Run IDs use `quic-admission-gate-*`,
+  `quic-admission-matrix-*`, and `quic-admission64-gate-*`.
+
+  Three pressure-sensitive variants then activated admission only after the
+  shard's pending STREAM-write count reached 128, 192, or 512. Threshold 128
+  did not activate in the c4 counter diagnostic and did activate at c64, where
+  it retained 141 delayed buffers and 37.68 MB of 64 KiB pool capacity. Its
+  clean c4/c32/c64 request-rate deltas were +2.85/+0.37/+11.63 percent, but c4
+  p95 regressed 21.20 percent. Threshold 192 moved c4/c64 request rate by
+  -0.81/+1.72 percent and c4 p95 by +20.88 percent. The final threshold 512
+  gate completed all 20 alternating c4/c64 cells with exact payload
+  validation, zero failures, and zero timeouts. It moved median request rate
+  by -1.05/-1.91 percent and p95 by -8.10/+0.91 percent, so it did not retain a
+  high-concurrency benefit. Evidence remains under
+  `quic-admission-pressure*-20260714a` ProtocolLab runs.
+
+  The implementation, metrics, and candidate-only tests were reverted. Do not
+  repeat per-connection queue-count admission with another cap or threshold.
+  A materially different follow-up must reduce creation or service cost of
+  shard STREAM-write work, or apply bounded producer backpressure before each
+  write becomes an independently queued runtime item, while preserving flow
+  control, write ordering, cancellation, and `ValueTask` memory lifetime. No
+  result was uploaded or published.
+
+- 2026-07-14: retaining the original queued STREAM payload and advancing a
+  consumed-data cursor instead of rebuilding the complete unsent tail after
+  every fragment was rejected. The candidate preserved the queued owner until
+  final removal, transferred only packet-sized fragment owners to sent-packet
+  tracking, kept partially consumed writes out of batching, preserved FIN
+  promotion and offsets, and advanced the cursor only after successful packet
+  protection and accounting. Focused queue/scheduler tests passed 38/38,
+  broader blocked-send, delayed-consumption, API, RFC, and interop tests passed
+  126/126, and independent review found no ownership, retransmission, ordering,
+  FIN, or transient-failure defect. The full test project passed 9,572 tests
+  with five intentional skips and only the standing dropped-FIN and incomplete-
+  content close-timeout flakes; each exact failure then passed five consecutive
+  reruns.
+
+  A permanent 64 KiB fragmentation benchmark measured the former repeated-tail
+  rebuild at 39.545 microseconds and the cursor path at 7.315 microseconds
+  (-81.5 percent, about 5.4 times faster), with zero managed allocation in both
+  cases. The exact source-backed c64 counter/GC run
+  `quic-stream-cursor-c64-gc-20260714a-quic-transport-v1-comparison` also passed
+  12,800-stream and 838,860,800-byte validation. Against
+  `quic-pressure-metrics-c64-gc-20260714b-quic-transport-v1-comparison`, observed
+  outbound-stream-payload rent traffic fell from 6,990.74 to 782.62 MiB, total
+  owner-attributed rent traffic fell from 12,010.24 to 7,360.61 MiB, mean write
+  completion fell 12.7 percent, and traced throughput rose 15.4 percent. The
+  same run doubled peak delayed application sends and retained application-send
+  buffers from 211 to 428, demonstrating that cheaper tail formatting did not
+  solve queue admission or service capacity.
+
+  Fifty alternating, uninstrumented source-backed cells at c1, c4, c16, c32,
+  and c64 all passed exact validation with no failed requests or timeouts. The
+  median same-pair request-rate deltas were -2.99/-0.84/-1.24/-0.59/+3.43
+  percent, and mean-latency deltas were +2.69/+1.73/+1.90/+1.03/+1.78 percent.
+  At c128, three exact baseline cells succeeded, while the candidate produced
+  only two valid cells before a warmup write timeout and then failed its retry
+  with 100 timed-out streams plus an exact byte-count mismatch. The local load
+  generator reported saturation and both variants reached multi-gigabyte
+  working sets, so c128 is not used for a percentage claim; the asymmetric
+  candidate failures still block acceptance. The implementation, candidate-only
+  tests, and benchmark were reverted. Evidence remains under the
+  `quic-stream-cursor-*20260714a` ProtocolLab runs and
+  `.artifacts/bdn/queued-stream-cursor-short-20260714a`. Future outbound staging
+  work must pair copy reduction with bounded admission or earlier completion;
+  cursor-only production can feed the existing backlog faster without improving
+  service capacity. No result was uploaded or published.
+
+- 2026-07-14: runtime-pressure diagnostics now sample the first observation,
+  at least every 250 ms, and every 32 work items during a sustained burst
+  instead of rebuilding all pressure measurements for every work item. The
+  sampling state is per connection runtime, preserves time-based visibility
+  when work is sparse, and does not alter queue admission, scheduling, flow
+  control, cancellation, or packet ownership. A permanent observed-metrics
+  benchmark covering 64 snapshot attempts improved from 291.1 to 46.97 ns per
+  attempt (-83.9 percent) and from 120 to 4 B (-96.7 percent). Production and
+  benchmark Release builds completed with zero warnings, and 29/29 focused
+  metrics tests passed. The full test project completed 9,567 passes and five
+  intentional skips with only the standing incomplete-content peer-close
+  timeout; that exact test then passed five consecutive reruns.
+
+  The central buffer pool now also reports bounded owner-tagged cumulative rent,
+  requested-byte, and rented-byte counters. Every current rent site has an
+  explicit owner, and application packet protection is separated from true
+  handshake work. Source-backed c64 diagnostic run
+  `quic-pressure-metrics-c64-gc-20260714b-quic-transport-v1-comparison` passed
+  exact 12,800-stream and 838,860,800-byte validation with zero failures or
+  timeouts. Of 12.59 GB of observed rented-byte increments, outbound stream
+  payload staging accounted for 7.33 GB (58.21 percent), inbound datagrams
+  1.80 GB (14.30 percent), outbound packet protection 1.61 GB (12.80 percent),
+  receive segments 684.75 MB (5.44 percent), inbound packet protection
+  641.85 MB (5.10 percent), and stream-write request ownership 409.78 MB
+  (3.25 percent). True handshake work was 1.24 MB (0.01 percent), and sent-
+  packet retention was 2.18 KB. This rejects sent-packet retention as the next
+  byte-movement target for this workload and prioritizes eliminating redundant
+  outbound payload staging and packet-protection copies. With every pool metric
+  actively observed, the existing rent/return microbenchmark moved from 52.74
+  to 58.58 ns (+11.1 percent), with zero allocation in both cases. That bounded
+  diagnostic cost is retained explicitly; no zero-overhead tracing claim is
+  made for observed owner attribution.
+
+  In the paired c64 CPU traces, `RecordRuntimePressureSnapshot` fell from 6.87
+  to 2.46 percent inclusive and from 1.20 to 0.14 percent exclusive. Metric
+  tag construction and EventPipe allocation remained dominant, and the traced
+  request rate was lower, so this run is diagnostic evidence only and makes no
+  transport-throughput claim. No result was uploaded or published.
+
+- 2026-07-14: completed STREAM reassembly spill and scratch lists now return to
+  a two-slot, per-thread cache after `DataRead`, reset, connection cleanup, or
+  replacement by a larger scratch list. The cache retains only cleared lists
+  with capacity at most 64; larger fragmentation histories remain collectible.
+  This preserves the existing two inline segments, geometric list growth,
+  merge rotation, pooled payload ownership, receive accounting, and stream
+  state lock. A permanent benchmark now drains 32 independent interleaved
+  terminal streams rather than measuring only same-stream scratch reuse. Its
+  Short allocation fell from 113.15 to 30.15 KB per operation (-73.4 percent),
+  while the existing single hole-fill row fell from 4.31 to 1.72 KB and the
+  repeated same-stream row remained 1.43 KB. Short-run timing was mixed and is
+  not used as acceptance evidence.
+
+  Focused receive, concurrency, thread-handoff, stream lifecycle, and RFC tests
+  passed 39/39 before the final handoff test and 16/16 after it. Independent
+  review found no correctness issue. The full test project completed 9,561
+  passes with five intentional skips and only the standing incomplete-content
+  close-notification timeout; that exact test then passed five consecutive
+  reruns. The solution wrapper also retains a pre-existing reference to the
+  absent `eng/tools/Incursa.Quic.TraceAnalysis` project, so full validation is
+  reported from the actual test project rather than claiming a clean solution
+  wrapper result.
+
+  Source-backed c64 GC/counter run
+  `quic-segment-list-cache-c64-gc-20260714a-quic-transport-v1-comparison`
+  passed exact 12,800-stream and 838,860,800-byte validation with zero failures
+  or timeouts. Against
+  `quic-ordered-write-retry-c64-gc-20260713a-quic-transport-v1-comparison`, the
+  sampled `List<BufferedSegment>` group fell from 47.22 MB to outside the top
+  32 allocation groups, mean allocation rate fell from 51.40 to 33.69 MB/s,
+  maximum GC heap fell from 685.27 to 465.90 MB, and sampled `byte[]` allocation
+  fell from 624.87 to 455.43 MB. Peak pooled outstanding buffers fell from
+  17,952 to 4,404 and bytes from 147.09 to 13.91 MB, but those pool and queue
+  lifetime deltas remain trace-timing diagnostics rather than direct cache
+  claims. The traced request rate was lower and queue-delay timing was mixed;
+  no throughput claim is made from this instrumented run.
+
+  Seven alternating uninstrumented c64 baseline/candidate pairs are retained
+  as `quic-segment-list-cache-c64-ab-r{1-7}-{baseline|candidate}-20260714a-quic-transport-v1-comparison`.
+  All 14 cells passed exact validation with zero failures or timeouts. Median
+  same-pair deltas were -1.81 percent request rate, -1.22 percent p95 latency,
+  and -2.25 percent mean latency, with wins in 3/7, 4/7, and 4/7 pairs. One
+  candidate cell was a severe retained outlier; baseline and candidate request-
+  rate relative ranges were 16.24 and 18.47 percent. Acceptance is therefore a
+  bounded allocation reduction with median throughput inside the existing two-
+  percent triage tolerance, not evidence of a throughput improvement. The
+  post-change sent-packet dictionary array remained only 1.53 MB in the trace
+  and still does not justify reviving either rejected whole-ledger design. No
+  result was uploaded or published.
+
+- 2026-07-14: flow-control-blocked stream writes now use a request-ordered
+  retry queue instead of snapshotting, renting and insertion-sorting an array
+  of every pending stream action, and rescanning it on each credit update. The
+  existing reentrant monitor and pending-request dictionary remain the
+  cancellation and terminal-lifecycle authority. Only writes that actually
+  block on connection or stream credit enter the queue; cancellation removes
+  the queued ID, one retry pass processes only the IDs present at its start,
+  still-blocked writes requeue once, and terminal cleanup clears both
+  structures. Focused ordering, cancellation, delayed-consumption, disposal,
+  stream-credit, blocked-sender, and RFC tests passed 49/49. Independent diff
+  review found no correctness issue. The all-up suite passed 9,559 tests with
+  five intentional skips and reproduced only the standing incomplete-content
+  close-notification and dropped-FIN timing failures; both exact tests then
+  passed together in five consecutive reruns.
+
+  The exact source-backed c64 GC/counter diagnostic
+  `quic-ordered-write-retry-c64-gc-20260713a-quic-transport-v1-comparison`
+  passed 12,800-stream and 838,860,800-byte validation with zero failures or
+  timeouts. Against
+  `quic-next-postread-c64-gc-20260713a-quic-transport-v1-comparison`,
+  average packet/write queue delay fell from 135.9/152.9 ms to 57.6/87.3 ms,
+  max shard queue depth fell from 2,606 to 634, sampled mean successful write
+  completion fell from 1,901.5 to 85.4 ms, peak delayed application sends and
+  application-send retained buffers fell from 367 to 267, peak pooled
+  outstanding buffers fell from 34,251 to 17,952, and mean allocation rate
+  fell from 126.35 to 51.40 MB/s. These are trace-instrumented shared-host
+  diagnostics, not clean throughput claims. The paired CPU trace
+  `quic-ordered-write-retry-c64-cpu-20260713a-quic-transport-v1-comparison`
+  was neutral: `Monitor.Enter_Slowpath` moved from 9.42 to 8.96 percent and
+  inclusive retry work moved from 0.89 to 0.95 percent, so acceptance does not
+  claim a sampled-CPU reduction.
+
+  Twenty-five uninstrumented source-backed baseline/candidate pairs used five
+  alternating observations at c1, c4, c16, c32, and c64. Every run passed
+  exact validation with zero failures or timeouts. Median same-pair throughput
+  deltas were +4.21/+7.32/+3.03/+4.84/+2.85 percent; median p95 deltas were
+  -11.31/-19.69/-4.29/-6.68/-3.17 percent; and median mean-latency deltas were
+  -3.26/-4.82/-3.83/-3.29/-1.66 percent. Run IDs use
+  `quic-ordered-write-retry-c{shape}-ab-r{1-5}-{baseline|candidate}-20260713a-quic-transport-v1-comparison`.
+  c128 remains diagnostic-only: one candidate run lost exactly one 100-stream
+  connection and failed exact validation, while three fresh valid pairs had
+  mixed results with median +4.25 percent throughput, -0.64 percent p95, and
+  -2.13 percent mean latency. The failed run and target-saturation warnings are
+  retained; no c128 percentage is used to justify acceptance. This slice is
+  accepted as a bounded retry-bookkeeping and queue-pressure reduction without
+  an observed c1-c64 regression. No result was uploaded or published.
+
+- 2026-07-13: a reusable open-addressed sent-packet store with backward-shift
+  deletion was rejected at the microbenchmark gate. It used one entry array,
+  tolerated sparse packet numbers, reused slots across a 10,000-packet
+  advancing window, and passed 24/24 focused store, ownership, send-runtime,
+  and retransmission tests. The production-shaped advancing-window benchmark
+  showed that the large inline entry array and cluster reinsertion outweighed
+  dictionary bucket savings: versus `Dictionary`, it was 20 percent slower at
+  16 live packets, 2.78 times slower at 128, and 3.56 times slower at 2,304.
+  Allocation fell 13 percent only at 16, then increased 85 percent at 128 and
+  25 percent at 2,304. The candidate was reverted without a ProtocolLab run.
+  Evidence is retained under
+  `.artifacts/bdn/sent-packet-open-addressed-candidate-20260713a`. Do not repeat
+  a whole-ledger open-addressed table with the full packet value inline; future
+  sent-packet work needs a compact indirection or a direct small-dictionary
+  path that avoids both per-packet dispatch and oversized sparse storage.
+
+- 2026-07-13: a custom reentrant short-monitor processing barrier was also
+  rejected. Unlike the `ReaderWriterLockSlim` design, it preserved same-thread
+  completion callback reentrancy, synchronized cancellation and terminal
+  sweeps with active processing, passed 25/25 focused tests, and passed the
+  cancellation/reentrant-terminal race set ten consecutive times. It released
+  the pending-action monitor during expensive write processing, but that let
+  more writes accumulate without addressing shard service capacity. In the
+  exact source-backed c64 diagnostic
+  `quic-short-monitor-processing-c64-cpu-20260713a-quic-transport-v1-comparison`,
+  average packet/write queue delay rose from the retained trace baseline's
+  149.5/170.3 ms to 228.0/251.4 ms, max shard depth rose from 1,831 to 2,331,
+  and mean write completion rose from 2.40 to 2.68 seconds. The single-run
+  throughput improvement is not sufficient to accept worse backpressure.
+  The runtime and candidate-only tests were reverted. Future work should
+  reduce per-write service work or bound ingress rather than only widening
+  pending-write admission.
+
+- 2026-07-13: a `ReaderWriterLockSlim` processing barrier around pending stream
+  actions was rejected before commit. It allowed new writes to enter a short
+  dictionary monitor while a shard processed another write, and its focused
+  cancellation, delayed-consumption, completion-pool, terminal-transition,
+  and concurrency tests passed. Review found two unacceptable races: writer
+  preference can deadlock a synchronous completion callback that queues a new
+  write while cancellation waits as a writer, and terminal publication was
+  not owned by the new barrier. The typed lock also required lifecycle disposal
+  that could race late callbacks. Exact c64 validation passed in
+  `quic-processing-gate-c64-cpu-20260713a-quic-transport-v1-comparison`, but
+  the single diagnostic increased average packet/write queue delay to roughly
+  200/210 ms and mean write completion to 2.70 seconds. A favorable unpaired
+  throughput sample is not acceptance evidence. Retain this as a rejected
+  design; a replacement must preserve monitor reentrancy, synchronize terminal
+  sweep ordering, and release the monitor during expensive write processing.
+
+- 2026-07-13: replacing only `pendingStreamActionRequestsGate` with .NET 10's
+  dedicated `System.Threading.Lock` was rejected. The change preserved the
+  existing reentrant lock scopes and passed 21/21 focused cancellation,
+  disposal, delayed-consumption, completion-pool, and concurrent-stream tests,
+  but it did not shorten the contended critical section. In the source-backed
+  c64 CPU trace, `Monitor.Enter_Slowpath` fell from 9.42 percent to 5.56
+  percent while `Lock.TryEnterSlow` added 4.82 percent, increasing combined
+  lock-entry cost to about 10.38 percent. Exact c64 validation still passed,
+  but the counter run increased average packet queue delay from 115.8 to
+  157.1 ms, average stream-write queue delay from 124.0 to 176.5 ms, and mean
+  write completion from 1.67 to 2.67 seconds. The one unpaired throughput
+  sample improved, so it is retained only as evidence of shared-host variance,
+  not as an acceptance signal. Candidate runs are
+  `quic-lock-candidate-c64-counters-20260713a-quic-transport-v1-comparison`
+  and `quic-lock-candidate-c64-cpu-20260713a-quic-transport-v1-comparison`.
+  The production change was reverted. Do not repeat a lock-type-only
+  substitution without first reducing lock hold time or retry work.
+
 - 2026-07-13: ACK receipt tracking now uses a pooled ordered store with binary
   search, sparse insertion, and one bulk compaction for acknowledged ranges
   instead of `SortedList<ulong, QuicPacketReceipt>` growth plus per-packet
@@ -477,6 +1673,23 @@ This is a pragmatic backlog for improving Incursa.Quic performance evidence, run
   percent. Do not repeat these candidates without a materially different
   design. Queue/backpressure work remains open around receive-segment lifetime,
   application read/write coupling, and sent-packet retention.
+
+- 2026-07-15: a bounded per-shard listener send-queue candidate was rejected
+  before ProtocolLab measurement. The accepted c64 CPU trace showed synchronous
+  listener UDP send work inside runtime-shard packet service, so the candidate
+  transferred detached datagram ownership to one ordered sender per shard,
+  bounded each queue at 256 datagrams, and used an ordering-preserving
+  producer drain when the bound was reached. Production and test projects built
+  cleanly, and focused queue ordering and ownership tests were added during the
+  experiment. However, the existing transient UDP-loss integration test
+  `DroppedServerFinIsRecoveredAndShardContinuesProcessing` deterministically
+  timed out twice while reading the 64 KiB response after one dropped send.
+  The synchronous baseline keeps packet emission and recovery bookkeeping on
+  the same shard service boundary; decoupling them changed that recovery timing
+  enough to violate the existing five-second contract. The runtime, metrics,
+  and test candidate was fully reverted. Do not repeat an asynchronous listener
+  send queue without a design that couples actual socket emission to congestion
+  and loss-recovery accounting.
 
 - 2026-07-12: incomplete stream try-writes now return the runtime's pooled
   `ValueTask<bool>` directly instead of allocating
@@ -1586,9 +2799,440 @@ Done when:
 
 ## Suggested Order
 
+### Accepted 2026-07-15: FIN-aware terminal receive capacity
+
+`QuicConnectionStreamState` now rents exact capacity for newly buffered STREAM
+data that reaches an already validated final size. This applies both to a
+data-bearing FIN and to non-FIN data arriving after an out-of-order FIN-only
+frame. Nonterminal data keeps the existing 4 KiB initial and 8 KiB continuation
+coalescing capacity. The change does not compact an existing segment when a
+later FIN establishes final size, because that would add a copy to reclaim an
+already-rented buffer.
+
+Deterministic proof:
+
+- focused receive/read/ownership/metrics tests passed 51/51, including
+  nonterminal coalescing, a 1 KiB terminal continuation tail, and FIN-first
+  reordered data delivery, completion, and release;
+- the complete Release inventory passed as a deterministic partition: the main
+  partition passed 9,579 tests with five intentional skips, while the HTTP/3
+  incomplete-content close and dropped-server-FIN recovery tests each passed
+  5/5 independently after showing suite-order timing failures in all-in-one
+  runs;
+- independent review found the FIN-first and below-threshold proof gaps; both
+  were fixed before closeout;
+- permanent `QuicByteBufferAllocationBenchmarks` rows cover a terminal 1 KiB
+  frame and a 1 KiB terminal tail after a full 4 KiB segment. Matched local
+  ShortRun means were 433.3 ns versus 440.3 ns for the single terminal frame
+  and 702.5 ns versus 790.5 ns for the terminal tail. Both three-iteration
+  samples have very wide confidence intervals and unchanged rounded managed
+  allocation, so they are retained as branch/shape guards rather than a speed
+  claim.
+
+End-to-end evidence:
+
+- one matched c64/s100 counter pair was diagnostic and mixed: peak central-pool
+  outstanding bytes fell 18 percent in the `<=16 KiB` bucket and 6 percent in
+  the `<=4 KiB` bucket, while stream-write and buffered-byte tails varied in the
+  opposite direction;
+- five alternating exact-baseline/candidate source-backed c64/s100 runs of
+  `quic.transport.multiplex.100x64kb` all passed validation and completed with
+  zero failed or timed-out requests. Candidate throughput exceeded its paired
+  baseline in all five accepted pairs; median throughput moved from 56.16 to
+  63.63 MB/s, median p95 latency from 6,159.57 to 5,591.06 ms, and throughput
+  relative range from 35.35 to 11.35 percent;
+- one additional baseline attempt failed during warmup with `timeout: no recent
+  network activity` and is retained as negative reliability evidence rather
+  than replaced or counted as a successful repetition.
+
+Artifacts are retained under
+`protocol-lab-internal/.artifacts/runs/quic-terminal-receive-*-20260715a-*` and
+the two reviewed BenchmarkDotNet roots under
+`.artifacts/bdn/terminal-receive-*-reviewed-20260715a`. These are local
+shared-host development results. They justify retaining the bounded runtime
+change but are not publishable or peer-ranking evidence.
+
+The next program priority is to audit the freshness and breadth of published
+raw QUIC evidence before selecting another micro-optimization: map every public
+row to its run date, QUIC.NET commit/package, scenario, load shape, load tool,
+validation status, and matched peer evidence; then fill missing stream
+throughput, multiplex, duplex, concurrency, payload-size, loss, and flow-control
+workloads with current repeated baselines.
+
+The audit is recorded in
+[`raw-quic-performance-evidence-plan.md`](raw-quic-performance-evidence-plan.md).
+It found that the latest public raw cohort is a non-publishable two-target,
+one-repetition smoke comparison, the multiplex row does not retain the effective
+100-stream shape, and the current three-target package-matrix dry-run omits
+MsQuic and cannot run its duplex peer slice. Package identity, shape proof, and
+three-target parity now precede further runtime micro-optimization.
+
+### Accepted 2026-07-15: raw peer package identity and provenance
+
+The local three-target package gap is closed without changing controller or
+worker state. Incursa commit `c9cef4f1` adds cold-handshake and
+connection-churn support beside throughput, multiplex, duplex, and peer matrix;
+its package builder now rejects dirty package inputs by default, emits embedded
+source/build provenance plus an external SHA-bound attestation, and creates
+deterministic archives. ProtocolLab commit `e3165c6` provides the same evidence
+contract for the distinct System.Net.Quic/MSQuic target.
+
+Verification:
+
+- the Incursa package/run-helper contract suite passed 20/20;
+- repeated dirty-source Incursa package builds produced the same archive SHA;
+- the Windows Incursa package started and its live adapter manifest reported all
+  six scenarios;
+- clean Incursa package `dev-c9cef4f1-clean` is parity-eligible at SHA-256
+  `861326182b8b474c3ceaeed92752db10f764d36f51e4a8cfed997d7a112c4649`;
+- ProtocolLab operator-script tests passed 47/47, and clean MsQuic package
+  `0.1.1-dev-e3165c6` is parity-eligible at SHA-256
+  `bc60e9208cc7726db680dc61e08bba79421ccff094c4fa3553fe86178a143a53`;
+- both clean archives passed ProtocolLab controller package admission.
+
+These are local package artifacts, not benchmark evidence. No upload,
+deployment, campaign execution, or publication occurred. The next accepted
+step requires explicit package registration followed by a fresh package-matrix
+preview that resolves Incursa, quic-go, and MsQuic as three runnable targets.
+
+### Accepted 2026-07-15: scenario-owned raw QUIC confidence matrix
+
+ProtocolLab public-contract commit `69edaed` and internal runner commit
+`ed7b177` replace the misleading single `local-comparison` QUIC shape with a
+dimension-neutral `raw-quic-peer-confidence` profile. The profile fixes timing,
+cooldown, five repetitions, and non-publishable evidence policy while each
+scenario retains its valid stream count. Cold handshake, 1 MiB stream
+throughput, 100x64 KiB multiplex, connection churn, and duplex coverage now
+span c1/c4/c16/c32/c64/c128. The matched campaign includes all five workload
+families and uses round-robin implementation ordering.
+
+Verification:
+
+- the exact public repository-health workflow passed;
+- 102 load-profile, scenario, and operator-script tests passed;
+- 84 raw adapter, execution, and package tests passed;
+- the complete internal suite passed 1,203/1,209 tests, with the remaining six
+  failures isolated to pre-existing cross-repository schema-registry and
+  unrelated component-package compatibility checks;
+- rerunning the failing contract class in isolation removed the registry-order
+  failures and retained two unrelated `protocol-lab-components` mismatches;
+- the raw scenario and quic-go executor component packages rebuilt
+  successfully in a temporary output directory.
+
+This is workload and campaign readiness, not throughput evidence. No package
+upload, worker/controller deployment, lab execution, or publication occurred.
+The next gate remains a three-target package-matrix preview after explicit
+registration approval, followed by a fresh matched campaign.
+
+### Accepted 2026-07-15: raw latency and stream-limit coverage
+
+The raw peer contract now includes two additional matched workloads. The 1 KiB
+bidirectional echo lane runs at c1/c4/c16/c32/c64/c128. The 100x64 KiB
+stream-limit lane intentionally stays at one connection so it measures
+advertised stream capacity rather than multiplying the scenario into 12,800
+simultaneous streams. Incursa, MsQuic/System.Net.Quic, and quic-go advertise
+both lanes, and the reusable quic-go executor validates their canonical
+behavior names.
+
+The quic-go target still does not advertise the bidirectional 1 MiB payload
+lane: its package server intentionally suppresses echoes above 64 KiB. That is
+retained as an explicit two-target coverage gap rather than a false parity
+claim.
+
+Verification:
+
+- public ProtocolLab repository health passed at commit `ff870ee`;
+- reusable Go executor and quic-go target tests passed at component commit
+  `32507af`;
+- all 84 public/internal component manifest pairs and the coverage baseline
+  passed;
+- 125 focused ProtocolLab parser, validator, package-script, and live adapter
+  tests passed at internal commit `f23b47e`;
+- 20 Incursa package-template tests passed at commit `bee9068a`;
+- clean scenario, executor, quic-go, Incursa, and MsQuic packages were produced
+  with parity-eligible provenance, yielding an exact eight-scenario target
+  intersection;
+- a bounded package-to-package Windows smoke completed 3,660 c4 latency streams
+  and 200 c1/s100 stream-limit operations with zero failures/timeouts and exact
+  sent/received byte symmetry.
+
+Artifact hashes are recorded in
+[`raw-quic-performance-evidence-plan.md`](raw-quic-performance-evidence-plan.md).
+This accepts contract and local execution readiness only. Registration and a
+matched three-target campaign remain the next gates. No package was uploaded
+and no lab or publication state changed.
+
+### Accepted 2026-07-16: raw workload-shape integrity and slow-reader coverage
+
+The raw QUIC evidence surface now includes
+`quic.transport.flow-control.slow-reader-16x64kb`, a 16-stream, 64 KiB exact
+echo workload whose client delays response reads by 100 milliseconds. Incursa,
+MsQuic/System.Net.Quic, and quic-go package templates advertise the scenario,
+the reusable executor validates its canonical behavior and observed delay, and
+clean local packages passed strict package-backed smoke for the supported host
+targets. Public contract commit `950ec73`, component commits `5063930` and
+`5083c00`, internal commits `5c5ec71` and `066838a`, and Incursa commit
+`40774b16` retain that work.
+
+Review of current controller previews also found that the generic `smoke`
+profile could override a fixed raw scenario's stream count. Historical cells
+labeled `quic.transport.multiplex.100x64kb` could therefore execute as `c1-s1`
+and still validate against the overridden cell shape. Internal commit
+`d35a727` closes that evidence-integrity hole: raw campaign defaults now use
+the dimension-neutral `raw-quic-peer-confidence` profile, plan construction
+rejects any stream count that differs from `quicTransport.streamCount`, and
+the deterministic validator repeats the same gate. Throughput remains one
+stream, multiplex remains 100, slow-reader remains 16, and handshake remains
+zero. Explicit incompatible CLI overrides fail rather than silently relabeling
+the workload.
+
+Verification:
+
+- 100 focused load-profile, planner, validator, execution, and operator-script
+  tests passed;
+- a live controller dry-run selected `raw-quic-peer-confidence`, Comparison,
+  five repetitions, round-robin ordering, and all three throughput targets;
+- the all-up internal suite passed 1,219/1,228 tests, with the nine failures
+  isolated to existing cross-repository schema registration, package fixture,
+  and environment-materialization interference outside this slice;
+- no package was registered, no worker/controller was deployed or restarted,
+  no benchmark job was submitted, and no result was published.
+
+Older raw QUIC results whose retained cell shape does not match the named
+scenario contract are not authoritative baselines. The next gate is explicit
+approval to register the already-built current packages and deploy the current
+runner, followed by a fresh matched c1/c4/c16/c32/c64/c128, five-repetition,
+round-robin Incursa/quic-go/MsQuic campaign. Runtime changes should be selected
+from those corrected traces rather than from the stale public numbers.
+
+### Accepted 2026-07-16: stable-connection stream-churn parity
+
+The ninth matched raw lane now distinguishes stream lifecycle cost from
+connection lifecycle cost. `quic.transport.stream-churn` opens, exchanges 128
+bytes in both directions, and closes 1,000 sequential bidirectional streams on
+one stable connection. The contract's exact total is 256,000 bytes. Public
+commit `cc149c7`, component commit `5be4862`, internal commit `0a51cfe`, and
+Incursa commit `e5a5304d` align the contract, reusable executor, Incursa and
+MsQuic adapters, campaign slices, and source-backed package template.
+
+Raw validation now also rejects any executor output whose reported behavior
+does not equal the selected scenario behavior. This prevents byte-compatible
+but semantically different workloads from being accepted under the wrong raw
+scenario identity.
+
+Verification:
+
+- Go executor tests passed and exercise live stream-churn dispatch;
+- 143/143 focused runner, validator, campaign, and live adapter tests passed;
+- 20/20 Incursa package-template tests passed;
+- all 90 component manifest pairs passed;
+- clean scenario, Linux/Windows executor, Incursa Linux, and MsQuic Linux
+  packages were built with parity-eligible attestations whose hashes match;
+- all five package manifests reference `quic.transport.stream-churn`.
+
+Exact package versions and hashes are recorded in
+[`raw-quic-performance-evidence-plan.md`](raw-quic-performance-evidence-plan.md).
+No package was uploaded or registered, no service was deployed or restarted,
+no lab benchmark ran, and no result was published. The public July 12 raw rows
+remain stale diagnostic evidence; the next decision gate is the current matched
+nine-lane package-backed campaign.
+
+The post-build live dry-run proves package registration is the remaining
+coverage blocker rather than another local scenario gap. Only throughput and
+multiplex currently resolve three runnable targets. Four lanes resolve quic-go
+alone, and stream churn, stream-limit pressure, and slow-reader do not resolve
+from the registered inventory. The dry-run used Comparison, five repetitions,
+and round-robin ordering and submitted no job.
+
+### Accepted 2026-07-16: exact 1 MiB server-to-client download coverage
+
+`quic.transport.stream-download.1mb` closes the largest directional gap in the
+raw comparison surface. A client sends a fixed 16-byte request prelude and the
+server sends exactly 1 MiB whose byte at zero-based offset N is `N % 251`.
+The executor excludes the prelude from payload metrics, rejects a short, long,
+or corrupt response, and reports zero payload bytes sent for this direction.
+The server implementations share a deterministic response payload instead of
+allocating one 1 MiB array per stream.
+
+Public commit `63242f4`, component commit `0032d2a`, internal commit `42f937b`,
+and Incursa commit `a450928a` retain the complete contract and implementation
+slice. The immutable local package artifacts are:
+
+- scenario package `0.1.12`, SHA-256
+  `e434f72a3fd92afde2ec3dad0e17205d942ec4d8a6c8d08bb4e612529f705e0a`;
+- Windows executor package `0.1.10`, SHA-256
+  `f3f5af7320b51e4fc20e1fb27d1d2061ea29c5a7a4da355bedb0fed233cce96e`;
+- quic-go raw target package `0.1.13`, SHA-256
+  `0279f2590b58eb41f74ba2c81c6387a31795c0437b37373d90ef4d9e723f9c98`.
+
+Focused validation passed 116/116 internal tests and 20/20 Incursa package
+tests; all 92 component manifest pairs and the Go suites passed. Local c1
+diagnostics retained under the following run roots completed exact validation
+with no failures or timeouts:
+
+- `raw-download-smoke-20260716-quic-transport-v1-comparison`: Incursa,
+  38.21 MiB/s and 29.68 ms p95;
+- `raw-download-msquic-smoke-20260716-quic-transport-v1-comparison`: MsQuic,
+  181.44 MiB/s and 6.49 ms p95;
+- `raw-download-quicgo-smoke-20260716-direct-package-cell`: quic-go,
+  61.79 MiB/s and 17.59 ms p95.
+
+The three cells are one short sequential shared-host pass, so they are
+diagnostic only. A current matched c1/c4/c16/c32/c64/c128 campaign still
+requires deterministic round-robin ordering, at least five repetitions,
+target and generator telemetry, exact source/package provenance, and explicit
+operator approval before any package registration or lab execution. Until
+then, the justified local next step is trace attribution on Incursa's isolated
+download send and completion path, not a public peer-ranking claim.
+
+### Accepted 2026-07-16: current raw cross-section and honest coverage
+
+The raw performance program now has a current source-backed c16 cross-section
+instead of relying on the stale public magnitude. Five exact repetitions each
+measured 259.49 MB/s for 16 MiB upload, 30.74 MB/s for 100x1 KiB multiplex, and
+123.26 MB/s for 16x1 MiB duplex. Every one of the 15 cells passed with zero
+failed or timed-out operations. Upload throughput range was 2.96 percent;
+multiplex and duplex remain diagnostic because throughput or p95 range was
+8.25-48.25 percent. Evidence is under
+`C:\shared\temp\protocol-lab-current-raw-baseline-20260716\runs`.
+
+ProtocolLab internal commits `d11f0dd`, `b394890`, and `acbb155` close the
+source workload inventory and executable-dispatch gaps. Mixed-size c4/s16,
+stream-churn c1/s1000, slow-reader c1/s16, and duplex-peer c1/s16 all passed
+real source-backed validation and benchmark execution; the slow-reader median
+was 112.36 ms. Component commit `d2edb1b` produces scenario package `0.1.18`
+with the exact 16-stream duplex c1-c128 shape at SHA-256
+`c65ac9f7186151e5c4fdbf56394f56de59333687589c2d4589a779822917e388`.
+
+This accepts coverage truth and diagnostic baselines, not a runtime throughput
+change or public ranking. No package was uploaded or registered and nothing was
+deployed or published. The next engineering target is a fixed-total-byte raw
+write-granularity lane (1 KiB versus 64 KiB chunks, upload and download) and a
+matched package-backed peer campaign after operator approval.
+
 1. Finish terminal exception attribution and cleanup.
 2. Add permanent exception/trace-site tooling.
 3. Establish stable smoke and confidence ProtocolLab lanes.
 4. Attack HTTP/3 allocation hot spots.
 5. Add raw QUIC and public API stream-transfer baselines.
 6. Move repeatable evidence onto package-backed lab/controller runs.
+
+### Accepted 2026-07-16: bounded ACK receipt-ledger work
+
+Sustained raw receive traffic exposed two quadratic ACK-generation operations.
+`RecordProcessedPacket` enumerated every retained receipt to find the largest
+ack-eliciting packet and enumerated the same history again to count disjoint
+ACK ranges. ACK scheduling then scanned acknowledged-but-not-yet-retired
+receipts from index zero even when only one newer packet was pending.
+
+The accepted runtime keeps the disjoint range count in
+`QuicPacketReceiptStore`, caches the largest retained ack-eliciting packet with
+explicit refresh after retirement and trimming, and binary-searches to the
+first receipt newer than the last ACK trigger. Duplicate replacement,
+out-of-order detection, delayed ACK thresholds, ECN state, ACK-range
+retirement, and packet-number-space discard behavior remain unchanged.
+
+Permanent BenchmarkDotNet coverage in
+`QuicAckGenerationStateRecordingBenchmarks` measured contiguous receipt
+recording as follows:
+
+| Receipts | Baseline | Candidate | Delta |
+| ---: | ---: | ---: | ---: |
+| 128 | 22.32 us | 3.701 us | -83.4% |
+| 1,024 | 1,082.76 us | 30.415 us | -97.2% |
+| 2,400 | 5,881.90 us | 74.912 us | -98.7% |
+
+The pending-ACK check after retained history fell from 310.5 ns to 18.76 ns at
+128 receipts, from 2.125 us to 21.74 ns at 1,024, and from 4.935 us to 23.04 ns
+at 2,400. Allocations stayed effectively flat; the optimized recording state
+is 1.86 KiB per benchmark operation versus 1.84 KiB before the cached field.
+Reports are under `C:\shared\temp\quic-ack-recording-*20260716` and
+`C:\shared\temp\quic-ack-pending-*20260716`.
+
+Matched local source-backed ProtocolLab runs used exact 16 MiB uploads, five
+repetitions, current target builds, and zero failed or timed-out operations.
+The c1 comparison produced the material end-to-end result:
+
+| Scenario | Baseline | Candidate | Throughput delta | p95 delta |
+| --- | ---: | ---: | ---: | ---: |
+| 16,384 x 1 KiB | 27.43 MiB/s | 56.98 MiB/s | +107.7% | -48.1% |
+| 256 x 64 KiB | 43.01 MiB/s | 74.23 MiB/s | +72.6% | -45.2% |
+
+At c16 the same candidate was neutral within variance: +0.7% for 1 KiB and
+-2.1% for 64 KiB, with 7-10% throughput ranges. This change removes a
+single-connection retained-history bottleneck; it does not close Incursa's
+absolute c16 peer gap. Evidence and machine-readable comparisons are under
+`C:\shared\temp\protocol-lab-ack-ledger-*20260716`.
+
+Focused tests passed 10/10. The full suite passed 9,602, skipped five, and hit
+two broad-run timing failures: one existing HTTP/3 close timeout and one
+dropped-FIN resilience assertion. Both passed on exact rerun, and the
+dropped-FIN case then passed 10 consecutive runs. Two independent reviews
+found no correctness defect and requested the now-present largest-cache
+retirement regression. No package was registered, no controller or worker was
+changed, and nothing was deployed or published.
+
+The next raw runtime tranche should target the absolute c16-c128 gap in the
+shared receive/send pipeline, especially datagram send cost, stream receive
+locking, and packet scheduling, rather than retuning small-write heuristics.
+
+### Rejected 2026-07-16: split stream-action lifecycle and processing gates
+
+The 100x1 KiB multiplex ladder falls after c16: 7.28 MiB/s at c1, 17.65 at
+c4, 24.44 at c16, 20.97 at c32, 13.61 at c64, and 8.47 at c128. Target CPU
+also falls while memory and handle counts rise. The investigated lock protected
+both cross-thread request lifecycle and the complete stream-write transport
+mutation, so the candidate separated lifecycle, retry, and processing gates
+while preserving serialized packet and send-state mutation.
+
+The first design removed transport serialization and is rejected for
+correctness: a c64 cell returned 221 of 1,024 expected response bytes. Its
+evidence remains under `C:\shared\temp\pllockcandidate\c16` and `c64`.
+
+The second design used an exact-value `ConcurrentDictionary`, per-request
+completion ownership, a lifecycle gate, a retry-queue gate, and a distinct
+processing gate. It passed 20 focused cancellation, completion-pool, and
+structural requirement tests, including a 128-write transition/cancellation
+race that also passed ten repetitions. A full run completed 9,605 passing tests
+and five skips, with one DoQ excessive-load timing failure that passed ten
+consecutive exact reruns. Candidate commit `30667255` and revert `57c47587`
+retain the implementation and its removal.
+
+Pre-commit shared-host evidence initially looked favorable. Five usable c64
+matched pairs produced 14.14 versus 15.89 MiB/s (+12.4%), with p95 improving
+26.5% and p99 improving 29.2%. c1 and c4 were +1.8% and +2.7%; c16 was -2.3%.
+Stable controls stayed within 3.4% throughput, but the 16 MiB upload control
+completed 10/10 baseline cells and only 8/10 candidate cells before five
+candidate supplements passed. Evidence is under
+`C:\shared\temp\pllockcandidate\v2-c1`, `v2-c4`, `v2-c16`, `v2-c64`, and
+`v2-controls-corrected`.
+
+Wake diagnostics explained only a bounded scheduling effect. Async wakeups
+fell from 5,344 to 2,903 and mean work per wake rose from 2,048.6 to 2,401.6,
+but average shard peak queue depth increased from 496.5 to 510.6, absolute peak
+from 561 to 569, and outstanding pooled bytes remained approximately 7 MiB.
+Request-registration slow-monitor attribution fell from 0.377% to 0.314%, while
+total slow-monitor and thread-pool semaphore wait shares stayed flat near 4.2%
+and 67.2%. ProtocolLab commit `68effd6` and evidence under
+`C:\shared\temp\pllockcandidate\v2-diagnostics` retain that attribution.
+
+The required clean committed rerun reversed the result. All ten c64 cells
+passed exact validation with zero failures or timeouts, but variance was too
+high and the candidate was slower:
+
+| Variant | Median | Range | p95 | p99 |
+| --- | ---: | ---: | ---: | ---: |
+| Baseline `ea4fb618` | 14.72 MiB/s | 73.4% | 287.02 ms | 351.15 ms |
+| Candidate `30667255` | 13.19 MiB/s | 57.7% | 328.60 ms | 396.93 ms |
+
+That is -10.4% throughput, +14.5% p95, and +13.0% p99. No cell had an
+objective network/resource failure or load-generator saturation signal that
+would justify excluding it, and the candidate lost four of five paired
+repetitions. The clean evidence root is
+`C:\shared\temp\pllockcandidate\committed-c64-30667255`.
+
+The candidate is therefore rejected and must not be published as an
+improvement. Do not repeat another minor lock split. The next diagnosis should
+target the unchanged queue peaks, pooled-buffer retention, and the pre-existing
+221-byte truncated-response and upload idle-timeout failures before another
+runtime scheduling design is attempted.

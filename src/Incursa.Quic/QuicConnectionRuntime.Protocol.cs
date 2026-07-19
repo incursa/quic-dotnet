@@ -791,9 +791,13 @@ internal sealed partial class QuicConnectionRuntime
             RemoveBufferedEstablishmentHandshakePacketAt(0);
         }
 
-        byte[] sourceConnectionIdBuffer = QuicBufferPool.RentBytes(sourceConnectionId.Length);
+        byte[] sourceConnectionIdBuffer = QuicBufferPool.RentBytes(
+            sourceConnectionId.Length,
+            QuicBufferPoolOwner.InboundDatagram);
         sourceConnectionId.CopyTo(sourceConnectionIdBuffer);
-        byte[] datagramBuffer = QuicBufferPool.RentBytes(packetReceivedEvent.Datagram.Length);
+        byte[] datagramBuffer = QuicBufferPool.RentBytes(
+            packetReceivedEvent.Datagram.Length,
+            QuicBufferPoolOwner.InboundDatagram);
         packetReceivedEvent.Datagram.CopyTo(datagramBuffer);
 
         bufferedEstablishmentHandshakePackets.Add(new BufferedEstablishmentHandshakePacket(

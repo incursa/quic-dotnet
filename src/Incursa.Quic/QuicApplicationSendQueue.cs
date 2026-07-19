@@ -12,7 +12,55 @@ internal readonly record struct PendingApplicationSendRequest(
     byte[] StreamPayload,
     int StreamPayloadLength,
     ulong FirstEnqueuedAtMicros = 0,
-    QuicApplicationSendQueueCause QueueCause = QuicApplicationSendQueueCause.SmallWriteDelay);
+    QuicApplicationSendQueueCause QueueCause = QuicApplicationSendQueueCause.SmallWriteDelay,
+    int StreamPayloadOffset = 0,
+    bool ContainsRawStreamData = false,
+    ulong StreamOffset = 0,
+    bool IsFinal = false)
+{
+    internal bool TryGetStreamFrame(out QuicStreamFrame frame)
+    {
+        ReadOnlySpan<byte> payload = StreamPayload.AsSpan(StreamPayloadOffset, StreamPayloadLength);
+        if (!ContainsRawStreamData)
+        {
+            return QuicStreamParser.TryParseStreamFrame(payload, out frame);
+        }
+
+        byte frameType = QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask;
+        if (StreamOffset != 0)
+        {
+            frameType |= QuicStreamFrameBits.OffsetBitMask;
+        }
+
+        if (IsFinal)
+        {
+            frameType |= QuicStreamFrameBits.FinBitMask;
+        }
+
+        if (!QuicStreamPayloadSizer.TryGetOutboundStreamFrameLength(
+                frameType,
+                StreamId,
+                StreamOffset,
+                payload.Length,
+                out int frameLength))
+        {
+            frame = default;
+            return false;
+        }
+
+        frame = new QuicStreamFrame(
+            frameType,
+            new QuicStreamId(StreamId),
+            hasOffset: StreamOffset != 0,
+            StreamOffset,
+            hasLength: true,
+            length: checked((ulong)payload.Length),
+            IsFinal,
+            payload,
+            frameLength);
+        return true;
+    }
+}
 
 internal enum QuicApplicationSendQueueCause
 {
@@ -186,6 +234,40 @@ internal sealed class QuicApplicationSendQueue
         }
     }
 
+    public void EnqueueRawStreamData(
+        ulong streamId,
+        int priority,
+        byte[] streamData,
+        int streamDataLength,
+        ulong streamOffset,
+        bool isFinal,
+        ulong firstEnqueuedAtMicros = 0,
+        QuicApplicationSendQueueCause queueCause = QuicApplicationSendQueueCause.OversizedWrite)
+    {
+        PendingApplicationSendRequest request = new(
+            TakeNextSequence(),
+            streamId,
+            priority,
+            streamData,
+            streamDataLength,
+            firstEnqueuedAtMicros,
+            queueCause,
+            StreamPayloadOffset: 0,
+            ContainsRawStreamData: true,
+            StreamOffset: streamOffset,
+            IsFinal: isFinal);
+
+        if (pendingRequestsOrdered && pendingRequests.Count < MaintainedOrderThreshold)
+        {
+            pendingRequests.Insert(FindInsertionIndex(request), request);
+        }
+        else
+        {
+            pendingRequests.Add(request);
+            pendingRequestsOrdered = false;
+        }
+    }
+
     public bool TryGetLatestQueuedWriteForStream(ulong streamId, out PendingApplicationSendRequest queuedWrite)
     {
         queuedWrite = default;
@@ -254,7 +336,91 @@ internal sealed class QuicApplicationSendQueue
             {
                 StreamPayload = streamPayload,
                 StreamPayloadLength = streamPayloadLength,
+                StreamPayloadOffset = 0,
             };
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool TryUpdateQueuedWritePayloadSlice(
+        long sequence,
+        byte[] expectedStreamPayload,
+        int streamPayloadOffset,
+        int streamPayloadLength)
+    {
+        if (streamPayloadOffset < 0
+            || streamPayloadLength < 0
+            || streamPayloadOffset > expectedStreamPayload.Length - streamPayloadLength)
+        {
+            return false;
+        }
+
+        for (int index = 0; index < pendingRequests.Count; index++)
+        {
+            PendingApplicationSendRequest queuedWrite = pendingRequests[index];
+            if (queuedWrite.Sequence != sequence
+                || !ReferenceEquals(queuedWrite.StreamPayload, expectedStreamPayload))
+            {
+                continue;
+            }
+
+            pendingRequests[index] = queuedWrite with
+            {
+                StreamPayloadOffset = streamPayloadOffset,
+                StreamPayloadLength = streamPayloadLength,
+            };
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool TryAdvanceQueuedRawStreamData(
+        long sequence,
+        byte[] expectedStreamData,
+        int consumedDataLength)
+    {
+        if (consumedDataLength <= 0)
+        {
+            return false;
+        }
+
+        for (int index = 0; index < pendingRequests.Count; index++)
+        {
+            PendingApplicationSendRequest queuedWrite = pendingRequests[index];
+            if (queuedWrite.Sequence != sequence
+                || !queuedWrite.ContainsRawStreamData
+                || !ReferenceEquals(queuedWrite.StreamPayload, expectedStreamData)
+                || consumedDataLength >= queuedWrite.StreamPayloadLength)
+            {
+                continue;
+            }
+
+            pendingRequests[index] = queuedWrite with
+            {
+                StreamPayloadOffset = checked(queuedWrite.StreamPayloadOffset + consumedDataLength),
+                StreamPayloadLength = queuedWrite.StreamPayloadLength - consumedDataLength,
+                StreamOffset = checked(queuedWrite.StreamOffset + (ulong)consumedDataLength),
+            };
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool TryMarkQueuedWriteFinal(long sequence)
+    {
+        for (int index = 0; index < pendingRequests.Count; index++)
+        {
+            PendingApplicationSendRequest queuedWrite = pendingRequests[index];
+            if (queuedWrite.Sequence != sequence || !queuedWrite.ContainsRawStreamData)
+            {
+                continue;
+            }
+
+            pendingRequests[index] = queuedWrite with { IsFinal = true };
             return true;
         }
 

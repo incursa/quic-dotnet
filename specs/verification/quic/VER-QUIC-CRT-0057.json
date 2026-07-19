@@ -1,0 +1,43 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0057",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Terminal stream receive capacity verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused final-size and retention tests, complete partitioned Release regression tests, permanent BenchmarkDotNet rows, alternating source-backed ProtocolLab runs, and independent review.",
+  "scope": "Verify that newly buffered STREAM data reaching a validated final size rents exact capacity without changing final-size validation, flow control, delivery order, completion, pooling ownership, or nonterminal coalescing behavior.",
+  "preconditions": [
+    "Final-size and flow-control validation complete before receive-buffer mutation.",
+    "Nonterminal STREAM data retains the existing 4 KiB initial and 8 KiB continuation coalescing policy.",
+    "Existing buffered segments are not copied merely to compact capacity when a later FIN establishes final size."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "tests/Incursa.Quic.Tests/QuicStreamReceiveBufferTests.cs",
+    "benchmarks/QuicByteBufferAllocationBenchmarks.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --filter FullyQualifiedName~QuicStreamReceiveBufferTests|FullyQualifiedName~QuicConnectionStreamReadLifecycleTests|FullyQualifiedName~QuicConnectionRuntimeShardReceiveBufferOwnershipTests|FullyQualifiedName~MetricsTests",
+    "Partitioned complete Release suite: 9,579 passed and 5 intentionally skipped in the main partition; the two suite-order-sensitive tests passed 5/5 independently.",
+    ".artifacts/bdn/terminal-receive-baseline-reviewed-20260715a",
+    ".artifacts/bdn/terminal-receive-candidate-reviewed-20260715a",
+    "protocol-lab-internal/.artifacts/runs/quic-terminal-receive-baseline-c64-r*-20260715a-quic-transport-v1-comparison",
+    "protocol-lab-internal/.artifacts/runs/quic-terminal-receive-candidate-c64-r*-20260715a-quic-transport-v1-comparison"
+  ],
+  "procedure": [
+    "Receive data-bearing FIN frames and confirm retained capacity equals payload length while unread-byte accounting remains exact.",
+    "Receive a FIN-only frame before terminal non-FIN data and confirm final-size-aware capacity, exact delivery, completion, and release.",
+    "Confirm nonterminal data retains coalescing capacity and a 1 KiB terminal continuation tail does not reserve an unused 8 KiB block.",
+    "Run focused receive, read lifecycle, shard ownership, and metrics tests.",
+    "Run the complete Release test inventory using a deterministic partition for the two known suite-order-sensitive tests.",
+    "Compare exact-baseline and candidate BenchmarkDotNet rows and five alternating source-backed raw QUIC c64/s100 pairs."
+  ],
+  "expected_result": "Terminal receive capacity is exact whenever final size is known, nonterminal coalescing and QUIC behavior remain unchanged, ownership balances, and repeated raw QUIC evidence shows no end-to-end regression.",
+  "status_summary": "Passed. Focused tests passed 51/51. The complete Release inventory passed as a deterministic partition: 9,579 tests passed with five intentional skips in the main partition, and the HTTP/3 incomplete-content close and dropped-server-FIN recovery tests each passed 5/5 independently after both showed suite-order timing failures in all-in-one runs. Independent review found and drove fixes for FIN-first reordered data and a below-threshold continuation-tail proof. Matched local ShortRun timing was noisy and did not establish a microbenchmark speed claim. Five alternating source-backed c64/s100 raw QUIC pairs all passed with zero failed or timed-out requests; candidate median throughput was 63.63 MB/s versus 56.16 MB/s and median p95 latency was 5,591.06 ms versus 6,159.57 ms. One additional baseline warmup timed out and remains retained negative evidence. All performance evidence is local shared-host and non-publishable.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0155"
+  ]
+}

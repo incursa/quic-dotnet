@@ -325,6 +325,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 writer.TryComplete();
             }, inbox.Writer)
             : default;
+        bool hasActiveWakeCycle = false;
+        bool activeWakeCompletedSynchronously = false;
+        var productiveWorkItemsInWakeCycle = 0;
 
         try
         {
@@ -347,6 +350,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                         continue;
                     }
 
+                    productiveWorkItemsInWakeCycle++;
                     ProcessWorkItem(workItem, transitionObserver, effectObserver, sendDatagramObserver);
                 }
 
@@ -359,17 +363,32 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                         continue;
                     }
 
+                    productiveWorkItemsInWakeCycle++;
                     ProcessWorkItem(queuedTimerWorkItem, transitionObserver, effectObserver, sendDatagramObserver);
                     continue;
                 }
 
                 if (!deadlineScheduler.TryGetNextWait(clock.Ticks, out TimeSpan wait))
                 {
-                    if (!await reader.WaitToReadAsync().ConfigureAwait(false))
+                    if (hasActiveWakeCycle)
+                    {
+                        QuicMetrics.RecordRuntimeShardWakeCycle(
+                            shardIndex,
+                            activeWakeCompletedSynchronously,
+                            productiveWorkItemsInWakeCycle);
+                        hasActiveWakeCycle = false;
+                    }
+
+                    ValueTask<bool> waitToRead = reader.WaitToReadAsync();
+                    bool completedSynchronously = waitToRead.IsCompletedSuccessfully;
+                    if (!await waitToRead.ConfigureAwait(false))
                     {
                         break;
                     }
 
+                    hasActiveWakeCycle = true;
+                    activeWakeCompletedSynchronously = completedSynchronously;
+                    productiveWorkItemsInWakeCycle = 0;
                     continue;
                 }
 
@@ -379,16 +398,38 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 }
 
                 deadlineWakeTimer.Change(wait, Timeout.InfiniteTimeSpan);
-                if (!await reader.WaitToReadAsync().ConfigureAwait(false))
+                if (hasActiveWakeCycle)
+                {
+                    QuicMetrics.RecordRuntimeShardWakeCycle(
+                        shardIndex,
+                        activeWakeCompletedSynchronously,
+                        productiveWorkItemsInWakeCycle);
+                    hasActiveWakeCycle = false;
+                }
+
+                ValueTask<bool> timedWaitToRead = reader.WaitToReadAsync();
+                bool timedWaitCompletedSynchronously = timedWaitToRead.IsCompletedSuccessfully;
+                if (!await timedWaitToRead.ConfigureAwait(false))
                 {
                     break;
                 }
 
+                hasActiveWakeCycle = true;
+                activeWakeCompletedSynchronously = timedWaitCompletedSynchronously;
+                productiveWorkItemsInWakeCycle = 0;
                 deadlineWakeTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             }
         }
         finally
         {
+            if (hasActiveWakeCycle)
+            {
+                QuicMetrics.RecordRuntimeShardWakeCycle(
+                    shardIndex,
+                    activeWakeCompletedSynchronously,
+                    productiveWorkItemsInWakeCycle);
+            }
+
             deadlineWakeTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             await cancellationRegistration.DisposeAsync().ConfigureAwait(false);
             while (reader.TryRead(out QuicConnectionRuntimeShardWorkItem workItem))
