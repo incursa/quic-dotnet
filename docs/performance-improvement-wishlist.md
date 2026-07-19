@@ -5835,3 +5835,48 @@ Acceptance evidence is retained under
 validation, exact benchmark JSON, target-only trace, allocation report, command
 logs, target hash, and run manifest. Use this wrapper to establish current
 local attribution before proposing the next HTTP/3 runtime change.
+
+### Rejected 2026-07-18: single-request oversized-write admission
+
+The public transport loopback reproduced a large write-shape gap on one
+established connection. At one MiB and c16, Incursa measured 18-27 MiB/s in
+current retained runs versus about 207 MiB/s for System.Net.Quic. The public
+Incursa write path split every oversized call into 32 KiB requests through an
+async state machine, creating one pooled completion and one actor event per
+fragment. Two bounded designs tested whether one public request could retain
+the caller's memory and let the actor admit its fragments.
+
+The first design admitted one fragment per ACK or flow-control recovery turn.
+It produced 41.88-42.11 MiB/s at c16 versus adjacent baselines of 25.94-26.74
+MiB/s and reduced median allocation from about 390 KiB/op to 295-306 KiB/op.
+It was rejected because it changed completion semantics: a 64 KiB write with
+ample send credit waited indefinitely in the synthetic recovery test until an
+ACK arrived. The full suite reached 8,285 passes and four expected skips before
+the same case stopped making progress; the isolated test reproduced the hang.
+
+The second design preserved completion semantics by admitting every currently
+available fragment inside the original actor operation. Focused cancellation,
+disposal, final-write, write-gate, and PTO retransmission tests passed 5/5. Its
+reverse-order c16 download medians remained materially better at 35.35 and
+42.90 MiB/s versus 24.70 and 26.07 MiB/s for the frozen baseline. It also
+improved the first matched c16 upload and duplex medians by 22.4% and 29.9%,
+respectively. One KiB, 64 KiB, and one-MiB c1 download controls were within
+1.1% of baseline.
+
+The longer reverse-order duplex control nevertheless failed the no-regression
+gate. At c4, throughput improved 5.7% and p50 fell from 202.56 ms to 190.76 ms,
+but p95 rose consistently from 212.79 ms to 233.01 ms, a 9.5% regression. This
+matches the fairness risk of retaining the stream-action gate while draining a
+whole oversized request. The implementation and candidate-only tests were
+reverted. Do not repeat the retained one-request continuation repost, generic
+stream-action lock split, ACK-gated completion, or whole-request locked-drain
+variants without a materially different ownership and fairness design.
+
+The initial ACK-gated candidate was also neutral through the exact one-MiB,
+one-connection, sixteen-stream fixed HTTP/3 path: 36.63-37.67 MiB/s candidate
+versus 36.49-38.47 MiB/s baseline. The current HTTP/3 responder writes 32 KiB
+chunks and therefore does not enter this oversized public-call mechanism. No
+ProtocolLab run was launched because the stable local tail-latency gate failed.
+Frozen baseline and both candidate binaries, SHA-256 hashes, raw A/B/B/A JSON,
+HTTP/3 results, the rejected patch, and logs are retained under
+`C:\shared\temp\quic-local-first-oversized-write-20260718`.
