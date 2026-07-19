@@ -6090,3 +6090,32 @@ eligible streams. The next bounded mechanism is fair rotation of a partially
 drained oversized raw-stream request inside the existing priority scheduler,
 with priority, per-stream ordering, retransmission precedence, congestion,
 flow control, cancellation, and completion semantics held unchanged.
+
+### Rejected 2026-07-18: same-priority raw-stream rotation
+
+A materially different follow-up combined the bounded adjacent-write
+accumulation with send-queue rotation. After a successful single-stream send,
+the queue selected the earliest request from another stream at the same
+priority before returning to the previous stream. Higher-priority writes still
+won, per-stream sequence stayed unchanged, retransmission precedence was not
+modified, and FIN and every non-write actor item remained hard boundaries.
+
+Queue, priority, FIN, cancellation, queued-final delivery, and concurrent
+public-stream tests passed 60/60. A matched uninstrumented A/B/B/A campaign
+then ran ten exact samples per variant on fixed one-MiB responses over one
+connection and sixteen streams. Baseline median throughput was 51.53 MiB/s
+(5.45% CV) versus 50.60 MiB/s (5.68% CV) for the candidate, a 1.8% regression.
+Median p95 rose from 323.13 to 327.39 ms (+1.3%), and allocation rose from
+104,650 to 140,166 bytes per response (+33.9%). All samples passed exact HTTP/3
+status, content-length, payload, EOF, request, and timeout validation.
+
+The candidate improved queue fairness but did not reduce packets, actor turns,
+or per-packet work, and its additional selection and retention cost was
+counterproductive. It was reverted. The primary lane failed before c1/c4,
+transport controls, or ProtocolLab were justified. Frozen binaries, hashes,
+raw A/B/B/A JSON and logs, the activation trace, focused TRX, rejected patch,
+runner, and negative-result record are retained under
+`C:\shared\temp\quic-consecutive-stream-write-batch-20260718`. Do not repeat
+adjacent-write accumulation or same-priority queue rotation without a design
+that reduces the number of actor transitions or datagrams rather than merely
+redistributing them.
