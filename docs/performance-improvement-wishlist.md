@@ -6208,3 +6208,46 @@ same test passed in the focused gate and then passed ten isolated reruns out of
 ten. The full and focused TRX files are under
 `tests/Incursa.Quic.Tests/TestResults/same-connection-egress-*`. ProtocolLab was
 not run, and no package, deployment, registration, or publication changed.
+
+### Rejected 2026-07-19: synchronous completion-coupled hosted send accounting
+
+The live synchronous proof carried prepared packet accounting beside every
+hosted application-send update, reserved all packets built in one actor turn,
+committed each packet after the socket callback using a post-callback timestamp,
+and refreshed recovery timers after the effect batch. It also added a strict
+hosted-actor ownership barrier so runtime disposal could not release a prepared
+packet or pooled datagram while the shard was still inside the send callback.
+Direct protocol and control effects retained their existing immediate accounting
+path. Focused reservation, ownership, listener-send, disposal-race, and large
+response coverage passed 38/38, and the repeated exact large-response test
+passed ten isolated reruns out of ten.
+
+Matched local A/B/B/A evidence nevertheless rejected the synchronous design.
+Each leg ran five exact HTTP/3 fixed one-MiB samples over one established
+connection at one, four, and sixteen concurrent streams. All samples passed
+HTTP/3 status, content-length, payload, EOF, failure, and timeout validation.
+
+| Streams on one connection | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | 51.00 | 49.81 | -2.3% | +6.7% | +7.7% |
+| 4 | 53.32 | 49.30 | -7.5% | +8.9% | +6.2% |
+| 16 | 50.29 | 46.25 | -8.0% | +9.6% | +9.1% |
+
+The candidate therefore added material per-datagram bookkeeping to the already
+saturated connection actor without removing synchronous socket submission. The
+full Release suite also recorded one load-only timeout in
+`PostDataRequest_WithIncompleteContentLength_ClosesConnectionWithMessageError`:
+9,650 tests passed, four were intentionally skipped, and one failed while
+waiting for the peer close. Both the frozen baseline and candidate then passed
+that exact test ten isolated reruns out of ten, so the timeout is retained as a
+load-sensitive signal rather than attributed solely to this candidate.
+
+The live slice was reverted. Do not repeat completion-coupled accounting while
+socket emission remains synchronous unless a materially different design avoids
+the added hot-path reservation, commit, owner-transfer, and timer-refresh cost.
+The next candidate must remove actor-owned socket work or substantially reduce
+actor turns in the same change; a correctness prerequisite that independently
+regresses the target lane is not acceptable. Raw results, logs, binary hashes,
+TRX files, the rejected patch, and `negative-result.json` are retained under
+`C:\shared\temp\quic-completion-coupled-send-20260719`. ProtocolLab was not run,
+and no package, deployment, registration, or publication state changed.
