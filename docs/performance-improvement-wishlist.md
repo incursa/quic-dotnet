@@ -5880,3 +5880,68 @@ ProtocolLab run was launched because the stable local tail-latency gate failed.
 Frozen baseline and both candidate binaries, SHA-256 hashes, raw A/B/B/A JSON,
 HTTP/3 results, the rejected patch, and logs are retained under
 `C:\shared\temp\quic-local-first-oversized-write-20260718`.
+
+### Rejected 2026-07-18: reusable receive-message event args
+
+A target-only allocation trace attributed repeated listener receive-path
+allocation to `Socket.ReceiveMessageFromAsync`, including address and packet
+information materialization. A direct BenchmarkDotNet mechanism test confirmed
+that reusing one `SocketAsyncEventArgs` reduced the receive operation from 208
+to 112 bytes per operation (-46.2%) while remaining timing-neutral (7.748 us
+versus 7.586 us). A runtime candidate therefore reused one event-args operation
+per listener or connected receive loop while preserving packet information,
+remote endpoint parsing, cancellation, disposal, and one outstanding receive.
+
+The first runtime version cleared and rebound the receive buffer for every
+datagram and regressed the 1 KiB fixed-response controls by 7.6-8.7%. Removing
+that per-packet rebinding eliminated those regressions. The corrected A/B/B/A
+campaign used ten exact samples per variant and had no protocol, content,
+length, EOF, request, or timeout failures:
+
+| Shape | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| fixed 1 MiB, c1 | 66.06 | 67.58 | +2.3% | -4.6% | +1.8% |
+| fixed 1 MiB, c4 | 63.01 | 63.56 | +0.9% | -2.7% | +1.2% |
+| fixed 1 MiB, c16 | 57.75 | 61.63 | +6.7% | -7.2% | +3.5% |
+| duplex 1 MiB, c16 | 73.10 | 77.02 | +5.4% | -11.2% | -48.3% |
+| upload 1 MiB, c16 | 78.24 | 91.24 | +16.6% | -14.0% | -29.3% |
+
+The upload cell was not promotable because baseline and candidate CV were
+19.53% and 34.02%. The decisive fixed one-connection, sixteen-stream lane
+missed the 10% throughput gate and increased measured allocation. The runtime
+wrapper and candidate-only tests were reverted. The reusable direct socket
+microbenchmark remains as a bounded mechanism probe, but it is not evidence of
+an end-to-end actor improvement. ProtocolLab was not run.
+
+Frozen binaries and hashes, BDN Dry and Short reports, raw campaigns, summary
+JSON, and the negative-result record are retained under
+`C:\shared\temp\quic-local-first-receive-eventargs-20260718`. Do not repeat a
+reusable receive-message event-args wrapper unless a materially different
+design connects the receive allocation to actor service time or passes the
+same-connection fixed-response gate.
+
+### Accepted 2026-07-18: HTTP/3 packet receive-phase attribution
+
+The local HTTP/3 diagnostics collector now records the existing
+`incursa.quic.packet.application.receive.phase_time.ms` measurements alongside
+runtime queue, buffer-pool, and datagram metrics. This makes the exact external
+HTTP/3 workload report packet open, frame, ACK, recovery, send preparation,
+timer, and post-recovery phase costs without adding runtime instrumentation.
+
+An attribution-only one-MiB fixed-response run over one established connection
+and sixteen streams completed 160 exact responses with zero failures. It
+processed 50,798 packet-received actor items and 10,400 stream-write items. The
+packet transition and effect phases consumed 2,073.55 ms and 1,871.90 ms,
+respectively; stream-write transition and effect phases consumed 387.71 ms and
+684.78 ms. Packet frame work consumed 636.48 ms, including 583.42 ms for ACK
+frames, 295.31 ms for ACK ranges, and 174.77 ms for recovery. Post-recovery
+consumed 635.80 ms, of which 585.83 ms was send flushing. The actor had only two
+asynchronous wakes and remained continuously busy, so the retained evidence
+points to per-packet actor service and synchronous send effects rather than
+wakeup starvation.
+
+This trace is diagnostic-only and its 29.64 MiB/s timing is not a promotion
+metric. Evidence is retained at
+`C:\shared\temp\quic-local-first-h3-phase-20260718\current-fixed-1x16-packet-phases.json`.
+The next step is to compare actor turns and phase cost per completed response at
+one, four, and sixteen streams before changing runtime behavior.
