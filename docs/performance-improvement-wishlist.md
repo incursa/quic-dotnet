@@ -6457,3 +6457,40 @@ duplex console evidence, TRX files, and BenchmarkDotNet artifacts are retained
 under `C:\shared\temp\quic-stream-scheduler-20260719` and
 `tests/Incursa.Quic.Tests/TestResults`. ProtocolLab was not run, and no package,
 deployment, registration, or publication changed.
+
+### Rejected 2026-07-19: distinct-stream write transition batching
+
+The retained consecutive-write deferral and same-priority rotation experiments
+did not reduce actor transitions. A materially different candidate therefore
+collected at most sixteen already-consecutive writes for distinct streams on
+the same connection and admitted them through one runtime transition and one
+effect accumulator. Duplicate-stream writes, FIN, packets, timers, events,
+runtime changes, and the sixteen-write limit remained hard boundaries. The
+authoritative application-send queue still owned ordering, fragmentation,
+congestion and anti-amplification budgets, recovery, flow control, packet
+accounting, cancellation, disposal, and payload ownership.
+
+The Release solution built with zero warnings and errors, and focused stream,
+shard, application-send, and HTTP/3 coverage passed 1,254/1,254. A matched
+uninstrumented A/B/B/A campaign then ran ten exact fixed one-MiB samples per
+variant over one established connection with sixteen concurrent streams. All
+samples passed HTTP/3 status, content-length, payload, EOF, failure, and timeout
+validation.
+
+| Variant | Median MiB/s | Throughput CV | Median p95 | Median allocated bytes/response |
+| --- | ---: | ---: | ---: | ---: |
+| `c5f9dae0` baseline | 79.53 | 10.62% | 214.01 ms | 82,068.94 |
+| transition-batch candidate | 79.54 | 8.59% | 219.01 ms | 86,242.88 |
+
+Throughput was unchanged, while p95 rose 2.34 percent and allocation rose 5.09
+percent. Collapsing write-admission transitions therefore did not raise packet
+service capacity. The runtime candidate was reverted and ProtocolLab was not
+run. The patch, frozen binaries and hashes, focused TRX, activation result, raw
+A/B/B/A JSON, and machine-readable negative record are retained under
+`C:\shared\temp\quic-distinct-write-transition-batch-20260719`.
+
+Do not repeat adjacent-write accumulation, same-priority rotation, or runtime
+write-transition grouping without a mechanism that measurably reduces packet
+construction, datagram count, or synchronous send-effect cost. The planner
+seam remains useful for future evidence-backed policies, but no alternate
+production policy is justified by the current same-connection evidence.
