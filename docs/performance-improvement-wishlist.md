@@ -5709,3 +5709,59 @@ duplex, not another speculative actor continuation. The exact source-backed
 target build, smoke, repeated JSON, and log are retained under
 `C:\shared\temp\quic-h3-external-local-20260718`. ProtocolLab orchestration was
 not run and no package, registration, deployment, or publication changed.
+
+### Local-first diagnosis 2026-07-18: exact HTTP/3 connection topology and current peer gap
+
+The external-target harness was used to separate actual connections from
+concurrent streams on one connection. This matters because the retained
+ProtocolLab managed HTTP/3 load tool reports a requested c16 shape but also
+warns that it cannot guarantee the requested connection count. Its Incursa
+one-MiB fixed-response result of about 38 MiB/s matches the local one-connection,
+16-stream result rather than the real 16-connection result.
+
+Five exact local samples per cell compared the source-built Incursa target with
+Kestrel/System.Net.Quic through the same HTTP/3 client and validation path:
+
+| Real connections x streams | Incursa fixed MiB/s | Kestrel fixed MiB/s | Incursa/Kestrel | Incursa p95 | Kestrel p95 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 x 1 | 42.62 | 68.85 | 61.9% | 27.02 ms | 15.98 ms |
+| 4 x 1 | 122.16 | 221.62 | 55.1% | 35.92 ms | 21.85 ms |
+| 16 x 1 | 206.62 | 522.57 | 39.5% | 88.00 ms | 45.56 ms |
+| 1 x 16 | 38.93 | 174.78 | 22.3% | 424.40 ms | 99.79 ms |
+
+Every accepted fixed-response cell validated HTTP/3, status, exact content
+length, exact `index % 251` payload bytes, and EOF. The 16-connection Kestrel
+cell had one disturbed low sample and a 7.87% CV, but its 522.57 MiB/s median
+was supported by four samples above 511 MiB/s. The Incursa 16-connection median
+was 206.62 MiB/s with 1.03% CV. Incursa therefore has both a general per-packet
+gap and a much larger same-connection serialization ceiling.
+
+The strict local harness also rejected two nominal peer lanes before accepting
+metrics. Kestrel's streaming fixture restarts its deterministic pattern for
+every chunk instead of producing one continuous payload, and its upload JSON
+response omits `Content-Length`. These are fixture-comparability blockers, not
+Incursa failures; validation was not weakened to admit them.
+
+A target-only sampled-thread trace of the exact Incursa 1 x 16 fixed workload
+completed 448 one-MiB responses in 12.08 seconds at 37.08 MiB/s with zero
+failures. `QuicConnectionRuntimeShard.ConsumeInboxAsync` was the active actor
+stack, while synchronous `QuicListenerHost.SendDatagram` accounted for 3.66%
+inclusive and 3.13% exclusive of all sampled thread time. The other sampled
+threads were predominantly idle waits; no isolated managed micro-hotspot was
+large enough to explain the 4.5x same-connection peer gap.
+
+The allocation trace for an exact c16 upload confirmed two already-retained
+mechanisms: wildcard packet-information address materialization and small
+ACK-only ownership copies. Concrete binding, two ACK ownership designs, and an
+ACK piggyback policy have already failed broader local gates, so this evidence
+does not reopen them. Likewise, the sampled send cost does not justify repeating
+the rejected send queue, immediate asynchronous send, copied segmentation, or
+exact-1472 zero-copy segmentation designs without a materially different
+mechanism and proof that the actual packet shape can benefit.
+
+Evidence is retained under
+`C:\shared\temp\quic-h3-external-local-20260718`, including the source-built
+targets, exact Incursa and Kestrel JSON, blocked peer attempts, upload allocation
+trace and attribution, and the fixed 1 x 16 CPU trace plus TopN reports.
+ProtocolLab was not run, and no package, deployment, registration, or
+publication changed.
