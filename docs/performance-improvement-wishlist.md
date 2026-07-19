@@ -5567,3 +5567,63 @@ copied listener segmentation and Linux `sendmmsg` negatives, this closes
 listener-side socket batching as the next route to the multi-fold gap. Do not
 retry another send wrapper or segmentation variant unless a future broader
 trace shows socket submission has become dominant after actor work is reduced.
+
+### Rejected 2026-07-18: detach receive segments before application copy
+
+The c16 transport trace attributed `Monitor.Enter_Slowpath` to a meaningful
+share of the single-connection actor's active time. `TryReadStreamData` copied
+application bytes and returned pooled receive owners while holding the
+connection-wide stream-state lock. A bounded ownership candidate detached up
+to four fully consumed segments under the lock, updated stream and flow-control
+state there, copied and returned the owners after releasing the lock, and
+repeated bounded batches within the same read so existing contiguous-read
+semantics remained intact. Partial segments stayed on the locked path because
+their unread tail shared the same pooled owner.
+
+The first four-segment-only design correctly failed five existing receive
+buffer tests because it shortened reads that were expected to drain all
+currently contiguous bytes. That version was not benchmarked. The revised
+batched design passed all 50 focused `TryReadStreamData` tests and all 19
+`QuicStreamReceiveBufferTests`, including concurrent interleaved-stream and
+thread-handoff cases. BenchmarkDotNet Dry validated the two receive/drain
+mechanisms. ShortRun showed no allocation change and only small sequential
+timing differences: repeated four-segment bursts moved from 5.992 to 5.831
+microseconds, and independent interleaved streams moved from 202.038 to
+199.338 microseconds.
+
+Frozen baseline and candidate executables then ran immediate A/B/B/A local
+campaigns. One-MiB transport downloads showed a real c16 benefit while c1 and
+c4 remained effectively flat:
+
+| Shape | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| c1 download | 40.37 | 40.29 | -0.2% | noisy | approximately flat |
+| c4 download | 30.18 | 30.66 | +1.6% | approximately flat | approximately flat |
+| c16 download | 21.30 | 26.29 | +23.4% | -20.7% | -17.4% |
+
+Matched one-MiB upload controls improved 1-3%. Combined duplex results were
+approximately flat at c1 and c16, while c4 was 5.3% lower amid substantial
+baseline drift. This was enough to proceed to the required cross-layer local
+guardrail, but not to accept the candidate.
+
+The HTTP/3 A/B/B/A matrix covered fixed, streaming, upload, and simultaneous
+request/response bodies at c1, c4, and c16 with five exact samples per run.
+Streaming and duplex stayed within 2%, and upload c16 was 3.5% lower. Fixed
+HTTP/3 responses at c16 failed decisively in both candidate runs:
+
+| Metric | Baseline | Candidate | Delta |
+| --- | ---: | ---: | ---: |
+| throughput | 42.12 MiB/s | 37.22 MiB/s | -11.6% |
+| p95 latency | 384.5 ms | 437.0 ms | +13.7% |
+| allocation | 150,598 B/request | 172,978 B/request | +14.9% |
+| per-run CV | 0.8%, 1.3% | 8.9%, 10.1% | unstable |
+
+The broad fixed-response regression outweighed the narrower transport gain.
+The runtime candidate was reverted and ProtocolLab was not run. Frozen
+assemblies, SHA-256 hashes, the exact patch, BDN reports, every raw transport
+and HTTP/3 result, and `negative-result.json` are retained under
+`C:\shared\temp\quic-receive-detach-20260718`. Do not repeat receive-owner
+detachment or another design that advances application-visible read state
+before the copy. A future receive-lock candidate needs broader HTTP/3
+attribution and should shorten critical sections without changing buffer
+ownership or increasing fixed-response scheduling variance.
