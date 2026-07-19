@@ -6026,3 +6026,37 @@ server-to-client download shape used by the local acceptance campaign. It
 therefore neither reproduces nor contradicts the local HTTP/3 +18.2% result.
 No package, deployment, registration, publication, controller, or lab-machine
 state changed.
+
+### Rejected 2026-07-18: corrected dual-mode UDP segmentation
+
+Post-tranche CPU sampling attributed 2.72% of target process samples
+exclusively to synchronous listener datagram submission, about 62% of the
+sampled active actor stack. The retained four-datagram UDP segmentation
+candidate had required an IPv4 socket, so it never enabled on the profiled
+dual-mode listener. A materially different candidate enabled Windows UDP
+segmentation on IPv4 and dual-mode IPv6 sockets and combined variable
+same-path, same-ECN runs of two through twelve exact 1472-byte datagrams while
+preserving owner lifetime and falling back for mixed sizes, tails, custom
+senders, unsupported platforms, and send failures.
+
+A dual-mode IPv4-mapped loopback probe validated 336,000 exact datagrams and
+their order. Twelve-segment submission fell from a 221.33 ms median to 110.74
+ms (-50.0%), although both paths were noisy. Focused socket and detached-owner
+tests passed 48/48. The end-to-end A/B/B/A campaign nevertheless showed that
+the primitive was not large enough to explain the same-connection gap:
+
+| Streams on one connection | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | 53.43 | 53.13 | -0.6% | -0.7% | -5.0% |
+| 4 | 54.07 | 53.81 | -0.5% | -0.5% | -1.0% |
+| 16 | 49.47 | 50.30 | +1.7% | -0.5% | +0.2% |
+
+All twenty fixed-response samples per stream count passed exact HTTP/3 status,
+content-length, payload, and EOF validation. The candidate missed the 10%
+local gate, so it was reverted without transport or ProtocolLab runs. Raw
+results, frozen assemblies and hashes, patch, helper source, focused TRX,
+probe source/output, and `negative-result.json` are retained under
+`C:\shared\temp\quic-dualmode-udp-segmentation-20260718` and
+`C:\shared\temp\quic-dualmode-1472-segmentation-probe-20260718`. Do not repeat
+socket-wrapper or UDP segmentation variants unless broader trace evidence
+attributes a substantially larger end-to-end cost than this campaign did.
