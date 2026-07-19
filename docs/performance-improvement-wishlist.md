@@ -5994,5 +5994,28 @@ Focused scheduler, write, cancellation, final-write, and recovery tests passed
 55/55. The full regression rerun passed 9,645 tests with four expected skips
 and no failures. Exact binaries, hashes, raw A/B evidence, summaries, failed
 baseline logs, TRX files, and `acceptance.json` are retained under
-`C:\shared\temp\quic-established-send-tranche-20260718`. ProtocolLab was not
-run, and no package, deployment, registration, or publication state changed.
+`C:\shared\temp\quic-established-send-tranche-20260718`. The initial local
+acceptance did not run ProtocolLab, and no package, deployment, registration,
+or publication state changed.
+
+A subsequent source-backed ProtocolLab A/B/B/A confirmation used the nearest
+exact named same-connection shape,
+`quic.transport.multiplex.16x1mb`: one connection, sixteen concurrent streams,
+and one MiB sent in each direction per stream. Ten baseline cells at commit
+`a62daa72` produced a 34.800 MiB/s median with 1.94% CV; ten candidate cells at
+commit `0f55e163` produced 35.635 MiB/s with 2.31% CV. The resulting +2.4%
+throughput and -2.2% p95 changes are neutral confirmation evidence, not a
+second 10% acceptance signal. All twenty cells passed exact byte, stream,
+failure, timeout, and benchmark validation.
+
+The ProtocolLab adapter records its own repository as target provenance, so
+the campaign also retained independent child-server verification after every
+leg. The built and executed `Incursa.Quic.dll` hashes matched the detached
+baseline and candidate source roots exactly. Evidence, including all raw
+cells, A/B/B/A summary, and source-verification records, is retained under
+`C:\shared\temp\quic-send-tranche-protocollab-20260718\matched-abba`. This
+lane is bidirectional multiplexing rather than the pure fixed-response or
+server-to-client download shape used by the local acceptance campaign. It
+therefore neither reproduces nor contradicts the local HTTP/3 +18.2% result.
+No package, deployment, registration, publication, controller, or lab-machine
+state changed.
