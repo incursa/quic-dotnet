@@ -273,6 +273,15 @@ internal readonly record struct QuicConnectionSendDatagramUpdate(
         => QuicBufferPool.ReturnBytes(DatagramOwner);
 }
 
+internal delegate void QuicConnectionSendDatagramBatchObserver(
+    QuicConnectionHandle handle,
+    ReadOnlySpan<QuicConnectionSendDatagramUpdate> updates);
+
+internal delegate void QuicConnectionRuntimeSendDatagramBatchObserver(
+    QuicConnectionHandle handle,
+    int shardIndex,
+    ReadOnlySpan<QuicConnectionSendDatagramUpdate> updates);
+
 internal sealed record QuicConnectionHostedSendDatagramMarkerEffect : QuicConnectionEffect
 {
     private QuicConnectionHostedSendDatagramMarkerEffect()

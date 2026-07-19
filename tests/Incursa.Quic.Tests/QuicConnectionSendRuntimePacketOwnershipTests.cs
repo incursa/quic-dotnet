@@ -173,6 +173,36 @@ public sealed class QuicConnectionSendRuntimePacketOwnershipTests
     }
 
     [Fact]
+    public void HostedBatchCanClearLatestRebuildableUnownedProtectedPacketBytes()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        byte[] plaintextOwner = QuicBufferPool.RentBytes(3);
+        byte[] packetBuffer = new byte[32];
+        ReadOnlyMemory<byte> packetBytes = packetBuffer.AsMemory(4, 17);
+        QuicConnectionSentPacketKey key = new(QuicPacketNumberSpace.ApplicationData, 7);
+
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 7,
+            PayloadBytes: 17,
+            SentAtMicros: 100,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PacketBytes: packetBytes,
+            PlaintextPayload: plaintextOwner.AsMemory(0, 3),
+            PlaintextPayloadOwner: plaintextOwner));
+
+        Assert.True(runtime.TryClearLatestRebuildablePacketBytes(packetBytes));
+        Assert.True(runtime.SentPackets[key].PacketBytes.IsEmpty);
+        Assert.Same(plaintextOwner, runtime.SentPackets[key].PlaintextPayloadOwner);
+
+        Assert.True(runtime.TryRegisterLoss(QuicPacketNumberSpace.ApplicationData, 7));
+        Assert.True(runtime.TryDequeueRetransmission(out QuicConnectionRetransmissionPlan retransmission));
+        Assert.True(retransmission.PacketBytes.IsEmpty);
+        Assert.Same(plaintextOwner, retransmission.PlaintextPayloadOwner);
+        QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
+    }
+
+    [Fact]
     public void RetentionSnapshotHelpersDeduplicateAliasedOwnersAndClampClockSkew()
     {
         byte[] owner = new byte[32];

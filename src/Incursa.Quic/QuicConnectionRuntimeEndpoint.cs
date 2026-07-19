@@ -624,7 +624,8 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         Action<QuicConnectionHandle, int, QuicConnectionTransitionResult>? transitionObserver = null,
         Action<QuicConnectionHandle, int, QuicConnectionEffect>? effectObserver = null,
         CancellationToken cancellationToken = default,
-        Action<QuicConnectionHandle, int, QuicConnectionSendDatagramUpdate>? sendDatagramObserver = null)
+        Action<QuicConnectionHandle, int, QuicConnectionSendDatagramUpdate>? sendDatagramObserver = null,
+        QuicConnectionRuntimeSendDatagramBatchObserver? sendDatagramBatchObserver = null)
     {
         return host.RunAsync(
             transitionObserver,
@@ -634,7 +635,8 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 effectObserver?.Invoke(handle, shardIndex, effect);
             },
             cancellationToken,
-            sendDatagramObserver);
+            sendDatagramObserver,
+            sendDatagramBatchObserver);
     }
 
     public bool TryApplyEffect(QuicConnectionHandle handle, QuicConnectionEffect effect)

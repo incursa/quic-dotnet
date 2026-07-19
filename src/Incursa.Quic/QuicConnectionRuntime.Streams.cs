@@ -1537,83 +1537,95 @@ internal sealed partial class QuicConnectionRuntime
         int queuedWritesBefore = applicationSendQueue.Count;
         if (queuedWritesBefore > 0)
         {
-            QuicSendPolicySnapshot policySnapshot = CaptureQueuedApplicationSendPolicySnapshot();
-            QuicQueuedApplicationSendBudget sendBudget =
-                QuicSendPolicy.ComputeQueuedApplicationSendBudget(policySnapshot);
-            QuicApplicationSendRecoveryFlushOutcome outcome =
-                QuicApplicationSendRecoveryFlushOutcome.BudgetBlocked;
-            QuicSendPolicyBlockedReason blockedReason = sendBudget.BlockedReason;
-            int flushedDatagrams = 0;
-            while (applicationSendQueue.Count > 0)
+            BeginHostedApplicationDatagramBatch();
+        }
+
+        try
+        {
+            if (queuedWritesBefore > 0)
             {
-                policySnapshot = CaptureQueuedApplicationSendPolicySnapshot();
-                sendBudget = QuicSendPolicy.ComputeQueuedApplicationSendBudget(policySnapshot);
-                if (!sendBudget.CanSendQueuedApplicationData)
+                QuicSendPolicySnapshot policySnapshot = CaptureQueuedApplicationSendPolicySnapshot();
+                QuicQueuedApplicationSendBudget sendBudget =
+                    QuicSendPolicy.ComputeQueuedApplicationSendBudget(policySnapshot);
+                QuicApplicationSendRecoveryFlushOutcome outcome =
+                    QuicApplicationSendRecoveryFlushOutcome.BudgetBlocked;
+                QuicSendPolicyBlockedReason blockedReason = sendBudget.BlockedReason;
+                int flushedDatagrams = 0;
+                while (applicationSendQueue.Count > 0)
                 {
-                    outcome = QuicApplicationSendRecoveryFlushOutcome.BudgetBlocked;
-                    blockedReason = sendBudget.BlockedReason;
-                    break;
+                    policySnapshot = CaptureQueuedApplicationSendPolicySnapshot();
+                    sendBudget = QuicSendPolicy.ComputeQueuedApplicationSendBudget(policySnapshot);
+                    if (!sendBudget.CanSendQueuedApplicationData)
+                    {
+                        outcome = QuicApplicationSendRecoveryFlushOutcome.BudgetBlocked;
+                        blockedReason = sendBudget.BlockedReason;
+                        break;
+                    }
+
+                    if (flushedDatagrams >= sendBudget.MaxDatagrams)
+                    {
+                        outcome = QuicApplicationSendRecoveryFlushOutcome.BurstLimitReached;
+                        break;
+                    }
+
+                    if (applicationSendTurnPlanner is not null
+                        && !QuicApplicationSendTurnPlannerDispatch.ShouldScheduleNext(
+                            applicationSendTurnPlanner,
+                            new QuicApplicationSendTurnContext(
+                                queuedWritesBefore,
+                                applicationSendQueue.Count,
+                                flushedDatagrams,
+                                sendBudget)))
+                    {
+                        outcome = QuicApplicationSendRecoveryFlushOutcome.PlannerDeferred;
+                        break;
+                    }
+
+                    if (!FlushPendingApplicationSends(
+                            nowTicks,
+                            probePacket: false,
+                            sendBudget,
+                            ref effects,
+                            out Exception? flushException))
+                    {
+                        exception = flushException;
+                        outcome = IsTransientApplicationSendPathBlocked(flushException)
+                            ? QuicApplicationSendRecoveryFlushOutcome.FlushBlocked
+                            : QuicApplicationSendRecoveryFlushOutcome.FlushFailed;
+                        blockedReason = ClassifyApplicationSendFlushBlockedReason(
+                            flushException,
+                            policySnapshot);
+                        break;
+                    }
+
+                    flushedDatagrams++;
+                    stateChanged = true;
+                    if (sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData))
+                    {
+                        outcome = QuicApplicationSendRecoveryFlushOutcome.RetransmissionPending;
+                        break;
+                    }
                 }
 
-                if (flushedDatagrams >= sendBudget.MaxDatagrams)
+                if (applicationSendQueue.Count == 0)
                 {
-                    outcome = QuicApplicationSendRecoveryFlushOutcome.BurstLimitReached;
-                    break;
+                    outcome = QuicApplicationSendRecoveryFlushOutcome.QueueDrained;
                 }
 
-                if (applicationSendTurnPlanner is not null
-                    && !QuicApplicationSendTurnPlannerDispatch.ShouldScheduleNext(
-                        applicationSendTurnPlanner,
-                        new QuicApplicationSendTurnContext(
-                            queuedWritesBefore,
-                            applicationSendQueue.Count,
-                            flushedDatagrams,
-                            sendBudget)))
-                {
-                    outcome = QuicApplicationSendRecoveryFlushOutcome.PlannerDeferred;
-                    break;
-                }
-
-                if (!FlushPendingApplicationSends(
-                        nowTicks,
-                        probePacket: false,
-                        sendBudget,
-                        ref effects,
-                        out Exception? flushException))
-                {
-                    exception = flushException;
-                    outcome = IsTransientApplicationSendPathBlocked(flushException)
-                        ? QuicApplicationSendRecoveryFlushOutcome.FlushBlocked
-                        : QuicApplicationSendRecoveryFlushOutcome.FlushFailed;
-                    blockedReason = ClassifyApplicationSendFlushBlockedReason(
-                        flushException,
-                        policySnapshot);
-                    break;
-                }
-
-                flushedDatagrams++;
-                stateChanged = true;
-                if (sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData))
-                {
-                    outcome = QuicApplicationSendRecoveryFlushOutcome.RetransmissionPending;
-                    break;
-                }
+                QuicMetrics.RecordApplicationSendRecoveryFlush(
+                    tlsState.Role,
+                    policySnapshot,
+                    sendBudget,
+                    queuedWritesBefore,
+                    applicationSendQueue.Count,
+                    flushedDatagrams,
+                    outcome,
+                    blockedReason);
             }
-
-            if (applicationSendQueue.Count == 0)
-            {
-                outcome = QuicApplicationSendRecoveryFlushOutcome.QueueDrained;
-            }
-
-            QuicMetrics.RecordApplicationSendRecoveryFlush(
-                tlsState.Role,
-                policySnapshot,
-                sendBudget,
-                queuedWritesBefore,
-                applicationSendQueue.Count,
-                flushedDatagrams,
-                outcome,
-                blockedReason);
+        }
+        finally
+        {
+            CompleteHostedApplicationDatagramBatch();
         }
 
         stateChanged |= TryFlushPendingFlowControlCreditUpdates(ref effects);
@@ -1748,9 +1760,12 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private int GetMaximumQueuedApplicationPayloadBytes()
-        => GetMaximumApplicationPayloadBytes(ApplicationSendBatchAckHeadroomBytes);
+        => GetMaximumApplicationPayloadBytes(GetPendingApplicationAckHeadroomBytes());
 
     private int GetMaximumFlowControlCreditPayloadBytes()
+        => GetMaximumApplicationPayloadBytes(GetPendingApplicationAckHeadroomBytes());
+
+    private int GetPendingApplicationAckHeadroomBytes()
     {
         int ackHeadroomBytes = 0;
         QuicAckFrame? ackFrame = null;
@@ -1775,7 +1790,7 @@ internal sealed partial class QuicConnectionRuntime
             ackFrame?.Dispose();
         }
 
-        return GetMaximumApplicationPayloadBytes(ackHeadroomBytes);
+        return ackHeadroomBytes;
     }
 
     private int GetMaximumApplicationPayloadBytes(int ackHeadroomBytes)
@@ -3090,14 +3105,25 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         QuicBufferLease protectedPacketLease = default;
-        if (!(piggybackedAckFrame is null
+        ulong packetNumber = default;
+        bool builtInHostedBatch = piggybackedAckFrame is null
+            && TryBuildProtectedApplicationPacketInHostedBatch(
+                packetPayload.Span,
+                tlsState.OneRttProtectPacketProtectionMaterial!.Value,
+                tlsState.CurrentOneRttKeyPhaseBit,
+                pathSpinBit,
+                PeerSupportsGreasedQuicBit,
+                out packetNumber,
+                out protectedPacket);
+        if (!builtInHostedBatch
+            && !(piggybackedAckFrame is null
                 ? handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacketLease(
                     packetPayload.Span,
                     tlsState.OneRttProtectPacketProtectionMaterial!.Value,
                     tlsState.CurrentOneRttKeyPhaseBit,
                     pathSpinBit,
                     PeerSupportsGreasedQuicBit,
-                    out ulong packetNumber,
+                    out packetNumber,
                     out protectedPacketLease)
                 : handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacketLease(
                     payload.Span,
@@ -3119,14 +3145,17 @@ internal sealed partial class QuicConnectionRuntime
         byte[]? protectedPacketOwner = null;
         try
         {
-            try
+            if (!builtInHostedBatch)
             {
-                protectedPacketOwner = protectedPacketLease.TransferOwnership(out int protectedPacketLength);
-                protectedPacket = protectedPacketOwner.AsMemory(0, protectedPacketLength);
-            }
-            finally
-            {
-                protectedPacketLease.Dispose();
+                try
+                {
+                    protectedPacketOwner = protectedPacketLease.TransferOwnership(out int protectedPacketLength);
+                    protectedPacket = protectedPacketOwner.AsMemory(0, protectedPacketLength);
+                }
+                finally
+                {
+                    protectedPacketLease.Dispose();
+                }
             }
 
             if (!tlsState.TryRecordCurrentOneRttProtectionUse())

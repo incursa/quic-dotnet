@@ -280,7 +280,8 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
         Action<QuicConnectionHandle, int, QuicConnectionTransitionResult>? transitionObserver = null,
         Action<QuicConnectionHandle, int, QuicConnectionEffect>? effectObserver = null,
         CancellationToken cancellationToken = default,
-        Action<QuicConnectionHandle, int, QuicConnectionSendDatagramUpdate>? sendDatagramObserver = null)
+        Action<QuicConnectionHandle, int, QuicConnectionSendDatagramUpdate>? sendDatagramObserver = null,
+        QuicConnectionRuntimeSendDatagramBatchObserver? sendDatagramBatchObserver = null)
     {
         ThrowIfDisposed();
 
@@ -299,7 +300,10 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
                 cancellationToken,
                 sendDatagramObserver is null
                     ? null
-                    : (handle, update) => sendDatagramObserver(handle, shardIndex, update));
+                    : (handle, update) => sendDatagramObserver(handle, shardIndex, update),
+                sendDatagramBatchObserver is null
+                    ? null
+                    : (handle, updates) => sendDatagramBatchObserver(handle, shardIndex, updates));
         }
 
         Task processing = Task.WhenAll(processingTasks);

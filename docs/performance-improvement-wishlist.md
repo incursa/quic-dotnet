@@ -6598,3 +6598,76 @@ evidence showing at least a ten-percent `1 x 16` gain or a material reduction in
 serialized shard time, without more than about five-percent regression at c1
 or c4 and without weakening congestion control, flow control, recovery,
 ordering, fairness, cancellation, disposal, or RFC behavior.
+
+### Accepted 2026-07-19: contiguous Windows UDP-segmented application bursts
+
+The first bounded egress slice keeps packet-number allocation, congestion and
+flow-control admission, loss-recovery accounting, ACK decisions, path state,
+and stream ordering inside the connection actor. For a hosted Windows server
+with the built-in datagram sender, the actor may now construct a run of two to
+twelve equal 1,472-byte ACK-free 1-RTT packets directly into one pooled owner.
+The listener submits that contiguous run through `UDP_SEND_MSG_SIZE=1472` in
+one synchronous socket call. ACK-bearing packets, partial packets, IPv6's
+1,452-byte path ceiling, custom senders, unsupported platforms, ECN or path
+changes, and non-contiguous buffers use the existing one-datagram path.
+
+The shared owner is attached once to the final hosted update and released only
+after the whole callback completes. Every associated sent-packet record drops
+its protected-packet view before the owner can return to the pool and retains
+the independently owned plaintext required to rebuild a lost packet. A focused
+loss test verifies that the resulting retransmission plan contains the
+plaintext and no recycled protected-packet memory.
+
+BenchmarkDotNet Dry and Short jobs ran before the end-to-end harnesses. Direct
+construction into one pooled owner reduced four-packet build time from 3,447.2
+to 2,946.3 ns and twelve-packet build time from 9,571.5 to 8,849.8 ns. The
+combined exact-size build-and-send benchmark reduced four-packet time from
+43.34 to 24.53 microseconds and twelve-packet time from 151.79 to 59.72
+microseconds, with no managed allocation reported by either method. Artifacts
+are retained under
+`C:\shared\temp\quic-egress-contiguous-batch-20260719` and
+`C:\shared\temp\quic-contiguous-segmented-bdn-final-20260719`. The final
+send benchmark uses unconnected `SendTo` for both variants and calls the same
+segmentation helper as production.
+
+Matched local HTTP/3 evidence used a detached `a5e64082` baseline, exact one-MiB
+content-length, payload and EOF validation, zero failures, and ten final
+candidate samples. Baseline values below combine the two bracketing baseline
+runs; the candidate is the ownership-safe final binary.
+
+| Exact one-MiB lane | Baseline MiB/s | Candidate MiB/s | Throughput delta | Candidate CV | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| HTTP/3 fixed `1 x 1` | 87.53 | 118.53 | +35.4% | 16.95% | -24.6% | -14.7% |
+| HTTP/3 fixed `1 x 4` | 89.05 | 123.56 | +38.8% | 2.84% | -28.1% | -6.1% |
+| HTTP/3 fixed `1 x 16` | 84.19 | 112.96 | +34.2% | 4.25% | -24.6% | -7.2% |
+
+The final HTTP/3 guardrail rerun kept upload c16 effectively flat at 185.31
+versus 184.12 MiB/s (-0.6%) and improved duplex c1/c4/c16 by 25.7%, 24.3%,
+and 22.9%. Upload c4 was -4.3%; upload c1 was nominally -6.9%, but both c1
+series were unstable (20.65% and 26.87% CV) and allocations were flat. The
+five-second public QUIC download c16 guardrail improved from 53.90 to 61.06
+MiB/s (+13.3%) with zero failures, though its 12.66% candidate CV keeps that
+single lane diagnostic rather than an independent improvement claim. Raw local
+evidence is retained under
+`C:\shared\temp\quic-contiguous-segmented-e2e-20260719`.
+
+Two negatives preceded acceptance. Expanding the socket send buffer was 13%
+slower for twelve datagrams and 2-3% slower for 256 and 1,024 datagrams in
+BenchmarkDotNet Short; its evidence remains at
+`C:\shared\temp\quic-send-buffer-bdn-20260719`. An initial 1,408-byte
+segmentation setting was invalid because `UDP_SEND_MSG_SIZE` is socket-wide and
+split larger ACK-bearing packets into separate UDP datagrams. The corrected
+1,472-byte setting is at least as large as every ordinary or probe datagram the
+current IPv4/IPv6 path policy permits, so sub-sized datagrams remain single
+datagrams and only exact contiguous 1,472-byte runs are grouped.
+
+ProtocolLab has not yet been run for this slice. The local gate is satisfied;
+the next step is one focused matched ProtocolLab HTTP/3 fixed one-MiB campaign
+before any broader peer or c1-c128 matrix.
+
+The final Release suite passed 9,663 tests with four intentional skips and no
+failures. Focused packet-destination, segmentation, sent-packet ownership,
+loss-rebuild, HTTP/3 interop, and minimal-server coverage passed 22/22. The
+segmentation regression verifies that enabled sockets preserve ordinary
+1,200-, 1,452-, and 1,472-byte sends as single datagrams and that a two-packet
+contiguous submission arrives as two exact datagrams in order.

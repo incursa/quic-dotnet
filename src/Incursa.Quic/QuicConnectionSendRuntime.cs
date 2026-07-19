@@ -753,6 +753,23 @@ internal sealed class QuicConnectionSendRuntime
         return true;
     }
 
+    internal bool TryClearLatestRebuildablePacketBytes(ReadOnlyMemory<byte> packetBytes)
+    {
+        if (!latestTrackedPacketKey.HasValue
+            || !sentPackets.TryGetValue(latestTrackedPacketKey.Value, out QuicConnectionSentPacket packet)
+            || packet.PacketNumberSpace != QuicPacketNumberSpace.ApplicationData
+            || !packet.Retransmittable
+            || packet.PlaintextPayload.IsEmpty
+            || packet.PacketBytesOwner is not null
+            || !packet.PacketBytes.Equals(packetBytes))
+        {
+            return false;
+        }
+
+        sentPackets[latestTrackedPacketKey.Value] = packet with { PacketBytes = default };
+        return true;
+    }
+
     public bool TryAcknowledgePacket(
         QuicPacketNumberSpace packetNumberSpace,
         ulong packetNumber,

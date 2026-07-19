@@ -3,6 +3,7 @@
 
 using System.Diagnostics;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -726,7 +727,17 @@ internal sealed partial class QuicConnectionRuntime
             List<QuicConnectionSendDatagramUpdate> updates = pendingHostedSendDatagramUpdates
                 ??= new List<QuicConnectionSendDatagramUpdate>(InitialHostedSendDatagramUpdateCapacity);
             updates.Add(update);
-            if (sendRuntime.TryDetachLatestRebuildablePacketBytes(datagram, out byte[]? datagramOwner))
+            if (IsHostedApplicationDatagramBatchMemory(datagram))
+            {
+                if (!sendRuntime.TryClearLatestRebuildablePacketBytes(datagram))
+                {
+                    throw new InvalidOperationException(
+                        "A hosted application datagram batch retained protected packet memory in recovery state.");
+                }
+
+                hostedApplicationDatagramBatchLastUpdateIndex = updates.Count - 1;
+            }
+            else if (sendRuntime.TryDetachLatestRebuildablePacketBytes(datagram, out byte[]? datagramOwner))
             {
                 updates[^1] = update with { DatagramOwner = datagramOwner };
             }
@@ -770,10 +781,13 @@ internal sealed partial class QuicConnectionRuntime
 
     internal void ConfigureHostedTimerEffectSuppression(
         bool suppress,
-        bool? suppressSendDatagramEffects = null)
+        bool? suppressSendDatagramEffects = null,
+        bool enableApplicationDatagramBatches = false)
     {
+        CompleteHostedApplicationDatagramBatch();
         suppressHostedTimerEffectObjects = suppress;
         suppressHostedSendDatagramEffectObjects = suppressSendDatagramEffects ?? suppress;
+        enableHostedApplicationDatagramBatches = enableApplicationDatagramBatches;
         ReleasePendingHostedSendDatagramOwners();
         pendingHostedSendDatagramUpdateIndex = 0;
         pendingHostedSendDatagramUpdates?.Clear();
@@ -807,6 +821,113 @@ internal sealed partial class QuicConnectionRuntime
 
         update = updates[pendingHostedSendDatagramUpdateIndex++];
         return true;
+    }
+
+    internal bool TryTakePendingHostedSendDatagramUpdates(
+        int count,
+        out ReadOnlySpan<QuicConnectionSendDatagramUpdate> updates)
+    {
+        if (count <= 0
+            || pendingHostedSendDatagramUpdates is not { } pendingUpdates
+            || pendingHostedSendDatagramUpdateIndex > pendingUpdates.Count - count)
+        {
+            updates = default;
+            return false;
+        }
+
+        updates = CollectionsMarshal.AsSpan(pendingUpdates)
+            .Slice(pendingHostedSendDatagramUpdateIndex, count);
+        pendingHostedSendDatagramUpdateIndex += count;
+        return true;
+    }
+
+    private void BeginHostedApplicationDatagramBatch()
+    {
+        if (!enableHostedApplicationDatagramBatches
+            || hostedApplicationDatagramBatchOwner is not null
+            || activePath is not QuicConnectionActivePathRecord currentPath
+            || currentPath.MaximumDatagramSizeState.MaximumDatagramSizeBytes
+                < HostedApplicationDatagramBatchSegmentSize)
+        {
+            return;
+        }
+
+        hostedApplicationDatagramBatchOwner = QuicBufferPool.RentBytes(
+            HostedApplicationDatagramBatchSegmentSize * HostedApplicationDatagramBatchCapacity,
+            QuicBufferPoolOwner.OutboundPacketProtection);
+        hostedApplicationDatagramBatchPacketCount = 0;
+        hostedApplicationDatagramBatchLastUpdateIndex = -1;
+    }
+
+    private bool TryBuildProtectedApplicationPacketInHostedBatch(
+        ReadOnlySpan<byte> payload,
+        QuicTlsPacketProtectionMaterial material,
+        bool keyPhase,
+        bool spinBit,
+        bool greaseQuicBit,
+        out ulong packetNumber,
+        out ReadOnlyMemory<byte> protectedPacket)
+    {
+        packetNumber = default;
+        protectedPacket = default;
+        byte[]? owner = hostedApplicationDatagramBatchOwner;
+        if (owner is null || hostedApplicationDatagramBatchPacketCount >= HostedApplicationDatagramBatchCapacity)
+        {
+            return false;
+        }
+
+        int offset = hostedApplicationDatagramBatchPacketCount * HostedApplicationDatagramBatchSegmentSize;
+        Span<byte> destination = owner.AsSpan(offset, HostedApplicationDatagramBatchSegmentSize);
+        if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
+                payload,
+                material,
+                keyPhase,
+                spinBit,
+                greaseQuicBit,
+                destination,
+                out packetNumber,
+                out int protectedPacketLength)
+            || protectedPacketLength != HostedApplicationDatagramBatchSegmentSize)
+        {
+            return false;
+        }
+
+        protectedPacket = owner.AsMemory(offset, protectedPacketLength);
+        hostedApplicationDatagramBatchPacketCount++;
+        return true;
+    }
+
+    private bool IsHostedApplicationDatagramBatchMemory(ReadOnlyMemory<byte> datagram)
+    {
+        return hostedApplicationDatagramBatchOwner is { } owner
+            && MemoryMarshal.TryGetArray(datagram, out ArraySegment<byte> segment)
+            && ReferenceEquals(segment.Array, owner);
+    }
+
+    private void CompleteHostedApplicationDatagramBatch()
+    {
+        byte[]? owner = hostedApplicationDatagramBatchOwner;
+        hostedApplicationDatagramBatchOwner = null;
+        hostedApplicationDatagramBatchPacketCount = 0;
+
+        if (owner is null)
+        {
+            hostedApplicationDatagramBatchLastUpdateIndex = -1;
+            return;
+        }
+
+        int updateIndex = hostedApplicationDatagramBatchLastUpdateIndex;
+        hostedApplicationDatagramBatchLastUpdateIndex = -1;
+        if (updateIndex >= 0
+            && pendingHostedSendDatagramUpdates is { } updates
+            && updateIndex < updates.Count
+            && updates[updateIndex].DatagramOwner is null)
+        {
+            updates[updateIndex] = updates[updateIndex] with { DatagramOwner = owner };
+            return;
+        }
+
+        QuicBufferPool.ReturnBytes(owner);
     }
 
     internal void ApplyPendingHostedTimerUpdates(

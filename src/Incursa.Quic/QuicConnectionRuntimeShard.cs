@@ -253,7 +253,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         Action<QuicConnectionHandle, QuicConnectionTransitionResult>? transitionObserver = null,
         Action<QuicConnectionHandle, QuicConnectionEffect>? effectObserver = null,
         CancellationToken cancellationToken = default,
-        Action<QuicConnectionHandle, QuicConnectionSendDatagramUpdate>? sendDatagramObserver = null)
+        Action<QuicConnectionHandle, QuicConnectionSendDatagramUpdate>? sendDatagramObserver = null,
+        QuicConnectionSendDatagramBatchObserver? sendDatagramBatchObserver = null)
     {
         ThrowIfDisposed();
 
@@ -266,6 +267,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             transitionObserver,
             effectObserver,
             sendDatagramObserver,
+            sendDatagramBatchObserver,
             cancellationToken);
         processingTask = processing;
         return processing;
@@ -318,6 +320,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         Action<QuicConnectionHandle, QuicConnectionTransitionResult>? transitionObserver,
         Action<QuicConnectionHandle, QuicConnectionEffect>? effectObserver,
         Action<QuicConnectionHandle, QuicConnectionSendDatagramUpdate>? sendDatagramObserver,
+        QuicConnectionSendDatagramBatchObserver? sendDatagramBatchObserver,
         CancellationToken cancellationToken)
     {
         ChannelReader<QuicConnectionRuntimeShardWorkItem> reader = inbox.Reader;
@@ -392,6 +395,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                         transitionObserver,
                         effectObserver,
                         sendDatagramObserver,
+                        sendDatagramBatchObserver,
                         deferApplicationAckFinalization,
                         finalizePendingApplicationAck);
                     deferredApplicationAckPacketCount = deferApplicationAckFinalization
@@ -413,7 +417,12 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 
                     TrackPacketRun(in queuedTimerWorkItem);
                     productiveWorkItemsInWakeCycle++;
-                    ProcessWorkItem(queuedTimerWorkItem, transitionObserver, effectObserver, sendDatagramObserver);
+                    ProcessWorkItem(
+                        queuedTimerWorkItem,
+                        transitionObserver,
+                        effectObserver,
+                        sendDatagramObserver,
+                        sendDatagramBatchObserver);
                     RecordPacketRunBoundary("single_read");
                     continue;
                 }
@@ -584,6 +593,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         Action<QuicConnectionHandle, QuicConnectionTransitionResult>? transitionObserver,
         Action<QuicConnectionHandle, QuicConnectionEffect>? effectObserver,
         Action<QuicConnectionHandle, QuicConnectionSendDatagramUpdate>? sendDatagramObserver,
+        QuicConnectionSendDatagramBatchObserver? sendDatagramBatchObserver,
         bool deferApplicationAckFinalization = false,
         bool finalizePendingApplicationAck = false)
     {
@@ -606,7 +616,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 
             runtime.ConfigureHostedTimerEffectSuppression(
                 suppressHostedTimerEffectObjects,
-                suppressSendDatagramEffects: suppressHostedTimerEffectObjects && sendDatagramObserver is not null);
+                suppressSendDatagramEffects: suppressHostedTimerEffectObjects
+                    && (sendDatagramObserver is not null || sendDatagramBatchObserver is not null),
+                enableApplicationDatagramBatches: sendDatagramBatchObserver is not null);
             flushMeasurementStarted = runtime.BeginRuntimeWorkItemFlushMeasurement();
 
             long transitionStartedTimestamp = QuicMetrics.GetRuntimeShardPhaseStartTimestamp();
@@ -645,11 +657,51 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             long effectsStartedTimestamp = QuicMetrics.GetRuntimeShardPhaseStartTimestamp();
             try
             {
-                for (int index = 0; index < result.EffectCount; index++)
+                int index = 0;
+                while (index < result.EffectCount)
                 {
                     QuicConnectionEffect effect = result.GetEffect(index);
                     if (effect is QuicConnectionHostedSendDatagramMarkerEffect)
                     {
+                        if (sendDatagramBatchObserver is not null)
+                        {
+                            int batchCount = 1;
+                            while (index + batchCount < result.EffectCount
+                                && result.GetEffect(index + batchCount) is QuicConnectionHostedSendDatagramMarkerEffect)
+                            {
+                                batchCount++;
+                            }
+
+                            if (!runtime.TryTakePendingHostedSendDatagramUpdates(
+                                    batchCount,
+                                    out ReadOnlySpan<QuicConnectionSendDatagramUpdate> updates))
+                            {
+                                throw new InvalidOperationException(
+                                    "The hosted send-datagram markers did not have matching value updates.");
+                            }
+
+                            long sendBatchStartedTimestamp = QuicMetrics.GetRuntimeShardPhaseStartTimestamp();
+                            try
+                            {
+                                sendDatagramBatchObserver(workItem.Handle, updates);
+                            }
+                            finally
+                            {
+                                QuicMetrics.RecordRuntimeShardPhaseTime(
+                                    shardIndex,
+                                    in workItem,
+                                    "send_datagram_effect",
+                                    sendBatchStartedTimestamp);
+                                foreach (QuicConnectionSendDatagramUpdate batchUpdate in updates)
+                                {
+                                    batchUpdate.ReleaseDatagramOwner();
+                                }
+                            }
+
+                            index += batchCount;
+                            continue;
+                        }
+
                         if (!runtime.TryTakePendingHostedSendDatagramUpdate(out QuicConnectionSendDatagramUpdate update))
                         {
                             throw new InvalidOperationException(
@@ -678,6 +730,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                             update.ReleaseDatagramOwner();
                         }
 
+                        index++;
                         continue;
                     }
 
@@ -695,6 +748,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                             "other_effect",
                             otherEffectStartedTimestamp);
                     }
+
+                    index++;
                 }
             }
             finally

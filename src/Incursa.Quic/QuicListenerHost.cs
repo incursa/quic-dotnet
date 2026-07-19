@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Runtime.ExceptionServices;
+using System.Runtime.InteropServices;
 using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Threading.Channels;
@@ -62,6 +63,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private readonly QuicAddressValidationTokenProtector addressValidationTokenProtector;
     private readonly QuicAddressValidationTokenReplayCache addressValidationTokenReplayCache = new();
     private readonly uint flowLabelSeed = unchecked((uint)RandomNumberGenerator.GetInt32(1, int.MaxValue));
+    private readonly bool windowsUdpSegmentationEnabled;
 
     private CancellationTokenSource? listenerCancellationSource;
     private CancellationTokenRegistration receiveLoopCancellationRegistration;
@@ -150,6 +152,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
         socket.Bind(boundEndPoint);
         boundSocketEndPoint = (IPEndPoint)socket.LocalEndPoint!;
+        windowsUdpSegmentationEnabled = datagramSender is null
+            && QuicSocketUdpSegmentation.TryEnable(socket);
     }
 
     internal int RuntimeShardCount => endpoint.ShardCount;
@@ -290,7 +294,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             ObserveTransition,
             ObserveEffect,
             hostCancellation,
-            ObserveSendDatagram);
+            ObserveSendDatagram,
+            windowsUdpSegmentationEnabled ? ObserveSendDatagrams : null);
 
         Task receiveTask = ReceiveLoopAsync(hostCancellation);
         ObserveBackgroundTaskFault(endpointTask);
@@ -877,6 +882,121 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     {
         _ = shardIndex;
         SendDatagram(handle, sendDatagram);
+    }
+
+    private void ObserveSendDatagrams(
+        QuicConnectionHandle handle,
+        int shardIndex,
+        ReadOnlySpan<QuicConnectionSendDatagramUpdate> sendDatagrams)
+    {
+        _ = shardIndex;
+        if (!connections.TryGetValue(handle, out PendingConnectionState? state))
+        {
+            return;
+        }
+
+        int index = 0;
+        while (index < sendDatagrams.Length)
+        {
+            int batchCount = GetSegmentableRunLength(sendDatagrams[index..]);
+            if (batchCount >= QuicSocketUdpSegmentation.MinimumSegmentsPerSend)
+            {
+                TrySendSegmentedDatagrams(state, sendDatagrams.Slice(index, batchCount));
+                index += batchCount;
+                continue;
+            }
+
+            QuicConnectionSendDatagramUpdate sendDatagram = sendDatagrams[index];
+            SendDatagram(
+                state.FlowLabelSeed,
+                sendDatagram,
+                state.GetRemoteSocketAddress(sendDatagram.PathIdentity));
+            index++;
+        }
+    }
+
+    private static int GetSegmentableRunLength(
+        ReadOnlySpan<QuicConnectionSendDatagramUpdate> sendDatagrams)
+    {
+        QuicConnectionSendDatagramUpdate first = sendDatagrams[0];
+        if (first.Datagram.Length != QuicSocketUdpSegmentation.SegmentSize
+            || !MemoryMarshal.TryGetArray(first.Datagram, out ArraySegment<byte> firstSegment)
+            || firstSegment.Array is null)
+        {
+            return 0;
+        }
+
+        int limit = Math.Min(sendDatagrams.Length, QuicSocketUdpSegmentation.MaximumSegmentsPerSend);
+        int count = 1;
+        while (count < limit)
+        {
+            QuicConnectionSendDatagramUpdate current = sendDatagrams[count];
+            if (current.Datagram.Length != QuicSocketUdpSegmentation.SegmentSize
+                || current.PathIdentity != first.PathIdentity
+                || current.EcnMarking != first.EcnMarking
+                || !MemoryMarshal.TryGetArray(current.Datagram, out ArraySegment<byte> currentSegment)
+                || !ReferenceEquals(currentSegment.Array, firstSegment.Array)
+                || currentSegment.Offset != firstSegment.Offset + (count * QuicSocketUdpSegmentation.SegmentSize))
+            {
+                break;
+            }
+
+            count++;
+        }
+
+        return count;
+    }
+
+    private void TrySendSegmentedDatagrams(
+        PendingConnectionState state,
+        ReadOnlySpan<QuicConnectionSendDatagramUpdate> sendDatagrams)
+    {
+        try
+        {
+            QuicConnectionSendDatagramUpdate first = sendDatagrams[0];
+            if (!MemoryMarshal.TryGetArray(first.Datagram, out ArraySegment<byte> firstSegment)
+                || firstSegment.Array is null)
+            {
+                throw new InvalidOperationException("The segmented send lost its contiguous array owner.");
+            }
+
+            _ = QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, first.EcnMarking);
+            SocketAddress destination = state.GetRemoteSocketAddress(first.PathIdentity);
+            int length = checked(sendDatagrams.Length * QuicSocketUdpSegmentation.SegmentSize);
+            _ = QuicSocketUdpSegmentation.Send(
+                socket,
+                firstSegment.Array.AsSpan(firstSegment.Offset, length),
+                sendDatagrams.Length,
+                destination);
+            foreach (QuicConnectionSendDatagramUpdate sendDatagram in sendDatagrams)
+            {
+                QuicMetrics.RecordDatagramSent(QuicTlsRole.Server, sendDatagram.Datagram.Length);
+            }
+        }
+        catch (ObjectDisposedException) when (shutdown.IsCancellationRequested)
+        {
+            // Expected during listener shutdown.
+        }
+        catch (SocketException) when (shutdown.IsCancellationRequested)
+        {
+            // Expected during listener shutdown.
+        }
+        catch (SocketException ex) when (IsPeerPathSendSocketError(ex.SocketErrorCode)
+            || IsTransientSendSocketError(ex.SocketErrorCode))
+        {
+            RecordUdpSendFailure(ex);
+            for (int index = 1; index < sendDatagrams.Length; index++)
+            {
+                QuicMetrics.RecordPacketDropped(QuicTlsRole.Server);
+            }
+        }
+        catch (IOException)
+        {
+            foreach (QuicConnectionSendDatagramUpdate _ in sendDatagrams)
+            {
+                QuicMetrics.RecordPacketDropped(QuicTlsRole.Server);
+            }
+        }
     }
 
     private void WakeReceiveLoop()

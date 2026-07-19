@@ -627,6 +627,66 @@ internal sealed class QuicHandshakeFlowCoordinator
         }
     }
 
+    internal bool TryBuildProtectedApplicationDataPacket(
+        ReadOnlySpan<byte> applicationPayload,
+        QuicTlsPacketProtectionMaterial material,
+        bool keyPhase,
+        bool spinBit,
+        bool greaseQuicBit,
+        Span<byte> destination,
+        out ulong packetNumber,
+        out int protectedPacketLength)
+    {
+        packetNumber = default;
+        protectedPacketLength = default;
+
+        if (applicationPayload.IsEmpty
+            || destinationConnectionId.Length > MaximumConnectionIdLength
+            || material.EncryptionLevel != QuicTlsEncryptionLevel.OneRtt
+            || nextApplicationPacketNumber >= QuicVariableLengthInteger.MaxValue)
+        {
+            return false;
+        }
+
+        ulong currentPacketNumber = nextApplicationPacketNumber;
+        if (!TryBuildApplicationDataPlaintextPacket(
+                applicationPayload,
+                ackFrame: null,
+                ackFramePayloadLength: 0,
+                keyPhase,
+                spinBit,
+                greaseQuicBit,
+                currentPacketNumber,
+                out QuicBufferLease plaintextPacket,
+                out int packetNumberOffset,
+                out int packetNumberLength))
+        {
+            return false;
+        }
+
+        try
+        {
+            if (!TryProtectApplicationDataPacket(
+                    material,
+                    plaintextPacket.Span,
+                    packetNumberOffset,
+                    packetNumberLength,
+                    destination,
+                    out protectedPacketLength))
+            {
+                return false;
+            }
+
+            packetNumber = currentPacketNumber;
+            nextApplicationPacketNumber = currentPacketNumber + 1;
+            return true;
+        }
+        finally
+        {
+            plaintextPacket.Dispose();
+        }
+    }
+
     internal bool TryBuildProtectedApplicationDataPacketLease(
         ReadOnlySpan<byte> applicationPayload,
         QuicTlsPacketProtectionMaterial material,
@@ -2717,6 +2777,62 @@ internal sealed class QuicHandshakeFlowCoordinator
                 protectedPacket = default;
             }
         }
+    }
+
+    private bool TryProtectApplicationDataPacket(
+        QuicTlsPacketProtectionMaterial material,
+        ReadOnlySpan<byte> plaintextPacket,
+        int packetNumberOffset,
+        int packetNumberLength,
+        Span<byte> destination,
+        out int protectedPacketLength)
+    {
+        protectedPacketLength = default;
+
+        if (!TryValidatePacketProtectionMaterial(material))
+        {
+            return false;
+        }
+
+        int plaintextPayloadLength = plaintextPacket.Length - packetNumberOffset - packetNumberLength;
+        if (plaintextPayloadLength < ApplicationMinimumProtectedPayloadLength)
+        {
+            return false;
+        }
+
+        int requiredLength = plaintextPacket.Length + QuicInitialPacketProtection.AuthenticationTagLength;
+        if (destination.Length < requiredLength)
+        {
+            return false;
+        }
+
+        Span<byte> protectedPacketBuffer = destination[..requiredLength];
+        plaintextPacket[..(packetNumberOffset + packetNumberLength)].CopyTo(protectedPacketBuffer);
+
+        Span<byte> nonce = stackalloc byte[QuicInitialPacketProtection.AeadNonceLength];
+        BuildNonce(
+            material.AeadIvBytes,
+            ReadPacketNumber(plaintextPacket, packetNumberOffset, packetNumberLength),
+            nonce);
+
+        if (!TryEncryptPacketPayload(
+                material,
+                nonce,
+                plaintextPacket.Slice(packetNumberOffset + packetNumberLength, plaintextPayloadLength),
+                protectedPacketBuffer.Slice(packetNumberOffset + packetNumberLength, plaintextPayloadLength),
+                protectedPacketBuffer.Slice(plaintextPacket.Length, QuicInitialPacketProtection.AuthenticationTagLength),
+                protectedPacketBuffer[..(packetNumberOffset + packetNumberLength)])
+            || !TryApplyHeaderProtection(
+                material,
+                protectedPacketBuffer,
+                packetNumberOffset,
+                packetNumberLength))
+        {
+            return false;
+        }
+
+        protectedPacketLength = requiredLength;
+        return true;
     }
 
     private bool TryOpenApplicationDataPacket(

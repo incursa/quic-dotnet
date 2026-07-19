@@ -56,7 +56,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const int PathMtuProbeDelayMilliseconds = 1;
     private const ulong CommonEthernetIpv4QuicDatagramSizeBytes = 1_472;
     private const ulong CommonEthernetIpv6QuicDatagramSizeBytes = 1_452;
-    private const int ApplicationSendBatchAckHeadroomBytes = 64;
+    internal const int HostedApplicationDatagramBatchSegmentSize = 1_472;
+    internal const int HostedApplicationDatagramBatchCapacity = QuicSendPolicy.EstablishedQueuedApplicationSendBurstDatagrams;
     private const int HandshakeEgressChunkBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize;
     private const int MaximumBufferedEstablishmentHandshakePackets = 8;
     private const int InitialHostedTimerUpdateCapacity = 8;
@@ -148,8 +149,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private List<QuicConnectionTimerUpdate>? pendingHostedTimerUpdates;
     private List<QuicConnectionSendDatagramUpdate>? pendingHostedSendDatagramUpdates;
     private int pendingHostedSendDatagramUpdateIndex;
+    private byte[]? hostedApplicationDatagramBatchOwner;
+    private int hostedApplicationDatagramBatchPacketCount;
+    private int hostedApplicationDatagramBatchLastUpdateIndex = -1;
     private bool suppressHostedTimerEffectObjects;
     private bool suppressHostedSendDatagramEffectObjects;
+    private bool enableHostedApplicationDatagramBatches;
     private QuicConnectionTerminalState? terminalState;
     private QuicIdleTimeoutState? idleTimeoutState;
     private QuicConnectionPhase phase = QuicConnectionPhase.Establishing;
