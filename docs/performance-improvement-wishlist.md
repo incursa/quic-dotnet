@@ -6161,6 +6161,8 @@ PTO, cancellation, disposal, and FIN recovery proof before end-to-end timing.
 Build that proof surface before changing the hosted runtime. Do not reuse the
 rejected per-shard sender queue, which accounted packets before delayed socket
 emission and failed `DroppedServerFinIsRecoveredAndShardContinuesProcessing`.
+The required reservation, completion, ACK-race, ownership, and staged promotion
+rules are defined in `docs/performance-same-connection-egress-design.md`.
 
 Evidence is retained under
 `C:\shared\temp\quic-actor-topology-attribution-20260719` and
@@ -6170,3 +6172,39 @@ and derived summary SHA-256 values are
 `DE4CCAD009F929FF294E0F9698BD24F5487D3FFADF3D4087ED5BA64DA388D105`.
 Focused metrics tests passed 38/38. ProtocolLab was not run, and no package,
 deployment, registration, or publication changed.
+
+### Accepted 2026-07-19: completion-coupled egress accounting foundation
+
+The first proof slice adds a dormant, allocation-free prepared-send reservation
+to the authoritative sent-packet runtime. A reservation consumes congestion
+capacity without increasing `bytes_in_flight`, entering the ACK/loss ledger,
+updating ECN state, or starting recovery. A successful commit converts the
+reserved bytes to in-flight bytes exactly once using the supplied socket
+acceptance timestamp. Release returns capacity and packet owners exactly once.
+Path recovery reset invalidates the pending token and returns its ownership.
+
+The token is an allocation-free sequence value backed by one connection-owned
+pending slot. A second reservation is refused until the first is committed or
+released. This bound is deliberate: the initial reference-token prototype was
+removed before commit because allocating one object per datagram would add
+roughly 884 allocations per one-MiB response on the attributed path.
+
+This is a correctness prerequisite, not an enabled runtime candidate and not a
+performance result. Hosted transitions can prepare several datagrams before
+their effects execute, while ACK piggyback state, anti-amplification budget,
+recovery timers, and owners are currently committed during packet construction.
+The live synchronous slice must therefore carry prepared packet metadata beside
+each send effect and reserve only immediately before its socket callback. It
+must not infer metadata from the latest sent packet or reintroduce pre-emission
+recovery accounting. Short or transient failed retransmittable sends must
+explicitly return plaintext or rebuild metadata to the actor recovery path.
+
+Focused reservation, packet ownership, FIN recovery, and standalone FIN tests
+passed 35/35. The full Release suite completed 9,648 passes and four intentional
+skips, with one occurrence of the retained load-sensitive
+`DroppedServerFinIsRecoveredAndShardContinuesProcessing` assertion: the FIN was
+dropped, but the test did not observe its retransmission before completion. The
+same test passed in the focused gate and then passed ten isolated reruns out of
+ten. The full and focused TRX files are under
+`tests/Incursa.Quic.Tests/TestResults/same-connection-egress-*`. ProtocolLab was
+not run, and no package, deployment, registration, or publication changed.
