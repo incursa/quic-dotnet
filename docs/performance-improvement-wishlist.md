@@ -6353,3 +6353,47 @@ deployment, registration, or publication state changed. The next
 same-connection investigation should re-profile the accepted runtime before
 selecting another mechanism; do not add broader ACK deferral or repeat rejected
 egress and queue-order variants.
+
+The follow-up source-backed ProtocolLab confirmation used exact
+`quic.transport.multiplex.16x1mb` validation on one connection with sixteen
+concurrent bidirectional one-MiB streams. An A/B/A/B campaign ran five
+repetitions per leg against detached `1db6a657` baseline and committed
+`e85dd63d` candidate sources. All 20 cells passed exact byte, stream-count,
+failure, and timeout validation. Across the ten samples per implementation,
+median throughput increased from 24.93 to 31.52 MiB/s (+26.4%), median p95
+latency fell from 708.65 to 571.67 ms (-19.3%), and throughput CV was 2.85%
+baseline versus 2.71% candidate. This confirms the local signal on an
+independent exact same-connection transport workload.
+
+ProtocolLab's ordinary fixed-response HTTP/3 load tool did not confirm the
+requested topology: its retained baseline leg achieved concurrency one and
+explicitly warns that it cannot guarantee `streamsPerConnection`. The named
+download-only raw QUIC scenario likewise correctly rejected a sixteen-stream
+override because its scenario contract defines one stream. Neither result is
+used as `1 x 16` evidence. The exact local HTTP/3 and download-only acceptance
+campaign remains authoritative for those shapes, while the ProtocolLab
+bidirectional multiplex campaign is corroborating shared-host diagnostic
+evidence. Artifacts and the derived summary are retained under
+`C:\shared\temp\pl-ack-finalization-confirmation-20260719`; the summary SHA-256
+is `C2965764471DEFD5CFDEEAA9616E450B9E412D11F274E92C8B6B4B157198B615`.
+Nothing was deployed, registered, or published.
+
+Post-acceptance actor attribution confirms that the accepted mechanism reduced
+the measured serialized service estimate from 27.36 to 23.36 ms per response
+(-14.6%). Packet-receive transition time fell from 7.82 to 5.99 ms per response
+and standalone ACK sends fell from approximately 114 to 0.30 per response. The
+remaining dominant serialized work is now stream-write packet construction and
+synchronous datagram effects: stream-write transition time is 5.19 ms per
+response and its send-datagram effects consume 11.33 ms per response. Mean
+packet and stream-write queue delays are 6.33 and 6.06 ms respectively, while
+retention remains bounded at 231 sent packets and 267 small pooled buffers
+(552,960 bytes at peak). This leaves no second candidate with a measured
+ten-percent mechanism among the retained chunk-size, admission, sender-queue,
+direct-send, segmentation, in-place protection, and queue-order negatives.
+Further same-connection work should require a materially different mechanism,
+such as true OS-level batched datagram submission or negotiated peer support
+for ACK frequency, before changing runtime behavior again. The derived
+attribution summary is retained at
+`C:\shared\temp\pl-ack-finalization-confirmation-20260719\post-acceptance-attribution-summary.json`
+with SHA-256
+`2984064CD79960D632E044106AA915B0448A64A56E6C7D33867EBB68C5C50AB5`.
