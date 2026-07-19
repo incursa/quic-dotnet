@@ -6251,3 +6251,46 @@ regresses the target lane is not acceptable. Raw results, logs, binary hashes,
 TRX files, the rejected patch, and `negative-result.json` are retained under
 `C:\shared\temp\quic-completion-coupled-send-20260719`. ProtocolLab was not run,
 and no package, deployment, registration, or publication state changed.
+
+### Rejected 2026-07-19: connection-local completion-coupled send emitter
+
+A materially different follow-up combined the prepared-send accounting proof
+with one bounded emitter per connection rather than the previously rejected
+per-shard sender queue. Established retransmittable one-RTT application packets
+transferred protected-buffer ownership to a 64-datagram connection-local queue.
+One ThreadPool worker preserved queue order, performed the actual socket calls,
+published emission timestamps before posting a batched actor wake, and returned
+protected buffers only after the send completed. The actor committed emitted
+packets before ordinary transitions, and authenticated ACK processing could
+commit an emitted reservation inline when its completion wake had not yet run.
+Disposal waited for the emitter before releasing pending packet state.
+
+The first activation attempt exposed an invalid full-queue fallback: sending a
+newer datagram synchronously while older datagrams remained queued could reorder
+emission. That run failed after eight successful responses and was stopped. The
+fallback was replaced with bounded producer backpressure, after which focused
+reservation, ACK-race, ownership, listener-send, disposal, FIN-recovery, and
+large-response tests passed 40/40.
+
+The corrected mechanism still failed the local performance gate. Five exact
+HTTP/3 fixed one-MiB `1 x 16` samples passed status, content-length, payload,
+EOF, failure, and timeout validation, but produced a 36.83 MiB/s median, 61.43%
+CV, 895.86 ms p95, and 163,953 allocated bytes per response. Removing an
+unnecessary pending-reservation lock from the normal ACK-ledger hit path did not
+recover the design: the next five validated samples fell to an 8.32 MiB/s
+median, 97.86% CV, 6,147.72 ms p95, and 159,634 allocated bytes per response.
+The matched clean-source reference was 50.29 MiB/s, 330.60 ms p95, and 98,225
+allocated bytes per response.
+
+The connection-local worker therefore moved socket work off the actor but
+replaced it with completion latency, reservation synchronization, extra wakeups,
+and severe tail stalls. The candidate was reverted before transport controls,
+the full suite, or ProtocolLab. Do not repeat asynchronous sender queues,
+completion wake variants, direct `SendToAsync`, or minor queue-bound changes
+without a materially different OS submission and recovery model. Two designs
+for this attribution have now failed the local gate, so the next investigation
+must reassess actor transition cost rather than continue egress-queue variants.
+Raw JSON, logs, focused TRX files, frozen hashes, the rejected patch and emitter
+source, and `negative-result.json` are retained under
+`C:\shared\temp\quic-connection-local-emitter-20260719`. No package,
+deployment, registration, publication, or ProtocolLab state changed.
