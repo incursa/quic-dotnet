@@ -6494,3 +6494,107 @@ write-transition grouping without a mechanism that measurably reduces packet
 construction, datagram count, or synchronous send-effect cost. The planner
 seam remains useful for future evidence-backed policies, but no alternate
 production policy is justified by the current same-connection evidence.
+
+### Planned 2026-07-19: post-authentication stream execution fan-out
+
+Move stream-local receive work out of the single connection actor after the
+connection has authenticated and decrypted a packet and parsed its frames. The
+connection coordinator must continue to own packet-number state, ACK and loss
+recovery, congestion control, connection and stream flow-control accounting,
+keys, paths, and lifecycle transitions. Stream executors may own stream-local
+range reassembly, offsets, FIN and reset state, read-buffer delivery, and
+preparation of immutable outbound stream ranges.
+
+Do not create one task or `Channel<T>` per stream. Use a fixed number of
+execution shards with bounded ready-stream queues, a lightweight per-stream
+mailbox, an atomic scheduled flag, and a lifecycle generation. A stream may be
+executed by only one shard at a time. Process a bounded byte or operation
+quantum and requeue unfinished streams so one active stream cannot monopolize a
+worker. Closing a connection or stream must stop admission, complete pending
+operations, drain and release owned buffers, and make stale queued work fail a
+generation check.
+
+Use explicit packet-buffer ownership. Parsed STREAM frames should initially
+hold slices of a reference-counted decrypted packet owner. Contiguous data that
+can satisfy a pending read may use that storage directly; out-of-order or
+long-lived data should be copied once into right-sized pooled stream storage so
+a small retained range cannot pin an entire UDP packet indefinitely. The goal
+is no unnecessary copy, not unconditional zero copy.
+
+Backpressure must be bounded globally, per connection, and per stream in bytes
+and descriptors. Reserve receive-work capacity before committing packet receipt
+to ACK state. If capacity cannot be reserved, discard the whole packet before
+ACK commitment and rely on QUIC retransmission; never acknowledge a packet and
+then discard one of its STREAM frames. Flow-control limits remain protocol
+limits and must not be replaced by memory-pool sizing.
+
+Acceptance requires focused ordering, duplicate, out-of-order, FIN, reset,
+cancellation, disposal, flow-control, ownership, and connection-close tests,
+plus local `1 x 1`, `1 x 4`, and `1 x 16` evidence. Instrument per-stream
+mailbox depth and delay, worker utilization, stale-work rejection, retained
+packet bytes, copied bytes, and coordinator service time. This is materially
+different from the rejected stream-action lock split: ownership moves to a
+bounded stream executor only after connection-wide packet processing, rather
+than allowing multiple callers to mutate the existing connection state under
+different locks.
+
+### Planned 2026-07-19: bounded packet-batch egress pipeline
+
+The current exact one-MiB `1 x 16` evidence observed about 884 hosted datagram
+callbacks per response, or approximately 1,186 application bytes per callback.
+That is consistent with nearly full MTU-sized QUIC packets: the wire packet
+count is expected, but one synchronous `Socket.SendTo` invocation per packet is
+not an unavoidable submission model. Current attribution retains about 5.19 ms
+per response in stream-write packet construction and 11.33 ms in synchronous
+datagram effects, both on the connection shard.
+
+Peer reconnaissance confirms that fast implementations retain connection-wide
+send authority while amortizing its work:
+
+- quic-go v0.60.0 uses a bounded eight-entry sender queue, a separate sender
+  goroutine, and UDP GSO to submit multiple same-sized QUIC packets through one
+  kernel operation. See
+  <https://github.com/quic-go/quic-go/blob/v0.60.0/send_queue.go>,
+  <https://github.com/quic-go/quic-go/blob/v0.60.0/connection.go>, and
+  <https://github.com/quic-go/quic-go/blob/v0.60.0/send_conn.go>.
+- MsQuic commit `c227199009273e328895e4c44ce2118571b3d5c6` retains a
+  connection send flush and fair stream-send list, builds several datagrams in
+  one send-data object, and submits the batch through platform GSO or
+  multi-message send facilities with pending-send handling. See
+  <https://github.com/microsoft/msquic/blob/c227199009273e328895e4c44ce2118571b3d5c6/src/core/send.c>,
+  <https://github.com/microsoft/msquic/blob/c227199009273e328895e4c44ce2118571b3d5c6/src/core/packet_builder.c>, and
+  <https://github.com/microsoft/msquic/blob/c227199009273e328895e4c44ce2118571b3d5c6/src/platform/datapath_epoll.c>.
+
+Build the Incursa pipeline in explicit bounded phases:
+
+1. Stream executors publish immutable send-ready ranges or descriptors.
+2. The connection coordinator reserves a bounded packet-number range and
+   snapshots congestion, flow-control, ACK, key, and path budgets.
+3. Packet builders encode and protect disjoint buffers from that reservation.
+4. An ordered platform sender submits a batch with segmentation or the best
+   available multi-datagram facility.
+5. A completion path commits successfully submitted packets and releases or
+   requeues any unsubmitted work.
+
+Start with synchronous batch construction and submission before attempting
+parallel packet encryption. A short reservation and commit phase can remain
+serialized while most stream preparation and the socket wait move elsewhere.
+Key updates, path changes, ACK-generation boundaries, pacing deadlines, and
+congestion-budget changes are batch barriers.
+
+This must not repeat the rejected generic sender queue, which accounted packets
+before delayed socket emission and failed dropped-FIN recovery. Packet state may
+become authoritative only for the subset accepted by the platform submission;
+partial batch success, cancellation, disposal, FIN, PTO, loss recovery, and
+buffer release require explicit tests. The queue and number of reserved packets
+must remain bounded, and a full sender must backpressure the connection flush
+rather than accumulating unlimited prepared ciphertext.
+
+Measure wire packets separately from packet-build calls, platform submissions,
+syscalls, datagrams per submission, bytes per submission, shard blocked time,
+reservation-to-submit latency, completion latency, queue depth, partial sends,
+and retained ciphertext bytes. A candidate qualifies only with matched local
+evidence showing at least a ten-percent `1 x 16` gain or a material reduction in
+serialized shard time, without more than about five-percent regression at c1
+or c4 and without weakening congestion control, flow control, recovery,
+ordering, fairness, cancellation, disposal, or RFC behavior.
