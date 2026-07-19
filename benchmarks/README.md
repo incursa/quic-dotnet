@@ -190,13 +190,14 @@ The topology lists form a Cartesian product. Each connection owns a separate
 JSON records connections, streams per connection, and total concurrency.
 
 For a locally hosted external HTTP/3 target, add `--target-base-url`. This
-client-only mode currently supports fixed deterministic byte responses and
-keeps target startup and target allocations outside the measured process:
+client-only mode supports fixed and streaming deterministic downloads, sink
+uploads, and simultaneous duplex echo while keeping target startup and target
+allocations outside the measured process:
 
 ```powershell
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- `
   --http3-loopback `
-  --scenarios fixed `
+  --scenarios fixed,streaming,upload,duplex `
   --payload-sizes 1048576 `
   --connections 1 `
   --streams-per-connection 1,4,16 `
@@ -207,11 +208,14 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- `
   --json .artifacts/perf/http3-local/external-target.json
 ```
 
-The external response must use the ProtocolLab deterministic `index % 251`
-payload. Client-only runs still require exact HTTP/3, status, content length,
-EOF, and payload validation. Runtime diagnostics and listener socket controls
-are rejected in this mode because they would describe the client process, not
-the external target.
+The external target contract uses `/bytes/{size}`, `/stream/bytes`, `/sink`,
+and `/duplex/echo` with the ProtocolLab deterministic `index % 251` payload.
+Client-only runs still require exact HTTP/3, status, EOF, and payload
+validation. Content length is also exact where the endpoint declares it;
+streaming downloads intentionally validate exact bytes and EOF without
+requiring that header. Runtime diagnostics and listener socket controls are
+rejected in this mode because they would describe the client process, not the
+external target.
 
 For a separate instrumented attribution run, add `--diagnostics true`. For
 example:

@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Net.Security;
 using System.Runtime.Versioning;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Incursa.Qpack;
@@ -84,7 +85,7 @@ internal static class Http3LoopbackPerformanceHarness
                         options.LoadShapes.Max(static shape => shape.Connections)).ConfigureAwait(false)
                     : null;
                 RequestSpec request = server?.Request
-                    ?? RequestSpec.CreateExternalFixed(options.TargetBaseUrl!, payloadSize);
+                    ?? RequestSpec.CreateExternal(options.TargetBaseUrl!, scenario, payloadSize);
 
                 foreach (LoadShape loadShape in options.LoadShapes)
                 {
@@ -251,7 +252,8 @@ internal static class Http3LoopbackPerformanceHarness
                         $"Unexpected response status/version: {(int)response.StatusCode}/{response.Version}.");
                 }
 
-                if (response.Content.Headers.ContentLength != requestSpec.ExpectedResponseBody.Length)
+                if (requestSpec.RequireContentLength
+                    && response.Content.Headers.ContentLength != requestSpec.ExpectedResponseBody.Length)
                 {
                     throw new InvalidOperationException(
                         $"Unexpected content length: {response.Content.Headers.ContentLength}.");
@@ -652,11 +654,6 @@ internal static class Http3LoopbackPerformanceHarness
 
             if (targetBaseUrl is not null)
             {
-                if (scenarios.Any(static scenario => scenario != ScenarioKind.FixedDownload))
-                {
-                    throw new ArgumentException("--target-base-url currently supports the fixed scenario only.");
-                }
-
                 if (diagnostics)
                 {
                     throw new ArgumentException(
@@ -864,17 +861,57 @@ internal static class Http3LoopbackPerformanceHarness
         Uri RequestUri,
         byte[]? RequestBody,
         byte[] ExpectedResponseBody,
-        int TransferredBytesPerRequest)
+        int TransferredBytesPerRequest,
+        bool RequireContentLength = true)
     {
-        internal static RequestSpec CreateExternalFixed(Uri baseUrl, int payloadSize)
+        internal static RequestSpec CreateExternal(Uri baseUrl, ScenarioKind scenario, int payloadSize)
         {
-            byte[] expectedBody = CreateModulo251Bytes(payloadSize);
+            byte[] payload = CreateModulo251Bytes(payloadSize);
+            string invariantPayloadSize = payloadSize.ToString(CultureInfo.InvariantCulture);
+            return scenario switch
+            {
+                ScenarioKind.FixedDownload => new RequestSpec(
+                    HttpMethod.Get,
+                    new Uri(baseUrl, $"/bytes/{invariantPayloadSize}"),
+                    null,
+                    payload,
+                    payloadSize),
+                ScenarioKind.StreamingDownload => CreateExternalStreaming(baseUrl, payload, payloadSize),
+                ScenarioKind.Upload => new RequestSpec(
+                    HttpMethod.Post,
+                    new Uri(baseUrl, "/sink"),
+                    payload,
+                    Encoding.UTF8.GetBytes($"{{\"bytesRead\":{invariantPayloadSize}}}"),
+                    payloadSize),
+                ScenarioKind.Duplex => new RequestSpec(
+                    HttpMethod.Post,
+                    new Uri(baseUrl, "/duplex/echo"),
+                    payload,
+                    payload,
+                    checked(payloadSize * 2)),
+                _ => throw new ArgumentOutOfRangeException(nameof(scenario)),
+            };
+        }
+
+        private static RequestSpec CreateExternalStreaming(Uri baseUrl, byte[] payload, int payloadSize)
+        {
+            int chunkSize = Math.Min(StreamingChunkSize, payloadSize);
+            int chunks = Math.DivRem(payloadSize, chunkSize, out int remainder);
+            if (remainder != 0)
+            {
+                throw new ArgumentException(
+                    $"External streaming payload size {payloadSize} must be divisible by chunk size {chunkSize}.");
+            }
+
             return new RequestSpec(
                 HttpMethod.Get,
-                new Uri(baseUrl, $"/bytes/{payloadSize.ToString(CultureInfo.InvariantCulture)}"),
+                new Uri(
+                    baseUrl,
+                    $"/stream/bytes?chunks={chunks.ToString(CultureInfo.InvariantCulture)}&size={chunkSize.ToString(CultureInfo.InvariantCulture)}&delayMs=0"),
                 null,
-                expectedBody,
-                payloadSize);
+                payload,
+                payloadSize,
+                RequireContentLength: false);
         }
     }
 

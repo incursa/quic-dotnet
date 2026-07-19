@@ -5672,3 +5672,40 @@ request DATA delivery unless a future broader trace shows the copy or pooled
 segment retention has become a material end-to-end cost. The result reinforces
 that the remaining large-body gap is dominated by actor queueing and packet
 service, not HTTP/3 frame-parser copying.
+
+### Accepted 2026-07-18: external-target HTTP/3 upload and duplex coverage
+
+The local HTTP/3 harness previously supported a separate target process only
+for fixed deterministic downloads. That left upload and duplex allocation
+figures contaminated by running the client and Incursa server in one process.
+External mode now covers the source-backed endpoint's fixed `/bytes/{size}`,
+streaming `/stream/bytes`, sink-upload `/sink`, and simultaneous
+`/duplex/echo` contracts. It preserves established connection topology,
+`index % 251` payload generation, exact HTTP/3 and status validation, exact
+content length where declared, exact body bytes, EOF proof, and transferred-byte
+accounting. Target startup and target allocation remain outside the measured
+client operation.
+
+A source-backed Incursa target built directly against the current QUIC
+worktree and passed a one-MiB four-shape smoke. A five-repetition baseline then
+ran fixed, streaming, upload, and duplex at c1, c4, and c16 in a separate
+process, 60 measured samples total, with zero protocol, content, EOF, payload,
+request, or timeout failures:
+
+| Shape | c1 MiB/s | c4 MiB/s | c16 MiB/s | c16 CV | c16 p95 | c16 client B/request |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| fixed | 44.86 | 43.06 | 38.93 | 5.63% | 424.40 ms | 145,905 |
+| streaming | 45.19 | 42.41 | 39.36 | 0.74% | 419.55 ms | 168,285 |
+| upload | 63.46 | 59.27 | 55.20 | 2.18% | 317.87 ms | 5,692 |
+| duplex | 55.48 | 55.62 | 49.32 | 1.02% | 710.83 ms | 170,369 |
+
+The client-only upload allocation is about 5.7 KiB/request rather than the
+roughly one-payload allocation reported by the in-process run. That proves the
+large upload allocation is target-side buffering rather than load-client
+construction. Duplex remains roughly 170 KiB/request on the client while the
+target streams the request and response concurrently. The next local-first
+step is target-process allocation and sampled CPU attribution for upload and
+duplex, not another speculative actor continuation. The exact source-backed
+target build, smoke, repeated JSON, and log are retained under
+`C:\shared\temp\quic-h3-external-local-20260718`. ProtocolLab orchestration was
+not run and no package, registration, deployment, or publication changed.
