@@ -613,6 +613,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                                 "The hosted send-datagram marker did not have a matching value update.");
                         }
 
+                        long sendDatagramStartedTimestamp = QuicMetrics.GetRuntimeShardPhaseStartTimestamp();
                         try
                         {
                             if (sendDatagramObserver is not null)
@@ -626,14 +627,31 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                         }
                         finally
                         {
+                            QuicMetrics.RecordRuntimeShardPhaseTime(
+                                shardIndex,
+                                in workItem,
+                                "send_datagram_effect",
+                                sendDatagramStartedTimestamp);
                             update.ReleaseDatagramOwner();
                         }
 
                         continue;
                     }
 
-                    deadlineScheduler.Apply(workItem.Handle, runtime, effect);
-                    effectObserver?.Invoke(workItem.Handle, effect);
+                    long otherEffectStartedTimestamp = QuicMetrics.GetRuntimeShardPhaseStartTimestamp();
+                    try
+                    {
+                        deadlineScheduler.Apply(workItem.Handle, runtime, effect);
+                        effectObserver?.Invoke(workItem.Handle, effect);
+                    }
+                    finally
+                    {
+                        QuicMetrics.RecordRuntimeShardPhaseTime(
+                            shardIndex,
+                            in workItem,
+                            "other_effect",
+                            otherEffectStartedTimestamp);
+                    }
                 }
             }
             finally

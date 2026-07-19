@@ -6119,3 +6119,54 @@ runner, and negative-result record are retained under
 adjacent-write accumulation or same-priority queue rotation without a design
 that reduces the number of actor transitions or datagrams rather than merely
 redistributing them.
+
+### Accepted 2026-07-19: same-connection hosted-send effect attribution
+
+The retained topology comparison confirmed that the current fixed-response
+path is limited by serialized per-connection actor service rather than wakeup
+starvation. In the diagnostic one-connection, sixteen-stream sample, 216 exact
+one-MiB responses completed at 43.14 MiB/s. Packet-receive and stream-write
+service consumed 8.29 and 13.82 ms per response respectively, or about
+22.11 ms of actor service per response. That service budget predicts roughly
+45 responses/s before other work, close to the measured result. A companion
+sixteen-connection, one-stream diagnostic completed 471 responses at
+93.09 MiB/s by distributing connections across actors. Its absolute per-item
+times were inflated by shared-host contention, so only the topology and work
+distribution are used as attribution evidence.
+
+The shard phase histogram now breaks the hosted effect loop into synchronous
+send-datagram callback time and other-effect time. This is disabled unless a
+metrics listener enables the existing runtime phase histogram and does not
+change runtime ordering, send ownership, recovery, congestion control, flow
+control, cancellation, disposal, or public behavior.
+
+An attribution-only exact one-MiB, one-connection, sixteen-stream run completed
+176 responses with no validation failures. Its instrumented 34.20 MiB/s and
+735.32 ms p95 are not promotion metrics. The actor spent approximately
+12.56 ms per response in transitions and 14.80 ms per response in effects.
+Hosted datagram callbacks accounted for 13.89 ms per response, 93.8 percent of
+effect time, across about 884 callbacks per response. Packet ACK processing
+accounted for 2.92 ms per response, including 1.51 ms walking ACK ranges and
+0.85 ms in recovery. Stream-write transitions accounted for 4.73 ms per
+response. The combined measured actor service predicts about 36.6 responses/s,
+close to the instrumented 34.2 responses/s.
+
+This evidence is large enough to justify an architectural egress investigation
+but not another socket wrapper, UDP segmentation, asynchronous submission,
+minor ACK-ledger, queue-order, or write-rotation variant. Those mechanisms have
+retained negative evidence. The next candidate must keep actual socket emission
+coupled to sent-packet and loss-recovery accounting, bound pending datagram
+ownership, preserve exact send order, and provide deterministic dropped-send,
+PTO, cancellation, disposal, and FIN recovery proof before end-to-end timing.
+Build that proof surface before changing the hosted runtime. Do not reuse the
+rejected per-shard sender queue, which accounted packets before delayed socket
+emission and failed `DroppedServerFinIsRecoveredAndShardContinuesProcessing`.
+
+Evidence is retained under
+`C:\shared\temp\quic-actor-topology-attribution-20260719` and
+`C:\shared\temp\quic-actor-effect-attribution-20260719`. The detailed trace
+and derived summary SHA-256 values are
+`1FFEFB6F862DC61762690C9D2FC479818477DB876BAB6DCFB33B15D9231C8C66` and
+`DE4CCAD009F929FF294E0F9698BD24F5487D3FFADF3D4087ED5BA64DA388D105`.
+Focused metrics tests passed 38/38. ProtocolLab was not run, and no package,
+deployment, registration, or publication changed.

@@ -58,6 +58,12 @@ public class MetricsTests
                 "incursa.quic.buffer_pool.returns",
                 "size_bucket",
                 sizeBucket) >= returnsBefore + 1);
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.shard.phase_time.ms"
+            && measurement.Value >= 0
+            && measurement.HasTag("shard_index", "0")
+            && measurement.HasTag("work_item_kind", "stream_capacity_release")
+            && measurement.HasTag("phase", "send_datagram_effect"));
 
         InvalidOperationException disposeFailure = await Assert.ThrowsAsync<InvalidOperationException>(
             () => shard.DisposeAsync().AsTask());
