@@ -1615,7 +1615,8 @@ internal sealed partial class QuicConnectionRuntime
                 IsAddressValidated: false,
                 HandshakeConfirmed: HandshakeConfirmed,
                 HasOneRttProtection: tlsState.OneRttProtectPacketProtectionMaterial.HasValue,
-                QueuedApplicationSendCount: applicationSendQueue.Count);
+                QueuedApplicationSendCount: applicationSendQueue.Count,
+                MaximumQueuedApplicationSendBurstDatagrams: GetMaximumQueuedApplicationSendBurstDatagrams());
         }
 
         return new QuicSendPolicySnapshot(
@@ -1632,8 +1633,14 @@ internal sealed partial class QuicConnectionRuntime
             IsAddressValidated: currentPath.AmplificationState.IsAddressValidated,
             HandshakeConfirmed: HandshakeConfirmed,
             HasOneRttProtection: tlsState.OneRttProtectPacketProtectionMaterial.HasValue,
-            QueuedApplicationSendCount: applicationSendQueue.Count);
+            QueuedApplicationSendCount: applicationSendQueue.Count,
+            MaximumQueuedApplicationSendBurstDatagrams: GetMaximumQueuedApplicationSendBurstDatagrams());
     }
+
+    private int GetMaximumQueuedApplicationSendBurstDatagrams()
+        => HandshakeConfirmed
+            ? QuicSendPolicy.EstablishedQueuedApplicationSendBurstDatagrams
+            : QuicSendPolicy.MeasuredQueuedApplicationSendBurstDatagrams;
 
     private static bool IsTransientCongestionExhaustion(Exception? exception)
     {

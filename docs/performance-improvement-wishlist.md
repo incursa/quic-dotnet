@@ -5945,3 +5945,54 @@ metric. Evidence is retained at
 `C:\shared\temp\quic-local-first-h3-phase-20260718\current-fixed-1x16-packet-phases.json`.
 The next step is to compare actor turns and phase cost per completed response at
 one, four, and sixteen streams before changing runtime behavior.
+
+### Accepted 2026-07-18: established congestion-bounded send tranche
+
+The cross-shape actor comparison confirmed a same-connection queueing limit.
+One-MiB fixed responses used about 269 packet-receive actor items and 65
+stream-write items per response at one, four, and sixteen streams. Median queue
+delay rose from roughly 0.3-0.8 ms at one stream to 4.6-5.5 ms at sixteen while
+the actor remained continuously busy. Packet ACK, recovery, and post-recovery
+send flushing accounted for enough actor service to explain a meaningful part
+of the gap. Evidence is retained under
+`C:\shared\temp\quic-same-connection-actor-20260718`.
+
+Two bounded variants were rejected before accepting the runtime change. A
+draft ACK_FREQUENCY implementation correctly retained the four-datagram
+fallback with System.Net.Quic, which did not advertise draft support; fixed
+one-MiB `1 x 16` therefore moved only 1.0%. The draft code was removed and the
+negative result is retained under
+`C:\shared\temp\quic-ack-frequency-negotiated-20260718`. An established
+sixteen-datagram tranche improved fixed `1 x 16` by 10.6%, but transport upload
+fell 5.8% and p95 rose from 528.31 ms to 718.55 ms. That variant was rejected
+and is recorded in `negative-16-datagram.json` in the accepted evidence root.
+
+The accepted policy keeps the pre-handshake cap at four datagrams and allows an
+established actor turn to consume up to twelve datagrams from the existing
+congestion and anti-amplification budget. It does not change send-queue order,
+stream selection, packet order, retransmission priority, congestion control,
+flow control, cancellation, disposal, or public write completion. Fifteen
+frozen-baseline and ten candidate samples produced the following exact local
+HTTP/3 fixed-response medians:
+
+| Streams on one connection | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | 65.85 | 75.29 | +14.3% | -18.5% | -22.1% |
+| 4 | 64.58 | 76.44 | +18.4% | -17.6% | -22.1% |
+| 16 | 60.49 | 71.47 | +18.2% | -15.7% | -24.3% |
+
+All fixed-response samples passed HTTP/3, status, exact content length, exact
+payload, and EOF validation. Two successful public-transport runs per variant
+showed download within -1.5%, upload +16.4%, and duplex +13.2%; upload and
+duplex p95 improved 10.6% and 12.7%. Those transport cells remain noisy shared-
+host guardrails rather than precise speed claims. Two of three frozen-baseline
+transport attempts also failed during duplex with `The requested path cannot
+send an ordinary packet`, while both candidate runs completed; the failed logs
+were retained instead of excluded silently.
+
+Focused scheduler, write, cancellation, final-write, and recovery tests passed
+55/55. The full regression rerun passed 9,645 tests with four expected skips
+and no failures. Exact binaries, hashes, raw A/B evidence, summaries, failed
+baseline logs, TRX files, and `acceptance.json` are retained under
+`C:\shared\temp\quic-established-send-tranche-20260718`. ProtocolLab was not
+run, and no package, deployment, registration, or publication state changed.
