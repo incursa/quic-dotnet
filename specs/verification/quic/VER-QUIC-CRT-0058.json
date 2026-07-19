@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0058",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Swappable application-send turn planner verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Policy parity and isolation tests, listener construction tests, permanent BenchmarkDotNet dispatch measurements, matched local end-to-end controls, complete Release regression tests, SpecTrace validation, and independent diff review.",
+  "scope": "Verify that the internal per-connection planner seam is genuinely replaceable while the null default remains behaviorally and performance equivalent to the current static scheduler and cannot weaken runtime send budgets or ownership boundaries.",
+  "preconditions": [
+    "QuicSendPolicy remains the sole source of congestion, anti-amplification, retransmission, and burst budgets.",
+    "The authoritative application-send queue remains connection-owned and is mutated only by QuicConnectionRuntime.",
+    "Retained queue-rotation, continuation, cursor, and sender-queue negatives are not repeated."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicApplicationSendTurnPlanner.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicListener.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/QuicApplicationSendSchedulerTests.cs",
+    "benchmarks/QuicApplicationSendTurnPlannerBenchmarks.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --filter FullyQualifiedName~QuicApplicationSendSchedulerTests",
+    "dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter *QuicApplicationSendTurnPlannerBenchmarks* --inProcess",
+    "C:/shared/temp/quic-stream-scheduler-20260719/turn-planner-bdn-short-final/results/Incursa.Quic.Benchmarks.QuicApplicationSendTurnPlannerBenchmarks-report-github.md",
+    "C:/shared/temp/quic-stream-scheduler-20260719/matched-ab",
+    "tests/Incursa.Quic.Tests/TestResults/application-send-turn-planner-final-focused.trx",
+    "tests/Incursa.Quic.Tests/TestResults/application-send-turn-planner-full.trx",
+    "tests/Incursa.Quic.Tests/TestResults/application-send-turn-planner-close-rerun-10.trx",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core"
+  ],
+  "procedure": [
+    "Compare the explicit current planner with the existing static selector across blocked, single, fragmented, batched, priority, and FIN cases.",
+    "Inject distinct recording planners and prove construction-time per-connection isolation, valid index selection, invalid index rejection, and read-only authoritative queue behavior.",
+    "Prove the runtime still enforces the computed datagram limit before consulting an alternate planner for another send.",
+    "Measure direct static selection, null/default dispatch, and explicit current-planner dispatch without per-operation setup.",
+    "Run exact local HTTP/3 and public QUIC controls against a detached current-main baseline and reject the seam if stable controls regress materially.",
+    "Run focused ownership, cancellation, disposal, recovery, FIN, and complete Release regression tests before marking the slice passed."
+  ],
+  "expected_result": "The default path preserves exact scheduling behavior and stable control performance, explicit planners are connection-local and actually invoked, runtime send budgets remain non-bypassable, all correctness tests pass, and no public API or protocol behavior changes.",
+  "status_summary": "Passed. Focused scheduler, queue, budget, cancellation, listener-send, and metrics coverage passed 137/137. The full Release suite completed 9,657 passes and four intentional skips with one occurrence of the retained load-sensitive incomplete-content close timeout; the exact test then passed ten isolated reruns out of ten. BenchmarkDotNet Dry and Short passed with zero allocation, and matched final local controls showed no material stable regression. Core SpecTrace validation retained the repository's pre-existing unresolved cross-reference errors; all three new artifacts independently pass the repository schema.",
+  "related_artifacts": [
+    "ARC-QUIC-CRT-0056",
+    "WI-QUIC-CRT-0057"
+  ],
+  "verifies": [
+    "RFC9000-S13-P2-S2-R01"
+  ]
+}

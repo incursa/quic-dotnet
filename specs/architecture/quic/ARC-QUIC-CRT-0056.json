@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0056",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Swappable connection-local application-send turn planning architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define an internal construction-time policy seam for bounded same-connection application-send turn planning while preserving the current scheduler as the allocation-free default and keeping congestion, anti-amplification, retransmission, accounting, ownership, and queue mutation authoritative in the runtime.",
+  "related_artifacts": [
+    "ARC-QUIC-RFC9000-0088"
+  ],
+  "satisfies": [
+    "RFC9000-S13-P2-S2-R01"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicApplicationSendTurnPlanner.cs",
+    "src/Incursa.Quic/QuicApplicationSendScheduler.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicListener.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/QuicApplicationSendSchedulerTests.cs",
+    "benchmarks/QuicApplicationSendTurnPlannerBenchmarks.cs"
+  ],
+  "design_summary": "Each connection may receive one internal application-send turn planner at construction time. A null planner is the shipped fast path and invokes the existing static QuicSendPolicy and QuicApplicationSendScheduler behavior directly without constructing planner context or using interface dispatch. An explicit planner is connection-local and may keep bounded selection state, shorten an already permitted send turn, and select one valid index from a read-only rented queue snapshot. The runtime moves that existing record to the front while preserving the relative order of all other records, rejects an invalid index, and then uses the existing static scheduler to compute fragmentation and batching. The planner cannot enlarge the runtime-computed datagram or payload budget. QuicConnectionRuntime remains the sole executor and owner of queue mutation, packet protection, sent-packet accounting, retransmission precedence, flow control, congestion control, anti-amplification, timers, cancellation, disposal, and payload ownership. The listener accepts only an internal per-connection factory so experimental policies do not become public API or shared cross-connection state.",
+  "alternatives_considered": [
+    "Expose a public scheduler API. Rejected because alternate policies are experimental internal implementation details with protocol-safety obligations.",
+    "Replace QuicSendPolicy with a swappable budget provider. Rejected because congestion, anti-amplification, and retransmission precedence must remain non-bypassable runtime invariants.",
+    "Make same-priority stream rotation the first alternate. Rejected by retained evidence because it regressed throughput and allocation without reducing actor turns or datagrams.",
+    "Move public write ownership into a scheduler cursor. Rejected because retained continuation and cursor experiments increased queue or retention pressure and exposed cancellation and completion races.",
+    "Use one shared planner instance for every connection. Rejected because bounded fairness or shadow-planning state must be connection-local and deterministic."
+  ],
+  "edge_cases_and_constraints": [
+    "The null/default path must preserve current queue order, batching, fragmentation, FIN promotion, retransmission precedence, and burst limits.",
+    "An alternate planner may stop before the runtime burst limit but may not exceed the runtime-computed budget.",
+    "Alternate selection returns one validated index into a read-only rented snapshot; the authoritative queue is mutated only by sequence after successful protection and accounting.",
+    "Planner state must not own payload buffers, completion sources, packet reservations, timers, or recovery-visible state.",
+    "A listener planner factory must create a distinct planner instance per admitted connection.",
+    "No scheduler policy may broaden ACK lookahead or alter cancellation, disposal, stream write completion, flow control, congestion control, loss recovery, or RFC behavior."
+  ],
+  "data_and_state_considerations": "The shipped path stores one nullable reference per connection and performs a predictable null check at policy decision points. Explicit planners are per-connection objects and may retain only bounded planning metadata. Queue snapshots remain pooled and temporary. No public option, static mutable override, payload copy, per-datagram policy object, or cross-connection scheduler state is introduced.",
+  "risks": [
+    "An interface dispatch on the shipped hot path could erase performance gains; the null default therefore continues to call existing static helpers.",
+    "A custom planner can choose a different ready record, but it cannot invent a record or return a complete send plan; invalid indexes are rejected and alternate policies require focused priority and per-stream-order tests before promotion.",
+    "A fairness-only policy can increase selection cost without reducing actor service; retained negative experiments remain binding.",
+    "A turn planner cannot remove synchronous host send cost without a separate proven batched-submission mechanism."
+  ]
+}

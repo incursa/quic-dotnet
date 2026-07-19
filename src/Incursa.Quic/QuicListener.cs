@@ -40,7 +40,8 @@ public sealed class QuicListener : IAsyncDisposable
         QuicListenerOptions options,
         CancellationToken cancellationToken,
         Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory,
-        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null)
+        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null,
+        Func<IQuicApplicationSendTurnPlanner>? applicationSendTurnPlannerFactory = null)
     {
         ArgumentNullException.ThrowIfNull(options);
         options.Validate(nameof(options));
@@ -54,7 +55,8 @@ public sealed class QuicListener : IAsyncDisposable
             retryBootstrapEnabled: false,
             diagnosticsSinkFactory: diagnosticsSinkFactory,
             tlsKeyLogSecretObserver: tlsKeyLogSecretObserver,
-            runtimeShardCount: SelectDefaultRuntimeShardCount(Environment.ProcessorCount));
+            runtimeShardCount: SelectDefaultRuntimeShardCount(Environment.ProcessorCount),
+            applicationSendTurnPlannerFactory: applicationSendTurnPlannerFactory);
 
         try
         {

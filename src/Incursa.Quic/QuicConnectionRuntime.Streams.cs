@@ -1222,60 +1222,71 @@ internal sealed partial class QuicConnectionRuntime
             }
             else
             {
-                if (!applicationSendQueue.TryGetNextQueuedWrite(out PendingApplicationSendRequest nextQueuedWrite))
+                if (applicationSendTurnPlanner is null)
                 {
-                    exception = null;
-                    return false;
-                }
-
-                QuicApplicationSendPlan nextWritePlan = QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
-                    nextQueuedWrite,
-                    schedulerBudget,
-                    out QuicStreamFrame nextQueuedWriteFrame,
-                    out exception);
-                if (TryHandleNoQueuedApplicationSendPlan(nextWritePlan, ref exception))
-                {
-                    return false;
-                }
-
-                if (nextWritePlan.Kind == QuicApplicationSendPlanKind.Fragment)
-                {
-                    if (TryFlushFragmentedQueuedApplicationSend(
-                            nextQueuedWrite,
-                            nextQueuedWriteFrame,
-                            nextWritePlan.FragmentDataLength,
-                            nowTicks,
-                            ref effects,
-                            out exception))
+                    if (!applicationSendQueue.TryGetNextQueuedWrite(out PendingApplicationSendRequest nextQueuedWrite))
                     {
-                        LogApplicationSend(
-                            $"app-tx flush-fragment-sent role={tlsState.Role} stream={nextQueuedWrite.StreamId} queue={applicationSendQueue.Count}.");
                         exception = null;
-                        return true;
+                        return false;
                     }
 
-                    if (IsTransientApplicationSendPathBlocked(exception))
+                    QuicApplicationSendPlan nextWritePlan = QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
+                        nextQueuedWrite,
+                        schedulerBudget,
+                        out QuicStreamFrame nextQueuedWriteFrame,
+                        out exception);
+                    if (TryHandleNoQueuedApplicationSendPlan(nextWritePlan, ref exception))
                     {
-                        pendingApplicationSendDelayDueTicks = SaturatingAdd(
-                            nowTicks,
-                            ConvertMicrosToTicks(ApplicationSendDelayMicros));
-                        AppendLifecycleTimerEffects(ref effects);
-                        LogApplicationSend(
-                            $"app-tx flush-fragment-blocked role={tlsState.Role} stream={nextQueuedWrite.StreamId} queue={applicationSendQueue.Count} reason={exception?.Message}.");
+                        return false;
                     }
 
-                    return false;
+                    if (nextWritePlan.Kind == QuicApplicationSendPlanKind.Fragment)
+                    {
+                        if (TryFlushFragmentedQueuedApplicationSend(
+                                nextQueuedWrite,
+                                nextQueuedWriteFrame,
+                                nextWritePlan.FragmentDataLength,
+                                nowTicks,
+                                ref effects,
+                                out exception))
+                        {
+                            LogApplicationSend(
+                                $"app-tx flush-fragment-sent role={tlsState.Role} stream={nextQueuedWrite.StreamId} queue={applicationSendQueue.Count}.");
+                            exception = null;
+                            return true;
+                        }
+
+                        if (IsTransientApplicationSendPathBlocked(exception))
+                        {
+                            pendingApplicationSendDelayDueTicks = SaturatingAdd(
+                                nowTicks,
+                                ConvertMicrosToTicks(ApplicationSendDelayMicros));
+                            AppendLifecycleTimerEffects(ref effects);
+                            LogApplicationSend(
+                                $"app-tx flush-fragment-blocked role={tlsState.Role} stream={nextQueuedWrite.StreamId} queue={applicationSendQueue.Count} reason={exception?.Message}.");
+                        }
+
+                        return false;
+                    }
                 }
 
                 queuedWrites = applicationSendQueue.RentSortedQueuedWrites(out int queuedWriteCount);
-                ReadOnlySpan<PendingApplicationSendRequest> sortedQueuedWrites =
+                Span<PendingApplicationSendRequest> sortedQueuedWrites =
                     queuedWrites.AsSpan(0, queuedWriteCount);
 
-                QuicApplicationSendPlan sendPlan = QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
-                    sortedQueuedWrites,
-                    schedulerBudget,
-                    out QuicStreamFrame firstSelectedWriteFrame,
-                    out exception);
+                QuicStreamFrame firstSelectedWriteFrame;
+                QuicApplicationSendPlan sendPlan = applicationSendTurnPlanner is null
+                    ? QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
+                        sortedQueuedWrites,
+                        schedulerBudget,
+                        out firstSelectedWriteFrame,
+                        out exception)
+                    : QuicApplicationSendTurnPlannerDispatch.SelectQueuedApplicationSendPlan(
+                        applicationSendTurnPlanner,
+                        sortedQueuedWrites,
+                        schedulerBudget,
+                        out firstSelectedWriteFrame,
+                        out exception);
                 if (TryHandleNoQueuedApplicationSendPlan(sendPlan, ref exception))
                 {
                     return false;
@@ -1547,6 +1558,19 @@ internal sealed partial class QuicConnectionRuntime
                 if (flushedDatagrams >= sendBudget.MaxDatagrams)
                 {
                     outcome = QuicApplicationSendRecoveryFlushOutcome.BurstLimitReached;
+                    break;
+                }
+
+                if (applicationSendTurnPlanner is not null
+                    && !QuicApplicationSendTurnPlannerDispatch.ShouldScheduleNext(
+                        applicationSendTurnPlanner,
+                        new QuicApplicationSendTurnContext(
+                            queuedWritesBefore,
+                            applicationSendQueue.Count,
+                            flushedDatagrams,
+                            sendBudget)))
+                {
+                    outcome = QuicApplicationSendRecoveryFlushOutcome.PlannerDeferred;
                     break;
                 }
 

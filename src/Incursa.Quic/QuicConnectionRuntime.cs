@@ -86,6 +86,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
     private readonly object scheduledFlowControlCreditGate = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
+    private readonly IQuicApplicationSendTurnPlanner? applicationSendTurnPlanner;
     private readonly HashSet<ulong> pendingPeerStreamCapacityReleaseStreamIds = new(capacity: 16);
     private readonly HashSet<ulong> scheduledPeerStreamCapacityReleaseStreamIds = new(capacity: 16);
     private readonly Dictionary<ulong, QuicMaxStreamDataFrame> pendingFlowControlStreamCreditFrames = [];
@@ -956,9 +957,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null,
         int maximumInboundDatagramQueueSize = 1024,
         bool enableInitialPeerUsableConnectionId = true,
-        QuicCongestionControlAlgorithm congestionControlAlgorithm = QuicCongestionControlAlgorithm.NewReno)
+        QuicCongestionControlAlgorithm congestionControlAlgorithm = QuicCongestionControlAlgorithm.NewReno,
+        IQuicApplicationSendTurnPlanner? applicationSendTurnPlanner = null)
     {
         this.clock = clock ?? new MonotonicClock();
+        this.applicationSendTurnPlanner = applicationSendTurnPlanner;
         timeOriginTicks = this.clock.Ticks;
         streamCapacityReleaseEvent = new QuicConnectionStreamActionEvent(
             timeOriginTicks,
@@ -1162,6 +1165,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     internal bool HasTerminalStreamOperation => IsDisposed || terminalState is not null;
 
     internal int DelayedApplicationSendCount => applicationSendQueue.Count;
+
+    internal IQuicApplicationSendTurnPlanner? ApplicationSendTurnPlanner => applicationSendTurnPlanner;
 
     internal bool TryBeginRuntimePressureSnapshot(
         long timestamp,

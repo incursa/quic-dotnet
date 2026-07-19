@@ -1,6 +1,9 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Net;
+using System.Net.Security;
+
 namespace Incursa.Quic.Tests;
 
 public sealed class QuicApplicationSendSchedulerTests
@@ -205,6 +208,194 @@ public sealed class QuicApplicationSendSchedulerTests
         Assert.True(frame.IsFin);
     }
 
+    [Fact]
+    public void CurrentTurnPlannerMatchesStaticScheduler()
+    {
+        PendingApplicationSendRequest[] directWrites =
+        [
+            CreateQueuedWrite(sequence: 0, streamId: 4, dataLength: 8),
+            CreateQueuedWrite(sequence: 1, streamId: 8, dataLength: 8),
+        ];
+        PendingApplicationSendRequest[] plannedWrites = [.. directWrites];
+        QuicQueuedApplicationSendBudget budget = QuicQueuedApplicationSendBudget.AllowSingleDatagram(
+            directWrites.Sum(static write => write.StreamPayloadLength));
+        QuicApplicationSendTurnContext context = new(
+            InitialQueuedWriteCount: directWrites.Length,
+            RemainingQueuedWriteCount: directWrites.Length,
+            FlushedDatagramCount: 0,
+            budget);
+
+        QuicApplicationSendPlan directPlan = QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
+            directWrites,
+            budget,
+            out QuicStreamFrame directFrame,
+            out Exception? directException);
+        IQuicApplicationSendTurnPlanner planner = QuicCurrentApplicationSendTurnPlanner.Instance;
+        QuicApplicationSendPlan plannedPlan = QuicApplicationSendTurnPlannerDispatch.SelectQueuedApplicationSendPlan(
+            planner,
+            plannedWrites,
+            budget,
+            out QuicStreamFrame plannedFrame,
+            out Exception? plannedException);
+
+        Assert.Null(directException);
+        Assert.Null(plannedException);
+        Assert.Equal(directPlan, plannedPlan);
+        Assert.Equal(directFrame.StreamId, plannedFrame.StreamId);
+        Assert.Equal(directFrame.Offset, plannedFrame.Offset);
+        Assert.Equal(directFrame.StreamDataLength, plannedFrame.StreamDataLength);
+        Assert.Equal(directFrame.IsFin, plannedFrame.IsFin);
+        Assert.True(QuicApplicationSendTurnPlannerDispatch.ShouldScheduleNext(planner, context));
+    }
+
+    [Fact]
+    public void AlternateTurnPlannerCanReorderOnlyItsQueueSnapshot()
+    {
+        PendingApplicationSendRequest first = CreateQueuedWrite(sequence: 0, streamId: 4, dataLength: 8);
+        PendingApplicationSendRequest second = CreateQueuedWrite(sequence: 1, streamId: 8, dataLength: 8);
+        PendingApplicationSendRequest[] authoritativeOrder = [first, second];
+        PendingApplicationSendRequest[] planningSnapshot = [.. authoritativeOrder];
+        QuicQueuedApplicationSendBudget budget = QuicQueuedApplicationSendBudget.AllowSingleDatagram(
+            first.StreamPayloadLength + second.StreamPayloadLength);
+        QuicApplicationSendTurnContext context = new(2, 2, 0, budget);
+        RecordingTurnPlanner planner = new(selectedWriteIndex: 1);
+
+        QuicApplicationSendPlan plan = QuicApplicationSendTurnPlannerDispatch.SelectQueuedApplicationSendPlan(
+            planner,
+            planningSnapshot,
+            budget,
+            out QuicStreamFrame firstFrame,
+            out Exception? exception);
+
+        Assert.Null(exception);
+        Assert.Equal(QuicApplicationSendPlanKind.Batch, plan.Kind);
+        Assert.Equal(8UL, firstFrame.StreamId.Value);
+        Assert.Equal([8UL, 4UL], planningSnapshot.Select(static write => write.StreamId));
+        Assert.Equal([4UL, 8UL], authoritativeOrder.Select(static write => write.StreamId));
+        Assert.Equal(1, planner.SelectionCount);
+    }
+
+    [Fact]
+    public void AlternateTurnPlannerSelectionStillUsesRuntimeFragmentationRules()
+    {
+        PendingApplicationSendRequest first = CreateQueuedWrite(sequence: 0, streamId: 4, dataLength: 8);
+        PendingApplicationSendRequest oversized = CreateQueuedWrite(sequence: 1, streamId: 8, dataLength: 64);
+        PendingApplicationSendRequest[] authoritativeOrder = [first, oversized];
+        PendingApplicationSendRequest[] planningSnapshot = [.. authoritativeOrder];
+        QuicQueuedApplicationSendBudget budget = QuicQueuedApplicationSendBudget.AllowSingleDatagram(
+            first.StreamPayloadLength + 12);
+        QuicApplicationSendTurnContext context = new(2, 2, 0, budget);
+        RecordingTurnPlanner planner = new(selectedWriteIndex: 1);
+
+        QuicApplicationSendPlan plan = QuicApplicationSendTurnPlannerDispatch.SelectQueuedApplicationSendPlan(
+            planner,
+            planningSnapshot,
+            budget,
+            out QuicStreamFrame firstFrame,
+            out Exception? exception);
+
+        Assert.Null(exception);
+        Assert.Equal(QuicApplicationSendPlanKind.Fragment, plan.Kind);
+        Assert.Equal(1, plan.SelectedWriteCount);
+        Assert.Equal(8UL, firstFrame.StreamId.Value);
+        Assert.InRange(plan.FragmentDataLength, 1, firstFrame.StreamDataLength - 1);
+        Assert.Equal([4UL, 8UL], authoritativeOrder.Select(static write => write.StreamId));
+    }
+
+    [Fact]
+    public void AlternateTurnPlannerRejectsSelectionOutsideTheQueueSnapshot()
+    {
+        PendingApplicationSendRequest[] planningSnapshot =
+        [
+            CreateQueuedWrite(sequence: 0, streamId: 4, dataLength: 8),
+        ];
+        QuicQueuedApplicationSendBudget budget = QuicQueuedApplicationSendBudget.AllowSingleDatagram(64);
+        QuicApplicationSendTurnContext context = new(1, 1, 0, budget);
+        RecordingTurnPlanner planner = new(selectedWriteIndex: 1);
+
+        QuicApplicationSendPlan plan = QuicApplicationSendTurnPlannerDispatch.SelectQueuedApplicationSendPlan(
+            planner,
+            planningSnapshot,
+            budget,
+            out _,
+            out Exception? exception);
+
+        Assert.Equal(QuicApplicationSendPlanKind.None, plan.Kind);
+        Assert.Equal(QuicSendPolicyBlockedReason.InvalidQueuedApplicationSend, plan.BlockedReason);
+        Assert.IsType<InvalidOperationException>(exception);
+    }
+
+    [Fact]
+    public void AlternateTurnPlannerCannotOvertakeAnEarlierWriteOnTheSameStream()
+    {
+        PendingApplicationSendRequest[] planningSnapshot =
+        [
+            CreateQueuedWrite(sequence: 0, streamId: 4, dataLength: 8),
+            CreateQueuedWrite(sequence: 1, streamId: 8, dataLength: 8),
+            CreateQueuedWrite(sequence: 2, streamId: 4, dataLength: 8),
+        ];
+        PendingApplicationSendRequest[] originalOrder = [.. planningSnapshot];
+        QuicQueuedApplicationSendBudget budget = QuicQueuedApplicationSendBudget.AllowSingleDatagram(128);
+        RecordingTurnPlanner planner = new(selectedWriteIndex: 2);
+
+        QuicApplicationSendPlan plan = QuicApplicationSendTurnPlannerDispatch.SelectQueuedApplicationSendPlan(
+            planner,
+            planningSnapshot,
+            budget,
+            out _,
+            out Exception? exception);
+
+        Assert.Equal(QuicApplicationSendPlanKind.None, plan.Kind);
+        Assert.Equal(QuicSendPolicyBlockedReason.InvalidQueuedApplicationSend, plan.BlockedReason);
+        Assert.IsType<InvalidOperationException>(exception);
+        Assert.Equal(originalOrder, planningSnapshot);
+    }
+
+    [Fact]
+    public void AlternateTurnPlannerCanStopBeforeRuntimeBudgetIsExhausted()
+    {
+        QuicApplicationSendTurnContext context = new(4, 3, 1, QuicQueuedApplicationSendBudget.Allowed(4, 4096));
+        RecordingTurnPlanner planner = new(selectedWriteIndex: 0, shouldScheduleNext: false);
+
+        Assert.False(QuicApplicationSendTurnPlannerDispatch.ShouldScheduleNext(planner, context));
+    }
+
+    [Fact]
+    public void RuntimeRetainsTheInjectedConnectionLocalTurnPlanner()
+    {
+        RecordingTurnPlanner planner = new(selectedWriteIndex: 0);
+
+        using QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            applicationSendTurnPlanner: planner);
+
+        Assert.Same(planner, runtime.ApplicationSendTurnPlanner);
+    }
+
+    [Fact]
+    public void ListenerFactoryCreatesDistinctTurnPlannersPerConnection()
+    {
+        int factoryCallCount = 0;
+        using QuicListenerHost listenerHost = new(
+            new IPEndPoint(IPAddress.Loopback, 0),
+            [SslApplicationProtocol.Http3],
+            (_, _, _) => ValueTask.FromResult(new QuicServerConnectionOptions()),
+            listenBacklog: 1,
+            applicationSendTurnPlannerFactory: () =>
+            {
+                factoryCallCount++;
+                return new RecordingTurnPlanner(selectedWriteIndex: 0);
+            });
+
+        using QuicConnectionRuntime firstRuntime = listenerHost.CreateRuntime(new QuicServerConnectionOptions());
+        using QuicConnectionRuntime secondRuntime = listenerHost.CreateRuntime(new QuicServerConnectionOptions());
+
+        Assert.Equal(2, factoryCallCount);
+        Assert.IsType<RecordingTurnPlanner>(firstRuntime.ApplicationSendTurnPlanner);
+        Assert.IsType<RecordingTurnPlanner>(secondRuntime.ApplicationSendTurnPlanner);
+        Assert.NotSame(firstRuntime.ApplicationSendTurnPlanner, secondRuntime.ApplicationSendTurnPlanner);
+    }
+
     private static PendingApplicationSendRequest CreateQueuedWrite(
         long sequence,
         ulong streamId,
@@ -236,5 +427,21 @@ public sealed class QuicApplicationSendSchedulerTests
             out int streamPayloadLength));
 
         return streamPayload[..streamPayloadLength];
+    }
+
+    private sealed class RecordingTurnPlanner(int selectedWriteIndex, bool shouldScheduleNext = true) : IQuicApplicationSendTurnPlanner
+    {
+        internal int SelectionCount { get; private set; }
+
+        public bool ShouldScheduleNext(in QuicApplicationSendTurnContext context)
+            => shouldScheduleNext;
+
+        public int SelectFirstQueuedWriteIndex(
+            ReadOnlySpan<PendingApplicationSendRequest> sortedQueuedWrites,
+            QuicQueuedApplicationSendBudget budget)
+        {
+            SelectionCount++;
+            return selectedWriteIndex;
+        }
     }
 }

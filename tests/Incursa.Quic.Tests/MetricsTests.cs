@@ -975,11 +975,27 @@ public class MetricsTests
             QuicApplicationSendRecoveryFlushOutcome.BurstLimitReached,
             QuicSendPolicyBlockedReason.None);
 
+        QuicMetrics.RecordApplicationSendRecoveryFlush(
+            QuicTlsRole.Server,
+            snapshot,
+            QuicQueuedApplicationSendBudget.Allowed(maxDatagrams: 4, maxPayloadBytes: 1_000),
+            queuedWritesBefore: 9,
+            queuedWritesAfter: 9,
+            flushedDatagrams: 0,
+            QuicApplicationSendRecoveryFlushOutcome.PlannerDeferred,
+            QuicSendPolicyBlockedReason.None);
+
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.application_send.recovery.flushes"
             && measurement.Value == 1
             && measurement.HasTag("role", "server")
             && measurement.HasTag("outcome", "burst_limit_reached")
+            && measurement.HasTag("blocked_reason", "none"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.recovery.flushes"
+            && measurement.Value == 1
+            && measurement.HasTag("role", "server")
+            && measurement.HasTag("outcome", "planner_deferred")
             && measurement.HasTag("blocked_reason", "none"));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.application_send.recovery.congestion_window.bytes"

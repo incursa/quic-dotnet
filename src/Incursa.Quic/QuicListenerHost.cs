@@ -47,6 +47,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private readonly Func<ReadOnlyMemory<byte>, SocketAddress, int>? datagramSender;
     private readonly IQuicDiagnosticsSink listenerDiagnosticsSink;
     private readonly Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver;
+    private readonly Func<IQuicApplicationSendTurnPlanner>? applicationSendTurnPlannerFactory;
     private readonly QuicConnectionRuntimeEndpoint endpoint;
     private readonly QuicReceiveBufferPool receiveBufferPool = new(
         ReceiveBufferBytes,
@@ -96,7 +97,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         QuicAddressValidationTokenProtector? addressValidationTokenProtector = null,
         int maximumVersionNegotiationResponsesPerRemoteAddress = int.MaxValue,
         int runtimeShardCount = 1,
-        Func<ReadOnlyMemory<byte>, SocketAddress, int>? datagramSender = null)
+        Func<ReadOnlyMemory<byte>, SocketAddress, int>? datagramSender = null,
+        Func<IQuicApplicationSendTurnPlanner>? applicationSendTurnPlannerFactory = null)
     {
         ArgumentNullException.ThrowIfNull(listenEndPoint);
         ArgumentNullException.ThrowIfNull(applicationProtocols);
@@ -122,6 +124,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         this.retryBootstrapEnabled = retryBootstrapEnabled;
         this.diagnosticsSinkFactory = diagnosticsSinkFactory;
         this.datagramSender = datagramSender;
+        this.applicationSendTurnPlannerFactory = applicationSendTurnPlannerFactory;
         listenerDiagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSinkFactory?.Invoke());
         this.tlsKeyLogSecretObserver = tlsKeyLogSecretObserver;
         this.addressValidationTokenProtector = addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
@@ -2160,7 +2163,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             enableServerEarlyData: options.EnableEarlyData,
             serverResumptionTicketStore: serverResumptionTicketStore,
             tlsKeyLogSecretObserver: tlsKeyLogSecretObserver,
-            maximumInboundDatagramQueueSize: GetEffectiveInboundDatagramQueueSize(options));
+            maximumInboundDatagramQueueSize: GetEffectiveInboundDatagramQueueSize(options),
+            applicationSendTurnPlanner: applicationSendTurnPlannerFactory?.Invoke());
     }
 
     private static int GetEffectiveInboundDatagramQueueSize(QuicConnectionOptions options)

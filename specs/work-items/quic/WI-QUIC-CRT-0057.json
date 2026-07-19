@@ -1,0 +1,31 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0057",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Swappable application-send turn planner work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add a connection-local internal application-send turn-planning seam whose null default preserves the current scheduler and whose alternate path can select only an existing queued-write index without bypassing runtime send budgets or ownership boundaries.",
+  "related_artifacts": [
+    "ARC-QUIC-CRT-0056"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0056"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0058"
+  ],
+  "addresses": [
+    "RFC9000-S13-P2-S2-R01"
+  ],
+  "planned_changes": "Introduce a per-connection internal turn planner contract, preserve the existing static scheduler as both the null fast path and an explicit control implementation, inject per-connection planners through the internal listener boundary, add policy parity and isolation tests, add a permanent dispatch-cost benchmark, and run matched local HTTP/3 and public QUIC guardrails before accepting the seam.",
+  "verification_plan": "Validate individual SpecTrace artifacts, run focused scheduler/listener/stream ownership tests, run BenchmarkDotNet Dry and Short jobs for direct/default/explicit policy dispatch, run matched current-baseline versus candidate HTTP/3 fixed 1 MiB at 1 x 1, 1 x 4, and 1 x 16 plus public QUIC download and duplex 1 x 16 controls, then run the complete Release regression suite if the seam is retained.",
+  "out_of_scope": [
+    "Promoting same-priority stream rotation or adjacent-write accumulation",
+    "Changing congestion, anti-amplification, retransmission, flow-control, ACK, packet-protection, or public completion semantics",
+    "Adding a public scheduler option or static mutable process-wide override",
+    "Claiming a throughput improvement from the policy seam alone",
+    "Running or publishing ProtocolLab evidence unless a later policy passes the local promotion gate"
+  ]
+}

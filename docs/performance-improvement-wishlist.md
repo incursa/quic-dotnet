@@ -6397,3 +6397,63 @@ attribution summary is retained at
 `C:\shared\temp\pl-ack-finalization-confirmation-20260719\post-acceptance-attribution-summary.json`
 with SHA-256
 `2984064CD79960D632E044106AA915B0448A64A56E6C7D33867EBB68C5C50AB5`.
+
+### Accepted 2026-07-19: swappable connection-local send-turn planner seam
+
+The runtime now has an internal construction-time policy seam for controlled
+same-connection scheduler experiments. The shipped null path retains the
+existing `QuicSendPolicy` and `QuicApplicationSendScheduler` calls without
+constructing planner context or using interface dispatch. An explicit planner
+is connection-local. It may stop an already-permitted recovery-progress turn
+or select one valid index from a read-only queue snapshot. The runtime moves
+that existing record to the front, rejects an invalid index, and remains the
+only component that computes fragmentation, batching, congestion and
+anti-amplification budgets, packet accounting, recovery, queue mutation,
+cancellation, disposal, and payload ownership. Planner deferral has its own
+bounded metric outcome instead of being mislabeled as a burst-limit decision.
+
+No alternate production policy is promoted in this slice. Retained negatives
+for same-priority rotation, adjacent-write accumulation, sender queues,
+continuation cursors, whole-request admission, UDP wrapper variants, and minor
+queue ordering remain binding. The seam exists so future policies can be
+measured and rejected without repeatedly editing the connection actor.
+
+The permanent BenchmarkDotNet Short run reported zero allocation for all
+methods. At queue depth one, direct selection measured 36.16 ns, null dispatch
+35.23 ns, and explicit current-policy dispatch 40.23 ns. At depth sixteen they
+measured 42.01 ns, 43.22 ns, and 46.50 ns respectively. The explicit path is
+therefore intentionally opt-in; its roughly eleven-percent micro-cost must be
+earned by a policy-level reduction in actor turns or tail latency.
+
+Matched final candidate/baseline runs used five exact samples per lane, a
+detached `319d88b3` baseline, one established connection, exact payload and EOF
+validation, and no runtime diagnostics:
+
+| Exact one-MiB lane | Baseline MiB/s | Candidate MiB/s | Throughput delta | p95 delta | Allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| HTTP/3 fixed `1 x 1` | 84.46 | 86.47 | +2.4% | -8.0% | +0.4% |
+| HTTP/3 fixed `1 x 4` | 88.36 | 89.33 | +1.1% | -4.6% | -0.7% |
+| HTTP/3 fixed `1 x 16` | 80.94 | 83.43 | +3.1% | -6.6% | -0.9% |
+| Public QUIC download `1 x 16` | 45.98 | 50.01 | +8.8% | -16.2% | +6.9% |
+| HTTP/3 duplex `1 x 4` | 119.48 | 119.05 | -0.4% | +1.9% | -8.2% |
+
+The transport download result retained high candidate variance and is a
+guardrail, not an improvement claim. The raw transport duplex c4 series was
+also retained as diagnostic-only because the baseline rose from 47.92 to 96.89
+MiB/s across its five nominally warmed samples. A separate HTTP/3 duplex c4
+pair supplied the stable guardrail shown above. The earlier baseline c16 raw
+duplex attempt failed during warmup with `The requested path cannot send an
+ordinary packet`; that existing instability is retained rather than attributed
+to the seam.
+
+Focused scheduler, queue, send-policy, cancellation, listener-send, and metrics
+coverage passed 137/137. Benchmark Dry and Short jobs passed. The full Release
+suite completed 9,657 passes and four intentional skips with one occurrence of
+the retained load-sensitive
+`PostDataRequest_WithIncompleteContentLength_ClosesConnectionWithMessageError`
+timeout. That exact test then passed ten isolated reruns out of ten. SpecTrace
+closeout evidence is recorded in `VER-QUIC-CRT-0058`. Raw JSON, the failed
+duplex console evidence, TRX files, and BenchmarkDotNet artifacts are retained
+under `C:\shared\temp\quic-stream-scheduler-20260719` and
+`tests/Incursa.Quic.Tests/TestResults`. ProtocolLab was not run, and no package,
+deployment, registration, or publication changed.

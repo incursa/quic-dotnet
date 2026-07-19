@@ -13,6 +13,7 @@ internal enum QuicApplicationSendRecoveryFlushOutcome
 {
     QueueDrained,
     BurstLimitReached,
+    PlannerDeferred,
     BudgetBlocked,
     RetransmissionPending,
     FlushBlocked,
@@ -688,6 +689,7 @@ internal static class QuicMetrics
         {
             QuicApplicationSendRecoveryFlushOutcome.QueueDrained => "queue_drained",
             QuicApplicationSendRecoveryFlushOutcome.BurstLimitReached => "burst_limit_reached",
+            QuicApplicationSendRecoveryFlushOutcome.PlannerDeferred => "planner_deferred",
             QuicApplicationSendRecoveryFlushOutcome.BudgetBlocked => "budget_blocked",
             QuicApplicationSendRecoveryFlushOutcome.RetransmissionPending => "retransmission_pending",
             QuicApplicationSendRecoveryFlushOutcome.FlushBlocked => "flush_blocked",
