@@ -5627,3 +5627,48 @@ detachment or another design that advances application-visible read state
 before the copy. A future receive-lock candidate needs broader HTTP/3
 attribution and should shorten critical sections without changing buffer
 ownership or increasing fixed-response scheduling variance.
+
+### Rejected 2026-07-18: borrow non-retained HTTP/3 request DATA segments
+
+The simultaneous request/response workload explicitly opts out of retaining
+streaming request chunks, but `Http3StreamingFrameReader` still copied every
+DATA byte into pooled segments before yielding it. A bounded candidate let
+non-retaining handlers borrow slices of the body reader's owned read buffer.
+Retaining handlers kept the existing copied ownership. Each frame part carried
+ownership metadata so data copied before the handler selected its retention
+mode could still be released correctly.
+
+The first candidate binary exposed an important mode-transition bug before any
+timing result was accepted. If request headers and a DATA prefix arrived in the
+same read, switching to borrowed mode skipped the already-buffered prefix and
+the exact duplex smoke failed with HTTP/3 error `0x10e`. The repair completed
+that partially owned segment before borrowing later input. Eight focused frame
+reader tests and exact c1/c16 duplex smoke then passed.
+
+BenchmarkDotNet Dry validated the retained and borrowed mechanisms. ShortRun
+measured one MiB of streaming DATA parsing at 23.897 microseconds and 504 bytes
+allocated for retained segments versus 1.738 microseconds and 320 bytes for
+borrowed segments. The 13.7x mechanism improvement saved only about 22
+microseconds per MiB, which was too small by itself to explain the end-to-end
+gap.
+
+Frozen baseline `73707498` and candidate binaries then ran a focused A/B/B/A
+one-MiB duplex campaign at one connection and 16 streams. Five three-second
+samples per pass produced ten exact samples per variant with zero failures:
+
+| Metric | Baseline | Candidate | Delta |
+| --- | ---: | ---: | ---: |
+| throughput | 52.36 MiB/s | 52.57 MiB/s | +0.4% |
+| throughput CV | 9.24% | 15.36% | noisier |
+| p95 latency | 677.5 ms | 681.2 ms | +0.5% |
+| allocation | 951,699 B/request | 977,441 B/request | +2.7% |
+
+No local promotion gate passed. The runtime, benchmark, and candidate-only
+tests were reverted, and ProtocolLab was not run. The patch, frozen binaries,
+BDN reports, failed-transition evidence, all A/B reports, hashes, and
+`negative-result.json` are retained under
+`C:\shared\temp\quic-h3-borrowed-request-20260718`. Do not repeat borrowed
+request DATA delivery unless a future broader trace shows the copy or pooled
+segment retention has become a material end-to-end cost. The result reinforces
+that the remaining large-body gap is dominated by actor queueing and packet
+service, not HTTP/3 frame-parser copying.
