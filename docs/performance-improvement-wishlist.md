@@ -7218,3 +7218,38 @@ Release build and focused metrics/send queue/scheduler coverage passed 88/88.
 Evidence is retained under
 `C:\shared\temp\quic-application-send-deep-attribution-20260720`. No ProtocolLab
 run was justified for this behavior-neutral instrumentation slice.
+
+### Rejected 2026-07-20: hosted timer-update coalescing
+
+The hosted runtime currently retains every timer generation emitted during an
+actor transition and applies those updates to the deadline scheduler afterward.
+A bounded candidate instead retained only the final update for each of the nine
+timer kinds in fixed indexed storage. It preserved the final generation,
+priority, arm/cancel decision, timer calculations, and all timer kinds.
+
+BenchmarkDotNet Dry and Short jobs passed before the runtime change. For a
+representative update batch, final-update retention measured 29.40 ns versus
+58.96 ns for 16 updates and 94.63 ns versus 227.26 ns for 64 updates, with no
+managed allocation. Focused lifecycle, hosted scheduler, metrics, send queue,
+and send scheduler coverage passed 95/95. Distinct timer kinds and final
+cancellation retention were explicitly covered.
+
+The first exact-payload A/B/B/A upload screen was bimodal and appeared promising
+at c16, so it was not accepted or rejected from that screen. A subsequent
+six-pass A/B/A/B/A/B campaign used five five-second samples per pass and rejected
+the mechanism:
+
+| Load | Baseline MiB/s | Candidate MiB/s | Delta | Baseline/Candidate CV | p95 delta | allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| c16 | 44.40 | 31.50 | -29.1% | 18.6% / 40.3% | +30.5% | +13.8% |
+| c32 | 30.71 | 30.16 | -1.8% | 1.0% / 18.5% | +4.8% | +1.3% |
+
+All 60 extended samples completed with exact payload validation and zero
+failures. The result demonstrates that applying intermediate generations affects
+deadline wake timing even when only the final generation remains current; final
+state equivalence is not timing equivalence. The runtime, tests, and temporary
+benchmark are reverted. Retain the frozen baseline/candidate hashes, BDN reports,
+screen, extended campaign, and logs under
+`C:\shared\temp\quic-hosted-timer-coalescing-20260720`. Do not coalesce hosted
+timer updates solely by timer kind without a materially different wake-equivalent
+design. No broader guardrails, full suite, or ProtocolLab run were justified.
