@@ -1,6 +1,7 @@
 # Adaptive Runtime Policy Planning
 
-Status: planning package ready for review; implementation blocked
+Status: planning package reviewed; shadow-foundation implementation authorized;
+active policy blocked
 
 Date: 2026-07-20
 
@@ -345,7 +346,9 @@ The machine-readable companions are
 [`../schemas/adaptive-runtime-policy-local-result-v1.schema.json`](../schemas/adaptive-runtime-policy-local-result-v1.schema.json)
 and
 [`../schemas/adaptive-runtime-policy-epoch-dataset-v1.schema.json`](../schemas/adaptive-runtime-policy-epoch-dataset-v1.schema.json).
-All artifacts remain proposed until reviewed as one bundle. Review does not by
-itself authorize production implementation; the open CRT planning gap must be
-resolved into stable requirements and canonical architecture and verification
-artifacts first.
+The bundle was reviewed together on 2026-07-20. `REQ-QUIC-CRT-0164` through
+`REQ-QUIC-CRT-0169`, `ARC-QUIC-CRT-0059`, `WI-QUIC-CRT-0060`, and
+`VER-QUIC-CRT-0061` provide the canonical trace home for the bounded
+observation, internal forced-policy, provenance, and shadow-only foundation.
+That approval does not authorize `active_internal`, a wider receive-credit
+selector, any other policy axis, online learning, or production exploration.

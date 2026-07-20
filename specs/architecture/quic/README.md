@@ -185,6 +185,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-CRT-0050.json`](ARC-QUIC-CRT-0050.json): canonical CRT server first-flight x25519 compatibility design source
 - [`ARC-QUIC-CRT-0051.json`](ARC-QUIC-CRT-0051.json): canonical CRT transport-core cleanup boundary architecture source
 - [`ARC-QUIC-CRT-0052.json`](ARC-QUIC-CRT-0052.json): canonical CRT QUIC and HTTP/3 metrics boundary architecture source
+- [`ARC-QUIC-CRT-0059.json`](ARC-QUIC-CRT-0059.json): canonical CRT adaptive runtime receive-credit shadow foundation architecture source
 
 ## Notes
 

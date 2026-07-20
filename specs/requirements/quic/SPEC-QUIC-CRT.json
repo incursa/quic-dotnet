@@ -2674,6 +2674,102 @@
         "Diagnostic timestamps and classification are enabled only when the shadow metrics are observed, preserving the normal null-planner fast path.",
         "A later active scheduler policy requires separate matched evidence and a requirement update; this requirement authorizes observation only."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0164",
+      "title": "Keep controller observations bounded and connection-local",
+      "statement": "Each controller observation MUST be connection-local, epoch-bounded, and explicitly versioned; disabled observation MUST NOT change runtime behavior; and steady-state observation MUST NOT allocate per observation, acquire a global lock, evaluate per packet, or perform unbounded stream enumeration.",
+      "trace": {
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-controller-state-machine.md",
+          "docs/protocol-lab/adaptive-runtime-policy-dataset-provenance-contract.md",
+          "docs/testing/adaptive-runtime-policy-shadow-verification.md"
+        ]
+      },
+      "notes": [
+        "This requirement covers the observation seam only, not active policy selection.",
+        "Observation content remains reviewable only when it stays within the canonical per-epoch contract.",
+        "A separately reviewed bounded counter may update at an existing operation boundary; the controller still evaluates only at actor-safe epoch boundaries."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0165",
+      "title": "Expose internal forced receive-credit modes behind correctness guards",
+      "statement": "The runtime MUST expose `legacy_current`, `immediate`, and frozen `read_dominant_batch` as distinct internal forced receive-credit modes, and each mode MUST remain subject to the same correctness, progress, cancellation, disposal, FIN, reset, shutdown, recovery, and saturation guards as the normal selector.",
+      "trace": {
+        "upstream_refs": [
+          "docs/protocol-lab/adaptive-runtime-policy-local-campaign.md",
+          "docs/testing/adaptive-runtime-policy-acceptance-rollback.md",
+          "docs/testing/adaptive-runtime-policy-shadow-verification.md"
+        ]
+      },
+      "notes": [
+        "These forced modes are test and evidence controls only.",
+        "Correctness and progress guards stay authoritative even when a forced mode is selected."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0166",
+      "title": "Reproduce the frozen receive-credit selector in shadow mode",
+      "statement": "In shadow mode, the receive-credit selector MUST deterministically reproduce the frozen `legacy_current` decision path while `legacy_current` remains applied, and MUST not apply controller output to runtime behavior.",
+      "trace": {
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-controller-state-machine.md",
+          "docs/testing/adaptive-runtime-policy-shadow-verification.md",
+          "docs/testing/adaptive-runtime-policy-acceptance-rollback.md"
+        ]
+      },
+      "notes": [
+        "This is the semantic-neutral migration boundary.",
+        "The controller may record proposals, but it does not become authoritative here."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0167",
+      "title": "Publish actor-safe snapshots, reasons, fallback, and latching",
+      "statement": "The controller MUST publish a compact immutable snapshot and bounded reason at each actor-safe boundary, MUST choose fallback deterministically when required inputs are missing, stale, contradictory, or out of domain, and MUST latch admitted-operation policy axes so in-flight work cannot be retroactively reclassified.",
+      "trace": {
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-controller-state-machine.md",
+          "docs/testing/adaptive-runtime-policy-shadow-verification.md"
+        ]
+      },
+      "notes": [
+        "The snapshot contract covers transition reason and policy state together.",
+        "Latching preserves in-flight ownership and completion behavior across later snapshot changes."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0168",
+      "title": "Keep controller analysis offline only",
+      "statement": "The controller and its evidence pipeline MUST treat benchmark labels, workload scenario identifiers, payload constants, caller-visible concurrency values, and online-learning outputs as offline analysis data only, and MUST not consume them as runtime controller inputs.",
+      "trace": {
+        "upstream_refs": [
+          "docs/protocol-lab/adaptive-runtime-policy-dataset-provenance-contract.md",
+          "docs/testing/adaptive-runtime-policy-acceptance-rollback.md",
+          "docs/adaptive-runtime-policy-planning.md"
+        ]
+      },
+      "notes": [
+        "Offline analysis may use those fields for exploration and split governance.",
+        "No production runtime decision may depend on benchmark labeling or online adaptation."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0169",
+      "title": "Require versioned provenance-rich evidence contracts",
+      "statement": "The campaign and dataset contracts MUST be versioned and MUST carry immutable identities and checksums sufficient to trace each result row back to its repository state, binary hashes, requested and effective workload shape, forced, applied, and shadow policy values, source artifacts, and every versioned transformation used to derive the row.",
+      "trace": {
+        "upstream_refs": [
+          "docs/protocol-lab/adaptive-runtime-policy-local-campaign.md",
+          "docs/protocol-lab/adaptive-runtime-policy-dataset-provenance-contract.md",
+          "docs/testing/adaptive-runtime-policy-shadow-verification.md"
+        ]
+      },
+      "notes": [
+        "Negative, noisy, and rejected rows remain addressable by ID and checksum.",
+        "The evidence contract is designed for offline replay and review, not online exploration."
+      ]
     }
   ]
 }

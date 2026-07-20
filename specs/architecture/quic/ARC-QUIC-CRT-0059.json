@@ -1,0 +1,62 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0059",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "Adaptive runtime receive-credit shadow foundation architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the first shadow-only adaptive runtime boundary inside QuicConnectionRuntime for receive-credit publication while keeping legacy_current authoritative until the local shadow gates pass and a later active slice is separately approved.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0058"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0164",
+    "REQ-QUIC-CRT-0165",
+    "REQ-QUIC-CRT-0166",
+    "REQ-QUIC-CRT-0167",
+    "REQ-QUIC-CRT-0168",
+    "REQ-QUIC-CRT-0169"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "docs/adaptive-runtime-policy-planning.md",
+    "docs/design/adaptive-runtime-policy-controller-state-machine.md",
+    "docs/design/adaptive-runtime-policy-seam-inventory.md",
+    "docs/protocol-lab/adaptive-runtime-policy-local-campaign.md",
+    "docs/protocol-lab/adaptive-runtime-policy-dataset-provenance-contract.md",
+    "docs/testing/adaptive-runtime-policy-shadow-verification.md",
+    "docs/testing/adaptive-runtime-policy-acceptance-rollback.md",
+    "schemas/adaptive-runtime-policy-local-result-v1.schema.json",
+    "schemas/adaptive-runtime-policy-epoch-dataset-v1.schema.json"
+  ],
+  "design_summary": "QuicConnectionRuntime remains the single connection-local authority. A small internal controller object, or equivalent state carried by the runtime, evaluates only at actor-safe boundaries and publishes an immutable snapshot containing the selected mode, a bounded reason, the fallback classification, and sequence metadata. For this first foundation the controller supports legacy_current, baseline_only, observe_only, and shadow; active_internal is reserved for a later approval and is not used by this slice. The only migration axis is receive-credit publication. The runtime continues to apply the legacy selector while internal test-only controls can force legacy_current, immediate, or the frozen read_dominant_batch value to capture counterfactual evidence. Sticky hasIssuedApplicationDataWrite behavior remains monotonic and is preserved across snapshots so the retained fallback cannot be cleared by later observations. All correctness, progress, cancellation, disposal, FIN, reset, shutdown, recovery, and saturation guards remain authoritative and can bypass any policy decision. Missing, stale, contradictory, out-of-domain, or resource-limited inputs deterministically select the conservative recommendation and emit a bounded reason code; shadow mode still applies legacy_current. No advisor is required for v1, no benchmark labels or online ML feed the runtime, and offline exploratory analysis is confined to the evidence pipeline and dataset contract. The result and epoch schemas carry the immutable provenance needed to trace each shadow decision back to repository state, binary hashes, workload shape, and versioned transformations. Rollback remains legacy_current at commit 1b2611e1, with the accepted narrow behavior preserved rather than rewritten.",
+  "alternatives_considered": [
+    "Make active_internal part of the first slice. Rejected because it would cross from shadow validation into production behavior before the evidence contract is reviewed.",
+    "Add an advisor dependency to decide missing or stale cases. Rejected because the first foundation must stay usable without a separate advisor and must degrade conservatively from runtime state alone.",
+    "Let the controller explore policies online. Rejected because runtime exploration would entangle production behavior with experiment selection and violate the offline-only analysis boundary.",
+    "Expand the first migration to oversized-write, send planning, or packet cadence. Rejected because the planning bundle defines receive-credit as the first and only migration axis.",
+    "Clear the sticky application-data fact once later sparse epochs appear. Rejected because the retained sticky fallback must remain monotonic and connection-lifetime preserved."
+  ],
+  "edge_cases_and_constraints": [
+    "When hasIssuedApplicationDataWrite is true, the frozen read_dominant_batch mode becomes ineligible for the rest of the connection, regardless of later queue shape.",
+    "Terminal read, FIN, reset, shutdown, cancellation, disposal, and recovery conditions bypass policy gating so required credit publication cannot be delayed.",
+    "Shadow observations are recorded even when a decision is forced back to legacy_current, but the runtime application path remains unchanged.",
+    "A missing or stale observation must not infer success from absence of data; it must fall back to conservative behavior.",
+    "Policy snapshots are immutable and actor-safe; an in-flight operation latches the applicable axes and must not be retroactively reclassified by later snapshots.",
+    "Benchmark names, payload constants, caller-visible concurrency values, and online-learning outputs remain analysis-only and cannot influence runtime selection."
+  ],
+  "data_and_state_considerations": "The controller state is intentionally small: one mode, one forced or internal receive-credit axis selector, one sticky application-data fact, bounded counters or dwell metadata, and one compact immutable snapshot per actor-safe boundary. Runtime writes continue to live in QuicConnectionRuntime, and the sticky fact is updated by the existing write configuration path in QuicConnectionRuntime.Streams.cs through the monotonic hasIssuedApplicationDataWrite field. Observation storage references the versioned local-result and epoch-dataset schemas, which capture repository identity, binary hashes, workload shape, forced and shadow policy values, reason codes, and provenance without retaining raw connection identifiers in the offline dataset. The controller does not own queue mutation, packet construction, flow control, congestion control, timers, or buffers.",
+  "risks": [
+    "A controller that consults too much state would become a second scheduler rather than a seam-local observer and selector.",
+    "Using benchmark labels or scenario names in the runtime path would make the controller sensitive to analysis metadata rather than connection-local state.",
+    "Resetting or clearing the sticky application-data fact would re-open the negative half-window and non-sticky candidates that were already rejected.",
+    "Treating shadow recommendations as applied behavior would blur the migration boundary and invalidate the rollback target.",
+    "Insufficient provenance in the result and epoch contracts would make offline regime discovery and later rule review unverifiable."
+  ]
+}
