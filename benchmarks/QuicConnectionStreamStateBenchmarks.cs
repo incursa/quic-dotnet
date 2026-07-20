@@ -16,12 +16,15 @@ public class QuicConnectionStreamStateBenchmarks
     private const int BurstCount = 8;
     private const int BurstLength = BurstSegmentLength * BurstSegmentCount;
     private const int IndependentStreamCount = 32;
+    private const int CreditWindowLength = 64 * 1024;
+    private const int CreditReadLength = 1024;
 
     private byte[] tailFrame = [];
     private byte[] streamData = [];
     private byte[] holeSegmentData = [];
     private byte[] holeFillingData = [];
     private byte[] burstSegmentData = [];
+    private byte[] creditWindowData = [];
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -37,6 +40,7 @@ public class QuicConnectionStreamStateBenchmarks
         holeSegmentData = new byte[HoleSegmentLength];
         holeFillingData = new byte[HoleFillLength];
         burstSegmentData = new byte[BurstSegmentLength];
+        creditWindowData = new byte[CreditWindowLength];
     }
 
     [Benchmark]
@@ -285,6 +289,68 @@ public class QuicConnectionStreamStateBenchmarks
             + maxDataFrame.MaximumData
             + maxStreamDataFrame.MaximumStreamData
             + (completed ? 1UL : 0UL);
+    }
+
+    [Benchmark]
+    public ulong ReceiveAndDrainCreditWindowInOneKilobyteReads()
+    {
+        QuicConnectionStreamState state = CreateState(
+            connectionReceiveLimit: CreditWindowLength * 16,
+            incomingBidirectionalStreamLimit: 16,
+            peerBidirectionalReceiveLimit: CreditWindowLength);
+        QuicStreamFrame highestStreamFrame = new(
+            0x0E,
+            new QuicStreamId(61),
+            hasOffset: true,
+            offset: 0,
+            hasLength: true,
+            length: 1,
+            fin: false,
+            creditWindowData,
+            1);
+        if (!state.TryReceiveStreamFrame(highestStreamFrame, out _))
+        {
+            throw new InvalidOperationException("Failed to open the receive-credit stream set.");
+        }
+
+        QuicStreamFrame frame = new(
+            0x0E,
+            new QuicStreamId(1),
+            hasOffset: true,
+            offset: 0,
+            hasLength: true,
+            length: CreditWindowLength,
+            fin: false,
+            creditWindowData,
+            CreditWindowLength);
+        if (!state.TryReceiveStreamFrame(frame, out _))
+        {
+            throw new InvalidOperationException("Failed to seed the receive-credit window.");
+        }
+
+        ulong result = 0;
+        Span<byte> destination = stackalloc byte[CreditReadLength];
+        for (int offset = 0; offset < CreditWindowLength; offset += CreditReadLength)
+        {
+            if (!state.TryReadStreamData(
+                    1,
+                    destination,
+                    out int bytesWritten,
+                    out _,
+                    out QuicMaxDataFrame maxDataFrame,
+                    out QuicMaxStreamDataFrame maxStreamDataFrame,
+                    out _)
+                || bytesWritten != CreditReadLength)
+            {
+                throw new InvalidOperationException("Failed to drain a receive-credit chunk.");
+            }
+
+            result += (ulong)bytesWritten;
+            result += maxDataFrame.MaximumData;
+            result += maxStreamDataFrame.MaximumStreamData;
+        }
+
+        return result;
     }
 
     [Benchmark]
