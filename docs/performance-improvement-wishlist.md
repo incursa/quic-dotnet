@@ -7177,3 +7177,44 @@ pressure-gated minimum useful packet threshold or another partial-budget delay;
 the earlier unconditional overhead candidate and this adaptive variant now both
 show that withholding available congestion budget trades failed flush work for
 worse latency and allocation. No ProtocolLab run or full suite was justified.
+
+### Accepted 2026-07-20: application-send queue and accounting attribution
+
+Listener-gated application-send phase metrics now subdivide the remaining
+fragment queue commit and packet-accounting parents without changing runtime
+behavior. Queue commit reports queue mutation, send-effect append, and lifecycle
+timer effects. Packet accounting reports admission, packet tracking, ACK commit,
+sent-packet state, recovery state, and idle-timeout state. The fixed phase names
+retain the existing bounded `role` and `phase` tags.
+
+An exact-payload, five-sample one-connection upload diagnostic completed c16 and
+c32 with zero failures. Median client costs per completed MiB were:
+
+| Phase | c16 ms/MiB | c32 ms/MiB |
+| --- | ---: | ---: |
+| fragment queue commit parent | 2.62 | 3.85 |
+| lifecycle timer effects | 1.58 | 2.69 |
+| send-effect append | 0.20 | 0.19 |
+| queue mutation | 0.06 | 0.06 |
+| packet accounting parent | 2.26 | 2.42 |
+| packet tracking parent | 1.22 | 1.31 |
+| sent-packet state | 0.21 | 0.22 |
+| recovery state | 0.08 | 0.09 |
+| idle-timeout state | 0.05 | 0.05 |
+| packet admission | 0.17 | 0.17 |
+| piggybacked-ACK commit | 0.10 | 0.09 |
+
+Child metric recording is itself included by the enclosing parent, so parent
+and child rows must not be summed and the packet-tracking gap is not credited as
+runtime work. The actionable result is that full lifecycle-timer recomputation
+and hosted timer-update accumulation dominate queue commit. Hosted timer updates
+are applied only after the actor transition, yet the current list retains every
+intermediate generation for a timer even though only the final generation can
+remain current. The next bounded candidate should coalesce pending hosted timer
+updates by timer kind while preserving the final generation and priority; it
+must not skip recovery, idle, ACK-delay, or application-send timer updates.
+
+Release build and focused metrics/send queue/scheduler coverage passed 88/88.
+Evidence is retained under
+`C:\shared\temp\quic-application-send-deep-attribution-20260720`. No ProtocolLab
+run was justified for this behavior-neutral instrumentation slice.

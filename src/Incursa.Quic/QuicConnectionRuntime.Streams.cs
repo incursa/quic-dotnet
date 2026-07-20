@@ -917,6 +917,7 @@ internal sealed partial class QuicConnectionRuntime
             protectStartedTimestamp);
 
         long commitStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
+        long queueMutationStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
 
         if (hasRemainder && queuedWrite.ContainsRawStreamData)
         {
@@ -947,12 +948,27 @@ internal sealed partial class QuicConnectionRuntime
             throw new InvalidOperationException("The connection runtime could not remove the completed queued stream write.");
         }
 
-        AppendSendDatagramEffect(ref effects, sendPathIdentity, protectedPacket);
+        QuicMetrics.RecordApplicationSendPhaseTime(
+            tlsState.Role,
+            "fragment_queue_mutation",
+            queueMutationStartedTimestamp);
 
+        long sendEffectStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
+        AppendSendDatagramEffect(ref effects, sendPathIdentity, protectedPacket);
+        QuicMetrics.RecordApplicationSendPhaseTime(
+            tlsState.Role,
+            "fragment_send_effect",
+            sendEffectStartedTimestamp);
+
+        long timerEffectsStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
         pendingApplicationSendDelayDueTicks = applicationSendQueue.Count > 0
             ? SaturatingAdd(nowTicks, ConvertMicrosToTicks(ApplicationSendDelayMicros))
             : null;
         AppendLifecycleTimerEffects(ref effects);
+        QuicMetrics.RecordApplicationSendPhaseTime(
+            tlsState.Role,
+            "fragment_timer_effects",
+            timerEffectsStartedTimestamp);
 
         QuicMetrics.RecordApplicationSendPhaseTime(
             tlsState.Role,
@@ -3292,6 +3308,12 @@ internal sealed partial class QuicConnectionRuntime
                 return false;
             }
 
+            QuicMetrics.RecordApplicationSendPhaseTime(
+                tlsState.Role,
+                "packet_admission",
+                accountingStartedTimestamp);
+
+            long packetTrackingStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
             TrackApplicationPacket(
                 packetNumber,
                 protectedPacket,
@@ -3302,7 +3324,12 @@ internal sealed partial class QuicConnectionRuntime
                 plaintextPayload: payload,
                 plaintextPayloadOwner: plaintextPayloadOwner,
                 packetBytesOwner: protectedPacketOwner);
+            QuicMetrics.RecordApplicationSendPhaseTime(
+                tlsState.Role,
+                "packet_tracking",
+                packetTrackingStartedTimestamp);
             protectedPacketOwner = null;
+            long ackCommitStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
             if (piggybackedAckFrame is not null)
             {
                 MarkApplicationAckFrameSent(
@@ -3311,6 +3338,10 @@ internal sealed partial class QuicConnectionRuntime
                     sentAtMicros: nowMicros,
                     ackOnlyPacket: false);
             }
+            QuicMetrics.RecordApplicationSendPhaseTime(
+                tlsState.Role,
+                "packet_ack_commit",
+                ackCommitStartedTimestamp);
 
             sendPathIdentity = pathIdentity;
             exception = null;
@@ -5339,6 +5370,7 @@ internal sealed partial class QuicConnectionRuntime
         byte[]? plaintextPayloadOwner = null,
         byte[]? packetBytesOwner = null)
     {
+        long sentStateStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
         sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
             QuicPacketNumberSpace.ApplicationData,
             packetNumber,
@@ -5358,6 +5390,12 @@ internal sealed partial class QuicConnectionRuntime
             OneRttKeyPhase: packetProtectionLevel == QuicTlsEncryptionLevel.OneRtt
                 ? tlsState.CurrentOneRttKeyPhase
                 : null));
+        QuicMetrics.RecordApplicationSendPhaseTime(
+            tlsState.Role,
+            "packet_sent_state",
+            sentStateStartedTimestamp);
+
+        long recoveryStateStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
         recoveryController.RecordPacketSent(
             QuicPacketNumberSpace.ApplicationData,
             packetNumber,
@@ -5368,11 +5406,20 @@ internal sealed partial class QuicConnectionRuntime
             oneRttKeyPhase: packetProtectionLevel == QuicTlsEncryptionLevel.OneRtt
                 ? tlsState.CurrentOneRttKeyPhase
                 : null);
+        QuicMetrics.RecordApplicationSendPhaseTime(
+            tlsState.Role,
+            "packet_recovery_state",
+            recoveryStateStartedTimestamp);
 
+        long idleStateStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
         if (ackEliciting && idleTimeoutState is not null)
         {
             idleTimeoutState.RecordAckElicitingPacketSent(GetElapsedMicros(lastTransitionTicks));
         }
+        QuicMetrics.RecordApplicationSendPhaseTime(
+            tlsState.Role,
+            "packet_idle_state",
+            idleStateStartedTimestamp);
     }
 
     private void TrackInitialPacket(ulong packetNumber, byte[] protectedPacket, bool probePacket = false)
