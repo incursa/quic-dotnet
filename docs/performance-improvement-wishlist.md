@@ -7147,3 +7147,33 @@ or coalesce already-authorized connection work, while preserving useful partial
 sends and the c1/c4 path. Retain the diagnostic JSON and transcript under
 `C:\shared\temp\quic-application-send-subphase-20260720`. No ProtocolLab run
 was justified for this behavior-neutral attribution slice.
+
+### Rejected 2026-07-20: saturated partial-packet deferral
+
+A bounded candidate made the existing pressure classifier active without a
+metrics listener and changed only saturated recovery-driven queued sends. When
+packets remained in flight, a partial congestion budget below half a useful
+packet was deferred until later recovery progress; larger partial budgets
+reserved the exact short-header, packet-number, and AEAD overhead before frame
+selection. Sparse and cooperative modes retained current behavior, as did full
+packet budgets, pre-validation sends, and sends with no packets in flight.
+
+BenchmarkDotNet Dry and Short jobs passed. The policy decision measured 2.815
+ns with no managed allocation. Focused send-policy, classifier requirement, and
+metrics coverage passed 54/54. The exact A/B/B/A one-connection upload screen
+then rejected the mechanism before broader gates:
+
+| Load | Baseline MiB/s | Candidate MiB/s | Delta | Baseline/Candidate CV | p95 delta | allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| c16 | 34.35 | 33.82 | -1.5% | 46.1% / 37.5% | +6.6% | +0.5% |
+| c32 | 36.69 | 25.47 | -30.6% | 20.5% / 23.4% | +47.1% | +38.7% |
+
+All samples completed exact payload validation, but saturated partial-send
+deferral materially worsened backlog drain and retained ownership at c32. The
+runtime, tests, and benchmark addition are reverted. Retain the frozen binaries,
+hashes, BenchmarkDotNet artifacts, focused TRX, and A/B/B/A JSON under
+`C:\shared\temp\quic-saturated-partial-policy-20260720`. Do not retry a
+pressure-gated minimum useful packet threshold or another partial-budget delay;
+the earlier unconditional overhead candidate and this adaptive variant now both
+show that withholding available congestion budget trades failed flush work for
+worse latency and allocation. No ProtocolLab run or full suite was justified.
