@@ -7512,3 +7512,63 @@ shows enough waste to explain a material part of the high-cardinality slope.
 This is materially different from the rejected distinct-stream transition
 batch, which did not reduce packets or datagrams. If packet utilization remains
 high, stop this branch and quantify stream-open/write command fan-in instead.
+
+### Rejected 2026-07-20: raw-stream tail packet packing
+
+The utilization diagnosis found a real but bounded gap. Across the fixed
+3 MiB waves, client datagram fill declined from 1,092.6 bytes at c64 to
+642.1 bytes at c1024. Payload efficiency declined from 96.5 to 92.5 percent,
+and the existing application-send batch metric remained 1.00 stream per packet
+at every load. The runtime already combines preformatted STREAM frames, but an
+oversized write retains one raw buffer and the scheduler selects only one raw
+write. Its final underfilled packet therefore cannot absorb the next stream's
+prefix.
+
+A bounded allocation-free builder formatted a completed raw tail and a prefix
+of the next ready raw stream into the same packet. It preserved offsets, FIN
+only on fully consumed writes, queue ownership, distinct stream IDs, and the
+existing protection, recovery, congestion, flow-control, and send-effect path.
+It did not run for probes, custom turn planners, a first fragment that could
+fill the packet, or fewer than two compatible raw writes. Focused RFC and
+builder coverage passed 18/18, and Release builds completed with no warnings or
+errors.
+
+BenchmarkDotNet Dry and Short jobs ran before end-to-end testing. The final
+Short job measured 41.45 ns for the current single-tail formatting, 162.76 ns
+for formatting the tail plus the next stream prefix, and 64.30 ns for rejecting
+a full first write before renting a combined buffer. All three paths allocated
+zero managed bytes. The extra formatting cost was small relative to packet
+protection and socket submission, so the candidate proceeded to a local screen.
+
+The exact-payload A/B/B/A screen used a frozen `c1fb83c5` runtime-equivalent
+baseline, five two-second samples per pass, diagnostics off, and zero failures:
+
+| Load | Baseline MiB/s | Candidate MiB/s | Delta | Baseline/Candidate CV | p95 delta | allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| fixed-total c64 | 25.04 | 26.05 | +4.0% | 17.1% / 20.6% | -3.6% | -0.6% |
+| fixed-total c128 | 18.75 | 20.24 | +7.9% | 25.7% / 24.3% | -13.0% | +12.5% |
+| fixed-total c256 | 15.15 | 14.59 | -3.7% | 24.4% / 29.9% | +23.0% | -0.5% |
+| fixed-per-stream c16, 1 MiB | 58.29 | 34.24 | -41.3% | 36.6% / 21.1% | +20.7% | +13.9% |
+
+The c16 pooled row is dominated by regime drift: the opening baseline measured
+67.25 MiB/s, both candidate passes measured 34.21-36.28, and the closing
+baseline measured 36.29. It is not evidence of a semantic candidate regression,
+but it also cannot clear the guardrail. The fixed-total gains were below the
+normal gate and had high variance; c256 moved in the wrong direction.
+
+A final instrumented c128 candidate cell proved that the mechanism activated:
+mean streams per packet rose from 1.00 to 1.96, datagrams per operation fell
+from 24.74 to 23.78 (-3.9 percent), and mean datagram fill rose from 1,045.2 to
+1,083.7 bytes. Candidate diagnostic throughput was 9.94 MiB/s versus the older
+11.69 MiB/s baseline diagnostic, so this is activation and packet-count proof,
+not a matched timing comparison. The measured packet reduction is too small to
+explain the broader high-cardinality slope or justify the added queue-commit
+surface. The runtime, tests, and benchmark are reverted. Retain BDN, A/B,
+diagnostic, JSON, and logs under
+`C:\shared\temp\quic-raw-tail-packing-20260720`.
+
+Do not repeat raw-tail packing without a design that removes materially more
+than one packet per operation or amortizes additional connection-actor work at
+the same time. The next high-cardinality slice must quantify stream-open and
+stream-write command fan-in separately from packet count, then target actor
+turns or lifecycle work only if the common c16 lane exposes the same mechanism.
