@@ -7357,3 +7357,48 @@ unconditional listener-buffer change. Only a causal buffer result can justify
 a pressure-triggered capacity policy. If neither mechanism passes, return to
 bounded post-authentication stream-local preparation outside the connection
 actor.
+
+### Rejected 2026-07-20: receipt-aware high-cardinality ACK cadence
+
+The corrected experiment tested three pressure signals before making a
+performance claim. A monotonic lifetime-stream count was rejected before A/B
+because repeated c1/c16 operations eventually crossed the threshold. Current
+buffered-readable stream occupancy remained at the normal policy for every ACK
+decision at c16, c24, and c32 because application reads drained buffers before
+the ACK path sampled them. A maintained active-peer-stream count then matched
+QUIC stream lifetime: c16 recorded no high-cardinality selections, while c24
+and c32 used the high-cardinality mode for approximately 76-79 percent of ACK
+decisions. Focused ACK, stream-lifecycle, receipt-store, metrics, and RFC tests
+passed 58/58, and the Release build completed with no warnings or errors.
+
+The valid active-stream signal drove an ACK threshold of one only at 24 or more
+active peer streams. An exact-payload A/B/A/B screen used a frozen `c1fb83c5`
+baseline, five three-second samples per pass, one connection, diagnostics off,
+and zero failures. Pooled results were:
+
+| Load | Baseline MiB/s | Candidate MiB/s | Delta | Baseline/Candidate CV | p95 delta | allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| c16 | 29.36 | 34.37 | +17.1% | 56.0% / 30.6% | -28.8% | -1.3% |
+| c24 | 31.84 | 16.40 | -48.5% | 18.5% / 6.3% | +82.8% | -2.3% |
+| c32 | 20.91 | 15.04 | -28.1% | 15.3% / 4.2% | +33.8% | -11.2% |
+
+The c16 row is below the activation threshold and too variable to credit. The
+correctly activated c24/c32 rows show that restoring per-packet ACK cadence
+under fanout increases receiver and connection-actor pressure rather than
+preventing the congestion-collapse regime. The runtime, tests, policy metric,
+and temporary BenchmarkDotNet benchmark are reverted. Retain activation proof,
+frozen baseline, build outputs, and A/B evidence under
+`C:\shared\temp\quic-ack-adaptive-buffered-20260720` and
+`C:\shared\temp\quic-ack-adaptive-active-20260720`. Do not repeat receipt-aware
+ACK cadence, another stream-count threshold, or a threshold-of-one policy
+without a materially different ACK-processing design. No low-cardinality
+guardrail, stress ladder, full suite, or ProtocolLab run was justified.
+
+The next causal screen is the already documented one-connection UDP receive
+capacity experiment at c16/c32. Compare the platform 64 KiB buffer with a 4 MiB
+diagnostic override using frozen binaries and exact payload validation. This is
+diagnosis only: prior evidence already rejects an unconditional production
+increase because it harmed low-load HTTP/3. A positive result can justify only
+a pressure-triggered listener-capacity design with c1/c4 guardrails; a negative
+result ends this loss-collapse branch and returns the work to bounded
+post-authentication stream-local preparation outside the connection actor.
