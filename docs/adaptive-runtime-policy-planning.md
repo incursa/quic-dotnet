@@ -1,18 +1,53 @@
 # Adaptive Runtime Policy Planning
 
-Status: planning checkpoint
+Status: planning package ready for review; implementation blocked
 
 Date: 2026-07-20
 
 This document records the architecture direction for adaptive QUIC runtime
 behavior after the July 2026 same-connection performance experiments. It is a
-planning artifact, not authorization to promote the current receive-credit
-candidate or to replace protocol invariants with performance heuristics.
+planning artifact, not authorization to widen the retained receive-credit
+policy or to replace protocol invariants with performance heuristics.
 
 The optimization loop pauses at this checkpoint. Preserve the accepted
 adaptive oversized-write and read-dominant receive-credit work, all matched
 evidence, and all retained negative experiments before beginning the broader
 implementation plan described here.
+
+## Worktree And Candidate Classification
+
+The 2026-07-20 planning inspection found a clean worktree on `main` at commit
+`1b2611e1f213dd5aedbfc74819bf5c4eb7dfdeda`, with the branch 118 commits ahead
+of `origin/main`. The receive-credit code is therefore not an uncommitted delta
+that can be silently folded into this plan or discarded as scratch work.
+
+The narrow sticky read-dominant policy in that commit is retained accepted
+work. Its exact behavior remains frozen: batching is eligible only with at
+least 16 live stream observers, any application-data write permanently selects
+immediate credit for the connection, small windows and limit saturation force
+progress, terminal reads and reset flush connection credit, and completed
+streams do not publish unusable stream credit.
+
+The unfinished candidate is the broader generalization of receive-credit
+selection beyond that frozen rule. It remains blocked. In particular, the
+universal, half-window duplex-reactivating, quarter-window
+duplex-reactivating, non-sticky, and lock-based selector variants remain
+negative experiments. This planning package neither promotes those variants
+nor moves the retained rule under a new controller.
+
+The retained sticky candidate binaries were re-identified from the evidence
+root during this inspection:
+
+- benchmark SHA-256
+  `43ECE5EEC45F1AFEB1545764E3931ADB5257BC92FABECD14D15939E96245D5C2`;
+- runtime SHA-256
+  `2C200B584C34A0FC306106CA6E5819E8838DAFBD2A6AD9B9924A4CEB9585D7A3`.
+
+The matched final, read-dominant duplex, quarter-window duplex, and sticky
+duplex manifests remain under
+`C:\shared\temp\quic-flow-credit-cadence-20260720`. The adaptive-write and
+cardinality roots listed below also remain retained inputs. None was moved,
+rewritten, or regenerated during planning.
 
 ## Problem Statement
 
@@ -20,9 +55,9 @@ One fixed scheduler policy is not consistently best across sparse,
 multiplexed, receive-heavy, send-heavy, duplex, and saturated workloads. Stream
 count is useful context, but it is not a sufficient selector:
 
-- the current receive-credit candidate improved c16 download while regressing
-  c16 upload;
-- it improved c32 download while regressing c32 duplex;
+- an early broad receive-credit candidate improved c16 download while
+  regressing c16 upload;
+- the same broad direction improved c32 download while regressing c32 duplex;
 - policies that help c16-c24 have previously regressed c1-c4 or c32+;
 - merely open streams do not represent runnable or heavily used streams;
 - queueing, flow-control headroom, loss, application consumption, and resource
@@ -295,3 +330,22 @@ Before new runtime optimization, produce and review:
 
 No additional production policy axis should begin until these planning
 artifacts are coherent enough to review together.
+
+The requested package is now represented by the following review artifacts:
+
+1. [`design/adaptive-runtime-policy-seam-inventory.md`](design/adaptive-runtime-policy-seam-inventory.md)
+2. [`design/adaptive-runtime-policy-observation-schema.md`](design/adaptive-runtime-policy-observation-schema.md)
+3. [`design/adaptive-runtime-policy-controller-state-machine.md`](design/adaptive-runtime-policy-controller-state-machine.md)
+4. [`protocol-lab/adaptive-runtime-policy-local-campaign.md`](protocol-lab/adaptive-runtime-policy-local-campaign.md)
+5. [`protocol-lab/adaptive-runtime-policy-dataset-provenance-contract.md`](protocol-lab/adaptive-runtime-policy-dataset-provenance-contract.md)
+6. [`testing/adaptive-runtime-policy-shadow-verification.md`](testing/adaptive-runtime-policy-shadow-verification.md)
+7. [`testing/adaptive-runtime-policy-acceptance-rollback.md`](testing/adaptive-runtime-policy-acceptance-rollback.md)
+
+The machine-readable companions are
+[`../schemas/adaptive-runtime-policy-local-result-v1.schema.json`](../schemas/adaptive-runtime-policy-local-result-v1.schema.json)
+and
+[`../schemas/adaptive-runtime-policy-epoch-dataset-v1.schema.json`](../schemas/adaptive-runtime-policy-epoch-dataset-v1.schema.json).
+All artifacts remain proposed until reviewed as one bundle. Review does not by
+itself authorize production implementation; the open CRT planning gap must be
+resolved into stable requirements and canonical architecture and verification
+artifacts first.

@@ -1,0 +1,425 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-policy-epoch-dataset-v1.schema.json",
+  "title": "Adaptive Runtime Policy Epoch Dataset Row v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "datasetId",
+    "rowId",
+    "campaignId",
+    "runId",
+    "cellId",
+    "sampleId",
+    "repetition",
+    "connectionKey",
+    "epochIndex",
+    "epochStartOffsetMicros",
+    "epochDurationMicros",
+    "preDecisionObservations",
+    "currentPolicyState",
+    "candidatePolicySelection",
+    "transitionState",
+    "dwellState",
+    "postEpochOutcomes",
+    "correctnessFlags",
+    "fairnessFlags",
+    "provenance",
+    "workloadAnalysisOnly",
+    "analysisExclusionFlags"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "adaptive-runtime-policy-epoch-dataset-v1"
+    },
+    "datasetId": { "$ref": "#/$defs/nonEmptyString" },
+    "rowId": { "$ref": "#/$defs/nonEmptyString" },
+    "campaignId": { "$ref": "#/$defs/nonEmptyString" },
+    "runId": { "$ref": "#/$defs/nonEmptyString" },
+    "cellId": { "$ref": "#/$defs/nonEmptyString" },
+    "sampleId": { "$ref": "#/$defs/nonEmptyString" },
+    "repetition": { "type": "integer", "minimum": 0 },
+    "connectionKey": { "$ref": "#/$defs/nonEmptyString" },
+    "epochIndex": { "type": "integer", "minimum": 0 },
+    "epochStartOffsetMicros": { "type": "integer", "minimum": 0 },
+    "epochDurationMicros": { "type": "integer", "exclusiveMinimum": 0 },
+    "preDecisionObservations": { "$ref": "#/$defs/observations" },
+    "currentPolicyState": { "$ref": "#/$defs/policyState" },
+    "candidatePolicySelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selectionSource", "selectedPolicy", "shadowRecommendation", "reasonCode"],
+      "properties": {
+        "selectionSource": {
+          "type": "string",
+          "enum": ["legacy", "forced", "shadow_rule", "active_rule", "baseline_only"]
+        },
+        "selectedPolicy": { "$ref": "#/$defs/policyValue" },
+        "shadowRecommendation": {
+          "anyOf": [
+            { "$ref": "#/$defs/policyValue" },
+            { "type": "null" }
+          ]
+        },
+        "reasonCode": { "$ref": "#/$defs/reasonCode" },
+        "contradictorySignals": { "type": "boolean", "default": false }
+      }
+    },
+    "transitionState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["previousState", "state", "transitioned", "reasonCode"],
+      "properties": {
+        "previousState": { "$ref": "#/$defs/controllerState" },
+        "state": { "$ref": "#/$defs/controllerState" },
+        "transitioned": { "type": "boolean" },
+        "reasonCode": { "$ref": "#/$defs/reasonCode" }
+      }
+    },
+    "dwellState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stateEpochCount", "stateDurationMicros", "candidateEvidenceCount", "reliefEvidenceCount"],
+      "properties": {
+        "stateEpochCount": { "type": "integer", "minimum": 0 },
+        "stateDurationMicros": { "type": "integer", "minimum": 0 },
+        "candidateEvidenceCount": { "type": "integer", "minimum": 0 },
+        "reliefEvidenceCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "postEpochOutcomes": { "$ref": "#/$defs/outcomes" },
+    "correctnessFlags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["payloadValid", "protocolValid", "timedOut", "ownershipValid", "terminalValid"],
+      "properties": {
+        "payloadValid": { "type": "boolean" },
+        "protocolValid": { "type": "boolean" },
+        "timedOut": { "type": "boolean" },
+        "cancellationValid": { "type": ["boolean", "null"] },
+        "disposalValid": { "type": ["boolean", "null"] },
+        "ownershipValid": { "type": "boolean" },
+        "terminalValid": { "type": "boolean" },
+        "violationCodes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      }
+    },
+    "fairnessFlags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assessed", "starvationObserved", "guardrailViolated"],
+      "properties": {
+        "assessed": { "type": "boolean" },
+        "starvationObserved": { "type": "boolean" },
+        "guardrailViolated": { "type": "boolean" },
+        "violationCodes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      }
+    },
+    "provenance": { "$ref": "#/$defs/provenance" },
+    "workloadAnalysisOnly": { "$ref": "#/$defs/workloadAnalysisOnly" },
+    "analysisExclusionFlags": {
+      "type": "array",
+      "uniqueItems": true,
+      "allOf": [
+        {
+          "if": {
+            "contains": { "const": "none" }
+          },
+          "then": {
+            "maxItems": 1
+          }
+        }
+      ],
+      "items": {
+        "type": "string",
+        "enum": [
+          "correctness_failed",
+          "requested_effective_mismatch",
+          "binary_identity_missing",
+          "binary_changed",
+          "target_health_invalid",
+          "generator_health_invalid",
+          "observation_missing",
+          "observation_stale",
+          "observation_saturated",
+          "out_of_domain",
+          "instrumentation_mismatch",
+          "warmup",
+          "cooldown",
+          "terminal_partial_epoch",
+          "policy_mismatch",
+          "source_join_failed",
+          "none"
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "sha256": { "type": "string", "pattern": "^[0-9a-fA-F]{64}$" },
+    "nullableUnsigned": { "type": ["integer", "null"], "minimum": 0 },
+    "nullableNumber": { "type": ["number", "null"], "minimum": 0 },
+    "policyValue": {
+      "type": "string",
+      "enum": ["legacy_current", "conservative", "immediate", "read_dominant_batch", "static_current", "candidate", "not_applicable"]
+    },
+    "controllerState": {
+      "type": "string",
+      "enum": ["quiescent", "conservative", "promotion_pending", "candidate", "demotion_pending", "fallback", "terminal"]
+    },
+    "reasonCode": {
+      "type": "string",
+      "enum": [
+        "none",
+        "activity_resumed",
+        "candidate_observed",
+        "promotion_sustained",
+        "promotion_evidence_cleared",
+        "relief_observed",
+        "demotion_sustained",
+        "relief_cleared",
+        "missing_signal",
+        "stale_signal",
+        "out_of_domain",
+        "contradictory_signals",
+        "resource_guard",
+        "recovery_guard",
+        "flow_progress_guard",
+        "cancellation_or_disposal",
+        "shutdown",
+        "rule_version_mismatch",
+        "arithmetic_saturated",
+        "fallback_recovered",
+        "connection_quiescent",
+        "terminal_started",
+        "forced_baseline",
+        "legacy_selector"
+      ]
+    },
+    "observations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "openStreams",
+        "liveObserverStreams",
+        "activeStreams",
+        "runnableStreams",
+        "receiveActiveStreams",
+        "sendActiveStreams",
+        "inboundBytesEpoch",
+        "outboundBytesEpoch",
+        "inboundRateEwmaBps",
+        "outboundRateEwmaBps",
+        "queuedApplicationWrites",
+        "distinctQueuedSendStreams",
+        "queueDelayEwmaMicros",
+        "actorServiceTimeEwmaMicros",
+        "queueToServiceRatioQ16",
+        "connectionReceiveHeadroomBytes",
+        "estimatedReceiveExhaustionMicros",
+        "connectionCreditPendingBytes",
+        "timeSinceCreditPublicationMicros",
+        "connectionFlowBlockedMicrosEpoch",
+        "streamFlowBlockedMicrosEpoch",
+        "outboundBacklogBytes",
+        "congestionWindowBytes",
+        "bytesInFlight",
+        "lossEventsEpoch",
+        "retransmissionsEpoch",
+        "ptoEventsEpoch",
+        "retainedSendBytes",
+        "retainedReceiveBytes",
+        "advisorAgeMicros",
+        "hasIssuedApplicationData",
+        "missingSignalMask",
+        "staleSignalMask",
+        "outOfDomain"
+      ],
+      "properties": {
+        "openStreams": { "$ref": "#/$defs/nullableUnsigned" },
+        "liveObserverStreams": { "$ref": "#/$defs/nullableUnsigned" },
+        "activeStreams": { "$ref": "#/$defs/nullableUnsigned" },
+        "runnableStreams": { "$ref": "#/$defs/nullableUnsigned" },
+        "receiveActiveStreams": { "$ref": "#/$defs/nullableUnsigned" },
+        "sendActiveStreams": { "$ref": "#/$defs/nullableUnsigned" },
+        "inboundBytesEpoch": { "$ref": "#/$defs/nullableUnsigned" },
+        "outboundBytesEpoch": { "$ref": "#/$defs/nullableUnsigned" },
+        "inboundRateEwmaBps": { "$ref": "#/$defs/nullableUnsigned" },
+        "outboundRateEwmaBps": { "$ref": "#/$defs/nullableUnsigned" },
+        "queuedApplicationWrites": { "$ref": "#/$defs/nullableUnsigned" },
+        "distinctQueuedSendStreams": { "$ref": "#/$defs/nullableUnsigned" },
+        "oldestApplicationSendAgeMicros": { "$ref": "#/$defs/nullableUnsigned" },
+        "queueDelayEwmaMicros": { "$ref": "#/$defs/nullableUnsigned" },
+        "actorServiceTimeEwmaMicros": { "$ref": "#/$defs/nullableUnsigned" },
+        "queueToServiceRatioQ16": { "$ref": "#/$defs/nullableUnsigned" },
+        "actorTurnsEpoch": { "$ref": "#/$defs/nullableUnsigned" },
+        "usefulWorkUnitsEpoch": { "$ref": "#/$defs/nullableUnsigned" },
+        "writeCompletionEwmaMicros": { "$ref": "#/$defs/nullableUnsigned" },
+        "connectionReceiveHeadroomBytes": { "$ref": "#/$defs/nullableUnsigned" },
+        "minimumStreamReceiveHeadroomBytes": { "$ref": "#/$defs/nullableUnsigned" },
+        "estimatedReceiveExhaustionMicros": { "$ref": "#/$defs/nullableUnsigned" },
+        "connectionCreditPendingBytes": { "$ref": "#/$defs/nullableUnsigned" },
+        "maximumStreamCreditPendingBytes": { "$ref": "#/$defs/nullableUnsigned" },
+        "timeSinceCreditPublicationMicros": { "$ref": "#/$defs/nullableUnsigned" },
+        "connectionFlowBlockedMicrosEpoch": { "$ref": "#/$defs/nullableUnsigned" },
+        "streamFlowBlockedMicrosEpoch": { "$ref": "#/$defs/nullableUnsigned" },
+        "outboundBacklogBytes": { "$ref": "#/$defs/nullableUnsigned" },
+        "burstLimitHitsEpoch": { "$ref": "#/$defs/nullableUnsigned" },
+        "packetFillRatioQ16": { "$ref": "#/$defs/nullableUnsigned" },
+        "packetsPerLogicalOperationQ16": { "$ref": "#/$defs/nullableUnsigned" },
+        "controlFrameRatioQ16": { "$ref": "#/$defs/nullableUnsigned" },
+        "congestionWindowBytes": { "$ref": "#/$defs/nullableUnsigned" },
+        "bytesInFlight": { "$ref": "#/$defs/nullableUnsigned" },
+        "lossEventsEpoch": { "$ref": "#/$defs/nullableUnsigned" },
+        "retransmissionsEpoch": { "$ref": "#/$defs/nullableUnsigned" },
+        "ptoEventsEpoch": { "$ref": "#/$defs/nullableUnsigned" },
+        "ackElicitingSentEpoch": { "$ref": "#/$defs/nullableUnsigned" },
+        "ackFramesSentEpoch": { "$ref": "#/$defs/nullableUnsigned" },
+        "retainedSendBuffers": { "$ref": "#/$defs/nullableUnsigned" },
+        "retainedSendBytes": { "$ref": "#/$defs/nullableUnsigned" },
+        "retainedReceiveBuffers": { "$ref": "#/$defs/nullableUnsigned" },
+        "retainedReceiveBytes": { "$ref": "#/$defs/nullableUnsigned" },
+        "runtimeCpuPressureQ16": { "$ref": "#/$defs/nullableUnsigned" },
+        "threadPoolDelayMicros": { "$ref": "#/$defs/nullableUnsigned" },
+        "managedMemoryPressureQ16": { "$ref": "#/$defs/nullableUnsigned" },
+        "socketSendBacklogQ16": { "$ref": "#/$defs/nullableUnsigned" },
+        "advisorAgeMicros": { "$ref": "#/$defs/nullableUnsigned" },
+        "hasIssuedApplicationData": { "type": "boolean" },
+        "missingSignalMask": { "type": "integer", "minimum": 0 },
+        "staleSignalMask": { "type": "integer", "minimum": 0 },
+        "lifecycleFlags": { "type": "integer", "minimum": 0 },
+        "outOfDomain": { "type": "boolean" }
+      }
+    },
+    "policyState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["snapshotVersion", "ruleVersion", "observationContractVersion", "state", "appliedPolicy", "hasIssuedApplicationData"],
+      "properties": {
+        "snapshotVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "ruleVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "observationContractVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "state": { "$ref": "#/$defs/controllerState" },
+        "appliedPolicy": { "$ref": "#/$defs/policyValue" },
+        "hasIssuedApplicationData": { "type": "boolean" }
+      }
+    },
+    "outcomes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["applicationBytes", "completedOperations", "throughputBytesPerSecond", "latencyP95Micros", "allocatedBytes", "peakRetainedBytes", "queueDelayP95Micros", "lossEvents", "ptoEvents"],
+      "properties": {
+        "applicationBytes": { "$ref": "#/$defs/nullableUnsigned" },
+        "completedOperations": { "$ref": "#/$defs/nullableUnsigned" },
+        "throughputBytesPerSecond": { "$ref": "#/$defs/nullableNumber" },
+        "latencyP50Micros": { "$ref": "#/$defs/nullableUnsigned" },
+        "latencyP95Micros": { "$ref": "#/$defs/nullableUnsigned" },
+        "latencyP99Micros": { "$ref": "#/$defs/nullableUnsigned" },
+        "allocatedBytes": { "$ref": "#/$defs/nullableUnsigned" },
+        "peakRetainedBytes": { "$ref": "#/$defs/nullableUnsigned" },
+        "queueDelayP95Micros": { "$ref": "#/$defs/nullableUnsigned" },
+        "lossEvents": { "$ref": "#/$defs/nullableUnsigned" },
+        "ptoEvents": { "$ref": "#/$defs/nullableUnsigned" }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repositoryName",
+        "repositoryPath",
+        "repositoryBranch",
+        "repositoryRemoteUrl",
+        "repositoryCommit",
+        "repositoryDirty",
+        "benchmarkSha256",
+        "runtimeSha256",
+        "hostFingerprint",
+        "os",
+        "architecture",
+        "processorCount",
+        "dotnetRuntime",
+        "monotonicTimerFrequencyHz",
+        "scriptVersion",
+        "toolVersions",
+        "resultSchemaVersion",
+        "datasetSchemaVersion",
+        "ruleVersion",
+        "observationContractVersion",
+        "sourceArtifactPath",
+        "sourceArtifactSha256",
+        "transformation"
+      ],
+      "properties": {
+        "repositoryName": { "$ref": "#/$defs/nonEmptyString" },
+        "repositoryPath": { "$ref": "#/$defs/nonEmptyString" },
+        "repositoryBranch": { "type": ["string", "null"] },
+        "repositoryRemoteUrl": { "type": ["string", "null"] },
+        "repositoryCommit": { "type": "string", "pattern": "^[0-9a-fA-F]{7,40}$" },
+        "repositoryDirty": { "type": "boolean" },
+        "benchmarkSha256": { "$ref": "#/$defs/sha256" },
+        "runtimeSha256": { "$ref": "#/$defs/sha256" },
+        "hostFingerprint": { "$ref": "#/$defs/nonEmptyString" },
+        "os": { "$ref": "#/$defs/nonEmptyString" },
+        "architecture": { "$ref": "#/$defs/nonEmptyString" },
+        "processorCount": { "type": "integer", "minimum": 1 },
+        "dotnetRuntime": { "$ref": "#/$defs/nonEmptyString" },
+        "monotonicTimerFrequencyHz": { "type": "integer", "minimum": 1 },
+        "scriptVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "toolVersions": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "resultSchemaVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "datasetSchemaVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "ruleVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "observationContractVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "sourceArtifactPath": { "$ref": "#/$defs/nonEmptyString" },
+        "sourceArtifactSha256": { "$ref": "#/$defs/sha256" },
+        "transformation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "version", "codeCommit", "inputSha256", "outputSha256"],
+          "properties": {
+            "name": { "$ref": "#/$defs/nonEmptyString" },
+            "version": { "$ref": "#/$defs/nonEmptyString" },
+            "codeCommit": { "type": "string", "pattern": "^[0-9a-fA-F]{7,40}$" },
+            "inputSha256": { "$ref": "#/$defs/sha256" },
+            "outputSha256": { "$ref": "#/$defs/sha256" }
+          }
+        }
+      }
+    },
+    "workloadAnalysisOnly": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["excludedFromProductionFeatures", "scenarioId", "trafficShape", "payloadBytes", "accountingMode", "requestedConnections", "effectiveConnections", "requestedStreamsPerConnection", "effectiveStreamsPerConnection", "requestedConcurrency", "effectiveConcurrency", "warmupMicros", "measurementMicros", "arrivalPattern"],
+      "properties": {
+        "excludedFromProductionFeatures": { "type": "boolean", "const": true },
+        "scenarioId": { "$ref": "#/$defs/nonEmptyString" },
+        "trafficShape": { "type": "string", "enum": ["upload", "download", "duplex", "request_response", "streaming"] },
+        "payloadBytes": { "type": "integer", "minimum": 0 },
+        "accountingMode": { "type": "string", "enum": ["fixed_total", "fixed_per_stream"] },
+        "requestedConnections": { "type": "integer", "minimum": 1 },
+        "effectiveConnections": { "type": "integer", "minimum": 1 },
+        "requestedStreamsPerConnection": { "type": "integer", "minimum": 1 },
+        "effectiveStreamsPerConnection": { "type": "integer", "minimum": 1 },
+        "requestedConcurrency": { "type": "integer", "minimum": 1 },
+        "effectiveConcurrency": { "type": "integer", "minimum": 1 },
+        "warmupMicros": { "type": "integer", "minimum": 0 },
+        "measurementMicros": { "type": "integer", "exclusiveMinimum": 0 },
+        "arrivalPattern": { "type": "string", "enum": ["sparse", "bursty", "sustained", "stream_churn"] },
+        "lossPercent": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+        "delayMs": { "type": ["number", "null"], "minimum": 0 }
+      }
+    }
+  }
+}

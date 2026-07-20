@@ -10,6 +10,8 @@ repository-config tooling.
 - [`test-run-summary.schema.json`](test-run-summary.schema.json)
 - [`coverage-summary.schema.json`](coverage-summary.schema.json)
 - [`quality-report.schema.json`](quality-report.schema.json)
+- [`adaptive-runtime-policy-local-result-v1.schema.json`](adaptive-runtime-policy-local-result-v1.schema.json)
+- [`adaptive-runtime-policy-epoch-dataset-v1.schema.json`](adaptive-runtime-policy-epoch-dataset-v1.schema.json)
 
 ## Notes
 

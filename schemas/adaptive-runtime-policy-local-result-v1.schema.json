@@ -1,0 +1,582 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-policy-local-result-v1.schema.json",
+  "title": "Adaptive Runtime Policy Local Result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "campaignId",
+    "runId",
+    "cellId",
+    "startedUtc",
+    "endedUtc",
+    "classification",
+    "repositoryIdentities",
+    "binaryProvenance",
+    "policyAxis",
+    "mode",
+    "policyConfiguration",
+    "workload",
+    "environment",
+    "sequenceProtocol",
+    "treatments",
+    "sequence",
+    "samples",
+    "aggregateOutcomes",
+    "correctnessOutcomes",
+    "fairnessOutcomes",
+    "diagnosticSignals",
+    "artifacts",
+    "notes"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "adaptive-runtime-policy-local-result-v1"
+    },
+    "campaignId": { "$ref": "#/$defs/nonEmptyString" },
+    "runId": { "$ref": "#/$defs/nonEmptyString" },
+    "cellId": { "$ref": "#/$defs/nonEmptyString" },
+    "startedUtc": { "type": "string", "format": "date-time" },
+    "endedUtc": { "type": "string", "format": "date-time" },
+    "repoRoot": { "type": ["string", "null"] },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "accepted_local",
+        "neutral_local",
+        "negative_retained",
+        "invalid_environment",
+        "invalid_contract",
+        "failed_correctness",
+        "stress_only"
+      ]
+    },
+    "repositoryIdentities": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/repositoryIdentity" }
+    },
+    "binaryProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["frozen", "assemblies"],
+      "properties": {
+        "frozen": { "type": "boolean" },
+        "assemblies": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/binaryIdentity" }
+        }
+      }
+    },
+    "policyAxis": {
+      "type": "string",
+      "enum": [
+        "receive_credit_publication",
+        "oversized_write_admission",
+        "application_send_planning",
+        "application_datagram_batching",
+        "queued_send_burst",
+        "actor_work_quantum",
+        "packet_flush_cadence",
+        "backpressure",
+        "none"
+      ]
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "legacy_current",
+        "baseline_only",
+        "observe_only",
+        "shadow",
+        "forced",
+        "active_internal"
+      ]
+    },
+    "policyConfiguration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "appliedPolicy",
+        "forcedPolicy",
+        "shadowEnabled",
+        "ruleVersion",
+        "observationContractVersion",
+        "anomalyBudgets"
+      ],
+      "properties": {
+        "appliedPolicy": { "$ref": "#/$defs/policyValue" },
+        "forcedPolicy": {
+          "anyOf": [
+            { "$ref": "#/$defs/policyValue" },
+            { "type": "null" }
+          ]
+        },
+        "shadowEnabled": { "type": "boolean" },
+        "shadowPolicy": {
+          "anyOf": [
+            { "$ref": "#/$defs/policyValue" },
+            { "type": "null" }
+          ]
+        },
+        "ruleVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "observationContractVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "anomalyBudgets": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maxMissingEpochPercent",
+            "maxStaleEpochPercent",
+            "maxOutOfDomainEpochPercent",
+            "maxContradictoryEpochPercent"
+          ],
+          "properties": {
+            "maxMissingEpochPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+            "maxStaleEpochPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+            "maxOutOfDomainEpochPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+            "maxContradictoryEpochPercent": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "legacySelectorCommit": { "type": ["string", "null"], "pattern": "^[0-9a-fA-F]{7,40}$" },
+        "stickyWriteEligibilityBypassed": { "type": "boolean", "default": false },
+        "axisSettings": {
+          "type": "object",
+          "additionalProperties": {
+            "type": ["string", "number", "integer", "boolean", "null"]
+          }
+        }
+      }
+    },
+    "workload": { "$ref": "#/$defs/workload" },
+    "environment": { "$ref": "#/$defs/environment" },
+    "sequenceProtocol": {
+      "type": "string",
+      "enum": ["ABBA", "BAAB", "custom"]
+    },
+    "treatments": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "A": { "$ref": "#/$defs/treatment" },
+        "B": { "$ref": "#/$defs/treatment" }
+      }
+    },
+    "sequence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": ["A", "B"]
+      }
+    },
+    "samples": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/sample" }
+    },
+    "aggregateOutcomes": { "$ref": "#/$defs/outcomes" },
+    "correctnessOutcomes": { "$ref": "#/$defs/correctness" },
+    "fairnessOutcomes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assessed", "violations"],
+      "properties": {
+        "assessed": { "type": "boolean" },
+        "streamCompletionP95Ms": { "type": ["number", "null"], "minimum": 0 },
+        "streamCompletionP99Ms": { "type": ["number", "null"], "minimum": 0 },
+        "starvationCount": { "type": "integer", "minimum": 0 },
+        "violations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      }
+    },
+    "diagnosticSignals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observationEnabled",
+        "shadowEpochCount",
+        "transitionCount",
+        "outOfDomainEpochCount",
+        "contradictoryEpochCount"
+      ],
+      "properties": {
+        "observationEnabled": { "type": "boolean" },
+        "shadowEpochCount": { "type": "integer", "minimum": 0 },
+        "transitionCount": { "type": "integer", "minimum": 0 },
+        "outOfDomainEpochCount": { "type": "integer", "minimum": 0 },
+        "contradictoryEpochCount": { "type": "integer", "minimum": 0 },
+        "missingEpochCount": { "type": "integer", "minimum": 0 },
+        "staleEpochCount": { "type": "integer", "minimum": 0 },
+        "reasonCounts": {
+          "type": "object",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        },
+        "summaryArtifactPath": { "type": ["string", "null"] }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/artifact" }
+    },
+    "negativeEvidenceClass": {
+      "type": ["string", "null"],
+      "enum": [
+        null,
+        "universal_batching",
+        "half_window_duplex_reactivation",
+        "quarter_window_duplex_reactivation",
+        "non_sticky_duplex_fallback",
+        "lock_based_selector",
+        "scheduler_quantum",
+        "other"
+      ]
+    },
+    "retainedEvidenceRefs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/nonEmptyString" }
+    },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "classification": { "const": "negative_retained" }
+        },
+        "required": ["classification"]
+      },
+      "then": {
+        "required": ["negativeEvidenceClass", "retainedEvidenceRefs"],
+        "properties": {
+          "negativeEvidenceClass": { "not": { "type": "null" } }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "sequenceProtocol": { "const": "ABBA" }
+        },
+        "required": ["sequenceProtocol"]
+      },
+      "then": {
+        "properties": {
+          "treatments": { "required": ["A", "B"] },
+          "sequence": {
+            "prefixItems": [
+              { "const": "A" },
+              { "const": "B" },
+              { "const": "B" },
+              { "const": "A" }
+            ],
+            "minItems": 4,
+            "maxItems": 4
+          },
+          "samples": {
+            "prefixItems": [
+              {
+                "type": "object",
+                "properties": { "treatment": { "const": "A" }, "sequenceIndex": { "const": 0 } },
+                "required": ["treatment", "sequenceIndex"]
+              },
+              {
+                "type": "object",
+                "properties": { "treatment": { "const": "B" }, "sequenceIndex": { "const": 1 } },
+                "required": ["treatment", "sequenceIndex"]
+              },
+              {
+                "type": "object",
+                "properties": { "treatment": { "const": "B" }, "sequenceIndex": { "const": 2 } },
+                "required": ["treatment", "sequenceIndex"]
+              },
+              {
+                "type": "object",
+                "properties": { "treatment": { "const": "A" }, "sequenceIndex": { "const": 3 } },
+                "required": ["treatment", "sequenceIndex"]
+              }
+            ],
+            "minItems": 4,
+            "maxItems": 4
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "sequenceProtocol": { "const": "BAAB" }
+        },
+        "required": ["sequenceProtocol"]
+      },
+      "then": {
+        "properties": {
+          "treatments": { "required": ["A", "B"] },
+          "sequence": {
+            "prefixItems": [
+              { "const": "B" },
+              { "const": "A" },
+              { "const": "A" },
+              { "const": "B" }
+            ],
+            "minItems": 4,
+            "maxItems": 4
+          },
+          "samples": {
+            "prefixItems": [
+              {
+                "type": "object",
+                "properties": { "treatment": { "const": "B" }, "sequenceIndex": { "const": 0 } },
+                "required": ["treatment", "sequenceIndex"]
+              },
+              {
+                "type": "object",
+                "properties": { "treatment": { "const": "A" }, "sequenceIndex": { "const": 1 } },
+                "required": ["treatment", "sequenceIndex"]
+              },
+              {
+                "type": "object",
+                "properties": { "treatment": { "const": "A" }, "sequenceIndex": { "const": 2 } },
+                "required": ["treatment", "sequenceIndex"]
+              },
+              {
+                "type": "object",
+                "properties": { "treatment": { "const": "B" }, "sequenceIndex": { "const": 3 } },
+                "required": ["treatment", "sequenceIndex"]
+              }
+            ],
+            "minItems": 4,
+            "maxItems": 4
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{64}$"
+    },
+    "policyValue": {
+      "type": "string",
+      "enum": [
+        "legacy_current",
+        "conservative",
+        "immediate",
+        "read_dominant_batch",
+        "static_current",
+        "candidate",
+        "not_applicable"
+      ]
+    },
+    "treatment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy", "benchmarkBinaryRole", "runtimeBinaryRole"],
+      "properties": {
+        "policy": { "$ref": "#/$defs/policyValue" },
+        "benchmarkBinaryRole": {
+          "type": "string",
+          "enum": ["baseline_benchmark", "candidate_benchmark", "other"]
+        },
+        "runtimeBinaryRole": {
+          "type": "string",
+          "enum": ["baseline_runtime", "candidate_runtime", "other"]
+        }
+      }
+    },
+    "repositoryIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "path", "commit", "dirty"],
+      "properties": {
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "path": { "$ref": "#/$defs/nonEmptyString" },
+        "branch": { "type": ["string", "null"] },
+        "commit": { "type": "string", "pattern": "^[0-9a-fA-F]{7,40}$" },
+        "dirty": { "type": "boolean" },
+        "remoteUrl": { "type": ["string", "null"] }
+      }
+    },
+    "binaryIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "path", "sha256"],
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": ["baseline_benchmark", "baseline_runtime", "candidate_benchmark", "candidate_runtime", "load_tool", "other"]
+        },
+        "path": { "$ref": "#/$defs/nonEmptyString" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "fileVersion": { "type": ["string", "null"] }
+      }
+    },
+    "workload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scenarioId",
+        "trafficShape",
+        "payloadBytes",
+        "accountingMode",
+        "connections",
+        "streamsPerConnection",
+        "concurrency",
+        "arrivalPattern",
+        "warmupSeconds",
+        "durationSeconds",
+        "repetitions",
+        "effectivePayloadBytes",
+        "effectiveConnections",
+        "effectiveStreamsPerConnection",
+        "effectiveConcurrency",
+        "requestedEffectiveMatch"
+      ],
+      "properties": {
+        "scenarioId": { "$ref": "#/$defs/nonEmptyString" },
+        "trafficShape": {
+          "type": "string",
+          "enum": ["upload", "download", "duplex", "request_response", "streaming"]
+        },
+        "payloadBytes": { "type": "integer", "minimum": 0 },
+        "totalBytes": { "type": ["integer", "null"], "minimum": 0 },
+        "accountingMode": { "type": "string", "enum": ["fixed_total", "fixed_per_stream"] },
+        "connections": { "type": "integer", "minimum": 1 },
+        "streamsPerConnection": { "type": "integer", "minimum": 1 },
+        "concurrency": { "type": "integer", "minimum": 1 },
+        "arrivalPattern": { "type": "string", "enum": ["sparse", "bursty", "sustained", "stream_churn"] },
+        "warmupSeconds": { "type": "number", "minimum": 0 },
+        "durationSeconds": { "type": "number", "exclusiveMinimum": 0 },
+        "repetitions": { "type": "integer", "minimum": 1 },
+        "effectivePayloadBytes": { "type": "integer", "minimum": 0 },
+        "effectiveConnections": { "type": "integer", "minimum": 1 },
+        "effectiveStreamsPerConnection": { "type": "integer", "minimum": 1 },
+        "effectiveConcurrency": { "type": "integer", "minimum": 1 },
+        "lossPercent": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+        "delayMs": { "type": ["number", "null"], "minimum": 0 },
+        "receiveWindowBytes": { "type": ["integer", "null"], "minimum": 1 },
+        "applicationConsumptionDelayMs": { "type": ["number", "null"], "minimum": 0 },
+        "requestedEffectiveMatch": { "type": "boolean" }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hostFingerprint",
+        "os",
+        "architecture",
+        "processorCount",
+        "dotnetRuntime",
+        "availableMemoryBytes",
+        "monotonicTimerFrequencyHz",
+        "toolVersions",
+        "topology",
+        "targetHealth",
+        "generatorHealth"
+      ],
+      "properties": {
+        "hostFingerprint": { "$ref": "#/$defs/nonEmptyString" },
+        "os": { "$ref": "#/$defs/nonEmptyString" },
+        "architecture": { "$ref": "#/$defs/nonEmptyString" },
+        "processorCount": { "type": "integer", "minimum": 1 },
+        "availableMemoryBytes": { "type": ["integer", "null"], "minimum": 0 },
+        "dotnetRuntime": { "$ref": "#/$defs/nonEmptyString" },
+        "monotonicTimerFrequencyHz": { "type": "integer", "minimum": 1 },
+        "toolVersions": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "topology": {
+          "type": "string",
+          "enum": ["same_process", "same_host", "split_host", "unknown"]
+        },
+        "targetHealth": { "type": "string", "enum": ["healthy", "limited", "invalid", "unknown"] },
+        "generatorHealth": { "type": "string", "enum": ["healthy", "limited", "invalid", "unknown"] },
+        "cpuLimit": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "pressureArtifactPath": { "type": ["string", "null"] }
+      }
+    },
+    "sample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sampleId", "treatment", "sequenceIndex", "exitCode", "outcomes", "correctness", "artifactPaths"],
+      "properties": {
+        "sampleId": { "$ref": "#/$defs/nonEmptyString" },
+        "treatment": { "type": "string", "enum": ["A", "B"] },
+        "sequenceIndex": { "type": "integer", "minimum": 0 },
+        "exitCode": { "type": "integer" },
+        "outcomes": { "$ref": "#/$defs/outcomes" },
+        "correctness": { "$ref": "#/$defs/correctness" },
+        "artifactPaths": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      }
+    },
+    "outcomes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["throughputBytesPerSecond", "latencyP50Ms", "latencyP95Ms", "latencyP99Ms", "allocatedBytes", "peakRetainedBytes"],
+      "properties": {
+        "throughputBytesPerSecond": { "type": ["number", "null"], "minimum": 0 },
+        "operationsPerSecond": { "type": ["number", "null"], "minimum": 0 },
+        "latencyP50Ms": { "type": ["number", "null"], "minimum": 0 },
+        "latencyP95Ms": { "type": ["number", "null"], "minimum": 0 },
+        "latencyP99Ms": { "type": ["number", "null"], "minimum": 0 },
+        "allocatedBytes": { "type": ["integer", "null"], "minimum": 0 },
+        "peakRetainedBytes": { "type": ["integer", "null"], "minimum": 0 },
+        "queueDelayP50Ms": { "type": ["number", "null"], "minimum": 0 },
+        "queueDelayP95Ms": { "type": ["number", "null"], "minimum": 0 },
+        "lossEvents": { "type": ["integer", "null"], "minimum": 0 },
+        "ptoEvents": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+    "correctness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["payloadValidated", "failedOperations", "timedOutOperations", "protocolErrors", "invariantViolations"],
+      "properties": {
+        "payloadValidated": { "type": "boolean" },
+        "failedOperations": { "type": "integer", "minimum": 0 },
+        "timedOutOperations": { "type": "integer", "minimum": 0 },
+        "protocolErrors": { "type": "integer", "minimum": 0 },
+        "cancellationFailures": { "type": "integer", "minimum": 0 },
+        "disposalFailures": { "type": "integer", "minimum": 0 },
+        "invariantViolations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path", "sha256"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["manifest", "result", "stdout", "stderr", "trace", "metrics", "dataset", "checksum_inventory", "other"]
+        },
+        "path": { "$ref": "#/$defs/nonEmptyString" },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  }
+}
