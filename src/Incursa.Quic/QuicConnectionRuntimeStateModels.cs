@@ -9,6 +9,15 @@ internal enum QuicConnectionTransportState
     PeerAddressValidated = 1 << 2,
 }
 
+internal enum QuicConnectionPathClassification
+{
+    SamePathTraffic = 0,
+    ProbableNatRebinding = 1,
+    MigrationCandidate = 2,
+    PreferredAddressTransition = 3,
+    NoiseOrAttack = 4,
+}
+
 internal enum QuicConnectionCloseOrigin
 {
     None = 0,
@@ -18,6 +27,13 @@ internal enum QuicConnectionCloseOrigin
     IdleTimeout = 4,
     ProtocolViolation = 5,
     Application = 6,
+}
+
+internal enum QuicConnectionSendingMode
+{
+    Ordinary = 0,
+    CloseOnly = 1,
+    None = 2,
 }
 
 internal enum QuicConnectionTimerKind
@@ -55,6 +71,89 @@ internal readonly record struct QuicConnectionPathRecoverySnapshot(
     ulong BytesInFlightBytes,
     bool EcnValidated);
 
+internal readonly record struct QuicConnectionPathAmplificationState(
+    ulong ReceivedPayloadBytes,
+    ulong SentPayloadBytes,
+    bool IsAddressValidated)
+{
+    public ulong RemainingSendBudget => IsAddressValidated
+        ? ulong.MaxValue
+        : GetRemainingSendBudget();
+
+    public bool CanSend(int payloadBytes)
+    {
+        return payloadBytes >= 0
+            && (IsAddressValidated || (ulong)payloadBytes <= RemainingSendBudget);
+    }
+
+    public bool TryRegisterReceivedDatagramPayloadBytes(
+        int payloadBytes,
+        bool uniquelyAttributedToSingleConnection,
+        out QuicConnectionPathAmplificationState updatedState)
+    {
+        updatedState = this;
+
+        if (payloadBytes < 0)
+        {
+            return false;
+        }
+
+        if (!uniquelyAttributedToSingleConnection)
+        {
+            return true;
+        }
+
+        updatedState = this with
+        {
+            ReceivedPayloadBytes = SaturatingAdd(ReceivedPayloadBytes, (ulong)payloadBytes),
+        };
+        return true;
+    }
+
+    public bool TryConsumeSendBudget(int payloadBytes, out QuicConnectionPathAmplificationState updatedState)
+    {
+        updatedState = this;
+
+        if (!CanSend(payloadBytes))
+        {
+            return false;
+        }
+
+        updatedState = this with
+        {
+            SentPayloadBytes = SaturatingAdd(SentPayloadBytes, (ulong)payloadBytes),
+        };
+        return true;
+    }
+
+    public QuicConnectionPathAmplificationState MarkAddressValidated()
+    {
+        return IsAddressValidated ? this : this with { IsAddressValidated = true };
+    }
+
+    private ulong GetRemainingSendBudget()
+    {
+        ulong maximumAllowedBytes = SaturatingMultiply(ReceivedPayloadBytes, 3);
+        return SentPayloadBytes >= maximumAllowedBytes ? 0 : maximumAllowedBytes - SentPayloadBytes;
+    }
+
+    private static ulong SaturatingAdd(ulong left, ulong right)
+    {
+        ulong result = left + right;
+        return result < left ? ulong.MaxValue : result;
+    }
+
+    private static ulong SaturatingMultiply(ulong value, ulong multiplier)
+    {
+        if (value > ulong.MaxValue / multiplier)
+        {
+            return ulong.MaxValue;
+        }
+
+        return value * multiplier;
+    }
+}
+
 internal readonly record struct QuicConnectionPathValidationState(
     ulong Generation,
     bool IsValidated,
@@ -69,19 +168,30 @@ internal readonly record struct QuicConnectionActivePathRecord(
     long ActivatedAtTicks,
     long LastActivityTicks,
     bool IsValidated,
-    QuicConnectionPathRecoverySnapshot? RecoverySnapshot);
+    QuicConnectionPathRecoverySnapshot? RecoverySnapshot)
+{
+    public QuicConnectionPathAmplificationState AmplificationState { get; init; }
+}
 
 internal readonly record struct QuicConnectionCandidatePathRecord(
     QuicConnectionPathIdentity Identity,
     long DiscoveredAtTicks,
     long LastActivityTicks,
     QuicConnectionPathValidationState Validation,
-    QuicConnectionPathRecoverySnapshot? SavedRecoverySnapshot);
+    QuicConnectionPathRecoverySnapshot? SavedRecoverySnapshot)
+{
+    public QuicConnectionPathAmplificationState AmplificationState { get; init; }
+}
 
 internal readonly record struct QuicConnectionValidatedPathRecord(
     QuicConnectionPathIdentity Identity,
     long ValidatedAtTicks,
-    QuicConnectionPathRecoverySnapshot? SavedRecoverySnapshot);
+    QuicConnectionPathRecoverySnapshot? SavedRecoverySnapshot)
+{
+    public long LastActivityTicks { get; init; }
+
+    public QuicConnectionPathAmplificationState AmplificationState { get; init; }
+}
 
 internal readonly record struct QuicConnectionCloseMetadata(
     QuicTransportErrorCode? TransportErrorCode,

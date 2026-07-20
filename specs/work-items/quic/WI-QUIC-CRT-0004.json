@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0004",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "QUIC Connection Runtime Lifecycle Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Keep the idle-timeout, close, drain, and discard runtime seam traceable while the lifecycle reducer and explicit effect path land.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0004"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0004"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0023",
+    "REQ-QUIC-CRT-0024",
+    "REQ-QUIC-CRT-0025",
+    "REQ-QUIC-CRT-0026",
+    "REQ-QUIC-CRT-0030",
+    "REQ-QUIC-CRT-0031",
+    "REQ-QUIC-CRT-0032",
+    "REQ-QUIC-CRT-0035",
+    "REQ-QUIC-CRT-0055",
+    "REQ-QUIC-CRT-0056",
+    "REQ-QUIC-CRT-0074",
+    "REQ-QUIC-CRT-0075",
+    "REQ-QUIC-CRT-0076",
+    "REQ-QUIC-CRT-0077",
+    "REQ-QUIC-CRT-0078",
+    "REQ-QUIC-CRT-0087"
+  ],
+  "planned_changes": "- Derive the effective idle timeout from the committed transport parameters and the current PTO floor.\n- Keep idle timer restarts limited to allowed peer activity and leave handshake confirmation and terminal lifecycle transitions as non-restart events.\n- Transition to Closing for local immediate close, to Draining for received CONNECTION_CLOSE or matched stateless reset, and to Discarded when the terminal lifetime expires.\n- Route close datagrams, timer arms, timer cancels, stream notifications, and discard actions through explicit effects instead of inline I/O.\n- Expose phase-derived send legality from the connection runtime so callers do not infer lifecycle policy from helper state.",
+  "verification_plan": "Run the lifecycle requirement-home tests and the narrow dotnet test subset that exercises the runtime phase, idle timeout, close/drain, and discard transitions.",
+  "completion_notes": "Optional implementation notes, deviations, or follow-up items.",
+  "out_of_scope": [
+    "Endpoint ingress routing and stateless-reset token registry behavior.",
+    "Timer scheduler ownership and generation ordering beyond the runtime lifecycle slice."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs\n- src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs\n- src/Incursa.Quic/QuicIdleTimeoutState.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0023.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0025.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0026.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0030.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0032.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0035.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0055.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0056.cs"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0003",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "QUIC Connection Runtime Endpoint Ingress Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home tests and inspection evidence from the endpoint ingress classifier, route registries, and reset-token registry.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0003",
+    "WI-QUIC-CRT-0003"
+  ],
+  "expected_result": "Version negotiation and retry stay endpoint-handled, long and short packets route to the correct runtime, malformed or unknown datagrams stay unroutable, stateless resets match only the current remote address and live binding, and explicit effects retire route and token ownership cleanly.",
+  "verifies": [
+    "REQ-QUIC-CRT-0002",
+    "REQ-QUIC-CRT-0012",
+    "REQ-QUIC-CRT-0013",
+    "REQ-QUIC-CRT-0014",
+    "REQ-QUIC-CRT-0015",
+    "REQ-QUIC-CRT-0016",
+    "REQ-QUIC-CRT-0080",
+    "REQ-QUIC-CRT-0082",
+    "REQ-QUIC-CRT-0083"
+  ],
+  "procedure": [
+    "Run the endpoint ingress requirement-home tests for REQ-QUIC-CRT-0012, REQ-QUIC-CRT-0013, REQ-QUIC-CRT-0015, REQ-QUIC-CRT-0016, REQ-QUIC-CRT-0080, REQ-QUIC-CRT-0082, and REQ-QUIC-CRT-0083.",
+    "Confirm the routed cases deliver `QuicConnectionPacketReceivedEvent` to the correct runtime and the reset cases only match when the endpoint binding and token ownership are current.",
+    "Confirm discard and retire effects remove the endpoint-owned route and token entries before later datagrams are retried."
+  ],
+  "scope": "This slice covers ingress classification, routing, and endpoint-owned stateless-reset bookkeeping. It does not prove the broader connection lifecycle, migration policy, or stateless-reset emission policy.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0015.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0016.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0080.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0082.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0083.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpointStateModels.cs"
+  ],
+  "preconditions": [
+    "The Incursa.Quic solution builds successfully.",
+    "The CRT requirement traits are discoverable by the test runner.",
+    "The endpoint ingress wrapper remains internal and the endpoint-owned registries stay isolated from connection-owned state."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Evidence",
+      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0012.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0013.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0015.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0016.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0080.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0082.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0083.cs\n- src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs\n- src/Incursa.Quic/QuicConnectionRuntimeEndpointStateModels.cs"
+    }
+  ]
+}

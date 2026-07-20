@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0004",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC Connection Runtime Lifecycle and Idle Timeout Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the runtime-owned lifecycle seam that derives idle timeout, enters Closing and Draining, and emits explicit close, drain, timer, and discard effects without inline I/O.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "WI-QUIC-CRT-0004",
+    "VER-QUIC-CRT-0004"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0023",
+    "REQ-QUIC-CRT-0024",
+    "REQ-QUIC-CRT-0025",
+    "REQ-QUIC-CRT-0026",
+    "REQ-QUIC-CRT-0030",
+    "REQ-QUIC-CRT-0031",
+    "REQ-QUIC-CRT-0032",
+    "REQ-QUIC-CRT-0035",
+    "REQ-QUIC-CRT-0055",
+    "REQ-QUIC-CRT-0056",
+    "REQ-QUIC-CRT-0074",
+    "REQ-QUIC-CRT-0075",
+    "REQ-QUIC-CRT-0076",
+    "REQ-QUIC-CRT-0077",
+    "REQ-QUIC-CRT-0078",
+    "REQ-QUIC-CRT-0087"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",
+    "src/Incursa.Quic/QuicIdleTimeoutState.cs",
+    "src/Incursa.Quic/QuicConnectionStreamRegistry.cs"
+  ],
+  "design_summary": "The runtime remains the single owner of lifecycle ordering. It derives the effective idle timeout through the helper state, restarts the idle deadline only on allowed peer activity, transitions to Closing on local immediate close, transitions to Draining on received CONNECTION_CLOSE or accepted stateless reset, and arms or cancels close, drain, and idle timers through explicit effects.\n\nOrdinary send legality is surfaced as a phase-derived property so callers do not need to infer it from scattered helpers. When the connection reaches a terminal lifetime boundary, the runtime discards connection-owned state, notifies live streams of the terminal state, and emits the discard effect as an explicit outcome.\n\nThe close/drain lifetime must preserve its end time when Draining follows Closing, and monotonic time remains the only source for timeout and deadline calculations.",
+  "risks": [
+    "Timer conversion must stay monotonic and saturating so close and idle deadlines never move backward.",
+    "Draining after Closing must preserve the existing terminal end tick or a peer close could shorten the drain period.",
+    "Close-payload formatting must remain deterministic so the send effect stays reproducible across hosts."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Lifecycle Model",
+      "content": "The runtime keeps a single phase value as the source of truth for ordinary sending, close-only sending, or no sending.\nIdle timeout state is created only when both transport-parameter sides and the PTO floor produce an effective timeout.\nClosing retains close-relevant state and arms a close lifetime.\nDraining preserves the existing terminal end time when entered from Closing.\nDiscard clears lifecycle timers and emits explicit discard effects."
+    },
+    {
+      "heading": "Effect Contract",
+      "content": "Local close emits a close send effect when a path is available.\nReceived CONNECTION_CLOSE and matched stateless reset suppress close retransmission and enter Draining.\nTimer expirations drive close-lifetime, drain-lifetime, and idle-timeout transitions back through the same runtime reducer.\nTerminal transitions notify live streams before the runtime drops connection-owned state."
+    }
+  ]
+}
