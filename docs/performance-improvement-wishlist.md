@@ -7572,3 +7572,50 @@ than one packet per operation or amortizes additional connection-actor work at
 the same time. The next high-cardinality slice must quantify stream-open and
 stream-write command fan-in separately from packet count, then target actor
 turns or lifecycle work only if the common c16 lane exposes the same mechanism.
+
+### Diagnostic 2026-07-20: common-lane stream command fan-in
+
+The local cardinality runner completed exact one-connection upload matrices at
+c1, c4, c8, c16, c24, and c32 in both fixed-total and fixed-per-stream modes.
+Every cell used five diagnostic samples and completed with zero failures. The
+fixed-total mode held each wave at 3 MiB; the fixed-per-stream mode transferred
+one MiB per stream. Median client-shard work per completed logical operation was:
+
+| Mode | Streams | Bytes/stream | MiB/s | Write items/op | Packet items/op | Write service ms/op | Packet service ms/op | Mean write queue ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| fixed per stream | 1 | 1,048,576 | 47.38 | 33 | 178.7 | 1.70 | 18.34 | 0.37 |
+| fixed per stream | 4 | 1,048,576 | 29.85 | 33 | 355.5 | 9.77 | 22.89 | 3.78 |
+| fixed per stream | 8 | 1,048,576 | 28.35 | 33 | 358.8 | 9.92 | 24.54 | 8.13 |
+| fixed per stream | 16 | 1,048,576 | 27.03 | 33 | 364.5 | 10.07 | 26.09 | 17.59 |
+| fixed per stream | 24 | 1,048,576 | 25.56 | 33 | 366.5 | 10.31 | 27.84 | 28.00 |
+| fixed per stream | 32 | 1,048,576 | 15.91 | 33 | 681.8 | 5.00 | 56.28 | 30.05 |
+| fixed total | 1 | 3,145,728 | 51.69 | 97 | 526.9 | 4.05 | 51.49 | 0.36 |
+| fixed total | 4 | 786,432 | 29.90 | 25 | 271.2 | 7.26 | 17.26 | 3.80 |
+| fixed total | 8 | 393,216 | 27.83 | 13 | 139.4 | 3.80 | 9.31 | 7.62 |
+| fixed total | 16 | 196,608 | 27.39 | 7 | 54.5 | 1.93 | 4.75 | 13.87 |
+| fixed total | 24 | 131,072 | 25.16 | 5 | 48.5 | 1.38 | 3.46 | 21.89 |
+| fixed total | 32 | 98,304 | 23.00 | 4 | 36.7 | 1.11 | 2.87 | 29.46 |
+
+The public one-MiB write is still split into thirty-two 32 KiB write work
+items plus one final-write item. This command inflation is already fully
+present at c4-c24, where client write service stabilizes near 10 ms per logical
+MiB and queue delay grows with fanout. At c32 a separate collapse doubles
+packet-receive items and service per operation; reducing write commands alone
+cannot be claimed to solve that loss/recovery regime.
+
+This evidence does not justify another unconditional chunk-size increase,
+single-chunk continuation repost, ACK-gated continuation, or whole-request
+locked drain; all are retained negatives. It does justify one materially
+different bounded experiment: preserve the sparse one-chunk path, but under a
+real established multi-stream pressure signal allow one actor item to admit a
+small fixed quantum of existing 32 KiB chunks before yielding. The design must
+dispatch completion outside the stream-action lock, preserve one request's
+cancellation and terminal ownership across yields, preserve PTO repair and
+queued-data probe behavior, and prove that it reduces write items per operation
+rather than merely feeding the queue faster. Test c1/c4/c16/c32 locally; reject
+if c1/c4 p95 regresses by more than about five percent or if c16/c32 service
+capacity does not improve materially.
+
+Retain the manifest, exact result JSON, and logs under
+`C:\shared\temp\quic-cardinality-common-20260720`. No ProtocolLab run was
+justified for this behavior-neutral diagnosis.
