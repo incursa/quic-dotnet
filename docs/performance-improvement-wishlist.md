@@ -7430,3 +7430,44 @@ processing, then move work only if that portion is large enough to explain a
 meaningful part of the same-connection gap. Keep packet-number state, ACK/loss
 recovery, congestion and flow control, keys, path state, and final connection
 commit under the connection actor.
+
+### Bounded 2026-07-20: STREAM receive fan-out opportunity
+
+Temporary listener-gated subphase metrics split the existing authenticated
+`frame_stream` receive parent into parsing, stream bookkeeping, terminal-state
+suppression, observer delivery, and peer-accept queuing. Five diagnostic-only
+one-connection one-MiB upload samples at c16 and c32 completed exact validation
+with no failures. Median server costs per completed MiB were:
+
+| Phase | c16 ms/MiB | c32 ms/MiB |
+| --- | ---: | ---: |
+| STREAM parent | 3.81 | 3.71 |
+| parse | 0.43 | 0.43 |
+| stream bookkeeping | 0.72 | 0.68 |
+| terminal-state suppression | 0.11 | 0.11 |
+| observer delivery | 0.91 | 0.95 |
+| peer-accept queue | 0.10 | 0.08 |
+
+The child rows include measurement overhead and do not sum to the parent. The
+plausibly stream-local bookkeeping and delivery work is approximately 1.6
+ms/MiB; even including parsing and all measured child work bounds the movable
+share near 2.2 ms/MiB. That is meaningful but cannot by itself explain the
+same-connection gap or the larger sender-side packet construction and
+synchronous send costs. A fixed-shard stream executor remains architecturally
+valid, but this trace does not justify implementing its ownership, lifecycle,
+backpressure, and scheduling complexity as the next performance candidate.
+
+The temporary instrumentation was also not retained. Its diagnostics-off
+A/B/A/B gate crossed fast and collapsed regimes; pooled c32 changed from 30.98
+to 20.33 MiB/s and allocation rose 11.9 percent. The individual pass ordering
+does not prove a semantic regression, but it fails the neutrality requirement
+for permanent hot-path probes. Production and test changes are reverted.
+Retain the diagnostic JSON, disabled-path gate, and logs under
+`C:\shared\temp\quic-stream-receive-subphase-20260720`.
+
+Do not start the broad receive fan-out implementation solely from this bound.
+First use existing stress and pressure telemetry to identify a sender-side or
+connection-commit mechanism with enough cost to improve c16-c32. Revisit
+stream-local receive execution for duplex/read-heavy workloads or when a
+broader design can amortize mailbox ownership across materially more than the
+measured bookkeeping and notification work.
