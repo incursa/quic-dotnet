@@ -21,6 +21,17 @@ internal sealed class QuicStreamObserverDirectory
         }
     }
 
+    internal int DistinctStreamCount
+    {
+        get
+        {
+            lock (sync)
+            {
+                return observersByStreamId.Count;
+            }
+        }
+    }
+
     // CONTEXT: observer storage is optimized for the one-observer case.
     // Most stream facades register exactly one runtime observer, so the
     // directory stores that observer inline and only allocates an array after a

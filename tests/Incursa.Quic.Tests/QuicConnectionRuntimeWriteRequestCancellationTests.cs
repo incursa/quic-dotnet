@@ -192,6 +192,376 @@ public sealed class QuicConnectionRuntimeWriteRequestCancellationTests
     }
 
     [Fact]
+    public async Task OversizedWriteCancellationAfterFirstFragmentReleasesGateForFollowupWrite()
+    {
+        await using QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
+
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+
+        Queue<QuicConnectionStreamActionEvent> postedWrites = new();
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            if (connectionEvent is QuicConnectionStreamActionEvent
+                {
+                    ActionKind: QuicConnectionStreamActionKind.Write,
+                } writeEvent)
+            {
+                postedWrites.Enqueue(writeEvent);
+            }
+
+            return true;
+        });
+
+        QuicStream stream = new(runtime.StreamRegistry.Bookkeeping, streamId.Value, runtime);
+        using CancellationTokenSource cancellation = new();
+        Task oversizedWrite = stream.WriteAsync(new byte[(32 * 1024) + 1], cancellation.Token).AsTask();
+        Assert.Single(postedWrites);
+
+        _ = runtime.Transition(postedWrites.Dequeue());
+        Assert.False(oversizedWrite.IsCompleted);
+
+        await cancellation.CancelAsync();
+        await Assert.ThrowsAsync<OperationCanceledException>(() => oversizedWrite);
+
+        ValueTask followupWrite = stream.WriteAsync(new byte[] { 0x42 });
+        Assert.Single(postedWrites);
+        _ = runtime.Transition(postedWrites.Dequeue());
+        await followupWrite;
+    }
+
+    [Fact]
+    public async Task OversizedWriteDisposalAfterFirstFragmentCompletesCallbackExactlyOnce()
+    {
+        QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
+
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryPeekLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+
+        Queue<QuicConnectionStreamActionEvent> postedWrites = new();
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            if (connectionEvent is QuicConnectionStreamActionEvent
+                {
+                    ActionKind: QuicConnectionStreamActionKind.Write,
+                } writeEvent)
+            {
+                postedWrites.Enqueue(writeEvent);
+            }
+
+            return true;
+        });
+
+        int completionCount = 0;
+        Task oversizedWrite = runtime.WriteStreamAsync(
+            streamId.Value,
+            new byte[(32 * 1024) + 1],
+            () => completionCount++).AsTask();
+        _ = runtime.Transition(postedWrites.Dequeue());
+        Assert.False(oversizedWrite.IsCompleted);
+
+        await runtime.DisposeAsync();
+
+        await Assert.ThrowsAsync<ObjectDisposedException>(() => oversizedWrite);
+        Assert.Equal(1, completionCount);
+    }
+
+    [Theory]
+    [InlineData(16)]
+    [InlineData(24)]
+    public async Task HostedMultiplexedOversizedWriteProcessesBoundedQuantumBeforeReposting(int activeStreamCount)
+    {
+        await using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+                connectionSendLimit: 2 * 1024 * 1024,
+                localBidirectionalSendLimit: 2 * 1024 * 1024);
+        Queue<PostedStreamWrite> postedWrites = new();
+        runtime.SetStreamWriteDispatcher((requestId, actionKind, streamId, streamData, streamDataSuffix) =>
+        {
+            postedWrites.Enqueue(new PostedStreamWrite(
+                requestId,
+                actionKind,
+                streamId,
+                streamData,
+                streamDataSuffix));
+            return true;
+        });
+        RegisterDistinctStreamObservers(runtime, activeStreamCount);
+
+        using CancellationTokenSource cancellation = new();
+        const int chunkLength = 32 * 1024;
+        byte[] payload = new byte[5 * chunkLength];
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+        Task write = runtime.WriteStreamAsync(streamId.Value, payload, cancellation.Token).AsTask();
+
+        PostedStreamWrite adaptiveWrite = Assert.Single(postedWrites);
+        _ = postedWrites.Dequeue();
+        Assert.Equal(payload.Length, adaptiveWrite.StreamData.Length);
+        _ = TransitionStreamWrite(runtime, adaptiveWrite, nowTicks: 20);
+
+        PostedStreamWrite continuation = Assert.Single(postedWrites);
+        Assert.Equal(adaptiveWrite.RequestId, continuation.RequestId);
+        Assert.Equal(chunkLength, continuation.StreamData.Length);
+        int continuationCount = 0;
+        while (postedWrites.TryDequeue(out continuation))
+        {
+            Assert.Equal(adaptiveWrite.RequestId, continuation.RequestId);
+            Assert.Equal(chunkLength, continuation.StreamData.Length);
+            _ = TransitionStreamWrite(runtime, continuation, nowTicks: 21 + continuationCount);
+            continuationCount++;
+        }
+
+        Assert.Equal(2, continuationCount);
+        await write.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    public async Task HostedMultiplexedOversizedWriteFailsOnceWhenContinuationCannotBePosted()
+    {
+        await using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+                connectionSendLimit: 2 * 1024 * 1024,
+                localBidirectionalSendLimit: 2 * 1024 * 1024);
+        Queue<PostedStreamWrite> postedWrites = new();
+        bool acceptPosts = true;
+        runtime.SetStreamWriteDispatcher((requestId, actionKind, streamId, streamData, streamDataSuffix) =>
+        {
+            if (!acceptPosts)
+            {
+                return false;
+            }
+
+            postedWrites.Enqueue(new PostedStreamWrite(
+                requestId,
+                actionKind,
+                streamId,
+                streamData,
+                streamDataSuffix));
+            return true;
+        });
+        RegisterDistinctStreamObservers(runtime, count: 16);
+
+        using CancellationTokenSource cancellation = new();
+        byte[] payload = new byte[5 * 32 * 1024];
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+
+        int completionCount = 0;
+        Task write = runtime.WriteStreamAsync(
+            streamId.Value,
+            payload,
+            () => completionCount++,
+            cancellation.Token).AsTask();
+
+        acceptPosts = false;
+        _ = TransitionStreamWrite(runtime, Assert.Single(postedWrites), nowTicks: 30);
+
+        InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => write.WaitAsync(TimeSpan.FromSeconds(5)));
+        Assert.Contains("oversized stream write continuation", exception.Message, StringComparison.Ordinal);
+        Assert.Equal(1, completionCount);
+    }
+
+    [Fact]
+    public async Task HostedMultiplexedOversizedWriteCancellationAfterQuantumCompletesOnce()
+    {
+        await using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+                connectionSendLimit: 2 * 1024 * 1024,
+                localBidirectionalSendLimit: 2 * 1024 * 1024);
+        Queue<PostedStreamWrite> postedWrites = new();
+        runtime.SetStreamWriteDispatcher((requestId, actionKind, streamId, streamData, streamDataSuffix) =>
+        {
+            postedWrites.Enqueue(new PostedStreamWrite(
+                requestId,
+                actionKind,
+                streamId,
+                streamData,
+                streamDataSuffix));
+            return true;
+        });
+        RegisterDistinctStreamObservers(runtime, count: 16);
+
+        using CancellationTokenSource cancellation = new();
+        byte[] payload = new byte[5 * 32 * 1024];
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+
+        int completionCount = 0;
+        Task write = runtime.WriteStreamAsync(
+            streamId.Value,
+            payload,
+            () => completionCount++,
+            cancellation.Token).AsTask();
+
+        PostedStreamWrite adaptiveWrite = Assert.Single(postedWrites);
+        _ = postedWrites.Dequeue();
+        _ = TransitionStreamWrite(runtime, adaptiveWrite, nowTicks: 40);
+        Assert.Single(postedWrites);
+
+        await cancellation.CancelAsync();
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => write.WaitAsync(TimeSpan.FromSeconds(5)));
+        Assert.Equal(1, completionCount);
+
+        PostedStreamWrite staleContinuation = Assert.Single(postedWrites);
+        Assert.False(TransitionStreamWrite(runtime, staleContinuation, nowTicks: 41).StateChanged);
+        Assert.Equal(1, completionCount);
+    }
+
+    [Fact]
+    public async Task HostedMultiplexedOversizedWriteContinuationDispatcherCanReenterRuntime()
+    {
+        await using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+                connectionSendLimit: 2 * 1024 * 1024,
+                localBidirectionalSendLimit: 2 * 1024 * 1024);
+        Queue<PostedStreamWrite> postedWrites = new();
+        bool processInline = false;
+        long nowTicks = 50;
+        runtime.SetStreamWriteDispatcher((requestId, actionKind, streamId, streamData, streamDataSuffix) =>
+        {
+            PostedStreamWrite write = new(requestId, actionKind, streamId, streamData, streamDataSuffix);
+            if (processInline)
+            {
+                _ = TransitionStreamWrite(runtime, write, Interlocked.Increment(ref nowTicks));
+            }
+            else
+            {
+                postedWrites.Enqueue(write);
+            }
+
+            return true;
+        });
+        RegisterDistinctStreamObservers(runtime, count: 16);
+
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+        Task write = runtime.WriteStreamAsync(
+            streamId.Value,
+            new byte[5 * 32 * 1024],
+            CancellationToken.None).AsTask();
+
+        processInline = true;
+        PostedStreamWrite firstWrite = Assert.Single(postedWrites);
+        _ = postedWrites.Dequeue();
+        _ = TransitionStreamWrite(runtime, firstWrite, nowTicks);
+
+        await write.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    public async Task HostedMultiplexedOversizedWriteKeepsAdmissionPolicyAfterStreamCountDrops()
+    {
+        await using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+                connectionSendLimit: 2 * 1024 * 1024,
+                localBidirectionalSendLimit: 2 * 1024 * 1024);
+        Queue<PostedStreamWrite> postedWrites = new();
+        runtime.SetStreamWriteDispatcher((requestId, actionKind, streamId, streamData, streamDataSuffix) =>
+        {
+            postedWrites.Enqueue(new PostedStreamWrite(
+                requestId,
+                actionKind,
+                streamId,
+                streamData,
+                streamDataSuffix));
+            return true;
+        });
+
+        List<(ulong StreamId, long ObserverId)> observers = [];
+        for (int index = 0; index < 16; index++)
+        {
+            ulong observedStreamId = (ulong)(index * 4);
+            observers.Add((
+                observedStreamId,
+                runtime.RegisterStreamObserver(observedStreamId, static _ => { })));
+        }
+
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+        Task write = runtime.WriteStreamAsync(
+            streamId.Value,
+            new byte[5 * 32 * 1024],
+            CancellationToken.None).AsTask();
+        PostedStreamWrite firstWrite = Assert.Single(postedWrites);
+        _ = postedWrites.Dequeue();
+        Assert.Equal(5 * 32 * 1024, firstWrite.StreamData.Length);
+
+        foreach ((ulong observedStreamId, long observerId) in observers.Take(15))
+        {
+            runtime.UnregisterStreamObserver(observedStreamId, observerId);
+        }
+
+        _ = TransitionStreamWrite(runtime, firstWrite, nowTicks: 60);
+        int continuationCount = 0;
+        while (postedWrites.TryDequeue(out PostedStreamWrite continuation))
+        {
+            _ = TransitionStreamWrite(runtime, continuation, nowTicks: 61 + continuationCount);
+            continuationCount++;
+        }
+
+        Assert.Equal(2, continuationCount);
+        await write.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Theory]
+    [InlineData(8)]
+    [InlineData(15)]
+    [InlineData(25)]
+    public async Task HostedOversizedWriteUsesSparsePathOutsideMultiplexedStreamRegime(int activeStreamCount)
+    {
+        await using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+                connectionSendLimit: 2 * 1024 * 1024,
+                localBidirectionalSendLimit: 2 * 1024 * 1024);
+        Queue<PostedStreamWrite> postedWrites = new();
+        runtime.SetStreamWriteDispatcher((requestId, actionKind, streamId, streamData, streamDataSuffix) =>
+        {
+            postedWrites.Enqueue(new PostedStreamWrite(
+                requestId,
+                actionKind,
+                streamId,
+                streamData,
+                streamDataSuffix));
+            return true;
+        });
+        RegisterDistinctStreamObservers(runtime, activeStreamCount);
+
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+        using CancellationTokenSource cancellation = new();
+        Task write = runtime.WriteStreamAsync(
+            streamId.Value,
+            new byte[5 * 32 * 1024],
+            cancellation.Token).AsTask();
+
+        PostedStreamWrite firstWrite = Assert.Single(postedWrites);
+        Assert.Equal(32 * 1024, firstWrite.StreamData.Length);
+
+        await cancellation.CancelAsync();
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => write.WaitAsync(TimeSpan.FromSeconds(5)));
+    }
+
+    [Fact]
     public async Task WriteStreamAsync_CompletionActionRunsBeforeDelayedValueTaskConsumption()
     {
         await using QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
@@ -651,4 +1021,31 @@ public sealed class QuicConnectionRuntimeWriteRequestCancellationTests
 
         return runtime;
     }
+
+    private static QuicConnectionTransitionResult TransitionStreamWrite(
+        QuicConnectionRuntime runtime,
+        PostedStreamWrite write,
+        long nowTicks)
+        => runtime.TransitionStreamWrite(
+            write.RequestId,
+            write.ActionKind,
+            write.StreamId,
+            write.StreamData,
+            write.StreamDataSuffix,
+            nowTicks);
+
+    private static void RegisterDistinctStreamObservers(QuicConnectionRuntime runtime, int count)
+    {
+        for (int index = 0; index < count; index++)
+        {
+            _ = runtime.RegisterStreamObserver((ulong)(index * 4), static _ => { });
+        }
+    }
+
+    private readonly record struct PostedStreamWrite(
+        long RequestId,
+        QuicConnectionStreamActionKind ActionKind,
+        ulong StreamId,
+        ReadOnlyMemory<byte> StreamData,
+        ReadOnlyMemory<byte> StreamDataSuffix);
 }

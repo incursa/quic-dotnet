@@ -631,23 +631,41 @@ public sealed class REQ_QUIC_API_0010
     [Trait("Category", "Positive")]
     public async Task OversizedWriteCompletionReleasesGateForFollowupWrite()
     {
-        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
-            connectionSendLimit: 65_536,
-            localBidirectionalSendLimit: 65_536);
-        runtime.SetLocalApiEventDispatcher(connectionEvent =>
-        {
-            _ = runtime.Transition(connectionEvent);
-            return true;
-        });
-
-        await using QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
-        AcknowledgeTrackedPackets(runtime);
-
+        await using LoopbackStreamPair pair = await LoopbackStreamPair.CreateAsync();
         byte[] oversizedPayload = new byte[(32 * 1024) + 1];
-        await stream.WriteAsync(oversizedPayload).AsTask().WaitAsync(TimeSpan.FromSeconds(5));
-        await stream.WriteAsync(new byte[] { 0x71 }).AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+        RandomNumberGenerator.Fill(oversizedPayload);
+        byte[] received = new byte[oversizedPayload.Length + 1];
+        ValueTask readTask = pair.ServerStream.ReadExactlyAsync(received);
 
-        Assert.Null(GetSlowWriteGateSignal(stream));
+        await pair.ClientStream.WriteAsync(oversizedPayload).AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+        await pair.ClientStream.WriteAsync(new byte[] { 0x71 }).AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+        await readTask.AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+
+        Assert.True(oversizedPayload.AsSpan().SequenceEqual(received.AsSpan(0, oversizedPayload.Length)));
+        Assert.Equal(0x71, received[^1]);
+        Assert.Null(GetSlowWriteGateSignal(pair.ClientStream));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-API-0010")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task OversizedFinalWriteDeliversEveryByteBeforePeerEof()
+    {
+        await using LoopbackStreamPair pair = await LoopbackStreamPair.CreateAsync();
+        byte[] payload = new byte[(32 * 1024) + 1];
+        RandomNumberGenerator.Fill(payload);
+        byte[] received = new byte[payload.Length];
+        ValueTask readTask = pair.ServerStream.ReadExactlyAsync(received);
+
+        await pair.ClientStream.WriteFinalAsync(payload, CancellationToken.None)
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(5));
+        await readTask.AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+
+        Assert.True(payload.AsSpan().SequenceEqual(received));
+        Assert.Equal(0, await pair.ServerStream.ReadAsync(new byte[1]).AsTask().WaitAsync(TimeSpan.FromSeconds(5)));
+        await pair.ServerStream.ReadsClosed.WaitAsync(TimeSpan.FromSeconds(5));
     }
 
     [Fact]

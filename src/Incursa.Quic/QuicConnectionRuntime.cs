@@ -241,11 +241,14 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         private ManualResetValueTaskSourceCore<bool> source;
         private CancellationTokenRegistration cancellationRegistration;
         private byte[]? ownedStreamData;
+        private ReadOnlyMemory<byte> oversizedStreamData;
+        private int oversizedStreamDataOffset;
         private Action? completionAction;
         private Action<bool>? resultCompletionAction;
         private long writeStartedTimestamp;
         private int completed;
         private bool queuedForWriteRetry;
+        private bool oversizedWrite;
 
         internal StreamActionRequestCompletionSource(QuicConnectionRuntime owner)
         {
@@ -265,6 +268,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             cancellationRegistration.Dispose();
             cancellationRegistration = default;
             ReleaseOwnedStreamData();
+            oversizedStreamData = ReadOnlyMemory<byte>.Empty;
+            oversizedStreamDataOffset = 0;
             ActionKind = default;
             StreamId = default;
             StreamDataLength = 0;
@@ -274,6 +279,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             writeStartedTimestamp = 0;
             completed = 0;
             queuedForWriteRetry = false;
+            oversizedWrite = false;
             source.Reset();
         }
 
@@ -329,6 +335,47 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         internal bool HasOwnedStreamData => ownedStreamData is not null;
+
+        internal bool HasPendingOversizedStreamData
+            => oversizedStreamDataOffset < oversizedStreamData.Length;
+
+        internal bool IsOversizedWrite => oversizedWrite;
+
+        internal void ConfigureOversizedStreamData(ReadOnlyMemory<byte> streamData)
+        {
+            oversizedWrite = true;
+            oversizedStreamData = streamData;
+            oversizedStreamDataOffset = 0;
+        }
+
+        internal ReadOnlyMemory<byte> GetPendingOversizedStreamData(int maximumLength)
+        {
+            int remainingLength = oversizedStreamData.Length - oversizedStreamDataOffset;
+            int length = Math.Min(maximumLength, remainingLength);
+            return oversizedStreamData.Slice(oversizedStreamDataOffset, length);
+        }
+
+        internal bool IsPendingOversizedFinalChunk(int maximumLength)
+            => oversizedStreamData.Length - oversizedStreamDataOffset <= maximumLength;
+
+        internal bool AdvanceOversizedStreamData(int consumedLength)
+        {
+            if (consumedLength <= 0
+                || consumedLength > oversizedStreamData.Length - oversizedStreamDataOffset)
+            {
+                throw new ArgumentOutOfRangeException(nameof(consumedLength));
+            }
+
+            oversizedStreamDataOffset += consumedLength;
+            if (oversizedStreamDataOffset < oversizedStreamData.Length)
+            {
+                return true;
+            }
+
+            oversizedStreamData = ReadOnlyMemory<byte>.Empty;
+            oversizedStreamDataOffset = 0;
+            return false;
+        }
 
         internal ReadOnlySpan<byte> GetOwnedStreamDataSpan()
             => ownedStreamData is null
@@ -918,6 +965,14 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         {
             return pendingStreamActionRequests.TryAdd(requestId, completionSource);
         }
+    }
+
+    private bool ShouldUseMultiplexedOversizedWritePath()
+    {
+        int activeStreamCount = streamObservers.DistinctStreamCount;
+        return streamWriteDispatcher is not null
+            && activeStreamCount >= MultiplexedOversizedWriteMinimumStreamCount
+            && activeStreamCount <= MultiplexedOversizedWriteMaximumStreamCount;
     }
 
     private bool TryRemovePendingStreamActionRequest(long requestId, out StreamActionRequestCompletionSource completionSource)
@@ -2212,7 +2267,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             return ValueTask.CompletedTask;
         }
 
-        if (buffer.Length > MaximumStreamWriteChunkBytes)
+        bool useMultiplexedOversizedWritePath = buffer.Length > MaximumStreamWriteChunkBytes
+            && ShouldUseMultiplexedOversizedWritePath();
+        if (buffer.Length > MaximumStreamWriteChunkBytes
+            && !useMultiplexedOversizedWritePath)
         {
             ValueTask<bool> chunkWriteTask = WriteStreamChunksAsync(
                 streamId,
@@ -2234,6 +2292,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             finishWrites ? QuicConnectionStreamActionKind.Finish : QuicConnectionStreamActionKind.Write,
             streamId,
             buffer.Length);
+        if (useMultiplexedOversizedWritePath)
+        {
+            completion.ConfigureOversizedStreamData(buffer);
+        }
         if (completionAction is not null)
         {
             completion.ConfigureCompletionAction(completionAction);
@@ -2348,6 +2410,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         int totalLength = checked(buffer.Length + bufferSuffix.Length);
+        bool useMultiplexedOversizedWritePath = false;
         if (totalLength > MaximumStreamWriteChunkBytes)
         {
             if (!bufferSuffix.IsEmpty)
@@ -2357,15 +2420,19 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                     $"A segmented stream write cannot exceed {MaximumStreamWriteChunkBytes} bytes.");
             }
 
-            ValueTask<bool> chunkWriteTask = WriteStreamChunksAsync(
-                streamId,
-                buffer,
-                finishWrites,
-                suppressTerminalException,
-                cancellationToken);
-            return completionAction is null
-                ? chunkWriteTask
-                : AwaitTryWriteStreamResultAndCompleteAsync(chunkWriteTask, completionAction);
+            useMultiplexedOversizedWritePath = ShouldUseMultiplexedOversizedWritePath();
+            if (!useMultiplexedOversizedWritePath)
+            {
+                ValueTask<bool> chunkWriteTask = WriteStreamChunksAsync(
+                    streamId,
+                    buffer,
+                    finishWrites,
+                    suppressTerminalException,
+                    cancellationToken);
+                return completionAction is null
+                    ? chunkWriteTask
+                    : AwaitTryWriteStreamResultAndCompleteAsync(chunkWriteTask, completionAction);
+            }
         }
 
         LogApplicationSend(
@@ -2377,6 +2444,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             finishWrites ? QuicConnectionStreamActionKind.Finish : QuicConnectionStreamActionKind.Write,
             streamId,
             totalLength);
+        if (useMultiplexedOversizedWritePath)
+        {
+            completion.ConfigureOversizedStreamData(buffer);
+        }
         if (completionAction is not null)
         {
             completion.ConfigureResultCompletionAction(completionAction);

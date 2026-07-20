@@ -7609,8 +7609,9 @@ locked drain; all are retained negatives. It does justify one materially
 different bounded experiment: preserve the sparse one-chunk path, but under a
 real established multi-stream pressure signal allow one actor item to admit a
 small fixed quantum of existing 32 KiB chunks before yielding. The design must
-dispatch completion outside the stream-action lock, preserve one request's
-cancellation and terminal ownership across yields, preserve PTO repair and
+dispatch continuation submission outside the stream-action lock while keeping
+terminal signaling synchronized, preserve one request's cancellation and
+terminal ownership across yields, preserve PTO repair and
 queued-data probe behavior, and prove that it reduces write items per operation
 rather than merely feeding the queue faster. Test c1/c4/c16/c32 locally; reject
 if c1/c4 p95 regresses by more than about five percent or if c16/c32 service
@@ -7619,3 +7620,102 @@ capacity does not improve materially.
 Retain the manifest, exact result JSON, and logs under
 `C:\shared\temp\quic-cardinality-common-20260720`. No ProtocolLab run was
 justified for this behavior-neutral diagnosis.
+
+### Accepted 2026-07-20: adaptive oversized-write quantum for the c16-c24 regime
+
+The common-lane diagnosis showed that each one-MiB public write entered the
+connection actor as thirty-two 32 KiB write requests plus a final request. A
+bounded continuation now keeps the original caller memory and request
+completion alive while admitting two existing 32 KiB chunks per actor turn.
+It then reposts the same request before yielding. Terminal completion retains
+the established pending-request synchronization, while only continuation queue
+submission is dispatched outside that lock. The sparse one-chunk path remains
+unchanged unless the hosted runtime has between 16 and 24 distinct active
+stream observers when the logical write is admitted. That admission policy is
+latched for the write so a stream-count change cannot alter its fragmentation
+or completion semantics mid-flight. The policy does not inspect benchmark
+labels, payload constants, or HTTP semantics, and it does not alter packet
+construction, stream offsets, flow control, congestion control, loss recovery,
+cancellation, or disposal.
+
+Several narrower designs were rejected and retained before the final policy:
+
+- Counting all pending stream actions activated the policy from unrelated
+  open and finish requests and caused a c4 duplex regression.
+- A four-chunk quantum improved c16 throughput but produced unacceptable c16
+  duplex tail latency.
+- A two-chunk quantum selected only by simultaneous oversized writes was
+  nondeterministic because write starts did not reliably overlap long enough
+  to cross the threshold.
+- Applying the stable distinct-stream selector without an upper regime bound
+  improved c32 upload throughput 21.1 percent, but increased p95 8.6 percent
+  and allocation 62.9 percent. At fixed-total c64 it reduced throughput 5.8
+  percent and increased allocation 61.7 percent. This directly justified the
+  c24 upper bound instead of treating one adaptive policy as universal.
+- Applying the candidate at c8 improved download, but upload p95 rose 8.3
+  percent and duplex p95 rose 30.1 percent for only 4.5 and 7.5 percent
+  throughput gains. c8 was therefore removed from the adaptive regime. The
+  final c8 sparse-path candidate matched the closing frozen baseline on upload
+  (-1.1 percent) and duplex (+2.1 percent); download remained in a faster local
+  regime (+14.0 percent). The opening baseline, candidate, and closing baseline
+  are all retained rather than converting that host drift into a claim.
+- Review found and blocked a remove-before-signal disposal race and an
+  under-lock continuation dispatcher. Terminal signaling was restored to the
+  established synchronized path, continuation submission moved outside the
+  lock, dispatcher exceptions now fail the request once, and stale events from
+  cancellation are request-ID-gated no-ops. Focused tests cover reentrant
+  dispatch, cancellation, disposal, post failure, and admission-policy latching.
+
+The final frozen candidate is identified by benchmark SHA-256
+`A5410B23FEED6C166009F55E7FED2B96B2FA1AB12384B73C6EFFE3A627E0EC55` and runtime
+SHA-256 `6FC91768F19E0E896F632431ED725C8DE943E29FB14D8D7348AD11045B26C409`.
+Five-sample, exact-payload local loopback comparisons produced:
+
+| Control | Baseline MiB/s | Candidate MiB/s | Delta | p95 delta | allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| c1 upload | 80.44 | 78.78 | -2.1% | +6.1% | -2.6% |
+| c1 download | 81.86 | 80.50 | -1.7% | +1.1% | -0.6% |
+| c4 upload | 80.87 | 81.83 | +1.2% | -1.0% | -1.4% |
+| c16 upload | 34.50 | 36.77 | +6.6% | +23.0% | -10.9% |
+| c16 download | 44.09 | 51.36 | +16.5% | -20.2% | -14.1% |
+| c16 duplex | 42.96 | 54.36 | +26.5% | +0.7% | -10.3% |
+| c24 upload | 32.66 | 41.27 | +26.4% | +9.2% | +2.1% |
+| c24 download | 30.23 | 42.06 | +39.1% | -15.2% | -13.6% |
+| c24 duplex | 42.77 | 44.89 | +4.9% | +9.7% | -8.6% |
+| fixed-total c64 | 24.86 | 25.40 | +2.2% | +4.8% | -6.3% |
+
+The c1 and c4 policy paths were disabled. The c4 download A/B/B/A control was
+also throughput-neutral at -2.1 percent with +0.1 percent allocation, but its
+p95 and both implementations' sample CV were noisy; do not attribute that
+local host variance to the candidate. The final c16 upload and c24 duplex tail
+increases are retained caveats. Earlier identical-mechanism c16 runs measured
+larger upload and download gains, but the final matched rows above remain the
+authoritative conservative comparison. The policy is accepted for its repeated
+cross-direction throughput and allocation benefit, not represented as an
+across-the-board win.
+
+BenchmarkDotNet Dry and Short jobs completed for the established public
+request/response stream operation. Short measured 27.05 ms and 1,570.98 KiB
+for Incursa versus 19.13 ms and 145.85 KiB for System.Net.Quic; this is a
+low-cardinality control where the new policy is disabled, not evidence that the
+remaining peer gap is closed. Focused adaptive-regime, cancellation, disposal,
+public API, and RFC 9002 PTO tests passed; the final focused filter passed
+74/74. Two pre-final full Release runs each completed 9,697 passes and four
+intentional skips with one occurrence of the retained load-sensitive
+`PostDataRequest_WithIncompleteContentLength_ClosesConnectionWithMessageError`
+timeout. That exact test then passed three isolated reruns out of three. The
+final source state completed 9,700 passes and four intentional skips with one
+`DroppedServerFinIsRecoveredAndShardContinuesProcessing` assertion miss under
+suite load; that exact FIN-loss resilience test passed three immediate isolated
+reruns out of three. Exact binaries, BDN output, A/B JSON, candidate histories,
+and test artifacts are retained under
+`C:\shared\temp\quic-adaptive-write-quantum-20260720`.
+
+The next diagnosis must not widen this quantum speculatively. At c32 the sparse
+path remains deliberately active, but local samples continue to cross fast and
+collapsed packet-receive regimes. Attribute the c32 packet-receive and
+ACK/recovery doubling before designing a separate c32+ policy. c64 and c128
+remain stress diagnostics, and any later high-cardinality policy must pass the
+c1-c16 upload, download, and duplex controls independently. ProtocolLab
+confirmation is deferred until the local correctness suite and review are
+complete.

@@ -89,6 +89,13 @@ internal sealed partial class QuicConnectionRuntime
     private const string StreamWriteSendBlockedMessage = "The connection cannot send the stream write packet.";
     private const string QueuedStreamWriteSendBlockedMessage = "The connection cannot send the queued stream write packet.";
     private const string DatagramSendBlockedMessage = "The connection cannot send the DATAGRAM packet.";
+    private const int MultiplexedOversizedWriteMinimumStreamCount = 16;
+    private const int MultiplexedOversizedWriteMaximumStreamCount = 24;
+    private const int MultiplexedOversizedWriteChunkQuantum = 2;
+
+    private readonly record struct PendingOversizedWriteContinuation(
+        long RequestId,
+        QuicConnectionRuntime.StreamActionRequestCompletionSource Completion);
 
     private bool HandleStreamAction(
         QuicConnectionStreamActionEvent streamActionEvent,
@@ -284,6 +291,8 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref QuicConnectionEffectAccumulator effects)
     {
+        List<PendingOversizedWriteContinuation>? pendingContinuations = null;
+        bool stateChanged = false;
         lock (pendingStreamActionRequestsGate)
         {
             int pendingRetryCount = pendingStreamWriteRetryRequests.Count;
@@ -292,7 +301,6 @@ internal sealed partial class QuicConnectionRuntime
                 return false;
             }
 
-            bool stateChanged = false;
             for (int index = 0;
                 index < pendingRetryCount && pendingStreamWriteRetryRequests.TryDequeue(out long requestId, out _);
                 index++)
@@ -305,21 +313,50 @@ internal sealed partial class QuicConnectionRuntime
                     continue;
                 }
 
-                if (HandleWriteStreamAction(
-                        nowTicks,
-                        requestId,
-                        completion.StreamId,
-                        completion.GetOwnedStreamDataMemory(),
-                        ReadOnlyMemory<byte>.Empty,
-                        completion.ActionKind == QuicConnectionStreamActionKind.Finish,
-                        ref effects))
+                int admittedChunkCount = 0;
+                int chunkQuantum = GetOversizedWriteChunkQuantum(completion);
+                bool continueOversizedWrite;
+                do
                 {
-                    stateChanged = true;
-                }
-            }
+                    continueOversizedWrite = false;
+                    if (HandleWriteStreamActionLocked(
+                            nowTicks,
+                            requestId,
+                            completion.StreamId,
+                            completion.HasPendingOversizedStreamData
+                                ? completion.GetPendingOversizedStreamData(MaximumStreamWriteChunkBytes)
+                                : completion.GetOwnedStreamDataMemory(),
+                            ReadOnlyMemory<byte>.Empty,
+                            completion.ActionKind == QuicConnectionStreamActionKind.Finish
+                                && (!completion.IsOversizedWrite
+                                    || completion.IsPendingOversizedFinalChunk(MaximumStreamWriteChunkBytes)),
+                            ref effects,
+                            ref continueOversizedWrite))
+                    {
+                        stateChanged = true;
+                    }
 
-            return stateChanged;
+                    if (continueOversizedWrite
+                        && ++admittedChunkCount >= chunkQuantum)
+                    {
+                        (pendingContinuations ??= []).Add(
+                            new PendingOversizedWriteContinuation(requestId, completion));
+                        continueOversizedWrite = false;
+                    }
+                }
+                while (continueOversizedWrite);
+            }
         }
+
+        if (pendingContinuations is not null)
+        {
+            foreach (PendingOversizedWriteContinuation continuation in pendingContinuations)
+            {
+                PostOversizedWriteContinuation(continuation);
+            }
+        }
+
+        return stateChanged;
     }
 
     private bool TryProcessPendingStreamOpenRequest(
@@ -446,17 +483,128 @@ internal sealed partial class QuicConnectionRuntime
         bool finishWrites,
         ref QuicConnectionEffectAccumulator effects)
     {
+        PendingOversizedWriteContinuation? pendingContinuation = null;
+        bool stateChanged = false;
         lock (pendingStreamActionRequestsGate)
         {
+            int admittedChunkCount = 0;
+            int chunkQuantum = GetOversizedWriteChunkQuantum(requestId);
+            do
+            {
+                bool continueOversizedWrite = false;
+                stateChanged |= HandleWriteStreamActionLocked(
+                    nowTicks,
+                    requestId,
+                    streamId,
+                    streamData,
+                    streamDataSuffix,
+                    finishWrites,
+                    ref effects,
+                    ref continueOversizedWrite);
+                if (!continueOversizedWrite)
+                {
+                    break;
+                }
+
+                if (++admittedChunkCount >= chunkQuantum)
+                {
+                    if (pendingStreamActionRequests.TryGetValue(
+                            requestId,
+                            out QuicConnectionRuntime.StreamActionRequestCompletionSource? completion)
+                        && completion.HasPendingOversizedStreamData)
+                    {
+                        pendingContinuation = new PendingOversizedWriteContinuation(requestId, completion);
+                    }
+
+                    break;
+                }
+            }
+            while (true);
+        }
+
+        if (pendingContinuation.HasValue)
+        {
+            PostOversizedWriteContinuation(pendingContinuation.Value);
+        }
+
+        return stateChanged;
+    }
+
+    private static int GetOversizedWriteChunkQuantum(
+        QuicConnectionRuntime.StreamActionRequestCompletionSource completion)
+        => completion.IsOversizedWrite ? MultiplexedOversizedWriteChunkQuantum : 1;
+
+    private int GetOversizedWriteChunkQuantum(long requestId)
+        => pendingStreamActionRequests.TryGetValue(
+                requestId,
+                out QuicConnectionRuntime.StreamActionRequestCompletionSource? completion)
+            ? GetOversizedWriteChunkQuantum(completion)
+            : 1;
+
+    private void PostOversizedWriteContinuation(PendingOversizedWriteContinuation continuation)
+    {
+        Func<long, QuicConnectionStreamActionKind, ulong, ReadOnlyMemory<byte>, ReadOnlyMemory<byte>, bool>? dispatcher =
+            streamWriteDispatcher;
+        QuicConnectionRuntime.StreamActionRequestCompletionSource completion = continuation.Completion;
+        Exception? exception = null;
+        bool posted = false;
+        try
+        {
+            // Cancellation can remove the request after the actor releases its gate but before this post.
+            // Stream-action transitions are request-ID gated, so that unavoidable stale event is a no-op.
+            posted = dispatcher is not null
+                && completion.HasPendingOversizedStreamData
+                && dispatcher(
+                    continuation.RequestId,
+                    completion.ActionKind,
+                    completion.StreamId,
+                    completion.GetPendingOversizedStreamData(MaximumStreamWriteChunkBytes),
+                    ReadOnlyMemory<byte>.Empty);
+        }
+        catch (Exception caughtException)
+        {
+            exception = caughtException;
+        }
+
+        if (posted
+            || !TryRemovePendingStreamActionRequest(
+                continuation.RequestId,
+                out QuicConnectionRuntime.StreamActionRequestCompletionSource removedCompletion)
+            || !ReferenceEquals(removedCompletion, completion))
+        {
+            return;
+        }
+
+        completion.TrySetException(exception ?? new InvalidOperationException(
+            "The connection runtime could not queue the oversized stream write continuation."));
+    }
+
+    private bool HandleWriteStreamActionLocked(
+        long nowTicks,
+        long requestId,
+        ulong streamId,
+        ReadOnlyMemory<byte> streamData,
+        ReadOnlyMemory<byte> streamDataSuffix,
+        bool finishWrites,
+        ref QuicConnectionEffectAccumulator effects,
+        ref bool continueOversizedWrite)
+    {
             if (!pendingStreamActionRequests.TryGetValue(requestId, out QuicConnectionRuntime.StreamActionRequestCompletionSource? completion))
             {
                 return false;
             }
 
+            if (completion.HasPendingOversizedStreamData)
+            {
+                streamData = completion.GetPendingOversizedStreamData(MaximumStreamWriteChunkBytes);
+                streamDataSuffix = ReadOnlyMemory<byte>.Empty;
+                finishWrites = completion.ActionKind == QuicConnectionStreamActionKind.Finish
+                    && completion.IsPendingOversizedFinalChunk(MaximumStreamWriteChunkBytes);
+            }
+
             if (!TryValidateStreamSendBoundary(out Exception? exception))
             {
-                pendingStreamActionRequests.Remove(requestId);
-                completion.TrySetException(exception!);
+                CompleteStreamWriteRequestException(requestId, completion, exception!);
                 return false;
             }
 
@@ -470,8 +618,7 @@ internal sealed partial class QuicConnectionRuntime
                 out QuicTransportErrorCode errorCode);
             if (preparationStatus == QuicConnectionStreamWritePreparationStatus.Unavailable)
             {
-                pendingStreamActionRequests.Remove(requestId);
-                completion.TrySetException(errorCode != default
+                CompleteStreamWriteRequestException(requestId, completion, errorCode != default
                     ? new QuicException(
                         QuicError.TransportError,
                         null,
@@ -483,32 +630,42 @@ internal sealed partial class QuicConnectionRuntime
 
             if (preparationStatus == QuicConnectionStreamWritePreparationStatus.NotWritable)
             {
-                pendingStreamActionRequests.Remove(requestId);
-                completion.TrySetException(new InvalidOperationException("This stream does not have a writable side."));
+                CompleteStreamWriteRequestException(
+                    requestId,
+                    completion,
+                    new InvalidOperationException("This stream does not have a writable side."));
                 return false;
             }
 
             if (preparationStatus == QuicConnectionStreamWritePreparationStatus.Completed)
             {
-                pendingStreamActionRequests.Remove(requestId);
                 if (finishWrites)
                 {
-                    completion.TrySetResult();
+                    CompleteStreamWriteRequestSuccess(
+                        requestId,
+                        completion,
+                        committedStreamDataLength: 0,
+                        ref continueOversizedWrite);
                     return false;
                 }
 
-                completion.TrySetException(new InvalidOperationException("The writable side is already completed."));
+                CompleteStreamWriteRequestException(
+                    requestId,
+                    completion,
+                    new InvalidOperationException("The writable side is already completed."));
                 return false;
             }
 
             if (preparationStatus == QuicConnectionStreamWritePreparationStatus.Error)
             {
-                pendingStreamActionRequests.Remove(requestId);
-                completion.TrySetException(new QuicException(
-                    QuicError.TransportError,
-                    null,
-                    (long)errorCode,
-                    "The stream write could not be committed."));
+                CompleteStreamWriteRequestException(
+                    requestId,
+                    completion,
+                    new QuicException(
+                        QuicError.TransportError,
+                        null,
+                        (long)errorCode,
+                        "The stream write could not be committed."));
                 return false;
             }
 
@@ -516,21 +673,28 @@ internal sealed partial class QuicConnectionRuntime
             {
                 if (dataBlockedFrame.MaximumData != 0 || streamDataBlockedFrame.MaximumStreamData != 0)
                 {
-                    completion.EnsureOwnedStreamData(streamData.Span, streamDataSuffix.Span);
+                    if (!completion.IsOversizedWrite)
+                    {
+                        completion.EnsureOwnedStreamData(streamData.Span, streamDataSuffix.Span);
+                    }
                     QueuePendingStreamWriteRetry(requestId, completion);
                     _ = TryEmitFlowControlBlockedSignal(dataBlockedFrame, streamDataBlockedFrame, ref effects);
                     return true;
                 }
 
-                pendingStreamActionRequests.Remove(requestId);
-                completion.TrySetException(new InvalidOperationException("The stream write could not be committed."));
+                CompleteStreamWriteRequestException(
+                    requestId,
+                    completion,
+                    new InvalidOperationException("The stream write could not be committed."));
                 return false;
             }
 
             if (preparationStatus != QuicConnectionStreamWritePreparationStatus.Reserved)
             {
-                pendingStreamActionRequests.Remove(requestId);
-                completion.TrySetException(new InvalidOperationException("The stream send state is unavailable."));
+                CompleteStreamWriteRequestException(
+                    requestId,
+                    completion,
+                    new InvalidOperationException("The stream send state is unavailable."));
                 return false;
             }
 
@@ -554,8 +718,8 @@ internal sealed partial class QuicConnectionRuntime
                 finishWrites,
                 writeOffset,
                 preparation.SendStateBeforeWrite,
-                ref effects);
-        }
+                ref effects,
+                ref continueOversizedWrite);
     }
 
     private void QueuePendingStreamWriteRetry(
@@ -578,7 +742,8 @@ internal sealed partial class QuicConnectionRuntime
         bool finishWrites,
         ulong writeOffset,
         QuicConnectionStreamSendStateSnapshot sendStateBeforeWrite,
-        ref QuicConnectionEffectAccumulator effects)
+        ref QuicConnectionEffectAccumulator effects,
+        ref bool continueOversizedWrite)
     {
         ReadOnlySpan<byte> committedStreamData = completion.HasOwnedStreamData
             ? completion.GetOwnedStreamDataSpan()
@@ -600,8 +765,8 @@ internal sealed partial class QuicConnectionRuntime
                 $"app-tx branch=finish-queued-final role={tlsState.Role} stream={streamId} queue={applicationSendQueue.Count}.");
             if (!TryPromoteQueuedApplicationSendToFinal(streamId))
             {
-                pendingStreamActionRequests.Remove(requestId);
                 return FailWriteAfterRollback(
+                    requestId,
                     completion,
                     sendStateBeforeWrite,
                     new InvalidOperationException("The connection runtime could not mark the queued stream write as final."));
@@ -611,13 +776,16 @@ internal sealed partial class QuicConnectionRuntime
             {
                 if (IsTransientApplicationSendPathBlocked(flushException))
                 {
-                    pendingStreamActionRequests.Remove(requestId);
-                    completion.TrySetResult();
+                    CompleteStreamWriteRequestSuccess(
+                        requestId,
+                        completion,
+                        committedStreamDataLength,
+                        ref continueOversizedWrite);
                     return true;
                 }
 
-                pendingStreamActionRequests.Remove(requestId);
                 return FailWriteAfterRollback(
+                    requestId,
                     completion,
                     sendStateBeforeWrite,
                     flushException ?? new InvalidOperationException("The connection runtime could not flush queued stream writes before finishing the writable side."));
@@ -625,8 +793,11 @@ internal sealed partial class QuicConnectionRuntime
 
             TryReleasePeerStreamCapacity(streamId, ref effects);
             AppendLifecycleTimerEffects(ref effects);
-            pendingStreamActionRequests.Remove(requestId);
-            completion.TrySetResult();
+            CompleteStreamWriteRequestSuccess(
+                requestId,
+                completion,
+                committedStreamDataLength,
+                ref continueOversizedWrite);
             return true;
         }
 
@@ -649,8 +820,8 @@ internal sealed partial class QuicConnectionRuntime
                 committedStreamDataLength,
                 out int streamFrameLength))
         {
-            pendingStreamActionRequests.Remove(requestId);
             return FailWriteAfterRollback(
+                requestId,
                 completion,
                 sendStateBeforeWrite,
                 new InvalidOperationException("The connection runtime could not size the stream write payload."));
@@ -694,8 +865,11 @@ internal sealed partial class QuicConnectionRuntime
                 AppendLifecycleTimerEffects(ref effects);
             }
 
-            pendingStreamActionRequests.Remove(requestId);
-            completion.TrySetResult();
+            CompleteStreamWriteRequestSuccess(
+                requestId,
+                completion,
+                committedStreamDataLength,
+                ref continueOversizedWrite);
             return true;
         }
 
@@ -708,8 +882,8 @@ internal sealed partial class QuicConnectionRuntime
                 out byte[] streamPayload,
                 out int streamPayloadLength))
         {
-            pendingStreamActionRequests.Remove(requestId);
             return FailWriteAfterRollback(
+                requestId,
                 completion,
                 sendStateBeforeWrite,
                 new InvalidOperationException("The connection runtime could not build the stream write payload."));
@@ -741,8 +915,11 @@ internal sealed partial class QuicConnectionRuntime
                 probePacket: false,
                 ref effects);
             AppendLifecycleTimerEffects(ref effects);
-            pendingStreamActionRequests.Remove(requestId);
-            completion.TrySetResult();
+            CompleteStreamWriteRequestSuccess(
+                requestId,
+                completion,
+                committedStreamDataLength,
+                ref continueOversizedWrite);
             return true;
         }
 
@@ -763,8 +940,11 @@ internal sealed partial class QuicConnectionRuntime
                 nowTicks,
                 tryFlushPendingApplicationSendsAfterEnqueue: false,
                 ref effects);
-            pendingStreamActionRequests.Remove(requestId);
-            completion.TrySetResult();
+            CompleteStreamWriteRequestSuccess(
+                requestId,
+                completion,
+                committedStreamDataLength,
+                ref continueOversizedWrite);
             return true;
         }
 
@@ -799,22 +979,28 @@ internal sealed partial class QuicConnectionRuntime
                     tryFlushPendingApplicationSendsAfterEnqueue: true,
                     ref effects,
                     out Exception? queuedFlushException);
-                pendingStreamActionRequests.Remove(requestId);
                 if (queuedFlushException is not null && !IsTransientApplicationSendPathBlocked(queuedFlushException))
                 {
                     // The stream state and queued payload are already committed, so this path cannot safely roll
                     // back. It must still complete the caller instead of orphaning the request after removal.
-                    completion.TrySetException(queuedFlushException);
+                    CompleteStreamWriteRequestException(
+                        requestId,
+                        completion,
+                        queuedFlushException);
                     return false;
                 }
 
-                completion.TrySetResult();
+                CompleteStreamWriteRequestSuccess(
+                    requestId,
+                    completion,
+                    committedStreamDataLength,
+                    ref continueOversizedWrite);
                 return true;
             }
 
             QuicBufferPool.ReturnBytes(streamPayload);
-            pendingStreamActionRequests.Remove(requestId);
             return FailWriteAfterRollback(
+                requestId,
                 completion,
                 sendStateBeforeWrite,
                 exception!);
@@ -831,8 +1017,11 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         AppendLifecycleTimerEffects(ref effects);
-        pendingStreamActionRequests.Remove(requestId);
-        completion.TrySetResult();
+        CompleteStreamWriteRequestSuccess(
+            requestId,
+            completion,
+            committedStreamDataLength,
+            ref continueOversizedWrite);
         return true;
     }
 
@@ -979,20 +1168,54 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
+    private void CompleteStreamWriteRequestSuccess(
+        long requestId,
+        QuicConnectionRuntime.StreamActionRequestCompletionSource completion,
+        int committedStreamDataLength,
+        ref bool continueOversizedWrite)
+    {
+        if (completion.IsOversizedWrite
+            && committedStreamDataLength > 0
+            && completion.AdvanceOversizedStreamData(committedStreamDataLength))
+        {
+            continueOversizedWrite = true;
+            return;
+        }
+
+        pendingStreamActionRequests.Remove(requestId);
+        completion.TrySetResult();
+    }
+
+    private void CompleteStreamWriteRequestException(
+        long requestId,
+        QuicConnectionRuntime.StreamActionRequestCompletionSource completion,
+        Exception exception)
+    {
+        pendingStreamActionRequests.Remove(requestId);
+        completion.TrySetException(exception);
+    }
+
     private bool FailWriteAfterRollback(
+        long requestId,
         QuicConnectionRuntime.StreamActionRequestCompletionSource completion,
         QuicConnectionStreamSendStateSnapshot sendStateBeforeWrite,
         Exception exception)
     {
         if (!streamRegistry.Bookkeeping.TryRestoreSendState(sendStateBeforeWrite))
         {
-            completion.TrySetException(new InvalidOperationException(
-                "The connection runtime could not roll back the failed stream write.",
-                exception));
+            CompleteStreamWriteRequestException(
+                requestId,
+                completion,
+                new InvalidOperationException(
+                    "The connection runtime could not roll back the failed stream write.",
+                    exception));
             return false;
         }
 
-        completion.TrySetException(exception);
+        CompleteStreamWriteRequestException(
+            requestId,
+            completion,
+            exception);
         return false;
     }
 
