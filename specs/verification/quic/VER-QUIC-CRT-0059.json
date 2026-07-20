@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0059",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Adaptive client application-datagram batching verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused deterministic transition and socket-boundary tests, permanent BenchmarkDotNet policy-cost measurements, interleaved local established-connection throughput evidence, complete Release regression tests for a retained candidate, SpecTrace validation, and independent diff review.",
+  "scope": "Verify that the built-in client retains contiguous segmented sends only under sparse pressure, promotes one way after repeated bounded queue pressure, and returns to the ordinary datagram representation without weakening runtime send authority or the listener path.",
+  "preconditions": [
+    "The unconditional client UDP-segmentation negative remains binding.",
+    "The accepted listener/server contiguous batching path remains unchanged.",
+    "The connection runtime remains authoritative for packet numbers, packet protection, sent-packet accounting, congestion control, flow control, recovery, ACK behavior, path state, ordering, cancellation, and disposal."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicApplicationDatagramBatchPolicy.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0162.cs",
+    "tests/Incursa.Quic.Tests/QuicSocketUdpSegmentationTests.cs",
+    "benchmarks/QuicApplicationDatagramBatchPolicyBenchmarks.cs",
+    "C:/shared/temp/quic-adaptive-client-egress-20260719/bdn-review-short",
+    "C:/shared/temp/quic-adaptive-client-egress-20260719/matched-abba",
+    "C:/shared/temp/quic-adaptive-client-egress-20260719/guardrails",
+    "C:/shared/temp/quic-adaptive-client-egress-20260719/duplex-c16-abba",
+    "C:/shared/temp/quic-adaptive-client-egress-20260719/review-ab",
+    "C:/shared/temp/quic-client-egress-batch-20260719",
+    "C:/shared/temp/quic-client-egress-baseline-1df86287"
+  ],
+  "procedure": [
+    "Prove sparse queue depths remain batch eligible and do not allocate.",
+    "Prove a single pressure turn is tolerated, a sparse turn resets the consecutive-pressure counter, and repeated pressure at the runtime batch-capacity boundary promotes exactly once.",
+    "Prove a promoted policy remains promoted and cannot reactivate after later sparse turns.",
+    "Exercise the complete built-in client endpoint with exact payload validation and retain the existing packet-destination, socket segmentation, ownership, migration, cancellation, disposal, and listener regression coverage.",
+    "Run BenchmarkDotNet Dry then Short for sparse, transient, promotion, and promoted decisions.",
+    "Run interleaved exact one-MiB established transport upload evidence at c1, c4, c8, c16, and c32 with at least five samples, plus one exact download or duplex guardrail.",
+    "If retained, run focused ownership, loss rebuild, cancellation, disposal, HTTP/3, and complete Release regression tests; otherwise revert runtime behavior and retain the negative evidence.",
+    "Run ProtocolLab only if the local candidate passes the stated gate and a matching workload exercises the Incursa built-in client sender."
+  ],
+  "expected_result": "Sparse client transfers retain the measured segmented-send benefit, sustained same-connection pressure promotes without oscillation, c16/c32 do not materially regress, low-pressure controls remain within about five percent, all exact payload and protocol checks pass, and no listener or QUIC correctness behavior changes.",
+  "status_summary": "Passed on 2026-07-19. Independent review corrected the pressure signal from raw write count to bounded distinct-stream count, corrected synchronous segmented-send fallback, and ensured the first ordinary send after promotion disables the socket option. BenchmarkDotNet Dry and Short completed; policy decisions were sub-nanosecond, the distinct-stream observation measured about 41-55 ns, and neither allocated. The original A/B/B/A exact one-MiB upload campaign improved c1/c4/c8 medians by 53.4/82.3/23.0 percent while c16/c32 remained within +1.8/-1.8 percent. Download controls were flat to +11.5 percent, and an isolated twenty-sample c16 duplex A/B/B/A was -0.3 percent with slightly better p95. After the review fix, an adjacent five-sample A/B confirmation improved c1/c4/c16/c32 by 90.1/17.3/6.4/46.7 percent with zero failures. Final focused batching, queue, ownership, packet-destination, client-host, listener, policy, and socket coverage passed 65/65. Combined complete-suite attempts passed 9,669-9,670 tests with four skips; three suite-load-sensitive close-wait tests failed in combined partitions and each passed 5/5 isolated. The three new trace artifacts pass the repository JSON schema individually; the existing `SPEC-QUIC-CRT.json` schema failure is unchanged from the detached baseline and the core validator still reports the standing repository-wide backlog. No ProtocolLab run was made because the available server-target lanes do not exercise this built-in client sender, so local loopback evidence remains the applicable proof boundary.",
+  "related_artifacts": [
+    "ARC-QUIC-CRT-0057",
+    "WI-QUIC-CRT-0058"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0162"
+  ]
+}

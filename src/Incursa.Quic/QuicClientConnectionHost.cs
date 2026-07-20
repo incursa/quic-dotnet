@@ -78,9 +78,14 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
 
         endpoint = new QuicConnectionRuntimeEndpoint(1, suppressHostedTimerEffectObjects: true);
         IQuicDiagnosticsSink? diagnosticsSink = diagnosticsSinkFactory?.Invoke();
+        QuicAdaptiveApplicationDatagramBatchPolicy applicationDatagramBatchPolicy = new();
         runtime = tlsKeyLogSecretObserver is null
-            ? CreateRuntime(settings, diagnosticsSink)
-            : CreateRuntime(settings, diagnosticsSink, tlsKeyLogSecretObserver);
+            ? CreateRuntime(settings, diagnosticsSink, applicationDatagramBatchPolicy: applicationDatagramBatchPolicy)
+            : CreateRuntime(
+                settings,
+                diagnosticsSink,
+                tlsKeyLogSecretObserver,
+                applicationDatagramBatchPolicy);
         connection = new QuicConnection(runtime, settings.Options, this);
         handle = endpoint.AllocateConnectionHandle();
 
@@ -111,7 +116,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             transitionObserver: ObserveTransition,
             ingressDatagramObserver: ObserveIngressDatagram,
             observeRoutedDatagrams: false,
-            diagnosticsSink: diagnosticsSink);
+            diagnosticsSink: diagnosticsSink,
+            applicationDatagramBatchPolicy: applicationDatagramBatchPolicy);
     }
 
     public ValueTask<QuicConnection> ConnectAsync(CancellationToken cancellationToken = default)
@@ -372,13 +378,19 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
 
     internal static QuicConnectionRuntime CreateRuntime(
         QuicClientConnectionSettings settings,
-        IQuicDiagnosticsSink? diagnosticsSink = null)
-        => CreateRuntime(settings, diagnosticsSink, tlsKeyLogSecretObserver: null);
+        IQuicDiagnosticsSink? diagnosticsSink = null,
+        IQuicApplicationDatagramBatchPolicy? applicationDatagramBatchPolicy = null)
+        => CreateRuntime(
+            settings,
+            diagnosticsSink,
+            tlsKeyLogSecretObserver: null,
+            applicationDatagramBatchPolicy);
 
     internal static QuicConnectionRuntime CreateRuntime(
         QuicClientConnectionSettings settings,
         IQuicDiagnosticsSink? diagnosticsSink,
-        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver)
+        Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver,
+        IQuicApplicationDatagramBatchPolicy? applicationDatagramBatchPolicy = null)
     {
         QuicClientConnectionOptions options = settings.Options;
         QuicReceiveWindowSizes receiveWindowSizes = options.InitialReceiveWindowSizes;
@@ -412,7 +424,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             allowClientPeerInitialReplacementBeforeTranscript: settings.AllowClientPeerInitialReplacementBeforeTranscript,
             selectedCipherSuite: settings.SelectedCipherSuite,
             tlsKeyLogSecretObserver: tlsKeyLogSecretObserver,
-            maximumInboundDatagramQueueSize: GetEffectiveInboundDatagramQueueSize(options));
+            maximumInboundDatagramQueueSize: GetEffectiveInboundDatagramQueueSize(options),
+            applicationDatagramBatchPolicy: applicationDatagramBatchPolicy);
     }
 
     private static int GetEffectiveInboundDatagramQueueSize(QuicConnectionOptions options)

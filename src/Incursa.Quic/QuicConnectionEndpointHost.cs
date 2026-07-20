@@ -3,6 +3,7 @@
 
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
 namespace Incursa.Quic;
@@ -32,6 +33,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
     private readonly object socketGate = new();
     private readonly CancellationTokenSource shutdown = new();
     private readonly uint flowLabelSeed;
+    private readonly IQuicApplicationDatagramBatchPolicy? applicationDatagramBatchPolicy;
 
     private Socket socket;
     private QuicConnectionPathIdentity peerPathIdentity;
@@ -41,6 +43,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
     private Task? runningTask;
     private CancellationTokenSource? linkedCancellation;
     private CancellationTokenRegistration receiveLoopCancellationRegistration;
+    private bool windowsUdpSegmentationEnabled;
     private int disposed;
 
     public QuicConnectionEndpointHost(
@@ -53,7 +56,8 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         int receiveBufferBytes = 4096,
         Action<ReadOnlyMemory<byte>, QuicConnectionIngressResult>? ingressDatagramObserver = null,
         bool observeRoutedDatagrams = true,
-        IQuicDiagnosticsSink? diagnosticsSink = null)
+        IQuicDiagnosticsSink? diagnosticsSink = null,
+        IQuicApplicationDatagramBatchPolicy? applicationDatagramBatchPolicy = null)
     {
         ArgumentNullException.ThrowIfNull(endpoint);
         ArgumentNullException.ThrowIfNull(socket);
@@ -73,6 +77,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         this.transitionObserver = transitionObserver;
         this.effectObserver = effectObserver;
         this.diagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSink);
+        this.applicationDatagramBatchPolicy = applicationDatagramBatchPolicy;
         receiveBufferPool = new QuicReceiveBufferPool(
             receiveBufferBytes,
             ownerName: nameof(QuicConnectionEndpointHost),
@@ -87,6 +92,9 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
             connectedSocket.Dispose();
             this.socket = CreateSocket(localEndPoint);
         }
+
+        windowsUdpSegmentationEnabled = applicationDatagramBatchPolicy is not null
+            && QuicSocketUdpSegmentation.TryEnable(this.socket);
     }
 
     /// <summary>
@@ -130,7 +138,19 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                 _ = shardIndex;
                 TrySendDatagram(update);
                 effectObserver?.Invoke(update.ToEffect());
-            });
+            },
+            windowsUdpSegmentationEnabled
+                ? (handle, shardIndex, updates) =>
+                {
+                    _ = handle;
+                    _ = shardIndex;
+                    TrySendDatagrams(updates);
+                    foreach (QuicConnectionSendDatagramUpdate update in updates)
+                    {
+                        effectObserver?.Invoke(update.ToEffect());
+                    }
+                }
+                : null);
 
         Task receiveTask = ReceiveLoopAsync(hostCancellation);
         runningTask = Task.WhenAll(runtimeTask, receiveTask);
@@ -426,6 +446,11 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
     private bool TrySendDatagram(QuicConnectionSendDatagramUpdate sendDatagram)
     {
+        if (applicationDatagramBatchPolicy?.IsPromoted == true)
+        {
+            DisableUdpSegmentationAfterPromotion();
+        }
+
         try
         {
             lock (socketGate)
@@ -498,6 +523,158 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         return false;
     }
 
+    private void TrySendDatagrams(ReadOnlySpan<QuicConnectionSendDatagramUpdate> sendDatagrams)
+    {
+        if (applicationDatagramBatchPolicy is null || applicationDatagramBatchPolicy.IsPromoted)
+        {
+            DisableUdpSegmentationAfterPromotion();
+            SendDatagramsIndividually(sendDatagrams);
+            return;
+        }
+
+        int index = 0;
+        while (index < sendDatagrams.Length)
+        {
+            int batchCount = GetSegmentableRunLength(sendDatagrams[index..]);
+            if (batchCount >= QuicSocketUdpSegmentation.MinimumSegmentsPerSend
+                && TrySendSegmentedDatagrams(sendDatagrams.Slice(index, batchCount)))
+            {
+                index += batchCount;
+                continue;
+            }
+
+            _ = TrySendDatagram(sendDatagrams[index]);
+            index++;
+        }
+    }
+
+    private void SendDatagramsIndividually(ReadOnlySpan<QuicConnectionSendDatagramUpdate> sendDatagrams)
+    {
+        foreach (QuicConnectionSendDatagramUpdate sendDatagram in sendDatagrams)
+        {
+            _ = TrySendDatagram(sendDatagram);
+        }
+    }
+
+    private void DisableUdpSegmentationAfterPromotion()
+    {
+        if (!windowsUdpSegmentationEnabled)
+        {
+            return;
+        }
+
+        lock (socketGate)
+        {
+            if (!windowsUdpSegmentationEnabled)
+            {
+                return;
+            }
+
+            _ = QuicSocketUdpSegmentation.TryDisable(socket);
+            windowsUdpSegmentationEnabled = false;
+        }
+    }
+
+    private static int GetSegmentableRunLength(
+        ReadOnlySpan<QuicConnectionSendDatagramUpdate> sendDatagrams)
+    {
+        QuicConnectionSendDatagramUpdate first = sendDatagrams[0];
+        if (first.Datagram.Length != QuicSocketUdpSegmentation.SegmentSize
+            || !MemoryMarshal.TryGetArray(first.Datagram, out ArraySegment<byte> firstSegment)
+            || firstSegment.Array is null)
+        {
+            return 0;
+        }
+
+        int limit = Math.Min(sendDatagrams.Length, QuicSocketUdpSegmentation.MaximumSegmentsPerSend);
+        int count = 1;
+        while (count < limit)
+        {
+            QuicConnectionSendDatagramUpdate current = sendDatagrams[count];
+            if (current.Datagram.Length != QuicSocketUdpSegmentation.SegmentSize
+                || current.PathIdentity != first.PathIdentity
+                || current.EcnMarking != first.EcnMarking
+                || !MemoryMarshal.TryGetArray(current.Datagram, out ArraySegment<byte> currentSegment)
+                || !ReferenceEquals(currentSegment.Array, firstSegment.Array)
+                || currentSegment.Offset != firstSegment.Offset + (count * QuicSocketUdpSegmentation.SegmentSize))
+            {
+                break;
+            }
+
+            count++;
+        }
+
+        return count;
+    }
+
+    private bool TrySendSegmentedDatagrams(
+        ReadOnlySpan<QuicConnectionSendDatagramUpdate> sendDatagrams)
+    {
+        try
+        {
+            lock (socketGate)
+            {
+                if (!windowsUdpSegmentationEnabled
+                    || applicationDatagramBatchPolicy is null
+                    || applicationDatagramBatchPolicy.IsPromoted)
+                {
+                    return false;
+                }
+
+                QuicConnectionSendDatagramUpdate first = sendDatagrams[0];
+                if (!MemoryMarshal.TryGetArray(first.Datagram, out ArraySegment<byte> firstSegment)
+                    || firstSegment.Array is null)
+                {
+                    return false;
+                }
+
+                IPEndPoint localEndPoint = (IPEndPoint)socket.LocalEndPoint!;
+                IPEndPoint remoteEndPoint = GetRemoteEndPoint(first.PathIdentity);
+                if (TryResolvePacketInformationSourceAddress(
+                        localEndPoint,
+                        socket.AddressFamily,
+                        first.PathIdentity,
+                        out IPAddress sourceAddress)
+                    && (socket.AddressFamily == AddressFamily.InterNetworkV6
+                        || !sourceAddress.Equals(localEndPoint.Address)))
+                {
+                    return false;
+                }
+
+                _ = QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, first.EcnMarking);
+                int length = checked(sendDatagrams.Length * QuicSocketUdpSegmentation.SegmentSize);
+                _ = QuicSocketUdpSegmentation.Send(
+                    socket,
+                    firstSegment.Array.AsSpan(firstSegment.Offset, length),
+                    sendDatagrams.Length,
+                    remoteEndPoint.Serialize());
+                foreach (QuicConnectionSendDatagramUpdate sendDatagram in sendDatagrams)
+                {
+                    QuicMetrics.RecordDatagramSent(QuicTlsRole.Client, sendDatagram.Datagram.Length);
+                }
+            }
+
+            return true;
+        }
+        catch (ObjectDisposedException) when (shutdown.IsCancellationRequested)
+        {
+            return true;
+        }
+        catch (SocketException) when (shutdown.IsCancellationRequested)
+        {
+            return true;
+        }
+        catch (SocketException ex)
+        {
+            EmitUdpSendError(ex);
+            return false;
+        }
+        catch (IOException)
+        {
+            return false;
+        }
+    }
+
     private void EmitUdpReceiveError(SocketException exception)
     {
         QuicMetrics.RecordUdpError(QuicTlsRole.Client, "receive", exception.SocketErrorCode);
@@ -559,6 +736,9 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
             Socket previousSocket = socket;
             socket = CreateSocket(localEndPoint);
+            windowsUdpSegmentationEnabled = applicationDatagramBatchPolicy is not null
+                && !applicationDatagramBatchPolicy.IsPromoted
+                && QuicSocketUdpSegmentation.TryEnable(socket);
             peerPathIdentity = pathIdentity;
             previousSocket.Dispose();
             return true;

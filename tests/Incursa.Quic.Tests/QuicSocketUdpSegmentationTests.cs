@@ -77,4 +77,33 @@ public sealed class QuicSocketUdpSegmentationTests
                 value => Assert.Equal(index == 0 ? (byte)0x11 : (byte)0x22, value));
         }
     }
+
+    [Fact]
+    public void TryDisableRestoresOrdinaryDatagramSubmission()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            return;
+        }
+
+        using Socket receiver = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        receiver.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+        receiver.ReceiveTimeout = (int)TimeSpan.FromSeconds(5).TotalMilliseconds;
+
+        using Socket sender = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        sender.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+        Assert.True(QuicSocketUdpSegmentation.TryEnable(sender));
+        Assert.True(QuicSocketUdpSegmentation.TryDisable(sender));
+
+        byte[] payload = new byte[QuicSocketUdpSegmentation.SegmentSize];
+        payload.AsSpan().Fill(0x37);
+        Assert.Equal(
+            payload.Length,
+            sender.SendTo(payload, SocketFlags.None, ((IPEndPoint)receiver.LocalEndPoint!).Serialize()));
+
+        byte[] receiveBuffer = new byte[payload.Length + 1];
+        int received = receiver.Receive(receiveBuffer, SocketFlags.None);
+        Assert.Equal(payload.Length, received);
+        Assert.Equal(payload, receiveBuffer.AsSpan(0, received).ToArray());
+    }
 }

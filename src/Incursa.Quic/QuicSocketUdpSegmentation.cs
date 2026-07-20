@@ -18,6 +18,12 @@ internal static partial class QuicSocketUdpSegmentation
     private const int WindowsUdpSendMessageSizeOption = 2;
 
     internal static bool TryEnable(Socket socket)
+        => TryConfigure(socket, SegmentSize);
+
+    internal static bool TryDisable(Socket socket)
+        => TryConfigure(socket, segmentSize: 0);
+
+    private static bool TryConfigure(Socket socket, int segmentSize)
     {
         ArgumentNullException.ThrowIfNull(socket);
         if (!OperatingSystem.IsWindows()
@@ -28,7 +34,6 @@ internal static partial class QuicSocketUdpSegmentation
 
         try
         {
-            int segmentSize = SegmentSize;
             return SetSocketOption(
                 socket.SafeHandle,
                 WindowsUdpProtocolLevel,

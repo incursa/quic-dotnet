@@ -852,6 +852,16 @@ internal sealed partial class QuicConnectionRuntime
             return;
         }
 
+        if (applicationDatagramBatchPolicy is not null)
+        {
+            Span<ulong> distinctStreamIds = stackalloc ulong[HostedApplicationDatagramBatchCapacity];
+            int distinctStreamCount = applicationSendQueue.CountDistinctStreamIdsUpTo(distinctStreamIds);
+            if (!applicationDatagramBatchPolicy.ShouldBuildBatch(distinctStreamCount))
+            {
+                return;
+            }
+        }
+
         hostedApplicationDatagramBatchOwner = QuicBufferPool.RentBytes(
             HostedApplicationDatagramBatchSegmentSize * HostedApplicationDatagramBatchCapacity,
             QuicBufferPoolOwner.OutboundPacketProtection);

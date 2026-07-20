@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0057",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Adaptive client application-datagram batching architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Retain the proven low-pressure client UDP-segmentation mechanism while promoting a pressured connection back to the ordinary datagram representation without changing QUIC correctness ownership or the accepted listener batching path.",
+  "related_artifacts": [
+    "ARC-QUIC-CRT-0056"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0162"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicApplicationDatagramBatchPolicy.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+    "src/Incursa.Quic/QuicSocketUdpSegmentation.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0162.cs",
+    "tests/Incursa.Quic.Tests/QuicSocketUdpSegmentationTests.cs",
+    "benchmarks/QuicApplicationDatagramBatchPolicyBenchmarks.cs"
+  ],
+  "design_summary": "Each built-in client connection owns one small adaptive batch policy shared by its runtime and endpoint host. New connections start eligible for the existing contiguous 1,472-byte application-datagram batch. At an existing flush boundary, the runtime counts distinct queued stream identifiers into a fixed twelve-entry stack buffer and stops at that bound. Repeated turns at the bound promote the policy one way for the connection lifetime; repeated writes for one stream remain sparse. After promotion the runtime stops renting contiguous batch owners and the endpoint disables UDP segmentation before using the ordinary per-datagram send path. Unsupported sockets never activate the batch observer, and a failed synchronous segmented submission falls back to ordinary individual sends. The connection actor remains the sole authority for queue mutation, packet construction, packet numbers, recovery, congestion and flow-control admission, path state, completion, cancellation, and disposal.",
+  "alternatives_considered": [
+    "Enable client UDP segmentation unconditionally. Rejected by retained evidence because c1 and c4 improved while c16 tail latency and throughput credibly regressed.",
+    "Select on a fixed c16 or one-MiB benchmark shape. Rejected because benchmark identity is not a runtime pressure signal and would overfit the current harness.",
+    "Use raw queued-write count as the pressure signal. Rejected because one stream can own several queued write fragments and would be misclassified as multiplex pressure.",
+    "Demote back to segmentation as soon as pressure falls. Rejected because oscillation would complicate socket state, ownership, and evidence; the first policy uses one-way promotion.",
+    "Build a generic asynchronous sender queue. Rejected because the prior design accounted packets before delayed platform emission and failed dropped-FIN recovery."
+  ],
+  "edge_cases_and_constraints": [
+    "A one-off queue burst must not promote the connection.",
+    "Once promoted, later sparse turns must not reactivate contiguous construction or UDP segmentation.",
+    "Promotion must not discard, reorder, duplicate, or re-account queued writes or protected packets.",
+    "Socket rebinding must reapply UDP segmentation only while the policy is still in the low-pressure state.",
+    "Path-specific packet-information sends, ECN or path changes, non-contiguous storage, partial packets, ACK-bearing packets, unsupported platforms, and custom send boundaries retain the individual-send fallback.",
+    "The listener/server batching path and public API remain unchanged."
+  ],
+  "data_and_state_considerations": "The client adds one connection-local policy reference, one small consecutive-pressure counter, and one promoted flag. Pressure observation occurs once per queued-send flush, uses a fixed twelve-entry stack buffer, exits at the threshold, does not allocate, does not scan payloads, does not read wall-clock time, and does not retain stream identifiers. The endpoint and runtime share the same object only to coordinate representation and socket capability; it never owns packet or stream data.",
+  "risks": [
+    "Distinct queued stream count remains a bounded proxy for multiplexing pressure; matched c1 through c32 evidence verifies that it preserves low-pressure gains without the unconditional high-pressure reversal.",
+    "Leaving UDP segmentation enabled after promotion could preserve platform overhead; the endpoint therefore disables the option before the promoted ordinary-send path.",
+    "A threshold below the existing batch capacity could penalize useful bursts; the first threshold is derived from the already bounded batch capacity and requires repetition.",
+    "Batch-observer dispatch could still add overhead after promotion; local high-pressure evidence must include the complete endpoint path rather than only policy microbenchmarks."
+  ]
+}

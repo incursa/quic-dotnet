@@ -206,6 +206,31 @@ internal sealed class QuicApplicationSendQueue
         return false;
     }
 
+    internal int CountDistinctStreamIdsUpTo(Span<ulong> distinctStreamIds)
+    {
+        if (distinctStreamIds.IsEmpty)
+        {
+            return 0;
+        }
+
+        int distinctStreamCount = 0;
+        foreach (PendingApplicationSendRequest pendingWrite in pendingRequests)
+        {
+            if (distinctStreamIds[..distinctStreamCount].Contains(pendingWrite.StreamId))
+            {
+                continue;
+            }
+
+            distinctStreamIds[distinctStreamCount++] = pendingWrite.StreamId;
+            if (distinctStreamCount == distinctStreamIds.Length)
+            {
+                break;
+            }
+        }
+
+        return distinctStreamCount;
+    }
+
     public void Enqueue(
         ulong streamId,
         int priority,

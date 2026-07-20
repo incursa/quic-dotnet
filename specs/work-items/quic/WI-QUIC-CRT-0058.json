@@ -1,0 +1,32 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0058",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Adaptive client application-datagram batching work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add a cheap connection-local pressure classifier and one-way client promotion from contiguous UDP-segmented application bursts to the ordinary datagram path.",
+  "related_artifacts": [
+    "ARC-QUIC-CRT-0057"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0057"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0059"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0162"
+  ],
+  "planned_changes": "Add a connection-local adaptive batch policy, gate contiguous client application-datagram construction at the existing flush boundary, wire the same policy through the built-in client endpoint so Windows UDP segmentation is enabled only while eligible and disabled after promotion, preserve every individual-send boundary, add policy and endpoint-focused tests, add a permanent policy-cost benchmark, and run matched local c1/c4/c8/c16/c32 transport evidence plus download or duplex controls before deciding whether to retain the slice.",
+  "verification_plan": "Validate the new SpecTrace artifacts; prove sparse, transient, sustained, and irreversible policy transitions; prove unsupported and rebound socket fallbacks; run focused batching, packet destination, ownership, loss rebuild, cancellation, disposal, and HTTP/3 tests; run BenchmarkDotNet Dry and Short jobs; run interleaved exact one-MiB established transport upload samples at c1/c4/c8/c16/c32 and at least one download or duplex guardrail; run the complete Release suite only if the candidate is retained; skip ProtocolLab unless the local gate passes.",
+  "out_of_scope": [
+    "Changing the accepted listener/server segmented-burst path",
+    "Adding post-authentication stream executors or parallel connection-state mutation",
+    "Adding a generic asynchronous sender queue or accounting packets before platform submission",
+    "Hardcoding benchmark scenario names, payload sizes, or c16",
+    "Changing congestion control, flow control, recovery, ACK behavior, packet protection, ordering, cancellation, disposal, or public API"
+  ],
+  "completion_notes": "Implemented a built-in-client-only adaptive batching policy. It counts distinct queued stream identifiers into a fixed twelve-entry stack buffer, tolerates one transient pressured turn, promotes one way after repeated pressure, disables Windows UDP segmentation after promotion, and preserves individual-send fallback boundaries. Final focused coverage passed 65/65 after review fixes. BenchmarkDotNet Short measured the bounded pressure scan at about 41-55 ns with zero allocation. Adjacent exact one-MiB upload evidence passed without failures and improved c1/c4/c16/c32 medians by 90.1/17.3/6.4/46.7 percent respectively. The retained unconditional-client negative remains binding; this completed item does not claim to solve the broader c16 scheduler bottleneck."
+}

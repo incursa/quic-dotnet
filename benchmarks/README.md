@@ -316,6 +316,8 @@ The benchmark project also contains the following permanent suites:
 - `QuicDiagnosticsBenchmarks`
 - `QuicDatagramFrameBenchmarks`
 - `QuicApplicationSendDistinctStreamIdBenchmarks`
+- `QuicApplicationDatagramBatchPolicyBenchmarks`
+- `QuicApplicationDatagramPressureBenchmarks`
 - `QuicApplicationSendQueueSortingBenchmarks`
 - `QuicApplicationSendTurnPlannerBenchmarks`
 - `QuicDeadlineSchedulerBenchmarks`
@@ -341,6 +343,7 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDiagnosticsBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendPriorityBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendDistinctStreamIdBenchmarks*" --inProcess
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationDatagram*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendQueueSortingBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendTurnPlannerBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDeadlineSchedulerBenchmarks*" --inProcess

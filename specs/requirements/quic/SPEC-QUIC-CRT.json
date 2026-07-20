@@ -2632,6 +2632,28 @@
         "Application-limited and flow-control-limited periods do not authorize artificial window growth.",
         "PMTU or MSS changes must feed the same normalized math for both NewReno and CUBIC."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0162",
+      "title": "Adapt client application-datagram batching only from sustained connection-local pressure",
+      "statement": "The built-in client endpoint MAY use contiguous application-datagram batching and platform UDP segmentation while connection-local application-send pressure remains sparse, but any adaptive policy MUST derive promotion from repeated bounded runtime pressure rather than benchmark scenario names, payload-size constants, or caller-visible concurrency values; MUST make promotion one-way for the connection lifetime unless a separately verified drain barrier and hysteresis policy exists; MUST leave packet-number allocation, packet protection, path selection, ACK generation, congestion control, flow control, loss recovery, stream ordering, cancellation, disposal, and sent-packet accounting authoritative in the existing connection runtime; and MUST preserve the ordinary one-datagram fallback for unsupported platforms, path-specific packet-information sends, non-contiguous packets, partial packets, ACK-bearing packets, ECN or path boundaries, and promoted high-pressure connections.",
+      "trace": {
+        "upstream_refs": [
+          "RFC9000-S13-P2-S3-R01",
+          "REQ-QUIC-CRT-0098",
+          "REQ-QUIC-CRT-0155",
+          "ARC-QUIC-CRT-0056",
+          "docs/performance-improvement-wishlist.md",
+          "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+          "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+          "src/Incursa.Quic/QuicSocketUdpSegmentation.cs"
+        ]
+      },
+      "notes": [
+        "The first policy counts distinct queued stream identifiers only up to the existing bounded batch-capacity boundary, tolerates one transient pressure turn, and then promotes one way after a second consecutive pressured turn.",
+        "This requirement does not authorize a generic delayed sender queue, packet accounting before platform submission, parallel mutation of connection-wide state, or post-authentication stream execution fan-out.",
+        "The listener/server segmented-burst path remains a separate accepted behavior and is not changed by this client policy."
+      ]
     }
   ]
 }

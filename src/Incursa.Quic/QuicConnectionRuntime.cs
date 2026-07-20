@@ -87,6 +87,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
     private readonly object scheduledFlowControlCreditGate = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
+    private readonly IQuicApplicationDatagramBatchPolicy? applicationDatagramBatchPolicy;
     private readonly IQuicApplicationSendTurnPlanner? applicationSendTurnPlanner;
     private readonly HashSet<ulong> pendingPeerStreamCapacityReleaseStreamIds = new(capacity: 16);
     private readonly HashSet<ulong> scheduledPeerStreamCapacityReleaseStreamIds = new(capacity: 16);
@@ -963,10 +964,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         int maximumInboundDatagramQueueSize = 1024,
         bool enableInitialPeerUsableConnectionId = true,
         QuicCongestionControlAlgorithm congestionControlAlgorithm = QuicCongestionControlAlgorithm.NewReno,
-        IQuicApplicationSendTurnPlanner? applicationSendTurnPlanner = null)
+        IQuicApplicationSendTurnPlanner? applicationSendTurnPlanner = null,
+        IQuicApplicationDatagramBatchPolicy? applicationDatagramBatchPolicy = null)
     {
         this.clock = clock ?? new MonotonicClock();
         this.applicationSendTurnPlanner = applicationSendTurnPlanner;
+        this.applicationDatagramBatchPolicy = applicationDatagramBatchPolicy;
         timeOriginTicks = this.clock.Ticks;
         streamCapacityReleaseEvent = new QuicConnectionStreamActionEvent(
             timeOriginTicks,

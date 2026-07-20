@@ -6744,3 +6744,57 @@ runtime pressure with one-way ownership transfer or strong hysteresis, not a
 hardcoded c16 or payload-size rule. The next experiment must first expose the
 minimum pressure signal that predicts this reversal without charging c1 for
 the multiplexed policy.
+
+### Accepted 2026-07-19: adaptive client application-datagram batching
+
+The built-in client now retains contiguous Windows UDP segmentation while
+connection-local pressure is sparse and promotes one way to ordinary
+per-datagram sends after two consecutive turns with at least twelve distinct
+queued streams. Distinct stream IDs are counted into a fixed twelve-entry stack
+buffer and stop at the bound, so repeated fragments for one stream cannot cause
+promotion. The policy does not inspect benchmark identity, payload size, or
+caller concurrency, and it does not change packet construction, packet-number
+allocation, recovery, congestion or flow-control admission, path state,
+ordering, cancellation, disposal, or sent-packet accounting.
+
+Independent review corrected two pre-commit issues: the initial classifier used
+raw queued-write count, synchronous segmented-send failures did not return to
+the ordinary-send fallback, and promotion did not guarantee immediate socket
+option disablement once batch markers stopped. Final focused queue, policy,
+socket, batching, ownership, destination, client-host, and listener coverage
+passed 65/65. Combined complete-suite attempts passed 9,669-9,670 tests with
+four skips; three close-wait tests that timed out under combined suite load each
+passed 5/5 isolated reruns.
+
+BenchmarkDotNet Dry and Short jobs are retained under
+`C:\shared\temp\quic-adaptive-client-egress-20260719\bdn-review-{dry,short}`.
+The policy decision measured below one nanosecond. Bounded distinct-stream
+observation measured about 41 ns for 32 writes on one stream and 55 ns when
+exiting at twelve distinct streams, with no managed allocation.
+
+The original A/B/B/A exact one-MiB upload campaign used ten samples per
+treatment/load. Median throughput moved from 71.41 to 109.55 MiB/s at c1,
+65.01 to 118.55 at c4, 52.73 to 64.83 at c8, 48.94 to 49.83 at c16, and
+45.10 to 44.29 at c32. Download controls were flat to +11.5 percent. The
+initial duplex c16 guardrail was isolated with twenty samples per treatment and
+was effectively flat: 73.83 versus 73.58 MiB/s, with slightly better candidate
+p95. Evidence is retained under `matched-abba`, `guardrails`, and
+`duplex-c16-abba` beneath the same root.
+
+After switching the classifier to distinct streams, an immediately adjacent
+five-sample A/B confirmation passed exact validation with zero failures:
+
+| One-connection 1 MiB upload | Baseline MiB/s | Candidate MiB/s | Delta |
+| --- | ---: | ---: | ---: |
+| c1 | 58.31 | 110.86 | +90.1% |
+| c4 | 46.88 | 54.98 | +17.3% |
+| c16 | 44.69 | 47.56 | +6.4% |
+| c32 | 29.74 | 43.63 | +46.7% |
+
+That confirmation is retained under
+`C:\shared\temp\quic-adaptive-client-egress-20260719\review-ab`. The c1 and
+c4 samples remain host-sensitive, but their direction repeats the bracketing
+campaign. ProtocolLab was not run because its available lanes target an Incursa
+server and do not exercise the built-in Incursa client sender changed here.
+This slice is therefore accepted on matched local loopback evidence and does
+not claim to solve the broader high-pressure same-connection scheduler gap.
