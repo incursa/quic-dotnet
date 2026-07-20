@@ -7402,3 +7402,31 @@ increase because it harmed low-load HTTP/3. A positive result can justify only
 a pressure-triggered listener-capacity design with c1/c4 guardrails; a negative
 result ends this loss-collapse branch and returns the work to bounded
 post-authentication stream-local preparation outside the connection actor.
+
+### Rejected 2026-07-20: listener UDP receive capacity as the scaling limit
+
+A behavior-neutral A/B/A/B causal screen compared the same accepted runtime
+with the platform 64 KiB listener receive buffer and an explicit 4 MiB
+diagnostic override. Each pass used one established connection, exact one-MiB
+uploads, c16 and c32, five three-second samples, diagnostics off, and zero
+failures. The harness confirmed actual socket buffer sizes of 65,536 and
+4,194,304 bytes.
+
+| Load | 64 KiB MiB/s | 4 MiB MiB/s | Delta | 64 KiB / 4 MiB CV | p95 delta | allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| c16 | 35.26 | 34.67 | -1.7% | 39.7% / 6.6% | +3.4% | +3.9% |
+| c32 | 15.01 | 14.98 | -0.2% | 10.0% / 1.8% | -0.1% | +0.1% |
+
+The larger buffer reduced run-to-run variance but did not increase service
+capacity or improve tail latency. Listener UDP receive capacity therefore does
+not explain the c32 ceiling, and neither an unconditional nor an adaptive
+listener-buffer runtime change is justified. Retain the exact JSON and logs
+under `C:\shared\temp\quic-listener-capacity-causal-20260720`. No runtime code,
+tests, stress ladder, or ProtocolLab run was warranted.
+
+This closes the current loss-collapse and ACK-cadence branches. The next slice
+must quantify the stream-local portion of authenticated STREAM-frame receive
+processing, then move work only if that portion is large enough to explain a
+meaningful part of the same-connection gap. Keep packet-number state, ACK/loss
+recovery, congestion and flow control, keys, path state, and final connection
+commit under the connection actor.
