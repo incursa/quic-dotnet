@@ -7253,3 +7253,47 @@ screen, extended campaign, and logs under
 `C:\shared\temp\quic-hosted-timer-coalescing-20260720`. Do not coalesce hosted
 timer updates solely by timer kind without a materially different wake-equivalent
 design. No broader guardrails, full suite, or ProtocolLab run were justified.
+
+### Rejected 2026-07-20: ordered recovery loss-prefix scan
+
+Fragment timer attribution isolated recovery-deadline selection as the largest
+individual lifecycle selector. Narrowing fragment timer recomputation to omit
+unrelated timer families was stopped before a runtime candidate because the
+measured path, deadline, key-retention, ACK-delay, and append work could explain
+only about 0.2 ms per completed MiB. Retain those attribution-only runs under
+`C:\shared\temp\quic-timer-dependency-attribution-20260720` and
+`C:\shared\temp\quic-timer-selector-attribution-20260720`; do not retry timer-
+family omission without materially larger attribution.
+
+The next bounded candidate exploited the ordering of the per-space
+`SortedList<ulong, ulong>` packet ledger. Both loss detection and its nonmutating
+peek scanned the entire retained tail even after reaching a packet number greater
+than or equal to `LargestAcknowledgedPacketNumber`, where no later sorted packet
+can satisfy RFC 9002 loss-declaration preconditions. A temporary side-by-side
+BenchmarkDotNet Dry and Short benchmark proved the isolated mechanism. At 512
+retained packets, the current scan measured 1.21-1.32 microseconds versus 3.8-7.8
+nanoseconds for a zero- or one-packet eligible prefix; at 2,048 packets it measured
+4.51-4.65 microseconds versus 4-8 nanoseconds, with no managed allocation.
+
+Release build passed, focused correctness coverage passed 5/5, and the broader
+RFC 9002/recovery/RTT set passed 858/858. The first exact A/B/B/A one-connection
+upload screen was mixed, so a fresh six-pass A/B/A/B/A/B campaign ran five
+five-second samples per pass at c16 and c32. All 30 extended samples completed
+exact payload validation with zero failures. Pooled results rejected the runtime
+change:
+
+| Load | Baseline MiB/s | Candidate MiB/s | Delta | Baseline/Candidate CV | p95 delta | allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| c16 | 34.68 | 35.75 | +3.1% | 11.0% / 52.4% | +31.5% | +0.2% |
+| c32 | 31.36 | 22.38 | -28.6% | 30.1% / 24.6% | +41.9% | +11.8% |
+
+The first candidate pass was favorable, but the next two candidate passes
+repeated the lower-throughput, higher-retention regime while adjacent baselines
+remained near 31 MiB/s at c32. Removing semantically irrelevant scan work changed
+actor timing enough to destabilize backlog drain; isolated instruction savings do
+not establish an end-to-end win. The runtime, tests, and temporary benchmark are
+reverted. Retain frozen hashes, BDN reports, screen, extended campaign, and logs
+under `C:\shared\temp\quic-recovery-loss-prefix-20260720`. Do not repeat a simple
+early exit or binary-search bound over this recovery ledger without a materially
+different actor-wake or backlog-drain design. No c1/c4 guardrails, stress ladder,
+full suite, or ProtocolLab run were justified.
