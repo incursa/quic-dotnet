@@ -84,6 +84,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private long lastRuntimePressureSnapshotTimestamp;
     private int runtimePressureSnapshotSkippedWorkItems;
     private readonly object pendingStreamActionRequestsGate = new();
+    private int hasIssuedApplicationDataWrite;
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
     private readonly object scheduledFlowControlCreditGate = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
@@ -300,6 +301,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             StreamId = streamId;
             StreamDataLength = streamDataLength;
             writeStartedTimestamp = QuicMetrics.GetStreamWriteStartTimestamp();
+            if (streamDataLength > 0)
+            {
+                Volatile.Write(ref owner.hasIssuedApplicationDataWrite, 1);
+            }
         }
 
         internal void ConfigureCompletionAction(Action completionAction)
@@ -973,6 +978,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         return streamWriteDispatcher is not null
             && activeStreamCount >= MultiplexedOversizedWriteMinimumStreamCount
             && activeStreamCount <= MultiplexedOversizedWriteMaximumStreamCount;
+    }
+
+    internal bool ShouldUseBatchedReceiveCreditPath()
+    {
+        return streamObservers.DistinctStreamCount >= MultiplexedOversizedWriteMinimumStreamCount
+            && Volatile.Read(ref hasIssuedApplicationDataWrite) == 0;
     }
 
     private bool TryRemovePendingStreamActionRequest(long requestId, out StreamActionRequestCompletionSource completionSource)

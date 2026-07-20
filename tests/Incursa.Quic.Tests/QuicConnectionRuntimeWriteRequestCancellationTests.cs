@@ -323,6 +323,81 @@ public sealed class QuicConnectionRuntimeWriteRequestCancellationTests
     }
 
     [Fact]
+    public async Task ApplicationDataWritePermanentlyDisablesBatchedReceiveCredit()
+    {
+        await using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+                connectionSendLimit: 2 * 1024 * 1024,
+                localBidirectionalSendLimit: 2 * 1024 * 1024);
+        Queue<PostedStreamWrite> postedWrites = new();
+        runtime.SetStreamWriteDispatcher((requestId, actionKind, streamId, streamData, streamDataSuffix) =>
+        {
+            postedWrites.Enqueue(new PostedStreamWrite(requestId, actionKind, streamId, streamData, streamDataSuffix));
+            return true;
+        });
+        RegisterDistinctStreamObservers(runtime, count: 16);
+        Assert.True(runtime.ShouldUseBatchedReceiveCreditPath());
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(true, out QuicStreamId streamId, out _));
+
+        Task write = runtime.WriteStreamAsync(streamId.Value, new byte[32 * 1024], CancellationToken.None).AsTask();
+
+        Assert.False(runtime.ShouldUseBatchedReceiveCreditPath());
+        _ = TransitionStreamWrite(runtime, Assert.Single(postedWrites), nowTicks: 15);
+        await write.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.False(runtime.ShouldUseBatchedReceiveCreditPath());
+    }
+
+    [Fact]
+    public async Task CanceledApplicationDataWriteKeepsBatchedReceiveCreditDisabled()
+    {
+        await using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        runtime.SetStreamWriteDispatcher(static (_, _, _, _, _) => true);
+        RegisterDistinctStreamObservers(runtime, count: 16);
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(true, out QuicStreamId streamId, out _));
+        using CancellationTokenSource cancellation = new();
+
+        Task write = runtime.WriteStreamAsync(streamId.Value, new byte[1024], cancellation.Token).AsTask();
+        Assert.False(runtime.ShouldUseBatchedReceiveCreditPath());
+
+        await cancellation.CancelAsync();
+        await Assert.ThrowsAsync<OperationCanceledException>(() => write.WaitAsync(TimeSpan.FromSeconds(5)));
+        Assert.False(runtime.ShouldUseBatchedReceiveCreditPath());
+    }
+
+    [Fact]
+    public void FailedApplicationDataWriteDispatchKeepsBatchedReceiveCreditDisabled()
+    {
+        using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        runtime.SetStreamWriteDispatcher(static (_, _, _, _, _) => false);
+        RegisterDistinctStreamObservers(runtime, count: 16);
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(true, out QuicStreamId streamId, out _));
+
+        Assert.Throws<InvalidOperationException>(
+            () => runtime.WriteStreamAsync(streamId.Value, new byte[1024], CancellationToken.None));
+
+        Assert.False(runtime.ShouldUseBatchedReceiveCreditPath());
+    }
+
+    [Fact]
+    public async Task DisposingWithAnActiveApplicationDataWriteKeepsBatchedReceiveCreditDisabled()
+    {
+        QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+        runtime.SetStreamWriteDispatcher(static (_, _, _, _, _) => true);
+        RegisterDistinctStreamObservers(runtime, count: 16);
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(true, out QuicStreamId streamId, out _));
+
+        Task write = runtime.WriteStreamAsync(streamId.Value, new byte[1024], CancellationToken.None).AsTask();
+        Assert.False(runtime.ShouldUseBatchedReceiveCreditPath());
+
+        await runtime.DisposeAsync();
+        await Assert.ThrowsAsync<ObjectDisposedException>(() => write.WaitAsync(TimeSpan.FromSeconds(5)));
+        Assert.False(runtime.ShouldUseBatchedReceiveCreditPath());
+    }
+
+    [Fact]
     public async Task HostedMultiplexedOversizedWriteFailsOnceWhenContinuationCannotBePosted()
     {
         await using QuicConnectionRuntime runtime =

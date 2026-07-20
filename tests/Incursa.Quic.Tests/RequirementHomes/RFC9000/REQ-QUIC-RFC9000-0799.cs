@@ -13,22 +13,26 @@ public sealed class REQ_QUIC_RFC9000_0799
     [Requirement("REQ-QUIC-RFC9000-0799")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void TryReadStreamData_UpdatesTheCurrentConnectionMaximumDataWhenAdditionalBytesAreRead()
+    public void TryReadStreamData_PublishesAccumulatedConnectionCreditWhenTheReceiveWindowThresholdIsReached()
     {
         QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
-            connectionReceiveLimit: 16,
-            peerBidirectionalReceiveLimit: 8);
+            connectionReceiveLimit: 4096,
+            peerBidirectionalReceiveLimit: 4096);
+
+        byte[] firstPayload = new byte[1024];
+        byte[] secondPayload = new byte[1024];
 
         Assert.True(QuicStreamParser.TryParseStreamFrame(
-            QuicStreamTestData.BuildStreamFrame(0x0E, 1, [0x11, 0x22], offset: 0),
+            QuicStreamTestData.BuildStreamFrame(0x0E, 1, firstPayload, offset: 0),
             out QuicStreamFrame firstFrame));
         Assert.True(state.TryReceiveStreamFrame(firstFrame, out QuicTransportErrorCode errorCode));
         Assert.Equal(default, errorCode);
 
-        Span<byte> destination = stackalloc byte[3];
+        Span<byte> destination = stackalloc byte[1024];
         Assert.True(state.TryReadStreamData(
             1,
-            destination[..2],
+            destination,
+            useBatchedReceiveCredit: true,
             out int bytesWritten,
             out bool completed,
             out QuicMaxDataFrame firstMaxDataFrame,
@@ -36,12 +40,12 @@ public sealed class REQ_QUIC_RFC9000_0799
             out errorCode));
 
         Assert.Equal(default, errorCode);
-        Assert.Equal(2, bytesWritten);
+        Assert.Equal(1024, bytesWritten);
         Assert.False(completed);
-        Assert.Equal(18UL, firstMaxDataFrame.MaximumData);
+        Assert.Equal(default, firstMaxDataFrame);
 
         Assert.True(QuicStreamParser.TryParseStreamFrame(
-            QuicStreamTestData.BuildStreamFrame(0x0E, 5, [0x33, 0x44, 0x55], offset: 0),
+            QuicStreamTestData.BuildStreamFrame(0x0E, 5, secondPayload, offset: 0),
             out QuicStreamFrame secondFrame));
         Assert.True(state.TryReceiveStreamFrame(secondFrame, out errorCode));
         Assert.Equal(default, errorCode);
@@ -49,6 +53,7 @@ public sealed class REQ_QUIC_RFC9000_0799
         Assert.True(state.TryReadStreamData(
             5,
             destination,
+            useBatchedReceiveCredit: true,
             out bytesWritten,
             out completed,
             out QuicMaxDataFrame secondMaxDataFrame,
@@ -56,10 +61,10 @@ public sealed class REQ_QUIC_RFC9000_0799
             out errorCode));
 
         Assert.Equal(default, errorCode);
-        Assert.Equal(3, bytesWritten);
+        Assert.Equal(1024, bytesWritten);
         Assert.False(completed);
-        Assert.Equal(21UL, secondMaxDataFrame.MaximumData);
-        Assert.Equal(21UL, state.ConnectionReceiveLimit);
+        Assert.Equal(6144UL, secondMaxDataFrame.MaximumData);
+        Assert.Equal(6144UL, state.ConnectionReceiveLimit);
     }
 
     [Fact]

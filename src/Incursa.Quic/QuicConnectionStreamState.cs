@@ -18,6 +18,8 @@ internal sealed class QuicConnectionStreamState
     private const int InlineBufferedSegmentCapacity = 2;
     private const int SpilledBufferedSegmentInitialCapacity = InlineBufferedSegmentCapacity * 4;
     private const int MaximumCachedBufferedSegmentCapacity = 64;
+    private const ulong MinimumBatchedReceiveWindow = 4 * 1024;
+    private const ulong ReceiveCreditUpdateDivisor = 2;
 
     [ThreadStatic]
     private static List<BufferedSegment>? cachedBufferedSegmentList;
@@ -44,6 +46,8 @@ internal sealed class QuicConnectionStreamState
     private ulong peerUnidirectionalStreamLimit;
     private ulong connectionAccountedBytesReceived;
     private ulong connectionUniqueBytesSent;
+    private ulong connectionReceiveCreditUpdateThreshold;
+    private ulong connectionConsumedBytesPendingCredit;
     private ulong highestCreatedIncomingBidirectionalStreamIndex;
     private ulong highestCreatedIncomingUnidirectionalStreamIndex;
     private long retainedReceiveBufferCount;
@@ -60,6 +64,7 @@ internal sealed class QuicConnectionStreamState
         streams = new Dictionary<ulong, StreamState>(GetInitialTrackedStreamCapacity(options));
         isServer = options.IsServer;
         ConnectionReceiveLimit = options.InitialConnectionReceiveLimit;
+        connectionReceiveCreditUpdateThreshold = GetReceiveCreditUpdateThreshold(options.InitialConnectionReceiveLimit);
         ConnectionSendLimit = options.InitialConnectionSendLimit;
         incomingBidirectionalStreamLimit = options.InitialIncomingBidirectionalStreamLimit;
         incomingUnidirectionalStreamLimit = options.InitialIncomingUnidirectionalStreamLimit;
@@ -374,6 +379,8 @@ internal sealed class QuicConnectionStreamState
                 stateChanged = true;
             }
 
+            connectionReceiveCreditUpdateThreshold = GetReceiveCreditUpdateThreshold(connectionReceiveLimit);
+
             if (initialLocalBidirectionalReceiveLimit != localBidirectionalReceiveLimit)
             {
                 initialLocalBidirectionalReceiveLimit = localBidirectionalReceiveLimit;
@@ -401,6 +408,7 @@ internal sealed class QuicConnectionStreamState
 
                 QuicStreamId streamId = new(entry.Key);
                 ulong updatedReceiveLimit = ResolveCurrentReceiveLimit(streamId);
+                entry.Value.ReceiveCreditUpdateThreshold = GetReceiveCreditUpdateThreshold(updatedReceiveLimit);
                 if (entry.Value.ReceiveLimit == updatedReceiveLimit)
                 {
                     continue;
@@ -813,13 +821,13 @@ internal sealed class QuicConnectionStreamState
 
             if (state.BufferedReadableBytes > 0)
             {
-                ulong increasedLimit = IncreaseLimit(ConnectionReceiveLimit, (ulong)state.BufferedReadableBytes);
-                if (increasedLimit != ConnectionReceiveLimit)
-                {
-                    ConnectionReceiveLimit = increasedLimit;
-                    maxDataFrame = new QuicMaxDataFrame(ConnectionReceiveLimit);
-                }
+                connectionConsumedBytesPendingCredit = IncreaseLimit(
+                    connectionConsumedBytesPendingCredit,
+                    (ulong)state.BufferedReadableBytes);
             }
+
+            TryPublishConnectionReceiveCredit(force: true, out maxDataFrame);
+            state.ConsumedBytesPendingCredit = 0;
 
             ReleaseBufferedSegments(state);
             DecreaseBufferedReadableBytes(state, state.BufferedReadableBytes);
@@ -935,6 +943,27 @@ internal sealed class QuicConnectionStreamState
         out QuicMaxStreamDataFrame maxStreamDataFrame,
         out QuicTransportErrorCode errorCode)
     {
+        return TryReadStreamData(
+            streamIdValue,
+            destination,
+            useBatchedReceiveCredit: false,
+            out bytesWritten,
+            out completed,
+            out maxDataFrame,
+            out maxStreamDataFrame,
+            out errorCode);
+    }
+
+    internal bool TryReadStreamData(
+        ulong streamIdValue,
+        Span<byte> destination,
+        bool useBatchedReceiveCredit,
+        out int bytesWritten,
+        out bool completed,
+        out QuicMaxDataFrame maxDataFrame,
+        out QuicMaxStreamDataFrame maxStreamDataFrame,
+        out QuicTransportErrorCode errorCode)
+    {
         lock (syncRoot)
         {
             bytesWritten = 0;
@@ -1008,22 +1037,50 @@ internal sealed class QuicConnectionStreamState
 
             state.ReadOffset = expectedOffset;
             bytesWritten = destinationIndex;
-            ulong increasedStreamLimit = IncreaseLimit(state.ReceiveLimit, (ulong)destinationIndex);
-            if (increasedStreamLimit != state.ReceiveLimit)
-            {
-                state.ReceiveLimit = increasedStreamLimit;
-                maxStreamDataFrame = new QuicMaxStreamDataFrame(streamIdValue, state.ReceiveLimit);
-            }
-
-            ulong increasedConnectionLimit = IncreaseLimit(ConnectionReceiveLimit, (ulong)destinationIndex);
-            if (increasedConnectionLimit != ConnectionReceiveLimit)
-            {
-                ConnectionReceiveLimit = increasedConnectionLimit;
-                maxDataFrame = new QuicMaxDataFrame(ConnectionReceiveLimit);
-            }
-
             UpdateReceiveState(state);
             completed = state.ReceiveState == QuicStreamReceiveState.DataRead;
+
+            ulong consumedBytes = (ulong)destinationIndex;
+            if (!useBatchedReceiveCredit
+                && state.ConsumedBytesPendingCredit == 0
+                && connectionConsumedBytesPendingCredit == 0)
+            {
+                ulong increasedStreamLimit = IncreaseLimit(state.ReceiveLimit, consumedBytes);
+                if (increasedStreamLimit != state.ReceiveLimit)
+                {
+                    state.ReceiveLimit = increasedStreamLimit;
+                    maxStreamDataFrame = new QuicMaxStreamDataFrame(streamIdValue, increasedStreamLimit);
+                }
+
+                ulong increasedConnectionLimit = IncreaseLimit(ConnectionReceiveLimit, consumedBytes);
+                if (increasedConnectionLimit != ConnectionReceiveLimit)
+                {
+                    ConnectionReceiveLimit = increasedConnectionLimit;
+                    maxDataFrame = new QuicMaxDataFrame(increasedConnectionLimit);
+                }
+
+                return true;
+            }
+
+            state.ConsumedBytesPendingCredit = IncreaseLimit(state.ConsumedBytesPendingCredit, consumedBytes);
+            connectionConsumedBytesPendingCredit = IncreaseLimit(connectionConsumedBytesPendingCredit, consumedBytes);
+
+            if (completed)
+            {
+                // A completed stream cannot consume additional stream credit. Discarding its unpublished
+                // stream-local credit avoids an unnecessary ack-eliciting MAX_STREAM_DATA packet.
+                state.ConsumedBytesPendingCredit = 0;
+            }
+            else
+            {
+                TryPublishStreamReceiveCredit(
+                    streamIdValue,
+                    state,
+                    useBatchedReceiveCredit,
+                    out maxStreamDataFrame);
+            }
+
+            TryPublishConnectionReceiveCredit(force: completed || !useBatchedReceiveCredit, out maxDataFrame);
             return true;
         }
     }
@@ -1473,6 +1530,65 @@ internal sealed class QuicConnectionStreamState
         return streamId.IsBidirectional
             ? initialPeerBidirectionalReceiveLimit
             : initialPeerUnidirectionalReceiveLimit;
+    }
+
+    private static ulong GetReceiveCreditUpdateThreshold(ulong receiveWindow)
+    {
+        if (receiveWindow < MinimumBatchedReceiveWindow)
+        {
+            return 1;
+        }
+
+        return Math.Max(1UL, receiveWindow / ReceiveCreditUpdateDivisor);
+    }
+
+    private static void TryPublishStreamReceiveCredit(
+        ulong streamIdValue,
+        StreamState state,
+        bool useBatchedReceiveCredit,
+        out QuicMaxStreamDataFrame maxStreamDataFrame)
+    {
+        maxStreamDataFrame = default;
+        ulong updateThreshold = useBatchedReceiveCredit ? state.ReceiveCreditUpdateThreshold : 1;
+        if (state.ConsumedBytesPendingCredit < updateThreshold
+            && state.ConsumedBytesPendingCredit < MaximumFlowControlLimit - state.ReceiveLimit)
+        {
+            return;
+        }
+
+        ulong consumedBytes = state.ConsumedBytesPendingCredit;
+        state.ConsumedBytesPendingCredit = 0;
+        ulong increasedLimit = IncreaseLimit(state.ReceiveLimit, consumedBytes);
+        if (increasedLimit == state.ReceiveLimit)
+        {
+            return;
+        }
+
+        state.ReceiveLimit = increasedLimit;
+        maxStreamDataFrame = new QuicMaxStreamDataFrame(streamIdValue, increasedLimit);
+    }
+
+    private void TryPublishConnectionReceiveCredit(bool force, out QuicMaxDataFrame maxDataFrame)
+    {
+        maxDataFrame = default;
+        if (connectionConsumedBytesPendingCredit == 0
+            || (!force
+                && connectionConsumedBytesPendingCredit < connectionReceiveCreditUpdateThreshold
+                && connectionConsumedBytesPendingCredit < MaximumFlowControlLimit - ConnectionReceiveLimit))
+        {
+            return;
+        }
+
+        ulong consumedBytes = connectionConsumedBytesPendingCredit;
+        connectionConsumedBytesPendingCredit = 0;
+        ulong increasedLimit = IncreaseLimit(ConnectionReceiveLimit, consumedBytes);
+        if (increasedLimit == ConnectionReceiveLimit)
+        {
+            return;
+        }
+
+        ConnectionReceiveLimit = increasedLimit;
+        maxDataFrame = new QuicMaxDataFrame(increasedLimit);
     }
 
     private static bool ViolatesKnownReceiveFinalSize(StreamState state, ulong offset, ulong endExclusive, int length, bool fin)
@@ -2196,6 +2312,8 @@ internal sealed class QuicConnectionStreamState
         public QuicStreamReceiveState ReceiveState { get; set; } = receiveState;
         public ulong SendLimit { get; set; } = sendLimit;
         public ulong ReceiveLimit { get; set; } = receiveLimit;
+        public ulong ReceiveCreditUpdateThreshold { get; set; } = GetReceiveCreditUpdateThreshold(receiveLimit);
+        public ulong ConsumedBytesPendingCredit { get; set; }
         public int Priority { get; set; } = priority;
         public ulong? SendFinalSize { get; set; }
         public ulong? ReceiveFinalSize { get; set; }

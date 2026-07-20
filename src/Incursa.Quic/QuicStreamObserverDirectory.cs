@@ -9,6 +9,7 @@ internal sealed class QuicStreamObserverDirectory
 
     private readonly object sync = new();
     private readonly Dictionary<ulong, ObserverSlot> observersByStreamId = [];
+    private int distinctStreamCount;
 
     internal bool IsEmpty
     {
@@ -23,13 +24,7 @@ internal sealed class QuicStreamObserverDirectory
 
     internal int DistinctStreamCount
     {
-        get
-        {
-            lock (sync)
-            {
-                return observersByStreamId.Count;
-            }
-        }
+        get => Volatile.Read(ref distinctStreamCount);
     }
 
     // CONTEXT: observer storage is optimized for the one-observer case.
@@ -67,6 +62,7 @@ internal sealed class QuicStreamObserverDirectory
                 observersByStreamId.Add(
                     streamId,
                     new ObserverSlot(observerId, observerAction, observerTarget, EmptyObservers));
+                Interlocked.Increment(ref distinctStreamCount);
                 return true;
             }
 
@@ -121,6 +117,7 @@ internal sealed class QuicStreamObserverDirectory
                 }
 
                 observersByStreamId.Remove(streamId);
+                Interlocked.Decrement(ref distinctStreamCount);
                 return true;
             }
 
@@ -143,6 +140,7 @@ internal sealed class QuicStreamObserverDirectory
             if (snapshot.Length == 1)
             {
                 observersByStreamId.Remove(streamId);
+                Interlocked.Decrement(ref distinctStreamCount);
                 return true;
             }
 

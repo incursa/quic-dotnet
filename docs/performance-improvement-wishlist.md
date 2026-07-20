@@ -7719,3 +7719,83 @@ remain stress diagnostics, and any later high-cardinality policy must pass the
 c1-c16 upload, download, and duplex controls independently. ProtocolLab
 confirmation is deferred until the local correctness suite and review are
 complete.
+
+### Accepted 2026-07-20: read-dominant receive-credit batching
+
+The c32 collapse diagnosis found that per-read MAX_DATA and MAX_STREAM_DATA
+updates were generating substantial connection-actor, packet, ACK, and recovery
+work. In matched diagnostics, the original path produced approximately 48, 108,
+and 139 flow-credit work items per completed c16, c24, and c32 upload operation.
+A half-window publication cadence reduced those rows to approximately 26, 31,
+and 32 and reduced client packet work and ACK sends at the same time.
+
+The accepted implementation accumulates consumed connection and stream credit
+only on connections with at least 16 live stream observers that have never
+issued application data. Small receive windows below 4 KiB retain immediate
+publication, limit saturation forces publication, connection credit flushes on
+terminal reads and reset, and completed streams do not publish unusable batched
+stream credit. A connection that issues any application data permanently keeps
+the original immediate receive-credit path. This conservative sticky policy
+separates the proven read-dominant upload/download shape from simultaneous
+request/response traffic without inspecting benchmark labels, protocol names,
+payload sizes, or stream IDs.
+
+Several candidate policies were rejected and retained:
+
+- Universal batching improved high-cardinality throughput but regressed noisy
+  c1/c4 controls because even disabled batching initially routed immediate reads
+  through pending-credit bookkeeping.
+- Latching the policy on a stream's first read could not adapt when stream
+  cardinality changed. The final policy is evaluated from live connection state.
+- A lock-based live-stream selector added avoidable read-path synchronization;
+  the observer directory now maintains an exact lock-free distinct-stream count
+  under its existing add/remove lock.
+- Half-window and quarter-window batching applied during duplex traffic improved
+  aggregate throughput but repeatedly increased c16/c24 p95 by 50-122 percent.
+  More frequent publication did not recover fairness, so cadence tuning stopped.
+- Disabling batching only while a local application write was active left a c16
+  p95 increase after the write completed. The accepted sticky policy keeps the
+  immediate path for the remainder of any connection that has transmitted
+  application data.
+- BenchmarkDotNet isolated state bookkeeping did not improve: the realistic
+  16-stream Short screen measured 9.261 microseconds for the original immediate
+  path and 12.66 microseconds for batched bookkeeping. The end-to-end gain comes
+  from avoided protocol feedback and actor work, not a cheaper state method.
+
+The final frozen benchmark is identified by benchmark SHA-256
+`43ECE5EEC45F1AFEB1545764E3931ADB5257BC92FABECD14D15939E96245D5C2`
+and runtime SHA-256
+`2C200B584C34A0FC306106CA6E5819E8838DAFBD2A6AD9B9924A4CEB9585D7A3`.
+Five-sample A/B/B/A local loopback evidence produced:
+
+| Control | Baseline MiB/s | Candidate MiB/s | Delta | p95 delta | allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| c1 upload | 103.64 | 107.15 | +3.4% | -7.9% | +1.1% |
+| c1 download | 102.54 | 100.52 | -2.0% | +5.0% | +2.2% |
+| c4 upload | 107.23 | 110.93 | +3.5% | -15.4% | -1.2% |
+| c4 download | 115.29 | 112.97 | -2.0% | -11.5% | -0.1% |
+| c1 duplex | 116.57 | 120.27 | +3.2% | -4.9% | +3.2% |
+| c4 duplex | 78.30 | 76.17 | -2.7% | +3.7% | +0.9% |
+| c16 upload | 55.81 | 104.69 | +87.6% | -52.7% | -4.8% |
+| c16 download | 71.09 | 85.98 | +20.9% | -20.1% | -9.2% |
+| c24 upload | 42.26 | 71.34 | +68.8% | -48.1% | -17.3% |
+| c24 download | 63.43 | 80.39 | +26.7% | -25.2% | -12.3% |
+| c32 upload | 41.94 | 47.25 | +12.7% | +35.4% | +1.3% |
+| c32 download | 49.15 | 65.22 | +32.7% | -1.7% | -0.8% |
+| sticky-policy c16 duplex | 65.79 | 64.68 | -1.7% | -0.2% | +3.8% |
+
+The upload c16 baseline had 42.4 percent sample CV, so its 87.6 percent delta is
+directional rather than a precise capacity claim. The repeated cross-cardinality
+upload/download gains, packet/ACK attribution, low-cardinality neutrality, and
+sticky duplex guardrail support the accepted mechanism. Earlier c64/c128 screens
+showed large read-only gains but remain stress diagnostics, not support-tier or
+publishable peer evidence.
+
+Focused flow-control, observer-count, write-success, cancellation, failed-post,
+and disposal tests passed before the final full-suite gate. The full Release
+suite completed 9,711 passes and four intentional skips with one occurrence of
+the load-sensitive
+`DanglingStreamLimitClosesConnectionWithExcessiveLoad` failure. That exact DoQ
+test then passed three isolated reruns out of three. All candidate binaries,
+BenchmarkDotNet output, matched JSON, summaries, and logs are retained under
+`C:\shared\temp\quic-flow-credit-cadence-20260720`. ProtocolLab was not run.

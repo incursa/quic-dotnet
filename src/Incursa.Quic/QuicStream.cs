@@ -808,9 +808,11 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
             return true;
         }
 
+        bool shouldUseBatchedReceiveCredit = runtime?.ShouldUseBatchedReceiveCreditPath() ?? false;
         if (bookkeeping.TryReadStreamData(
             streamId,
             buffer.Span,
+            shouldUseBatchedReceiveCredit,
             out int bytesWritten,
             out bool completed,
             out QuicMaxDataFrame maxDataFrame,
