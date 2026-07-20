@@ -403,6 +403,11 @@ public class MetricsTests
             QuicTlsRole.Server,
             "frames",
             packetPhaseStartedTimestamp);
+        long sendPhaseStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
+        QuicMetrics.RecordApplicationSendPhaseTime(
+            QuicTlsRole.Client,
+            "packet_protection",
+            sendPhaseStartedTimestamp);
 
         Assert.True(shard.TryPostFlowControlCreditUpdate(new QuicConnectionHandle(1), runtime));
         recorder.RecordObservableInstruments();
@@ -480,6 +485,11 @@ public class MetricsTests
             && measurement.Value >= 0
             && measurement.HasTag("role", "server")
             && measurement.HasTag("phase", "frames"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_send.phase_time.ms"
+            && measurement.Value >= 0
+            && measurement.HasTag("role", "client")
+            && measurement.HasTag("phase", "packet_protection"));
         Assert.Contains(recorder.Measurements, measurement =>
             measurement.InstrumentName == "incursa.quic.runtime.delayed_application_sends"
             && measurement.HasTag("shard_index", "2"));

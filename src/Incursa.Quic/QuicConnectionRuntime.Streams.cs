@@ -845,6 +845,7 @@ internal sealed partial class QuicConnectionRuntime
         out Exception? exception)
     {
         exception = null;
+        long formatStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
 
         if (fragmentDataLength <= 0
             || fragmentDataLength > queuedFrame.StreamDataLength)
@@ -882,6 +883,13 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        QuicMetrics.RecordApplicationSendPhaseTime(
+            tlsState.Role,
+            "fragment_format",
+            formatStartedTimestamp);
+
+        long protectStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
+
         if (!TryProtectAndAccountStreamApplicationPayload(
                 fragmentPayload.AsMemory(0, fragmentPayloadLength),
                 fragmentPayload,
@@ -895,9 +903,20 @@ internal sealed partial class QuicConnectionRuntime
                 out ReadOnlyMemory<byte> protectedPacket,
                 out exception))
         {
+            QuicMetrics.RecordApplicationSendPhaseTime(
+                tlsState.Role,
+                "fragment_protect_and_account",
+                protectStartedTimestamp);
             QuicBufferPool.ReturnBytes(fragmentPayload);
             return false;
         }
+
+        QuicMetrics.RecordApplicationSendPhaseTime(
+            tlsState.Role,
+            "fragment_protect_and_account",
+            protectStartedTimestamp);
+
+        long commitStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
 
         if (hasRemainder && queuedWrite.ContainsRawStreamData)
         {
@@ -934,6 +953,11 @@ internal sealed partial class QuicConnectionRuntime
             ? SaturatingAdd(nowTicks, ConvertMicrosToTicks(ApplicationSendDelayMicros))
             : null;
         AppendLifecycleTimerEffects(ref effects);
+
+        QuicMetrics.RecordApplicationSendPhaseTime(
+            tlsState.Role,
+            "fragment_queue_commit",
+            commitStartedTimestamp);
 
         exception = null;
         return true;
@@ -3042,6 +3066,7 @@ internal sealed partial class QuicConnectionRuntime
     {
         sendPathIdentity = default;
         protectedPacket = ReadOnlyMemory<byte>.Empty;
+        long preflightStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
 
         if (!tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
         {
@@ -3124,8 +3149,14 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        QuicMetrics.RecordApplicationSendPhaseTime(
+            tlsState.Role,
+            "packet_preflight",
+            preflightStartedTimestamp);
+
         QuicBufferLease protectedPacketLease = default;
         ulong packetNumber = default;
+        long protectionStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
         bool builtInHostedBatch = piggybackedAckFrame is null
             && TryBuildProtectedApplicationPacketInHostedBatch(
                 packetPayload.Span,
@@ -3156,13 +3187,23 @@ internal sealed partial class QuicConnectionRuntime
                     out packetNumber,
                     out protectedPacketLease)))
         {
+            QuicMetrics.RecordApplicationSendPhaseTime(
+                tlsState.Role,
+                "packet_protection",
+                protectionStartedTimestamp);
             exception = new InvalidOperationException(protectFailureMessage);
             LogApplicationSend($"app-tx protect-blocked role={tlsState.Role} reason={exception.Message}.");
             piggybackedAckFrame?.Dispose();
             return false;
         }
 
+        QuicMetrics.RecordApplicationSendPhaseTime(
+            tlsState.Role,
+            "packet_protection",
+            protectionStartedTimestamp);
+
         byte[]? protectedPacketOwner = null;
+        long accountingStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
         try
         {
             if (!builtInHostedBatch)
@@ -3288,6 +3329,10 @@ internal sealed partial class QuicConnectionRuntime
         }
         finally
         {
+            QuicMetrics.RecordApplicationSendPhaseTime(
+                tlsState.Role,
+                "packet_accounting",
+                accountingStartedTimestamp);
             piggybackedAckFrame?.Dispose();
         }
     }

@@ -7110,3 +7110,40 @@ retaining contiguous storage after promotion as an independent explanation for
 the saturated actor gap. The next slice must subdivide stream-write transition
 time into queue selection/framing, packet protection, sent-packet and recovery
 accounting, and connection-state commit before selecting another mechanism.
+
+### Accepted 2026-07-20: application-send subphase attribution
+
+Bounded, listener-gated histograms now divide queued application-send work into
+fragment formatting, inclusive protect/account work, queue commit, packet
+preflight, packet protection, and packet accounting. The tags are restricted to
+the existing role plus a fixed phase name. The instrumentation does not change
+queue ownership, send policy, packet construction, recovery, or scheduling.
+
+A five-sample, diagnostics-only one-connection upload run at c16 and c32
+completed exact one-MiB operations without failures. Median client costs per
+completed MiB were:
+
+| Phase | c16 ms/MiB | c32 ms/MiB |
+| --- | ---: | ---: |
+| fragment formatting | 0.179 | 0.566 |
+| inclusive protect/account | 2.620 | 5.174 |
+| queue commit | 1.247 | 2.213 |
+| packet preflight | 0.139 | 0.508 |
+| packet protection | 1.351 | 2.026 |
+| packet accounting | 0.400 | 1.280 |
+
+The inclusive protect/account row overlaps the three packet rows and must not
+be added to them. c32 attempted about 1,224 fragment flushes per completed MiB,
+but committed about 896; recovery telemetry separately recorded a median
+21,069 congestion-limited flush-blocked decisions per sample. This reconfirms
+the partial-budget policy/preflight mismatch documented on 2026-07-16, while
+showing that protection and accounting also become more expensive at the
+scaling knee.
+
+Do not repeat packet-overhead subtraction by itself: that earlier candidate
+removed almost all failed flushes but regressed the bulk-download latency
+guardrail. The next candidate must change when useful send budget is serviced,
+or coalesce already-authorized connection work, while preserving useful partial
+sends and the c1/c4 path. Retain the diagnostic JSON and transcript under
+`C:\shared\temp\quic-application-send-subphase-20260720`. No ProtocolLab run
+was justified for this behavior-neutral attribution slice.
