@@ -1,2 +1,0 @@
-git diff --check passed with no output.
-git diff --cached --check passed with no output.
