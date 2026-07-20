@@ -6798,3 +6798,70 @@ campaign. ProtocolLab was not run because its available lanes target an Incursa
 server and do not exercise the built-in Incursa client sender changed here.
 This slice is therefore accepted on matched local loopback evidence and does
 not claim to solve the broader high-pressure same-connection scheduler gap.
+
+### Rejected 2026-07-19: promoted two-segment client batching
+
+A bounded follow-up kept the accepted distinct-stream pressure classifier but,
+after promotion, retained Windows UDP segmentation with a two-packet cap rather
+than returning to ordinary individual sends. Low pressure still used the
+accepted twelve-packet representation. Packet construction, packet numbering,
+congestion and flow-control admission, recovery, ordering, ownership, and path
+state were unchanged. Focused policy and socket tests passed 14/14.
+
+The first adjacent screen appeared favorable at c16, but the frozen-binary
+A/B/B/A campaign rejected that signal. Ten samples per treatment and load gave
+the following combined medians:
+
+| One-connection 1 MiB upload | Baseline MiB/s | Candidate MiB/s | Delta |
+| --- | ---: | ---: | ---: |
+| c1 | 112.88 | 104.22 | -7.7% |
+| c4 | 122.05 | 53.50 | -56.2% |
+| c16 | 47.43 | 49.15 | +3.6% |
+| c32 | 39.33 | 36.71 | -6.6% |
+
+All payload checks passed, but both implementations exposed substantial
+cross-run high-pressure variance and the candidate failed every useful
+performance gate. The runtime and tests were reverted. Evidence and the
+machine-readable negative record are retained under
+`C:\shared\temp\quic-promoted-egress-cap-20260719`; the negative record SHA-256
+is `B0392D79AF9FEEE75609E198A5EEBB76C5F1B1733CF2C5BE3D67E667940FF611`.
+Do not replace promoted ordinary sends with another fixed segmented cap without
+a new platform-submission mechanism and matched evidence that explains the
+observed mode instability.
+
+### Rejected 2026-07-19: promoted bounded raw-stream quantum
+
+The next candidate used the existing swappable send-turn planner only after the
+accepted pressure policy promoted. A fragmented oversized raw-stream write
+could consume four successful datagrams before yielding once to another ready
+stream at the same priority inside the same already-authorized actor turn. It
+did not accumulate shard work, add actor turns, cross priority, enlarge the
+runtime budget, or own queue, payload, completion, congestion, flow-control,
+or recovery state. Focused quantum, priority, scheduler, and pressure tests
+passed 26/26.
+
+The longer identical frozen-main/candidate screen produced a real but
+unacceptable shape reversal:
+
+| One-connection 1 MiB upload | Baseline MiB/s | Candidate MiB/s | Delta | Candidate CV |
+| --- | ---: | ---: | ---: | ---: |
+| c1 | 112.07 | 114.19 | +1.9% | 7.6% |
+| c4 | 104.07 | 119.17 | +14.5% | 34.1% |
+| c16 | 49.68 | 103.35 | +108.0% | 1.4% |
+| c32 | 43.99 | 29.81 | -32.2% | 4.5% |
+
+An instrumented c16/c32 repeat showed why a simple queue-count threshold cannot
+make this safe. At c16, client stream-write queue delay was 5.34/6.34 ms p50/p95;
+at c32 it rose to 23.62/26.18 ms. Yet application-send recovery queue depth was
+usually one at both loads, and twelve-datagram burst limits remained common.
+The planner redistributes rare multi-write turns but cannot increase service
+capacity once the actor is saturated; at c32 that redistribution delays already
+queued writes. The candidate was reverted before ProtocolLab or full-suite
+testing. Evidence and the machine-readable negative record are retained under
+`C:\shared\temp\quic-bounded-yield-20260719`; the negative record SHA-256 is
+`CB87FDFA7A1A26A4EE214A6BA1DB8B715B7A56ED82D57DD1917F9990E563F6CD`.
+
+Do not promote a fixed per-stream datagram quantum as a production planner.
+Further high-pressure work must increase connection service capacity or move
+bounded post-authentication stream-local work off the connection actor; queue
+selection alone has now repeatedly traded c16 fairness for c32 saturation.
