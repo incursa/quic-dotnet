@@ -6,6 +6,15 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Incursa.Quic;
 
+internal enum QuicImmediateAckTrigger
+{
+    None,
+    AckElicitingPacketReordered,
+    AckElicitingPacketGap,
+    HandshakePacket,
+    CongestionExperienced,
+}
+
 internal readonly record struct QuicPacketReceipt
 {
     private const byte AckElicitingFlag = 1 << 0;
@@ -103,7 +112,7 @@ internal sealed class QuicAckGenerationState
     /// Records a processed packet for later ACK generation.
     /// The optional buffering delay captures time spent waiting for decryption keys before processing.
     /// </summary>
-    internal void RecordProcessedPacket(
+    internal QuicImmediateAckTrigger RecordProcessedPacket(
         QuicPacketNumberSpace packetNumberSpace,
         ulong packetNumber,
         bool ackEliciting,
@@ -113,13 +122,18 @@ internal sealed class QuicAckGenerationState
         QuicEcnCounts? ecnCounts = null)
     {
         SpaceState state = GetOrCreateSpaceState(packetNumberSpace);
+        QuicImmediateAckTrigger immediateAckTrigger = QuicImmediateAckTrigger.None;
         if (ackEliciting && state.LargestAckElicitingPacketNumber is ulong previousLargestAckElicitingPacketNumber)
         {
-            if (packetNumber < previousLargestAckElicitingPacketNumber
-                || (packetNumber > previousLargestAckElicitingPacketNumber
-                    && packetNumber - previousLargestAckElicitingPacketNumber > 1))
+            bool packetIsReordered = packetNumber < previousLargestAckElicitingPacketNumber;
+            bool packetHasAckElicitingNumberGap = packetNumber > previousLargestAckElicitingPacketNumber
+                && packetNumber - previousLargestAckElicitingPacketNumber > 1;
+            if (packetIsReordered || packetHasAckElicitingNumberGap)
             {
                 state.ImmediateAckRequired = true;
+                immediateAckTrigger = packetIsReordered
+                    ? QuicImmediateAckTrigger.AckElicitingPacketReordered
+                    : QuicImmediateAckTrigger.AckElicitingPacketGap;
             }
         }
 
@@ -150,14 +164,17 @@ internal sealed class QuicAckGenerationState
         if (ackEliciting && (packetNumberSpace == QuicPacketNumberSpace.Initial || packetNumberSpace == QuicPacketNumberSpace.Handshake))
         {
             state.ImmediateAckRequired = true;
+            immediateAckTrigger = QuicImmediateAckTrigger.HandshakePacket;
         }
 
         if (congestionExperienced)
         {
             state.ImmediateAckRequired = true;
+            immediateAckTrigger = QuicImmediateAckTrigger.CongestionExperienced;
         }
 
         TrimOldestRangesIfNeeded(state);
+        return immediateAckTrigger;
     }
 
     /// <summary>

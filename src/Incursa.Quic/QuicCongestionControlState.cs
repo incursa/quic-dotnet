@@ -1361,7 +1361,7 @@ internal sealed class QuicSenderFlowController
     /// Records a received packet and drives ACK scheduling logic.
     /// The optional buffering delay captures time spent waiting for decryption keys before processing.
     /// </summary>
-    internal void RecordIncomingPacket(
+    internal QuicImmediateAckTrigger RecordIncomingPacket(
         QuicPacketNumberSpace packetNumberSpace,
         ulong packetNumber,
         bool ackEliciting,
@@ -1370,7 +1370,7 @@ internal sealed class QuicSenderFlowController
         bool congestionExperienced = false,
         QuicEcnCounts? ecnCounts = null)
     {
-        AckGenerationState.RecordProcessedPacket(
+        return AckGenerationState.RecordProcessedPacket(
             packetNumberSpace,
             packetNumber,
             ackEliciting,

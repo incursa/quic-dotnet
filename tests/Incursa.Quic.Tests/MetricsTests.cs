@@ -360,6 +360,38 @@ public class MetricsTests
 
     [Fact]
     [Requirement("REQ-QUIC-CRT-0155")]
+    public void ApplicationImmediateAckMetricsDistinguishWireGapsFromContiguousPackets()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+
+        QuicMetrics.RecordApplicationImmediateAckTrigger(
+            QuicTlsRole.Client,
+            QuicImmediateAckTrigger.AckElicitingPacketGap,
+            hasObservedPacketNumber: true,
+            largestObservedPacketNumber: 11,
+            packetNumber: 12);
+        QuicMetrics.RecordApplicationImmediateAckTrigger(
+            QuicTlsRole.Server,
+            QuicImmediateAckTrigger.AckElicitingPacketGap,
+            hasObservedPacketNumber: true,
+            largestObservedPacketNumber: 10,
+            packetNumber: 12);
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_ack.immediate_triggers"
+            && measurement.Value == 1
+            && measurement.HasTag("role", "client")
+            && measurement.HasTag("trigger", "ack_eliciting_gap")
+            && measurement.HasTag("packet_relation", "contiguous"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.runtime.application_ack.packet_number_distance"
+            && measurement.Value == 2
+            && measurement.HasTag("role", "server")
+            && measurement.HasTag("packet_relation", "forward_gap"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
     public async Task ApplicationAckMetricsObserveRuntimePiggybackedSend()
     {
         using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);

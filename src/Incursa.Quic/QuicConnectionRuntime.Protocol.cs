@@ -2428,12 +2428,23 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         QuicEcnCounts? ecnCounts = null)
     {
-        sendRuntime.FlowController.RecordIncomingPacket(
+        QuicImmediateAckTrigger immediateAckTrigger = sendRuntime.FlowController.RecordIncomingPacket(
             packetNumberSpace,
             packetNumber,
             ackEliciting,
             GetElapsedMicros(nowTicks),
             ecnCounts: ecnCounts);
+
+        if (packetNumberSpace == QuicPacketNumberSpace.ApplicationData
+            && immediateAckTrigger != QuicImmediateAckTrigger.None)
+        {
+            QuicMetrics.RecordApplicationImmediateAckTrigger(
+                tlsState.Role,
+                immediateAckTrigger,
+                hasObservedApplicationPacketNumber,
+                largestObservedApplicationPacketNumber,
+                packetNumber);
+        }
     }
 
     private bool TryExpandOpenedPacketNumber(

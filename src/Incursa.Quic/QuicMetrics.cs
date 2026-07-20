@@ -223,6 +223,8 @@ internal static class QuicMetrics
     private static readonly Histogram<long> ApplicationSendRecoveryQueueAfter = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.recovery.queue.after", unit: "writes");
     private static readonly Counter<long> ApplicationAckSends = Meter.CreateCounter<long>("incursa.quic.runtime.application_ack.sends", unit: "packets");
     private static readonly Histogram<long> ApplicationAckQueuedWrites = Meter.CreateHistogram<long>("incursa.quic.runtime.application_ack.queued_writes", unit: "writes");
+    private static readonly Counter<long> ApplicationImmediateAckTriggers = Meter.CreateCounter<long>("incursa.quic.runtime.application_ack.immediate_triggers", unit: "triggers");
+    private static readonly Histogram<long> ApplicationImmediateAckPacketNumberDistance = Meter.CreateHistogram<long>("incursa.quic.runtime.application_ack.packet_number_distance", unit: "packet_numbers");
     private static readonly Counter<long> RuntimeDetectedPacketLosses = Meter.CreateCounter<long>("incursa.quic.runtime.losses.detected", unit: "packets");
     private static readonly Histogram<double> StreamWriteCompletion = Meter.CreateHistogram<double>("incursa.quic.runtime.stream_write.completion.ms", unit: "ms");
     private static readonly long[] BufferPoolRentCounts = new long[BufferPoolBucketCount];
@@ -818,6 +820,61 @@ internal static class QuicMetrics
         ApplicationAckSends.Add(1, in tags);
         ApplicationAckQueuedWrites.Record(Math.Max(0, queuedApplicationWrites), in tags);
     }
+
+    internal static void RecordApplicationImmediateAckTrigger(
+        QuicTlsRole role,
+        QuicImmediateAckTrigger trigger,
+        bool hasObservedPacketNumber,
+        ulong largestObservedPacketNumber,
+        ulong packetNumber)
+    {
+        if (!ApplicationImmediateAckTriggers.Enabled && !ApplicationImmediateAckPacketNumberDistance.Enabled)
+        {
+            return;
+        }
+
+        string packetRelation;
+        ulong distance;
+        if (!hasObservedPacketNumber)
+        {
+            packetRelation = "first";
+            distance = 0;
+        }
+        else if (packetNumber > largestObservedPacketNumber
+            && packetNumber - largestObservedPacketNumber == 1)
+        {
+            packetRelation = "contiguous";
+            distance = 1;
+        }
+        else if (packetNumber > largestObservedPacketNumber)
+        {
+            packetRelation = "forward_gap";
+            distance = packetNumber - largestObservedPacketNumber;
+        }
+        else
+        {
+            packetRelation = packetNumber == largestObservedPacketNumber ? "duplicate" : "reordered";
+            distance = largestObservedPacketNumber - packetNumber;
+        }
+
+        TagList tags = default;
+        tags.Add("role", GetRoleTag(role));
+        tags.Add("trigger", FormatImmediateAckTrigger(trigger));
+        tags.Add("packet_relation", packetRelation);
+        ApplicationImmediateAckTriggers.Add(1, in tags);
+        ApplicationImmediateAckPacketNumberDistance.Record(ToInt64Saturating(distance), in tags);
+    }
+
+    internal static string FormatImmediateAckTrigger(QuicImmediateAckTrigger trigger)
+        => trigger switch
+        {
+            QuicImmediateAckTrigger.AckElicitingPacketReordered => "ack_eliciting_reordered",
+            QuicImmediateAckTrigger.AckElicitingPacketGap => "ack_eliciting_gap",
+            QuicImmediateAckTrigger.HandshakePacket => "handshake_packet",
+            QuicImmediateAckTrigger.CongestionExperienced => "congestion_experienced",
+            QuicImmediateAckTrigger.None => "none",
+            _ => throw new ArgumentOutOfRangeException(nameof(trigger)),
+        };
 
     private static ulong ComputeAvailableSendBytes(QuicSendPolicySnapshot snapshot)
     {

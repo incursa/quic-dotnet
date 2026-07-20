@@ -6,6 +6,29 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicAckGenerationStateTests
 {
     [Fact]
+    public void RecordProcessedPacketClassifiesImmediateAckTriggerWithoutChangingAckState()
+    {
+        QuicAckGenerationState state = new(minimumAckElicitingPacketsBeforeDelayedAck: 16);
+
+        Assert.Equal(
+            QuicImmediateAckTrigger.None,
+            state.RecordProcessedPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber: 10,
+                ackEliciting: true,
+                receivedAtMicros: 1_000));
+        Assert.Equal(
+            QuicImmediateAckTrigger.AckElicitingPacketGap,
+            state.RecordProcessedPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber: 12,
+                ackEliciting: true,
+                receivedAtMicros: 1_100));
+
+        Assert.True(state.ShouldSendAckImmediately(QuicPacketNumberSpace.ApplicationData));
+    }
+
+    [Fact]
     public void EcnCountsFollowTheLatestCumulativeSnapshotAcrossOutOfOrderPacketNumbers()
     {
         QuicAckGenerationState state = new();

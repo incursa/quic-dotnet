@@ -7297,3 +7297,63 @@ under `C:\shared\temp\quic-recovery-loss-prefix-20260720`. Do not repeat a simpl
 early exit or binary-search bound over this recovery ledger without a materially
 different actor-wake or backlog-drain design. No c1/c4 guardrails, stress ladder,
 full suite, or ProtocolLab run were justified.
+
+### Accepted 2026-07-20: immediate-ACK trigger attribution
+
+Listener-gated metrics now classify why application-packet processing requests
+an immediate ACK and distinguish the ACK-eliciting packet-number comparison
+from the actual packet-number relation on the wire. The bounded tags are role,
+trigger, and packet relation; the companion histogram records packet-number
+distance. With no listener, the runtime preserves the existing ACK-generation
+and scheduling behavior.
+
+The c16/c32 one-connection upload diagnostic found that 284,119 of 284,311
+ACK-eliciting numeric-gap triggers, 99.93 percent, arrived contiguously on the
+wire. A non-ACK-eliciting packet number lay between consecutive ACK-eliciting
+packets. Only 192 triggers exposed an actual forward packet-number gap. This
+explains why slow samples approached one received ACK per sent packet, but it
+does not prove that suppressing those ACKs increases saturated throughput.
+
+The disabled-path frozen-binary A/B/A/B/A/B gate ran 15 exact one-MiB samples
+per treatment at c16 and c32 with zero failures. c16 changed from 34.69 to
+34.19 MiB/s (-1.4 percent), p95 changed +2.8 percent, and allocation changed
++0.5 percent. c32 changed from 19.81 to 24.15 MiB/s, but the 17.72-36.99 MiB/s
+combined range remains too bimodal to credit as an instrumentation gain. The
+bounded claim is no material disabled-path regression at c16 and a preserved
+diagnostic surface, not higher throughput.
+
+Release build and focused ACK/metrics coverage passed 45/45. Retain the trigger
+diagnostic, frozen-binary gate, and transcripts under
+`C:\shared\temp\quic-ack-trigger-attribution-20260720` and
+`C:\shared\temp\quic-ack-trigger-instrumentation-20260720`.
+
+### Invalidated 2026-07-20: first receipt-aware adaptive ACK screen
+
+A receipt-aware candidate stopped treating an intervening received
+non-ACK-eliciting packet as missing, then attempted to restore an ACK threshold
+of one at 24 or more tracked streams. The receipt lookup itself measured
+4.18-6.96 ns with no managed allocation, and focused correctness coverage
+passed. The A/B screens were mixed: c24 appeared materially better while c32
+appeared materially worse, with the same fast/slow actor regimes seen in prior
+runs.
+
+The screen is invalid rather than negative evidence for adaptive ACK policy.
+The policy read `QuicConnectionStreamRegistry.Count`, but the runtime currently
+uses the registry's bookkeeping object directly and never populates the wrapper
+dictionary. Its count remained zero, so the advertised 24-stream threshold
+never activated. The candidate was reverted; do not use these A/B numbers as a
+policy comparison. Retain the invalid screen, receipt-aware diagnostics, and
+BenchmarkDotNet reports under
+`C:\shared\temp\quic-ack-receipt-aware-20260720`.
+
+The next bounded ACK experiment must read a real monotonic stream count from
+`QuicConnectionStreamState`, include an integration assertion and diagnostic
+proof that the high-pressure threshold activates, and keep c1-c16 on the normal
+threshold. If the corrected policy passes c24/c32, run c1/c4/c16 guardrails and
+c64/c128 stress before considering it. If it fails, stop ACK-cadence variants
+and test the separate loss-collapse diagnosis: explicit 64 KiB versus larger
+one-connection listener UDP capacity at c16/c32, without repeating the rejected
+unconditional listener-buffer change. Only a causal buffer result can justify
+a pressure-triggered capacity policy. If neither mechanism passes, return to
+bounded post-authentication stream-local preparation outside the connection
+actor.
