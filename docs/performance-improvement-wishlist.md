@@ -7073,3 +7073,40 @@ materially different socket submission mechanism that demonstrates lower actor
 service time. The next candidate should instead reduce connection-owned packet
 construction or move bounded post-authentication stream-local preparation off
 the actor before final ordered commit.
+
+### Rejected 2026-07-20: caller-owned oversized stream-write chunks
+
+Before implementing the planned post-authentication ownership handoff, a
+BenchmarkDotNet bound measured the entire actor-side pooled rent, copy, and
+return cost for the thirty-two 32 KiB chunks in a one-MiB public stream write.
+The current operation measured 20.245 microseconds per MiB; transferring and
+restoring thirty-two preowned references measured 0.200 microseconds. The
+maximum removable actor work is therefore about 20 microseconds per MiB,
+roughly 0.2 percent of the measured 10-15 ms per-MiB actor cost.
+
+No runtime or test change was made and no end-to-end or ProtocolLab run was
+justified. The temporary benchmark is reverted; retain its Dry and Short
+reports under
+`C:\shared\temp\quic-stream-write-ownership-handoff-20260720`. Do not add
+caller-side ownership, lifecycle transfer, and cancellation complexity solely
+to move these copies. Such ownership remains relevant only as a prerequisite
+to a broader stream-execution design that removes materially more actor work.
+
+### Rejected 2026-07-20: high-pressure contiguous packet construction alone
+
+The existing permanent packet-build benchmark then bounded decoupling
+contiguous protected-packet construction from high-pressure individual socket
+submission. At twelve packets, individual pooled leases measured 11.972
+microseconds and one contiguous pooled owner measured 11.146 microseconds, a
+0.826-microsecond saving per twelve packets. At the observed approximately 884
+packets per one-MiB response, this removes only about 61 microseconds per MiB.
+Four-packet construction was effectively flat, and a one-packet contiguous
+owner was 8 percent slower.
+
+No runtime candidate was created. Retain the Short report under
+`C:\shared\temp\quic-contiguous-build-high-pressure-20260720`. This result does
+not reverse the accepted sparse contiguous-segmentation path; it only rejects
+retaining contiguous storage after promotion as an independent explanation for
+the saturated actor gap. The next slice must subdivide stream-write transition
+time into queue selection/framing, packet protection, sent-packet and recovery
+accounting, and connection-state commit before selecting another mechanism.
