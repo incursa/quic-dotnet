@@ -6961,3 +6961,64 @@ result confirms that queue ordering is not the missing service capacity. The
 next high-confidence work should reduce connection-actor service cost or move
 bounded post-authentication stream-local preparation outside the actor, using
 the classifier only to prove which pressure regime benefits.
+
+### Accepted 2026-07-20: same-connection cardinality regime map
+
+The behavior-neutral pressure classifier was run across the local one-connection
+upload ladder before another runtime candidate was selected. Exact one-MiB
+fixed-per-stream cells used five repetitions with payload validation and zero
+failures:
+
+| Streams | Throughput MiB/s | CV | Sparse | Cooperative | Saturated | Queue-delay p50/p95 ms |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 58.21 | 33.6% | 100.0% | 0.0% | 0.0% | 0.29 / 0.36 |
+| 4 | 67.75 | 27.1% | 96.8% | 3.2% | 0.0% | 1.76 / 2.32 |
+| 8 | 66.77 | 26.0% | 24.8% | 73.5% | 1.7% | 3.42 / 4.23 |
+| 16 | 25.82 | 27.0% | 0.2% | 92.3% | 7.5% | 11.96 / 15.96 |
+| 24 | 29.55 | 9.0% | 0.0% | 3.5% | 96.5% | 24.45 / 27.03 |
+| 32 | 27.47 | 3.2% | 0.0% | 2.7% | 97.3% | 34.49 / 39.15 |
+
+The regime change is therefore observed rather than keyed to a cardinality:
+`c1-c4` are sparse, `c8-c16` are principally cooperative, and `c24-c32`
+are saturated for this fixed-per-stream shape. Fixed-total three-MiB stress
+cells reached 76.4 percent saturated at c64 and 98.7 percent at c128, with
+queue-delay p95 of 39.16 and 78.11 ms. c64 and c128 remain stress-only.
+
+Phase attribution also identified costs large enough to govern candidate
+selection. Sender-side synchronous socket-send time was about 6.7-7.2 ms per
+transferred MiB at c1-c8 and 14.7-17.1 ms per MiB at c16-c32. Sender packet
+transition time rose from about 7.5-9.7 to 12.7-14.4 ms per MiB, while
+stream-write transition time rose from 0.5 at c1 to 3.2 ms per MiB at c32.
+ACK-range processing increased too, but remained only 1.2-3.1 ms per MiB.
+
+Evidence is retained under
+`C:\shared\temp\quic-capacity-regimes-20260720`. Do not create bespoke c16,
+c32, c64, or c128 implementations. Runtime signals may select general sparse,
+cooperative, or saturated mechanisms only after each mechanism independently
+passes low- and high-pressure gates.
+
+### Rejected 2026-07-20: ACK-retirement stream-ID metadata shortcut
+
+A bounded candidate replaced plaintext STREAM-frame inspection during sent
+packet retirement with the stream ID already retained in sent-packet metadata.
+The candidate preserved a parser fallback for packets lacking metadata and its
+focused RFC reset-retransmission coverage passed 5/5.
+
+BenchmarkDotNet Dry and Short jobs showed why the candidate was stopped before
+end-to-end testing. Parsing a representative one-KiB STREAM frame to recover
+its stream ID measured 35.91 ns with no managed allocation; reading retained
+metadata measured effectively zero. Even eliminating the parse for every ACKed
+stream packet cannot explain the observed 7-10 ms per-MiB increase in actor
+work at the scaling knee. The runtime, test, and temporary benchmark changes
+were reverted, and ProtocolLab was not run. Evidence remains under
+`C:\shared\temp\quic-ack-metadata-20260720`.
+
+The next candidate must address the materially larger synchronous egress cost.
+It should transfer already-protected datagrams from the connection actor to a
+bounded FIFO send pump only under measured multiplexing pressure, with explicit
+ownership transfer, ordered submission, bounded backpressure, shutdown drain,
+and synchronous fallback only before any earlier queued datagram exists. If
+that mechanism cannot lower c16/c32 actor service time without harming c1/c4,
+the next fallback is bounded post-authentication stream-local preparation;
+packet numbering, protection, ACK/loss recovery, congestion and flow control,
+path state, and final commit authority remain connection-owned.
