@@ -7471,3 +7471,44 @@ connection-commit mechanism with enough cost to improve c16-c32. Revisit
 stream-local receive execution for duplex/read-heavy workloads or when a
 broader design can amortize mailbox ownership across materially more than the
 measured bookkeeping and notification work.
+
+### Diagnostic 2026-07-20: fixed-total extreme stream cardinality
+
+The existing local cardinality runner completed exact one-connection upload
+waves at c64, c128, c256, c512, and c1024. Every cell transferred the same
+3 MiB total, used three samples, and completed with zero failures. Increasing
+cardinality therefore reduced bytes per stream rather than increasing offered
+payload:
+
+| Streams | Bytes/stream | Median MiB/s | CV | p95 latency | Allocated bytes/op |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 64 | 49,152 | 14.23 | 17.3% | 228.1 ms | 93,311 |
+| 128 | 24,576 | 11.69 | 20.0% | 316.6 ms | 66,878 |
+| 256 | 12,288 | 8.25 | 28.7% | 424.6 ms | 39,752 |
+| 512 | 6,144 | 5.07 | 29.5% | 700.4 ms | 28,508 |
+| 1,024 | 3,072 | 3.49 | 23.4% | 1,061.1 ms | 23,148 |
+
+The hot shard's p95 queue depth grew from approximately 683 packet-receive,
+53 stream-open, and 64 stream-write items at c64 to 2,386, 825, and 1,024 at
+c1024. Normalized service time per fixed 3 MiB wave also grew materially:
+packet receive rose from 135.63 to 794.89 ms, stream open from 1.19 to
+48.67 ms, and stream write from 76.58 to 314.40 ms. At c1024 the shard peaked
+near 3,000 queued work items, with stream-open, stream-write, and
+packet-receive queue delays measured in hundreds of milliseconds.
+
+This is diagnostic stress evidence, not a production support tier or a claim
+that ordinary applications need 1,024 concurrent streams. It exposes
+asymptotic command fan-in and per-stream lifecycle cost under a fixed payload.
+c64 and above remain stress lanes; changes suggested by them must also improve
+or preserve c1-c16 bulk and multiplex controls before acceptance. Retain the
+matrix, summaries, and logs under
+`C:\shared\temp\quic-cardinality-extreme-20260720`.
+
+The next bounded diagnosis is packet utilization. Determine whether the small
+per-stream tails leave protected datagrams underfilled and cause avoidable
+packet construction, ACK/recovery, socket-send, and packet-receive work. A true
+multi-stream frame-packing candidate is justified only if utilization evidence
+shows enough waste to explain a material part of the high-cardinality slope.
+This is materially different from the rejected distinct-stream transition
+batch, which did not reduce packets or datagrams. If packet utilization remains
+high, stop this branch and quantify stream-open/write command fan-in instead.
