@@ -45,6 +45,10 @@ internal static class QuicMetrics
     private const string RuntimeShardWorkItemsPerWakeMetricName = "incursa.quic.runtime.shard.work_items_per_wake";
     private const string RuntimeShardPacketRunLengthMetricName = "incursa.quic.runtime.shard.packet_run_length";
     private const string RuntimeFollowOnFlushItemsMetricName = "incursa.quic.runtime.follow_on_flush.items";
+    private const string ApplicationSendPressureShadowObservationMetricName = "incursa.quic.runtime.application_send.pressure.shadow.observations";
+    private const string ApplicationSendPressureShadowTransitionMetricName = "incursa.quic.runtime.application_send.pressure.shadow.transitions";
+    private const string ApplicationSendPressureShadowQueueDelayMetricName = "incursa.quic.runtime.application_send.pressure.shadow.queue_delay_ewma.ms";
+    private const string ApplicationSendPressureShadowDistinctStreamsMetricName = "incursa.quic.runtime.application_send.pressure.shadow.distinct_streams";
     private const string RuntimeShardIndexTagName = "shard_index";
     private const string RuntimeShardWorkItemKindTagName = "work_item_kind";
     private const string RuntimeShardPhaseTagName = "phase";
@@ -180,6 +184,10 @@ internal static class QuicMetrics
     private static readonly Histogram<long> RuntimeShardWorkItemsPerWake = Meter.CreateHistogram<long>(RuntimeShardWorkItemsPerWakeMetricName, unit: "work_items");
     private static readonly Histogram<long> RuntimeShardPacketRunLength = Meter.CreateHistogram<long>(RuntimeShardPacketRunLengthMetricName, unit: "packets");
     private static readonly Counter<long> RuntimeFollowOnFlushItems = Meter.CreateCounter<long>(RuntimeFollowOnFlushItemsMetricName, unit: "items");
+    private static readonly Counter<long> ApplicationSendPressureShadowObservations = Meter.CreateCounter<long>(ApplicationSendPressureShadowObservationMetricName, unit: "observations");
+    private static readonly Counter<long> ApplicationSendPressureShadowTransitions = Meter.CreateCounter<long>(ApplicationSendPressureShadowTransitionMetricName, unit: "transitions");
+    private static readonly Histogram<double> ApplicationSendPressureShadowQueueDelay = Meter.CreateHistogram<double>(ApplicationSendPressureShadowQueueDelayMetricName, unit: "ms");
+    private static readonly Histogram<long> ApplicationSendPressureShadowDistinctStreams = Meter.CreateHistogram<long>(ApplicationSendPressureShadowDistinctStreamsMetricName, unit: "streams");
     private static readonly Histogram<long> DelayedApplicationSends = Meter.CreateHistogram<long>("incursa.quic.runtime.delayed_application_sends", unit: "writes");
     private static readonly Histogram<long> ApplicationSendRetainedBuffers = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.retained_buffers", unit: "buffers");
     private static readonly Histogram<long> ApplicationSendRetainedBytes = Meter.CreateHistogram<long>("incursa.quic.runtime.application_send.retained_bytes", unit: "bytes");
@@ -533,8 +541,63 @@ internal static class QuicMetrics
         }
     }
 
+    internal static bool ApplicationSendPressureShadowEnabled
+        => ApplicationSendPressureShadowObservations.Enabled
+            || ApplicationSendPressureShadowTransitions.Enabled
+            || ApplicationSendPressureShadowQueueDelay.Enabled
+            || ApplicationSendPressureShadowDistinctStreams.Enabled;
+
     internal static long GetRuntimeShardEnqueueTimestamp()
         => RuntimeShardQueueDelay.Enabled ? Stopwatch.GetTimestamp() : 0;
+
+    internal static long GetRuntimeShardEnqueueTimestamp(QuicConnectionRuntimeShardWorkItemKind workItemKind)
+        => RuntimeShardQueueDelay.Enabled
+            || (workItemKind == QuicConnectionRuntimeShardWorkItemKind.StreamWrite
+                && ApplicationSendPressureShadowEnabled)
+            ? Stopwatch.GetTimestamp()
+            : 0;
+
+    internal static void RecordApplicationSendPressureShadow(
+        QuicTlsRole role,
+        in QuicApplicationSendPressureObservation observation)
+    {
+        if (!ApplicationSendPressureShadowEnabled)
+        {
+            return;
+        }
+
+        TagList observationTags = default;
+        observationTags.Add("role", GetRoleTag(role));
+        observationTags.Add("mode", FormatApplicationSendPressureMode(observation.Mode));
+        observationTags.Add(
+            "burst_limit_reached",
+            observation.BurstLimitReached ? "true" : "false");
+        ApplicationSendPressureShadowObservations.Add(1, in observationTags);
+        ApplicationSendPressureShadowQueueDelay.Record(
+            observation.QueueDelayEwmaMicros / MicrosecondsPerMillisecond,
+            in observationTags);
+        ApplicationSendPressureShadowDistinctStreams.Record(
+            observation.DistinctQueuedStreamCount,
+            in observationTags);
+
+        if (observation.ModeChanged)
+        {
+            TagList transitionTags = default;
+            transitionTags.Add("role", GetRoleTag(role));
+            transitionTags.Add("from", FormatApplicationSendPressureMode(observation.PreviousMode));
+            transitionTags.Add("to", FormatApplicationSendPressureMode(observation.Mode));
+            ApplicationSendPressureShadowTransitions.Add(1, in transitionTags);
+        }
+    }
+
+    internal static string FormatApplicationSendPressureMode(QuicApplicationSendPressureMode mode)
+        => mode switch
+        {
+            QuicApplicationSendPressureMode.Sparse => "sparse",
+            QuicApplicationSendPressureMode.Cooperative => "cooperative",
+            QuicApplicationSendPressureMode.Saturated => "saturated",
+            _ => throw new ArgumentOutOfRangeException(nameof(mode)),
+        };
 
     internal static long GetRuntimeShardServiceStartTimestamp()
         => RuntimeShardServiceTime.Enabled ? Stopwatch.GetTimestamp() : 0;

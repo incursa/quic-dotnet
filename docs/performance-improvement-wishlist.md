@@ -6865,3 +6865,61 @@ Do not promote a fixed per-stream datagram quantum as a production planner.
 Further high-pressure work must increase connection service capacity or move
 bounded post-authentication stream-local work off the connection actor; queue
 selection alone has now repeatedly traded c16 fairness for c32 saturation.
+
+### Accepted 2026-07-19: behavior-neutral application-send pressure classification
+
+The runtime now has a connection-local shadow classifier for sparse,
+cooperative, and saturated application-send pressure. It observes an integer
+queue-delay EWMA, bounded distinct queued streams, and whether the existing
+datagram burst limit was reached. Consecutive evidence and asymmetric relief
+thresholds provide hysteresis. Classification and stream-write enqueue timing
+remain disabled unless the new diagnostic instruments are observed, the
+production planner remains null, and no scheduling or send behavior changes.
+
+BenchmarkDotNet Dry and Short runs reported no managed allocation for
+steady-state observations. The Short job measured approximately 0.63-0.82 ns
+per observation, but its broad confidence intervals make the allocation result
+more useful than the precise timing rank. Focused classifier, scheduler, and
+metrics coverage passed 68/68.
+
+The final exact one-MiB upload diagnostic used a 20 ms saturated-delay
+threshold and five repetitions per cell:
+
+| One connection | Throughput MiB/s | CV | Cooperative | Saturated | Queue delay p50/p95 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| c16 | 31.44 | 12.6% | 73.5% | 26.5% | 15.40/19.48 ms |
+| c32 | 28.16 | 3.2% | 2.7% | 97.3% | 26.79/31.45 ms |
+
+Both cells completed with exact payload validation and zero failures. This is
+the first retained runtime signal that separates the c16 cooperative opening
+from the c32 saturation reversal without inspecting caller concurrency,
+payload size, or benchmark identity. It is attribution evidence, not a
+throughput improvement.
+
+Fixed-total three-MiB stress cells also completed with exact validation. c64
+measured 13.02 MiB/s with 90.6 percent saturated observations; c128 measured
+5.63 MiB/s with 99.0 percent saturated observations. These cells remain
+stress-only and are not regression gates. Larger cardinalities are available
+through the new matrix runner but should remain fixed-total capacity tests,
+not fixed-per-stream workload inflation.
+
+The complete Release suite passed 9,685 tests with four skips and two failures
+under combined suite load. Both failing connection lifecycle/send recovery
+tests passed 10/10 isolated reruns, so they are retained as suite-load
+sensitivity rather than attributed classifier regressions. Core SpecTrace
+validation continues to report the repository's pre-existing unresolved
+cross-reference backlog; each new standalone architecture, work-item, and
+verification artifact validates against `model.schema.json`.
+
+Evidence is retained under
+`C:\shared\temp\quic-pressure-shadow-20260719`, including `bdn-dry`,
+`bdn-short`, `upload-final-threshold`, `stress-c64-c128`, and
+`isolated-reruns`. ProtocolLab was not run because this slice does not change
+runtime behavior.
+
+The next candidate may activate a cooperative planner only while this signal
+is cooperative, must immediately preserve the existing planner while sparse
+or saturated, and must pass matched A/B c1/c4/c16/c32 plus upload, download,
+and duplex guardrails. If activation cannot retain the c16 gain without the
+c32 regression, the diagnosis must move from queue selection to connection
+service capacity or bounded post-authentication stream-local work.

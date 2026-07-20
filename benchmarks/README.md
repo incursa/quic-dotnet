@@ -320,6 +320,7 @@ The benchmark project also contains the following permanent suites:
 - `QuicApplicationDatagramPressureBenchmarks`
 - `QuicApplicationSendQueueSortingBenchmarks`
 - `QuicApplicationSendTurnPlannerBenchmarks`
+- `QuicApplicationSendPressureClassifierBenchmarks`
 - `QuicDeadlineSchedulerBenchmarks`
 - `QuicRuntimeCollectionBenchmarks`
 - `QuicConnectionSnapshotBenchmarks`
@@ -346,6 +347,18 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationDatagram*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendQueueSortingBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendTurnPlannerBenchmarks*" --inProcess
+
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendPressureClassifierBenchmarks*" --inProcess
+
+Run the behavior-neutral one-connection cardinality matrix with exact fixed-total and fixed-per-stream payload validation:
+
+```powershell
+pwsh -NoProfile -File scripts/perf/Invoke-QuicCardinalityMatrix.ps1
+```
+
+Use a comma-delimited override for a bounded subset, for example `-Cardinality "1,4,16,32"`.
+
+The default fixed-total ladder covers 1, 4, 8, 16, 24, 32, 64, 128, 256, 512, and 1,024 simultaneous streams while keeping three MiB in flight per logical wave. The c1-c32 cells are regression-ready candidates; c64 and above are explicitly stress-only. Fixed-per-stream one-MiB cells stop at c128 unless `-IncludeExtremeFixedPerStream` is supplied.
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDeadlineSchedulerBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicRuntimeCollectionBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicConnectionSnapshotBenchmarks*"

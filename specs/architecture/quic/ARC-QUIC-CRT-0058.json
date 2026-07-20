@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0058",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Shadow application-send pressure classifier architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Measure whether connection-local send pressure can reliably distinguish the retained c16 cooperative opportunity from c32 saturation before allowing an adaptive planner to change runtime behavior.",
+  "related_artifacts": [
+    "ARC-QUIC-CRT-0056",
+    "ARC-QUIC-CRT-0057"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0163"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicApplicationSendPressureClassifier.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeShard.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicMetrics.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0163.cs",
+    "benchmarks/QuicApplicationSendPressureClassifierBenchmarks.cs",
+    "scripts/perf/Invoke-QuicCardinalityMatrix.ps1"
+  ],
+  "design_summary": "A small mutable classifier remains connection-local and behavior-neutral. When its diagnostic instruments are observed, stream-write inbox items retain their enqueue timestamp and the runtime feeds elapsed queue delay into an integer microsecond EWMA. Existing recovery flush boundaries feed a bounded distinct-stream count and whether the authorized datagram burst was exhausted. Consecutive evidence and separate entry/exit thresholds classify sparse, cooperative, or saturated pressure with hysteresis. Metrics expose observations and transitions, while the existing null planner, static selector, and send authority remain unchanged. A local orchestration script runs fixed-per-stream and fixed-total-byte cardinality shapes without embedding benchmark identities in production code.",
+  "alternatives_considered": [
+    "Activate the four-datagram cooperative quantum immediately. Rejected because retained evidence improved c16 but regressed c32 by 32.2 percent.",
+    "Classify from queued-write count alone. Rejected because application-send recovery depth was usually one at both c16 and c32.",
+    "Classify from caller concurrency or stream-count settings. Rejected as benchmark overfitting and unavailable to the runtime in a general form.",
+    "Collect timestamps unconditionally. Deferred until the shadow evidence proves the signal; the diagnostic-only first slice avoids charging normal operation."
+  ],
+  "edge_cases_and_constraints": [
+    "A transient high-delay or burst-limit sample must not change mode by itself.",
+    "Saturated mode must require sustained high queue delay and must require sustained relief before demotion.",
+    "Sparse mode must not be inferred while queue delay remains elevated.",
+    "Instrumentation must not add per-observation allocations or alter work-item ordering.",
+    "High-cardinality failures caused by generator exhaustion must remain stress-only and must not be reported as transport regressions."
+  ],
+  "data_and_state_considerations": "The classifier stores one mode, one integer EWMA, and bounded consecutive-evidence counters per connection. It retains no stream IDs, payloads, work items, timestamps, or metric tag objects. Distinct IDs are counted into a fixed stack buffer only at an existing flush boundary and only while diagnostics observe the shadow metrics.",
+  "risks": [
+    "Diagnostic instrumentation can perturb throughput; classification runs are attribution evidence and not performance claims.",
+    "Local thresholds may not generalize across hosts; fixed-work c1 through c1024 screens and later ProtocolLab confirmation are required before activation.",
+    "Queue delay can represent host saturation rather than connection saturation; mode evidence must be interpreted with target CPU and variance.",
+    "The available queue snapshot may undercount runnable streams; burst-limit frequency and delay are retained as independent signals."
+  ]
+}

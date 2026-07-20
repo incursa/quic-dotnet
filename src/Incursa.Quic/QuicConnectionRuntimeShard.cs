@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Diagnostics;
 using System.Threading.Channels;
 
 namespace Incursa.Quic;
@@ -552,7 +553,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
     {
         QuicConnectionRuntimeShardWorkItem queuedWorkItem = workItem with
         {
-            EnqueuedTimestamp = QuicMetrics.GetRuntimeShardEnqueueTimestamp(),
+            EnqueuedTimestamp = QuicMetrics.GetRuntimeShardEnqueueTimestamp(workItem.Kind),
         };
         metricsRegistration.BeginEnqueue(in queuedWorkItem);
         if (!inbox.Writer.TryWrite(queuedWorkItem))
@@ -620,6 +621,14 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     && (sendDatagramObserver is not null || sendDatagramBatchObserver is not null),
                 enableApplicationDatagramBatches: sendDatagramBatchObserver is not null);
             flushMeasurementStarted = runtime.BeginRuntimeWorkItemFlushMeasurement();
+
+            if (workItem.Kind == QuicConnectionRuntimeShardWorkItemKind.StreamWrite
+                && workItem.EnqueuedTimestamp != 0
+                && QuicMetrics.ApplicationSendPressureShadowEnabled)
+            {
+                runtime.ObserveApplicationSendWorkItemQueueDelay(
+                    Stopwatch.GetElapsedTime(workItem.EnqueuedTimestamp).TotalMilliseconds);
+            }
 
             long transitionStartedTimestamp = QuicMetrics.GetRuntimeShardPhaseStartTimestamp();
             QuicConnectionTransitionResult result = workItem.Kind switch

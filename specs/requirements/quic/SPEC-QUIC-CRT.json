@@ -2654,6 +2654,26 @@
         "This requirement does not authorize a generic delayed sender queue, packet accounting before platform submission, parallel mutation of connection-wide state, or post-authentication stream execution fan-out.",
         "The listener/server segmented-burst path remains a separate accepted behavior and is not changed by this client policy."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0163",
+      "title": "Classify application-send pressure without changing scheduling behavior",
+      "statement": "A diagnostic application-send pressure classifier MUST derive sparse, cooperative, and saturated modes only from bounded connection-local runtime measurements; MUST use hysteresis so transient samples cannot oscillate the mode; MUST NOT inspect benchmark scenario names, payload-size constants, or caller-visible concurrency values; MUST NOT allocate per observation; and, while operating in shadow mode, MUST NOT change queued-write selection, packet construction, send budgets, packet numbering, recovery, congestion control, flow control, stream ordering, cancellation, disposal, or ownership behavior.",
+      "trace": {
+        "upstream_refs": [
+          "REQ-QUIC-CRT-0162",
+          "ARC-QUIC-CRT-0056",
+          "docs/performance-improvement-wishlist.md",
+          "src/Incursa.Quic/QuicApplicationSendTurnPlanner.cs",
+          "src/Incursa.Quic/QuicConnectionRuntimeShard.cs",
+          "src/Incursa.Quic/QuicMetrics.cs"
+        ]
+      },
+      "notes": [
+        "The first shadow classifier uses stream-write queue-delay EWMA, bounded distinct queued stream count, and burst-limit outcomes.",
+        "Diagnostic timestamps and classification are enabled only when the shadow metrics are observed, preserving the normal null-planner fast path.",
+        "A later active scheduler policy requires separate matched evidence and a requirement update; this requirement authorizes observation only."
+      ]
     }
   ]
 }

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0060",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Shadow application-send pressure classifier verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Deterministic state-transition tests, metrics-boundary tests, BenchmarkDotNet cost measurements, exact local high-cardinality loopback screens, SpecTrace validation, complete Release regression tests, and independent diff review.",
+  "scope": "Verify that diagnostic-only pressure classification distinguishes useful cooperative pressure from saturation without changing application-send scheduling or charging the uninstrumented path.",
+  "preconditions": [
+    "The bounded raw-stream quantum remains rejected and reverted.",
+    "The null application-send planner remains the production default.",
+    "The existing exact-payload transport harness remains the end-to-end measurement boundary."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicApplicationSendPressureClassifier.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0163.cs",
+    "benchmarks/QuicApplicationSendPressureClassifierBenchmarks.cs",
+    "scripts/perf/Invoke-QuicCardinalityMatrix.ps1",
+    "C:\\shared\\temp\\quic-pressure-shadow-20260719\\bdn-dry",
+    "C:\\shared\\temp\\quic-pressure-shadow-20260719\\bdn-short",
+    "C:\\shared\\temp\\quic-pressure-shadow-20260719\\upload-final-threshold",
+    "C:\\shared\\temp\\quic-pressure-shadow-20260719\\stress-c64-c128",
+    "C:\\shared\\temp\\quic-pressure-shadow-20260719\\isolated-reruns"
+  ],
+  "procedure": [
+    "Prove deterministic transitions for transient, sustained, and relieved pressure without per-observation allocation.",
+    "Prove diagnostics-disabled work items retain the current zero timestamp and null-planner behavior.",
+    "Run BenchmarkDotNet Dry and Short for sparse, cooperative, and saturated observation costs.",
+    "Run exact one-MiB or fixed-total-byte transport shapes at c1 through c1024 where healthy and retain queue-delay and shadow-mode series.",
+    "Classify disturbed or generator-limited extreme cells as stress-only instead of using them as acceptance evidence.",
+    "Run focused scheduler, metrics, stream-write, cancellation, disposal, flow-control, and complete Release tests."
+  ],
+  "expected_result": "The uninstrumented path remains unchanged, diagnostic observations allocate no managed memory, c16 evidence predominantly reaches cooperative mode, c32 or higher saturated evidence reaches saturated mode with hysteresis, exact payload checks pass, focused tests pass, and no active scheduler behavior changes.",
+  "status_summary": "Passed on 2026-07-19 for the behavior-neutral shadow slice. The final 20 ms saturation threshold separated the exact one-MiB upload lanes: c16 produced 73.5 percent cooperative and 26.5 percent saturated observations at 31.44 MiB/s, while c32 produced 2.7 percent cooperative and 97.3 percent saturated observations at 28.16 MiB/s. Both had zero payload failures. Fixed-total c64 and c128 cells completed at 13.02 and 5.63 MiB/s with 90.6 and 99.0 percent saturated observations and are classified stress-only. BenchmarkDotNet Dry and Short reported no managed allocation for steady-state observations. Focused coverage passed 68/68. The complete Release run passed 9,685 of 9,691 tests with four skips and two suite-load-sensitive failures; each failure passed 10/10 isolated reruns. Core SpecTrace validation still reports the repository's pre-existing unresolved cross-reference backlog, including the invalid owning SPEC-QUIC-CRT document, while the three new standalone artifacts validate against model.schema.json. No ProtocolLab run or throughput-improvement claim is made because this slice changes no scheduling behavior.",
+  "related_artifacts": [
+    "ARC-QUIC-CRT-0058",
+    "WI-QUIC-CRT-0059"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0163"
+  ]
+}

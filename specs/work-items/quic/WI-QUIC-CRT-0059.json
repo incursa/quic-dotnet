@@ -1,0 +1,32 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0059",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Shadow application-send pressure classifier work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add behavior-neutral sparse, cooperative, and saturated pressure observation plus fixed-work high-cardinality local coverage.",
+  "related_artifacts": [
+    "ARC-QUIC-CRT-0058"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0058"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0060"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0163"
+  ],
+  "planned_changes": "Add an allocation-free connection-local shadow classifier, diagnostics-gated stream-write enqueue timing, bounded flush observations and stable metrics, deterministic transition tests, a BenchmarkDotNet cost benchmark, and a PowerShell matrix that runs fixed-per-stream and fixed-total-byte one-connection cardinality shapes through the existing exact loopback harness.",
+  "verification_plan": "Validate the new artifacts; prove sparse, cooperative, saturated, and hysteretic transitions including transient and missing-signal cases; prove the runtime default planner and scheduler output remain unchanged; run BenchmarkDotNet Dry and Short; run diagnostic one-connection c1/c4/c16/c32/c64/c128 and bounded c256/c512/c1024 screens where the generator remains healthy; inspect emitted mode counts against queue-delay evidence; and run focused plus complete Release tests before accepting the instrumentation slice.",
+  "out_of_scope": [
+    "Activating the cooperative quantum or any other alternate planner",
+    "Hardcoding c16, c32, payload size, benchmark labels, or scenario identifiers in runtime code",
+    "Changing packet construction, congestion control, flow control, recovery, ACK behavior, packet protection, ordering, cancellation, disposal, or public API",
+    "Claiming extreme cardinalities as regression-ready when the generator or host is saturated",
+    "Running or publishing ProtocolLab evidence before a behavior-changing candidate passes the local gate"
+  ],
+  "completion_notes": "Completed on 2026-07-19 as behavior-neutral instrumentation. The classifier and its metrics are disabled unless the shadow instruments are observed, the production planner remains null, and no work ordering or send behavior changes. Focused classifier, scheduler, and metrics coverage passed 68/68. BenchmarkDotNet Dry and Short runs reported no managed allocation. Exact local upload diagnostics at the final 20 ms saturation threshold classified c16 predominantly cooperative and c32 predominantly saturated. Fixed-total c64 and c128 cells completed with exact payload validation and remain stress-only. The full 9,691-test run passed 9,685 with four skips and two suite-load failures; both failing tests then passed 10/10 isolated reruns. ProtocolLab was not run because this slice does not change behavior."
+}

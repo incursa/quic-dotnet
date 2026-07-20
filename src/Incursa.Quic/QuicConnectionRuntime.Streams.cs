@@ -1535,6 +1535,14 @@ internal sealed partial class QuicConnectionRuntime
         exception = null;
         bool stateChanged = false;
         int queuedWritesBefore = applicationSendQueue.Count;
+        bool observePressure = QuicMetrics.ApplicationSendPressureShadowEnabled;
+        int distinctQueuedStreamCount = 0;
+        if (observePressure && queuedWritesBefore > 0)
+        {
+            Span<ulong> distinctStreamIds = stackalloc ulong[QuicApplicationSendPressureClassifier.MaximumObservedDistinctStreamCount];
+            distinctQueuedStreamCount = applicationSendQueue.CountDistinctStreamIdsUpTo(distinctStreamIds);
+        }
+
         if (queuedWritesBefore > 0)
         {
             BeginHostedApplicationDatagramBatch();
@@ -1621,6 +1629,15 @@ internal sealed partial class QuicConnectionRuntime
                     flushedDatagrams,
                     outcome,
                     blockedReason);
+
+                if (observePressure)
+                {
+                    QuicApplicationSendPressureObservation observation =
+                        applicationSendPressureClassifier.ObserveTurn(
+                            distinctQueuedStreamCount,
+                            outcome == QuicApplicationSendRecoveryFlushOutcome.BurstLimitReached);
+                    QuicMetrics.RecordApplicationSendPressureShadow(tlsState.Role, in observation);
+                }
             }
         }
         finally
@@ -1632,6 +1649,9 @@ internal sealed partial class QuicConnectionRuntime
         stateChanged |= TryFlushPendingPeerStreamCapacityReleases(ref effects);
         return stateChanged;
     }
+
+    internal void ObserveApplicationSendWorkItemQueueDelay(double queueDelayMilliseconds)
+        => applicationSendPressureClassifier.ObserveQueueDelay(queueDelayMilliseconds);
 
     private QuicSendPolicySnapshot CaptureQueuedApplicationSendPolicySnapshot()
     {
