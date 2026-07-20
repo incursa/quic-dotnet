@@ -6923,3 +6923,41 @@ or saturated, and must pass matched A/B c1/c4/c16/c32 plus upload, download,
 and duplex guardrails. If activation cannot retain the c16 gain without the
 c32 regression, the diagnosis must move from queue selection to connection
 service capacity or bounded post-authentication stream-local work.
+
+### Rejected 2026-07-19: cooperative-pressure-gated raw-stream quantum
+
+The first active use of the shadow signal revived the previously rejected
+four-datagram raw-stream quantum only while pressure was `cooperative`.
+Sparse and saturated modes retained the current null planner, explicit injected
+planners still overrode adaptation, selection could not cross priority or an
+earlier write on the same stream, and the planner was connection-local. Focused
+classifier, selection, priority, reset, override, and scheduler tests passed
+40/40 before measurement.
+
+An initial variant reset classifier and planner state whenever the application
+send queue momentarily drained. That repeatedly erased the c16 signal: the
+diagnostic run spent substantial time re-entering sparse mode, and the adjacent
+c16/c32 screen was flat to negative. A bounded follow-up preserved classifier
+hysteresis across transient drains while still resetting planner quantum state.
+
+The decisive frozen-binary A/B/B/A upload campaign used exact one-MiB payloads,
+ten samples per run, two runs per treatment, and diagnostics disabled:
+
+| One connection | Baseline MiB/s | Candidate MiB/s | Delta | Baseline/Candidate CV | p95 delta | allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| c16 | 33.93 | 33.56 | -1.1% | 43.4% / 45.1% | +2.1% | +4.8% |
+| c32 | 29.97 | 25.29 | -15.6% | 22.2% / 49.6% | +24.5% | +8.1% |
+
+All exact transfers completed with zero failures, but there was no c16 gain and
+c32 materially regressed. The active runtime and tests were reverted; the
+accepted behavior-neutral classifier remains. Evidence and frozen baseline and
+candidate binaries are retained under
+`C:\shared\temp\quic-adaptive-pressure-planner-20260719`. The negative record
+SHA-256 is `82149EB6B61FD7E595C37744ACC6334925AC82718DF621734CE55C55BC7B7B11`.
+
+Do not repeat a pressure-gated queue-selection quantum without a materially
+different mechanism. The calibrated signal is useful for attribution, but this
+result confirms that queue ordering is not the missing service capacity. The
+next high-confidence work should reduce connection-actor service cost or move
+bounded post-authentication stream-local preparation outside the actor, using
+the classifier only to prove which pressure regime benefits.
