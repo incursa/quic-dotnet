@@ -7022,3 +7022,54 @@ that mechanism cannot lower c16/c32 actor service time without harming c1/c4,
 the next fallback is bounded post-authentication stream-local preparation;
 packet numbering, protection, ACK/loss recovery, congestion and flow control,
 path state, and final commit authority remain connection-owned.
+
+### Rejected 2026-07-20: pressure-activated client datagram egress pump
+
+A bounded candidate transferred ownership of already-protected client
+datagrams from the connection actor to a 32-batch FIFO worker after the
+existing sustained queued-stream policy promoted the connection. Sparse
+connections retained the synchronous path. The worker preserved update and
+batch order, bounded backpressure, pooled-container and datagram ownership,
+shutdown drain, and failure propagation. The server listener remained
+unchanged.
+
+BenchmarkDotNet Dry and Short jobs validated the primitive before end-to-end
+testing. An uncontended producer submission measured 303.87 ns, far below the
+observed synchronous datagram-send cost, so the candidate proceeded to matched
+loopback gates. The first frozen-binary screen and A/B/B/A campaign appeared
+promising, but the target lanes were strongly bimodal. A subsequent six-pass
+A/B/A/B/A/B campaign with longer five-second samples produced these pooled
+medians:
+
+| One connection | Baseline MiB/s | Candidate MiB/s | Delta | Baseline/Candidate CV | p95 delta | allocation delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| c16 upload | 33.20 | 35.60 | +7.2% | 56.6% / 35.8% | -31.7% | -6.4% |
+| c32 upload | 21.38 | 31.42 | +47.0% | 55.6% / 43.7% | -36.4% | -11.8% |
+
+Those aggregates were not accepted because individual c16 runs crossed in
+both directions and the trace-enabled attribution pass did not reproduce the
+mechanism. Under diagnostics, c16 throughput changed from 32.16 to 32.95 MiB/s
+and c32 changed from 15.73 to 15.44 MiB/s. Sender stream-write
+`send_datagram_effect` time did not fall: it changed from 5.45 to 5.69 ms per
+MiB at c16 and from 0.52 to 0.62 ms per MiB at c32. At c32, stream-write queue
+delay p50 increased from 16.18 to 31.98 ms. The bounded worker could not drain
+faster than the actor produced protected datagrams, so its full-queue waits
+failed to create durable service capacity.
+
+The exact-content guardrails had zero failures. Download stayed within 0.5
+percent at c16 and c32. Duplex throughput improved 3.5 percent at c16 and 3.0
+percent at c32, but c16 duplex allocation increased 6.6 percent. A separate
+low-load bookend left c1 within 1.4 percent; c4 was itself bimodal and therefore
+was not credited as a gain. Focused ownership/failure tests passed 3/3, but the
+diagnostic mechanism gate failed, so full regression and ProtocolLab were not
+run.
+
+The runtime, tests, and temporary benchmark are reverted. Retain all frozen
+binaries, BenchmarkDotNet reports, matched campaigns, guardrails, and diagnostic
+JSON under `C:\shared\temp\quic-egress-pump-20260720`. Do not repeat a single
+synchronous-socket FIFO worker with a larger queue: that only increases retained
+datagram ownership and delays backpressure. Revisit egress offload only with a
+materially different socket submission mechanism that demonstrates lower actor
+service time. The next candidate should instead reduce connection-owned packet
+construction or move bounded post-authentication stream-local preparation off
+the actor before final ordered commit.
