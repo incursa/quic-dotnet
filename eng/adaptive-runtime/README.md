@@ -61,6 +61,12 @@ and exports:
 - shadow epoch, transition, missing/stale, and reason counts in
   `local-result.json`.
 
+The shadow sample also retains `counters-summary.json` as the result's pressure
+artifact. Because target and generator still share one developer host, this
+extra evidence does not upgrade either health classification above `limited`;
+it exists to make noise and queue-pressure review concrete before any rerun or
+rack-lab eligibility decision.
+
 The raw host contract contains only a run-local connection pseudonym, the
 bounded runtime observation, and the immutable shadow snapshot. Workload
 identity, provenance, correctness, and analysis-exclusion fields are joined by

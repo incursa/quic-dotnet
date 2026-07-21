@@ -122,6 +122,8 @@ public sealed class REQ_QUIC_CRT_0169
             "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs"), StringComparison.Ordinal);
         Assert.Contains("adaptive-runtime-connection-observation-v1", runner, StringComparison.Ordinal);
         Assert.Contains("Test-AdaptiveRuntimePolicyEvidence.ps1", runner, StringComparison.Ordinal);
+        Assert.Contains("'-CaptureCounters'", runner, StringComparison.Ordinal);
+        Assert.Contains("counters-summary.json", runner, StringComparison.Ordinal);
         Assert.Contains("shadow-epochs.raw.jsonl", ReadRepositoryText(
             "eng/adaptive-runtime/README.md"), StringComparison.Ordinal);
         Assert.DoesNotContain("mode = 'active_internal'", runner, StringComparison.OrdinalIgnoreCase);

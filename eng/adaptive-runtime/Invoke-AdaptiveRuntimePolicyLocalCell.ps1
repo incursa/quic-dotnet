@@ -476,6 +476,7 @@ $shadowEpochsBySample = @{}
 $artifactPaths = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
 $commands = [System.Collections.Generic.List[object]]::new()
 $contractFailures = [System.Collections.Generic.List[string]]::new()
+$pressureArtifactPaths = [System.Collections.Generic.List[string]]::new()
 $environmentInvalid = $false
 $startedUtc = (Get-Date).ToUniversalTime()
 
@@ -547,6 +548,17 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
             $_.implementationId -match 'incursa|quic-dotnet'
         }) | Select-Object -First 1
         [void] $artifactPaths.Add($aggregatePath)
+    }
+    $pressureArtifactPath = if ($ShadowOnly) {
+        Get-ChildItem -LiteralPath $runRoot -Filter 'counters-summary.json' -Recurse -File -ErrorAction SilentlyContinue |
+            Select-Object -First 1 -ExpandProperty FullName
+    }
+    else {
+        $null
+    }
+    if (-not [string]::IsNullOrWhiteSpace([string] $pressureArtifactPath)) {
+        $pressureArtifactPaths.Add($pressureArtifactPath)
+        [void] $artifactPaths.Add($pressureArtifactPath)
     }
 
     $adapterArtifactsPath = Get-ChildItem -LiteralPath $runRoot -Filter 'adapter-artifacts.json' -Recurse -File -ErrorAction SilentlyContinue |
@@ -639,7 +651,7 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
         exitCode = $exitCode
         outcomes = $outcome
         correctness = $correctness
-        artifactPaths = @($commandPath, $stdoutPath, $stderrPath, $aggregatePath, $campaignHostStdoutPath, $campaignHostStderrPath, $shadowRawPath) |
+        artifactPaths = @($commandPath, $stdoutPath, $stderrPath, $aggregatePath, $campaignHostStdoutPath, $campaignHostStderrPath, $shadowRawPath, $pressureArtifactPath) |
             Where-Object { -not [string]::IsNullOrWhiteSpace([string] $_) -and (Test-Path -LiteralPath $_ -PathType Leaf) }
     })
 }
@@ -1086,7 +1098,7 @@ $result = [ordered]@{
         targetHealth = if ($environmentInvalid) { 'invalid' } else { 'limited' }
         generatorHealth = if ($environmentInvalid) { 'invalid' } else { 'limited' }
         cpuLimit = $null
-        pressureArtifactPath = $null
+        pressureArtifactPath = if ($pressureArtifactPaths.Count -eq 0) { $null } else { $pressureArtifactPaths[0] }
     }
     sequenceProtocol = $effectiveSequenceProtocol
     treatments = if ($ShadowOnly) {
