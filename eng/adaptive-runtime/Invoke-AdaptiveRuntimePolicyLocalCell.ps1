@@ -20,6 +20,8 @@ param(
     [ValidateSet('legacy_current', 'immediate', 'read_dominant_batch')]
     [string] $PolicyB = 'read_dominant_batch',
 
+    [switch] $ShadowOnly,
+
     [string] $ScenarioId = 'quic.transport.sustained-stream.16384x1kb',
 
     [ValidateSet('upload', 'download', 'duplex', 'request_response', 'streaming')]
@@ -61,6 +63,8 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $localBenchmarkScript = Join-Path $repoRoot 'scripts\perf\Invoke-ProtocolLabLocalQuicBenchmark.ps1'
 $resultSchemaPath = Join-Path $repoRoot 'schemas\adaptive-runtime-policy-local-result-v1.schema.json'
+$epochSchemaPath = Join-Path $repoRoot 'schemas\adaptive-runtime-policy-epoch-dataset-v1.schema.json'
+$evidenceValidationScript = Join-Path $repoRoot 'eng\adaptive-runtime\Test-AdaptiveRuntimePolicyEvidence.ps1'
 $serverProjectPath = Join-Path $repoRoot 'eng\protocol-lab\servers\IncursaRawQuicServer\IncursaRawQuicServer.csproj'
 $serverBinaryPath = Join-Path $repoRoot 'eng\protocol-lab\servers\IncursaRawQuicServer\bin\Release\net10.0\IncursaRawQuicServer.dll'
 $runtimeBinaryPath = Join-Path $repoRoot 'src\Incursa.Quic\bin\Release\net10.0\Incursa.Quic.dll'
@@ -247,9 +251,106 @@ function Get-ArtifactKind {
     if ($name -eq 'cell-manifest.json') { return 'manifest' }
     if ($name -eq 'checksum-inventory.json') { return 'checksum_inventory' }
     if ($name -eq 'aggregate-results.json') { return 'metrics' }
+    if ($name -eq 'shadow-epochs.raw.jsonl' -or $name.StartsWith('epoch-row-', [StringComparison]::OrdinalIgnoreCase)) { return 'dataset' }
     if ($name.EndsWith('.stdout.log', [StringComparison]::OrdinalIgnoreCase) -or $name -eq 'server.stdout.txt') { return 'stdout' }
     if ($name.EndsWith('.stderr.log', [StringComparison]::OrdinalIgnoreCase) -or $name -eq 'server.stderr.txt') { return 'stderr' }
     return 'other'
+}
+
+function ConvertTo-ControllerState {
+    param([Parameter(Mandatory = $true)][string] $Value)
+
+    switch ($Value) {
+        'Conservative' { 'conservative' }
+        'Candidate' { 'candidate' }
+        'Fallback' { 'fallback' }
+        'Terminal' { 'terminal' }
+        default { throw "Unknown adaptive controller state '$Value'." }
+    }
+}
+
+function ConvertTo-PolicyValue {
+    param([Parameter(Mandatory = $true)][string] $Value)
+
+    switch ($Value) {
+        'LegacyCurrent' { 'legacy_current' }
+        'Immediate' { 'immediate' }
+        'ReadDominantBatch' { 'read_dominant_batch' }
+        default { throw "Unknown receive-credit policy '$Value'." }
+    }
+}
+
+function ConvertTo-ReasonCode {
+    param([Parameter(Mandatory = $true)][string] $Value)
+
+    switch ($Value) {
+        'LegacyImmediate' { 'legacy_selector' }
+        'LegacyReadDominantBatch' { 'legacy_selector' }
+        'MissingSignal' { 'missing_signal' }
+        'StaleSignal' { 'stale_signal' }
+        'ContradictorySignals' { 'contradictory_signals' }
+        'OutOfDomain' { 'out_of_domain' }
+        'RuleVersionMismatch' { 'rule_version_mismatch' }
+        'ArithmeticSaturated' { 'arithmetic_saturated' }
+        'TerminalStarted' { 'terminal_started' }
+        'ResourceGuard' { 'resource_guard' }
+        'RecoveryGuard' { 'recovery_guard' }
+        'FlowProgressGuard' { 'flow_progress_guard' }
+        'CancellationOrDisposal' { 'cancellation_or_disposal' }
+        'Shutdown' { 'shutdown' }
+        default { throw "Unknown adaptive policy reason '$Value'." }
+    }
+}
+
+function ConvertTo-SignalMask {
+    param([AllowNull()][object] $Value)
+
+    [uint64] $numeric = 0
+    if ($null -eq $Value -or [string]::IsNullOrWhiteSpace([string] $Value) -or [string] $Value -eq 'None') {
+        return $numeric
+    }
+    if ([uint64]::TryParse([string] $Value, [ref] $numeric)) {
+        return $numeric
+    }
+
+    foreach ($name in ([string] $Value -split ',' | ForEach-Object { $_.Trim() })) {
+        $bit = switch ($name) {
+            'HasIssuedApplicationData' { 1 }
+            'LiveObserverStreams' { 2 }
+            'Lifecycle' { 4 }
+            'QueueDelayEwma' { 8 }
+            default { throw "Unknown adaptive observation signal '$name'." }
+        }
+        $numeric = $numeric -bor $bit
+    }
+    return $numeric
+}
+
+function ConvertTo-LifecycleFlags {
+    param([AllowNull()][object] $Value)
+
+    [uint64] $numeric = 0
+    if ($null -eq $Value -or [string]::IsNullOrWhiteSpace([string] $Value) -or [string] $Value -eq 'None') {
+        return $numeric
+    }
+    if ([uint64]::TryParse([string] $Value, [ref] $numeric)) {
+        return $numeric
+    }
+
+    foreach ($name in ([string] $Value -split ',' | ForEach-Object { $_.Trim() })) {
+        $bit = switch ($name) {
+            'Establishing' { 1 }
+            'Active' { 2 }
+            'Closing' { 4 }
+            'Draining' { 8 }
+            'Discarded' { 16 }
+            'Terminal' { 32 }
+            'Disposed' { 64 }
+            default { throw "Unknown adaptive lifecycle flag '$name'." }
+        }
+        $numeric = $numeric -bor $bit
+    }
+    return $numeric
 }
 
 function Get-ScenarioShape {
@@ -288,17 +389,19 @@ function Get-ScenarioShape {
     throw "Scenario '$Scenario' was not found under $scenarioRoot."
 }
 
-foreach ($requiredPath in @($localBenchmarkScript, $resultSchemaPath, $serverProjectPath)) {
+foreach ($requiredPath in @($localBenchmarkScript, $resultSchemaPath, $epochSchemaPath, $evidenceValidationScript, $serverProjectPath)) {
     if (-not (Test-Path -LiteralPath $requiredPath -PathType Leaf)) {
         throw "Required campaign input was not found: $requiredPath"
     }
 }
 
-if ($PolicyA -eq $PolicyB) {
-    throw 'PolicyA and PolicyB must name different forced treatments.'
-}
-if (($PolicyA -eq 'legacy_current') -eq ($PolicyB -eq 'legacy_current')) {
-    throw 'Exactly one treatment must be legacy_current so local classification has an explicit baseline.'
+if (-not $ShadowOnly) {
+    if ($PolicyA -eq $PolicyB) {
+        throw 'PolicyA and PolicyB must name different forced treatments.'
+    }
+    if (($PolicyA -eq 'legacy_current') -eq ($PolicyB -eq 'legacy_current')) {
+        throw 'Exactly one treatment must be legacy_current so local classification has an explicit baseline.'
+    }
 }
 
 $scenarioShape = Get-ScenarioShape -ExecutionRoot $ProtocolLabExecutionRoot -Scenario $ScenarioId
@@ -335,7 +438,12 @@ if (-not $NoBuild -and -not $DryRun) {
 }
 
 if ($DryRun) {
-    Write-Host "Dry run: would execute $SequenceProtocol for A=$PolicyA and B=$PolicyB."
+    if ($ShadowOnly) {
+        Write-Host 'Dry run: would execute one custom shadow-only sample with legacy_current applied.'
+    }
+    else {
+        Write-Host "Dry run: would execute $SequenceProtocol for A=$PolicyA and B=$PolicyB."
+    }
     Write-Host "Output root: $resolvedOutputRoot"
     return
 }
@@ -351,9 +459,20 @@ $repositoryIdentities = @(
     Get-GitIdentity -Name 'protocol-lab' -Path $ProtocolLabRoot
     Get-GitIdentity -Name 'protocol-lab-internal' -Path $ProtocolLabExecutionRoot
 )
-$sequence = if ($SequenceProtocol -eq 'ABBA') { @('A', 'B', 'B', 'A') } else { @('B', 'A', 'A', 'B') }
-$policyByTreatment = @{ A = $PolicyA; B = $PolicyB }
+$effectiveSequenceProtocol = if ($ShadowOnly) { 'custom' } else { $SequenceProtocol }
+$sequence = if ($ShadowOnly) {
+    @('A')
+}
+elseif ($SequenceProtocol -eq 'ABBA') {
+    @('A', 'B', 'B', 'A')
+}
+else {
+    @('B', 'A', 'A', 'B')
+}
+$sequence = @($sequence)
+$policyByTreatment = if ($ShadowOnly) { @{ A = 'legacy_current' } } else { @{ A = $PolicyA; B = $PolicyB } }
 $samples = [System.Collections.Generic.List[object]]::new()
+$shadowEpochsBySample = @{}
 $artifactPaths = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
 $commands = [System.Collections.Generic.List[object]]::new()
 $contractFailures = [System.Collections.Generic.List[string]]::new()
@@ -363,6 +482,7 @@ $startedUtc = (Get-Date).ToUniversalTime()
 for ($index = 0; $index -lt $sequence.Count; $index++) {
     $treatment = $sequence[$index]
     $policy = $policyByTreatment[$treatment]
+    $hostPolicy = if ($ShadowOnly) { 'shadow' } else { $policy }
     $sampleId = "sample-$($index + 1)-$treatment-$policy"
     $sampleRoot = Join-Path $samplesRoot $sampleId
     New-Item -ItemType Directory -Path $sampleRoot -Force | Out-Null
@@ -395,18 +515,21 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
     if ($NoRestore) {
         $arguments += '-NoRestore'
     }
+    if ($ShadowOnly) {
+        $arguments += @('-CaptureCounters', '-CounterRefreshInterval', '1')
+    }
 
     $commandText = 'pwsh ' + (($arguments | ForEach-Object {
         if ($_ -match '[\s"]') { '"' + ($_ -replace '"', '\"') + '"' } else { $_ }
     }) -join ' ')
     Set-Content -LiteralPath $commandPath -Value $commandText -Encoding utf8
-    $commands.Add([ordered]@{ sampleId = $sampleId; treatment = $treatment; policy = $policy; command = $commandText })
+    $commands.Add([ordered]@{ sampleId = $sampleId; treatment = $treatment; policy = $policy; hostMode = $hostPolicy; command = $commandText })
     [void] $artifactPaths.Add($commandPath)
 
     $sampleStartedUtc = (Get-Date).ToUniversalTime()
     $previousPolicy = [Environment]::GetEnvironmentVariable('PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY')
     try {
-        [Environment]::SetEnvironmentVariable('PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY', $policy)
+        [Environment]::SetEnvironmentVariable('PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY', $hostPolicy)
         & pwsh @arguments 1> $stdoutPath 2> $stderrPath
         $exitCode = $LASTEXITCODE
     }
@@ -430,6 +553,7 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
         Select-Object -First 1 -ExpandProperty FullName
     $campaignHostStdoutPath = Join-Path $sampleRoot 'campaign-host.stdout.log'
     $campaignHostStderrPath = Join-Path $sampleRoot 'campaign-host.stderr.log'
+    $shadowRawPath = $null
     $campaignHostSourceStdout = $null
     $campaignHostSourceStderr = $null
     if ($null -ne $adapterArtifactsPath) {
@@ -451,8 +575,35 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
         $reportedPolicy = [regex]::Match(
             (Get-Content -LiteralPath $campaignHostStdoutPath -Raw),
             'QUIC_RECEIVE_CREDIT_POLICY=([^\r\n]+)').Groups[1].Value
-        if ($reportedPolicy -ne $policy) {
-            $contractFailures.Add("$sampleId`: requested policy '$policy' but host reported '$reportedPolicy'.")
+        if ($reportedPolicy -ne $hostPolicy) {
+            $contractFailures.Add("$sampleId`: requested host mode '$hostPolicy' but host reported '$reportedPolicy'.")
+        }
+
+        if ($ShadowOnly) {
+            $shadowContract = [regex]::Match(
+                (Get-Content -LiteralPath $campaignHostStdoutPath -Raw),
+                'QUIC_SHADOW_EPOCH_CONTRACT=([^\r\n]+)').Groups[1].Value
+            if ($shadowContract -ne 'adaptive-runtime-shadow-epoch-raw-v1') {
+                $contractFailures.Add("$sampleId`: shadow epoch raw contract was not reported.")
+            }
+
+            $shadowRawPath = Join-Path $sampleRoot 'shadow-epochs.raw.jsonl'
+            $shadowPrefix = 'QUIC_SHADOW_EPOCH_JSON='
+            $shadowLines = @(Get-Content -LiteralPath $campaignHostStdoutPath | Where-Object {
+                $_.StartsWith($shadowPrefix, [StringComparison]::Ordinal)
+            } | ForEach-Object {
+                $_.Substring($shadowPrefix.Length)
+            })
+            if ($shadowLines.Count -eq 0) {
+                $contractFailures.Add("$sampleId`: no shadow epochs were retained.")
+            }
+            else {
+                [System.IO.File]::WriteAllLines($shadowRawPath, $shadowLines, [System.Text.UTF8Encoding]::new($false))
+                [void] $artifactPaths.Add($shadowRawPath)
+                $shadowEpochsBySample[$sampleId] = @($shadowLines | ForEach-Object {
+                    $_ | ConvertFrom-Json -Depth 30
+                })
+            }
         }
     }
     if (-not [string]::IsNullOrWhiteSpace($campaignHostSourceStderr) -and
@@ -488,8 +639,8 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
         exitCode = $exitCode
         outcomes = $outcome
         correctness = $correctness
-        artifactPaths = @($commandPath, $stdoutPath, $stderrPath, $aggregatePath, $campaignHostStdoutPath, $campaignHostStderrPath) |
-            Where-Object { Test-Path -LiteralPath $_ -PathType Leaf }
+        artifactPaths = @($commandPath, $stdoutPath, $stderrPath, $aggregatePath, $campaignHostStdoutPath, $campaignHostStderrPath, $shadowRawPath) |
+            Where-Object { -not [string]::IsNullOrWhiteSpace([string] $_) -and (Test-Path -LiteralPath $_ -PathType Leaf) }
     })
 }
 
@@ -506,15 +657,17 @@ $candidateTreatment = if ($baselineTreatment -eq 'A') { 'B' } else { 'A' }
 $baselineSamples = @($samples | Where-Object { $_.treatment -eq $baselineTreatment })
 $candidateSamples = @($samples | Where-Object { $_.treatment -eq $candidateTreatment })
 $baselineThroughput = Get-Median -Values @($baselineSamples.outcomes.throughputBytesPerSecond)
-$candidateThroughput = Get-Median -Values @($candidateSamples.outcomes.throughputBytesPerSecond)
+$candidateThroughput = if ($ShadowOnly) { $null } else { Get-Median -Values @($candidateSamples.outcomes.throughputBytesPerSecond) }
 $baselineP95 = Get-Median -Values @($baselineSamples.outcomes.latencyP95Ms)
-$candidateP95 = Get-Median -Values @($candidateSamples.outcomes.latencyP95Ms)
-$withinTreatmentRelativeRanges = @(
+$candidateP95 = if ($ShadowOnly) { $null } else { Get-Median -Values @($candidateSamples.outcomes.latencyP95Ms) }
+$withinTreatmentRelativeRanges = @(@(
     Get-RelativeRange -Values @($baselineSamples.outcomes.throughputBytesPerSecond)
-    Get-RelativeRange -Values @($candidateSamples.outcomes.throughputBytesPerSecond)
     Get-RelativeRange -Values @($baselineSamples.outcomes.latencyP95Ms)
-    Get-RelativeRange -Values @($candidateSamples.outcomes.latencyP95Ms)
-) | Where-Object { $null -ne $_ }
+    if (-not $ShadowOnly) {
+        Get-RelativeRange -Values @($candidateSamples.outcomes.throughputBytesPerSecond)
+        Get-RelativeRange -Values @($candidateSamples.outcomes.latencyP95Ms)
+    }
+) | Where-Object { $null -ne $_ })
 $maximumWithinTreatmentRelativeRange = if ($withinTreatmentRelativeRanges.Count -eq 0) {
     $null
 }
@@ -548,14 +701,247 @@ else {
     }
 }
 
+$resultRunId = if ($ShadowOnly) {
+    "$CampaignId-$CellId-shadow"
+}
+else {
+    "$CampaignId-$CellId-$($SequenceProtocol.ToLowerInvariant())"
+}
+$epochRowPaths = [System.Collections.Generic.List[string]]::new()
+$allShadowEpochs = @($shadowEpochsBySample.Values | ForEach-Object { @($_) })
+if ($ShadowOnly -and $contractFailures.Count -eq 0) {
+    $quicRepository = @($repositoryIdentities | Where-Object name -eq 'quic-dotnet') | Select-Object -First 1
+    $benchmarkHash = [string] $binaryIdentities[0].sha256
+    $runtimeHash = [string] $binaryIdentities[1].sha256
+    $hostFingerprint = "$env:COMPUTERNAME|$([System.Runtime.InteropServices.RuntimeInformation]::OSDescription)|$([Environment]::ProcessorCount)"
+    $epochRoot = Join-Path $resolvedOutputRoot 'epoch-rows'
+    New-Item -ItemType Directory -Path $epochRoot -Force | Out-Null
+
+    foreach ($sample in $samples) {
+        if (-not $shadowEpochsBySample.ContainsKey($sample.sampleId)) {
+            continue
+        }
+
+        $rawPath = @($sample.artifactPaths | Where-Object {
+            [System.IO.Path]::GetFileName($_) -eq 'shadow-epochs.raw.jsonl'
+        }) | Select-Object -First 1
+        if ([string]::IsNullOrWhiteSpace([string] $rawPath)) {
+            $contractFailures.Add("$($sample.sampleId): retained shadow epochs have no raw source artifact.")
+            continue
+        }
+
+        $sourceHash = (Get-FileHash -LiteralPath $rawPath -Algorithm SHA256).Hash.ToLowerInvariant()
+        $firstEpochStartByConnection = @{}
+        foreach ($epoch in @($shadowEpochsBySample[$sample.sampleId])) {
+            $connectionKey = [string] $epoch.connectionKey
+            if (-not $firstEpochStartByConnection.ContainsKey($connectionKey)) {
+                $firstEpochStartByConnection[$connectionKey] = [long] $epoch.observation.epochStartTicks
+            }
+
+            $epochStartOffsetMicros = [long] [Math]::Max(
+                0,
+                (([long] $epoch.observation.epochStartTicks - [long] $firstEpochStartByConnection[$connectionKey]) * 1000000.0) /
+                    [Diagnostics.Stopwatch]::Frequency)
+            $reasonCode = ConvertTo-ReasonCode -Value ([string] $epoch.snapshot.reason)
+            $state = ConvertTo-ControllerState -Value ([string] $epoch.snapshot.state)
+            $previousState = ConvertTo-ControllerState -Value ([string] $epoch.snapshot.previousState)
+            $appliedPolicy = ConvertTo-PolicyValue -Value ([string] $epoch.snapshot.appliedPolicy)
+            $proposedPolicy = ConvertTo-PolicyValue -Value ([string] $epoch.snapshot.proposedPolicy)
+            $missingSignalMask = ConvertTo-SignalMask -Value $epoch.observation.missingSignalMask
+            $staleSignalMask = ConvertTo-SignalMask -Value $epoch.observation.staleSignalMask
+            $lifecycleFlags = ConvertTo-LifecycleFlags -Value $epoch.observation.lifecycleFlags
+            $outOfDomain = $reasonCode -eq 'out_of_domain'
+            $exclusionFlags = [System.Collections.Generic.List[string]]::new()
+            if ($missingSignalMask -ne 0) { $exclusionFlags.Add('observation_missing') }
+            if ($staleSignalMask -ne 0) { $exclusionFlags.Add('observation_stale') }
+            if ($reasonCode -eq 'arithmetic_saturated') { $exclusionFlags.Add('observation_saturated') }
+            if ($outOfDomain) { $exclusionFlags.Add('out_of_domain') }
+            if ($epochStartOffsetMicros -lt ($WarmupSeconds * 1000000L)) { $exclusionFlags.Add('warmup') }
+            if (($lifecycleFlags -band 96) -ne 0) { $exclusionFlags.Add('terminal_partial_epoch') }
+            if ($exclusionFlags.Count -eq 0) { $exclusionFlags.Add('none') }
+
+            $rowId = "$($sample.sampleId)-$connectionKey-epoch-$([uint64]$epoch.observation.connectionEpochSequence)"
+            $row = [ordered]@{
+                schemaVersion = 'adaptive-runtime-policy-epoch-dataset-v1'
+                datasetId = "$CampaignId-$CellId-shadow-dataset"
+                rowId = $rowId
+                campaignId = $CampaignId
+                runId = $resultRunId
+                cellId = $CellId
+                sampleId = [string] $sample.sampleId
+                repetition = 0
+                connectionKey = $connectionKey
+                epochIndex = [long] ([uint64] $epoch.observation.connectionEpochSequence - 1)
+                epochStartOffsetMicros = $epochStartOffsetMicros
+                epochDurationMicros = [long] $epoch.observation.activeDurationMicros
+                preDecisionObservations = [ordered]@{
+                    openStreams = [long] $epoch.observation.openStreams
+                    liveObserverStreams = [long] $epoch.observation.liveObserverStreams
+                    activeStreams = $null
+                    runnableStreams = $null
+                    receiveActiveStreams = $null
+                    sendActiveStreams = $null
+                    inboundBytesEpoch = $null
+                    outboundBytesEpoch = $null
+                    inboundRateEwmaBps = $null
+                    outboundRateEwmaBps = $null
+                    queuedApplicationWrites = [long] $epoch.observation.queuedApplicationWrites
+                    distinctQueuedSendStreams = $null
+                    queueDelayEwmaMicros = if (($missingSignalMask -band 8) -ne 0) { $null } else { [long] $epoch.observation.queueDelayEwmaMicros }
+                    actorServiceTimeEwmaMicros = $null
+                    queueToServiceRatioQ16 = $null
+                    connectionReceiveHeadroomBytes = $null
+                    estimatedReceiveExhaustionMicros = $null
+                    connectionCreditPendingBytes = $null
+                    timeSinceCreditPublicationMicros = $null
+                    connectionFlowBlockedMicrosEpoch = $null
+                    streamFlowBlockedMicrosEpoch = $null
+                    outboundBacklogBytes = $null
+                    congestionWindowBytes = $null
+                    bytesInFlight = $null
+                    lossEventsEpoch = $null
+                    retransmissionsEpoch = $null
+                    ptoEventsEpoch = $null
+                    retainedSendBytes = $null
+                    retainedReceiveBytes = $null
+                    advisorAgeMicros = $null
+                    hasIssuedApplicationData = [bool] $epoch.observation.hasIssuedApplicationData
+                    missingSignalMask = [long] $missingSignalMask
+                    staleSignalMask = [long] $staleSignalMask
+                    lifecycleFlags = [long] $lifecycleFlags
+                    outOfDomain = $outOfDomain
+                }
+                currentPolicyState = [ordered]@{
+                    snapshotVersion = [string] $epoch.snapshot.snapshotVersion
+                    ruleVersion = [string] $epoch.snapshot.ruleVersion
+                    observationContractVersion = [string] $epoch.observation.observationContractVersion
+                    state = $state
+                    appliedPolicy = $appliedPolicy
+                    hasIssuedApplicationData = [bool] $epoch.snapshot.hasIssuedApplicationData
+                }
+                candidatePolicySelection = [ordered]@{
+                    selectionSource = 'shadow_rule'
+                    selectedPolicy = $appliedPolicy
+                    shadowRecommendation = $proposedPolicy
+                    reasonCode = $reasonCode
+                    contradictorySignals = $reasonCode -eq 'contradictory_signals'
+                }
+                transitionState = [ordered]@{
+                    previousState = $previousState
+                    state = $state
+                    transitioned = [bool] $epoch.snapshot.transitioned
+                    reasonCode = $reasonCode
+                }
+                dwellState = [ordered]@{
+                    stateEpochCount = [long] $epoch.snapshot.stateEpochCount
+                    stateDurationMicros = [long] $epoch.snapshot.stateDurationMicros
+                    candidateEvidenceCount = [long] $epoch.snapshot.candidateEvidenceCount
+                    reliefEvidenceCount = [long] $epoch.snapshot.reliefEvidenceCount
+                }
+                postEpochOutcomes = [ordered]@{
+                    applicationBytes = $null
+                    completedOperations = $null
+                    throughputBytesPerSecond = $null
+                    latencyP95Micros = $null
+                    allocatedBytes = $null
+                    peakRetainedBytes = $null
+                    queueDelayP95Micros = $null
+                    lossEvents = $null
+                    ptoEvents = $null
+                }
+                correctnessFlags = [ordered]@{
+                    payloadValid = [bool] $sample.correctness.payloadValidated
+                    protocolValid = [int] $sample.correctness.protocolErrors -eq 0
+                    timedOut = [int] $sample.correctness.timedOutOperations -ne 0
+                    cancellationValid = $null
+                    disposalValid = $null
+                    ownershipValid = [int] $sample.correctness.failedOperations -eq 0
+                    terminalValid = [int] $sample.correctness.failedOperations -eq 0
+                    violationCodes = @($sample.correctness.invariantViolations)
+                }
+                fairnessFlags = [ordered]@{
+                    assessed = $false
+                    starvationObserved = $false
+                    guardrailViolated = $false
+                    violationCodes = @()
+                }
+                provenance = [ordered]@{
+                    repositoryName = [string] $quicRepository.name
+                    repositoryPath = [string] $quicRepository.path
+                    repositoryBranch = $quicRepository.branch
+                    repositoryRemoteUrl = $quicRepository.remoteUrl
+                    repositoryCommit = [string] $quicRepository.commit
+                    repositoryDirty = [bool] $quicRepository.dirty
+                    benchmarkSha256 = $benchmarkHash
+                    runtimeSha256 = $runtimeHash
+                    hostFingerprint = $hostFingerprint
+                    os = [System.Runtime.InteropServices.RuntimeInformation]::OSDescription
+                    architecture = [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString()
+                    processorCount = [Environment]::ProcessorCount
+                    dotnetRuntime = [System.Runtime.InteropServices.RuntimeInformation]::FrameworkDescription
+                    monotonicTimerFrequencyHz = [Diagnostics.Stopwatch]::Frequency
+                    scriptVersion = 'adaptive-runtime-shadow-export-v1'
+                    toolVersions = [ordered]@{ powershell = $PSVersionTable.PSVersion.ToString() }
+                    resultSchemaVersion = 'adaptive-runtime-policy-local-result-v1'
+                    datasetSchemaVersion = 'adaptive-runtime-policy-epoch-dataset-v1'
+                    ruleVersion = [string] $epoch.snapshot.ruleVersion
+                    observationContractVersion = [string] $epoch.observation.observationContractVersion
+                    sourceArtifactPath = [System.IO.Path]::GetFullPath($rawPath)
+                    sourceArtifactSha256 = $sourceHash
+                    transformation = [ordered]@{
+                        name = 'adaptive-runtime-shadow-epoch-export'
+                        version = '1.0.0'
+                        codeCommit = [string] $quicRepository.commit
+                        inputSha256 = $sourceHash
+                        outputSha256 = ('0' * 64)
+                    }
+                }
+                workloadAnalysisOnly = [ordered]@{
+                    excludedFromProductionFeatures = $true
+                    scenarioId = $ScenarioId
+                    trafficShape = $TrafficShape
+                    payloadBytes = $PayloadBytes
+                    accountingMode = $AccountingMode
+                    requestedConnections = $Connections
+                    effectiveConnections = $Connections
+                    requestedStreamsPerConnection = $StreamsPerConnection
+                    effectiveStreamsPerConnection = $StreamsPerConnection
+                    requestedConcurrency = $Connections * $StreamsPerConnection
+                    effectiveConcurrency = $Connections * $StreamsPerConnection
+                    warmupMicros = $WarmupSeconds * 1000000L
+                    measurementMicros = $DurationSeconds * 1000000L
+                    arrivalPattern = $ArrivalPattern
+                    lossPercent = 0
+                    delayMs = 0
+                }
+                analysisExclusionFlags = @($exclusionFlags)
+            }
+
+            $canonicalRow = $row | ConvertTo-Json -Depth 100 -Compress
+            $canonicalHash = [Convert]::ToHexString(
+                [Security.Cryptography.SHA256]::HashData([Text.Encoding]::UTF8.GetBytes($canonicalRow))).ToLowerInvariant()
+            $row.provenance.transformation.outputSha256 = $canonicalHash
+            $rowPath = Join-Path $epochRoot "$rowId.json"
+            $row | ConvertTo-Json -Depth 100 | Set-Content -LiteralPath $rowPath -Encoding utf8
+            $rowJson = Get-Content -LiteralPath $rowPath -Raw
+            if (-not ($rowJson | Test-Json -SchemaFile $epochSchemaPath -ErrorAction Stop)) {
+                throw "Generated epoch row did not validate against $epochSchemaPath. Retained row: $rowPath"
+            }
+
+            $epochRowPaths.Add($rowPath)
+            [void] $artifactPaths.Add($rowPath)
+        }
+    }
+}
+
 $manifestPath = Join-Path $resolvedOutputRoot 'cell-manifest.json'
 $manifest = [ordered]@{
     schemaVersion = 'adaptive-runtime-policy-local-cell-manifest-v1'
     campaignId = $CampaignId
     cellId = $CellId
-    sequenceProtocol = $SequenceProtocol
+    sequenceProtocol = $effectiveSequenceProtocol
     sequence = $sequence
-    treatments = [ordered]@{ A = $PolicyA; B = $PolicyB }
+    treatments = if ($ShadowOnly) { [ordered]@{ A = 'legacy_current' } } else { [ordered]@{ A = $PolicyA; B = $PolicyB } }
     workload = [ordered]@{
         scenarioId = $ScenarioId
         trafficShape = $TrafficShape
@@ -612,11 +998,22 @@ foreach ($failure in $contractFailures) {
     $resultNotes.Add("contract: $failure")
 }
 $hostFingerprint = "$env:COMPUTERNAME|$([System.Runtime.InteropServices.RuntimeInformation]::OSDescription)|$([Environment]::ProcessorCount)"
+$reasonCounts = [ordered]@{}
+foreach ($epoch in $allShadowEpochs) {
+    $reason = ConvertTo-ReasonCode -Value ([string] $epoch.snapshot.reason)
+    if (-not $reasonCounts.Contains($reason)) {
+        $reasonCounts[$reason] = 0
+    }
+    $reasonCounts[$reason]++
+}
+$shadowSummaryArtifactPath = @($artifactPaths | Where-Object {
+    [System.IO.Path]::GetFileName($_) -eq 'shadow-epochs.raw.jsonl'
+}) | Select-Object -First 1
 $resultPath = Join-Path $resolvedOutputRoot 'local-result.json'
 $result = [ordered]@{
     schemaVersion = 'adaptive-runtime-policy-local-result-v1'
     campaignId = $CampaignId
-    runId = "$CampaignId-$CellId-$($SequenceProtocol.ToLowerInvariant())"
+    runId = $resultRunId
     cellId = $CellId
     startedUtc = $startedUtc.ToString('O')
     endedUtc = $endedUtc.ToString('O')
@@ -625,14 +1022,14 @@ $result = [ordered]@{
     repositoryIdentities = $repositoryIdentities
     binaryProvenance = [ordered]@{ frozen = $true; assemblies = $binaryIdentities }
     policyAxis = 'receive_credit_publication'
-    mode = 'forced'
+    mode = if ($ShadowOnly) { 'shadow' } else { 'forced' }
     policyConfiguration = [ordered]@{
-        appliedPolicy = 'not_applicable'
+        appliedPolicy = if ($ShadowOnly) { 'legacy_current' } else { 'not_applicable' }
         forcedPolicy = $null
-        shadowEnabled = $false
-        shadowPolicy = $null
-        ruleVersion = 'receive-credit-shadow-v1'
-        observationContractVersion = 'adaptive-runtime-observation-v1'
+        shadowEnabled = [bool] $ShadowOnly
+        shadowPolicy = if ($ShadowOnly) { 'not_applicable' } else { $null }
+        ruleVersion = 'receive-credit-legacy-v1'
+        observationContractVersion = 'adaptive-runtime-connection-observation-v1'
         anomalyBudgets = [ordered]@{
             maxMissingEpochPercent = 0
             maxStaleEpochPercent = 0
@@ -640,7 +1037,7 @@ $result = [ordered]@{
             maxContradictoryEpochPercent = 0
         }
         legacySelectorCommit = '1b2611e1'
-        stickyWriteEligibilityBypassed = $PolicyA -eq 'read_dominant_batch' -or $PolicyB -eq 'read_dominant_batch'
+        stickyWriteEligibilityBypassed = -not $ShadowOnly -and ($PolicyA -eq 'read_dominant_batch' -or $PolicyB -eq 'read_dominant_batch')
         axisSettings = [ordered]@{
             treatmentA = $PolicyA
             treatmentB = $PolicyB
@@ -665,7 +1062,7 @@ $result = [ordered]@{
         arrivalPattern = $ArrivalPattern
         warmupSeconds = $WarmupSeconds
         durationSeconds = $DurationSeconds
-        repetitions = 4
+        repetitions = $sequence.Count
         effectivePayloadBytes = $PayloadBytes
         effectiveConnections = $Connections
         effectiveStreamsPerConnection = $StreamsPerConnection
@@ -691,10 +1088,17 @@ $result = [ordered]@{
         cpuLimit = $null
         pressureArtifactPath = $null
     }
-    sequenceProtocol = $SequenceProtocol
-    treatments = [ordered]@{
-        A = [ordered]@{ policy = $PolicyA; benchmarkBinaryRole = 'candidate_benchmark'; runtimeBinaryRole = 'candidate_runtime' }
-        B = [ordered]@{ policy = $PolicyB; benchmarkBinaryRole = 'candidate_benchmark'; runtimeBinaryRole = 'candidate_runtime' }
+    sequenceProtocol = $effectiveSequenceProtocol
+    treatments = if ($ShadowOnly) {
+        [ordered]@{
+            A = [ordered]@{ policy = 'legacy_current'; benchmarkBinaryRole = 'candidate_benchmark'; runtimeBinaryRole = 'candidate_runtime' }
+        }
+    }
+    else {
+        [ordered]@{
+            A = [ordered]@{ policy = $PolicyA; benchmarkBinaryRole = 'candidate_benchmark'; runtimeBinaryRole = 'candidate_runtime' }
+            B = [ordered]@{ policy = $PolicyB; benchmarkBinaryRole = 'candidate_benchmark'; runtimeBinaryRole = 'candidate_runtime' }
+        }
     }
     sequence = $sequence
     samples = @($samples)
@@ -728,15 +1132,15 @@ $result = [ordered]@{
         violations = @()
     }
     diagnosticSignals = [ordered]@{
-        observationEnabled = $false
-        shadowEpochCount = 0
-        transitionCount = 0
-        outOfDomainEpochCount = 0
-        contradictoryEpochCount = 0
-        missingEpochCount = 0
-        staleEpochCount = 0
-        reasonCounts = [ordered]@{}
-        summaryArtifactPath = $null
+        observationEnabled = [bool] $ShadowOnly
+        shadowEpochCount = $allShadowEpochs.Count
+        transitionCount = @($allShadowEpochs | Where-Object { $_.snapshot.transitioned }).Count
+        outOfDomainEpochCount = @($allShadowEpochs | Where-Object { $_.snapshot.reason -eq 'OutOfDomain' }).Count
+        contradictoryEpochCount = @($allShadowEpochs | Where-Object { $_.snapshot.reason -eq 'ContradictorySignals' }).Count
+        missingEpochCount = @($allShadowEpochs | Where-Object { (ConvertTo-SignalMask -Value $_.observation.missingSignalMask) -ne 0 }).Count
+        staleEpochCount = @($allShadowEpochs | Where-Object { (ConvertTo-SignalMask -Value $_.observation.staleSignalMask) -ne 0 }).Count
+        reasonCounts = $reasonCounts
+        summaryArtifactPath = if ([string]::IsNullOrWhiteSpace([string] $shadowSummaryArtifactPath)) { $null } else { [string] $shadowSummaryArtifactPath }
     }
     artifacts = $artifacts
     retainedEvidenceRefs = @(
@@ -753,6 +1157,14 @@ $result | ConvertTo-Json -Depth 100 | Set-Content -LiteralPath $resultPath -Enco
 $resultJson = Get-Content -LiteralPath $resultPath -Raw
 if (-not ($resultJson | Test-Json -SchemaFile $resultSchemaPath -ErrorAction Stop)) {
     throw "Generated local result did not validate against $resultSchemaPath. Retained result: $resultPath"
+}
+
+if ($ShadowOnly -and $epochRowPaths.Count -gt 0) {
+    & $evidenceValidationScript -LocalResultPath $resultPath -EpochDatasetPath @($epochRowPaths) |
+        Set-Content -LiteralPath (Join-Path $resolvedOutputRoot 'evidence-validation.json') -Encoding utf8
+    if ($LASTEXITCODE -ne 0) {
+        throw "Generated shadow evidence did not pass schema/join validation. Retained output: $resolvedOutputRoot"
+    }
 }
 
 Write-Host "Adaptive runtime local cell completed."

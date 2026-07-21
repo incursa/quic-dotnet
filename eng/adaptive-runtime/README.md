@@ -50,6 +50,25 @@ result, manifest, raw ProtocolLab artifacts, commands, and checksum inventory
 under `.artifacts/adaptive-runtime/<campaignId>/<cellId>`. A single-cell result
 is diagnostic and cannot authorize activation or rack-lab submission.
 
+Capture one behavior-neutral shadow sample with the same permanent runner by
+adding `-ShadowOnly`. The runner applies `legacy_current`, asks the internal
+controller only for a recommendation, enables one-second host/process counters,
+and exports:
+
+- the authoritative raw host stream as `shadow-epochs.raw.jsonl`;
+- one schema-valid file per connection epoch under `epoch-rows/`;
+- a schema/join validation summary in `evidence-validation.json`; and
+- shadow epoch, transition, missing/stale, and reason counts in
+  `local-result.json`.
+
+The raw host contract contains only a run-local connection pseudonym, the
+bounded runtime observation, and the immutable shadow snapshot. Workload
+identity, provenance, correctness, and analysis-exclusion fields are joined by
+the runner outside the transport. `transformation.outputSha256` is the SHA-256
+of the canonical row with that field filled by 64 zeroes, avoiding a
+self-referential file hash while keeping the transformation payload
+independently reproducible.
+
 Canonical schema examples live under
 `tests/fixtures/adaptive-runtime-policy/`. Their identities and hashes are
 illustrative and are not campaign evidence.
