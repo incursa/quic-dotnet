@@ -178,6 +178,7 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-CRT-0050.json`](WI-QUIC-CRT-0050.json): canonical CRT server-side 0-RTT admission anti-replay gate work item
 - [`WI-QUIC-CRT-0052.json`](WI-QUIC-CRT-0052.json): canonical CRT server first-flight x25519 compatibility work item
 - [`WI-QUIC-CRT-0053.json`](WI-QUIC-CRT-0053.json): canonical CRT QUIC and HTTP/3 metrics surface work item
+- [`WI-QUIC-CRT-0060.json`](WI-QUIC-CRT-0060.json): canonical CRT adaptive runtime receive-credit shadow foundation work item
 
 ## Notes
 

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0061",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Adaptive runtime receive-credit shadow foundation verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home and correctness-guard tests, deterministic replay and property/fuzz tests, same-binary neutrality checks, receive-credit cost benchmarks, JSON Schema validation, matched local forced-policy campaigns, complete Release regression tests, and explicit retained-negative review.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0059",
+    "WI-QUIC-CRT-0060"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0164",
+    "REQ-QUIC-CRT-0165",
+    "REQ-QUIC-CRT-0166",
+    "REQ-QUIC-CRT-0167",
+    "REQ-QUIC-CRT-0168",
+    "REQ-QUIC-CRT-0169"
+  ],
+  "preconditions": [
+    "The retained receive-credit behavior at commit 1b2611e1 remains the legacy_current authority and rollback target.",
+    "The universal, duplex-reactivating, non-sticky, and lock-based receive-credit variants remain retained negative evidence rather than implementation inputs.",
+    "No active_internal policy application, other policy axis, runtime advisor, public API, or online-learning path is included in this verification slice.",
+    "The local-result and epoch-dataset schemas remain versioned review contracts for offline analysis and provenance."
+  ],
+  "scope": "Verify the behavior-neutral receive-credit shadow foundation only: bounded connection observations, internal forced legacy_current/immediate/frozen read_dominant_batch controls, exact frozen-selector shadow reproduction while legacy_current remains applied, deterministic actor-safe snapshot and reason behavior, monotonic sticky application-write fallback, conservative recommendations for incomplete or invalid observations, and provenance-rich local evidence output. This artifact does not verify active controller application, a wider receive-credit rule, any other policy axis, or a publishable ProtocolLab performance claim.",
+  "expected_result": "The unset and disabled paths preserve legacy_current behavior; forced modes remain internal and cannot bypass correctness or resource guards; identical ordered observations replay identically; every in-domain shadow decision agrees with the frozen legacy selector; the sticky application-write fact never clears; missing, stale, contradictory, saturated, and out-of-domain observations produce bounded conservative recommendations without changing the applied path; steady-state observation adds no managed allocation, global lock, per-packet evaluation, or unbounded enumeration; representative result and epoch documents validate with complete provenance; focused, property/fuzz, benchmark, matched local, and complete Release gates pass or retain an explicit non-promoting failure classification.",
+  "procedure": [
+    "Validate ARC-QUIC-CRT-0059, WI-QUIC-CRT-0060, and VER-QUIC-CRT-0061 individually against model/model.schema.json; verify unique IDs and reciprocal direct links to REQ-QUIC-CRT-0164 through REQ-QUIC-CRT-0169.",
+    "Run focused requirement-home tests for REQ-QUIC-CRT-0164 through REQ-QUIC-CRT-0169 and adjacent receive-credit, cancellation, disposal, FIN, reset, terminal-read, low-headroom, saturation, recovery, and completed-stream guards.",
+    "Run deterministic replay plus property/fuzz sequences covering duplicate, delayed, missing, stale, contradictory, saturated, out-of-order, out-of-domain, shutdown, and terminal observations, including actor-safe latching and bounded reason codes.",
+    "Compare the default disabled path, observe_only, and shadow in the same binary; prove shadow output has no behavior consumer and prove 100 percent in-domain agreement with the frozen legacy receive-credit selector, including the connection-lifetime sticky application-write fallback.",
+    "Force legacy_current, immediate, and frozen read_dominant_batch independently in test-only campaigns and prove that selection cannot bypass correctness or progress guards.",
+    "Run the receive-credit decision and observation cost benchmark in Dry and Short jobs; verify no steady-state managed allocation, global-lock acquisition, per-packet evaluation, or unbounded stream enumeration is introduced.",
+    "Validate representative positive, retained-negative, malformed-sequence, contradictory-exclusion, and provenance-missing local-result and epoch-row documents against schemas/adaptive-runtime-policy-local-result-v1.schema.json and schemas/adaptive-runtime-policy-epoch-dataset-v1.schema.json.",
+    "Run matched local-only ABBA or BAAB forced-policy and shadow campaigns over sparse, target, neighboring, retained-negative, and healthy stress regimes with frozen binary hashes and exact-payload checks; retain noisy, rejected, and failed rows without promotion.",
+    "Run the complete Release test suite and classify any failure using isolated deterministic reruns without erasing the original result.",
+    "Run git diff --check and record the pre-existing repo-wide SpecTrace validation backlog separately from the validation status of the touched artifacts."
+  ],
+  "evidence": [
+    "specs/requirements/quic/SPEC-QUIC-CRT.json",
+    "specs/architecture/quic/ARC-QUIC-CRT-0059.json",
+    "specs/work-items/quic/WI-QUIC-CRT-0060.json",
+    "docs/design/adaptive-runtime-policy-controller-state-machine.md",
+    "docs/protocol-lab/adaptive-runtime-policy-local-campaign.md",
+    "docs/protocol-lab/adaptive-runtime-policy-dataset-provenance-contract.md",
+    "docs/testing/adaptive-runtime-policy-shadow-verification.md",
+    "docs/testing/adaptive-runtime-policy-acceptance-rollback.md",
+    "schemas/adaptive-runtime-policy-local-result-v1.schema.json",
+    "schemas/adaptive-runtime-policy-epoch-dataset-v1.schema.json",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT",
+    "benchmarks/QuicConnectionStreamStateBenchmarks.cs"
+  ]
+}

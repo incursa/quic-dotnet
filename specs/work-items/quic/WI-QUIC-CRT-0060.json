@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0060",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "Adaptive runtime receive-credit shadow foundation work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add the bounded connection-local observation, internal forced-policy, provenance, and shadow-only receive-credit foundation while legacy_current remains authoritative.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0059"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0059"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0061"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0164",
+    "REQ-QUIC-CRT-0165",
+    "REQ-QUIC-CRT-0166",
+    "REQ-QUIC-CRT-0167",
+    "REQ-QUIC-CRT-0168",
+    "REQ-QUIC-CRT-0169"
+  ],
+  "planned_changes": "- Introduce the smallest internal receive-credit policy seam with legacy_current as the unchanged default and with internal/test-only immediate and frozen read_dominant_batch forced values.\n- Preserve every existing correctness, progress, low-headroom, saturation, terminal-read, FIN, reset, cancellation, disposal, shutdown, recovery, and completed-stream guard regardless of forced or shadow selection.\n- Add a compact versioned connection-local observation and immutable policy snapshot evaluated only at actor-safe boundaries, with bounded reason codes, deterministic fallback, monotonic hasIssuedApplicationData state, and no advisor dependency.\n- Add observe_only and shadow plumbing with no runtime behavior consumer; shadow records the frozen legacy selector recommendation while legacy_current remains applied.\n- Keep disabled observation behavior-neutral and keep steady-state observation free from per-observation allocation, global locking, per-packet evaluation, and unbounded stream enumeration.\n- Add schema-backed local-result and epoch-row serialization or validation plumbing with repository, binary, workload, policy, artifact, and transformation provenance.\n- Add focused requirement-home, state/replay, correctness-guard, schema, and cost coverage before running matched local forced-policy campaigns.\n- Land the seam, observation, shadow, and local-evidence portions as separate interruption-safe commits when each portion passes its own verification gate.",
+  "verification_plan": "Validate the touched SpecTrace artifacts individually and verify their direct links; prove the unset seam is equivalent to legacy_current; prove internal forced values cannot bypass correctness guards; prove deterministic replay and exact in-domain legacy selector agreement in shadow mode; prove sticky application-write fallback, actor-safe latching, bounded reasons, conservative recommendations for missing/stale/contradictory/out-of-domain observations, disabled-path neutrality, and steady-state allocation/lock bounds; validate representative local-result and epoch-row documents against their schemas; preserve retained negative evidence; run focused and property/fuzz tests, the receive-credit cost benchmark, matched local-only forced-policy campaigns, and the complete Release suite before marking the item complete. ProtocolLab is a later eligibility gate and is not required to complete the behavior-neutral shadow foundation.",
+  "out_of_scope": [
+    "Applying active_internal controller output to production runtime behavior",
+    "Widening receive-credit batching beyond the frozen sticky read-dominant selector",
+    "Changing oversized-write admission, send planning, datagram batching, actor quantum, packet cadence, congestion control, recovery, or other policy axes",
+    "Adding a runtime-advisor dependency or a global per-connection policy manager",
+    "Using benchmark labels, payload constants, scenario identifiers, caller-visible concurrency, online learning, or live exploration as runtime inputs",
+    "Adding public API or a support promise for forced or shadow modes",
+    "Publishing performance claims or submitting ProtocolLab jobs before the local shadow and counterfactual gates pass"
+  ]
+}
