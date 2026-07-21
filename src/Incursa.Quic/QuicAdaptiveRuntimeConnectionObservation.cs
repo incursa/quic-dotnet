@@ -7,7 +7,10 @@ namespace Incursa.Quic;
 internal enum QuicAdaptiveRuntimeSignalMask : uint
 {
     None = 0,
-    QueueDelayEwma = 1U << 0,
+    HasIssuedApplicationData = 1U << 0,
+    LiveObserverStreams = 1U << 1,
+    Lifecycle = 1U << 2,
+    QueueDelayEwma = 1U << 3,
 }
 
 [Flags]

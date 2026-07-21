@@ -9,3 +9,8 @@ internal enum QuicReceiveCreditPolicyMode
     Immediate = 1,
     ReadDominantBatch = 2,
 }
+
+internal static class QuicReceiveCreditPolicy
+{
+    internal const ushort ReadDominantMinimumLiveObserverStreams = 16;
+}

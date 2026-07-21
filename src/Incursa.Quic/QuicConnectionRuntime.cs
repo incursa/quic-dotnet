@@ -66,6 +66,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const int AdaptiveRuntimeObservationDisabled = 0;
     private const int AdaptiveRuntimeObservationConfiguring = 1;
     private const int AdaptiveRuntimeObservationEnabled = 2;
+    private const int AdaptiveRuntimeShadowDisabled = 0;
+    private const int AdaptiveRuntimeShadowConfiguring = 1;
+    private const int AdaptiveRuntimeShadowEnabled = 2;
     private const byte OutboundStreamControlFrameType = QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask;
     private const int ApplicationMinimumProtectedPayloadLength =
         QuicInitialPacketProtection.HeaderProtectionSampleOffset + QuicInitialPacketProtection.HeaderProtectionSampleLength;
@@ -93,6 +96,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private int adaptiveRuntimeObservationConfigurationState;
     private long adaptiveRuntimeObservationEpochStartTicks;
     private ulong adaptiveRuntimeObservationEpochSequence;
+    private int adaptiveRuntimeShadowConfigurationState;
+    private QuicReceiveCreditShadowController receiveCreditShadowController = default;
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
     private readonly object scheduledFlowControlCreditGate = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
@@ -1008,6 +1013,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             throw new ArgumentOutOfRangeException(nameof(mode));
         }
 
+        if (mode != QuicReceiveCreditPolicyMode.LegacyCurrent
+            && Volatile.Read(ref adaptiveRuntimeShadowConfigurationState) != AdaptiveRuntimeShadowDisabled)
+        {
+            throw new InvalidOperationException("Forced receive-credit modes cannot be enabled while shadow mode is active.");
+        }
+
         if (Interlocked.CompareExchange(
                 ref receiveCreditPolicyMode,
                 (int)mode,
@@ -1019,7 +1030,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     private bool ShouldUseLegacyBatchedReceiveCreditPath()
     {
-        return streamObservers.DistinctStreamCount >= MultiplexedOversizedWriteMinimumStreamCount
+        return streamObservers.DistinctStreamCount >= QuicReceiveCreditPolicy.ReadDominantMinimumLiveObserverStreams
             && Volatile.Read(ref hasIssuedApplicationDataWrite) == 0;
     }
 
@@ -1088,6 +1099,60 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         adaptiveRuntimeObservationEpochSequence = epochSequence;
         adaptiveRuntimeObservationEpochStartTicks = epochEndTicks;
         return true;
+    }
+
+    internal void EnableAdaptiveRuntimeShadow()
+    {
+        if (Interlocked.CompareExchange(
+                ref adaptiveRuntimeShadowConfigurationState,
+                AdaptiveRuntimeShadowConfiguring,
+                AdaptiveRuntimeShadowDisabled) != AdaptiveRuntimeShadowDisabled)
+        {
+            throw new InvalidOperationException("Adaptive runtime shadow mode has already been enabled.");
+        }
+
+        int receiveCreditMode = Volatile.Read(ref receiveCreditPolicyMode);
+        if (receiveCreditMode is (int)QuicReceiveCreditPolicyMode.Immediate
+            or (int)QuicReceiveCreditPolicyMode.ReadDominantBatch)
+        {
+            Volatile.Write(
+                ref adaptiveRuntimeShadowConfigurationState,
+                AdaptiveRuntimeShadowDisabled);
+            throw new InvalidOperationException("Shadow mode requires the legacy_current receive-credit policy.");
+        }
+
+        int observationState = Volatile.Read(ref adaptiveRuntimeObservationConfigurationState);
+        if (observationState == AdaptiveRuntimeObservationDisabled)
+        {
+            EnableAdaptiveRuntimeObservation();
+        }
+        else if (observationState != AdaptiveRuntimeObservationEnabled)
+        {
+            Volatile.Write(
+                ref adaptiveRuntimeShadowConfigurationState,
+                AdaptiveRuntimeShadowDisabled);
+            throw new InvalidOperationException("Adaptive runtime observation is not ready for shadow mode.");
+        }
+
+        Volatile.Write(
+            ref adaptiveRuntimeShadowConfigurationState,
+            AdaptiveRuntimeShadowEnabled);
+    }
+
+    internal bool TryCaptureReceiveCreditShadowAtActorBoundary(
+        long epochEndTicks,
+        out QuicAdaptiveRuntimeConnectionObservation observation,
+        out QuicReceiveCreditPolicySnapshot snapshot)
+    {
+        snapshot = default;
+        if (Volatile.Read(ref adaptiveRuntimeShadowConfigurationState) != AdaptiveRuntimeShadowEnabled)
+        {
+            observation = default;
+            return false;
+        }
+
+        return TryCaptureAdaptiveRuntimeObservationAtActorBoundary(epochEndTicks, out observation)
+            && receiveCreditShadowController.TryEvaluate(in observation, out snapshot);
     }
 
     private QuicAdaptiveRuntimeLifecycle CaptureAdaptiveRuntimeLifecycleFlags()
