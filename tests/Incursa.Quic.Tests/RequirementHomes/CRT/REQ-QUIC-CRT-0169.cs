@@ -95,6 +95,25 @@ public sealed class REQ_QUIC_CRT_0169
         Assert.DoesNotContain("ApplicationId", propertyNames);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void PermanentLocalCellRunnerPreservesForcedSequenceAndProvenanceGates()
+    {
+        string runner = ReadRepositoryText(
+            "eng/adaptive-runtime/Invoke-AdaptiveRuntimePolicyLocalCell.ps1");
+
+        Assert.Contains("@('A', 'B', 'B', 'A')", runner, StringComparison.Ordinal);
+        Assert.Contains("@('B', 'A', 'A', 'B')", runner, StringComparison.Ordinal);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY", runner, StringComparison.Ordinal);
+        Assert.Contains("QUIC_RECEIVE_CREDIT_POLICY=", runner, StringComparison.Ordinal);
+        Assert.Contains("a frozen campaign binary changed during the sequence", runner, StringComparison.Ordinal);
+        Assert.Contains("Campaign output already exists and will not be rewritten", runner, StringComparison.Ordinal);
+        Assert.Contains("Test-Json -SchemaFile $resultSchemaPath", runner, StringComparison.Ordinal);
+        Assert.DoesNotContain("mode = 'active_internal'", runner, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Invoke-QuicDotNetProtocolLabRun.ps1", runner, StringComparison.OrdinalIgnoreCase);
+    }
+
     private static JsonDocument ReadRepositoryJson(string relativePath)
     {
         DirectoryInfo? directory = new(AppContext.BaseDirectory);
@@ -104,6 +123,23 @@ public sealed class REQ_QUIC_CRT_0169
             if (File.Exists(candidate))
             {
                 return JsonDocument.Parse(File.ReadAllText(candidate));
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException($"Unable to locate repository file '{relativePath}'.");
+    }
+
+    private static string ReadRepositoryText(string relativePath)
+    {
+        DirectoryInfo? directory = new(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            string candidate = Path.Combine(directory.FullName, relativePath.Replace('/', Path.DirectorySeparatorChar));
+            if (File.Exists(candidate))
+            {
+                return File.ReadAllText(candidate);
             }
 
             directory = directory.Parent;
