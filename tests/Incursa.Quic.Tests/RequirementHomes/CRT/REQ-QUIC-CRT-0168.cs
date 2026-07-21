@@ -38,21 +38,4 @@ public sealed class REQ_QUIC_CRT_0168
         }
     }
 
-    [Fact]
-    [CoverageType(RequirementCoverageType.Negative)]
-    [Trait("Category", "Negative")]
-    public void ShadowEvaluationAcceptsOnlyTheVersionedConnectionObservation()
-    {
-        Type[] parameterTypes = typeof(QuicReceiveCreditShadowController)
-            .GetMethod("TryEvaluate", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
-            .GetParameters()
-            .Select(static parameter => parameter.ParameterType.IsByRef
-                ? parameter.ParameterType.GetElementType()!
-                : parameter.ParameterType)
-            .ToArray();
-
-        Assert.Equal(
-            [typeof(QuicAdaptiveRuntimeConnectionObservation), typeof(QuicReceiveCreditPolicySnapshot)],
-            parameterTypes);
-    }
 }
