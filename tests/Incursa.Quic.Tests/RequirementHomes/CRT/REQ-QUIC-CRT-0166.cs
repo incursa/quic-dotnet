@@ -105,6 +105,27 @@ public sealed class REQ_QUIC_CRT_0166
             () => shadowRuntime.ConfigureReceiveCreditPolicyMode(QuicReceiveCreditPolicyMode.ReadDominantBatch));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void InternalConnectionOptionsRejectForcedCandidateWithShadow()
+    {
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicServerConnectionOptions options = new()
+        {
+            ForcedReceiveCreditPolicyMode = QuicReceiveCreditPolicyMode.ReadDominantBatch,
+            AdaptiveRuntimeShadowEnabled = true,
+        };
+
+        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+            () => runtime.ConfigureAdaptiveRuntimePolicy(options));
+
+        Assert.Equal(
+            "Adaptive runtime shadow requires the legacy_current receive-credit policy.",
+            exception.Message);
+        Assert.False(runtime.ShouldUseBatchedReceiveCreditPath());
+    }
+
     private static void RegisterDistinctStreamObservers(QuicConnectionRuntime runtime, int count)
     {
         for (int index = 0; index < count; index++)

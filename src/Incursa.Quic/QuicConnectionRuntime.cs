@@ -1028,6 +1028,34 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
     }
 
+    internal void ConfigureAdaptiveRuntimePolicy(QuicConnectionOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+
+        QuicReceiveCreditPolicyMode? forcedMode = options.ForcedReceiveCreditPolicyMode;
+        if (options.AdaptiveRuntimeShadowEnabled)
+        {
+            if (forcedMode is not null and not QuicReceiveCreditPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Adaptive runtime shadow requires the legacy_current receive-credit policy.");
+            }
+
+            if (forcedMode is QuicReceiveCreditPolicyMode.LegacyCurrent)
+            {
+                ConfigureReceiveCreditPolicyMode(QuicReceiveCreditPolicyMode.LegacyCurrent);
+            }
+
+            EnableAdaptiveRuntimeShadow();
+            return;
+        }
+
+        if (forcedMode is not null)
+        {
+            ConfigureReceiveCreditPolicyMode(forcedMode.Value);
+        }
+    }
+
     private bool ShouldUseLegacyBatchedReceiveCreditPath()
     {
         return streamObservers.DistinctStreamCount >= QuicReceiveCreditPolicy.ReadDominantMinimumLiveObserverStreams

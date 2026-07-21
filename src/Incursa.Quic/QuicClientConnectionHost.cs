@@ -86,6 +86,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
                 diagnosticsSink,
                 tlsKeyLogSecretObserver,
                 applicationDatagramBatchPolicy);
+        runtime.ConfigureAdaptiveRuntimePolicy(settings.Options);
         connection = new QuicConnection(runtime, settings.Options, this);
         handle = endpoint.AllocateConnectionHandle();
 

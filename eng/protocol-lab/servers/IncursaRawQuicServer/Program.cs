@@ -31,6 +31,8 @@ var certSubject = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_Q
 var payloadDirection = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_DIRECTION") ?? "bidirectional";
 var behavior = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_BEHAVIOR");
 var payloadSizeText = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_SIZE_BYTES");
+var adaptiveRuntimePolicy = ResolveAdaptiveRuntimePolicy(
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY"));
 var echoResponses = string.Equals(payloadDirection, "bidirectional", StringComparison.OrdinalIgnoreCase);
 var downloadPayload = string.Equals(payloadDirection, "server-to-client", StringComparison.OrdinalIgnoreCase)
     ? CreateDownloadPayload(payloadSizeText)
@@ -80,6 +82,8 @@ var listenerOptions = new QuicListenerOptions
                 RemotelyInitiatedBidirectionalStream = RawQuicReceiveWindowBytes,
                 UnidirectionalStream = RawQuicReceiveWindowBytes,
             },
+            ForcedReceiveCreditPolicyMode = adaptiveRuntimePolicy.ForcedMode,
+            AdaptiveRuntimeShadowEnabled = adaptiveRuntimePolicy.ShadowEnabled,
             ServerAuthenticationOptions = new SslServerAuthenticationOptions
             {
                 ServerCertificate = certificate,
@@ -98,6 +102,7 @@ Console.WriteLine($"QUIC_ENDPOINT={advertisedHost}:{listenPort}");
 Console.WriteLine($"QUIC_PORT={listenPort}");
 Console.WriteLine($"QUIC_ALPN={alpn}");
 Console.WriteLine($"QUIC_IMPLEMENTATION=incursa-raw-quic");
+Console.WriteLine($"QUIC_RECEIVE_CREDIT_POLICY={adaptiveRuntimePolicy.Name}");
 
 try
 {
@@ -129,6 +134,20 @@ catch (QuicException ex)
 finally
 {
     await listener.DisposeAsync();
+}
+
+static (string Name, QuicReceiveCreditPolicyMode? ForcedMode, bool ShadowEnabled) ResolveAdaptiveRuntimePolicy(string? value)
+{
+    return value?.Trim().ToLowerInvariant() switch
+    {
+        null or "" => ("unset", null, false),
+        "legacy_current" => ("legacy_current", QuicReceiveCreditPolicyMode.LegacyCurrent, false),
+        "immediate" => ("immediate", QuicReceiveCreditPolicyMode.Immediate, false),
+        "read_dominant_batch" => ("read_dominant_batch", QuicReceiveCreditPolicyMode.ReadDominantBatch, false),
+        "shadow" => ("shadow", QuicReceiveCreditPolicyMode.LegacyCurrent, true),
+        _ => throw new InvalidOperationException(
+            "PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY must be unset, legacy_current, immediate, read_dominant_batch, or shadow."),
+    };
 }
 
 static async Task HandleConnectionAsync(QuicConnection connection, int connectionIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes, int? boundedFinalEchoBytes)

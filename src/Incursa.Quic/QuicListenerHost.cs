@@ -1629,6 +1629,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             ApplyReturnedOptions(selectedOptions, returnedOptions);
             ApplyReturnedInitialReceiveLimits(runtime, selectedOptions);
             ApplyReturnedInitialIncomingStreamLimits(runtime, selectedOptions);
+            runtime.ConfigureAdaptiveRuntimePolicy(selectedOptions);
             connection.UpdateStreamCapacityCallback(selectedOptions.StreamCapacityCallback);
 
             if (!runtime.TryConfigureServerResumptionTicketIssuance(validatedOptions.EnableResumptionTickets)
@@ -2413,6 +2414,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         selectedOptions.EnableResumptionTickets = returnedOptions.EnableResumptionTickets;
         selectedOptions.EnableEarlyData = returnedOptions.EnableEarlyData;
         selectedOptions.PreferredAddress = returnedOptions.PreferredAddress;
+        selectedOptions.ForcedReceiveCreditPolicyMode = returnedOptions.ForcedReceiveCreditPolicyMode;
+        selectedOptions.AdaptiveRuntimeShadowEnabled = returnedOptions.AdaptiveRuntimeShadowEnabled;
 
         QuicReceiveWindowSizes returnedWindowSizes = returnedOptions.InitialReceiveWindowSizes;
         selectedOptions.InitialReceiveWindowSizes = new QuicReceiveWindowSizes

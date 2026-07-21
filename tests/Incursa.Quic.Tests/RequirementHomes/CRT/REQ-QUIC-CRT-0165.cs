@@ -80,6 +80,43 @@ public sealed class REQ_QUIC_CRT_0165
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void InternalConnectionOptionsApplyForcedReceiveCreditModeOnce()
+    {
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicServerConnectionOptions options = new()
+        {
+            ForcedReceiveCreditPolicyMode = QuicReceiveCreditPolicyMode.ReadDominantBatch,
+        };
+
+        runtime.ConfigureAdaptiveRuntimePolicy(options);
+
+        Assert.True(runtime.ShouldUseBatchedReceiveCreditPath());
+        Assert.Throws<InvalidOperationException>(() => runtime.ConfigureAdaptiveRuntimePolicy(options));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ListenerCallbackCarriesForcedModeIntoPendingRuntimeConfiguration()
+    {
+        QuicServerConnectionOptions selectedOptions = new();
+        QuicServerConnectionOptions returnedOptions = new()
+        {
+            ForcedReceiveCreditPolicyMode = QuicReceiveCreditPolicyMode.Immediate,
+        };
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        RegisterDistinctStreamObservers(runtime, count: 16);
+
+        QuicListenerHost.ApplyReturnedOptions(selectedOptions, returnedOptions);
+        runtime.ConfigureAdaptiveRuntimePolicy(selectedOptions);
+
+        Assert.False(runtime.ShouldUseBatchedReceiveCreditPath());
+        Assert.Equal(QuicReceiveCreditPolicyMode.Immediate, selectedOptions.ForcedReceiveCreditPolicyMode);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ForcedReadDominantBatchStillHonorsFinalReadGuard()

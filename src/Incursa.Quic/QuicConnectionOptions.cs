@@ -148,4 +148,11 @@ public abstract class QuicConnectionOptions
     /// Gets or sets the maximum number of inbound unidirectional streams.
     /// </summary>
     public int MaxInboundUnidirectionalStreams { get; set; }
+
+    // CONTEXT: These internal-only controls let evidence hosts select one receive-credit
+    // treatment before connection admission without expanding the supported public API.
+    // SEE: QuicConnectionRuntime.ConfigureAdaptiveRuntimePolicy
+    internal QuicReceiveCreditPolicyMode? ForcedReceiveCreditPolicyMode { get; set; }
+
+    internal bool AdaptiveRuntimeShadowEnabled { get; set; }
 }
