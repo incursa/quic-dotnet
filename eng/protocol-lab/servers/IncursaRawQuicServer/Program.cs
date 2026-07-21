@@ -10,6 +10,8 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
+using System.Threading.Channels;
 using Incursa.Quic;
 
 var port = args.Length > 0 && int.TryParse(args[0], out var parsedPort) ? parsedPort : 0;
@@ -33,6 +35,9 @@ var behavior = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC
 var payloadSizeText = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_SIZE_BYTES");
 var adaptiveRuntimePolicy = ResolveAdaptiveRuntimePolicy(
     Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY"));
+var shadowEpochPublisher = adaptiveRuntimePolicy.ShadowEnabled
+    ? new AdaptiveRuntimeShadowEpochPublisher()
+    : null;
 var echoResponses = string.Equals(payloadDirection, "bidirectional", StringComparison.OrdinalIgnoreCase);
 var downloadPayload = string.Equals(payloadDirection, "server-to-client", StringComparison.OrdinalIgnoreCase)
     ? CreateDownloadPayload(payloadSizeText)
@@ -84,6 +89,10 @@ var listenerOptions = new QuicListenerOptions
             },
             ForcedReceiveCreditPolicyMode = adaptiveRuntimePolicy.ForcedMode,
             AdaptiveRuntimeShadowEnabled = adaptiveRuntimePolicy.ShadowEnabled,
+            AdaptiveRuntimeShadowEpochInterval = shadowEpochPublisher is null
+                ? TimeSpan.Zero
+                : TimeSpan.FromMilliseconds(250),
+            AdaptiveRuntimeShadowEpochSink = shadowEpochPublisher?.CreateConnectionSink(),
             ServerAuthenticationOptions = new SslServerAuthenticationOptions
             {
                 ServerCertificate = certificate,
@@ -103,6 +112,10 @@ Console.WriteLine($"QUIC_PORT={listenPort}");
 Console.WriteLine($"QUIC_ALPN={alpn}");
 Console.WriteLine($"QUIC_IMPLEMENTATION=incursa-raw-quic");
 Console.WriteLine($"QUIC_RECEIVE_CREDIT_POLICY={adaptiveRuntimePolicy.Name}");
+if (shadowEpochPublisher is not null)
+{
+    Console.WriteLine("QUIC_SHADOW_EPOCH_CONTRACT=adaptive-runtime-shadow-epoch-raw-v1");
+}
 
 try
 {
@@ -483,3 +496,64 @@ static int GetFreePort()
     socket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
     return ((IPEndPoint)socket.LocalEndPoint!).Port;
 }
+
+internal sealed class AdaptiveRuntimeShadowEpochPublisher
+{
+    private const string OutputPrefix = "QUIC_SHADOW_EPOCH_JSON=";
+    private readonly Channel<AdaptiveRuntimeShadowEpochRecord> epochs = Channel.CreateBounded<AdaptiveRuntimeShadowEpochRecord>(
+        new BoundedChannelOptions(4096)
+        {
+            SingleReader = true,
+            SingleWriter = false,
+            FullMode = BoundedChannelFullMode.Wait,
+            AllowSynchronousContinuations = false,
+        });
+    private long nextConnectionKey;
+
+    internal AdaptiveRuntimeShadowEpochPublisher()
+    {
+        _ = WriteEpochsAsync();
+    }
+
+    internal IQuicAdaptiveRuntimeShadowEpochSink CreateConnectionSink()
+        => new ConnectionSink(this, $"connection-{Interlocked.Increment(ref nextConnectionKey):D4}");
+
+    private async Task WriteEpochsAsync()
+    {
+        try
+        {
+            await foreach (AdaptiveRuntimeShadowEpochRecord epoch in epochs.Reader.ReadAllAsync())
+            {
+                Console.WriteLine(OutputPrefix + JsonSerializer.Serialize(epoch, AdaptiveRuntimeShadowEpochJsonContext.Default.AdaptiveRuntimeShadowEpochRecord));
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"IncursaRawQuicServer shadow epoch writer stopped: {ex.Message}");
+        }
+    }
+
+    private sealed class ConnectionSink(
+        AdaptiveRuntimeShadowEpochPublisher owner,
+        string connectionKey) : IQuicAdaptiveRuntimeShadowEpochSink
+    {
+        public bool TryPublish(
+            in QuicAdaptiveRuntimeConnectionObservation observation,
+            in QuicReceiveCreditPolicySnapshot snapshot)
+            => owner.epochs.Writer.TryWrite(new AdaptiveRuntimeShadowEpochRecord(
+                "adaptive-runtime-shadow-epoch-raw-v1",
+                connectionKey,
+                observation,
+                snapshot));
+    }
+}
+
+internal readonly record struct AdaptiveRuntimeShadowEpochRecord(
+    string SchemaVersion,
+    string ConnectionKey,
+    QuicAdaptiveRuntimeConnectionObservation Observation,
+    QuicReceiveCreditPolicySnapshot Snapshot);
+
+[System.Text.Json.Serialization.JsonSerializable(typeof(AdaptiveRuntimeShadowEpochRecord))]
+[System.Text.Json.Serialization.JsonSourceGenerationOptions(PropertyNamingPolicy = System.Text.Json.Serialization.JsonKnownNamingPolicy.CamelCase)]
+internal sealed partial class AdaptiveRuntimeShadowEpochJsonContext : System.Text.Json.Serialization.JsonSerializerContext;

@@ -126,6 +126,81 @@ public sealed class REQ_QUIC_CRT_0166
         Assert.False(runtime.ShouldUseBatchedReceiveCreditPath());
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ConfiguredShadowSinkPublishesOnlyAtBoundedActorIntervals()
+    {
+        FakeMonotonicClock clock = new(Stopwatch.Frequency);
+        RecordingShadowEpochSink sink = new();
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState(), clock);
+        RegisterDistinctStreamObservers(runtime, count: 16);
+        runtime.ConfigureAdaptiveRuntimePolicy(new QuicServerConnectionOptions
+        {
+            ForcedReceiveCreditPolicyMode = QuicReceiveCreditPolicyMode.LegacyCurrent,
+            AdaptiveRuntimeShadowEnabled = true,
+            AdaptiveRuntimeShadowEpochInterval = TimeSpan.FromMilliseconds(250),
+            AdaptiveRuntimeShadowEpochSink = sink,
+        });
+
+        clock.Advance(Stopwatch.Frequency / 8);
+        runtime.TryPublishReceiveCreditShadowAtActorBoundary(clock.Ticks);
+        Assert.Empty(sink.Epochs);
+
+        clock.Advance(Stopwatch.Frequency / 8);
+        runtime.TryPublishReceiveCreditShadowAtActorBoundary(clock.Ticks);
+        QuicReceiveCreditPolicySnapshot first = Assert.Single(sink.Epochs).Snapshot;
+        Assert.Equal(1UL, first.EpochSequence);
+        Assert.Equal(QuicReceiveCreditPolicyMode.LegacyCurrent, first.AppliedPolicy);
+        Assert.Equal(QuicReceiveCreditPolicyMode.ReadDominantBatch, first.ProposedPolicy);
+
+        runtime.TryPublishReceiveCreditShadowAtActorBoundary(clock.Ticks);
+        Assert.Single(sink.Epochs);
+
+        clock.Advance(Stopwatch.Frequency / 4);
+        runtime.TryPublishReceiveCreditShadowAtActorBoundary(clock.Ticks);
+        Assert.Equal(2, sink.Epochs.Count);
+        Assert.Equal(2UL, sink.Epochs[1].Snapshot.EpochSequence);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ShadowSinkFailureCannotEscapeTheActorBoundary()
+    {
+        FakeMonotonicClock clock = new(Stopwatch.Frequency);
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState(), clock);
+        runtime.ConfigureAdaptiveRuntimePolicy(new QuicServerConnectionOptions
+        {
+            AdaptiveRuntimeShadowEnabled = true,
+            AdaptiveRuntimeShadowEpochInterval = TimeSpan.FromMilliseconds(250),
+            AdaptiveRuntimeShadowEpochSink = new ThrowingShadowEpochSink(),
+        });
+
+        clock.Advance(Stopwatch.Frequency / 4);
+        runtime.TryPublishReceiveCreditShadowAtActorBoundary(clock.Ticks);
+
+        Assert.False(runtime.ShouldUseBatchedReceiveCreditPath());
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void EpochExportCannotBeConfiguredOutsideShadowMode()
+    {
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicServerConnectionOptions options = new()
+        {
+            AdaptiveRuntimeShadowEpochInterval = TimeSpan.FromMilliseconds(250),
+            AdaptiveRuntimeShadowEpochSink = new RecordingShadowEpochSink(),
+        };
+
+        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
+            () => runtime.ConfigureAdaptiveRuntimePolicy(options));
+
+        Assert.Equal("Adaptive runtime shadow epoch export requires shadow mode.", exception.Message);
+    }
+
     private static void RegisterDistinctStreamObservers(QuicConnectionRuntime runtime, int count)
     {
         for (int index = 0; index < count; index++)
@@ -149,5 +224,26 @@ public sealed class REQ_QUIC_CRT_0166
         {
             Ticks += ticks;
         }
+    }
+
+    private sealed class RecordingShadowEpochSink : IQuicAdaptiveRuntimeShadowEpochSink
+    {
+        internal List<(QuicAdaptiveRuntimeConnectionObservation Observation, QuicReceiveCreditPolicySnapshot Snapshot)> Epochs { get; } = [];
+
+        public bool TryPublish(
+            in QuicAdaptiveRuntimeConnectionObservation observation,
+            in QuicReceiveCreditPolicySnapshot snapshot)
+        {
+            Epochs.Add((observation, snapshot));
+            return true;
+        }
+    }
+
+    private sealed class ThrowingShadowEpochSink : IQuicAdaptiveRuntimeShadowEpochSink
+    {
+        public bool TryPublish(
+            in QuicAdaptiveRuntimeConnectionObservation observation,
+            in QuicReceiveCreditPolicySnapshot snapshot)
+            => throw new InvalidOperationException("diagnostic sink failure");
     }
 }

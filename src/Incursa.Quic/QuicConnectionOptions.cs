@@ -155,4 +155,8 @@ public abstract class QuicConnectionOptions
     internal QuicReceiveCreditPolicyMode? ForcedReceiveCreditPolicyMode { get; set; }
 
     internal bool AdaptiveRuntimeShadowEnabled { get; set; }
+
+    internal TimeSpan AdaptiveRuntimeShadowEpochInterval { get; set; }
+
+    internal IQuicAdaptiveRuntimeShadowEpochSink? AdaptiveRuntimeShadowEpochSink { get; set; }
 }

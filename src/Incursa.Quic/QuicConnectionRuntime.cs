@@ -97,6 +97,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private long adaptiveRuntimeObservationEpochStartTicks;
     private ulong adaptiveRuntimeObservationEpochSequence;
     private int adaptiveRuntimeShadowConfigurationState;
+    private long adaptiveRuntimeShadowEpochIntervalTicks;
+    private long adaptiveRuntimeShadowNextEpochTicks;
+    private IQuicAdaptiveRuntimeShadowEpochSink? adaptiveRuntimeShadowEpochSink;
     private QuicReceiveCreditShadowController receiveCreditShadowController = default;
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
     private readonly object scheduledFlowControlCreditGate = new();
@@ -1046,14 +1049,51 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 ConfigureReceiveCreditPolicyMode(QuicReceiveCreditPolicyMode.LegacyCurrent);
             }
 
+            ConfigureAdaptiveRuntimeShadowEpochSink(
+                options.AdaptiveRuntimeShadowEpochInterval,
+                options.AdaptiveRuntimeShadowEpochSink);
+
             EnableAdaptiveRuntimeShadow();
             return;
+        }
+
+        if (options.AdaptiveRuntimeShadowEpochSink is not null
+            || options.AdaptiveRuntimeShadowEpochInterval != TimeSpan.Zero)
+        {
+            throw new InvalidOperationException("Adaptive runtime shadow epoch export requires shadow mode.");
         }
 
         if (forcedMode is not null)
         {
             ConfigureReceiveCreditPolicyMode(forcedMode.Value);
         }
+    }
+
+    private void ConfigureAdaptiveRuntimeShadowEpochSink(
+        TimeSpan epochInterval,
+        IQuicAdaptiveRuntimeShadowEpochSink? epochSink)
+    {
+        if (epochSink is null)
+        {
+            if (epochInterval != TimeSpan.Zero)
+            {
+                throw new InvalidOperationException(
+                    "Adaptive runtime shadow epoch export requires an epoch sink.");
+            }
+
+            return;
+        }
+
+        if (epochInterval <= TimeSpan.Zero || epochInterval > TimeSpan.FromMinutes(1))
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(epochInterval),
+                "Adaptive runtime shadow epochs must use an interval greater than zero and no longer than one minute.");
+        }
+
+        double intervalTicks = epochInterval.TotalSeconds * Stopwatch.Frequency;
+        adaptiveRuntimeShadowEpochIntervalTicks = Math.Max(1, checked((long)Math.Ceiling(intervalTicks)));
+        adaptiveRuntimeShadowEpochSink = epochSink;
     }
 
     private bool ShouldUseLegacyBatchedReceiveCreditPath()
@@ -1165,6 +1205,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         Volatile.Write(
             ref adaptiveRuntimeShadowConfigurationState,
             AdaptiveRuntimeShadowEnabled);
+        if (adaptiveRuntimeShadowEpochIntervalTicks > 0)
+        {
+            adaptiveRuntimeShadowNextEpochTicks = SaturatingAdd(
+                adaptiveRuntimeObservationEpochStartTicks,
+                adaptiveRuntimeShadowEpochIntervalTicks);
+        }
     }
 
     internal bool TryCaptureReceiveCreditShadowAtActorBoundary(
@@ -1181,6 +1227,42 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         return TryCaptureAdaptiveRuntimeObservationAtActorBoundary(epochEndTicks, out observation)
             && receiveCreditShadowController.TryEvaluate(in observation, out snapshot);
+    }
+
+    internal void TryPublishReceiveCreditShadowAtActorBoundary(long actorBoundaryTicks)
+    {
+        IQuicAdaptiveRuntimeShadowEpochSink? epochSink = adaptiveRuntimeShadowEpochSink;
+        long epochIntervalTicks = adaptiveRuntimeShadowEpochIntervalTicks;
+        if (epochSink is null
+            || epochIntervalTicks <= 0
+            || Volatile.Read(ref adaptiveRuntimeShadowConfigurationState) != AdaptiveRuntimeShadowEnabled)
+        {
+            return;
+        }
+
+        long nextEpochTicks = adaptiveRuntimeShadowNextEpochTicks;
+        if (actorBoundaryTicks < nextEpochTicks)
+        {
+            return;
+        }
+
+        adaptiveRuntimeShadowNextEpochTicks = SaturatingAdd(actorBoundaryTicks, epochIntervalTicks);
+        if (!TryCaptureReceiveCreditShadowAtActorBoundary(
+                actorBoundaryTicks,
+                out QuicAdaptiveRuntimeConnectionObservation observation,
+                out QuicReceiveCreditPolicySnapshot snapshot))
+        {
+            return;
+        }
+
+        try
+        {
+            _ = epochSink.TryPublish(in observation, in snapshot);
+        }
+        catch (Exception)
+        {
+            // Shadow export is diagnostic-only. A failed sink must never affect transport behavior.
+        }
     }
 
     private QuicAdaptiveRuntimeLifecycle CaptureAdaptiveRuntimeLifecycleFlags()
@@ -3399,6 +3481,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                     try
                     {
                         QuicConnectionTransitionResult result = Transition(connectionEvent);
+                        TryPublishReceiveCreditShadowAtActorBoundary(result.ObservedAtTicks);
                         transitionObserver?.Invoke(result);
 
                         if (effectObserver is not null)

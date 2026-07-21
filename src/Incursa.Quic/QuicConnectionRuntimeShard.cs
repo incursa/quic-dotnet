@@ -655,6 +655,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                         finalizePendingApplicationAck),
                 _ => runtime.Transition(workItem.ConnectionEvent!, clock.Ticks),
             };
+            runtime.TryPublishReceiveCreditShadowAtActorBoundary(result.ObservedAtTicks);
             transitionObserver?.Invoke(workItem.Handle, result);
             runtime.ApplyPendingHostedTimerUpdates(workItem.Handle, deadlineScheduler);
             QuicMetrics.RecordRuntimeShardPhaseTime(

@@ -46,3 +46,10 @@ internal readonly record struct QuicAdaptiveRuntimeConnectionObservation(
     internal const string CurrentObservationContractVersion = "adaptive-runtime-connection-observation-v1";
     internal const string CurrentPolicyRuleVersion = "receive-credit-legacy-v1";
 }
+
+internal interface IQuicAdaptiveRuntimeShadowEpochSink
+{
+    bool TryPublish(
+        in QuicAdaptiveRuntimeConnectionObservation observation,
+        in QuicReceiveCreditPolicySnapshot snapshot);
+}
