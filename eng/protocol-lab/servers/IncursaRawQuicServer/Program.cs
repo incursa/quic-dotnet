@@ -555,5 +555,7 @@ internal readonly record struct AdaptiveRuntimeShadowEpochRecord(
     QuicReceiveCreditPolicySnapshot Snapshot);
 
 [System.Text.Json.Serialization.JsonSerializable(typeof(AdaptiveRuntimeShadowEpochRecord))]
-[System.Text.Json.Serialization.JsonSourceGenerationOptions(PropertyNamingPolicy = System.Text.Json.Serialization.JsonKnownNamingPolicy.CamelCase)]
+[System.Text.Json.Serialization.JsonSourceGenerationOptions(
+    PropertyNamingPolicy = System.Text.Json.Serialization.JsonKnownNamingPolicy.CamelCase,
+    UseStringEnumConverter = true)]
 internal sealed partial class AdaptiveRuntimeShadowEpochJsonContext : System.Text.Json.Serialization.JsonSerializerContext;

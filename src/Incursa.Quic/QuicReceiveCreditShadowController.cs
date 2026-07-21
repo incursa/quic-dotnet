@@ -32,7 +32,13 @@ internal enum QuicAdaptiveRuntimePolicyReason : byte
 internal readonly record struct QuicReceiveCreditPolicySnapshot(
     ulong SnapshotVersion,
     string RuleVersion,
+    QuicAdaptiveRuntimePolicyState PreviousState,
     QuicAdaptiveRuntimePolicyState State,
+    bool Transitioned,
+    uint StateEpochCount,
+    ulong StateDurationMicros,
+    uint CandidateEvidenceCount,
+    uint ReliefEvidenceCount,
     ulong EpochSequence,
     QuicReceiveCreditPolicyMode AppliedPolicy,
     QuicReceiveCreditPolicyMode ProposedPolicy,
@@ -56,6 +62,8 @@ internal struct QuicReceiveCreditShadowController
     private ulong snapshotVersion;
     private bool hasIssuedApplicationData;
     private QuicAdaptiveRuntimePolicyState state;
+    private uint stateEpochCount;
+    private ulong stateDurationMicros;
 
     internal bool TryEvaluate(
         in QuicAdaptiveRuntimeConnectionObservation observation,
@@ -188,12 +196,33 @@ internal struct QuicReceiveCreditShadowController
         QuicAdaptiveRuntimePolicyReason reason,
         out QuicReceiveCreditPolicySnapshot snapshot)
     {
+        QuicAdaptiveRuntimePolicyState previousState = state;
+        bool transitioned = previousState != nextState;
+        if (transitioned)
+        {
+            stateEpochCount = 1;
+            stateDurationMicros = observation.ActiveDurationMicros;
+        }
+        else
+        {
+            stateEpochCount = stateEpochCount == uint.MaxValue
+                ? uint.MaxValue
+                : stateEpochCount + 1;
+            stateDurationMicros = SaturatingAdd(stateDurationMicros, observation.ActiveDurationMicros);
+        }
+
         state = nextState;
         snapshotVersion++;
         snapshot = new QuicReceiveCreditPolicySnapshot(
             snapshotVersion,
             QuicAdaptiveRuntimeConnectionObservation.CurrentPolicyRuleVersion,
+            previousState,
             state,
+            transitioned,
+            stateEpochCount,
+            stateDurationMicros,
+            state == QuicAdaptiveRuntimePolicyState.Candidate ? stateEpochCount : 0,
+            state == QuicAdaptiveRuntimePolicyState.Conservative ? stateEpochCount : 0,
             observation.ConnectionEpochSequence,
             QuicReceiveCreditPolicyMode.LegacyCurrent,
             proposedPolicy,
@@ -201,4 +230,7 @@ internal struct QuicReceiveCreditShadowController
             hasIssuedApplicationData);
         return true;
     }
+
+    private static ulong SaturatingAdd(ulong left, ulong right)
+        => ulong.MaxValue - left < right ? ulong.MaxValue : left + right;
 }

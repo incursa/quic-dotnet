@@ -27,6 +27,8 @@ public sealed class REQ_QUIC_CRT_0166
         Assert.Equal(QuicReceiveCreditPolicyMode.LegacyCurrent, immediateSnapshot.AppliedPolicy);
         Assert.Equal(QuicReceiveCreditPolicyMode.Immediate, immediateSnapshot.ProposedPolicy);
         Assert.Equal(QuicAdaptiveRuntimePolicyReason.LegacyImmediate, immediateSnapshot.Reason);
+        Assert.False(immediateSnapshot.Transitioned);
+        Assert.Equal(1U, immediateSnapshot.StateEpochCount);
 
         _ = runtime.RegisterStreamObserver(streamId: 60, static _ => { });
         clock.Advance(Stopwatch.Frequency);
@@ -38,6 +40,11 @@ public sealed class REQ_QUIC_CRT_0166
         Assert.Equal(QuicReceiveCreditPolicyMode.LegacyCurrent, batchedSnapshot.AppliedPolicy);
         Assert.Equal(QuicReceiveCreditPolicyMode.ReadDominantBatch, batchedSnapshot.ProposedPolicy);
         Assert.Equal(QuicAdaptiveRuntimePolicyReason.LegacyReadDominantBatch, batchedSnapshot.Reason);
+        Assert.True(batchedSnapshot.Transitioned);
+        Assert.Equal(QuicAdaptiveRuntimePolicyState.Conservative, batchedSnapshot.PreviousState);
+        Assert.Equal(1U, batchedSnapshot.StateEpochCount);
+        Assert.Equal(1U, batchedSnapshot.CandidateEvidenceCount);
+        Assert.Equal(0U, batchedSnapshot.ReliefEvidenceCount);
     }
 
     [Fact]

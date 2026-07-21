@@ -117,6 +117,13 @@ public sealed class REQ_QUIC_CRT_0169
         Assert.Contains("Get-RelativeRange", runner, StringComparison.Ordinal);
         Assert.Contains("maximumWithinTreatmentRelativeRange", runner, StringComparison.Ordinal);
         Assert.Contains("Test-Json -SchemaFile $resultSchemaPath", runner, StringComparison.Ordinal);
+        Assert.Contains("[switch] $ShadowOnly", runner, StringComparison.Ordinal);
+        Assert.Contains("QUIC_SHADOW_EPOCH_JSON=", ReadRepositoryText(
+            "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs"), StringComparison.Ordinal);
+        Assert.Contains("adaptive-runtime-connection-observation-v1", runner, StringComparison.Ordinal);
+        Assert.Contains("Test-AdaptiveRuntimePolicyEvidence.ps1", runner, StringComparison.Ordinal);
+        Assert.Contains("shadow-epochs.raw.jsonl", ReadRepositoryText(
+            "eng/adaptive-runtime/README.md"), StringComparison.Ordinal);
         Assert.DoesNotContain("mode = 'active_internal'", runner, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Invoke-QuicDotNetProtocolLabRun.ps1", runner, StringComparison.OrdinalIgnoreCase);
     }
