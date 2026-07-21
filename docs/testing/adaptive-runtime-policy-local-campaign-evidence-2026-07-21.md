@@ -27,6 +27,14 @@ upload, or ProtocolLab controller job was created.
 - `448ccfad` treats any throughput or p95 within-treatment relative range over
   five percent as `invalid_environment` and classifies against the explicit
   `legacy_current` baseline regardless of A/B order.
+- `5fbed292` adds a bounded actor-boundary shadow sink and asynchronous raw
+  host export without adding a policy consumer.
+- `228023be` adds controller-owned transition and dwell metadata required for
+  honest epoch-row export.
+- `5ed514ca` adds permanent `-ShadowOnly` capture, schema-v1 row generation,
+  analysis exclusions, and result/epoch join validation.
+- `20a139ee` retains the actual counter summary as pressure evidence while
+  keeping same-host target and generator health conservatively `limited`.
 
 The controls remain internal to friend assemblies. The public API baseline
 did not change. Forced modes bypass selector eligibility only; the existing
@@ -45,6 +53,9 @@ invalid results were not deleted or rewritten after the runner was corrected.
 | `adaptive-receive-credit-20260721-local3` | `duplex-64kb-c16` | `neutral_local` | All four samples were correct and authoritative logs matched their forced modes. The then-current classifier did not yet reject within-treatment variance. Manual review found a maximum p95 relative range of about 16.2 percent, so this immutable row is not accepted or promotable. |
 | `adaptive-receive-credit-20260721-local4` | `duplex-64kb-c16` | `invalid_environment` | All four samples passed exact payload, shape, timeout, and protocol checks. Maximum within-treatment range was 22.84 percent, so the apparent 9.46 percent throughput improvement and 14.06 percent p95 improvement are not credited. |
 | `adaptive-receive-credit-20260721-local5` | `upload-1mb-c1` | `invalid_environment` | All four low-cardinality samples passed exact payload, shape, timeout, and protocol checks. Maximum within-treatment range was 23.30 percent, so the 3.52 percent throughput difference and apparent p95 improvement are not credited. |
+| `adaptive-shadow-20260721-local1` | `upload-1mb-c1` | `invalid_contract` | The clean-repository sample retained 13 raw epochs, but the first project-reference build after the checkpoint changed the commit-stamped frozen binary. The result is preserved and not joined as authoritative evidence. |
+| `adaptive-shadow-20260721-local2` | `upload-1mb-c1` | `neutral_local` | Clean provenance, 12 schema-valid joined epochs, exact payload validation, and stable frozen hashes. This pre-pressure-path checkpoint remains diagnostic. |
+| `adaptive-shadow-20260721-local3` | `upload-1mb-c1` | `neutral_local` | Clean provenance, 13 schema-valid joined epochs, exact payload validation, stable frozen hashes, and retained counter pressure evidence. Same-host target and generator health remain `limited`, so this is contract proof rather than a performance claim. |
 
 The last two cohorts prove that the conservative classifier retains correct
 but noisy measurements rather than converting workstation variance into a
@@ -60,6 +71,8 @@ clear either the target or sparse guardrail.
 | `local3` | `a5e4505161922bd9d2df1d96f96d452a920edb1641860a6f352ee6961b2ed1d7` | `e4f25c01e7c4c81eb245ec319324cdde2f236aab02ceb633cadbd1fc2d10ede2` | `3579c890f014ed0c0c8129f65a13d79adcd9b89d71fcb049948d54a996514065` |
 | `local4` | `ab869bb836cf6dacc1619aa7724e4eeb2d15aa8d6b7280f7a03e2e0c2b5285d1` | `e8cf47b0ce76168122b6b4350b5f0388abba823044783cbc7d382dadd1150561` | `9404ff07c4509756c620d4644382328369881fc33aa95673542d91031883a089` |
 | `local5` | `ed099b5caa8698abcdd0e52c63eb65b217d3d457609d8b9250d664f1a004412f` | `6ec8d6c025f35880aeaf898fcee3a942fbeb1e3244d9b503ad2a47074cc905b5` | `647c5c1be0b6bd39819a064445f8a403f94d5d860c974aff87fd848b2b4a0229` |
+| `shadow-local1` | `3238d4890a103ef64db58432eb62deecaa9ae0e50d7034ec90562d2e126af7d4` | `86a2a992e1173cbf7dc6fe8e821664c942ba2905b2fa9ebdcf077ac8d62e36bd` | `4d3b64aebfbfc7f15b7228710630e6db64350c7d8df34d62a6d4e55578e44734` |
+| `shadow-local3` | `043814067455f3f8039ed3b9eb080e0e087b1d95d07db8099fe8a5b6e4358aef` | `7e435cb6c5d2b24f81b60a0cac3b168c6982411cb1f5f1c249d833d713fd047b` | `0117d0f77de788744b9812ab6d56043b0a8bdaa8040eceee6ec0fcc89b6d1957` |
 
 The `local2` through `local5` result documents validate against
 `adaptive-runtime-policy-local-result-v1`. A fresh hash audit of all 120
@@ -67,11 +80,25 @@ artifacts referenced by those four results reported zero missing files and
 zero mismatches. `local1` intentionally retains its original invalid result
 document and is excluded from schema-valid evidence.
 
+The final `shadow-local3` evidence validation summary is schema-valid and
+join-valid for 13 epoch rows; its SHA-256 is
+`86692aa532bb50e34b298c3d91b20c8558d11d0b4cbe06c034ec8fd126404585`.
+All 13 recommendations were `legacy_selector`, no controller transition or
+stale/out-of-domain/contradictory epoch occurred, and three early epochs with
+missing optional queue-delay observations remain present with explicit
+analysis exclusions.
+
+The retained counter summary reported 2,498 samples, 7.81 percent mean process
+CPU, 15.10 percent maximum process CPU, and a maximum thread-pool queue length
+of one. Those observations improve reviewability but do not isolate the target
+from the generator and therefore do not justify upgrading either health field
+or rerunning the broader forced-policy matrix as trusted evidence.
+
 ## Verification
 
 - `Incursa.Quic` Release build: passed, zero warnings and errors.
 - `IncursaRawQuicServer` Release build: passed, zero warnings and errors.
-- Final `REQ-QUIC-CRT-0164` through `REQ-QUIC-CRT-0169` run: 38 passed,
+- Final `REQ-QUIC-CRT-0164` through `REQ-QUIC-CRT-0169` run: 41 passed,
   zero failed, zero skipped.
 - Public API requirement guards: 13 passed.
 - ProtocolLab package-template guards: 22 passed.
@@ -92,9 +119,9 @@ matched local evidence before a ProtocolLab proposal. The controller at
 but no upload, package mutation, or job was submitted because the local
 environment gate failed.
 
-Next work must stay evidence-oriented: improve or isolate local host stability,
-repeat required sparse, target, neighboring, and retained-negative cells under
-the same contracts, add end-to-end shadow epoch capture and join validation,
-and review the complete local evidence. It must not widen the selector, enable
-`active_internal`, begin online learning, or treat the noisy apparent gains as
-accepted tuning evidence.
+End-to-end shadow epoch capture and join validation are now complete for the
+bounded c1 proof cell. Remaining work must stay evidence-oriented: materially
+isolate local host stability, repeat required sparse, target, neighboring, and
+retained-negative cells under the same contracts, and review the complete
+local evidence. It must not widen the selector, enable `active_internal`, begin
+online learning, or treat the noisy apparent gains as accepted tuning evidence.

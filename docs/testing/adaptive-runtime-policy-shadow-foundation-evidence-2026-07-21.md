@@ -94,6 +94,26 @@ observed a connection termination. Both unmodified cases pass in isolation:
 The original failing runs remain the authoritative suite-context evidence; the
 isolated reruns classify rather than erase them.
 
+### Follow-up suite audit after end-to-end epoch export
+
+After checkpoints `5fbed292`, `228023be`, `5ed514ca`, and `20a139ee`, the two
+previously retained sensitivities again passed in isolation, one test each.
+The complete Release suite then retained 9,752 passed, 4 skipped, and 1 failed
+of 9,757 tests. Neither prior sensitivity recurred. Instead, the unmodified
+`Http3MinimalServerTests.RequestInvalidQPackStaticIndex_ClosesConnectionWithDecompressionFailed`
+timed out waiting for the peer HTTP/3 connection close. Its immediate isolated
+rerun passed 1/1. This is a new member of the same suite-load close-wait
+sensitivity class; it is not erased by the isolated pass and it prevents a
+clean full-suite gate.
+
+| Follow-up artifact | SHA-256 |
+| --- | --- |
+| Full-suite TRX | `a21ce9cce2872dee3f9e5ff8ac98ca38c4dc4afbac2384b2a91de83ffcd8580d` |
+| Full-suite log | `bb7c5851bb836c5af29b3be9de1bc73ccbe3583cf0ee0516b3e2c8f436a67c73` |
+| Prior HTTP/3 sensitivity isolated TRX | `d26d10d9e63b72441bee5d37549ca4cbfc8d30d9746a10cfdf4fbd8a707d6c36` |
+| Prior DoQ sensitivity isolated TRX | `f2f5a60cb61a53dd63ff1a45a62b65fdea8fd8ba95aa5a78dcccaf5449e6e974` |
+| New HTTP/3 sensitivity isolated TRX | `2dac07b726571f7f14acf61869a08ed154c28126b3325c5523af42c4104d15ae` |
+
 | Artifact | SHA-256 |
 | --- | --- |
 | First full-suite TRX | `875a2348bd3b39ece42759c3a6b1b0ff0c7c412e103d42d7e725f882490694be` |
@@ -120,14 +140,12 @@ shadow rule reproduces only the accepted selector at `1b2611e1`.
 
 This evidence is non-promoting. Before any active-policy review:
 
-1. expose the internal forced/shadow controls through a bounded local campaign
-   host without making them public API;
-2. run the permanent exact-payload ABBA or BAAB local matrix and retain noisy,
-   negative, excluded, and failed rows through the v1 contracts;
-3. resolve or explicitly accept the repeated full-suite HTTP/3 timeout and the
-   suite-context DoQ failure under repository release policy;
-4. review the local counterfactual and shadow evidence; and
-5. only then consider ProtocolLab submission as a later eligibility gate.
+1. complete the remaining sparse, target, neighboring, and retained-negative
+   local matrix with materially improved host isolation;
+2. resolve or explicitly accept the repeated suite-context HTTP/3 close-wait
+   sensitivity under repository release policy;
+3. review the local counterfactual and shadow evidence; and
+4. only then consider ProtocolLab submission as a later eligibility gate.
 
 The ProtocolLab controller at `http://10.10.99.176:5088` was reachable by
 read-only root and package-list probes on 2026-07-21. No job, upload, package
