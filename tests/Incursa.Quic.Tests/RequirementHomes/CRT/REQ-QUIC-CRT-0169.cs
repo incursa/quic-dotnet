@@ -107,6 +107,8 @@ public sealed class REQ_QUIC_CRT_0169
         Assert.Contains("@('B', 'A', 'A', 'B')", runner, StringComparison.Ordinal);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY", runner, StringComparison.Ordinal);
         Assert.Contains("QUIC_RECEIVE_CREDIT_POLICY=", runner, StringComparison.Ordinal);
+        Assert.Contains("adapter-artifacts.json", runner, StringComparison.Ordinal);
+        Assert.Contains("campaign-host.stdout.log", runner, StringComparison.Ordinal);
         Assert.Contains("a frozen campaign binary changed during the sequence", runner, StringComparison.Ordinal);
         Assert.Contains("Campaign output already exists and will not be rewritten", runner, StringComparison.Ordinal);
         Assert.Contains("Get-ScenarioShape", runner, StringComparison.Ordinal);

@@ -409,19 +409,39 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
         [void] $artifactPaths.Add($aggregatePath)
     }
 
-    $serverStdout = Get-ChildItem -LiteralPath $runRoot -Filter 'server.stdout.txt' -Recurse -File -ErrorAction SilentlyContinue |
-        Select-Object -First 1
-    if ($null -eq $serverStdout) {
-        $contractFailures.Add("$sampleId`: server stdout was not retained.")
+    $adapterArtifactsPath = Get-ChildItem -LiteralPath $runRoot -Filter 'adapter-artifacts.json' -Recurse -File -ErrorAction SilentlyContinue |
+        Select-Object -First 1 -ExpandProperty FullName
+    $campaignHostStdoutPath = Join-Path $sampleRoot 'campaign-host.stdout.log'
+    $campaignHostStderrPath = Join-Path $sampleRoot 'campaign-host.stderr.log'
+    $campaignHostSourceStdout = $null
+    $campaignHostSourceStderr = $null
+    if ($null -ne $adapterArtifactsPath) {
+        [void] $artifactPaths.Add($adapterArtifactsPath)
+        $adapterArtifacts = Get-Content -LiteralPath $adapterArtifactsPath -Raw | ConvertFrom-Json -Depth 30
+        $campaignHostSourceStdout = @($adapterArtifacts.artifacts | Where-Object artifactId -eq 'server.stdout') |
+            Select-Object -First 1 -ExpandProperty path
+        $campaignHostSourceStderr = @($adapterArtifacts.artifacts | Where-Object artifactId -eq 'server.stderr') |
+            Select-Object -First 1 -ExpandProperty path
+    }
+
+    if ([string]::IsNullOrWhiteSpace($campaignHostSourceStdout) -or
+        -not (Test-Path -LiteralPath $campaignHostSourceStdout -PathType Leaf)) {
+        $contractFailures.Add("$sampleId`: authoritative campaign-host stdout was not retained.")
     }
     else {
-        [void] $artifactPaths.Add($serverStdout.FullName)
+        Copy-Item -LiteralPath $campaignHostSourceStdout -Destination $campaignHostStdoutPath
+        [void] $artifactPaths.Add($campaignHostStdoutPath)
         $reportedPolicy = [regex]::Match(
-            (Get-Content -LiteralPath $serverStdout.FullName -Raw),
+            (Get-Content -LiteralPath $campaignHostStdoutPath -Raw),
             'QUIC_RECEIVE_CREDIT_POLICY=([^\r\n]+)').Groups[1].Value
         if ($reportedPolicy -ne $policy) {
             $contractFailures.Add("$sampleId`: requested policy '$policy' but host reported '$reportedPolicy'.")
         }
+    }
+    if (-not [string]::IsNullOrWhiteSpace($campaignHostSourceStderr) -and
+        (Test-Path -LiteralPath $campaignHostSourceStderr -PathType Leaf)) {
+        Copy-Item -LiteralPath $campaignHostSourceStderr -Destination $campaignHostStderrPath
+        [void] $artifactPaths.Add($campaignHostStderrPath)
     }
 
     $currentServerHash = (Get-FileHash -LiteralPath $serverBinaryPath -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -451,7 +471,7 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
         exitCode = $exitCode
         outcomes = $outcome
         correctness = $correctness
-        artifactPaths = @($commandPath, $stdoutPath, $stderrPath, $aggregatePath) |
+        artifactPaths = @($commandPath, $stdoutPath, $stderrPath, $aggregatePath, $campaignHostStdoutPath, $campaignHostStderrPath) |
             Where-Object { Test-Path -LiteralPath $_ -PathType Leaf }
     })
 }
