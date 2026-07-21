@@ -238,6 +238,42 @@ function Get-ArtifactKind {
     return 'other'
 }
 
+function Get-ScenarioShape {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $ExecutionRoot,
+
+        [Parameter(Mandatory = $true)]
+        [string] $Scenario
+    )
+
+    $scenarioRoot = Join-Path $ExecutionRoot 'scenarios'
+    $escapedId = [regex]::Escape($Scenario)
+    $idPattern = "(?m)^id:\s*$escapedId\s*$"
+    foreach ($file in Get-ChildItem -LiteralPath $scenarioRoot -Filter '*.yaml' -Recurse -File) {
+        $content = Get-Content -LiteralPath $file.FullName -Raw
+        if ($content -notmatch $idPattern) {
+            continue
+        }
+
+        $streamMatch = [regex]::Match($content, 'streamCount:\s*(\d+)')
+        $payloadMatch = [regex]::Match($content, 'payloadSizeBytes:\s*(\d+)')
+        $directionMatch = [regex]::Match($content, 'payloadDirection:\s*([^,}\r\n]+)')
+        if (-not $streamMatch.Success -or -not $payloadMatch.Success) {
+            throw "Scenario '$Scenario' does not declare a parseable QUIC stream count and payload size in $($file.FullName)."
+        }
+
+        return [ordered]@{
+            path = $file.FullName
+            streamsPerConnection = [int] $streamMatch.Groups[1].Value
+            payloadBytes = [int] $payloadMatch.Groups[1].Value
+            payloadDirection = if ($directionMatch.Success) { $directionMatch.Groups[1].Value.Trim().Trim('"', "'") } else { $null }
+        }
+    }
+
+    throw "Scenario '$Scenario' was not found under $scenarioRoot."
+}
+
 foreach ($requiredPath in @($localBenchmarkScript, $resultSchemaPath, $serverProjectPath)) {
     if (-not (Test-Path -LiteralPath $requiredPath -PathType Leaf)) {
         throw "Required campaign input was not found: $requiredPath"
@@ -246,6 +282,14 @@ foreach ($requiredPath in @($localBenchmarkScript, $resultSchemaPath, $serverPro
 
 if ($PolicyA -eq $PolicyB) {
     throw 'PolicyA and PolicyB must name different forced treatments.'
+}
+
+$scenarioShape = Get-ScenarioShape -ExecutionRoot $ProtocolLabExecutionRoot -Scenario $ScenarioId
+if ($scenarioShape.streamsPerConnection -ne $StreamsPerConnection) {
+    throw "Scenario '$ScenarioId' requires $($scenarioShape.streamsPerConnection) streams per connection, but the cell requested $StreamsPerConnection."
+}
+if ($scenarioShape.payloadBytes -ne $PayloadBytes) {
+    throw "Scenario '$ScenarioId' requires payloadBytes=$($scenarioShape.payloadBytes), but the cell requested $PayloadBytes."
 }
 
 if (-not $DryRun -and (Test-Path -LiteralPath $resolvedOutputRoot)) {
@@ -501,6 +545,13 @@ $artifacts = @($artifactPaths | Sort-Object | ForEach-Object {
     }
 })
 $allWarnings = @($samples | ForEach-Object { $_.correctness.invariantViolations })
+$resultNotes = [System.Collections.Generic.List[string]]::new()
+$resultNotes.Add('Local diagnostic evidence only; this result does not authorize active_internal or ProtocolLab submission.')
+$resultNotes.Add('The host and generator share a machine, so target and generator health remain limited.')
+$resultNotes.Add('Allocation, retained-memory, and fairness outcomes require separate instrumentation before acceptance.')
+foreach ($failure in $contractFailures) {
+    $resultNotes.Add("contract: $failure")
+}
 $hostFingerprint = "$env:COMPUTERNAME|$([System.Runtime.InteropServices.RuntimeInformation]::OSDescription)|$([Environment]::ProcessorCount)"
 $resultPath = Join-Path $resolvedOutputRoot 'local-result.json'
 $result = [ordered]@{
@@ -623,12 +674,7 @@ $result = [ordered]@{
         'C:\shared\temp\quic-flow-credit-cadence-20260720',
         'docs/performance-improvement-wishlist.md'
     )
-    notes = @(
-        'Local diagnostic evidence only; this result does not authorize active_internal or ProtocolLab submission.',
-        'The host and generator share a machine, so target and generator health remain limited.',
-        'Allocation, retained-memory, and fairness outcomes require separate instrumentation before acceptance.',
-        @($contractFailures | ForEach-Object { "contract: $_" })
-    )
+    notes = @($resultNotes)
 }
 if ($classification -eq 'negative_retained') {
     $result.negativeEvidenceClass = 'other'

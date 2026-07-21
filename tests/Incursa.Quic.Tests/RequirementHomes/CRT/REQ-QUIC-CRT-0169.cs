@@ -109,6 +109,8 @@ public sealed class REQ_QUIC_CRT_0169
         Assert.Contains("QUIC_RECEIVE_CREDIT_POLICY=", runner, StringComparison.Ordinal);
         Assert.Contains("a frozen campaign binary changed during the sequence", runner, StringComparison.Ordinal);
         Assert.Contains("Campaign output already exists and will not be rewritten", runner, StringComparison.Ordinal);
+        Assert.Contains("Get-ScenarioShape", runner, StringComparison.Ordinal);
+        Assert.Contains("requires payloadBytes=", runner, StringComparison.Ordinal);
         Assert.Contains("Test-Json -SchemaFile $resultSchemaPath", runner, StringComparison.Ordinal);
         Assert.DoesNotContain("mode = 'active_internal'", runner, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Invoke-QuicDotNetProtocolLabRun.ps1", runner, StringComparison.OrdinalIgnoreCase);
