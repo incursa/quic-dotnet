@@ -62,6 +62,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const int MaximumBufferedEstablishmentHandshakePackets = 8;
     private const int InitialHostedTimerUpdateCapacity = 8;
     private const int InitialHostedSendDatagramUpdateCapacity = 16;
+    private const int UnconfiguredReceiveCreditPolicyMode = -1;
     private const byte OutboundStreamControlFrameType = QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask;
     private const int ApplicationMinimumProtectedPayloadLength =
         QuicInitialPacketProtection.HeaderProtectionSampleOffset + QuicInitialPacketProtection.HeaderProtectionSampleLength;
@@ -85,6 +86,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private int runtimePressureSnapshotSkippedWorkItems;
     private readonly object pendingStreamActionRequestsGate = new();
     private int hasIssuedApplicationDataWrite;
+    private int receiveCreditPolicyMode = UnconfiguredReceiveCreditPolicyMode;
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
     private readonly object scheduledFlowControlCreditGate = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
@@ -981,6 +983,35 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     }
 
     internal bool ShouldUseBatchedReceiveCreditPath()
+    {
+        int configuredMode = Volatile.Read(ref receiveCreditPolicyMode);
+        return configuredMode switch
+        {
+            (int)QuicReceiveCreditPolicyMode.Immediate => false,
+            (int)QuicReceiveCreditPolicyMode.ReadDominantBatch => true,
+            UnconfiguredReceiveCreditPolicyMode or (int)QuicReceiveCreditPolicyMode.LegacyCurrent
+                => ShouldUseLegacyBatchedReceiveCreditPath(),
+            _ => false,
+        };
+    }
+
+    internal void ConfigureReceiveCreditPolicyMode(QuicReceiveCreditPolicyMode mode)
+    {
+        if (mode is < QuicReceiveCreditPolicyMode.LegacyCurrent or > QuicReceiveCreditPolicyMode.ReadDominantBatch)
+        {
+            throw new ArgumentOutOfRangeException(nameof(mode));
+        }
+
+        if (Interlocked.CompareExchange(
+                ref receiveCreditPolicyMode,
+                (int)mode,
+                UnconfiguredReceiveCreditPolicyMode) != UnconfiguredReceiveCreditPolicyMode)
+        {
+            throw new InvalidOperationException("The receive-credit policy mode has already been configured.");
+        }
+    }
+
+    private bool ShouldUseLegacyBatchedReceiveCreditPath()
     {
         return streamObservers.DistinctStreamCount >= MultiplexedOversizedWriteMinimumStreamCount
             && Volatile.Read(ref hasIssuedApplicationDataWrite) == 0;
