@@ -143,6 +143,20 @@ function Get-Median {
     return ($numbers[$middle - 1] + $numbers[$middle]) / 2.0
 }
 
+function Get-RelativeRange {
+    param([AllowNull()][object[]] $Values)
+
+    $numbers = @($Values | Where-Object { $null -ne $_ } | ForEach-Object { [double] $_ })
+    $median = Get-Median -Values $numbers
+    if ($numbers.Count -lt 2 -or $null -eq $median -or $median -eq 0) {
+        return $null
+    }
+
+    $minimum = ($numbers | Measure-Object -Minimum).Minimum
+    $maximum = ($numbers | Measure-Object -Maximum).Maximum
+    return [Math]::Abs($maximum - $minimum) / [Math]::Abs($median)
+}
+
 function Get-Outcome {
     param([AllowNull()][object] $Aggregate)
 
@@ -282,6 +296,9 @@ foreach ($requiredPath in @($localBenchmarkScript, $resultSchemaPath, $serverPro
 
 if ($PolicyA -eq $PolicyB) {
     throw 'PolicyA and PolicyB must name different forced treatments.'
+}
+if (($PolicyA -eq 'legacy_current') -eq ($PolicyB -eq 'legacy_current')) {
+    throw 'Exactly one treatment must be legacy_current so local classification has an explicit baseline.'
 }
 
 $scenarioShape = Get-ScenarioShape -ExecutionRoot $ProtocolLabExecutionRoot -Scenario $ScenarioId
@@ -484,6 +501,29 @@ $hasCorrectnessFailure = @($samples | Where-Object {
     $_.correctness.protocolErrors -ne 0 -or
     $_.correctness.invariantViolations.Count -ne 0
 }).Count -ne 0
+$baselineTreatment = if ($PolicyA -eq 'legacy_current') { 'A' } else { 'B' }
+$candidateTreatment = if ($baselineTreatment -eq 'A') { 'B' } else { 'A' }
+$baselineSamples = @($samples | Where-Object { $_.treatment -eq $baselineTreatment })
+$candidateSamples = @($samples | Where-Object { $_.treatment -eq $candidateTreatment })
+$baselineThroughput = Get-Median -Values @($baselineSamples.outcomes.throughputBytesPerSecond)
+$candidateThroughput = Get-Median -Values @($candidateSamples.outcomes.throughputBytesPerSecond)
+$baselineP95 = Get-Median -Values @($baselineSamples.outcomes.latencyP95Ms)
+$candidateP95 = Get-Median -Values @($candidateSamples.outcomes.latencyP95Ms)
+$withinTreatmentRelativeRanges = @(
+    Get-RelativeRange -Values @($baselineSamples.outcomes.throughputBytesPerSecond)
+    Get-RelativeRange -Values @($candidateSamples.outcomes.throughputBytesPerSecond)
+    Get-RelativeRange -Values @($baselineSamples.outcomes.latencyP95Ms)
+    Get-RelativeRange -Values @($candidateSamples.outcomes.latencyP95Ms)
+) | Where-Object { $null -ne $_ }
+$maximumWithinTreatmentRelativeRange = if ($withinTreatmentRelativeRanges.Count -eq 0) {
+    $null
+}
+else {
+    ($withinTreatmentRelativeRanges | Measure-Object -Maximum).Maximum
+}
+if ($null -ne $maximumWithinTreatmentRelativeRange -and $maximumWithinTreatmentRelativeRange -gt 0.05) {
+    $environmentInvalid = $true
+}
 $classification = if ($contractFailures.Count -ne 0) {
     'invalid_contract'
 }
@@ -494,15 +534,14 @@ elseif ($environmentInvalid) {
     'invalid_environment'
 }
 else {
-    $aSamples = @($samples | Where-Object { $_.treatment -eq 'A' })
-    $bSamples = @($samples | Where-Object { $_.treatment -eq 'B' })
-    $aThroughput = Get-Median -Values @($aSamples.outcomes.throughputBytesPerSecond)
-    $bThroughput = Get-Median -Values @($bSamples.outcomes.throughputBytesPerSecond)
-    $aP95 = Get-Median -Values @($aSamples.outcomes.latencyP95Ms)
-    $bP95 = Get-Median -Values @($bSamples.outcomes.latencyP95Ms)
-    if (($null -ne $aThroughput -and $null -ne $bThroughput -and $bThroughput -lt ($aThroughput * 0.95)) -or
-        ($null -ne $aP95 -and $null -ne $bP95 -and $bP95 -gt ($aP95 * 1.05))) {
+    if (($null -ne $baselineThroughput -and $null -ne $candidateThroughput -and $candidateThroughput -lt ($baselineThroughput * 0.95)) -or
+        ($null -ne $baselineP95 -and $null -ne $candidateP95 -and $candidateP95 -gt ($baselineP95 * 1.05))) {
         'negative_retained'
+    }
+    elseif ($null -ne $baselineThroughput -and $null -ne $candidateThroughput -and
+        $candidateThroughput -ge ($baselineThroughput * 1.05) -and
+        ($null -eq $baselineP95 -or $null -eq $candidateP95 -or $candidateP95 -le ($baselineP95 * 1.05))) {
+        'accepted_local'
     }
     else {
         'neutral_local'
@@ -602,7 +641,17 @@ $result = [ordered]@{
         }
         legacySelectorCommit = '1b2611e1'
         stickyWriteEligibilityBypassed = $PolicyA -eq 'read_dominant_batch' -or $PolicyB -eq 'read_dominant_batch'
-        axisSettings = [ordered]@{ treatmentA = $PolicyA; treatmentB = $PolicyB }
+        axisSettings = [ordered]@{
+            treatmentA = $PolicyA
+            treatmentB = $PolicyB
+            baselineTreatment = $baselineTreatment
+            candidateTreatment = $candidateTreatment
+            baselineThroughputBytesPerSecond = $baselineThroughput
+            candidateThroughputBytesPerSecond = $candidateThroughput
+            baselineLatencyP95Ms = $baselineP95
+            candidateLatencyP95Ms = $candidateP95
+            maximumWithinTreatmentRelativeRange = $maximumWithinTreatmentRelativeRange
+        }
     }
     workload = [ordered]@{
         scenarioId = $ScenarioId

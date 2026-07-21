@@ -113,6 +113,9 @@ public sealed class REQ_QUIC_CRT_0169
         Assert.Contains("Campaign output already exists and will not be rewritten", runner, StringComparison.Ordinal);
         Assert.Contains("Get-ScenarioShape", runner, StringComparison.Ordinal);
         Assert.Contains("requires payloadBytes=", runner, StringComparison.Ordinal);
+        Assert.Contains("Exactly one treatment must be legacy_current", runner, StringComparison.Ordinal);
+        Assert.Contains("Get-RelativeRange", runner, StringComparison.Ordinal);
+        Assert.Contains("maximumWithinTreatmentRelativeRange", runner, StringComparison.Ordinal);
         Assert.Contains("Test-Json -SchemaFile $resultSchemaPath", runner, StringComparison.Ordinal);
         Assert.DoesNotContain("mode = 'active_internal'", runner, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Invoke-QuicDotNetProtocolLabRun.ps1", runner, StringComparison.OrdinalIgnoreCase);
