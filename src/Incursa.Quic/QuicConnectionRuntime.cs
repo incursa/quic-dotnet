@@ -63,6 +63,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const int InitialHostedTimerUpdateCapacity = 8;
     private const int InitialHostedSendDatagramUpdateCapacity = 16;
     private const int UnconfiguredReceiveCreditPolicyMode = -1;
+    private const int AdaptiveRuntimeObservationDisabled = 0;
+    private const int AdaptiveRuntimeObservationConfiguring = 1;
+    private const int AdaptiveRuntimeObservationEnabled = 2;
     private const byte OutboundStreamControlFrameType = QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask;
     private const int ApplicationMinimumProtectedPayloadLength =
         QuicInitialPacketProtection.HeaderProtectionSampleOffset + QuicInitialPacketProtection.HeaderProtectionSampleLength;
@@ -87,6 +90,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly object pendingStreamActionRequestsGate = new();
     private int hasIssuedApplicationDataWrite;
     private int receiveCreditPolicyMode = UnconfiguredReceiveCreditPolicyMode;
+    private int adaptiveRuntimeObservationConfigurationState;
+    private long adaptiveRuntimeObservationEpochStartTicks;
+    private ulong adaptiveRuntimeObservationEpochSequence;
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
     private readonly object scheduledFlowControlCreditGate = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
@@ -1016,6 +1022,100 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         return streamObservers.DistinctStreamCount >= MultiplexedOversizedWriteMinimumStreamCount
             && Volatile.Read(ref hasIssuedApplicationDataWrite) == 0;
     }
+
+    internal void EnableAdaptiveRuntimeObservation()
+    {
+        if (Interlocked.CompareExchange(
+                ref adaptiveRuntimeObservationConfigurationState,
+                AdaptiveRuntimeObservationConfiguring,
+                AdaptiveRuntimeObservationDisabled) != AdaptiveRuntimeObservationDisabled)
+        {
+            throw new InvalidOperationException("Adaptive runtime observation has already been enabled.");
+        }
+
+        adaptiveRuntimeObservationEpochStartTicks = clock.Ticks;
+        Volatile.Write(
+            ref adaptiveRuntimeObservationConfigurationState,
+            AdaptiveRuntimeObservationEnabled);
+    }
+
+    internal bool TryCaptureAdaptiveRuntimeObservationAtActorBoundary(
+        long epochEndTicks,
+        out QuicAdaptiveRuntimeConnectionObservation observation)
+    {
+        observation = default;
+        if (Volatile.Read(ref adaptiveRuntimeObservationConfigurationState) != AdaptiveRuntimeObservationEnabled)
+        {
+            return false;
+        }
+
+        long epochStartTicks = adaptiveRuntimeObservationEpochStartTicks;
+        if (epochEndTicks <= epochStartTicks
+            || adaptiveRuntimeObservationEpochSequence == ulong.MaxValue)
+        {
+            return false;
+        }
+
+        QuicAdaptiveRuntimeSignalMask missingSignalMask = QuicAdaptiveRuntimeSignalMask.None;
+        uint queueDelayEwmaMicros = 0;
+        if (applicationSendPressureClassifier.HasQueueDelay)
+        {
+            queueDelayEwmaMicros = (uint)applicationSendPressureClassifier.QueueDelayEwmaMicros;
+        }
+        else
+        {
+            missingSignalMask |= QuicAdaptiveRuntimeSignalMask.QueueDelayEwma;
+        }
+
+        ulong epochSequence = adaptiveRuntimeObservationEpochSequence + 1;
+        observation = new QuicAdaptiveRuntimeConnectionObservation(
+            epochSequence,
+            epochStartTicks,
+            epochEndTicks,
+            ConvertTicksToMicros(epochEndTicks - epochStartTicks),
+            QuicAdaptiveRuntimeConnectionObservation.CurrentObservationContractVersion,
+            QuicAdaptiveRuntimeConnectionObservation.CurrentPolicyRuleVersion,
+            AdvisorAgeMicros: null,
+            missingSignalMask,
+            StaleSignalMask: QuicAdaptiveRuntimeSignalMask.None,
+            CaptureAdaptiveRuntimeLifecycleFlags(),
+            Volatile.Read(ref hasIssuedApplicationDataWrite) != 0,
+            SaturateToUInt16(streamRegistry.Count),
+            SaturateToUInt16(streamObservers.DistinctStreamCount),
+            (uint)applicationSendQueue.Count,
+            queueDelayEwmaMicros);
+
+        adaptiveRuntimeObservationEpochSequence = epochSequence;
+        adaptiveRuntimeObservationEpochStartTicks = epochEndTicks;
+        return true;
+    }
+
+    private QuicAdaptiveRuntimeLifecycle CaptureAdaptiveRuntimeLifecycleFlags()
+    {
+        QuicAdaptiveRuntimeLifecycle flags = phase switch
+        {
+            QuicConnectionPhase.Establishing => QuicAdaptiveRuntimeLifecycle.Establishing,
+            QuicConnectionPhase.Active => QuicAdaptiveRuntimeLifecycle.Active,
+            QuicConnectionPhase.Closing => QuicAdaptiveRuntimeLifecycle.Closing,
+            QuicConnectionPhase.Draining => QuicAdaptiveRuntimeLifecycle.Draining,
+            QuicConnectionPhase.Discarded => QuicAdaptiveRuntimeLifecycle.Discarded,
+            _ => QuicAdaptiveRuntimeLifecycle.None,
+        };
+        if (terminalState is not null)
+        {
+            flags |= QuicAdaptiveRuntimeLifecycle.Terminal;
+        }
+
+        if (Volatile.Read(ref disposed) != 0)
+        {
+            flags |= QuicAdaptiveRuntimeLifecycle.Disposed;
+        }
+
+        return flags;
+    }
+
+    private static ushort SaturateToUInt16(int value)
+        => value >= ushort.MaxValue ? ushort.MaxValue : (ushort)Math.Max(value, 0);
 
     private bool TryRemovePendingStreamActionRequest(long requestId, out StreamActionRequestCompletionSource completionSource)
     {

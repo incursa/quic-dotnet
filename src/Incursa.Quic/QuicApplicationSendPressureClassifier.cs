@@ -44,6 +44,8 @@ internal struct QuicApplicationSendPressureClassifier
 
     internal int QueueDelayEwmaMicros => queueDelayEwmaMicros;
 
+    internal bool HasQueueDelay => hasQueueDelay;
+
     internal void ObserveQueueDelay(double queueDelayMilliseconds)
     {
         if (!double.IsFinite(queueDelayMilliseconds) || queueDelayMilliseconds < 0)
