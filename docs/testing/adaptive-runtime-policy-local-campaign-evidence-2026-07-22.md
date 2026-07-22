@@ -114,6 +114,55 @@ and peaked at 92.29 percent. A final ten-second process-I/O sample observed
 84.54 MiB read and 20.31 CPU-seconds across the Syncthing processes. The
 permitted x4/s16 rerun was deliberately not spent in that regime.
 
+## Forced-Epoch Preservation Correction
+
+A contract audit after the balanced profile found that forced-policy cells
+retained result-level metrics but did not export the per-connection epoch rows
+required by the offline dataset contract. Only `-ShadowOnly` cells enabled the
+epoch publisher. The balanced results above remain valid aggregate diagnostic
+evidence, but they are not eligible as raw epoch-layer training rows and must
+not be silently represented as ML-ready data.
+
+Commits `85b40119` and `c12e2c57` add behavior-neutral forced epoch capture.
+The configured forced policy remains transport-authoritative; the existing
+rule is evaluated only as a recorded recommendation. Each forced row now joins
+to its source sample and treatment, records `selectionSource=forced`, carries
+the actual applied policy, and fails validation when sample, treatment, and
+snapshot policy identities disagree. The generic raw stream is retained as
+`adaptive-runtime-epochs.raw.jsonl`.
+
+The focused Release build completed with zero warnings and errors. The
+`REQ-QUIC-CRT-0164` through `REQ-QUIC-CRT-0169` band passed 46 of 46 tests,
+including all three forced policies and a proof that observation does not
+change the selected receive-credit path. Both forced and shadow example rows
+passed schema and join validation. Source-host startup smokes for
+`legacy_current`, `immediate`, `read_dominant_batch`, and `shadow` all reported
+the generic epoch contract.
+
+The append-only
+`adaptive-receive-credit-20260722-forced-epoch-smoke1/upload-1mb-x1-s1`
+integration row retained 66 epoch files across four ABBA samples. Every row
+used `selectionSource=forced`, every applied policy matched the source sample
+treatment, and evidence validation joined all 66 rows with zero failures. Its
+111 checksum entries had zero missing files or hash mismatches, and every
+sample retained valid target attribution. The row is
+`invalid_environment` because it deliberately ran during the documented host
+contention; its timings are not credited.
+
+The smoke identities are result
+`779900d549fe0ed6669d9e4796becfa4da19f988e8da31459bf14daef965c0fe`,
+manifest
+`d1365cc5412434247d85cfdd7934783327835f8a5ba773bef0012de074b73f8d`,
+inventory
+`8c810410253739109df382d0240a7f2e21e091844cbd07299d8466222dc92922`,
+and validation summary
+`351ffa04ec8a3f5a710575b05ec395120f9965f6b6cc595c7f0a8380e0db23b6`.
+
+Because epoch capture adds bounded instrumentation to every forced sample, a
+new full-length c1 guardrail must requalify the measurement environment before
+any ML-ready varied profile runs. The earlier aggregate balanced profile is
+not substituted for that rerun.
+
 The reviewed next gate is one append-only rerun of only
 `duplex-64kb-x4-s16` at 5/60 seconds after a low-contention idle window is
 observed. If that row remains `invalid_environment`, the broader campaign must
@@ -140,9 +189,11 @@ Key artifact identities are:
 ## Gate Decision
 
 The repaired harness and the valid c1, c16, s16, download-c16, and s100 rows
-are ready for offline dataset preparation after review. The local campaign as
-a whole is not complete because the mixed x4/s16 cell failed environment
-repeatability. `connection_first` and `stream_first` have not started.
+remain useful aggregate diagnostic evidence. They are not raw epoch-layer
+training rows because they predate forced-epoch capture. The local campaign as
+a whole is not complete: the host remains contended, the instrumented c1 gate
+has not cleared, and the ML-ready `balanced`, `connection_first`, and
+`stream_first` profiles have not run.
 
 No result in this record authorizes `active_internal`, stress expansion,
 ProtocolLab submission, online exploration, or production selector changes.
