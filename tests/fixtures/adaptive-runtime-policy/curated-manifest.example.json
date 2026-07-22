@@ -46,7 +46,7 @@
   },
   "rowDecisions": [
     {
-      "rowId": "row-shadow-001-0001",
+      "rowId": "adaptive-receive-credit-local-001|run-shadow-001|row-shadow-001-0001",
       "decision": "excluded",
       "reasonCodes": [
         "analysis_exclusion_flag"
@@ -60,7 +60,7 @@
       }
     },
     {
-      "rowId": "row-forced-001-0001",
+      "rowId": "adaptive-receive-credit-local-002|run-forced-001|row-forced-001-0001",
       "decision": "excluded",
       "reasonCodes": [
         "analysis_exclusion_flag"

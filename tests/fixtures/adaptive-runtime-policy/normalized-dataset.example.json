@@ -54,7 +54,8 @@
   },
   "rows": [
     {
-      "rowId": "row-shadow-001-0001",
+      "rowId": "adaptive-receive-credit-local-001|run-shadow-001|row-shadow-001-0001",
+      "sourceRowId": "row-shadow-001-0001",
       "joinKey": "adaptive-receive-credit-local-001|run-shadow-001|c16-download-shadow|sample-shadow-001",
       "campaignId": "adaptive-receive-credit-local-001",
       "runId": "run-shadow-001",
@@ -128,7 +129,8 @@
       }
     },
     {
-      "rowId": "row-forced-001-0001",
+      "rowId": "adaptive-receive-credit-local-002|run-forced-001|row-forced-001-0001",
+      "sourceRowId": "row-forced-001-0001",
       "joinKey": "adaptive-receive-credit-local-002|run-forced-001|c16-download-forced|sample-forced-001",
       "campaignId": "adaptive-receive-credit-local-002",
       "runId": "run-forced-001",

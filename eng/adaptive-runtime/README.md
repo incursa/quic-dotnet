@@ -72,6 +72,13 @@ the checksum-backed sample throughput, p95 latency, buffer-pool measurements,
 and explicit availability of managed-memory and fairness outcomes. The block is
 marked `scope = sample` because its values repeat across the sample's epoch rows
 and must not be treated as independent epoch observations.
+Raw epoch `rowId` values are scoped to their source run. Normalized rows preserve
+that value as `sourceRowId` and use `campaignId|runId|sourceRowId` as the stable,
+dataset-wide `rowId`, so independent append-only campaigns can be combined
+without rewriting their retained evidence.
+Both fields remain optional at the persisted v1 schema boundary so previously
+retained v1 normalized datasets remain valid; the current transformation emits
+them and its requirement tests enforce their presence and semantics.
 
 The split stage blocks rather than inventing train/validation/test assignments
 when complete host-fingerprint and workload-family holdouts cannot be satisfied

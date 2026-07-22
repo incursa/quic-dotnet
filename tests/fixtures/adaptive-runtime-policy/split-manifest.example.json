@@ -28,13 +28,13 @@
   "blockedReason": "No curated rows remained eligible for splitting.",
   "assignments": [
     {
-      "rowId": "row-shadow-001-0001",
+      "rowId": "adaptive-receive-credit-local-001|run-shadow-001|row-shadow-001-0001",
       "split": "holdout_blocked",
       "counterfactualGroupKey": "adaptive-receive-credit-local-001|example.download.c16|download|fixed_total|1048576|1|16|16|sustained|cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|example-host-fingerprint|receive_credit_publication|custom|8d13cbb13bff6f6a3084bdd98679cfc562a07da1f45efd25026a6038c0b86531",
       "holdoutGroupKey": "example.download.c16|download|fixed_total|1048576|1|16|16|sustained|example-host-fingerprint"
     },
     {
-      "rowId": "row-forced-001-0001",
+      "rowId": "adaptive-receive-credit-local-002|run-forced-001|row-forced-001-0001",
       "split": "holdout_blocked",
       "counterfactualGroupKey": "adaptive-receive-credit-local-002|example.download.c16|download|fixed_total|1048576|1|16|16|sustained|cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|example-host-fingerprint|receive_credit_publication|custom|8d13cbb13bff6f6a3084bdd98679cfc562a07da1f45efd25026a6038c0b86531",
       "holdoutGroupKey": "example.download.c16|download|fixed_total|1048576|1|16|16|sustained|example-host-fingerprint"

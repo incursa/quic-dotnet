@@ -225,14 +225,19 @@ public sealed class REQ_QUIC_CRT_0172
             Assert.True(File.Exists(splitPath));
 
             using JsonDocument normalized = JsonDocument.Parse(File.ReadAllText(normalizedPath));
-            JsonElement metrics = normalized.RootElement.GetProperty("rows")[0].GetProperty("normalizedMetrics");
+            JsonElement normalizedRow = normalized.RootElement.GetProperty("rows")[0];
+            Assert.Equal("row-shadow-checksum-001-0001", normalizedRow.GetProperty("sourceRowId").GetString());
+            Assert.Equal(
+                "adaptive-receive-credit-checksum-001|run-shadow-checksum-001|row-shadow-checksum-001-0001",
+                normalizedRow.GetProperty("rowId").GetString());
+            JsonElement metrics = normalizedRow.GetProperty("normalizedMetrics");
             Assert.Equal(JsonValueKind.Null, metrics.GetProperty("throughputMiBPerSecond").ValueKind);
             Assert.Equal(JsonValueKind.Null, metrics.GetProperty("allocatedKiB").ValueKind);
             Assert.Equal(JsonValueKind.Null, metrics.GetProperty("peakRetainedKiB").ValueKind);
             Assert.Equal(JsonValueKind.Null, metrics.GetProperty("queueToServiceRatio").ValueKind);
             Assert.Equal(JsonValueKind.Null, metrics.GetProperty("flowBlockedMs").ValueKind);
 
-            JsonElement sampleOutcomes = normalized.RootElement.GetProperty("rows")[0].GetProperty("sampleScopedOutcomes");
+            JsonElement sampleOutcomes = normalizedRow.GetProperty("sampleScopedOutcomes");
             Assert.Equal("sample", sampleOutcomes.GetProperty("scope").GetString());
             Assert.Equal(0.953674, sampleOutcomes.GetProperty("throughputMiBPerSecond").GetDouble(), precision: 6);
             Assert.Equal(15, sampleOutcomes.GetProperty("latencyP95Ms").GetDouble());

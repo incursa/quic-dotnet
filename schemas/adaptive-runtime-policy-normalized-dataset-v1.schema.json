@@ -324,11 +324,13 @@
         "workloadShape",
         "groupKeys",
         "normalizedMetrics",
-        "sampleScopedOutcomes",
         "provenance"
       ],
       "properties": {
         "rowId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceRowId": {
           "$ref": "#/$defs/nonEmptyString"
         },
         "joinKey": {

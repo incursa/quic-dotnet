@@ -595,8 +595,9 @@ $seenRowIds = [System.Collections.Generic.HashSet[string]]::new([StringComparer]
 $seenEpochKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 foreach ($item in $validatedEpochRows) {
     $row = $item.Document
-    if (-not $seenRowIds.Add([string] $row.rowId)) {
-        $failures.Add("Duplicate epoch-row rowId '$($row.rowId)'.")
+    $scopedRowId = "$($row.runId)|$($row.rowId)"
+    if (-not $seenRowIds.Add($scopedRowId)) {
+        $failures.Add("Duplicate epoch-row rowId '$($row.rowId)' within run '$($row.runId)'.")
     }
 
     $epochKey = "$($row.runId)|$($row.sampleId)|$($row.connectionKey)|$($row.epochIndex)"

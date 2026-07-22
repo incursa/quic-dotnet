@@ -280,9 +280,11 @@ foreach ($epochItem in ($epochRows | Sort-Object { $_.Document.campaignId }, { $
     $resultArtifact = @($result.artifacts | Where-Object { $_.kind -eq 'result' } | Select-Object -First 1)
     $resultArtifactPath = if ($resultArtifact.Count -gt 0) { [string] $resultArtifact[0].path } else { $match.ResultItem.Path }
     $resultArtifactSha = if ($resultArtifact.Count -gt 0) { [string] $resultArtifact[0].sha256 } else { $match.ResultItem.Sha256 }
+    $normalizedRowId = '{0}|{1}|{2}' -f $row.campaignId, $row.runId, $row.rowId
 
     $normalizedRows.Add([ordered]@{
-        rowId = [string] $row.rowId
+        rowId = $normalizedRowId
+        sourceRowId = [string] $row.rowId
         joinKey = $compositeKey
         campaignId = [string] $row.campaignId
         runId = [string] $row.runId
