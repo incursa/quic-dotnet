@@ -105,6 +105,15 @@ files. Syncthing was actively reading the shared tree after those artifacts
 were generated. No process was suspended or stopped because campaign authority
 does not extend to changing user synchronization or desktop state.
 
+A bounded 30-minute idle monitor then sampled 60 ten-second windows separated
+by 20 seconds. A qualifying window required at most 20 percent mean CPU, 35
+percent maximum CPU, processor queue length at most one, and at most three
+Syncthing CPU-seconds. None qualified and the consecutive-stability count
+remained zero of three. Later windows averaged as much as 78.74 percent CPU
+and peaked at 92.29 percent. A final ten-second process-I/O sample observed
+84.54 MiB read and 20.31 CPU-seconds across the Syncthing processes. The
+permitted x4/s16 rerun was deliberately not spent in that regime.
+
 The reviewed next gate is one append-only rerun of only
 `duplex-64kb-x4-s16` at 5/60 seconds after a low-contention idle window is
 observed. If that row remains `invalid_environment`, the broader campaign must
