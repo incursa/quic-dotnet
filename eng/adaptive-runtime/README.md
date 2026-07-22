@@ -110,6 +110,11 @@ completion and memory outcomes remain null because the contract does not claim
 same-connection phase-local attribution. A single-cell
 result is diagnostic and cannot authorize activation or rack-lab submission.
 
+The local classifier is conjunctive. Known throughput, p95, or peak outstanding
+buffer-pool regressions beyond five percent retain a negative result. It cannot
+emit `accepted_local` until managed-allocation and true stream-fairness evidence
+are also populated, so a throughput-only win remains neutral.
+
 Run a deterministic higher-count measurement schedule with the same permanent
 cell runner:
 

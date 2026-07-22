@@ -152,6 +152,9 @@ public sealed class REQ_QUIC_CRT_0169
         Assert.Contains("Exactly one treatment must be legacy_current", runner, StringComparison.Ordinal);
         Assert.Contains("Get-RelativeRange", runner, StringComparison.Ordinal);
         Assert.Contains("maximumWithinTreatmentRelativeRange", runner, StringComparison.Ordinal);
+        Assert.Contains("candidateBufferPoolOutstandingPeakBytes", runner, StringComparison.Ordinal);
+        Assert.Contains("allAcceptanceOutcomesAvailable", runner, StringComparison.Ordinal);
+        Assert.Contains("fairnessAssessedForAcceptance = $false", runner, StringComparison.Ordinal);
         Assert.Contains("Test-Json -SchemaFile $resultSchemaPath", runner, StringComparison.Ordinal);
         Assert.Contains("[switch] $ShadowOnly", runner, StringComparison.Ordinal);
         Assert.Contains("[switch] $StressOnly", runner, StringComparison.Ordinal);

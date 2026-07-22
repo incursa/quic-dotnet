@@ -1007,6 +1007,14 @@ $baselineThroughput = Get-Median -Values @($baselineSamples.outcomes.throughputB
 $candidateThroughput = if ($ShadowOnly) { $null } else { Get-Median -Values @($candidateSamples.outcomes.throughputBytesPerSecond) }
 $baselineP95 = Get-Median -Values @($baselineSamples.outcomes.latencyP95Ms)
 $candidateP95 = if ($ShadowOnly) { $null } else { Get-Median -Values @($candidateSamples.outcomes.latencyP95Ms) }
+$baselineBufferPoolOutstandingPeakBytes = Get-RoundedMedianInt64 -Values @($baselineSamples.outcomes.bufferPoolOutstandingPeakBytes)
+$candidateBufferPoolOutstandingPeakBytes = if ($ShadowOnly) { $null } else { Get-RoundedMedianInt64 -Values @($candidateSamples.outcomes.bufferPoolOutstandingPeakBytes) }
+$managedAllocationAssessed = @($samples | Where-Object { $null -ne $_.outcomes.allocatedBytes }).Count -eq $samples.Count
+$fairnessAssessedForAcceptance = $false
+$allAcceptanceOutcomesAvailable = $managedAllocationAssessed -and
+    $fairnessAssessedForAcceptance -and
+    $null -ne $baselineBufferPoolOutstandingPeakBytes -and
+    ($ShadowOnly -or $null -ne $candidateBufferPoolOutstandingPeakBytes)
 $withinTreatmentRelativeRanges = @(@(
     Get-RelativeRange -Values @($baselineSamples.outcomes.throughputBytesPerSecond)
     Get-RelativeRange -Values @($baselineSamples.outcomes.latencyP95Ms)
@@ -1038,10 +1046,13 @@ elseif ($StressOnly) {
 }
 else {
     if (($null -ne $baselineThroughput -and $null -ne $candidateThroughput -and $candidateThroughput -lt ($baselineThroughput * 0.95)) -or
-        ($null -ne $baselineP95 -and $null -ne $candidateP95 -and $candidateP95 -gt ($baselineP95 * 1.05))) {
+        ($null -ne $baselineP95 -and $null -ne $candidateP95 -and $candidateP95 -gt ($baselineP95 * 1.05)) -or
+        ($null -ne $baselineBufferPoolOutstandingPeakBytes -and $null -ne $candidateBufferPoolOutstandingPeakBytes -and
+            $candidateBufferPoolOutstandingPeakBytes -gt ($baselineBufferPoolOutstandingPeakBytes * 1.05))) {
         'negative_retained'
     }
-    elseif ($null -ne $baselineThroughput -and $null -ne $candidateThroughput -and
+    elseif ($allAcceptanceOutcomesAvailable -and
+        $null -ne $baselineThroughput -and $null -ne $candidateThroughput -and
         $candidateThroughput -ge ($baselineThroughput * 1.05) -and
         ($null -eq $baselineP95 -or $null -eq $candidateP95 -or $candidateP95 -le ($baselineP95 * 1.05))) {
         'accepted_local'
@@ -1361,6 +1372,7 @@ if ($StressOnly) {
 $resultNotes.Add('The host and generator share a machine, so target and generator health remain limited.')
 $resultNotes.Add('Sample and aggregate buffer-pool rent and peak-outstanding measurements come only from retained quic-buffer-pool-summary.json metrics; generic managed-allocation and peak-retained-memory fields remain null.')
 $resultNotes.Add('Fairness remains unassessed because retained request latency/completion metrics are not proof of stream-level fairness. Per-epoch completion and memory outcomes also remain null.')
+$resultNotes.Add('accepted_local remains unavailable until managed-allocation and true stream-fairness gates are populated; known throughput, p95, or peak outstanding buffer-pool regressions can still retain a negative result.')
 foreach ($failure in $contractFailures) {
     $resultNotes.Add("contract: $failure")
 }
