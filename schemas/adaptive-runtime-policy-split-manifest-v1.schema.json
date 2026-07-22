@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-policy-split-manifest-v1.schema.json",
+  "title": "Adaptive Runtime Policy Split Manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "splitManifestId",
+    "createdUtc",
+    "curatedManifest",
+    "transformation",
+    "strategy",
+    "status",
+    "assignments",
+    "summary"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "adaptive-runtime-policy-split-manifest-v1"
+    },
+    "splitManifestId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "createdUtc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "curatedManifest": {
+      "$ref": "#/$defs/manifestReference"
+    },
+    "transformation": {
+      "$ref": "#/$defs/transformation"
+    },
+    "strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "appendOnly",
+        "groupingDimensions",
+        "deterministicSort",
+        "seed",
+        "insufficientDiversityAction"
+      ],
+      "properties": {
+        "appendOnly": {
+          "type": "boolean",
+          "const": true
+        },
+        "groupingDimensions": {
+          "type": "array",
+          "prefixItems": [
+            { "const": "workloadFamilyKey" },
+            { "const": "hostFingerprintKey" },
+            { "const": "runConnectionKey" },
+            { "const": "counterfactualGroupKey" }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "deterministicSort": {
+          "type": "string",
+          "minLength": 1
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "insufficientDiversityAction": {
+          "type": "string",
+          "const": "blocked_manifest"
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "insufficient_group_diversity"
+      ]
+    },
+    "blockedReason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "assignments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/assignment"
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trainRowCount",
+        "validationRowCount",
+        "testRowCount",
+        "blockedRowCount"
+      ],
+      "properties": {
+        "trainRowCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "validationRowCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "testRowCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blockedRowCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{64}$"
+    },
+    "manifestReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "curatedManifestId"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "curatedManifestId": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "transformation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version",
+        "codeCommit"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "version": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "codeCommit": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{7,40}$"
+        }
+      }
+    },
+    "splitName": {
+      "type": "string",
+      "enum": [
+        "train",
+        "validation",
+        "test",
+        "holdout_blocked"
+      ]
+    },
+    "assignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rowId",
+        "split",
+        "counterfactualGroupKey",
+        "holdoutGroupKey"
+      ],
+      "properties": {
+        "rowId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "split": {
+          "$ref": "#/$defs/splitName"
+        },
+        "counterfactualGroupKey": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "holdoutGroupKey": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    }
+  }
+}

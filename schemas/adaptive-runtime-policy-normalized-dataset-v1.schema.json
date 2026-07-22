@@ -1,0 +1,667 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-policy-normalized-dataset-v1.schema.json",
+  "title": "Adaptive Runtime Policy Normalized Dataset v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "normalizedDatasetId",
+    "datasetVersion",
+    "createdUtc",
+    "catalog",
+    "rawInputs",
+    "transformation",
+    "joinContract",
+    "rows",
+    "unmatchedResults",
+    "unmatchedEpochRows",
+    "summary"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "adaptive-runtime-policy-normalized-dataset-v1"
+    },
+    "normalizedDatasetId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "datasetVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "createdUtc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "catalog": {
+      "$ref": "#/$defs/artifactReference"
+    },
+    "rawInputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "localResults",
+        "epochRows",
+        "evidenceValidation"
+      ],
+      "properties": {
+        "localResults": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/artifactReference"
+          }
+        },
+        "epochRows": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/artifactReference"
+          }
+        },
+        "evidenceValidation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "valid",
+            "localResultCount",
+            "epochRowCount",
+            "failures"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "type": "string",
+              "const": "adaptive-runtime-policy-evidence-validation-v1"
+            },
+            "valid": {
+              "type": "boolean"
+            },
+            "localResultCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "epochRowCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "failures": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "transformation": {
+      "$ref": "#/$defs/transformation"
+    },
+    "joinContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "joinKeys",
+        "unmatchedResultPolicy",
+        "unmatchedEpochPolicy",
+        "missingValueSemantics"
+      ],
+      "properties": {
+        "joinKeys": {
+          "type": "array",
+          "prefixItems": [
+            { "const": "campaignId" },
+            { "const": "runId" },
+            { "const": "cellId" },
+            { "const": "sampleId" }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "unmatchedResultPolicy": {
+          "type": "string",
+          "const": "retained"
+        },
+        "unmatchedEpochPolicy": {
+          "type": "string",
+          "const": "retained"
+        },
+        "missingValueSemantics": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/normalizedRow"
+      }
+    },
+    "unmatchedResults": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/unmatchedResult"
+      }
+    },
+    "unmatchedEpochRows": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/unmatchedEpochRow"
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "joinedRowCount",
+        "defaultIncludedRowCount",
+        "defaultExcludedRowCount",
+        "unmatchedResultCount",
+        "unmatchedEpochRowCount"
+      ],
+      "properties": {
+        "joinedRowCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "defaultIncludedRowCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "defaultExcludedRowCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unmatchedResultCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unmatchedEpochRowCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{64}$"
+    },
+    "nullableNumber": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "transformation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version",
+        "codeCommit"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "version": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "codeCommit": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{7,40}$"
+        }
+      }
+    },
+    "analysisExclusionFlag": {
+      "type": "string",
+      "enum": [
+        "correctness_failed",
+        "requested_effective_mismatch",
+        "binary_identity_missing",
+        "binary_changed",
+        "target_health_invalid",
+        "generator_health_invalid",
+        "observation_missing",
+        "observation_stale",
+        "observation_saturated",
+        "out_of_domain",
+        "instrumentation_mismatch",
+        "warmup",
+        "cooldown",
+        "terminal_partial_epoch",
+        "policy_mismatch",
+        "source_join_failed",
+        "none"
+      ]
+    },
+    "defaultCurationReason": {
+      "type": "string",
+      "enum": [
+        "none",
+        "analysis_exclusion_flag",
+        "invalid_environment_classification",
+        "invalid_contract_classification",
+        "failed_correctness_classification",
+        "stress_only_classification",
+        "unmatched_source_result",
+        "unmatched_epoch_row"
+      ]
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "legacy_current",
+        "baseline_only",
+        "observe_only",
+        "shadow",
+        "forced"
+      ]
+    },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "accepted_local",
+        "neutral_local",
+        "negative_retained",
+        "invalid_environment",
+        "invalid_contract",
+        "failed_correctness",
+        "stress_only"
+      ]
+    },
+    "normalizedRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rowId",
+        "joinKey",
+        "campaignId",
+        "runId",
+        "cellId",
+        "sampleId",
+        "connectionKey",
+        "epochIndex",
+        "policyAxis",
+        "classification",
+        "mode",
+        "selectedPolicy",
+        "appliedPolicy",
+        "forcedPolicy",
+        "shadowRecommendation",
+        "selectionSource",
+        "reasonCode",
+        "sourceExclusionFlags",
+        "defaultCurationDecision",
+        "defaultCurationReasons",
+        "workloadShape",
+        "groupKeys",
+        "normalizedMetrics",
+        "provenance"
+      ],
+      "properties": {
+        "rowId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "joinKey": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "campaignId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "runId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "cellId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sampleId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "connectionKey": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "epochIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "policyAxis": {
+          "type": "string",
+          "const": "receive_credit_publication"
+        },
+        "classification": {
+          "$ref": "#/$defs/classification"
+        },
+        "mode": {
+          "$ref": "#/$defs/mode"
+        },
+        "selectedPolicy": {
+          "type": "string",
+          "enum": [
+            "legacy_current",
+            "conservative",
+            "immediate",
+            "read_dominant_batch",
+            "static_current",
+            "candidate",
+            "not_applicable"
+          ]
+        },
+        "appliedPolicy": {
+          "type": "string",
+          "enum": [
+            "legacy_current",
+            "conservative",
+            "immediate",
+            "read_dominant_batch",
+            "static_current",
+            "candidate",
+            "not_applicable"
+          ]
+        },
+        "forcedPolicy": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "legacy_current",
+            "conservative",
+            "immediate",
+            "read_dominant_batch",
+            "static_current",
+            "candidate",
+            "not_applicable",
+            null
+          ]
+        },
+        "shadowRecommendation": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "legacy_current",
+            "conservative",
+            "immediate",
+            "read_dominant_batch",
+            "static_current",
+            "candidate",
+            "not_applicable",
+            null
+          ]
+        },
+        "selectionSource": {
+          "type": "string",
+          "enum": [
+            "legacy",
+            "forced",
+            "shadow_rule",
+            "baseline_only"
+          ]
+        },
+        "reasonCode": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceExclusionFlags": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/analysisExclusionFlag"
+          }
+        },
+        "defaultCurationDecision": {
+          "type": "string",
+          "enum": [
+            "include",
+            "exclude"
+          ]
+        },
+        "defaultCurationReasons": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/defaultCurationReason"
+          }
+        },
+        "workloadShape": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scenarioId",
+            "trafficShape",
+            "accountingMode",
+            "payloadBytes",
+            "effectiveConnections",
+            "effectiveStreamsPerConnection",
+            "effectiveConcurrency",
+            "arrivalPattern"
+          ],
+          "properties": {
+            "scenarioId": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "trafficShape": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "accountingMode": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "payloadBytes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "effectiveConnections": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "effectiveStreamsPerConnection": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "effectiveConcurrency": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "arrivalPattern": {
+              "$ref": "#/$defs/nonEmptyString"
+            }
+          }
+        },
+        "groupKeys": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "binaryCohortKey",
+            "workloadFamilyKey",
+            "hostFingerprintKey",
+            "runConnectionKey",
+            "repetitionProtocolKey",
+            "preDecisionRegimeKey",
+            "counterfactualGroupKey"
+          ],
+          "properties": {
+            "binaryCohortKey": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "workloadFamilyKey": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "hostFingerprintKey": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "runConnectionKey": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "repetitionProtocolKey": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "preDecisionRegimeKey": {
+              "$ref": "#/$defs/sha256"
+            },
+            "counterfactualGroupKey": {
+              "$ref": "#/$defs/nonEmptyString"
+            }
+          }
+        },
+        "normalizedMetrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "throughputMiBPerSecond",
+            "latencyP95Ms",
+            "allocatedKiB",
+            "peakRetainedKiB",
+            "queueToServiceRatio",
+            "flowBlockedMs",
+            "missingSignalCount",
+            "staleSignalCount"
+          ],
+          "properties": {
+            "throughputMiBPerSecond": {
+              "$ref": "#/$defs/nullableNumber"
+            },
+            "latencyP95Ms": {
+              "$ref": "#/$defs/nullableNumber"
+            },
+            "allocatedKiB": {
+              "$ref": "#/$defs/nullableNumber"
+            },
+            "peakRetainedKiB": {
+              "$ref": "#/$defs/nullableNumber"
+            },
+            "queueToServiceRatio": {
+              "$ref": "#/$defs/nullableNumber"
+            },
+            "flowBlockedMs": {
+              "$ref": "#/$defs/nullableNumber"
+            },
+            "missingSignalCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "staleSignalCount": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "resultArtifactPath",
+            "resultArtifactSha256",
+            "repositoryCommit",
+            "benchmarkSha256",
+            "runtimeSha256",
+            "hostFingerprint"
+          ],
+          "properties": {
+            "resultArtifactPath": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "resultArtifactSha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "repositoryCommit": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{7,40}$"
+            },
+            "benchmarkSha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "runtimeSha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "hostFingerprint": {
+              "$ref": "#/$defs/nonEmptyString"
+            }
+          }
+        }
+      }
+    },
+    "unmatchedResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runId",
+        "campaignId",
+        "cellId",
+        "reasonCode",
+        "artifact"
+      ],
+      "properties": {
+        "runId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "campaignId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "cellId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "reasonCode": {
+          "type": "string",
+          "const": "unmatched_source_result"
+        },
+        "artifact": {
+          "$ref": "#/$defs/artifactReference"
+        }
+      }
+    },
+    "unmatchedEpochRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rowId",
+        "runId",
+        "reasonCode",
+        "artifact"
+      ],
+      "properties": {
+        "rowId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "runId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "reasonCode": {
+          "type": "string",
+          "const": "unmatched_epoch_row"
+        },
+        "artifact": {
+          "$ref": "#/$defs/artifactReference"
+        }
+      }
+    }
+  }
+}

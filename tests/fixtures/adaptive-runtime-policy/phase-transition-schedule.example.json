@@ -1,0 +1,202 @@
+{
+  "schemaVersion": "adaptive-runtime-policy-phase-transition-schedule-v1",
+  "campaignId": "adaptive-runtime-schema-validation-20260722",
+  "scheduleProfile": "balanced",
+  "scheduleId": "adaptive-runtime.balanced.phase-transition.v1",
+  "generatedAtUtc": "2026-07-22T15:27:45.0156110Z",
+  "executionModel": "independent_cell_sequence",
+  "sameConnectionPhaseExecution": "not_supported",
+  "policyAxis": "receive_credit_publication",
+  "activePolicyAuthorized": false,
+  "onlineLearningAuthorized": false,
+  "protocolLabSubmissionAuthorized": false,
+  "transitionIntent": "few_to_many_to_few_review_artifact",
+  "phases": [
+    {
+      "phaseId": "adaptive-runtime.connection-wave.upload.v1",
+      "phaseLabel": "Connection-wave upload hold",
+      "transitionKind": "connection_wave",
+      "executionStatus": "mapped_to_cells",
+      "measurementCells": [
+        {
+          "cellId": "upload-1mb-x16-s1",
+          "scenarioId": "quic.transport.stream-throughput.1mb",
+          "trafficShape": "upload",
+          "payloadBytes": 1048576,
+          "connections": 16,
+          "streamsPerConnection": 1,
+          "effectiveConcurrency": 16,
+          "stressOnly": false
+        }
+      ]
+    },
+    {
+      "phaseId": "adaptive-runtime.few-streams.baseline.v1",
+      "phaseLabel": "Few-stream baseline",
+      "transitionKind": "baseline",
+      "executionStatus": "mapped_to_cells",
+      "measurementCells": [
+        {
+          "cellId": "duplex-64kb-x1-s16",
+          "scenarioId": "quic.transport.duplex-streams-peer-matrix",
+          "trafficShape": "duplex",
+          "payloadBytes": 65536,
+          "connections": 1,
+          "streamsPerConnection": 16,
+          "effectiveConcurrency": 16,
+          "stressOnly": false
+        }
+      ]
+    },
+    {
+      "phaseId": "adaptive-runtime.connection-wave.download.v1",
+      "phaseLabel": "Connection-wave download hold",
+      "transitionKind": "connection_wave",
+      "executionStatus": "mapped_to_cells",
+      "measurementCells": [
+        {
+          "cellId": "download-1mb-x16-s1",
+          "scenarioId": "quic.transport.stream-download.1mb",
+          "trafficShape": "download",
+          "payloadBytes": 1048576,
+          "connections": 16,
+          "streamsPerConnection": 1,
+          "effectiveConcurrency": 16,
+          "stressOnly": false
+        }
+      ]
+    },
+    {
+      "phaseId": "adaptive-runtime.stream-wave.multiplex-burst.v1",
+      "phaseLabel": "Stream-wave multiplex burst",
+      "transitionKind": "stream_wave",
+      "executionStatus": "mapped_to_cells",
+      "measurementCells": [
+        {
+          "cellId": "multiplex-1kb-x1-s100",
+          "scenarioId": "quic.transport.multiplex.100x1kb",
+          "trafficShape": "duplex",
+          "payloadBytes": 1024,
+          "connections": 1,
+          "streamsPerConnection": 100,
+          "effectiveConcurrency": 100,
+          "stressOnly": false
+        }
+      ]
+    },
+    {
+      "phaseId": "adaptive-runtime.stream-wave.duplex-ramp.v1",
+      "phaseLabel": "Stream-wave duplex ramp",
+      "transitionKind": "stream_wave",
+      "executionStatus": "mapped_to_cells",
+      "measurementCells": [
+        {
+          "cellId": "duplex-64kb-x4-s16",
+          "scenarioId": "quic.transport.duplex-streams-peer-matrix",
+          "trafficShape": "duplex",
+          "payloadBytes": 65536,
+          "connections": 4,
+          "streamsPerConnection": 16,
+          "effectiveConcurrency": 64,
+          "stressOnly": false
+        }
+      ]
+    },
+    {
+      "phaseId": "adaptive-runtime.balanced.recovery.planned.v1",
+      "phaseLabel": "Few-to-many-to-few recovery return",
+      "transitionKind": "recovery",
+      "executionStatus": "planned_only",
+      "gating": "Requires a same-connection phased executor; the current local schedule runs independent cells only.",
+      "measurementCells": []
+    }
+  ],
+  "commandLineage": {
+    "scheduleScriptPath": "C:\\shared\\src\\incursa\\quic-dotnet\\eng\\adaptive-runtime\\Invoke-AdaptiveRuntimePolicyLocalSchedule.ps1",
+    "scheduleScriptSha256": "ddc0833cd830c9103f8bd983251bfae7ae7288bc8f95ba1b53375c0092b8aba4",
+    "cellRunnerPath": "C:\\shared\\src\\incursa\\quic-dotnet\\eng\\adaptive-runtime\\Invoke-AdaptiveRuntimePolicyLocalCell.ps1",
+    "cellRunnerSha256": "54dbd26539b77f1f70b5f8d66a16e410aeefe53935fafeda867fc393aee86c6e",
+    "protocolLabRoot": "C:\\shared\\src\\incursa\\protocol-lab",
+    "protocolLabExecutionRoot": "C:\\shared\\src\\incursa\\protocol-lab-internal",
+    "sharedArguments": {
+      "policyA": "legacy_current",
+      "policyB": "read_dominant_batch",
+      "warmupSeconds": 2,
+      "durationSeconds": 5,
+      "includeStress": false,
+      "continueOnFailure": false
+    },
+    "cells": [
+      {
+        "cellId": "upload-1mb-x16-s1",
+        "phaseId": "adaptive-runtime.connection-wave.upload.v1",
+        "sequenceProtocol": "ABBA",
+        "scenarioId": "quic.transport.stream-throughput.1mb",
+        "trafficShape": "upload",
+        "accountingMode": "fixed_per_stream",
+        "arrivalPattern": "sustained",
+        "payloadBytes": 1048576,
+        "connections": 16,
+        "streamsPerConnection": 1,
+        "stressOnly": false
+      },
+      {
+        "cellId": "duplex-64kb-x1-s16",
+        "phaseId": "adaptive-runtime.few-streams.baseline.v1",
+        "sequenceProtocol": "BAAB",
+        "scenarioId": "quic.transport.duplex-streams-peer-matrix",
+        "trafficShape": "duplex",
+        "accountingMode": "fixed_per_stream",
+        "arrivalPattern": "sustained",
+        "payloadBytes": 65536,
+        "connections": 1,
+        "streamsPerConnection": 16,
+        "stressOnly": false
+      },
+      {
+        "cellId": "download-1mb-x16-s1",
+        "phaseId": "adaptive-runtime.connection-wave.download.v1",
+        "sequenceProtocol": "ABBA",
+        "scenarioId": "quic.transport.stream-download.1mb",
+        "trafficShape": "download",
+        "accountingMode": "fixed_per_stream",
+        "arrivalPattern": "sustained",
+        "payloadBytes": 1048576,
+        "connections": 16,
+        "streamsPerConnection": 1,
+        "stressOnly": false
+      },
+      {
+        "cellId": "multiplex-1kb-x1-s100",
+        "phaseId": "adaptive-runtime.stream-wave.multiplex-burst.v1",
+        "sequenceProtocol": "BAAB",
+        "scenarioId": "quic.transport.multiplex.100x1kb",
+        "trafficShape": "duplex",
+        "accountingMode": "fixed_per_stream",
+        "arrivalPattern": "bursty",
+        "payloadBytes": 1024,
+        "connections": 1,
+        "streamsPerConnection": 100,
+        "stressOnly": false
+      },
+      {
+        "cellId": "duplex-64kb-x4-s16",
+        "phaseId": "adaptive-runtime.stream-wave.duplex-ramp.v1",
+        "sequenceProtocol": "ABBA",
+        "scenarioId": "quic.transport.duplex-streams-peer-matrix",
+        "trafficShape": "duplex",
+        "accountingMode": "fixed_per_stream",
+        "arrivalPattern": "sustained",
+        "payloadBytes": 65536,
+        "connections": 4,
+        "streamsPerConnection": 16,
+        "stressOnly": false
+      }
+    ]
+  },
+  "notes": [
+    "This artifact declares deterministic measurement phases and exact command lineage only.",
+    "The current scheduler executes independent cells and does not claim same-connection multi-phase transitions.",
+    "The planned recovery phase is retained for review so later executor work can reuse the stable phase IDs."
+  ]
+}

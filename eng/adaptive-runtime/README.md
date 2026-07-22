@@ -1,8 +1,9 @@
-# Adaptive Runtime Evidence Validation
+# Adaptive Runtime Evidence Validation And Dataset Materialization
 
 This directory contains the local validation gate for adaptive-runtime policy
-campaign results and offline epoch rows. It does not train a model, submit a
-ProtocolLab job, or provide runtime controller inputs.
+campaign results plus the measurement-only catalog and offline dataset
+materialization scripts. It does not train a model, submit a ProtocolLab job,
+or provide runtime controller inputs.
 
 Validate one or more result documents and their joined epoch rows from the
 repository root:
@@ -16,13 +17,62 @@ repository root:
 The command validates each document against the versioned schema in
 `schemas/`, checks unique result run IDs, requires every epoch row to join to a
 result by run/campaign/cell identity, and verifies that rule, observation, and
-result-schema versions agree across the join. It also requires
+result-schema versions agree across the join. Local results must include a
+checksum inventory, and source, sample, target-attribution, summary, and epoch
+artifacts must resolve through that inventory with matching SHA-256 values. It
+also requires
 `workloadAnalysisOnly.excludedFromProductionFeatures` to remain true.
 
 The command emits a machine-readable
 `adaptive-runtime-policy-evidence-validation-v1` summary and exits nonzero on
 any schema or join failure. Input files are read-only. Negative, noisy,
 excluded, and failed campaign rows remain in their source evidence set.
+
+Materialize the measurement-only catalog metadata for the known adaptive seams:
+
+```powershell
+./eng/adaptive-runtime/New-AdaptiveRuntimePolicyCatalog.ps1 `
+  -OutputPath ./.artifacts/adaptive-runtime/catalog/policy-catalog.json
+```
+
+The catalog records all currently known seams as review metadata while keeping
+`receive_credit_publication` as the only executable measurement seam in this
+v1 substrate. Every catalog entry remains seam-local, versioned,
+`activationAuthorized = false`, and non-authoritative for runtime behavior.
+
+Build the deterministic raw -> normalized -> curated -> split chain from
+validated local results and epoch rows:
+
+```powershell
+./eng/adaptive-runtime/Invoke-AdaptiveRuntimeDatasetPipeline.ps1 `
+  -LocalResultPath ./tests/fixtures/adaptive-runtime-policy/local-result.shadow.checksum.example.json `
+  -EpochDatasetPath ./tests/fixtures/adaptive-runtime-policy/epoch-row.shadow.checksum.example.json `
+  -OutputRoot ./.artifacts/adaptive-runtime/pipeline-example
+```
+
+The pipeline validates the raw inputs before it creates the append-only output
+root, emits a versioned catalog when one is not supplied, preserves null
+derived metrics as null, retains unmatched results/rows with explicit reason
+codes, and writes schema-valid:
+
+- `catalog/policy-catalog.json`
+- `normalized/normalized-dataset.json`
+- `curated/curated-manifest.json`
+- `split/split-manifest.json`
+
+The standalone validator rejects unmatched epoch rows by default. The dataset
+pipeline invokes its explicit retention mode so schema-valid unmatched rows
+remain addressable under `unmatchedEpochRows` with reason codes while every
+other integrity failure still blocks materialization. Counterfactual keys also
+include the declared repetition protocol and a SHA-256 key over the complete,
+property-sorted pre-decision observation vector; rows from different protocols
+or observation regimes are therefore not silently grouped together.
+
+The split stage blocks rather than inventing train/validation/test assignments
+when complete host-fingerprint and workload-family holdouts cannot be satisfied
+honestly. The canonical illustrative fixture therefore produces
+`status = insufficient_group_diversity` because it contains only one host and
+one workload family.
 
 Run one permanent forced-policy A/B/B/A or B/A/A/B local cell with the
 source-backed raw QUIC ProtocolLab harness:
@@ -78,6 +128,12 @@ interruption; completed cell results are retained and skipped only after their
 frozen binary hashes match. These are measurement schedules, not alternative
 production runtime schedulers, and they do not authorize `active_internal`,
 online learning, or ProtocolLab submission.
+
+Every schedule also writes a schema-valid `phase-transition-schedule.json`
+with stable phase IDs and exact command lineage. The current execution model is
+an independent-cell sequence. Same-connection multi-phase execution is
+explicitly `not_supported`, and the recovery phase remains `planned_only`
+until a separately reviewed executor exists.
 
 Capture one behavior-neutral shadow sample with the same permanent runner by
 adding `-ShadowOnly`. The runner applies `legacy_current`, asks the internal

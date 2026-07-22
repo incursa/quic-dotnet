@@ -41,17 +41,40 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
-$resolvedProtocolLabRoot = (Resolve-Path -LiteralPath $ProtocolLabRoot).Path
-$resolvedProtocolLabExecutionRoot = (Resolve-Path -LiteralPath $ProtocolLabExecutionRoot).Path
 $cellRunnerPath = Join-Path $PSScriptRoot 'Invoke-AdaptiveRuntimePolicyLocalCell.ps1'
+$phaseTransitionSchemaPath = Join-Path $repoRoot 'schemas\adaptive-runtime-policy-phase-transition-schedule-v1.schema.json'
 $serverProjectPath = Join-Path $repoRoot 'eng\protocol-lab\servers\IncursaRawQuicServer\IncursaRawQuicServer.csproj'
 $serverBinaryPath = Join-Path $repoRoot 'eng\protocol-lab\servers\IncursaRawQuicServer\bin\Release\net10.0\IncursaRawQuicServer.dll'
 $runtimeBinaryPath = Join-Path $repoRoot 'src\Incursa.Quic\bin\Release\net10.0\Incursa.Quic.dll'
 $campaignRoot = Join-Path $repoRoot ".artifacts\adaptive-runtime\$CampaignId"
+$phaseTransitionArtifactPath = Join-Path $campaignRoot 'phase-transition-schedule.json'
 $schedulePath = Join-Path $campaignRoot 'measurement-schedule.json'
 $completionPath = Join-Path $campaignRoot 'measurement-schedule-completion.json'
 $attemptId = (Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssfffffffZ')
 $attemptPath = Join-Path $campaignRoot "measurement-schedule-attempt-$attemptId.json"
+
+function Resolve-DeclaredRootPath {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $Path,
+
+        [bool] $Required
+    )
+
+    if (Test-Path -LiteralPath $Path) {
+        return (Resolve-Path -LiteralPath $Path).Path
+    }
+
+    if ($Required) {
+        throw "Required path was not found: $Path"
+    }
+
+    if ([System.IO.Path]::IsPathRooted($Path)) {
+        return [System.IO.Path]::GetFullPath($Path)
+    }
+
+    return [System.IO.Path]::GetFullPath((Join-Path $repoRoot $Path))
+}
 
 function New-MeasurementCell {
     param(
@@ -78,6 +101,16 @@ function New-MeasurementCell {
         [ValidateSet('sparse', 'bursty', 'sustained')]
         [string] $ArrivalPattern,
 
+        [Parameter(Mandatory = $true)]
+        [string] $PhaseId,
+
+        [Parameter(Mandatory = $true)]
+        [string] $PhaseLabel,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('baseline', 'connection_wave', 'stream_wave', 'recovery')]
+        [string] $TransitionKind,
+
         [bool] $StressOnly = $false
     )
 
@@ -91,8 +124,143 @@ function New-MeasurementCell {
         connections = $Connections
         streamsPerConnection = $StreamsPerConnection
         effectiveConcurrency = $Connections * $StreamsPerConnection
+        phaseId = $PhaseId
+        phaseLabel = $PhaseLabel
+        transitionKind = $TransitionKind
         stressOnly = $StressOnly
     }
+}
+
+function New-PhaseTransitionArtifact {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object[]] $Cells,
+
+        [Parameter(Mandatory = $true)]
+        [string] $ResolvedProtocolLabRoot,
+
+        [Parameter(Mandatory = $true)]
+        [string] $ResolvedProtocolLabExecutionRoot
+    )
+
+    $phaseRows = [System.Collections.Generic.List[object]]::new()
+    $phaseRowsById = @{}
+    foreach ($cell in $Cells) {
+        if (-not $phaseRowsById.ContainsKey($cell.phaseId)) {
+            $phaseRow = [ordered]@{
+                phaseId = [string] $cell.phaseId
+                phaseLabel = [string] $cell.phaseLabel
+                transitionKind = [string] $cell.transitionKind
+                executionStatus = 'mapped_to_cells'
+                measurementCells = [System.Collections.Generic.List[object]]::new()
+            }
+            $phaseRowsById[$cell.phaseId] = $phaseRow
+            $phaseRows.Add($phaseRow)
+        }
+
+        $phaseRowsById[$cell.phaseId].measurementCells.Add([ordered]@{
+            cellId = $cell.cellId
+            scenarioId = $cell.scenarioId
+            trafficShape = $cell.trafficShape
+            payloadBytes = $cell.payloadBytes
+            connections = $cell.connections
+            streamsPerConnection = $cell.streamsPerConnection
+            effectiveConcurrency = $cell.effectiveConcurrency
+            stressOnly = $cell.stressOnly
+        })
+    }
+
+    $phaseRows = @($phaseRows | ForEach-Object {
+        [ordered]@{
+            phaseId = $_.phaseId
+            phaseLabel = $_.phaseLabel
+            transitionKind = $_.transitionKind
+            executionStatus = $_.executionStatus
+            measurementCells = @($_.measurementCells | ForEach-Object {
+                [ordered]@{
+                    cellId = $_.cellId
+                    scenarioId = $_.scenarioId
+                    trafficShape = $_.trafficShape
+                    payloadBytes = $_.payloadBytes
+                    connections = $_.connections
+                    streamsPerConnection = $_.streamsPerConnection
+                    effectiveConcurrency = $_.effectiveConcurrency
+                    stressOnly = $_.stressOnly
+                }
+            })
+        }
+    })
+
+    $phaseRows += [ordered]@{
+        phaseId = "adaptive-runtime.$ScheduleProfile.recovery.planned.v1"
+        phaseLabel = 'Few-to-many-to-few recovery return'
+        transitionKind = 'recovery'
+        executionStatus = 'planned_only'
+        gating = 'Requires a same-connection phased executor; the current local schedule runs independent cells only.'
+        measurementCells = @()
+    }
+
+    $cellArguments = @($Cells | ForEach-Object {
+        [ordered]@{
+            cellId = $_.cellId
+            phaseId = $_.phaseId
+            sequenceProtocol = $_.sequenceProtocol
+            scenarioId = $_.scenarioId
+            trafficShape = $_.trafficShape
+            accountingMode = $_.accountingMode
+            arrivalPattern = $_.arrivalPattern
+            payloadBytes = $_.payloadBytes
+            connections = $_.connections
+            streamsPerConnection = $_.streamsPerConnection
+            stressOnly = $_.stressOnly
+        }
+    })
+
+    return [ordered]@{
+        schemaVersion = 'adaptive-runtime-policy-phase-transition-schedule-v1'
+        campaignId = $CampaignId
+        scheduleProfile = $ScheduleProfile
+        scheduleId = "adaptive-runtime.$ScheduleProfile.phase-transition.v1"
+        generatedAtUtc = (Get-Date).ToUniversalTime().ToString('O')
+        executionModel = 'independent_cell_sequence'
+        sameConnectionPhaseExecution = 'not_supported'
+        policyAxis = 'receive_credit_publication'
+        activePolicyAuthorized = $false
+        onlineLearningAuthorized = $false
+        protocolLabSubmissionAuthorized = $false
+        transitionIntent = 'few_to_many_to_few_review_artifact'
+        phases = $phaseRows
+        commandLineage = [ordered]@{
+            scheduleScriptPath = $PSCommandPath
+            scheduleScriptSha256 = (Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant()
+            cellRunnerPath = $cellRunnerPath
+            cellRunnerSha256 = (Get-FileHash -LiteralPath $cellRunnerPath -Algorithm SHA256).Hash.ToLowerInvariant()
+            protocolLabRoot = $ResolvedProtocolLabRoot
+            protocolLabExecutionRoot = $ResolvedProtocolLabExecutionRoot
+            sharedArguments = [ordered]@{
+                policyA = $PolicyA
+                policyB = $PolicyB
+                warmupSeconds = $WarmupSeconds
+                durationSeconds = $DurationSeconds
+                includeStress = [bool] $IncludeStress
+                continueOnFailure = [bool] $ContinueOnFailure
+            }
+            cells = $cellArguments
+        }
+        notes = @(
+            'This artifact declares deterministic measurement phases and exact command lineage only.',
+            'The current scheduler executes independent cells and does not claim same-connection multi-phase transitions.',
+            'The planned recovery phase is retained for review so later executor work can reuse the stable phase IDs.'
+        )
+    }
+}
+
+function Get-ComparablePhaseTransitionArtifact {
+    param([Parameter(Mandatory = $true)][object] $Artifact)
+
+    $clone = $Artifact | ConvertTo-Json -Depth 30 | ConvertFrom-Json -Depth 30
+    $clone.PSObject.Properties.Remove('generatedAtUtc')
+    return $clone
 }
 
 function Get-FileIdentity {
@@ -119,6 +287,9 @@ if (-not (Test-Path -LiteralPath $cellRunnerPath -PathType Leaf)) {
     throw "Permanent local cell runner was not found: $cellRunnerPath"
 }
 
+$resolvedProtocolLabRoot = Resolve-DeclaredRootPath -Path $ProtocolLabRoot -Required (-not $DryRun)
+$resolvedProtocolLabExecutionRoot = Resolve-DeclaredRootPath -Path $ProtocolLabExecutionRoot -Required (-not $DryRun)
+
 if ($PolicyA -eq $PolicyB) {
     throw 'PolicyA and PolicyB must name different forced treatments.'
 }
@@ -134,7 +305,10 @@ $connectionCells = @(
         -PayloadBytes 1MB `
         -Connections 16 `
         -StreamsPerConnection 1 `
-        -ArrivalPattern sustained
+        -ArrivalPattern sustained `
+        -PhaseId 'adaptive-runtime.connection-wave.upload.v1' `
+        -PhaseLabel 'Connection-wave upload hold' `
+        -TransitionKind connection_wave
     New-MeasurementCell `
         -CellId 'download-1mb-x16-s1' `
         -ScenarioId 'quic.transport.stream-download.1mb' `
@@ -142,7 +316,10 @@ $connectionCells = @(
         -PayloadBytes 1MB `
         -Connections 16 `
         -StreamsPerConnection 1 `
-        -ArrivalPattern sustained
+        -ArrivalPattern sustained `
+        -PhaseId 'adaptive-runtime.connection-wave.download.v1' `
+        -PhaseLabel 'Connection-wave download hold' `
+        -TransitionKind connection_wave
 )
 
 $streamCells = @(
@@ -153,7 +330,10 @@ $streamCells = @(
         -PayloadBytes 64KB `
         -Connections 1 `
         -StreamsPerConnection 16 `
-        -ArrivalPattern sustained
+        -ArrivalPattern sustained `
+        -PhaseId 'adaptive-runtime.few-streams.baseline.v1' `
+        -PhaseLabel 'Few-stream baseline' `
+        -TransitionKind baseline
     New-MeasurementCell `
         -CellId 'duplex-64kb-x4-s16' `
         -ScenarioId 'quic.transport.duplex-streams-peer-matrix' `
@@ -161,7 +341,10 @@ $streamCells = @(
         -PayloadBytes 64KB `
         -Connections 4 `
         -StreamsPerConnection 16 `
-        -ArrivalPattern sustained
+        -ArrivalPattern sustained `
+        -PhaseId 'adaptive-runtime.stream-wave.duplex-ramp.v1' `
+        -PhaseLabel 'Stream-wave duplex ramp' `
+        -TransitionKind stream_wave
     New-MeasurementCell `
         -CellId 'multiplex-1kb-x1-s100' `
         -ScenarioId 'quic.transport.multiplex.100x1kb' `
@@ -169,7 +352,10 @@ $streamCells = @(
         -PayloadBytes 1KB `
         -Connections 1 `
         -StreamsPerConnection 100 `
-        -ArrivalPattern bursty
+        -ArrivalPattern bursty `
+        -PhaseId 'adaptive-runtime.stream-wave.multiplex-burst.v1' `
+        -PhaseLabel 'Stream-wave multiplex burst' `
+        -TransitionKind stream_wave
 )
 
 $balancedCells = @(
@@ -196,6 +382,9 @@ if ($IncludeStress) {
             -Connections 32 `
             -StreamsPerConnection 1 `
             -ArrivalPattern sustained `
+            -PhaseId 'adaptive-runtime.connection-wave.upload-stress.v1' `
+            -PhaseLabel 'Connection-wave upload stress extension' `
+            -TransitionKind connection_wave `
             -StressOnly $true
         New-MeasurementCell `
             -CellId 'download-1mb-x32-s1-stress' `
@@ -205,6 +394,9 @@ if ($IncludeStress) {
             -Connections 32 `
             -StreamsPerConnection 1 `
             -ArrivalPattern sustained `
+            -PhaseId 'adaptive-runtime.connection-wave.download-stress.v1' `
+            -PhaseLabel 'Connection-wave download stress extension' `
+            -TransitionKind connection_wave `
             -StressOnly $true
         New-MeasurementCell `
             -CellId 'multiplex-1kb-x4-s100-stress' `
@@ -214,6 +406,9 @@ if ($IncludeStress) {
             -Connections 4 `
             -StreamsPerConnection 100 `
             -ArrivalPattern bursty `
+            -PhaseId 'adaptive-runtime.stream-wave.multiplex-stress.v1' `
+            -PhaseLabel 'Stream-wave multiplex stress extension' `
+            -TransitionKind stream_wave `
             -StressOnly $true
     )
 }
@@ -232,14 +427,29 @@ $plannedCells = @(for ($index = 0; $index -lt $cells.Count; $index++) {
         connections = $cell.connections
         streamsPerConnection = $cell.streamsPerConnection
         effectiveConcurrency = $cell.effectiveConcurrency
+        phaseId = $cell.phaseId
+        phaseLabel = $cell.phaseLabel
+        transitionKind = $cell.transitionKind
         stressOnly = $cell.stressOnly
     }
 })
 
+$phaseTransitionArtifact = New-PhaseTransitionArtifact `
+    -Cells $plannedCells `
+    -ResolvedProtocolLabRoot $resolvedProtocolLabRoot `
+    -ResolvedProtocolLabExecutionRoot $resolvedProtocolLabExecutionRoot
+$phaseTransitionArtifactJson = $phaseTransitionArtifact | ConvertTo-Json -Depth 30
+if (-not ($phaseTransitionArtifactJson | Test-Json -SchemaFile $phaseTransitionSchemaPath -ErrorAction Stop)) {
+    throw "Generated phase-transition schedule did not validate against $phaseTransitionSchemaPath."
+}
+
 if ($DryRun) {
+    New-Item -ItemType Directory -Path $campaignRoot -Force | Out-Null
+    $phaseTransitionArtifactJson | Set-Content -LiteralPath $phaseTransitionArtifactPath -Encoding utf8
     Write-Host "Dry run: $ScheduleProfile schedule for campaign '$CampaignId'."
+    Write-Host "  phase transition artifact: $phaseTransitionArtifactPath"
     $plannedCells |
-        Select-Object scheduleIndex, sequenceProtocol, cellId, scenarioId, connections, streamsPerConnection, effectiveConcurrency, stressOnly |
+        Select-Object scheduleIndex, phaseId, sequenceProtocol, cellId, scenarioId, connections, streamsPerConnection, effectiveConcurrency, stressOnly |
         Format-Table -AutoSize
     return
 }
@@ -275,6 +485,12 @@ if (Test-Path -LiteralPath $schedulePath -PathType Leaf) {
     $currentCellsJson = $plannedCells | ConvertTo-Json -Depth 20 -Compress
     if ($retainedCellsJson -ne $currentCellsJson) {
         throw 'The retained measurement cells changed before resume.'
+    }
+
+    $retainedPhaseTransitionJson = (Get-ComparablePhaseTransitionArtifact -Artifact $scheduleDocument.phaseTransitionSchedule) | ConvertTo-Json -Depth 20 -Compress
+    $currentPhaseTransitionJson = (Get-ComparablePhaseTransitionArtifact -Artifact $phaseTransitionArtifact) | ConvertTo-Json -Depth 20 -Compress
+    if ($retainedPhaseTransitionJson -ne $currentPhaseTransitionJson) {
+        throw 'The retained phase-transition artifact changed before resume.'
     }
 
     if (Test-Path -LiteralPath $completionPath -PathType Leaf) {
@@ -318,6 +534,7 @@ else {
         Get-FileIdentity -Role 'candidate_runtime' -Path $runtimeBinaryPath
     )
     New-Item -ItemType Directory -Path $campaignRoot -Force | Out-Null
+    $phaseTransitionArtifactJson | Set-Content -LiteralPath $phaseTransitionArtifactPath -Encoding utf8
     $scheduleDocument = [ordered]@{
         schemaVersion = 'adaptive-runtime-policy-local-schedule-v1'
         campaignId = $CampaignId
@@ -337,6 +554,8 @@ else {
         activePolicyAuthorized = $false
         onlineLearningAuthorized = $false
         protocolLabSubmissionAuthorized = $false
+        phaseTransitionSchedulePath = $phaseTransitionArtifactPath
+        phaseTransitionSchedule = $phaseTransitionArtifact
         frozenBinaries = $frozenBinaries
         cells = $plannedCells
     }

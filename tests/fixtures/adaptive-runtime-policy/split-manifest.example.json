@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "adaptive-runtime-policy-split-manifest-v1",
+  "splitManifestId": "adaptive-runtime-fixture-dataset-split",
+  "createdUtc": "2026-07-22T15:15:30.9104102Z",
+  "curatedManifest": {
+    "path": "C:\\shared\\src\\incursa\\quic-dotnet\\.artifacts\\adaptive-runtime\\pipeline-smoke-20260722h\\curated\\curated-manifest.json",
+    "sha256": "ddb0b1dc004278725ba3c797773da506b5f2084de74af59d9b8c77ef337ba83f",
+    "curatedManifestId": "adaptive-runtime-fixture-dataset-curated"
+  },
+  "transformation": {
+    "name": "adaptive-runtime-curated-to-split",
+    "version": "2026-07-22-v1",
+    "codeCommit": "5ed3e3f33d0c94a9eab788e5a125df30da7f4ba8"
+  },
+  "strategy": {
+    "appendOnly": true,
+    "groupingDimensions": [
+      "workloadFamilyKey",
+      "hostFingerprintKey",
+      "runConnectionKey",
+      "counterfactualGroupKey"
+    ],
+    "deterministicSort": "sha256(seed|dimension) ascending with host and workload buckets checked for agreement",
+    "seed": 17,
+    "insufficientDiversityAction": "blocked_manifest"
+  },
+  "status": "insufficient_group_diversity",
+  "blockedReason": "No curated rows remained eligible for splitting.",
+  "assignments": [
+    {
+      "rowId": "row-shadow-001-0001",
+      "split": "holdout_blocked",
+      "counterfactualGroupKey": "adaptive-receive-credit-local-001|example.download.c16|download|fixed_total|1048576|1|16|16|sustained|cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|example-host-fingerprint|receive_credit_publication|custom|8d13cbb13bff6f6a3084bdd98679cfc562a07da1f45efd25026a6038c0b86531",
+      "holdoutGroupKey": "example.download.c16|download|fixed_total|1048576|1|16|16|sustained|example-host-fingerprint"
+    },
+    {
+      "rowId": "row-forced-001-0001",
+      "split": "holdout_blocked",
+      "counterfactualGroupKey": "adaptive-receive-credit-local-002|example.download.c16|download|fixed_total|1048576|1|16|16|sustained|cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|example-host-fingerprint|receive_credit_publication|custom|8d13cbb13bff6f6a3084bdd98679cfc562a07da1f45efd25026a6038c0b86531",
+      "holdoutGroupKey": "example.download.c16|download|fixed_total|1048576|1|16|16|sustained|example-host-fingerprint"
+    }
+  ],
+  "summary": {
+    "trainRowCount": 0,
+    "validationRowCount": 0,
+    "testRowCount": 0,
+    "blockedRowCount": 2
+  }
+}

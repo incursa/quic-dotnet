@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-policy-phase-transition-schedule-v1.schema.json",
+  "title": "Adaptive Runtime Policy Phase Transition Schedule v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "campaignId",
+    "scheduleProfile",
+    "scheduleId",
+    "generatedAtUtc",
+    "executionModel",
+    "sameConnectionPhaseExecution",
+    "policyAxis",
+    "activePolicyAuthorized",
+    "onlineLearningAuthorized",
+    "protocolLabSubmissionAuthorized",
+    "transitionIntent",
+    "phases",
+    "commandLineage",
+    "notes"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "adaptive-runtime-policy-phase-transition-schedule-v1" },
+    "campaignId": { "type": "string", "minLength": 1 },
+    "scheduleProfile": { "enum": ["balanced", "connection_first", "stream_first"] },
+    "scheduleId": { "type": "string", "minLength": 1 },
+    "generatedAtUtc": { "type": "string", "format": "date-time" },
+    "executionModel": { "const": "independent_cell_sequence" },
+    "sameConnectionPhaseExecution": { "const": "not_supported" },
+    "policyAxis": { "const": "receive_credit_publication" },
+    "activePolicyAuthorized": { "const": false },
+    "onlineLearningAuthorized": { "const": false },
+    "protocolLabSubmissionAuthorized": { "const": false },
+    "transitionIntent": { "const": "few_to_many_to_few_review_artifact" },
+    "phases": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "#/$defs/phase" }
+    },
+    "commandLineage": { "$ref": "#/$defs/commandLineage" },
+    "notes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{64}$"
+    },
+    "measurementCell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cellId",
+        "scenarioId",
+        "trafficShape",
+        "payloadBytes",
+        "connections",
+        "streamsPerConnection",
+        "effectiveConcurrency",
+        "stressOnly"
+      ],
+      "properties": {
+        "cellId": { "type": "string", "minLength": 1 },
+        "scenarioId": { "type": "string", "minLength": 1 },
+        "trafficShape": { "enum": ["upload", "download", "duplex"] },
+        "payloadBytes": { "type": "integer", "minimum": 1 },
+        "connections": { "type": "integer", "minimum": 1 },
+        "streamsPerConnection": { "type": "integer", "minimum": 1 },
+        "effectiveConcurrency": { "type": "integer", "minimum": 1 },
+        "stressOnly": { "type": "boolean" }
+      }
+    },
+    "phase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phaseId",
+        "phaseLabel",
+        "transitionKind",
+        "executionStatus",
+        "measurementCells"
+      ],
+      "properties": {
+        "phaseId": { "type": "string", "minLength": 1 },
+        "phaseLabel": { "type": "string", "minLength": 1 },
+        "transitionKind": { "enum": ["baseline", "connection_wave", "stream_wave", "recovery"] },
+        "executionStatus": { "enum": ["mapped_to_cells", "planned_only"] },
+        "gating": { "type": "string", "minLength": 1 },
+        "measurementCells": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/measurementCell" }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "executionStatus": { "const": "mapped_to_cells" } } },
+          "then": { "properties": { "measurementCells": { "minItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "executionStatus": { "const": "planned_only" } } },
+          "then": {
+            "required": ["gating"],
+            "properties": { "measurementCells": { "maxItems": 0 } }
+          }
+        }
+      ]
+    },
+    "commandCell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cellId",
+        "phaseId",
+        "sequenceProtocol",
+        "scenarioId",
+        "trafficShape",
+        "accountingMode",
+        "arrivalPattern",
+        "payloadBytes",
+        "connections",
+        "streamsPerConnection",
+        "stressOnly"
+      ],
+      "properties": {
+        "cellId": { "type": "string", "minLength": 1 },
+        "phaseId": { "type": "string", "minLength": 1 },
+        "sequenceProtocol": { "enum": ["ABBA", "BAAB"] },
+        "scenarioId": { "type": "string", "minLength": 1 },
+        "trafficShape": { "enum": ["upload", "download", "duplex"] },
+        "accountingMode": { "enum": ["fixed_per_stream", "fixed_total"] },
+        "arrivalPattern": { "enum": ["sparse", "bursty", "sustained"] },
+        "payloadBytes": { "type": "integer", "minimum": 1 },
+        "connections": { "type": "integer", "minimum": 1 },
+        "streamsPerConnection": { "type": "integer", "minimum": 1 },
+        "stressOnly": { "type": "boolean" }
+      }
+    },
+    "commandLineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scheduleScriptPath",
+        "scheduleScriptSha256",
+        "cellRunnerPath",
+        "cellRunnerSha256",
+        "protocolLabRoot",
+        "protocolLabExecutionRoot",
+        "sharedArguments",
+        "cells"
+      ],
+      "properties": {
+        "scheduleScriptPath": { "type": "string", "minLength": 1 },
+        "scheduleScriptSha256": { "$ref": "#/$defs/sha256" },
+        "cellRunnerPath": { "type": "string", "minLength": 1 },
+        "cellRunnerSha256": { "$ref": "#/$defs/sha256" },
+        "protocolLabRoot": { "type": "string", "minLength": 1 },
+        "protocolLabExecutionRoot": { "type": "string", "minLength": 1 },
+        "sharedArguments": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policyA",
+            "policyB",
+            "warmupSeconds",
+            "durationSeconds",
+            "includeStress",
+            "continueOnFailure"
+          ],
+          "properties": {
+            "policyA": { "enum": ["legacy_current", "immediate", "read_dominant_batch"] },
+            "policyB": { "enum": ["legacy_current", "immediate", "read_dominant_batch"] },
+            "warmupSeconds": { "type": "integer", "minimum": 0 },
+            "durationSeconds": { "type": "integer", "minimum": 1 },
+            "includeStress": { "type": "boolean" },
+            "continueOnFailure": { "type": "boolean" }
+          }
+        },
+        "cells": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/commandCell" }
+        }
+      }
+    }
+  }
+}

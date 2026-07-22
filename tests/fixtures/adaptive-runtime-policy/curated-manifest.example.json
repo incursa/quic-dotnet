@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "adaptive-runtime-policy-curated-manifest-v1",
+  "curatedManifestId": "adaptive-runtime-fixture-dataset-curated",
+  "createdUtc": "2026-07-22T15:15:30.8504250Z",
+  "normalizedDataset": {
+    "path": "C:\\shared\\src\\incursa\\quic-dotnet\\.artifacts\\adaptive-runtime\\pipeline-smoke-20260722h\\normalized\\normalized-dataset.json",
+    "sha256": "643d2a6c14024559817bd30d03801860a2a274aaf866b324466f5b36d16722ea",
+    "normalizedDatasetId": "adaptive-runtime-fixture-dataset"
+  },
+  "transformation": {
+    "name": "adaptive-runtime-normalized-to-curated",
+    "version": "2026-07-22-v1",
+    "codeCommit": "5ed3e3f33d0c94a9eab788e5a125df30da7f4ba8"
+  },
+  "curationPolicy": {
+    "appendOnly": true,
+    "includedClassifications": [
+      "accepted_local",
+      "neutral_local",
+      "negative_retained"
+    ],
+    "excludedClassifications": [
+      "invalid_environment",
+      "invalid_contract",
+      "failed_correctness",
+      "stress_only"
+    ],
+    "excludedAnalysisFlags": [
+      "correctness_failed",
+      "requested_effective_mismatch",
+      "binary_identity_missing",
+      "binary_changed",
+      "target_health_invalid",
+      "generator_health_invalid",
+      "observation_missing",
+      "observation_stale",
+      "observation_saturated",
+      "out_of_domain",
+      "instrumentation_mismatch",
+      "warmup",
+      "cooldown",
+      "terminal_partial_epoch",
+      "policy_mismatch",
+      "source_join_failed"
+    ]
+  },
+  "rowDecisions": [
+    {
+      "rowId": "row-shadow-001-0001",
+      "decision": "excluded",
+      "reasonCodes": [
+        "analysis_exclusion_flag"
+      ],
+      "counterfactualGroupKey": "adaptive-receive-credit-local-001|example.download.c16|download|fixed_total|1048576|1|16|16|sustained|cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|example-host-fingerprint|receive_credit_publication|custom|8d13cbb13bff6f6a3084bdd98679cfc562a07da1f45efd25026a6038c0b86531",
+      "holdoutGroupKey": "example.download.c16|download|fixed_total|1048576|1|16|16|sustained|example-host-fingerprint",
+      "labelSet": {
+        "classification": "neutral_local",
+        "qualityBucket": "excluded",
+        "outcomeTier": "excluded"
+      }
+    },
+    {
+      "rowId": "row-forced-001-0001",
+      "decision": "excluded",
+      "reasonCodes": [
+        "analysis_exclusion_flag"
+      ],
+      "counterfactualGroupKey": "adaptive-receive-credit-local-002|example.download.c16|download|fixed_total|1048576|1|16|16|sustained|cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|example-host-fingerprint|receive_credit_publication|custom|8d13cbb13bff6f6a3084bdd98679cfc562a07da1f45efd25026a6038c0b86531",
+      "holdoutGroupKey": "example.download.c16|download|fixed_total|1048576|1|16|16|sustained|example-host-fingerprint",
+      "labelSet": {
+        "classification": "neutral_local",
+        "qualityBucket": "excluded",
+        "outcomeTier": "excluded"
+      }
+    }
+  ],
+  "summary": {
+    "includedRowCount": 0,
+    "excludedRowCount": 2,
+    "retainedNegativeRowCount": 0
+  }
+}

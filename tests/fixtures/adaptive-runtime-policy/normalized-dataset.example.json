@@ -1,0 +1,194 @@
+{
+  "schemaVersion": "adaptive-runtime-policy-normalized-dataset-v1",
+  "normalizedDatasetId": "adaptive-runtime-fixture-dataset",
+  "datasetVersion": "2026-07-22-v1",
+  "createdUtc": "2026-07-22T15:15:30.7996727Z",
+  "catalog": {
+    "path": "C:\\shared\\src\\incursa\\quic-dotnet\\.artifacts\\adaptive-runtime\\pipeline-smoke-20260722h\\catalog\\policy-catalog.json",
+    "sha256": "2ef1172b4e9e7a12fd693604482e1e910c312674992f2ab187130e1c263e36e2"
+  },
+  "rawInputs": {
+    "localResults": [
+      {
+        "path": "C:\\shared\\src\\incursa\\quic-dotnet\\tests\\fixtures\\adaptive-runtime-policy\\local-result.shadow.example.json",
+        "sha256": "78acea54f2f3b3abd6c4b658490197740fb73157217dbb9d9ff0421854cb982e"
+      },
+      {
+        "path": "C:\\shared\\src\\incursa\\quic-dotnet\\tests\\fixtures\\adaptive-runtime-policy\\local-result.forced.example.json",
+        "sha256": "108626bfb1a5cbd15a3187295175e690a9775095579dc4ff42e624cce1423ec4"
+      }
+    ],
+    "epochRows": [
+      {
+        "path": "C:\\shared\\src\\incursa\\quic-dotnet\\tests\\fixtures\\adaptive-runtime-policy\\epoch-row.shadow.example.json",
+        "sha256": "addb0b2815431bdf3d6c677c96fa31060c00e90b2ea463d9577a3c9deafe7bc4"
+      },
+      {
+        "path": "C:\\shared\\src\\incursa\\quic-dotnet\\tests\\fixtures\\adaptive-runtime-policy\\epoch-row.forced.example.json",
+        "sha256": "a21f69b62d643e68bf95a37121fcf8d7d6317a7c40b2fed3022b8bf8e6433802"
+      }
+    ],
+    "evidenceValidation": {
+      "schemaVersion": "adaptive-runtime-policy-evidence-validation-v1",
+      "valid": true,
+      "localResultCount": 2,
+      "epochRowCount": 2,
+      "failures": []
+    }
+  },
+  "transformation": {
+    "name": "adaptive-runtime-raw-to-normalized",
+    "version": "2026-07-22-v1",
+    "codeCommit": "5ed3e3f33d0c94a9eab788e5a125df30da7f4ba8"
+  },
+  "joinContract": {
+    "joinKeys": [
+      "campaignId",
+      "runId",
+      "cellId",
+      "sampleId"
+    ],
+    "unmatchedResultPolicy": "retained",
+    "unmatchedEpochPolicy": "retained",
+    "missingValueSemantics": "Null numeric values remain null; missing and stale masks retain the raw bit counts for later curation."
+  },
+  "rows": [
+    {
+      "rowId": "row-shadow-001-0001",
+      "joinKey": "adaptive-receive-credit-local-001|run-shadow-001|c16-download-shadow|sample-shadow-001",
+      "campaignId": "adaptive-receive-credit-local-001",
+      "runId": "run-shadow-001",
+      "cellId": "c16-download-shadow",
+      "sampleId": "sample-shadow-001",
+      "connectionKey": "connection-0001",
+      "epochIndex": 0,
+      "policyAxis": "receive_credit_publication",
+      "classification": "neutral_local",
+      "mode": "shadow",
+      "selectedPolicy": "legacy_current",
+      "appliedPolicy": "legacy_current",
+      "forcedPolicy": null,
+      "shadowRecommendation": "read_dominant_batch",
+      "selectionSource": "shadow_rule",
+      "reasonCode": "legacy_selector",
+      "sourceExclusionFlags": [
+        "observation_missing",
+        "warmup"
+      ],
+      "defaultCurationDecision": "exclude",
+      "defaultCurationReasons": [
+        "analysis_exclusion_flag"
+      ],
+      "workloadShape": {
+        "scenarioId": "example.download.c16",
+        "trafficShape": "download",
+        "accountingMode": "fixed_total",
+        "payloadBytes": 1048576,
+        "effectiveConnections": 1,
+        "effectiveStreamsPerConnection": 16,
+        "effectiveConcurrency": 16,
+        "arrivalPattern": "sustained"
+      },
+      "groupKeys": {
+        "binaryCohortKey": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "workloadFamilyKey": "example.download.c16|download|fixed_total|1048576|1|16|16|sustained",
+        "hostFingerprintKey": "example-host-fingerprint",
+        "runConnectionKey": "run-shadow-001|connection-0001",
+        "repetitionProtocolKey": "custom",
+        "preDecisionRegimeKey": "8d13cbb13bff6f6a3084bdd98679cfc562a07da1f45efd25026a6038c0b86531",
+        "counterfactualGroupKey": "adaptive-receive-credit-local-001|example.download.c16|download|fixed_total|1048576|1|16|16|sustained|cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|example-host-fingerprint|receive_credit_publication|custom|8d13cbb13bff6f6a3084bdd98679cfc562a07da1f45efd25026a6038c0b86531"
+      },
+      "normalizedMetrics": {
+        "throughputMiBPerSecond": 4.0,
+        "latencyP95Ms": 15.0,
+        "allocatedKiB": 0.0,
+        "peakRetainedKiB": 1024.0,
+        "queueToServiceRatio": null,
+        "flowBlockedMs": null,
+        "missingSignalCount": 1,
+        "staleSignalCount": 0
+      },
+      "provenance": {
+        "resultArtifactPath": "artifacts/sample-shadow-001.json",
+        "resultArtifactSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "repositoryCommit": "1111111111111111111111111111111111111111",
+        "benchmarkSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "runtimeSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "hostFingerprint": "example-host-fingerprint"
+      }
+    },
+    {
+      "rowId": "row-forced-001-0001",
+      "joinKey": "adaptive-receive-credit-local-002|run-forced-001|c16-download-forced|sample-forced-001",
+      "campaignId": "adaptive-receive-credit-local-002",
+      "runId": "run-forced-001",
+      "cellId": "c16-download-forced",
+      "sampleId": "sample-forced-001",
+      "connectionKey": "connection-0001",
+      "epochIndex": 0,
+      "policyAxis": "receive_credit_publication",
+      "classification": "neutral_local",
+      "mode": "forced",
+      "selectedPolicy": "immediate",
+      "appliedPolicy": "immediate",
+      "forcedPolicy": "immediate",
+      "shadowRecommendation": "read_dominant_batch",
+      "selectionSource": "forced",
+      "reasonCode": "legacy_selector",
+      "sourceExclusionFlags": [
+        "observation_missing",
+        "warmup"
+      ],
+      "defaultCurationDecision": "exclude",
+      "defaultCurationReasons": [
+        "analysis_exclusion_flag"
+      ],
+      "workloadShape": {
+        "scenarioId": "example.download.c16",
+        "trafficShape": "download",
+        "accountingMode": "fixed_total",
+        "payloadBytes": 1048576,
+        "effectiveConnections": 1,
+        "effectiveStreamsPerConnection": 16,
+        "effectiveConcurrency": 16,
+        "arrivalPattern": "sustained"
+      },
+      "groupKeys": {
+        "binaryCohortKey": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "workloadFamilyKey": "example.download.c16|download|fixed_total|1048576|1|16|16|sustained",
+        "hostFingerprintKey": "example-host-fingerprint",
+        "runConnectionKey": "run-forced-001|connection-0001",
+        "repetitionProtocolKey": "custom",
+        "preDecisionRegimeKey": "8d13cbb13bff6f6a3084bdd98679cfc562a07da1f45efd25026a6038c0b86531",
+        "counterfactualGroupKey": "adaptive-receive-credit-local-002|example.download.c16|download|fixed_total|1048576|1|16|16|sustained|cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|example-host-fingerprint|receive_credit_publication|custom|8d13cbb13bff6f6a3084bdd98679cfc562a07da1f45efd25026a6038c0b86531"
+      },
+      "normalizedMetrics": {
+        "throughputMiBPerSecond": 4.0,
+        "latencyP95Ms": 15.0,
+        "allocatedKiB": 0.0,
+        "peakRetainedKiB": 1024.0,
+        "queueToServiceRatio": null,
+        "flowBlockedMs": null,
+        "missingSignalCount": 1,
+        "staleSignalCount": 0
+      },
+      "provenance": {
+        "resultArtifactPath": "artifacts/sample-forced-001.json",
+        "resultArtifactSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "repositoryCommit": "1111111111111111111111111111111111111111",
+        "benchmarkSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "runtimeSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "hostFingerprint": "example-host-fingerprint"
+      }
+    }
+  ],
+  "unmatchedResults": [],
+  "unmatchedEpochRows": [],
+  "summary": {
+    "joinedRowCount": 2,
+    "defaultIncludedRowCount": 0,
+    "defaultExcludedRowCount": 2,
+    "unmatchedResultCount": 0,
+    "unmatchedEpochRowCount": 0
+  }
+}

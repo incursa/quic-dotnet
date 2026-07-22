@@ -12,10 +12,17 @@ repository-config tooling.
 - [`quality-report.schema.json`](quality-report.schema.json)
 - [`adaptive-runtime-policy-local-result-v1.schema.json`](adaptive-runtime-policy-local-result-v1.schema.json)
 - [`adaptive-runtime-policy-epoch-dataset-v1.schema.json`](adaptive-runtime-policy-epoch-dataset-v1.schema.json)
+- [`adaptive-runtime-policy-catalog-v1.schema.json`](adaptive-runtime-policy-catalog-v1.schema.json)
+- [`adaptive-runtime-policy-phase-transition-schedule-v1.schema.json`](adaptive-runtime-policy-phase-transition-schedule-v1.schema.json)
+- [`adaptive-runtime-policy-normalized-dataset-v1.schema.json`](adaptive-runtime-policy-normalized-dataset-v1.schema.json)
+- [`adaptive-runtime-policy-curated-manifest-v1.schema.json`](adaptive-runtime-policy-curated-manifest-v1.schema.json)
+- [`adaptive-runtime-policy-split-manifest-v1.schema.json`](adaptive-runtime-policy-split-manifest-v1.schema.json)
 
 ## Notes
 
 - The schemas are consumed by the local `workbench` tool for quality artifacts
   and repository config validation.
+- The adaptive-runtime catalog and dataset schemas remain measurement-only and
+  do not authorize runtime activation, axis widening, or online learning.
 - SpecTrace validation schemas live under [`../specs/schemas/`](../specs/schemas/README.md).
 - Keep the schema set stable unless the repo-wide quality contract changes.

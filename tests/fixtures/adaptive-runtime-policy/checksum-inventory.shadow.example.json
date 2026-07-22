@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "adaptive-runtime-policy-checksum-inventory-v1",
+  "generatedUtc": "2026-07-22T00:00:00Z",
+  "files": [
+    {
+      "path": "fixture-artifacts/adaptive-runtime-epochs.raw.checksum.example.jsonl",
+      "sha256": "9421fe7e9f6bd0bee998d1deea035f6e0b031fff7786d29091a78bce618e1b5d"
+    },
+    {
+      "path": "fixture-artifacts/benchmark-result.checksum.example.json",
+      "sha256": "0b4e18db20a643436041bf4f1455be55a02b68dea1d946ef1236a9513dbfba2a"
+    },
+    {
+      "path": "fixture-artifacts/diagnostic-target.checksum.example.json",
+      "sha256": "a9753d64bd02550799b3a6dda5cd585594f04a42f70e8aeb21c4c32b1fc2b46b"
+    },
+    {
+      "path": "fixture-artifacts/counters-summary.checksum.example.json",
+      "sha256": "bf0673797862faff4d75c838a94d4b1aae25fcd661d0b1317a79ef04d39700d9"
+    },
+    {
+      "path": "fixture-artifacts/shadow-summary.checksum.example.json",
+      "sha256": "7ced2acca9714f210b1e2a1fed8ca4eb5b5fec1c3d1b02a87f1be7e2b141d5ca"
+    }
+  ]
+}

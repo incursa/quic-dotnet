@@ -1,0 +1,210 @@
+{
+  "schemaVersion": "adaptive-runtime-policy-local-result-v1",
+  "campaignId": "adaptive-receive-credit-checksum-001",
+  "runId": "run-shadow-checksum-001",
+  "cellId": "duplex-64kb-x1-s16",
+  "startedUtc": "2026-07-22T00:00:00Z",
+  "endedUtc": "2026-07-22T00:01:00Z",
+  "repoRoot": "C:\\shared\\src\\incursa\\quic-dotnet",
+  "classification": "neutral_local",
+  "repositoryIdentities": [
+    {
+      "name": "quic-dotnet",
+      "path": "C:\\shared\\src\\incursa\\quic-dotnet",
+      "branch": "example",
+      "commit": "1111111111111111111111111111111111111111",
+      "dirty": false,
+      "remoteUrl": "https://github.com/incursa/quic-dotnet.git"
+    }
+  ],
+  "binaryProvenance": {
+    "frozen": true,
+    "assemblies": [
+      {
+        "role": "candidate_runtime",
+        "path": "artifacts/Incursa.Quic.dll",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "fileVersion": "1.0.0"
+      }
+    ]
+  },
+  "policyAxis": "receive_credit_publication",
+  "mode": "shadow",
+  "policyConfiguration": {
+    "appliedPolicy": "legacy_current",
+    "forcedPolicy": null,
+    "shadowEnabled": true,
+    "shadowPolicy": "read_dominant_batch",
+    "ruleVersion": "receive-credit-legacy-v1",
+    "observationContractVersion": "adaptive-runtime-connection-observation-v1",
+    "anomalyBudgets": {
+      "maxMissingEpochPercent": 0,
+      "maxStaleEpochPercent": 0,
+      "maxOutOfDomainEpochPercent": 0,
+      "maxContradictoryEpochPercent": 0
+    },
+    "legacySelectorCommit": "1b2611e1",
+    "stickyWriteEligibilityBypassed": false,
+    "axisSettings": {
+      "treatmentA": "legacy_current",
+      "baselineTreatment": "A",
+      "candidateTreatment": "A"
+    }
+  },
+  "workload": {
+    "scenarioId": "quic.transport.duplex-streams-peer-matrix",
+    "trafficShape": "duplex",
+    "payloadBytes": 65536,
+    "totalBytes": null,
+    "accountingMode": "fixed_per_stream",
+    "connections": 1,
+    "streamsPerConnection": 16,
+    "concurrency": 16,
+    "arrivalPattern": "sustained",
+    "warmupSeconds": 2,
+    "durationSeconds": 5,
+    "repetitions": 1,
+    "effectivePayloadBytes": 65536,
+    "effectiveConnections": 1,
+    "effectiveStreamsPerConnection": 16,
+    "effectiveConcurrency": 16,
+    "lossPercent": 0,
+    "delayMs": 0,
+    "receiveWindowBytes": 16777216,
+    "applicationConsumptionDelayMs": 0,
+    "requestedEffectiveMatch": true
+  },
+  "environment": {
+    "hostFingerprint": "example-host-fingerprint",
+    "os": "Windows",
+    "architecture": "x64",
+    "processorCount": 8,
+    "availableMemoryBytes": 17179869184,
+    "dotnetRuntime": ".NET 10.0.0",
+    "monotonicTimerFrequencyHz": 10000000,
+    "toolVersions": {
+      "powershell": "7.5.0"
+    },
+    "topology": "same_host",
+    "targetHealth": "limited",
+    "generatorHealth": "limited",
+    "cpuLimit": null,
+    "pressureArtifactPath": "fixture-artifacts/counters-summary.checksum.example.json"
+  },
+  "sequenceProtocol": "custom",
+  "treatments": {
+    "A": {
+      "policy": "legacy_current",
+      "benchmarkBinaryRole": "candidate_benchmark",
+      "runtimeBinaryRole": "candidate_runtime"
+    }
+  },
+  "sequence": ["A"],
+  "samples": [
+    {
+      "sampleId": "sample-shadow-checksum-001",
+      "treatment": "A",
+      "sequenceIndex": 0,
+      "exitCode": 0,
+      "outcomes": {
+        "throughputBytesPerSecond": 1000000,
+        "operationsPerSecond": 16,
+        "latencyP50Ms": 10,
+        "latencyP95Ms": 15,
+        "latencyP99Ms": 20,
+        "allocatedBytes": 0,
+        "peakRetainedBytes": 65536,
+        "queueDelayP50Ms": null,
+        "queueDelayP95Ms": null,
+        "lossEvents": 0,
+        "ptoEvents": 0
+      },
+      "correctness": {
+        "payloadValidated": true,
+        "failedOperations": 0,
+        "timedOutOperations": 0,
+        "protocolErrors": 0,
+        "cancellationFailures": 0,
+        "disposalFailures": 0,
+        "invariantViolations": []
+      },
+      "targetAttribution": {
+        "rootProcessId": 4100,
+        "resolvedProcessId": 4101,
+        "measuredProcessId": 4101,
+        "counterProcessId": 4101,
+        "resolutionStrategy": "adapter-process-metrics",
+        "measurementSource": "adapter-resolved-live-process",
+        "counterProcessIdSource": "runner-counter-attach-resolved-process",
+        "resultArtifactPath": "fixture-artifacts/benchmark-result.checksum.example.json",
+        "diagnosticTargetArtifactPath": "fixture-artifacts/diagnostic-target.checksum.example.json",
+        "counterSummaryArtifactPath": "fixture-artifacts/counters-summary.checksum.example.json",
+        "counterCaptureStatus": "succeeded",
+        "countersAvailable": true,
+        "rootCommandLine": "dotnet exec ProtocolLabAdapter.dll",
+        "rootExecutablePath": "dotnet",
+        "rootWorkingDirectory": "C:\\shared\\src\\incursa\\quic-dotnet",
+        "commandIdentityAvailable": true,
+        "rootEqualsResolved": false,
+        "resolvedEqualsMeasured": true,
+        "resolvedEqualsCounter": true,
+        "valid": true
+      },
+      "artifactPaths": [
+        "fixture-artifacts/adaptive-runtime-epochs.raw.checksum.example.jsonl"
+      ]
+    }
+  ],
+  "aggregateOutcomes": {
+    "throughputBytesPerSecond": 1000000,
+    "operationsPerSecond": 16,
+    "latencyP50Ms": 10,
+    "latencyP95Ms": 15,
+    "latencyP99Ms": 20,
+    "allocatedBytes": 0,
+    "peakRetainedBytes": 65536,
+    "queueDelayP50Ms": null,
+    "queueDelayP95Ms": null,
+    "lossEvents": 0,
+    "ptoEvents": 0
+  },
+  "correctnessOutcomes": {
+    "payloadValidated": true,
+    "failedOperations": 0,
+    "timedOutOperations": 0,
+    "protocolErrors": 0,
+    "cancellationFailures": 0,
+    "disposalFailures": 0,
+    "invariantViolations": []
+  },
+  "fairnessOutcomes": {
+    "assessed": false,
+    "streamCompletionP95Ms": null,
+    "streamCompletionP99Ms": null,
+    "starvationCount": 0,
+    "violations": []
+  },
+  "diagnosticSignals": {
+    "observationEnabled": true,
+    "shadowEpochCount": 1,
+    "transitionCount": 1,
+    "outOfDomainEpochCount": 0,
+    "contradictoryEpochCount": 0,
+    "missingEpochCount": 1,
+    "staleEpochCount": 0,
+    "reasonCounts": {
+      "missing_signal": 1
+    },
+    "summaryArtifactPath": "fixture-artifacts/shadow-summary.checksum.example.json"
+  },
+  "artifacts": [
+    {
+      "kind": "checksum_inventory",
+      "path": "checksum-inventory.shadow.example.json",
+      "sha256": "e7ba6ecc096f540d38a4c554c359226a9b062a71f4d74bcc0dd2e4e919d69e02"
+    }
+  ],
+  "notes": [
+    "Checksum-backed schema example only."
+  ]
+}

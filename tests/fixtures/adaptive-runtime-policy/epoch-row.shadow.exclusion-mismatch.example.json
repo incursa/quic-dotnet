@@ -1,13 +1,13 @@
 {
   "schemaVersion": "adaptive-runtime-policy-epoch-dataset-v1",
-  "datasetId": "adaptive-receive-credit-dataset-002",
-  "rowId": "row-forced-001-0001",
-  "campaignId": "adaptive-receive-credit-local-002",
-  "runId": "run-forced-001",
-  "cellId": "c16-download-forced",
-  "sampleId": "sample-forced-001",
+  "datasetId": "adaptive-receive-credit-checksum-001-dataset",
+  "rowId": "row-shadow-checksum-exclusion-mismatch-0001",
+  "campaignId": "adaptive-receive-credit-checksum-001",
+  "runId": "run-shadow-checksum-001",
+  "cellId": "duplex-64kb-x1-s16",
+  "sampleId": "sample-shadow-checksum-001",
   "repetition": 0,
-  "connectionKey": "connection-0001",
+  "connectionKey": "shadow-connection-0002",
   "epochIndex": 0,
   "epochStartOffsetMicros": 0,
   "epochDurationMicros": 250000,
@@ -53,21 +53,21 @@
     "ruleVersion": "receive-credit-legacy-v1",
     "observationContractVersion": "adaptive-runtime-connection-observation-v1",
     "state": "candidate",
-    "appliedPolicy": "immediate",
+    "appliedPolicy": "legacy_current",
     "hasIssuedApplicationData": false
   },
   "candidatePolicySelection": {
-    "selectionSource": "forced",
-    "selectedPolicy": "immediate",
+    "selectionSource": "shadow_rule",
+    "selectedPolicy": "legacy_current",
     "shadowRecommendation": "read_dominant_batch",
-    "reasonCode": "legacy_selector",
+    "reasonCode": "missing_signal",
     "contradictorySignals": false
   },
   "transitionState": {
     "previousState": "conservative",
     "state": "candidate",
     "transitioned": true,
-    "reasonCode": "legacy_selector"
+    "reasonCode": "missing_signal"
   },
   "dwellState": {
     "stateEpochCount": 1,
@@ -76,17 +76,17 @@
     "reliefEvidenceCount": 0
   },
   "postEpochOutcomes": {
-    "applicationBytes": 1048576,
-    "completedOperations": 1,
-    "throughputBytesPerSecond": 4194304,
-    "latencyP50Micros": 10000,
-    "latencyP95Micros": 15000,
-    "latencyP99Micros": 20000,
-    "allocatedBytes": 0,
-    "peakRetainedBytes": 1048576,
+    "applicationBytes": null,
+    "completedOperations": null,
+    "throughputBytesPerSecond": null,
+    "latencyP50Micros": null,
+    "latencyP95Micros": null,
+    "latencyP99Micros": null,
+    "allocatedBytes": null,
+    "peakRetainedBytes": null,
     "queueDelayP95Micros": null,
-    "lossEvents": 0,
-    "ptoEvents": 0
+    "lossEvents": null,
+    "ptoEvents": null
   },
   "correctnessFlags": {
     "payloadValid": true,
@@ -99,7 +99,7 @@
     "violationCodes": []
   },
   "fairnessFlags": {
-    "assessed": true,
+    "assessed": false,
     "starvationObserved": false,
     "guardrailViolated": false,
     "violationCodes": []
@@ -119,41 +119,41 @@
     "processorCount": 8,
     "dotnetRuntime": ".NET 10.0.0",
     "monotonicTimerFrequencyHz": 10000000,
-    "scriptVersion": "adaptive-runtime-evidence-transform-v1",
+    "scriptVersion": "adaptive-runtime-epoch-export-v1",
     "toolVersions": {
-      "campaignScript": "1.0.0"
+      "powershell": "7.5.0"
     },
     "resultSchemaVersion": "adaptive-runtime-policy-local-result-v1",
     "datasetSchemaVersion": "adaptive-runtime-policy-epoch-dataset-v1",
     "ruleVersion": "receive-credit-legacy-v1",
     "observationContractVersion": "adaptive-runtime-connection-observation-v1",
-    "sourceArtifactPath": "artifacts/sample-forced-001.json",
-    "sourceArtifactSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "sourceArtifactPath": "fixture-artifacts/adaptive-runtime-epochs.raw.checksum.example.jsonl",
+    "sourceArtifactSha256": "9421fe7e9f6bd0bee998d1deea035f6e0b031fff7786d29091a78bce618e1b5d",
     "transformation": {
       "name": "adaptive-runtime-epoch-export",
       "version": "1.0.0",
       "codeCommit": "1111111111111111111111111111111111111111",
-      "inputSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "inputSha256": "9421fe7e9f6bd0bee998d1deea035f6e0b031fff7786d29091a78bce618e1b5d",
       "outputSha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
     }
   },
   "workloadAnalysisOnly": {
     "excludedFromProductionFeatures": true,
-    "scenarioId": "example.download.c16",
-    "trafficShape": "download",
-    "payloadBytes": 1048576,
-    "accountingMode": "fixed_total",
+    "scenarioId": "quic.transport.duplex-streams-peer-matrix",
+    "trafficShape": "duplex",
+    "payloadBytes": 65536,
+    "accountingMode": "fixed_per_stream",
     "requestedConnections": 1,
     "effectiveConnections": 1,
     "requestedStreamsPerConnection": 16,
     "effectiveStreamsPerConnection": 16,
     "requestedConcurrency": 16,
     "effectiveConcurrency": 16,
-    "warmupMicros": 5000000,
-    "measurementMicros": 30000000,
+    "warmupMicros": 2000000,
+    "measurementMicros": 5000000,
     "arrivalPattern": "sustained",
-    "lossPercent": null,
-    "delayMs": null
+    "lossPercent": 0,
+    "delayMs": 0
   },
-  "analysisExclusionFlags": ["observation_missing", "warmup"]
+  "analysisExclusionFlags": ["none"]
 }
