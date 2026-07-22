@@ -35,6 +35,9 @@ upload, or ProtocolLab controller job was created.
   analysis exclusions, and result/epoch join validation.
 - `20a139ee` retains the actual counter summary as pressure evidence while
   keeping same-host target and generator health conservatively `limited`.
+- `bd2e045a` requires counter capture for every forced-policy sample, treats a
+  missing counter summary as an invalid contract, adds resumable deterministic
+  higher-count measurement schedules, and keeps stress cells non-promoting.
 
 The controls remain internal to friend assemblies. The public API baseline
 did not change. Forced modes bypass selector eligibility only; the existing
@@ -56,6 +59,7 @@ invalid results were not deleted or rewritten after the runner was corrected.
 | `adaptive-shadow-20260721-local1` | `upload-1mb-c1` | `invalid_contract` | The clean-repository sample retained 13 raw epochs, but the first project-reference build after the checkpoint changed the commit-stamped frozen binary. The result is preserved and not joined as authoritative evidence. |
 | `adaptive-shadow-20260721-local2` | `upload-1mb-c1` | `neutral_local` | Clean provenance, 12 schema-valid joined epochs, exact payload validation, and stable frozen hashes. This pre-pressure-path checkpoint remains diagnostic. |
 | `adaptive-shadow-20260721-local3` | `upload-1mb-c1` | `neutral_local` | Clean provenance, 13 schema-valid joined epochs, exact payload validation, stable frozen hashes, and retained counter pressure evidence. Same-host target and generator health remain `limited`, so this is contract proof rather than a performance claim. |
+| `adaptive-receive-credit-20260721-guardrail1` | `upload-1mb-x1-s1` | `invalid_environment` | The first post-checkpoint forced guardrail retained four counter summaries and passed exact payload, shape, timeout, protocol, and forced-mode checks. Baseline throughput repeated within 1.67 percent, but candidate throughput split between 45.59 and 4.24 MiB/s for a 165.97 percent relative range; candidate p95 also ranged by 159.47 percent. The apparent fast sample is not credited. |
 
 The last two cohorts prove that the conservative classifier retains correct
 but noisy measurements rather than converting workstation variance into a
@@ -73,6 +77,7 @@ clear either the target or sparse guardrail.
 | `local5` | `ed099b5caa8698abcdd0e52c63eb65b217d3d457609d8b9250d664f1a004412f` | `6ec8d6c025f35880aeaf898fcee3a942fbeb1e3244d9b503ad2a47074cc905b5` | `647c5c1be0b6bd39819a064445f8a403f94d5d860c974aff87fd848b2b4a0229` |
 | `shadow-local1` | `3238d4890a103ef64db58432eb62deecaa9ae0e50d7034ec90562d2e126af7d4` | `86a2a992e1173cbf7dc6fe8e821664c942ba2905b2fa9ebdcf077ac8d62e36bd` | `4d3b64aebfbfc7f15b7228710630e6db64350c7d8df34d62a6d4e55578e44734` |
 | `shadow-local3` | `043814067455f3f8039ed3b9eb080e0e087b1d95d07db8099fe8a5b6e4358aef` | `7e435cb6c5d2b24f81b60a0cac3b168c6982411cb1f5f1c249d833d713fd047b` | `0117d0f77de788744b9812ab6d56043b0a8bdaa8040eceee6ec0fcc89b6d1957` |
+| `guardrail1` | `eec3eb5842bdbfc3112fd652b63bf1080119a8a24d1b167be532d58c43af5326` | `1e712e1646dc2997538cb8b7eec5dd5804313b3105d44047433a6b4e28a8ad92` | `64424cd1a6c1b2464fa03036083bc5e5410eac502c24a23656e31eb43caa8d5a` |
 
 The `local2` through `local5` result documents validate against
 `adaptive-runtime-policy-local-result-v1`. A fresh hash audit of all 120
@@ -94,11 +99,20 @@ of one. Those observations improve reviewability but do not isolate the target
 from the generator and therefore do not justify upgrading either health field
 or rerunning the broader forced-policy matrix as trusted evidence.
 
+The `guardrail1` row retains one counter summary for each of its four forced
+samples. The anomalous first candidate sample reported 0.33 percent mean
+process CPU and 0.91 percent maximum CPU while reaching 45.59 MiB/s; the other
+three samples reported roughly 9.24-9.59 percent mean CPU and 14.84-15.49
+percent maximum CPU while reaching 3.95-4.24 MiB/s. This is a concrete host or
+measurement-regime mismatch, not evidence for the forced policy. A fresh audit
+of the 33 files in its checksum inventory found zero missing files and zero
+hash mismatches.
+
 ## Verification
 
 - `Incursa.Quic` Release build: passed, zero warnings and errors.
 - `IncursaRawQuicServer` Release build: passed, zero warnings and errors.
-- Final `REQ-QUIC-CRT-0164` through `REQ-QUIC-CRT-0169` run: 41 passed,
+- Final `REQ-QUIC-CRT-0164` through `REQ-QUIC-CRT-0169` run: 42 passed,
   zero failed, zero skipped.
 - Public API requirement guards: 13 passed.
 - ProtocolLab package-template guards: 22 passed.
@@ -125,3 +139,9 @@ isolate local host stability, repeat required sparse, target, neighboring, and
 retained-negative cells under the same contracts, and review the complete
 local evidence. It must not widen the selector, enable `active_internal`, begin
 online learning, or treat the noisy apparent gains as accepted tuning evidence.
+
+The post-checkpoint `guardrail1` rerun confirms that the higher-count schedule
+must remain paused: one candidate sample entered a materially different regime
+despite identical requested shape and frozen binaries. The next bounded slice
+is to explain or eliminate that regime split, then create a new append-only c1
+guardrail result. Do not advance to the c16/c100 schedule on this row.
