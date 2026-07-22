@@ -108,6 +108,16 @@
         "missingSignalCount": 1,
         "staleSignalCount": 0
       },
+      "sampleScopedOutcomes": {
+        "scope": "sample",
+        "throughputMiBPerSecond": 0.953674,
+        "latencyP95Ms": 15.0,
+        "bufferPoolRentedKiB": null,
+        "bufferPoolOutstandingPeakKiB": null,
+        "managedAllocatedKiB": 0.0,
+        "peakRetainedKiB": 1024.0,
+        "fairnessAssessed": false
+      },
       "provenance": {
         "resultArtifactPath": "artifacts/sample-shadow-001.json",
         "resultArtifactSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -171,6 +181,16 @@
         "flowBlockedMs": null,
         "missingSignalCount": 1,
         "staleSignalCount": 0
+      },
+      "sampleScopedOutcomes": {
+        "scope": "sample",
+        "throughputMiBPerSecond": 0.953674,
+        "latencyP95Ms": 15.0,
+        "bufferPoolRentedKiB": null,
+        "bufferPoolOutstandingPeakKiB": null,
+        "managedAllocatedKiB": 0.0,
+        "peakRetainedKiB": 1024.0,
+        "fairnessAssessed": false
       },
       "provenance": {
         "resultArtifactPath": "artifacts/sample-forced-001.json",

@@ -26,6 +26,23 @@ $ErrorActionPreference = 'Stop'
 
 . (Join-Path $PSScriptRoot 'AdaptiveRuntimePipeline.Common.ps1')
 
+function Get-OptionalPropertyValue {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object] $InputObject,
+
+        [Parameter(Mandatory = $true)]
+        [string] $PropertyName
+    )
+
+    $property = $InputObject.PSObject.Properties[$PropertyName]
+    if ($null -eq $property) {
+        return $null
+    }
+
+    return $property.Value
+}
+
 function Get-DefaultCurationState {
     param(
         [Parameter(Mandatory = $true)]
@@ -313,6 +330,16 @@ foreach ($epochItem in ($epochRows | Sort-Object { $_.Document.campaignId }, { $
             flowBlockedMs = if ($flowBlockedMicros.Count -gt 0 -and $flowBlockedMicros.Sum -ne $null) { Convert-MicrosToMilliseconds -Value $flowBlockedMicros.Sum } else { $null }
             missingSignalCount = Get-BitCount -Value ([int] $row.preDecisionObservations.missingSignalMask)
             staleSignalCount = Get-BitCount -Value ([int] $row.preDecisionObservations.staleSignalMask)
+        }
+        sampleScopedOutcomes = [ordered]@{
+            scope = 'sample'
+            throughputMiBPerSecond = Convert-BytesToMiB -Value $sample.outcomes.throughputBytesPerSecond
+            latencyP95Ms = $sample.outcomes.latencyP95Ms
+            bufferPoolRentedKiB = Convert-BytesToKiB -Value (Get-OptionalPropertyValue -InputObject $sample.outcomes -PropertyName 'bufferPoolRentedBytes')
+            bufferPoolOutstandingPeakKiB = Convert-BytesToKiB -Value (Get-OptionalPropertyValue -InputObject $sample.outcomes -PropertyName 'bufferPoolOutstandingPeakBytes')
+            managedAllocatedKiB = Convert-BytesToKiB -Value $sample.outcomes.allocatedBytes
+            peakRetainedKiB = Convert-BytesToKiB -Value $sample.outcomes.peakRetainedBytes
+            fairnessAssessed = [bool] $result.fairnessOutcomes.assessed
         }
         provenance = [ordered]@{
             resultArtifactPath = $resultArtifactPath

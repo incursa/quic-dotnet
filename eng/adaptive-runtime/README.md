@@ -67,6 +67,11 @@ other integrity failure still blocks materialization. Counterfactual keys also
 include the declared repetition protocol and a SHA-256 key over the complete,
 property-sorted pre-decision observation vector; rows from different protocols
 or observation regimes are therefore not silently grouped together.
+Each normalized epoch row also retains a `sampleScopedOutcomes` join containing
+the checksum-backed sample throughput, p95 latency, buffer-pool measurements,
+and explicit availability of managed-memory and fairness outcomes. The block is
+marked `scope = sample` because its values repeat across the sample's epoch rows
+and must not be treated as independent epoch observations.
 
 The split stage blocks rather than inventing train/validation/test assignments
 when complete host-fingerprint and workload-family holdouts cannot be satisfied
