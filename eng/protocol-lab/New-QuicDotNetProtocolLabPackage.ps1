@@ -13,7 +13,12 @@ param(
 
     [string] $PackageVersion,
 
+    [ValidateSet("", "legacy_current", "immediate", "read_dominant_batch", "shadow")]
+    [string] $AdaptiveRuntimeReceiveCreditPolicy = "",
+
     [string] $OutputPath,
+
+    [string] $WorkRoot,
 
     [switch] $Force,
 
@@ -383,6 +388,9 @@ function Invoke-DotNetPublish {
 
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
 $targetConfig = Get-PackageTargetConfig -Target $PackageTarget
+if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy) -and $PackageTarget -ne "RawQuic") {
+    throw "AdaptiveRuntimeReceiveCreditPolicy is supported only for the RawQuic package target."
+}
 if ([string]::IsNullOrWhiteSpace($Project)) {
     $Project = $targetConfig.DefaultProject
 }
@@ -415,15 +423,24 @@ if ([string]::IsNullOrWhiteSpace($PackageVersion)) {
     $PackageVersion = Get-DefaultPackageVersion -RepositoryRoot $repoRoot -SourceClean $sourceClean
 }
 
-$stageRoot = Join-Path $repoRoot "artifacts/protocol-lab/package-source/$($targetConfig.PackageId)/$PackageVersion"
-$publishRoot = Join-Path $repoRoot "artifacts/protocol-lab/publish/$($targetConfig.PackageId)/$PackageVersion"
+$resolvedWorkRoot = if ([string]::IsNullOrWhiteSpace($WorkRoot)) {
+    Join-Path $repoRoot "artifacts/protocol-lab"
+}
+elseif ([System.IO.Path]::IsPathRooted($WorkRoot)) {
+    [System.IO.Path]::GetFullPath($WorkRoot)
+}
+else {
+    [System.IO.Path]::GetFullPath((Join-Path $repoRoot $WorkRoot))
+}
+$stageRoot = Join-Path $resolvedWorkRoot "package-source/$($targetConfig.PackageId)/$PackageVersion"
+$publishRoot = Join-Path $resolvedWorkRoot "publish/$($targetConfig.PackageId)/$PackageVersion"
 $templateRoot = $targetConfig.TemplateRoot
 if (-not (Test-Path -LiteralPath $templateRoot -PathType Container)) {
     throw "Package target template root was not found: $templateRoot"
 }
 
 if ([string]::IsNullOrWhiteSpace($OutputPath)) {
-    $OutputPath = Join-Path $repoRoot "artifacts/protocol-lab/packages/$($targetConfig.PackageId).$PackageVersion.plabpkg"
+    $OutputPath = Join-Path $resolvedWorkRoot "packages/$($targetConfig.PackageId).$PackageVersion.plabpkg"
 }
 
 Remove-Item -LiteralPath $stageRoot -Recurse -Force -ErrorAction SilentlyContinue
@@ -436,6 +453,28 @@ Copy-Item -LiteralPath (Join-Path $templateRoot "implementations") -Destination 
 $scriptsRoot = Join-Path $templateRoot "scripts"
 if (Test-Path -LiteralPath $scriptsRoot -PathType Container) {
     Copy-Item -LiteralPath $scriptsRoot -Destination (Join-Path $stageRoot "scripts") -Recurse
+}
+
+if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy)) {
+    $implementationManifestPath = Join-Path $stageRoot "implementations/quic-dotnet-raw-dev.yaml"
+    $implementationText = Get-Content -LiteralPath $implementationManifestPath -Raw
+    $environmentAnchorPattern = '(?m)^(  ASPNETCORE_URLS: http://127\.0\.0\.1:53591)(\r?)$'
+    $environmentAnchorMatches = [regex]::Matches($implementationText, $environmentAnchorPattern)
+    if ($environmentAnchorMatches.Count -ne 1) {
+        throw "Raw QUIC package implementation manifest must contain exactly one ASPNETCORE_URLS environment anchor."
+    }
+
+    $environmentReplacement = '$1$2' + "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY: $AdaptiveRuntimeReceiveCreditPolicy"
+    $implementationText = [regex]::Replace(
+        $implementationText,
+        $environmentAnchorPattern,
+        $environmentReplacement,
+        [System.Text.RegularExpressions.RegexOptions]::None,
+        [TimeSpan]::FromSeconds(1))
+    [System.IO.File]::WriteAllText(
+        $implementationManifestPath,
+        $implementationText,
+        [System.Text.UTF8Encoding]::new($false))
 }
 
 $manifestPath = Join-Path $stageRoot "protocol-lab-package.json"
@@ -534,6 +573,7 @@ $embeddedProvenance = [ordered]@{
         packageId = $targetConfig.PackageId
         packageVersion = $PackageVersion
         packageTarget = $PackageTarget
+        adaptiveRuntimeReceiveCreditPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy)) { $null } else { $AdaptiveRuntimeReceiveCreditPolicy }
     }
 }
 Write-JsonFile -Value $embeddedProvenance -Path (Join-Path $stageRoot "package-build-provenance.json")
@@ -553,6 +593,7 @@ $attestation = [ordered]@{
         packageId = $targetConfig.PackageId
         packageVersion = $PackageVersion
         packageTarget = $PackageTarget
+        adaptiveRuntimeReceiveCreditPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy)) { $null } else { $AdaptiveRuntimeReceiveCreditPolicy }
         sha256 = $sha256
         materializationPath = [System.IO.Path]::GetFullPath($OutputPath)
         buildAttestationPath = [System.IO.Path]::GetFullPath($attestationPath)
@@ -572,6 +613,8 @@ Write-JsonFile -Value $attestation -Path $attestationPath
     path = [System.IO.Path]::GetFullPath($OutputPath)
     packageId = $targetConfig.PackageId
     packageVersion = $PackageVersion
+    adaptiveRuntimeReceiveCreditPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy)) { $null } else { $AdaptiveRuntimeReceiveCreditPolicy }
+    workRoot = $resolvedWorkRoot
     sha256 = $sha256
     buildAttestationPath = [System.IO.Path]::GetFullPath($attestationPath)
     parityEligible = $sourceClean
