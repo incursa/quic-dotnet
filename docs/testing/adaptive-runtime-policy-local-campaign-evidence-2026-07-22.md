@@ -4,8 +4,8 @@ title: "Adaptive Runtime Local Campaign Evidence - 2026-07-22"
 
 # Adaptive Runtime Local Campaign Evidence - 2026-07-22
 
-Status: partial local campaign retained; broader schedule paused on host
-isolation
+Status: post-SSD guardrail and varied local campaign retained; offline review
+required before any runtime implementation
 
 This record continues the append-only receive-credit campaign after the
 planning and harness-review period. It does not replace or reinterpret the
@@ -197,3 +197,119 @@ has not cleared, and the ML-ready `balanced`, `connection_first`, and
 
 No result in this record authorizes `active_internal`, stress expansion,
 ProtocolLab submission, online exploration, or production selector changes.
+
+## Post-SSD Requalification And Varied Campaign
+
+The workstation's `C:` drive returned to local SSD storage before this slice.
+The work resumed from the retained evidence rather than replacing any earlier
+campaign. Syncthing remained stopped, no stale benchmark process was present,
+and the campaign continued to use fixed policies, fixed sequences, and
+fail-closed classification. No stress profile or production runtime tuning was
+authorized.
+
+### ProtocolLab Qualification
+
+The distributed diagnostic path was requalified before local measurements.
+The retained ProtocolLab implementation checkpoints are:
+
+- `b2159d0`: repair cross-worker diagnostic attribution and controller-root
+  artifact access;
+- `971696f`: materialize adapter child artifacts before worker cleanup;
+- `5fa8e34`: suppress inactive external-target diagnostics while retaining
+  required target-side capture.
+
+The following jobs remain negative or diagnostic-only evidence and were not
+folded into later measurements:
+
+- `job-49599a3e3e96464db850b9c65246ae40`: load workspace ownership prevented
+  artifact creation;
+- `job-e3eec67b6c8e458e934b5542cfd6c914`: pre-repair merged SUT artifacts and
+  target counters were not usable;
+- `job-4c87cc8cec91436c81f22aa8c5d02717`: target counters passed, but child
+  artifacts were not yet materialized;
+- `job-cebe14546d334fbdbd7abd3b56f51f42`: child artifacts and counters passed,
+  but the old load CLI emitted an unresolved-target warning;
+- `job-76df321b593e422f9ded14253cb6919f`: the same warning remained in the
+  bundled CLI copy before both Runner DLL locations were updated.
+
+The final forced baseline smoke
+`job-4b66d91b95514002833d49fde80400b0` and candidate smoke
+`job-560238ac02a64ee0b148ecc18f509ab5` both completed with 115 artifacts,
+valid target counter capture, readable child stdout, 25 valid epoch rows, zero
+invalid epoch rows, successful payload validation, and no load-side diagnostic
+warning. The baseline applied only `LegacyCurrent`; the candidate applied only
+`ReadDominantBatch`. These remain diagnostic-only results because SUT and load
+VMs share one Lenovo P620 physical host under Proxmox.
+
+### Instrumented C1 Guardrail
+
+Campaign
+`adaptive-receive-credit-20260722-postssd-guardrail-c1-60s1` completed the
+`upload-1mb-x1-s1` ABBA cell as `neutral_local`. Maximum within-treatment
+relative range was 3.644 percent. Baseline/candidate throughput was
+4.601/4.600 MiB/s and p95 was 244.838/247.424 ms. All four samples exited zero
+with exact payload validation and zero failed operations. Evidence validation
+accepted all 1,043 epoch rows, and all 1,088 inventoried files passed the later
+SHA-256 audit.
+
+### Balanced Schedule And Bounded Recoveries
+
+The append-only balanced attempt
+`adaptive-receive-credit-varied-postssd-20260722-balanced60s1` used a 5-second
+warmup, 60-second samples, ABBA/BAAB ordering, frozen binaries, and no stress
+cells. `-ContinueOnFailure` preserved all five outcomes. The schedule-level
+status is `incomplete_retained` because two cells failed their measurement
+contract; this status is not rewritten after later independent recoveries.
+
+| Cell | Original classification and reason | Independent recovery | Review disposition |
+| --- | --- | --- | --- |
+| `upload-1mb-x16-s1` | `neutral_local`; 1.628% range; 29.921/29.869 MiB/s; 585.411/581.314 ms p95 | Not needed | 16,576 validated epoch rows; usable local diagnostic row. |
+| `duplex-64kb-x1-s16` | `invalid_environment`; 5.470% range | `neutral_local`; 0.609% range; 1.930/1.963 MiB/s; 571.650/552.152 ms p95 | Original remains environment-invalid; recovery has 1,047 validated epoch rows. |
+| `download-1mb-x16-s1` | `invalid_environment`; 5.728% range | `invalid_environment`; 8.007% range | Both attempts passed correctness and schema validation, but neither is policy-effect evidence. Further retries stopped to avoid sampling-until-success bias. |
+| `multiplex-1kb-x1-s100` | `invalid_contract`; sample 1 timed out during adapter start and sample 3 counter capture failed | `neutral_local`; 1.167% range; 0.962/0.973 MiB/s; 101.559/100.117 ms p95 | Original remains contract-invalid; recovery has 1,043 validated epoch rows. |
+| `duplex-64kb-x4-s16` | `invalid_contract`; sample 3 counter capture failed; observed range was also 5.846% | `neutral_local`; 4.556% range; 6.773/6.720 MiB/s; 622.202/627.369 ms p95 | Original remains contract-invalid; recovery has 4,144 validated epoch rows. |
+
+The counter failures retained zero timestamped numeric samples and reported
+that `dotnet-counters` did not exit after load, was stopped, then exited with
+code `-1`. The multiplex adapter-start failure was a canceled HTTP operation.
+These are harness-reliability negatives, not candidate-policy losses. Separate
+campaign IDs were used for every recovery; no failed cell directory, result,
+manifest, or inventory was overwritten.
+
+Across the c1 gate, the five-cell attempt, and four bounded recoveries, the ten
+post-SSD local-result documents classify as five `neutral_local`, three
+`invalid_environment`, and two `invalid_contract`. The eight contract-complete
+documents passed evidence validation with 57,876 epoch rows and zero
+validation failures. Of those, 23,853 rows belong to neutral local results;
+the 34,023 environment-invalid rows remain labeled for environment/regime
+analysis and must not be used as policy-effect evidence. The two
+contract-invalid documents reference 4,885 retained observations, but they do
+not have evidence-validation summaries and are not ML-eligible.
+
+A fresh integrity audit rehashed all 58,323 files referenced by the ten
+post-SSD checksum inventories. No path was missing and no SHA-256 mismatch was
+found. Key post-SSD artifact identities are:
+
+| Campaign/cell | Result SHA-256 | Manifest SHA-256 | Inventory SHA-256 |
+| --- | --- | --- | --- |
+| `postssd-guardrail-c1-60s1/upload-1mb-x1-s1` | `29b125226e8d8c1319d2825c1e4f5571610421caa66759ea6be71419d73abe97` | `5e4c21b1c762e46ccf6186a1b59304ee30cc739ea79bde24b8c6e73c781d9240` | `9d1bf387001c93541ddb80cfc94e558261c52c110fc658a875084257d6ef2bfe` |
+| `balanced60s1/upload-1mb-x16-s1` | `57480ecf1bbdb1cd8a02d7143f33aad0583e4981c1c66fcbdcc7b7c3c932423e` | `dd8095de17784260199cca5ae9da16bbbbbd2a7177f1ffe59eac8dbfdd3379f0` | `dfe79ec7a0b16111375112709e6f490f7b9fea7273138f16df066e3d1604db48` |
+| `recovery1-duplex-x1-s16/duplex-64kb-x1-s16` | `bf5755f257d321b2b599ae89db900df54eb094ce0ddd880df334741bef8d5700` | `a014c713c4a107bc9128fd4bab237ed6647b960772044238495b9cbb1b0c51b5` | `b1887f42cfab0561d343f5d8ad8f8be92f6108d55669f0e0fe70b338bf19d3d8` |
+| `recovery1-multiplex-x1-s100/multiplex-1kb-x1-s100` | `bfa8e81bc961f61e4dbaef298fbe7ae417f0dab383c730cff803a473f0739928` | `544bd46d53b9b559df08662fcf013def27b32789bffe5fd31edcea3401a7233f` | `6af5306e16ddc11df27b07ab4db9a791889a54a9533e37c51a7cd35199fc2008` |
+| `recovery1-duplex-x4-s16/duplex-64kb-x4-s16` | `fcd2051794dedc2d205e7329895e03aa2691768aec7d65d6d30eed7c89a79cb0` | `5a0e40c434a2fbe6821b1dbd00d1c0516b8b3858507a591acb63003c91998511` | `9a12158048fd5c093b86b247695b6cc03c72ab0a2519d2d322c6609a4b953638` |
+| `recovery1-download-x16-s1/download-1mb-x16-s1` | `5f3383a4f77448a273f34cf72fec4fdcdc1d8baf8e8aa82dbdb64a7d0492097c` | `c7912078755dca843ebfc61a1bee3d560f3498a6d4f30388f790af07486e9d92` | `8f1ee1028e096dbb9ae933b66ecef945bd2cde65a4c9b50e57d72efea2798475` |
+
+### Post-SSD Gate Decision
+
+The planned non-stress varied collection is complete enough for offline
+review: four distinct varied shapes now have neutral, contract-complete local
+rows, while the 16-connection download shape has two explicit
+environment-invalid rows. No valid row demonstrates a material receive-credit
+improvement; the accepted interpretation remains neutral and diagnostic.
+
+The next permitted activity is review, dataset curation, and offline regime
+discovery using the documented provenance and exclusion labels. This evidence
+does not authorize stress expansion, online learning, active controller
+selection, ProtocolLab publication, or production implementation. Any derived
+rule must be reviewed against the shadow-mode, acceptance, and rollback
+contracts before runtime code changes begin.
