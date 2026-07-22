@@ -259,6 +259,178 @@ function Get-ArtifactKind {
     return 'other'
 }
 
+function Get-OptionalObjectProperty {
+    param(
+        [AllowNull()][object] $Object,
+
+        [Parameter(Mandatory = $true)]
+        [string] $Name
+    )
+
+    if ($null -eq $Object) {
+        return $null
+    }
+
+    $property = $Object.PSObject.Properties[$Name]
+    if ($null -eq $property) {
+        return $null
+    }
+
+    return $property.Value
+}
+
+function ConvertTo-NullableInt {
+    param([AllowNull()][object] $Value)
+
+    if ($null -eq $Value -or [string]::IsNullOrWhiteSpace([string] $Value)) {
+        return $null
+    }
+
+    return [int] $Value
+}
+
+function Resolve-SampleTargetAttribution {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $SampleId,
+
+        [Parameter(Mandatory = $true)]
+        [string] $RunRoot,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Generic.HashSet[string]] $ArtifactPathSet,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Generic.List[string]] $ContractFailures
+    )
+
+    $runnerResultPath = Get-ChildItem -LiteralPath $RunRoot -Filter 'result.json' -Recurse -File -ErrorAction SilentlyContinue |
+        Select-Object -First 1 -ExpandProperty FullName
+    $diagnosticTargetPath = Get-ChildItem -LiteralPath $RunRoot -Filter 'diagnostic-target.json' -Recurse -File -ErrorAction SilentlyContinue |
+        Select-Object -First 1 -ExpandProperty FullName
+    $counterSummaryPath = Get-ChildItem -LiteralPath $RunRoot -Filter 'counters-summary.json' -Recurse -File -ErrorAction SilentlyContinue |
+        Select-Object -First 1 -ExpandProperty FullName
+
+    foreach ($path in @($runnerResultPath, $diagnosticTargetPath, $counterSummaryPath)) {
+        if (-not [string]::IsNullOrWhiteSpace([string] $path) -and (Test-Path -LiteralPath $path -PathType Leaf)) {
+            [void] $ArtifactPathSet.Add($path)
+        }
+    }
+
+    $benchmarkResult = $null
+    if (-not [string]::IsNullOrWhiteSpace([string] $runnerResultPath) -and (Test-Path -LiteralPath $runnerResultPath -PathType Leaf)) {
+        $benchmarkResult = Get-Content -LiteralPath $runnerResultPath -Raw | ConvertFrom-Json -Depth 100
+    }
+    else {
+        $ContractFailures.Add("$SampleId`: authoritative benchmark result.json was not retained.")
+    }
+
+    $diagnosticTarget = Get-OptionalObjectProperty -Object $benchmarkResult -Name 'diagnosticTarget'
+    if ($null -eq $diagnosticTarget -and
+        -not [string]::IsNullOrWhiteSpace([string] $diagnosticTargetPath) -and
+        (Test-Path -LiteralPath $diagnosticTargetPath -PathType Leaf)) {
+        $diagnosticTarget = Get-Content -LiteralPath $diagnosticTargetPath -Raw | ConvertFrom-Json -Depth 50
+    }
+
+    $targetProcessMetrics = Get-OptionalObjectProperty -Object $benchmarkResult -Name 'targetProcessMetrics'
+    $counterCaptureStatus = [string] (Get-OptionalObjectProperty -Object $benchmarkResult -Name 'countersCaptureStatus')
+    $countersAvailable = [bool] (Get-OptionalObjectProperty -Object $benchmarkResult -Name 'countersAvailable')
+
+    $rootProcessId = ConvertTo-NullableInt (Get-OptionalObjectProperty -Object $diagnosticTarget -Name 'rootProcessId')
+    $resolvedProcessId = ConvertTo-NullableInt (Get-OptionalObjectProperty -Object $diagnosticTarget -Name 'resolvedProcessId')
+    $measuredProcessId = ConvertTo-NullableInt (Get-OptionalObjectProperty -Object $targetProcessMetrics -Name 'processId')
+    $resolutionStrategy = [string] (Get-OptionalObjectProperty -Object $diagnosticTarget -Name 'resolutionStrategy')
+
+    $targetMetricWarnings = @((Get-OptionalObjectProperty -Object $targetProcessMetrics -Name 'warnings') | ForEach-Object { [string] $_ })
+    $targetMetricSamples = @((Get-OptionalObjectProperty -Object $targetProcessMetrics -Name 'samples'))
+    $measurementSource = if ($targetMetricWarnings -contains 'target-process-metrics-adapter-derived') {
+        if ($targetMetricSamples.Count -gt 0) { 'adapter-resolved-live-process' } else { 'adapter-metrics-snapshots' }
+    }
+    elseif ([string]::Equals($resolutionStrategy, 'root-process', [StringComparison]::OrdinalIgnoreCase)) {
+        'root-process'
+    }
+    elseif ([string]::IsNullOrWhiteSpace($resolutionStrategy)) {
+        $null
+    }
+    else {
+        'resolved-process'
+    }
+
+    $counterProcessId = if (-not [string]::IsNullOrWhiteSpace($counterCaptureStatus) -and
+        $counterCaptureStatus -eq 'succeeded' -and
+        -not [string]::IsNullOrWhiteSpace([string] $counterSummaryPath) -and
+        (Test-Path -LiteralPath $counterSummaryPath -PathType Leaf) -and
+        $resolvedProcessId -ne $null) {
+        $resolvedProcessId
+    }
+    else {
+        $null
+    }
+    $counterProcessIdSource = if ($counterProcessId -ne $null) { 'runner-counter-attach-resolved-process' } else { $null }
+
+    $rootEqualsResolved = $rootProcessId -ne $null -and $resolvedProcessId -ne $null -and $rootProcessId -eq $resolvedProcessId
+    $resolvedEqualsMeasured = $resolvedProcessId -ne $null -and $measuredProcessId -ne $null -and $resolvedProcessId -eq $measuredProcessId
+    $resolvedEqualsCounter = $resolvedProcessId -ne $null -and $counterProcessId -ne $null -and $resolvedProcessId -eq $counterProcessId
+    $commandLine = [string] (Get-OptionalObjectProperty -Object $diagnosticTarget -Name 'commandLine')
+    $executablePath = [string] (Get-OptionalObjectProperty -Object $diagnosticTarget -Name 'executablePath')
+    $workingDirectory = [string] (Get-OptionalObjectProperty -Object $diagnosticTarget -Name 'workingDirectory')
+    $commandIdentityAvailable = -not [string]::IsNullOrWhiteSpace($commandLine) -or
+        -not [string]::IsNullOrWhiteSpace($executablePath) -or
+        -not [string]::IsNullOrWhiteSpace($workingDirectory)
+
+    $valid = $rootProcessId -ne $null -and
+        $resolvedProcessId -ne $null -and
+        $measuredProcessId -ne $null -and
+        $counterProcessId -ne $null -and
+        -not [string]::IsNullOrWhiteSpace($resolutionStrategy) -and
+        -not [string]::IsNullOrWhiteSpace($measurementSource) -and
+        $resolvedEqualsMeasured -and
+        $resolvedEqualsCounter -and
+        (
+            -not [string]::Equals($resolutionStrategy, 'root-process', [StringComparison]::OrdinalIgnoreCase) -or
+            $rootEqualsResolved
+        )
+
+    if ($null -eq $diagnosticTarget) {
+        $ContractFailures.Add("$SampleId`: diagnostic-target.json was not retained or could not be parsed.")
+    }
+    if ($null -eq $targetProcessMetrics) {
+        $ContractFailures.Add("$SampleId`: targetProcessMetrics were not retained in result.json.")
+    }
+    if ([string]::IsNullOrWhiteSpace([string] $counterSummaryPath) -or -not (Test-Path -LiteralPath $counterSummaryPath -PathType Leaf)) {
+        $ContractFailures.Add("$SampleId`: counters-summary.json was not retained for target attribution.")
+    }
+    elseif ($counterCaptureStatus -ne 'succeeded') {
+        $ContractFailures.Add("$SampleId`: counters capture did not succeed (status '$counterCaptureStatus').")
+    }
+    if (-not $valid) {
+        $ContractFailures.Add("$SampleId`: target attribution proof is invalid or incomplete (root=$rootProcessId resolved=$resolvedProcessId measured=$measuredProcessId counter=$counterProcessId strategy='$resolutionStrategy' source='$measurementSource').")
+    }
+
+    return [ordered]@{
+        rootProcessId = $rootProcessId
+        resolvedProcessId = $resolvedProcessId
+        measuredProcessId = $measuredProcessId
+        counterProcessId = $counterProcessId
+        resolutionStrategy = if ([string]::IsNullOrWhiteSpace($resolutionStrategy)) { $null } else { $resolutionStrategy }
+        measurementSource = $measurementSource
+        counterProcessIdSource = $counterProcessIdSource
+        resultArtifactPath = if ([string]::IsNullOrWhiteSpace([string] $runnerResultPath)) { $null } else { $runnerResultPath }
+        diagnosticTargetArtifactPath = if ([string]::IsNullOrWhiteSpace([string] $diagnosticTargetPath)) { $null } else { $diagnosticTargetPath }
+        counterSummaryArtifactPath = if ([string]::IsNullOrWhiteSpace([string] $counterSummaryPath)) { $null } else { $counterSummaryPath }
+        counterCaptureStatus = if ([string]::IsNullOrWhiteSpace($counterCaptureStatus)) { $null } else { $counterCaptureStatus }
+        countersAvailable = $countersAvailable
+        rootCommandLine = if ([string]::IsNullOrWhiteSpace($commandLine)) { $null } else { $commandLine }
+        rootExecutablePath = if ([string]::IsNullOrWhiteSpace($executablePath)) { $null } else { $executablePath }
+        rootWorkingDirectory = if ([string]::IsNullOrWhiteSpace($workingDirectory)) { $null } else { $workingDirectory }
+        commandIdentityAvailable = $commandIdentityAvailable
+        rootEqualsResolved = $rootEqualsResolved
+        resolvedEqualsMeasured = $resolvedEqualsMeasured
+        resolvedEqualsCounter = $resolvedEqualsCounter
+        valid = $valid
+    }
+}
+
 function ConvertTo-ControllerState {
     param([Parameter(Mandatory = $true)][string] $Value)
 
@@ -645,6 +817,11 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
 
     $outcome = Get-Outcome -Aggregate $aggregate
     $correctness = Get-Correctness -ExitCode $exitCode -Aggregate $aggregate
+    $targetAttribution = Resolve-SampleTargetAttribution `
+        -SampleId $sampleId `
+        -RunRoot $runRoot `
+        -ArtifactPathSet $artifactPaths `
+        -ContractFailures $contractFailures
     $samples.Add([ordered]@{
         sampleId = $sampleId
         treatment = $treatment
@@ -652,7 +829,20 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
         exitCode = $exitCode
         outcomes = $outcome
         correctness = $correctness
-        artifactPaths = @($commandPath, $stdoutPath, $stderrPath, $aggregatePath, $campaignHostStdoutPath, $campaignHostStderrPath, $shadowRawPath, $pressureArtifactPath) |
+        targetAttribution = $targetAttribution
+        artifactPaths = @(
+            $commandPath,
+            $stdoutPath,
+            $stderrPath,
+            $aggregatePath,
+            $campaignHostStdoutPath,
+            $campaignHostStderrPath,
+            $shadowRawPath,
+            $pressureArtifactPath,
+            $targetAttribution.resultArtifactPath,
+            $targetAttribution.diagnosticTargetArtifactPath,
+            $targetAttribution.counterSummaryArtifactPath
+        ) |
             Where-Object { -not [string]::IsNullOrWhiteSpace([string] $_) -and (Test-Path -LiteralPath $_ -PathType Leaf) }
     })
 }

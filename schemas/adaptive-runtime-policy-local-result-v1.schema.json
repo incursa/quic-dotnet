@@ -516,7 +516,7 @@
     "sample": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["sampleId", "treatment", "sequenceIndex", "exitCode", "outcomes", "correctness", "artifactPaths"],
+      "required": ["sampleId", "treatment", "sequenceIndex", "exitCode", "outcomes", "correctness", "targetAttribution", "artifactPaths"],
       "properties": {
         "sampleId": { "$ref": "#/$defs/nonEmptyString" },
         "treatment": { "type": "string", "enum": ["A", "B"] },
@@ -524,6 +524,7 @@
         "exitCode": { "type": "integer" },
         "outcomes": { "$ref": "#/$defs/outcomes" },
         "correctness": { "$ref": "#/$defs/correctness" },
+        "targetAttribution": { "$ref": "#/$defs/targetAttribution" },
         "artifactPaths": {
           "type": "array",
           "items": { "$ref": "#/$defs/nonEmptyString" }
@@ -563,6 +564,54 @@
           "type": "array",
           "items": { "$ref": "#/$defs/nonEmptyString" }
         }
+      }
+    },
+    "targetAttribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rootProcessId",
+        "resolvedProcessId",
+        "measuredProcessId",
+        "counterProcessId",
+        "resolutionStrategy",
+        "measurementSource",
+        "counterProcessIdSource",
+        "resultArtifactPath",
+        "diagnosticTargetArtifactPath",
+        "counterSummaryArtifactPath",
+        "counterCaptureStatus",
+        "countersAvailable",
+        "rootCommandLine",
+        "rootExecutablePath",
+        "rootWorkingDirectory",
+        "commandIdentityAvailable",
+        "rootEqualsResolved",
+        "resolvedEqualsMeasured",
+        "resolvedEqualsCounter",
+        "valid"
+      ],
+      "properties": {
+        "rootProcessId": { "type": ["integer", "null"] },
+        "resolvedProcessId": { "type": ["integer", "null"] },
+        "measuredProcessId": { "type": ["integer", "null"] },
+        "counterProcessId": { "type": ["integer", "null"] },
+        "resolutionStrategy": { "type": ["string", "null"] },
+        "measurementSource": { "type": ["string", "null"] },
+        "counterProcessIdSource": { "type": ["string", "null"] },
+        "resultArtifactPath": { "type": ["string", "null"] },
+        "diagnosticTargetArtifactPath": { "type": ["string", "null"] },
+        "counterSummaryArtifactPath": { "type": ["string", "null"] },
+        "counterCaptureStatus": { "type": ["string", "null"] },
+        "countersAvailable": { "type": "boolean" },
+        "rootCommandLine": { "type": ["string", "null"] },
+        "rootExecutablePath": { "type": ["string", "null"] },
+        "rootWorkingDirectory": { "type": ["string", "null"] },
+        "commandIdentityAvailable": { "type": "boolean" },
+        "rootEqualsResolved": { "type": "boolean" },
+        "resolvedEqualsMeasured": { "type": "boolean" },
+        "resolvedEqualsCounter": { "type": "boolean" },
+        "valid": { "type": "boolean" }
       }
     },
     "artifact": {

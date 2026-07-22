@@ -36,6 +36,16 @@ public sealed class REQ_QUIC_CRT_0169
         Assert.Equal(64, provenance.GetProperty("benchmarkSha256").GetString()!.Length);
         Assert.Equal(64, provenance.GetProperty("runtimeSha256").GetString()!.Length);
         Assert.Equal(64, provenance.GetProperty("sourceArtifactSha256").GetString()!.Length);
+        JsonElement targetAttribution = resultRoot.GetProperty("samples")[0].GetProperty("targetAttribution");
+        Assert.Equal(4100, targetAttribution.GetProperty("rootProcessId").GetInt32());
+        Assert.Equal(4101, targetAttribution.GetProperty("resolvedProcessId").GetInt32());
+        Assert.Equal(4101, targetAttribution.GetProperty("measuredProcessId").GetInt32());
+        Assert.Equal(4101, targetAttribution.GetProperty("counterProcessId").GetInt32());
+        Assert.Equal("adapter-process-metrics", targetAttribution.GetProperty("resolutionStrategy").GetString());
+        Assert.Equal("adapter-resolved-live-process", targetAttribution.GetProperty("measurementSource").GetString());
+        Assert.True(targetAttribution.GetProperty("resolvedEqualsMeasured").GetBoolean());
+        Assert.True(targetAttribution.GetProperty("resolvedEqualsCounter").GetBoolean());
+        Assert.True(targetAttribution.GetProperty("valid").GetBoolean());
         Assert.True(epochRoot
             .GetProperty("workloadAnalysisOnly")
             .GetProperty("excludedFromProductionFeatures")
@@ -127,11 +137,15 @@ public sealed class REQ_QUIC_CRT_0169
         Assert.Contains("'-CaptureCounters'", runner, StringComparison.Ordinal);
         Assert.Contains("counters-summary.json", runner, StringComparison.Ordinal);
         Assert.Contains("counters-summary.json was not retained", runner, StringComparison.Ordinal);
+        Assert.Contains("targetAttribution", runner, StringComparison.Ordinal);
+        Assert.Contains("resolvedEqualsCounter", runner, StringComparison.Ordinal);
+        Assert.Contains("runner-counter-attach-resolved-process", runner, StringComparison.Ordinal);
         string readme = ReadRepositoryText("eng/adaptive-runtime/README.md")
             .Replace("\r\n", " ", StringComparison.Ordinal)
             .Replace("\n", " ", StringComparison.Ordinal);
         Assert.Contains("Host/process counters are captured for every sample so forced-policy evidence keeps a pressure artifact by default.", readme, StringComparison.Ordinal);
         Assert.Contains("Every forced-policy sample also retains `counters-summary.json` as the result's pressure artifact", readme, StringComparison.Ordinal);
+        Assert.Contains("retains per-sample target attribution proving root, resolved, measured, and counter PID alignment", readme, StringComparison.Ordinal);
         Assert.Contains("shadow-epochs.raw.jsonl", readme, StringComparison.Ordinal);
         Assert.DoesNotContain("mode = 'active_internal'", runner, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Invoke-QuicDotNetProtocolLabRun.ps1", runner, StringComparison.OrdinalIgnoreCase);

@@ -126,6 +126,28 @@
         "disposalFailures": 0,
         "invariantViolations": []
       },
+      "targetAttribution": {
+        "rootProcessId": 4100,
+        "resolvedProcessId": 4101,
+        "measuredProcessId": 4101,
+        "counterProcessId": 4101,
+        "resolutionStrategy": "adapter-process-metrics",
+        "measurementSource": "adapter-resolved-live-process",
+        "counterProcessIdSource": "runner-counter-attach-resolved-process",
+        "resultArtifactPath": "artifacts/result.json",
+        "diagnosticTargetArtifactPath": "artifacts/diagnostic-target.json",
+        "counterSummaryArtifactPath": "artifacts/counters-summary.json",
+        "counterCaptureStatus": "succeeded",
+        "countersAvailable": true,
+        "rootCommandLine": "dotnet exec ProtocolLabAdapter.dll",
+        "rootExecutablePath": "dotnet",
+        "rootWorkingDirectory": "C:\\shared\\src\\incursa\\quic-dotnet",
+        "commandIdentityAvailable": true,
+        "rootEqualsResolved": false,
+        "resolvedEqualsMeasured": true,
+        "resolvedEqualsCounter": true,
+        "valid": true
+      },
       "artifactPaths": ["artifacts/sample-shadow-001.json"]
     }
   ],

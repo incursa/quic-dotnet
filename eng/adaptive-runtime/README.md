@@ -49,8 +49,10 @@ effective workload shape, retains every sample, and emits a schema-valid v1
 result, manifest, raw ProtocolLab artifacts, commands, and checksum inventory
 under `.artifacts/adaptive-runtime/<campaignId>/<cellId>`. Host/process
 counters are captured for every sample so forced-policy evidence keeps a
-pressure artifact by default. A single-cell result is diagnostic and cannot
-authorize activation or rack-lab submission.
+pressure artifact by default. The local result also retains per-sample target
+attribution proving root, resolved, measured, and counter PID alignment, plus
+the retained runner artifacts used for that proof. A single-cell result is
+diagnostic and cannot authorize activation or rack-lab submission.
 
 Run a deterministic higher-count measurement schedule with the same permanent
 cell runner:
