@@ -35,8 +35,8 @@ var behavior = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC
 var payloadSizeText = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_SIZE_BYTES");
 var adaptiveRuntimePolicy = ResolveAdaptiveRuntimePolicy(
     Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY"));
-var shadowEpochPublisher = adaptiveRuntimePolicy.ShadowEnabled
-    ? new AdaptiveRuntimeShadowEpochPublisher()
+var epochPublisher = adaptiveRuntimePolicy.ForcedMode is not null || adaptiveRuntimePolicy.ShadowEnabled
+    ? new AdaptiveRuntimeEpochPublisher()
     : null;
 var echoResponses = string.Equals(payloadDirection, "bidirectional", StringComparison.OrdinalIgnoreCase);
 var downloadPayload = string.Equals(payloadDirection, "server-to-client", StringComparison.OrdinalIgnoreCase)
@@ -89,10 +89,10 @@ var listenerOptions = new QuicListenerOptions
             },
             ForcedReceiveCreditPolicyMode = adaptiveRuntimePolicy.ForcedMode,
             AdaptiveRuntimeShadowEnabled = adaptiveRuntimePolicy.ShadowEnabled,
-            AdaptiveRuntimeShadowEpochInterval = shadowEpochPublisher is null
+            AdaptiveRuntimeShadowEpochInterval = epochPublisher is null
                 ? TimeSpan.Zero
                 : TimeSpan.FromMilliseconds(250),
-            AdaptiveRuntimeShadowEpochSink = shadowEpochPublisher?.CreateConnectionSink(),
+            AdaptiveRuntimeShadowEpochSink = epochPublisher?.CreateConnectionSink(),
             ServerAuthenticationOptions = new SslServerAuthenticationOptions
             {
                 ServerCertificate = certificate,
@@ -112,9 +112,9 @@ Console.WriteLine($"QUIC_PORT={listenPort}");
 Console.WriteLine($"QUIC_ALPN={alpn}");
 Console.WriteLine($"QUIC_IMPLEMENTATION=incursa-raw-quic");
 Console.WriteLine($"QUIC_RECEIVE_CREDIT_POLICY={adaptiveRuntimePolicy.Name}");
-if (shadowEpochPublisher is not null)
+if (epochPublisher is not null)
 {
-    Console.WriteLine("QUIC_SHADOW_EPOCH_CONTRACT=adaptive-runtime-shadow-epoch-raw-v1");
+    Console.WriteLine("QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=adaptive-runtime-epoch-raw-v1");
 }
 
 try
@@ -497,10 +497,10 @@ static int GetFreePort()
     return ((IPEndPoint)socket.LocalEndPoint!).Port;
 }
 
-internal sealed class AdaptiveRuntimeShadowEpochPublisher
+internal sealed class AdaptiveRuntimeEpochPublisher
 {
-    private const string OutputPrefix = "QUIC_SHADOW_EPOCH_JSON=";
-    private readonly Channel<AdaptiveRuntimeShadowEpochRecord> epochs = Channel.CreateBounded<AdaptiveRuntimeShadowEpochRecord>(
+    private const string OutputPrefix = "QUIC_ADAPTIVE_RUNTIME_EPOCH_JSON=";
+    private readonly Channel<AdaptiveRuntimeEpochRecord> epochs = Channel.CreateBounded<AdaptiveRuntimeEpochRecord>(
         new BoundedChannelOptions(4096)
         {
             SingleReader = true,
@@ -510,7 +510,7 @@ internal sealed class AdaptiveRuntimeShadowEpochPublisher
         });
     private long nextConnectionKey;
 
-    internal AdaptiveRuntimeShadowEpochPublisher()
+    internal AdaptiveRuntimeEpochPublisher()
     {
         _ = WriteEpochsAsync();
     }
@@ -522,40 +522,40 @@ internal sealed class AdaptiveRuntimeShadowEpochPublisher
     {
         try
         {
-            await foreach (AdaptiveRuntimeShadowEpochRecord epoch in epochs.Reader.ReadAllAsync())
+            await foreach (AdaptiveRuntimeEpochRecord epoch in epochs.Reader.ReadAllAsync())
             {
-                Console.WriteLine(OutputPrefix + JsonSerializer.Serialize(epoch, AdaptiveRuntimeShadowEpochJsonContext.Default.AdaptiveRuntimeShadowEpochRecord));
+                Console.WriteLine(OutputPrefix + JsonSerializer.Serialize(epoch, AdaptiveRuntimeEpochJsonContext.Default.AdaptiveRuntimeEpochRecord));
             }
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"IncursaRawQuicServer shadow epoch writer stopped: {ex.Message}");
+            Console.Error.WriteLine($"IncursaRawQuicServer adaptive-runtime epoch writer stopped: {ex.Message}");
         }
     }
 
     private sealed class ConnectionSink(
-        AdaptiveRuntimeShadowEpochPublisher owner,
+        AdaptiveRuntimeEpochPublisher owner,
         string connectionKey) : IQuicAdaptiveRuntimeShadowEpochSink
     {
         public bool TryPublish(
             in QuicAdaptiveRuntimeConnectionObservation observation,
             in QuicReceiveCreditPolicySnapshot snapshot)
-            => owner.epochs.Writer.TryWrite(new AdaptiveRuntimeShadowEpochRecord(
-                "adaptive-runtime-shadow-epoch-raw-v1",
+            => owner.epochs.Writer.TryWrite(new AdaptiveRuntimeEpochRecord(
+                "adaptive-runtime-epoch-raw-v1",
                 connectionKey,
                 observation,
                 snapshot));
     }
 }
 
-internal readonly record struct AdaptiveRuntimeShadowEpochRecord(
+internal readonly record struct AdaptiveRuntimeEpochRecord(
     string SchemaVersion,
     string ConnectionKey,
     QuicAdaptiveRuntimeConnectionObservation Observation,
     QuicReceiveCreditPolicySnapshot Snapshot);
 
-[System.Text.Json.Serialization.JsonSerializable(typeof(AdaptiveRuntimeShadowEpochRecord))]
+[System.Text.Json.Serialization.JsonSerializable(typeof(AdaptiveRuntimeEpochRecord))]
 [System.Text.Json.Serialization.JsonSourceGenerationOptions(
     PropertyNamingPolicy = System.Text.Json.Serialization.JsonKnownNamingPolicy.CamelCase,
     UseStringEnumConverter = true)]
-internal sealed partial class AdaptiveRuntimeShadowEpochJsonContext : System.Text.Json.Serialization.JsonSerializerContext;
+internal sealed partial class AdaptiveRuntimeEpochJsonContext : System.Text.Json.Serialization.JsonSerializerContext;

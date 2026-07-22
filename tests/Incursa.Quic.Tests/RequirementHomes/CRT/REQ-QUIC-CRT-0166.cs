@@ -81,6 +81,40 @@ public sealed class REQ_QUIC_CRT_0166
         await Assert.ThrowsAsync<ObjectDisposedException>(() => write.WaitAsync(TimeSpan.FromSeconds(5)));
     }
 
+    [Theory]
+    [InlineData((int)QuicReceiveCreditPolicyMode.LegacyCurrent, true)]
+    [InlineData((int)QuicReceiveCreditPolicyMode.Immediate, false)]
+    [InlineData((int)QuicReceiveCreditPolicyMode.ReadDominantBatch, true)]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ForcedEpochExportPreservesBehaviorAndPublishesActualPolicyAndRecommendation(
+        int forcedPolicyValue,
+        bool expectedBatchedPath)
+    {
+        QuicReceiveCreditPolicyMode forcedPolicy = (QuicReceiveCreditPolicyMode)forcedPolicyValue;
+        FakeMonotonicClock clock = new(Stopwatch.Frequency);
+        RecordingShadowEpochSink sink = new();
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState(), clock);
+        RegisterDistinctStreamObservers(runtime, count: 16);
+        runtime.ConfigureAdaptiveRuntimePolicy(new QuicServerConnectionOptions
+        {
+            ForcedReceiveCreditPolicyMode = forcedPolicy,
+            AdaptiveRuntimeShadowEpochInterval = TimeSpan.FromMilliseconds(250),
+            AdaptiveRuntimeShadowEpochSink = sink,
+        });
+
+        clock.Advance(Stopwatch.Frequency / 4);
+        runtime.TryPublishReceiveCreditShadowAtActorBoundary(clock.Ticks);
+
+        Assert.Single(sink.Epochs);
+        QuicReceiveCreditPolicySnapshot snapshot = sink.Epochs[0].Snapshot;
+        Assert.Equal(forcedPolicy, snapshot.AppliedPolicy);
+        Assert.Equal(QuicReceiveCreditPolicyMode.ReadDominantBatch, snapshot.ProposedPolicy);
+        Assert.Equal(QuicAdaptiveRuntimePolicyReason.LegacyReadDominantBatch, snapshot.Reason);
+        Assert.True(snapshot.Transitioned);
+        Assert.Equal(expectedBatchedPath, runtime.ShouldUseBatchedReceiveCreditPath());
+    }
+
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -193,7 +227,7 @@ public sealed class REQ_QUIC_CRT_0166
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void EpochExportCannotBeConfiguredOutsideShadowMode()
+    public void EpochExportCannotBeConfiguredWithoutShadowOrForcedMode()
     {
         using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
         QuicServerConnectionOptions options = new()
@@ -205,7 +239,7 @@ public sealed class REQ_QUIC_CRT_0166
         InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
             () => runtime.ConfigureAdaptiveRuntimePolicy(options));
 
-        Assert.Equal("Adaptive runtime shadow epoch export requires shadow mode.", exception.Message);
+        Assert.Equal("Adaptive runtime epoch export requires shadow or forced mode.", exception.Message);
     }
 
     private static void RegisterDistinctStreamObservers(QuicConnectionRuntime runtime, int count)

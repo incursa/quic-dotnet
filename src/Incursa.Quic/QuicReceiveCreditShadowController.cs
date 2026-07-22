@@ -68,6 +68,15 @@ internal struct QuicReceiveCreditShadowController
     internal bool TryEvaluate(
         in QuicAdaptiveRuntimeConnectionObservation observation,
         out QuicReceiveCreditPolicySnapshot snapshot)
+        => TryEvaluate(
+            in observation,
+            QuicReceiveCreditPolicyMode.LegacyCurrent,
+            out snapshot);
+
+    internal bool TryEvaluate(
+        in QuicAdaptiveRuntimeConnectionObservation observation,
+        QuicReceiveCreditPolicyMode appliedPolicy,
+        out QuicReceiveCreditPolicySnapshot snapshot)
     {
         snapshot = default;
         if (observation.ConnectionEpochSequence == 0
@@ -85,6 +94,7 @@ internal struct QuicReceiveCreditShadowController
             return Publish(
                 in observation,
                 QuicAdaptiveRuntimePolicyState.Terminal,
+                appliedPolicy,
                 QuicReceiveCreditPolicyMode.Immediate,
                 QuicAdaptiveRuntimePolicyReason.TerminalStarted,
                 out snapshot);
@@ -95,6 +105,7 @@ internal struct QuicReceiveCreditShadowController
             return Publish(
                 in observation,
                 QuicAdaptiveRuntimePolicyState.Terminal,
+                appliedPolicy,
                 QuicReceiveCreditPolicyMode.Immediate,
                 QuicAdaptiveRuntimePolicyReason.CancellationOrDisposal,
                 out snapshot);
@@ -105,6 +116,7 @@ internal struct QuicReceiveCreditShadowController
             return Publish(
                 in observation,
                 QuicAdaptiveRuntimePolicyState.Terminal,
+                appliedPolicy,
                 QuicReceiveCreditPolicyMode.Immediate,
                 QuicAdaptiveRuntimePolicyReason.TerminalStarted,
                 out snapshot);
@@ -121,6 +133,7 @@ internal struct QuicReceiveCreditShadowController
         {
             return PublishFallback(
                 in observation,
+                appliedPolicy,
                 QuicAdaptiveRuntimePolicyReason.RuleVersionMismatch,
                 out snapshot);
         }
@@ -129,6 +142,7 @@ internal struct QuicReceiveCreditShadowController
         {
             return PublishFallback(
                 in observation,
+                appliedPolicy,
                 QuicAdaptiveRuntimePolicyReason.MissingSignal,
                 out snapshot);
         }
@@ -137,6 +151,7 @@ internal struct QuicReceiveCreditShadowController
         {
             return PublishFallback(
                 in observation,
+                appliedPolicy,
                 QuicAdaptiveRuntimePolicyReason.StaleSignal,
                 out snapshot);
         }
@@ -147,6 +162,7 @@ internal struct QuicReceiveCreditShadowController
         {
             return PublishFallback(
                 in observation,
+                appliedPolicy,
                 phaseValue == 0
                     ? QuicAdaptiveRuntimePolicyReason.OutOfDomain
                     : QuicAdaptiveRuntimePolicyReason.ContradictorySignals,
@@ -157,6 +173,7 @@ internal struct QuicReceiveCreditShadowController
         {
             return PublishFallback(
                 in observation,
+                appliedPolicy,
                 QuicAdaptiveRuntimePolicyReason.ArithmeticSaturated,
                 out snapshot);
         }
@@ -169,6 +186,7 @@ internal struct QuicReceiveCreditShadowController
             useBatchedReceiveCredit
                 ? QuicAdaptiveRuntimePolicyState.Candidate
                 : QuicAdaptiveRuntimePolicyState.Conservative,
+            appliedPolicy,
             useBatchedReceiveCredit
                 ? QuicReceiveCreditPolicyMode.ReadDominantBatch
                 : QuicReceiveCreditPolicyMode.Immediate,
@@ -180,11 +198,13 @@ internal struct QuicReceiveCreditShadowController
 
     private bool PublishFallback(
         in QuicAdaptiveRuntimeConnectionObservation observation,
+        QuicReceiveCreditPolicyMode appliedPolicy,
         QuicAdaptiveRuntimePolicyReason reason,
         out QuicReceiveCreditPolicySnapshot snapshot)
         => Publish(
             in observation,
             QuicAdaptiveRuntimePolicyState.Fallback,
+            appliedPolicy,
             QuicReceiveCreditPolicyMode.Immediate,
             reason,
             out snapshot);
@@ -192,6 +212,7 @@ internal struct QuicReceiveCreditShadowController
     private bool Publish(
         in QuicAdaptiveRuntimeConnectionObservation observation,
         QuicAdaptiveRuntimePolicyState nextState,
+        QuicReceiveCreditPolicyMode appliedPolicy,
         QuicReceiveCreditPolicyMode proposedPolicy,
         QuicAdaptiveRuntimePolicyReason reason,
         out QuicReceiveCreditPolicySnapshot snapshot)
@@ -224,7 +245,7 @@ internal struct QuicReceiveCreditShadowController
             state == QuicAdaptiveRuntimePolicyState.Candidate ? stateEpochCount : 0,
             state == QuicAdaptiveRuntimePolicyState.Conservative ? stateEpochCount : 0,
             observation.ConnectionEpochSequence,
-            QuicReceiveCreditPolicyMode.LegacyCurrent,
+            appliedPolicy,
             proposedPolicy,
             reason,
             hasIssuedApplicationData);

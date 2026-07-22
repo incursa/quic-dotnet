@@ -53,6 +53,32 @@ public sealed class REQ_QUIC_CRT_0169
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ForcedExamplesRecordTheActualForcedPolicyAndShadowRecommendation()
+    {
+        using JsonDocument result = ReadRepositoryJson(
+            "tests/fixtures/adaptive-runtime-policy/local-result.forced.example.json");
+        using JsonDocument epoch = ReadRepositoryJson(
+            "tests/fixtures/adaptive-runtime-policy/epoch-row.forced.example.json");
+
+        JsonElement resultRoot = result.RootElement;
+        JsonElement epochRoot = epoch.RootElement;
+        JsonElement policyConfiguration = resultRoot.GetProperty("policyConfiguration");
+        JsonElement candidatePolicySelection = epochRoot.GetProperty("candidatePolicySelection");
+
+        Assert.Equal("forced", resultRoot.GetProperty("mode").GetString());
+        Assert.Equal("immediate", policyConfiguration.GetProperty("appliedPolicy").GetString());
+        Assert.Equal("immediate", policyConfiguration.GetProperty("forcedPolicy").GetString());
+        Assert.False(policyConfiguration.GetProperty("shadowEnabled").GetBoolean());
+        Assert.Equal("read_dominant_batch", policyConfiguration.GetProperty("shadowPolicy").GetString());
+        Assert.Equal("forced", candidatePolicySelection.GetProperty("selectionSource").GetString());
+        Assert.Equal("immediate", candidatePolicySelection.GetProperty("selectedPolicy").GetString());
+        Assert.Equal("read_dominant_batch", candidatePolicySelection.GetProperty("shadowRecommendation").GetString());
+        Assert.Equal("immediate", epochRoot.GetProperty("currentPolicyState").GetProperty("appliedPolicy").GetString());
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void EpochSchemaRequiresImmutableSourceAndTransformationIdentity()
@@ -130,7 +156,7 @@ public sealed class REQ_QUIC_CRT_0169
         Assert.Contains("[switch] $ShadowOnly", runner, StringComparison.Ordinal);
         Assert.Contains("[switch] $StressOnly", runner, StringComparison.Ordinal);
         Assert.Contains("elseif ($StressOnly)", runner, StringComparison.Ordinal);
-        Assert.Contains("QUIC_SHADOW_EPOCH_JSON=", ReadRepositoryText(
+        Assert.Contains("QUIC_ADAPTIVE_RUNTIME_EPOCH_JSON=", ReadRepositoryText(
             "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs"), StringComparison.Ordinal);
         Assert.Contains("adaptive-runtime-connection-observation-v1", runner, StringComparison.Ordinal);
         Assert.Contains("Test-AdaptiveRuntimePolicyEvidence.ps1", runner, StringComparison.Ordinal);
@@ -141,13 +167,18 @@ public sealed class REQ_QUIC_CRT_0169
         Assert.Contains("resolvedEqualsCounter", runner, StringComparison.Ordinal);
         Assert.Contains("runner-counter-attach-resolved-process", runner, StringComparison.Ordinal);
         Assert.Contains("[AllowEmptyCollection()]", runner, StringComparison.Ordinal);
+        Assert.Contains("selectionSource = if ($ShadowOnly) { 'shadow_rule' } else { 'forced' }", runner, StringComparison.Ordinal);
+        Assert.Contains("policy_mismatch", runner, StringComparison.Ordinal);
+        Assert.Contains("if ($epochRowPaths.Count -gt 0)", runner, StringComparison.Ordinal);
+        string validator = ReadRepositoryText("eng/adaptive-runtime/Test-AdaptiveRuntimePolicyEvidence.ps1");
+        Assert.Contains("source sample treatment", validator, StringComparison.Ordinal);
         string readme = ReadRepositoryText("eng/adaptive-runtime/README.md")
             .Replace("\r\n", " ", StringComparison.Ordinal)
             .Replace("\n", " ", StringComparison.Ordinal);
         Assert.Contains("Host/process counters are captured for every sample so forced-policy evidence keeps a pressure artifact by default.", readme, StringComparison.Ordinal);
         Assert.Contains("Every forced-policy sample also retains `counters-summary.json` as the result's pressure artifact", readme, StringComparison.Ordinal);
         Assert.Contains("retains per-sample target attribution proving root, resolved, measured, and counter PID alignment", readme, StringComparison.Ordinal);
-        Assert.Contains("shadow-epochs.raw.jsonl", readme, StringComparison.Ordinal);
+        Assert.Contains("adaptive-runtime-epochs.raw.jsonl", readme, StringComparison.Ordinal);
         Assert.DoesNotContain("mode = 'active_internal'", runner, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Invoke-QuicDotNetProtocolLabRun.ps1", runner, StringComparison.OrdinalIgnoreCase);
     }
