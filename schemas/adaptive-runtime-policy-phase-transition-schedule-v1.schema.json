@@ -28,7 +28,7 @@
     "scheduleId": { "type": "string", "minLength": 1 },
     "generatedAtUtc": { "type": "string", "format": "date-time" },
     "executionModel": { "const": "independent_cell_sequence" },
-    "sameConnectionPhaseExecution": { "const": "not_supported" },
+    "sameConnectionPhaseExecution": { "const": "supported_by_helper" },
     "policyAxis": { "const": "receive_credit_publication" },
     "activePolicyAuthorized": { "const": false },
     "onlineLearningAuthorized": { "const": false },
@@ -89,8 +89,8 @@
         "phaseId": { "type": "string", "minLength": 1 },
         "phaseLabel": { "type": "string", "minLength": 1 },
         "transitionKind": { "enum": ["baseline", "connection_wave", "stream_wave", "recovery"] },
-        "executionStatus": { "enum": ["mapped_to_cells", "planned_only"] },
-        "gating": { "type": "string", "minLength": 1 },
+        "executionStatus": { "enum": ["mapped_to_cells", "same_connection_probe"] },
+        "sameConnectionShape": { "$ref": "#/$defs/sameConnectionShape" },
         "measurementCells": {
           "type": "array",
           "items": { "$ref": "#/$defs/measurementCell" }
@@ -102,13 +102,31 @@
           "then": { "properties": { "measurementCells": { "minItems": 1 } } }
         },
         {
-          "if": { "properties": { "executionStatus": { "const": "planned_only" } } },
+          "if": { "properties": { "executionStatus": { "const": "same_connection_probe" } } },
           "then": {
-            "required": ["gating"],
+            "required": ["sameConnectionShape"],
             "properties": { "measurementCells": { "maxItems": 0 } }
           }
         }
       ]
+    },
+    "sameConnectionShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trafficShape",
+        "payloadBytes",
+        "connections",
+        "streamsPerConnection",
+        "effectiveConcurrency"
+      ],
+      "properties": {
+        "trafficShape": { "enum": ["upload", "download", "duplex"] },
+        "payloadBytes": { "type": "integer", "minimum": 1 },
+        "connections": { "const": 1 },
+        "streamsPerConnection": { "type": "integer", "minimum": 1 },
+        "effectiveConcurrency": { "type": "integer", "minimum": 1 }
+      }
     },
     "commandCell": {
       "type": "object",
@@ -148,6 +166,8 @@
         "scheduleScriptSha256",
         "cellRunnerPath",
         "cellRunnerSha256",
+        "sameConnectionExecutorPath",
+        "sameConnectionExecutorSha256",
         "protocolLabRoot",
         "protocolLabExecutionRoot",
         "sharedArguments",
@@ -158,6 +178,8 @@
         "scheduleScriptSha256": { "$ref": "#/$defs/sha256" },
         "cellRunnerPath": { "type": "string", "minLength": 1 },
         "cellRunnerSha256": { "$ref": "#/$defs/sha256" },
+        "sameConnectionExecutorPath": { "type": "string", "minLength": 1 },
+        "sameConnectionExecutorSha256": { "$ref": "#/$defs/sha256" },
         "protocolLabRoot": { "type": "string", "minLength": 1 },
         "protocolLabExecutionRoot": { "type": "string", "minLength": 1 },
         "sharedArguments": {

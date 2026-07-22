@@ -11,7 +11,7 @@ public sealed class REQ_QUIC_CRT_0171
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void PhaseTransitionFixtureRetainsReviewOnlyRecoveryPhaseAndCommandLineage()
+    public void PhaseTransitionFixtureAdvertisesSameConnectionHelperAndRecoveryProbe()
     {
         using JsonDocument fixture = AdaptiveRuntimePolicyScriptTestSupport.ReadRepositoryJson(
             "tests/fixtures/adaptive-runtime-policy/phase-transition-schedule.example.json");
@@ -19,22 +19,24 @@ public sealed class REQ_QUIC_CRT_0171
         JsonElement root = fixture.RootElement;
         Assert.Equal("adaptive-runtime-policy-phase-transition-schedule-v1", root.GetProperty("schemaVersion").GetString());
         Assert.Equal("independent_cell_sequence", root.GetProperty("executionModel").GetString());
-        Assert.Equal("not_supported", root.GetProperty("sameConnectionPhaseExecution").GetString());
+        Assert.Equal("supported_by_helper", root.GetProperty("sameConnectionPhaseExecution").GetString());
         Assert.Equal("few_to_many_to_few_review_artifact", root.GetProperty("transitionIntent").GetString());
 
         JsonElement recoveryPhase = root.GetProperty("phases")[5];
-        Assert.Equal("planned_only", recoveryPhase.GetProperty("executionStatus").GetString());
-        Assert.Contains("same-connection phased executor", recoveryPhase.GetProperty("gating").GetString(), StringComparison.Ordinal);
+        Assert.Equal("same_connection_probe", recoveryPhase.GetProperty("executionStatus").GetString());
+        Assert.Equal(1, recoveryPhase.GetProperty("sameConnectionShape").GetProperty("connections").GetInt32());
+        Assert.Equal(16, recoveryPhase.GetProperty("sameConnectionShape").GetProperty("streamsPerConnection").GetInt32());
 
         JsonElement commandLineage = root.GetProperty("commandLineage");
         Assert.Contains("Invoke-AdaptiveRuntimePolicyLocalSchedule.ps1", commandLineage.GetProperty("scheduleScriptPath").GetString(), StringComparison.Ordinal);
         Assert.Contains("Invoke-AdaptiveRuntimePolicyLocalCell.ps1", commandLineage.GetProperty("cellRunnerPath").GetString(), StringComparison.Ordinal);
+        Assert.Contains("Invoke-AdaptiveRuntimeSameConnectionPhaseExecutor.ps1", commandLineage.GetProperty("sameConnectionExecutorPath").GetString(), StringComparison.Ordinal);
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
-    public void DryRunWritesPhaseTransitionArtifactWithoutClaimingSameConnectionExecution()
+    public void DryRunWritesPhaseTransitionArtifactWithSameConnectionHelperContractOnly()
     {
         string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
         string campaignId = $"adaptive-runtime-dryrun-test-{Guid.NewGuid():N}";
@@ -61,19 +63,20 @@ public sealed class REQ_QUIC_CRT_0171
             JsonElement root = artifact.RootElement;
             Assert.Equal("adaptive-runtime-policy-phase-transition-schedule-v1", root.GetProperty("schemaVersion").GetString());
             Assert.Equal("independent_cell_sequence", root.GetProperty("executionModel").GetString());
-            Assert.Equal("not_supported", root.GetProperty("sameConnectionPhaseExecution").GetString());
+            Assert.Equal("supported_by_helper", root.GetProperty("sameConnectionPhaseExecution").GetString());
             Assert.False(root.GetProperty("activePolicyAuthorized").GetBoolean());
             Assert.False(root.GetProperty("onlineLearningAuthorized").GetBoolean());
             Assert.False(root.GetProperty("protocolLabSubmissionAuthorized").GetBoolean());
 
             JsonElement phases = root.GetProperty("phases");
             Assert.Equal("adaptive-runtime.connection-wave.upload.v1", phases[0].GetProperty("phaseId").GetString());
-            Assert.Equal("planned_only", phases[5].GetProperty("executionStatus").GetString());
-            Assert.Contains("same-connection phased executor", phases[5].GetProperty("gating").GetString(), StringComparison.Ordinal);
+            Assert.Equal("same_connection_probe", phases[5].GetProperty("executionStatus").GetString());
+            Assert.Equal(16, phases[5].GetProperty("sameConnectionShape").GetProperty("streamsPerConnection").GetInt32());
 
             JsonElement commandLineage = root.GetProperty("commandLineage");
             Assert.Equal(missingProtocolLabRoot, commandLineage.GetProperty("protocolLabRoot").GetString());
             Assert.Equal(missingProtocolLabExecutionRoot, commandLineage.GetProperty("protocolLabExecutionRoot").GetString());
+            Assert.Contains("Invoke-AdaptiveRuntimeSameConnectionPhaseExecutor.ps1", commandLineage.GetProperty("sameConnectionExecutorPath").GetString(), StringComparison.Ordinal);
             Assert.True(commandLineage.GetProperty("cells").GetArrayLength() >= 5);
         }
         finally

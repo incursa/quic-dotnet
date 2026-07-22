@@ -8,7 +8,7 @@
     },
     {
       "path": "fixture-artifacts/benchmark-result.checksum.example.json",
-      "sha256": "0b4e18db20a643436041bf4f1455be55a02b68dea1d946ef1236a9513dbfba2a"
+      "sha256": "cd7d098ccc2dfa456684556c3da1972edbe3fd600b6c643a352e5d0227d431ee"
     },
     {
       "path": "fixture-artifacts/diagnostic-target.checksum.example.json",
@@ -21,6 +21,10 @@
     {
       "path": "fixture-artifacts/shadow-summary.checksum.example.json",
       "sha256": "7ced2acca9714f210b1e2a1fed8ca4eb5b5fec1c3d1b02a87f1be7e2b141d5ca"
+    },
+    {
+      "path": "fixture-artifacts/quic-buffer-pool-summary.checksum.example.json",
+      "sha256": "1be86fcc3f404aa375f5b028af61726d02a38ba759e90d5396b2d9c9961e5f08"
     }
   ]
 }

@@ -14,6 +14,7 @@ repository-config tooling.
 - [`adaptive-runtime-policy-epoch-dataset-v1.schema.json`](adaptive-runtime-policy-epoch-dataset-v1.schema.json)
 - [`adaptive-runtime-policy-catalog-v1.schema.json`](adaptive-runtime-policy-catalog-v1.schema.json)
 - [`adaptive-runtime-policy-phase-transition-schedule-v1.schema.json`](adaptive-runtime-policy-phase-transition-schedule-v1.schema.json)
+- [`adaptive-runtime-same-connection-phase-execution-v1.schema.json`](adaptive-runtime-same-connection-phase-execution-v1.schema.json)
 - [`adaptive-runtime-policy-normalized-dataset-v1.schema.json`](adaptive-runtime-policy-normalized-dataset-v1.schema.json)
 - [`adaptive-runtime-policy-curated-manifest-v1.schema.json`](adaptive-runtime-policy-curated-manifest-v1.schema.json)
 - [`adaptive-runtime-policy-split-manifest-v1.schema.json`](adaptive-runtime-policy-split-manifest-v1.schema.json)

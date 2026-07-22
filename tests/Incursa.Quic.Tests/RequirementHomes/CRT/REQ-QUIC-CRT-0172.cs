@@ -27,6 +27,20 @@ public sealed class REQ_QUIC_CRT_0172
         Assert.Equal(1, root.GetProperty("checksumInventoryCount").GetInt32());
         Assert.Equal(1, root.GetProperty("uniqueEpochRowCount").GetInt32());
         Assert.Empty(root.GetProperty("failures").EnumerateArray());
+
+        using JsonDocument localResult = AdaptiveRuntimePolicyScriptTestSupport.ReadRepositoryJson(
+            "tests/fixtures/adaptive-runtime-policy/local-result.shadow.checksum.example.json");
+        JsonElement resultRoot = localResult.RootElement;
+        JsonElement aggregateOutcomes = resultRoot.GetProperty("aggregateOutcomes");
+        Assert.Equal(JsonValueKind.Null, aggregateOutcomes.GetProperty("allocatedBytes").ValueKind);
+        Assert.Equal(JsonValueKind.Null, aggregateOutcomes.GetProperty("peakRetainedBytes").ValueKind);
+        Assert.Equal(131072, aggregateOutcomes.GetProperty("bufferPoolRentedBytes").GetInt32());
+        Assert.Equal(65536, aggregateOutcomes.GetProperty("bufferPoolOutstandingPeakBytes").GetInt32());
+        JsonElement fairness = resultRoot.GetProperty("fairnessOutcomes");
+        Assert.False(fairness.GetProperty("assessed").GetBoolean());
+        Assert.Equal(JsonValueKind.Null, fairness.GetProperty("streamCompletionP95Ms").ValueKind);
+        Assert.Equal(JsonValueKind.Null, fairness.GetProperty("streamCompletionP99Ms").ValueKind);
+        Assert.Equal(0, fairness.GetProperty("starvationCount").GetInt32());
     }
 
     [Theory]
@@ -115,6 +129,25 @@ public sealed class REQ_QUIC_CRT_0172
                 Directory.Delete(temporaryDirectory, recursive: true);
             }
         }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ValidatorRejectsPopulatedOutcomeMetricsThatDoNotMatchRetainedArtifacts()
+    {
+        AdaptiveRuntimePolicyScriptTestSupport.ProcessResult result = AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+            "eng/adaptive-runtime/Test-AdaptiveRuntimePolicyEvidence.ps1",
+            "-LocalResultPath", AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                "tests/fixtures/adaptive-runtime-policy/local-result.shadow.checksum.outcome-mismatch.example.json"),
+            "-EpochDatasetPath", AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                "tests/fixtures/adaptive-runtime-policy/epoch-row.shadow.checksum.example.json"));
+
+        Assert.NotEqual(0, result.ExitCode);
+        using JsonDocument summary = JsonDocument.Parse(result.Output);
+        Assert.Contains(
+            summary.RootElement.GetProperty("failures").EnumerateArray().Select(static failure => failure.GetString()!).ToArray(),
+            failure => failure.Contains("outcomes.bufferPoolRentedBytes does not match quic-buffer-pool-summary.json", StringComparison.Ordinal));
     }
 
     [Fact]

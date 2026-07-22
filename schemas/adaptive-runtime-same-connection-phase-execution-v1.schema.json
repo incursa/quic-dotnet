@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-same-connection-phase-execution-v1.schema.json",
+  "title": "Adaptive Runtime Same-Connection Phase Execution v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "campaignId",
+    "generatedAtUtc",
+    "executionModel",
+    "activePolicyAuthorized",
+    "onlineLearningAuthorized",
+    "protocolLabSubmissionAuthorized",
+    "executorScriptPath",
+    "executorScriptSha256",
+    "serverBinaryPath",
+    "serverBinarySha256",
+    "phaseExecutions",
+    "proof",
+    "notes"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "adaptive-runtime-same-connection-phase-execution-v1" },
+    "campaignId": { "type": "string", "minLength": 1 },
+    "generatedAtUtc": { "type": "string", "format": "date-time" },
+    "executionModel": { "const": "single_real_connection" },
+    "activePolicyAuthorized": { "const": false },
+    "onlineLearningAuthorized": { "const": false },
+    "protocolLabSubmissionAuthorized": { "const": false },
+    "executorScriptPath": { "type": "string", "minLength": 1 },
+    "executorScriptSha256": { "$ref": "#/$defs/sha256" },
+    "serverBinaryPath": { "type": "string", "minLength": 1 },
+    "serverBinarySha256": { "$ref": "#/$defs/sha256" },
+    "phaseExecutions": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "$ref": "#/$defs/phaseExecution" }
+    },
+    "proof": { "$ref": "#/$defs/proof" },
+    "notes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{64}$"
+    },
+    "phaseExecution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phaseId",
+        "phaseLabel",
+        "phaseOrder",
+        "connections",
+        "streamsPerConnection",
+        "payloadBytes",
+        "completedStreams",
+        "exactPayloadValidated"
+      ],
+      "properties": {
+        "phaseId": { "type": "string", "minLength": 1 },
+        "phaseLabel": { "type": "string", "minLength": 1 },
+        "phaseOrder": { "type": "integer", "minimum": 1, "maximum": 3 },
+        "connections": { "const": 1 },
+        "streamsPerConnection": { "type": "integer", "minimum": 1 },
+        "payloadBytes": { "type": "integer", "minimum": 1 },
+        "completedStreams": { "type": "integer", "minimum": 1 },
+        "exactPayloadValidated": { "const": true }
+      }
+    },
+    "proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clientLocalEndPointBefore",
+        "clientLocalEndPointAfter",
+        "clientRemoteEndPointBefore",
+        "clientRemoteEndPointAfter",
+        "sameClientLocalEndPointPreserved",
+        "sameClientRemoteEndPointPreserved",
+        "serverAcceptedConnectionCount",
+        "serverAcceptedConnectionIndices",
+        "serverAcceptedInboundStreamCount",
+        "expectedInboundStreamCount",
+        "singleConnectionPreserved",
+        "serverStdoutPath",
+        "serverStderrPath"
+      ],
+      "properties": {
+        "clientLocalEndPointBefore": { "type": "string", "minLength": 1 },
+        "clientLocalEndPointAfter": { "type": "string", "minLength": 1 },
+        "clientRemoteEndPointBefore": { "type": "string", "minLength": 1 },
+        "clientRemoteEndPointAfter": { "type": "string", "minLength": 1 },
+        "sameClientLocalEndPointPreserved": { "const": true },
+        "sameClientRemoteEndPointPreserved": { "const": true },
+        "serverAcceptedConnectionCount": { "const": 1 },
+        "serverAcceptedConnectionIndices": {
+          "type": "array",
+          "prefixItems": [{ "const": 1 }],
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "serverAcceptedInboundStreamCount": { "type": "integer", "minimum": 3 },
+        "expectedInboundStreamCount": { "type": "integer", "minimum": 3 },
+        "singleConnectionPreserved": { "const": true },
+        "serverStdoutPath": { "type": "string", "minLength": 1 },
+        "serverStderrPath": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

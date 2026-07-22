@@ -101,8 +101,14 @@ under `.artifacts/adaptive-runtime/<campaignId>/<cellId>`. Host/process
 counters are captured for every sample so forced-policy evidence keeps a
 pressure artifact by default. The local result also retains per-sample target
 attribution proving root, resolved, measured, and counter PID alignment, plus
-the retained runner artifacts used for that proof. A single-cell result is
-diagnostic and cannot authorize activation or rack-lab submission.
+the retained runner artifacts used for that proof. It populates the explicit
+`bufferPoolRentedBytes` and `bufferPoolOutstandingPeakBytes` measurements only
+from retained `quic-buffer-pool-summary.json` metrics. Generic managed-allocation,
+peak-retained-memory, and stream-fairness outcomes remain null or unassessed;
+request-level result latency is not relabeled as stream fairness. Per-epoch
+completion and memory outcomes remain null because the contract does not claim
+same-connection phase-local attribution. A single-cell
+result is diagnostic and cannot authorize activation or rack-lab submission.
 
 Run a deterministic higher-count measurement schedule with the same permanent
 cell runner:
@@ -130,10 +136,14 @@ production runtime schedulers, and they do not authorize `active_internal`,
 online learning, or ProtocolLab submission.
 
 Every schedule also writes a schema-valid `phase-transition-schedule.json`
-with stable phase IDs and exact command lineage. The current execution model is
-an independent-cell sequence. Same-connection multi-phase execution is
-explicitly `not_supported`, and the recovery phase remains `planned_only`
-until a separately reviewed executor exists.
+with stable phase IDs and exact command lineage. The execution model for
+metrics collection remains an independent-cell sequence. The recovery return
+phase is declared as `same_connection_probe`, and non-dry-run schedules now
+retain a separate `same-connection-phase-execution.json` proof produced by
+`Invoke-AdaptiveRuntimeSameConnectionPhaseExecutor.ps1`. That helper preserves
+one real QUIC connection across the few-stream baseline, many-stream burst,
+and few-stream recovery return. The proof artifact is retained beside the
+schedule so resume comparisons can keep the schedule contract deterministic.
 
 Capture one behavior-neutral shadow sample with the same permanent runner by
 adding `-ShadowOnly`. The runner applies `legacy_current`, asks the internal

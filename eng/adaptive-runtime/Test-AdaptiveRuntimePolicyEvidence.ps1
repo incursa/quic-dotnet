@@ -49,6 +49,116 @@ function Get-CollectionCount {
     return @($Value).Count
 }
 
+function ConvertTo-NullableLong {
+    param([AllowNull()][object] $Value)
+
+    if ($null -eq $Value -or [string]::IsNullOrWhiteSpace([string] $Value)) {
+        return $null
+    }
+
+    return [long] $Value
+}
+
+function ConvertTo-NullableDouble {
+    param([AllowNull()][object] $Value)
+
+    if ($null -eq $Value -or [string]::IsNullOrWhiteSpace([string] $Value)) {
+        return $null
+    }
+
+    return [double] $Value
+}
+
+function Get-OptionalObjectProperty {
+    param(
+        [AllowNull()][object] $Object,
+
+        [Parameter(Mandatory = $true)]
+        [string] $Name
+    )
+
+    if ($null -eq $Object) {
+        return $null
+    }
+
+    $property = $Object.PSObject.Properties[$Name]
+    if ($null -eq $property) {
+        return $null
+    }
+
+    return $property.Value
+}
+
+function Get-MetricValueFromSummary {
+    param(
+        [AllowNull()][object] $Summary,
+
+        [Parameter(Mandatory = $true)]
+        [string] $MetricName,
+
+        [Parameter(Mandatory = $true)]
+        [string] $PropertyName
+    )
+
+    if ($null -eq $Summary) {
+        return $null
+    }
+
+    $metric = @($Summary.metrics | Where-Object {
+        [string] $_.metricName -eq $MetricName
+    }) | Select-Object -First 1
+    if ($null -eq $metric) {
+        return $null
+    }
+
+    return Get-OptionalObjectProperty -Object $metric -Name $PropertyName
+}
+
+function Get-Median {
+    param([AllowNull()][object[]] $Values)
+
+    $numbers = @($Values | Where-Object { $null -ne $_ } | ForEach-Object { [double] $_ } | Sort-Object)
+    if ($numbers.Count -eq 0) {
+        return $null
+    }
+
+    $middle = [int][Math]::Floor($numbers.Count / 2)
+    if (($numbers.Count % 2) -eq 1) {
+        return $numbers[$middle]
+    }
+
+    return ($numbers[$middle - 1] + $numbers[$middle]) / 2.0
+}
+
+function Get-RoundedMedianInt64 {
+    param([AllowNull()][object[]] $Values)
+
+    $numbers = @($Values | Where-Object { $null -ne $_ } | ForEach-Object { [double] $_ } | Sort-Object)
+    if ($numbers.Count -eq 0) {
+        return $null
+    }
+
+    $middle = [int][Math]::Floor($numbers.Count / 2)
+    $median = if (($numbers.Count % 2) -eq 1) {
+        $numbers[$middle]
+    }
+    else {
+        ($numbers[$middle - 1] + $numbers[$middle]) / 2.0
+    }
+
+    return [long] [Math]::Round($median, 0, [MidpointRounding]::AwayFromZero)
+}
+
+function Get-ExpectedFairnessViolations {
+    param([int] $StarvationCount)
+
+    if ($StarvationCount -gt 0) {
+        return @('stream_completion_incomplete')
+    }
+
+    return @()
+}
+
 function Get-ChecksumInventoryContext {
     param(
         [Parameter(Mandatory = $true)]
@@ -295,6 +405,180 @@ foreach ($item in $validatedLocalResults) {
         Document = $document
         SamplesById = $samplesById
         ChecksumInventory = Get-ChecksumInventoryContext -ResultItem $item
+    }
+}
+
+foreach ($resultContext in $localResultContextsByRunId.Values) {
+    $result = $resultContext.Document
+    $sampleBufferPoolRentedBytes = [System.Collections.Generic.List[long]]::new()
+    $sampleBufferPoolOutstandingPeakBytes = [System.Collections.Generic.List[long]]::new()
+    $sampleFairnessP95Ms = [System.Collections.Generic.List[double]]::new()
+    $sampleFairnessP99Ms = [System.Collections.Generic.List[double]]::new()
+    $expectedFairnessAssessable = $true
+    $expectedStarvationCount = 0
+
+    foreach ($sample in @($result.samples)) {
+        $sampleArtifactPaths = @($sample.artifactPaths | ForEach-Object {
+            Resolve-NormalizedEvidencePath -BasePath $resultContext.Item.Directory -Path ([string] $_)
+        })
+        $bufferPoolSummaryPaths = @($sampleArtifactPaths | Where-Object {
+            [System.IO.Path]::GetFileName($_).StartsWith('quic-buffer-pool-summary', [StringComparison]::OrdinalIgnoreCase)
+        })
+        $sampleHasOutcomeMetrics = $null -ne $sample.outcomes.bufferPoolRentedBytes -or $null -ne $sample.outcomes.bufferPoolOutstandingPeakBytes
+
+        if ($sampleHasOutcomeMetrics -or
+            $null -ne $result.aggregateOutcomes.bufferPoolRentedBytes -or
+            $null -ne $result.aggregateOutcomes.bufferPoolOutstandingPeakBytes) {
+            if ($bufferPoolSummaryPaths.Count -ne 1) {
+                $failures.Add("Sample '$($sample.sampleId)' must retain exactly one quic-buffer-pool-summary.json when buffer-pool outcomes are populated.")
+            }
+            else {
+                $declaredBufferPoolSummaryPath = @($sample.artifactPaths | Where-Object {
+                    [System.IO.Path]::GetFileName($_).StartsWith('quic-buffer-pool-summary', [StringComparison]::OrdinalIgnoreCase)
+                } | Select-Object -First 1)[0]
+                $bufferPoolSummaryPath = Test-InventoryJoin `
+                    -InventoryContext $resultContext.ChecksumInventory `
+                    -BasePath $resultContext.Item.Directory `
+                    -DeclaredPath ([string] $declaredBufferPoolSummaryPath) `
+                    -ExpectedSha256 $null `
+                    -Description "Sample '$($sample.sampleId)' quic-buffer-pool summary"
+
+                if ($null -ne $bufferPoolSummaryPath) {
+                    try {
+                        $bufferPoolSummary = Get-Content -LiteralPath $bufferPoolSummaryPath -Raw | ConvertFrom-Json -Depth 100
+                        $expectedBufferPoolRentedBytes = ConvertTo-NullableLong (Get-MetricValueFromSummary `
+                            -Summary $bufferPoolSummary `
+                            -MetricName 'incursa.quic.buffer_pool.bytes.rented' `
+                            -PropertyName 'total')
+                        $expectedBufferPoolOutstandingPeakBytes = ConvertTo-NullableLong (Get-MetricValueFromSummary `
+                            -Summary $bufferPoolSummary `
+                            -MetricName 'incursa.quic.buffer_pool.outstanding.bytes' `
+                            -PropertyName 'max')
+
+                        if ($sampleHasOutcomeMetrics) {
+                            if ($null -eq $expectedBufferPoolRentedBytes) {
+                                $failures.Add("Sample '$($sample.sampleId)' populated outcomes.bufferPoolRentedBytes, but quic-buffer-pool-summary.json did not retain incursa.quic.buffer_pool.bytes.rented total.")
+                            }
+                            elseif ([long] $sample.outcomes.bufferPoolRentedBytes -ne $expectedBufferPoolRentedBytes) {
+                                $failures.Add("Sample '$($sample.sampleId)' outcomes.bufferPoolRentedBytes does not match quic-buffer-pool-summary.json.")
+                            }
+                            else {
+                                $sampleBufferPoolRentedBytes.Add($expectedBufferPoolRentedBytes)
+                            }
+
+                            if ($null -eq $expectedBufferPoolOutstandingPeakBytes) {
+                                $failures.Add("Sample '$($sample.sampleId)' populated outcomes.bufferPoolOutstandingPeakBytes, but quic-buffer-pool-summary.json did not retain incursa.quic.buffer_pool.outstanding.bytes max.")
+                            }
+                            elseif ([long] $sample.outcomes.bufferPoolOutstandingPeakBytes -ne $expectedBufferPoolOutstandingPeakBytes) {
+                                $failures.Add("Sample '$($sample.sampleId)' outcomes.bufferPoolOutstandingPeakBytes does not match quic-buffer-pool-summary.json.")
+                            }
+                            else {
+                                $sampleBufferPoolOutstandingPeakBytes.Add($expectedBufferPoolOutstandingPeakBytes)
+                            }
+                        }
+                    }
+                    catch {
+                        $failures.Add("Sample '$($sample.sampleId)' quic-buffer-pool summary could not be parsed: $($_.Exception.Message)")
+                    }
+                }
+            }
+        }
+
+        $fairnessRequested = [bool] $result.fairnessOutcomes.assessed -or
+            $null -ne $result.fairnessOutcomes.streamCompletionP95Ms -or
+            $null -ne $result.fairnessOutcomes.streamCompletionP99Ms -or
+            [int] $result.fairnessOutcomes.starvationCount -ne 0 -or
+            (Get-CollectionCount -Value $result.fairnessOutcomes.violations) -ne 0
+        if ($fairnessRequested) {
+            $benchmarkResultPath = Test-InventoryJoin `
+                -InventoryContext $resultContext.ChecksumInventory `
+                -BasePath $resultContext.Item.Directory `
+                -DeclaredPath ([string] $sample.targetAttribution.resultArtifactPath) `
+                -ExpectedSha256 $null `
+                -Description "Sample '$($sample.sampleId)' benchmark result"
+
+            if ($null -eq $benchmarkResultPath) {
+                $expectedFairnessAssessable = $false
+                continue
+            }
+
+            try {
+                $benchmarkResult = Get-Content -LiteralPath $benchmarkResultPath -Raw | ConvertFrom-Json -Depth 100
+                $metrics = Get-OptionalObjectProperty -Object $benchmarkResult -Name 'metrics'
+                $latencyP95Ms = ConvertTo-NullableDouble (Get-OptionalObjectProperty -Object $metrics -Name 'latencyP95Ms')
+                $latencyP99Ms = ConvertTo-NullableDouble (Get-OptionalObjectProperty -Object $metrics -Name 'latencyP99Ms')
+                $totalRequests = ConvertTo-NullableLong (Get-OptionalObjectProperty -Object $metrics -Name 'totalRequests')
+                $successfulRequests = ConvertTo-NullableLong (Get-OptionalObjectProperty -Object $metrics -Name 'successfulRequests')
+                if ($latencyP95Ms -eq $null -or $latencyP99Ms -eq $null -or $totalRequests -eq $null -or $successfulRequests -eq $null) {
+                    $failures.Add("Sample '$($sample.sampleId)' fairnessOutcomes require retained result.json latency and completion metrics.")
+                    $expectedFairnessAssessable = $false
+                    continue
+                }
+
+                $sampleFairnessP95Ms.Add($latencyP95Ms)
+                $sampleFairnessP99Ms.Add($latencyP99Ms)
+                $expectedStarvationCount += [int] [Math]::Max(0L, $totalRequests - $successfulRequests)
+            }
+            catch {
+                $failures.Add("Sample '$($sample.sampleId)' retained result.json could not be parsed for fairness evidence: $($_.Exception.Message)")
+                $expectedFairnessAssessable = $false
+            }
+        }
+    }
+
+    if ($null -ne $result.aggregateOutcomes.bufferPoolRentedBytes) {
+        $expectedAggregateBufferPoolRentedBytes = Get-RoundedMedianInt64 -Values @($sampleBufferPoolRentedBytes)
+        if ($null -eq $expectedAggregateBufferPoolRentedBytes) {
+            $failures.Add("Local result '$($resultContext.Item.Path)' populated aggregateOutcomes.bufferPoolRentedBytes without checksum-backed sample buffer-pool evidence.")
+        }
+        elseif ([long] $result.aggregateOutcomes.bufferPoolRentedBytes -ne $expectedAggregateBufferPoolRentedBytes) {
+            $failures.Add("Local result '$($resultContext.Item.Path)' aggregateOutcomes.bufferPoolRentedBytes does not match the checksum-backed sample median.")
+        }
+    }
+
+    if ($null -ne $result.aggregateOutcomes.bufferPoolOutstandingPeakBytes) {
+        $expectedAggregateBufferPoolOutstandingPeakBytes = Get-RoundedMedianInt64 -Values @($sampleBufferPoolOutstandingPeakBytes)
+        if ($null -eq $expectedAggregateBufferPoolOutstandingPeakBytes) {
+            $failures.Add("Local result '$($resultContext.Item.Path)' populated aggregateOutcomes.bufferPoolOutstandingPeakBytes without checksum-backed sample buffer-pool evidence.")
+        }
+        elseif ([long] $result.aggregateOutcomes.bufferPoolOutstandingPeakBytes -ne $expectedAggregateBufferPoolOutstandingPeakBytes) {
+            $failures.Add("Local result '$($resultContext.Item.Path)' aggregateOutcomes.bufferPoolOutstandingPeakBytes does not match the checksum-backed sample median.")
+        }
+    }
+
+    $fairnessRequested = [bool] $result.fairnessOutcomes.assessed -or
+        $null -ne $result.fairnessOutcomes.streamCompletionP95Ms -or
+        $null -ne $result.fairnessOutcomes.streamCompletionP99Ms -or
+        [int] $result.fairnessOutcomes.starvationCount -ne 0 -or
+        (Get-CollectionCount -Value $result.fairnessOutcomes.violations) -ne 0
+    if ($fairnessRequested) {
+        if (-not [bool] $result.fairnessOutcomes.assessed) {
+            $failures.Add("Local result '$($resultContext.Item.Path)' populated fairness values or violations without fairnessOutcomes.assessed=true.")
+        }
+        elseif (-not $expectedFairnessAssessable) {
+            $failures.Add("Local result '$($resultContext.Item.Path)' marked fairnessOutcomes.assessed=true without complete retained result.json completion metrics.")
+        }
+        else {
+            $expectedFairnessP95Ms = Get-Median -Values @($sampleFairnessP95Ms)
+            $expectedFairnessP99Ms = Get-Median -Values @($sampleFairnessP99Ms)
+            if ([double] $result.fairnessOutcomes.streamCompletionP95Ms -ne [double] $expectedFairnessP95Ms) {
+                $failures.Add("Local result '$($resultContext.Item.Path)' fairnessOutcomes.streamCompletionP95Ms does not match retained result.json metrics.")
+            }
+            if ([double] $result.fairnessOutcomes.streamCompletionP99Ms -ne [double] $expectedFairnessP99Ms) {
+                $failures.Add("Local result '$($resultContext.Item.Path)' fairnessOutcomes.streamCompletionP99Ms does not match retained result.json metrics.")
+            }
+            if ([int] $result.fairnessOutcomes.starvationCount -ne $expectedStarvationCount) {
+                $failures.Add("Local result '$($resultContext.Item.Path)' fairnessOutcomes.starvationCount does not match retained result.json completion counts.")
+            }
+
+            $expectedFairnessViolations = Get-ExpectedFairnessViolations -StarvationCount $expectedStarvationCount
+            $actualFairnessViolations = @($result.fairnessOutcomes.violations | ForEach-Object { [string] $_ })
+            $expectedFairnessKey = (@($expectedFairnessViolations | Sort-Object) -join '|')
+            $actualFairnessKey = (@($actualFairnessViolations | Sort-Object) -join '|')
+            if ($expectedFairnessKey -ne $actualFairnessKey) {
+                $failures.Add("Local result '$($resultContext.Item.Path)' fairnessOutcomes.violations does not match retained result.json completion evidence.")
+            }
+        }
     }
 }
 

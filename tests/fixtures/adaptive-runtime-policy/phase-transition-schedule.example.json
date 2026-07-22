@@ -5,7 +5,7 @@
   "scheduleId": "adaptive-runtime.balanced.phase-transition.v1",
   "generatedAtUtc": "2026-07-22T15:27:45.0156110Z",
   "executionModel": "independent_cell_sequence",
-  "sameConnectionPhaseExecution": "not_supported",
+  "sameConnectionPhaseExecution": "supported_by_helper",
   "policyAxis": "receive_credit_publication",
   "activePolicyAuthorized": false,
   "onlineLearningAuthorized": false,
@@ -106,8 +106,14 @@
       "phaseId": "adaptive-runtime.balanced.recovery.planned.v1",
       "phaseLabel": "Few-to-many-to-few recovery return",
       "transitionKind": "recovery",
-      "executionStatus": "planned_only",
-      "gating": "Requires a same-connection phased executor; the current local schedule runs independent cells only.",
+      "executionStatus": "same_connection_probe",
+      "sameConnectionShape": {
+        "trafficShape": "duplex",
+        "payloadBytes": 65536,
+        "connections": 1,
+        "streamsPerConnection": 16,
+        "effectiveConcurrency": 16
+      },
       "measurementCells": []
     }
   ],
@@ -116,6 +122,8 @@
     "scheduleScriptSha256": "ddc0833cd830c9103f8bd983251bfae7ae7288bc8f95ba1b53375c0092b8aba4",
     "cellRunnerPath": "C:\\shared\\src\\incursa\\quic-dotnet\\eng\\adaptive-runtime\\Invoke-AdaptiveRuntimePolicyLocalCell.ps1",
     "cellRunnerSha256": "54dbd26539b77f1f70b5f8d66a16e410aeefe53935fafeda867fc393aee86c6e",
+    "sameConnectionExecutorPath": "C:\\shared\\src\\incursa\\quic-dotnet\\eng\\adaptive-runtime\\Invoke-AdaptiveRuntimeSameConnectionPhaseExecutor.ps1",
+    "sameConnectionExecutorSha256": "7d69578bc954693310ef2ef9930938bfa09f9b78cc3f9e6d1a0f8703678f11da",
     "protocolLabRoot": "C:\\shared\\src\\incursa\\protocol-lab",
     "protocolLabExecutionRoot": "C:\\shared\\src\\incursa\\protocol-lab-internal",
     "sharedArguments": {
@@ -196,7 +204,8 @@
   },
   "notes": [
     "This artifact declares deterministic measurement phases and exact command lineage only.",
-    "The current scheduler executes independent cells and does not claim same-connection multi-phase transitions.",
-    "The planned recovery phase is retained for review so later executor work can reuse the stable phase IDs."
+    "The scheduler still executes independent measurement cells for metrics collection.",
+    "A same-connection helper is the only supported path for the preserved few-to-many-to-few recovery probe, and its retained proof lives beside the schedule rather than inside this deterministic artifact.",
+    "The recovery phase keeps its stable phase ID so the helper and the review artifact refer to the same return target."
   ]
 }

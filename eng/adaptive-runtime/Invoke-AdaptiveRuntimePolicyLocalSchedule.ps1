@@ -42,12 +42,14 @@ $ErrorActionPreference = 'Stop'
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $cellRunnerPath = Join-Path $PSScriptRoot 'Invoke-AdaptiveRuntimePolicyLocalCell.ps1'
+$sameConnectionExecutorPath = Join-Path $PSScriptRoot 'Invoke-AdaptiveRuntimeSameConnectionPhaseExecutor.ps1'
 $phaseTransitionSchemaPath = Join-Path $repoRoot 'schemas\adaptive-runtime-policy-phase-transition-schedule-v1.schema.json'
 $serverProjectPath = Join-Path $repoRoot 'eng\protocol-lab\servers\IncursaRawQuicServer\IncursaRawQuicServer.csproj'
 $serverBinaryPath = Join-Path $repoRoot 'eng\protocol-lab\servers\IncursaRawQuicServer\bin\Release\net10.0\IncursaRawQuicServer.dll'
 $runtimeBinaryPath = Join-Path $repoRoot 'src\Incursa.Quic\bin\Release\net10.0\Incursa.Quic.dll'
 $campaignRoot = Join-Path $repoRoot ".artifacts\adaptive-runtime\$CampaignId"
 $phaseTransitionArtifactPath = Join-Path $campaignRoot 'phase-transition-schedule.json'
+$sameConnectionExecutionProofPath = Join-Path $campaignRoot 'same-connection-phase-execution.json'
 $schedulePath = Join-Path $campaignRoot 'measurement-schedule.json'
 $completionPath = Join-Path $campaignRoot 'measurement-schedule-completion.json'
 $attemptId = (Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssfffffffZ')
@@ -195,8 +197,14 @@ function New-PhaseTransitionArtifact {
         phaseId = "adaptive-runtime.$ScheduleProfile.recovery.planned.v1"
         phaseLabel = 'Few-to-many-to-few recovery return'
         transitionKind = 'recovery'
-        executionStatus = 'planned_only'
-        gating = 'Requires a same-connection phased executor; the current local schedule runs independent cells only.'
+        executionStatus = 'same_connection_probe'
+        sameConnectionShape = [ordered]@{
+            trafficShape = 'duplex'
+            payloadBytes = 65536
+            connections = 1
+            streamsPerConnection = 16
+            effectiveConcurrency = 16
+        }
         measurementCells = @()
     }
 
@@ -223,7 +231,7 @@ function New-PhaseTransitionArtifact {
         scheduleId = "adaptive-runtime.$ScheduleProfile.phase-transition.v1"
         generatedAtUtc = (Get-Date).ToUniversalTime().ToString('O')
         executionModel = 'independent_cell_sequence'
-        sameConnectionPhaseExecution = 'not_supported'
+        sameConnectionPhaseExecution = 'supported_by_helper'
         policyAxis = 'receive_credit_publication'
         activePolicyAuthorized = $false
         onlineLearningAuthorized = $false
@@ -235,6 +243,8 @@ function New-PhaseTransitionArtifact {
             scheduleScriptSha256 = (Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant()
             cellRunnerPath = $cellRunnerPath
             cellRunnerSha256 = (Get-FileHash -LiteralPath $cellRunnerPath -Algorithm SHA256).Hash.ToLowerInvariant()
+            sameConnectionExecutorPath = $sameConnectionExecutorPath
+            sameConnectionExecutorSha256 = (Get-FileHash -LiteralPath $sameConnectionExecutorPath -Algorithm SHA256).Hash.ToLowerInvariant()
             protocolLabRoot = $ResolvedProtocolLabRoot
             protocolLabExecutionRoot = $ResolvedProtocolLabExecutionRoot
             sharedArguments = [ordered]@{
@@ -249,8 +259,9 @@ function New-PhaseTransitionArtifact {
         }
         notes = @(
             'This artifact declares deterministic measurement phases and exact command lineage only.',
-            'The current scheduler executes independent cells and does not claim same-connection multi-phase transitions.',
-            'The planned recovery phase is retained for review so later executor work can reuse the stable phase IDs.'
+            'The scheduler still executes independent measurement cells for metrics collection.',
+            'A same-connection helper is the only supported path for the preserved few-to-many-to-few recovery probe, and its retained proof lives beside the schedule rather than inside this deterministic artifact.',
+            'The recovery phase keeps its stable phase ID so the helper and the review artifact refer to the same return target.'
         )
     }
 }
@@ -285,6 +296,9 @@ function Get-FileIdentity {
 
 if (-not (Test-Path -LiteralPath $cellRunnerPath -PathType Leaf)) {
     throw "Permanent local cell runner was not found: $cellRunnerPath"
+}
+if (-not (Test-Path -LiteralPath $sameConnectionExecutorPath -PathType Leaf)) {
+    throw "Permanent same-connection phase executor was not found: $sameConnectionExecutorPath"
 }
 
 $resolvedProtocolLabRoot = Resolve-DeclaredRootPath -Path $ProtocolLabRoot -Required (-not $DryRun)
@@ -497,6 +511,16 @@ if (Test-Path -LiteralPath $schedulePath -PathType Leaf) {
         throw "Campaign schedule already has a completion record: $completionPath"
     }
 
+    if ([string]::IsNullOrWhiteSpace([string] $scheduleDocument.sameConnectionExecutionProofPath) -or
+        -not (Test-Path -LiteralPath ([string] $scheduleDocument.sameConnectionExecutionProofPath) -PathType Leaf)) {
+        throw 'The retained same-connection execution proof is missing before resume.'
+    }
+    $retainedProofHash = (Get-FileHash -LiteralPath ([string] $scheduleDocument.sameConnectionExecutionProofPath) -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ([string]::IsNullOrWhiteSpace([string] $scheduleDocument.sameConnectionExecutionProofSha256) -or
+        $retainedProofHash -ne [string] $scheduleDocument.sameConnectionExecutionProofSha256) {
+        throw 'The retained same-connection execution proof changed before resume.'
+    }
+
     foreach ($identity in @($scheduleDocument.frozenBinaries)) {
         $currentHash = (Get-FileHash -LiteralPath ([string] $identity.path) -Algorithm SHA256).Hash.ToLowerInvariant()
         if ($currentHash -ne [string] $identity.sha256) {
@@ -533,6 +557,20 @@ else {
         Get-FileIdentity -Role 'candidate_benchmark' -Path $serverBinaryPath
         Get-FileIdentity -Role 'candidate_runtime' -Path $runtimeBinaryPath
     )
+
+    & $sameConnectionExecutorPath `
+        -CampaignId $CampaignId `
+        -OutputPath $sameConnectionExecutionProofPath `
+        -FewPhaseId 'adaptive-runtime.few-streams.baseline.v1' `
+        -ManyPhaseId 'adaptive-runtime.stream-wave.multiplex-burst.v1' `
+        -RecoveryPhaseId "adaptive-runtime.$ScheduleProfile.recovery.planned.v1" `
+        -ServerProjectPath $serverProjectPath `
+        -ServerBinaryPath $serverBinaryPath `
+        -NoBuild `
+        -NoRestore:$NoRestore
+    $sameConnectionExecutionProof = Get-Content -LiteralPath $sameConnectionExecutionProofPath -Raw | ConvertFrom-Json -Depth 30
+    $sameConnectionExecutionProofSha256 = (Get-FileHash -LiteralPath $sameConnectionExecutionProofPath -Algorithm SHA256).Hash.ToLowerInvariant()
+
     New-Item -ItemType Directory -Path $campaignRoot -Force | Out-Null
     $phaseTransitionArtifactJson | Set-Content -LiteralPath $phaseTransitionArtifactPath -Encoding utf8
     $scheduleDocument = [ordered]@{
@@ -556,6 +594,9 @@ else {
         protocolLabSubmissionAuthorized = $false
         phaseTransitionSchedulePath = $phaseTransitionArtifactPath
         phaseTransitionSchedule = $phaseTransitionArtifact
+        sameConnectionExecutionProofPath = $sameConnectionExecutionProofPath
+        sameConnectionExecutionProofSha256 = $sameConnectionExecutionProofSha256
+        sameConnectionExecutionProof = $sameConnectionExecutionProof
         frozenBinaries = $frozenBinaries
         cells = $plannedCells
     }

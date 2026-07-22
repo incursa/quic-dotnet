@@ -1,4 +1,14 @@
 {
   "status": "ok",
-  "sampleId": "sample-shadow-checksum-001"
+  "sampleId": "sample-shadow-checksum-001",
+  "metrics": {
+    "requestsPerSecond": 16,
+    "totalRequests": 16,
+    "successfulRequests": 16,
+    "failedRequests": 0,
+    "timeoutRequests": 0,
+    "latencyP50Ms": 10,
+    "latencyP95Ms": 15,
+    "latencyP99Ms": 20
+  }
 }

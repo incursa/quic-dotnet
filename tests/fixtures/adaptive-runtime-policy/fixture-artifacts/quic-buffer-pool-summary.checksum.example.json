@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "protocol-lab.quic-buffer-pool-summary.v1",
+  "status": "available",
+  "available": true,
+  "collectionStartUtc": "2026-07-22T00:00:05Z",
+  "collectionEndUtc": "2026-07-22T00:00:35Z",
+  "samples": 30,
+  "metrics": [
+    {
+      "metricName": "incursa.quic.buffer_pool.bytes.rented",
+      "label": "QUIC buffer pool bytes rented",
+      "unit": "bytes",
+      "sampleCount": 4,
+      "counterType": "Rate",
+      "total": 131072,
+      "mean": 32768,
+      "max": 65536,
+      "latest": 0,
+      "delta": 0
+    },
+    {
+      "metricName": "incursa.quic.buffer_pool.outstanding.bytes",
+      "label": "QUIC buffer pool outstanding bytes",
+      "unit": "bytes",
+      "sampleCount": 4,
+      "counterType": "Metric",
+      "total": 131072,
+      "mean": 32768,
+      "max": 65536,
+      "latest": 0,
+      "delta": 0
+    }
+  ],
+  "sizeBuckets": []
+}

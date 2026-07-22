@@ -543,6 +543,8 @@
         "latencyP99Ms": { "type": ["number", "null"], "minimum": 0 },
         "allocatedBytes": { "type": ["integer", "null"], "minimum": 0 },
         "peakRetainedBytes": { "type": ["integer", "null"], "minimum": 0 },
+        "bufferPoolRentedBytes": { "type": ["integer", "null"], "minimum": 0 },
+        "bufferPoolOutstandingPeakBytes": { "type": ["integer", "null"], "minimum": 0 },
         "queueDelayP50Ms": { "type": ["number", "null"], "minimum": 0 },
         "queueDelayP95Ms": { "type": ["number", "null"], "minimum": 0 },
         "lossEvents": { "type": ["integer", "null"], "minimum": 0 },

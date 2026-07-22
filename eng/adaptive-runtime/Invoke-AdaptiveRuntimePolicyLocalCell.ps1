@@ -163,8 +163,22 @@ function Get-RelativeRange {
     return [Math]::Abs($maximum - $minimum) / [Math]::Abs($median)
 }
 
+function Get-RoundedMedianInt64 {
+    param([AllowNull()][object[]] $Values)
+
+    $median = Get-Median -Values $Values
+    if ($null -eq $median) {
+        return $null
+    }
+
+    return [long] [Math]::Round([double] $median, 0, [MidpointRounding]::AwayFromZero)
+}
+
 function Get-Outcome {
-    param([AllowNull()][object] $Aggregate)
+    param(
+        [AllowNull()][object] $Aggregate,
+        [AllowNull()][object] $RunEvidence
+    )
 
     if ($null -eq $Aggregate) {
         return [ordered]@{
@@ -175,6 +189,8 @@ function Get-Outcome {
             latencyP99Ms = $null
             allocatedBytes = $null
             peakRetainedBytes = $null
+            bufferPoolRentedBytes = if ($null -eq $RunEvidence) { $null } else { $RunEvidence.bufferPoolRentedBytes }
+            bufferPoolOutstandingPeakBytes = if ($null -eq $RunEvidence) { $null } else { $RunEvidence.bufferPoolOutstandingPeakBytes }
             queueDelayP50Ms = $null
             queueDelayP95Ms = $null
             lossEvents = $null
@@ -190,6 +206,8 @@ function Get-Outcome {
         latencyP99Ms = $Aggregate.latencyP99Ms.median
         allocatedBytes = $null
         peakRetainedBytes = $null
+        bufferPoolRentedBytes = if ($null -eq $RunEvidence) { $null } else { $RunEvidence.bufferPoolRentedBytes }
+        bufferPoolOutstandingPeakBytes = if ($null -eq $RunEvidence) { $null } else { $RunEvidence.bufferPoolOutstandingPeakBytes }
         queueDelayP50Ms = $null
         queueDelayP95Ms = $null
         lossEvents = $null
@@ -287,6 +305,106 @@ function ConvertTo-NullableInt {
     }
 
     return [int] $Value
+}
+
+function ConvertTo-NullableLong {
+    param([AllowNull()][object] $Value)
+
+    if ($null -eq $Value -or [string]::IsNullOrWhiteSpace([string] $Value)) {
+        return $null
+    }
+
+    return [long] $Value
+}
+
+function Get-MetricValueFromSummary {
+    param(
+        [AllowNull()][object] $Summary,
+
+        [Parameter(Mandatory = $true)]
+        [string] $MetricName,
+
+        [Parameter(Mandatory = $true)]
+        [string] $PropertyName
+    )
+
+    if ($null -eq $Summary) {
+        return $null
+    }
+
+    $metric = @($Summary.metrics | Where-Object {
+        [string] $_.metricName -eq $MetricName
+    }) | Select-Object -First 1
+    if ($null -eq $metric) {
+        return $null
+    }
+
+    return Get-OptionalObjectProperty -Object $metric -Name $PropertyName
+}
+
+function Resolve-SampleRunEvidence {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $SampleId,
+
+        [Parameter(Mandatory = $true)]
+        [string] $RunRoot,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Generic.HashSet[string]] $ArtifactPathSet,
+
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [System.Collections.Generic.List[string]] $ContractFailures
+    )
+
+    $quicBufferPoolSummaryPath = Get-ChildItem -LiteralPath $RunRoot -Filter 'quic-buffer-pool-summary.json' -Recurse -File -ErrorAction SilentlyContinue |
+        Select-Object -First 1 -ExpandProperty FullName
+    $quicBufferPoolSummary = $null
+    if ([string]::IsNullOrWhiteSpace([string] $quicBufferPoolSummaryPath) -or
+        -not (Test-Path -LiteralPath $quicBufferPoolSummaryPath -PathType Leaf)) {
+        $ContractFailures.Add("$SampleId`: quic-buffer-pool-summary.json was not retained.")
+    }
+    else {
+        try {
+            $quicBufferPoolSummary = Get-Content -LiteralPath $quicBufferPoolSummaryPath -Raw | ConvertFrom-Json -Depth 100
+            [void] $ArtifactPathSet.Add($quicBufferPoolSummaryPath)
+        }
+        catch {
+            $ContractFailures.Add("$SampleId`: quic-buffer-pool-summary.json could not be parsed.")
+        }
+    }
+
+    $bufferPoolRentedBytes = $null
+    $bufferPoolOutstandingPeakBytes = $null
+    if ($null -ne $quicBufferPoolSummary) {
+        if (-not [bool] (Get-OptionalObjectProperty -Object $quicBufferPoolSummary -Name 'available')) {
+            $ContractFailures.Add("$SampleId`: quic-buffer-pool-summary.json reported available=false.")
+        }
+        else {
+            $bufferPoolRentedBytes = ConvertTo-NullableLong (Get-MetricValueFromSummary `
+                -Summary $quicBufferPoolSummary `
+                -MetricName 'incursa.quic.buffer_pool.bytes.rented' `
+                -PropertyName 'total')
+            $bufferPoolOutstandingPeakBytes = ConvertTo-NullableLong (Get-MetricValueFromSummary `
+                -Summary $quicBufferPoolSummary `
+                -MetricName 'incursa.quic.buffer_pool.outstanding.bytes' `
+                -PropertyName 'max')
+
+            if ($null -eq $bufferPoolRentedBytes) {
+                $ContractFailures.Add("$SampleId`: quic-buffer-pool-summary.json did not retain incursa.quic.buffer_pool.bytes.rented total.")
+            }
+            if ($null -eq $bufferPoolOutstandingPeakBytes) {
+                $ContractFailures.Add("$SampleId`: quic-buffer-pool-summary.json did not retain incursa.quic.buffer_pool.outstanding.bytes max.")
+            }
+        }
+    }
+
+    return [ordered]@{
+        bufferPoolRentedBytes = $bufferPoolRentedBytes
+        bufferPoolOutstandingPeakBytes = $bufferPoolOutstandingPeakBytes
+        quicBufferPoolSummaryArtifactPath = if ([string]::IsNullOrWhiteSpace([string] $quicBufferPoolSummaryPath)) { $null } else { $quicBufferPoolSummaryPath }
+    }
 }
 
 function Resolve-SampleTargetAttribution {
@@ -648,6 +766,7 @@ $sequence = @($sequence)
 $policyByTreatment = if ($ShadowOnly) { @{ A = 'legacy_current' } } else { @{ A = $PolicyA; B = $PolicyB } }
 $samples = [System.Collections.Generic.List[object]]::new()
 $shadowEpochsBySample = @{}
+$sampleRunEvidenceBySampleId = @{}
 $artifactPaths = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
 $commands = [System.Collections.Generic.List[object]]::new()
 $contractFailures = [System.Collections.Generic.List[string]]::new()
@@ -814,13 +933,19 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
         }
     }
 
-    $outcome = Get-Outcome -Aggregate $aggregate
-    $correctness = Get-Correctness -ExitCode $exitCode -Aggregate $aggregate
     $targetAttribution = Resolve-SampleTargetAttribution `
         -SampleId $sampleId `
         -RunRoot $runRoot `
         -ArtifactPathSet $artifactPaths `
         -ContractFailures $contractFailures
+    $sampleRunEvidence = Resolve-SampleRunEvidence `
+        -SampleId $sampleId `
+        -RunRoot $runRoot `
+        -ArtifactPathSet $artifactPaths `
+        -ContractFailures $contractFailures
+    $sampleRunEvidenceBySampleId[$sampleId] = $sampleRunEvidence
+    $outcome = Get-Outcome -Aggregate $aggregate -RunEvidence $sampleRunEvidence
+    $correctness = Get-Correctness -ExitCode $exitCode -Aggregate $aggregate
     $samples.Add([ordered]@{
         sampleId = $sampleId
         treatment = $treatment
@@ -840,7 +965,8 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
             $pressureArtifactPath,
             $targetAttribution.resultArtifactPath,
             $targetAttribution.diagnosticTargetArtifactPath,
-            $targetAttribution.counterSummaryArtifactPath
+            $targetAttribution.counterSummaryArtifactPath,
+            $sampleRunEvidence.quicBufferPoolSummaryArtifactPath
         ) |
             Where-Object { -not [string]::IsNullOrWhiteSpace([string] $_) -and (Test-Path -LiteralPath $_ -PathType Leaf) }
     })
@@ -1215,13 +1341,15 @@ $artifacts = @($artifactPaths | Sort-Object | ForEach-Object {
     }
 })
 $allWarnings = @($samples | ForEach-Object { $_.correctness.invariantViolations })
+$sampleRunEvidence = @($sampleRunEvidenceBySampleId.Values)
 $resultNotes = [System.Collections.Generic.List[string]]::new()
 $resultNotes.Add('Local diagnostic evidence only; this result does not authorize active_internal or ProtocolLab submission.')
 if ($StressOnly) {
     $resultNotes.Add('This cell was declared stress-only and cannot serve as a regression or promotion gate.')
 }
 $resultNotes.Add('The host and generator share a machine, so target and generator health remain limited.')
-$resultNotes.Add('Allocation, retained-memory, and fairness outcomes require separate instrumentation before acceptance.')
+$resultNotes.Add('Sample and aggregate buffer-pool rent and peak-outstanding measurements come only from retained quic-buffer-pool-summary.json metrics; generic managed-allocation and peak-retained-memory fields remain null.')
+$resultNotes.Add('Fairness remains unassessed because retained request latency/completion metrics are not proof of stream-level fairness. Per-epoch completion and memory outcomes also remain null.')
 foreach ($failure in $contractFailures) {
     $resultNotes.Add("contract: $failure")
 }
@@ -1359,6 +1487,8 @@ $result = [ordered]@{
         latencyP99Ms = Get-Median -Values @($samples.outcomes.latencyP99Ms)
         allocatedBytes = $null
         peakRetainedBytes = $null
+        bufferPoolRentedBytes = Get-RoundedMedianInt64 -Values @($samples.outcomes.bufferPoolRentedBytes)
+        bufferPoolOutstandingPeakBytes = Get-RoundedMedianInt64 -Values @($samples.outcomes.bufferPoolOutstandingPeakBytes)
         queueDelayP50Ms = $null
         queueDelayP95Ms = $null
         lossEvents = $null
