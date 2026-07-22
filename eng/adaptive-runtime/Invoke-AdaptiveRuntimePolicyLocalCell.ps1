@@ -301,6 +301,7 @@ function Resolve-SampleTargetAttribution {
         [System.Collections.Generic.HashSet[string]] $ArtifactPathSet,
 
         [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
         [System.Collections.Generic.List[string]] $ContractFailures
     )
 
