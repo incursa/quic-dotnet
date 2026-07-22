@@ -140,6 +140,7 @@ public sealed class REQ_QUIC_CRT_0169
         Assert.Contains("targetAttribution", runner, StringComparison.Ordinal);
         Assert.Contains("resolvedEqualsCounter", runner, StringComparison.Ordinal);
         Assert.Contains("runner-counter-attach-resolved-process", runner, StringComparison.Ordinal);
+        Assert.Contains("[AllowEmptyCollection()]", runner, StringComparison.Ordinal);
         string readme = ReadRepositoryText("eng/adaptive-runtime/README.md")
             .Replace("\r\n", " ", StringComparison.Ordinal)
             .Replace("\n", " ", StringComparison.Ordinal);
