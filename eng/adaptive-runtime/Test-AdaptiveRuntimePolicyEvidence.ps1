@@ -104,6 +104,39 @@ foreach ($item in $validatedEpochRows) {
         $row.provenance.observationContractVersion -ne $result.policyConfiguration.observationContractVersion) {
         $failures.Add("Epoch row '$($row.rowId)' does not match its local-result policy contract versions.")
     }
+
+    if ($row.currentPolicyState.appliedPolicy -ne $row.candidatePolicySelection.selectedPolicy) {
+        $failures.Add("Epoch row '$($row.rowId)' does not keep the selected policy aligned with the applied policy snapshot.")
+    }
+
+    if ($result.mode -eq 'forced') {
+        if ($row.candidatePolicySelection.selectionSource -ne 'forced') {
+            $failures.Add("Epoch row '$($row.rowId)' from a forced result did not record selectionSource='forced'.")
+        }
+
+        if ($result.policyConfiguration.forcedPolicy -ne $null -and
+            $row.currentPolicyState.appliedPolicy -ne $result.policyConfiguration.forcedPolicy) {
+            $failures.Add("Epoch row '$($row.rowId)' does not match the forced policy recorded on the local result.")
+        }
+
+        $sourceSample = @($result.samples | Where-Object { $_.sampleId -eq $row.sampleId }) |
+            Select-Object -First 1
+        if ($null -eq $sourceSample) {
+            $failures.Add("Epoch row '$($row.rowId)' does not resolve to source sample '$($row.sampleId)'.")
+        }
+        else {
+            $treatmentProperty = $result.treatments.PSObject.Properties[[string] $sourceSample.treatment]
+            if ($null -eq $treatmentProperty) {
+                $failures.Add("Epoch row '$($row.rowId)' source sample names unknown treatment '$($sourceSample.treatment)'.")
+            }
+            elseif ($row.currentPolicyState.appliedPolicy -ne $treatmentProperty.Value.policy) {
+                $failures.Add("Epoch row '$($row.rowId)' applied policy does not match source sample treatment '$($sourceSample.treatment)'.")
+            }
+        }
+    }
+    elseif ($result.mode -eq 'shadow' -and $row.candidatePolicySelection.selectionSource -ne 'shadow_rule') {
+        $failures.Add("Epoch row '$($row.rowId)' from a shadow result did not record selectionSource='shadow_rule'.")
+    }
 }
 
 $summary = [ordered]@{

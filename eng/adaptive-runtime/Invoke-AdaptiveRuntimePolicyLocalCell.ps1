@@ -253,7 +253,7 @@ function Get-ArtifactKind {
     if ($name -eq 'cell-manifest.json') { return 'manifest' }
     if ($name -eq 'checksum-inventory.json') { return 'checksum_inventory' }
     if ($name -eq 'aggregate-results.json') { return 'metrics' }
-    if ($name -eq 'shadow-epochs.raw.jsonl' -or $name.StartsWith('epoch-row-', [StringComparison]::OrdinalIgnoreCase)) { return 'dataset' }
+    if ($name -eq 'adaptive-runtime-epochs.raw.jsonl' -or $name.StartsWith('epoch-row-', [StringComparison]::OrdinalIgnoreCase)) { return 'dataset' }
     if ($name.EndsWith('.stdout.log', [StringComparison]::OrdinalIgnoreCase) -or $name -eq 'server.stdout.txt') { return 'stdout' }
     if ($name.EndsWith('.stderr.log', [StringComparison]::OrdinalIgnoreCase) -or $name -eq 'server.stderr.txt') { return 'stderr' }
     return 'other'
@@ -765,31 +765,29 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
             $contractFailures.Add("$sampleId`: requested host mode '$hostPolicy' but host reported '$reportedPolicy'.")
         }
 
-        if ($ShadowOnly) {
-            $shadowContract = [regex]::Match(
-                (Get-Content -LiteralPath $campaignHostStdoutPath -Raw),
-                'QUIC_SHADOW_EPOCH_CONTRACT=([^\r\n]+)').Groups[1].Value
-            if ($shadowContract -ne 'adaptive-runtime-shadow-epoch-raw-v1') {
-                $contractFailures.Add("$sampleId`: shadow epoch raw contract was not reported.")
-            }
+        $shadowContract = [regex]::Match(
+            (Get-Content -LiteralPath $campaignHostStdoutPath -Raw),
+            'QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=([^\r\n]+)').Groups[1].Value
+        if ($shadowContract -ne 'adaptive-runtime-epoch-raw-v1') {
+            $contractFailures.Add("$sampleId`: adaptive-runtime epoch raw contract was not reported.")
+        }
 
-            $shadowRawPath = Join-Path $sampleRoot 'shadow-epochs.raw.jsonl'
-            $shadowPrefix = 'QUIC_SHADOW_EPOCH_JSON='
-            $shadowLines = @(Get-Content -LiteralPath $campaignHostStdoutPath | Where-Object {
-                $_.StartsWith($shadowPrefix, [StringComparison]::Ordinal)
-            } | ForEach-Object {
-                $_.Substring($shadowPrefix.Length)
+        $shadowRawPath = Join-Path $sampleRoot 'adaptive-runtime-epochs.raw.jsonl'
+        $shadowPrefix = 'QUIC_ADAPTIVE_RUNTIME_EPOCH_JSON='
+        $shadowLines = @(Get-Content -LiteralPath $campaignHostStdoutPath | Where-Object {
+            $_.StartsWith($shadowPrefix, [StringComparison]::Ordinal)
+        } | ForEach-Object {
+            $_.Substring($shadowPrefix.Length)
+        })
+        if ($shadowLines.Count -eq 0) {
+            $contractFailures.Add("$sampleId`: no adaptive-runtime epochs were retained.")
+        }
+        else {
+            [System.IO.File]::WriteAllLines($shadowRawPath, $shadowLines, [System.Text.UTF8Encoding]::new($false))
+            [void] $artifactPaths.Add($shadowRawPath)
+            $shadowEpochsBySample[$sampleId] = @($shadowLines | ForEach-Object {
+                $_ | ConvertFrom-Json -Depth 30
             })
-            if ($shadowLines.Count -eq 0) {
-                $contractFailures.Add("$sampleId`: no shadow epochs were retained.")
-            }
-            else {
-                [System.IO.File]::WriteAllLines($shadowRawPath, $shadowLines, [System.Text.UTF8Encoding]::new($false))
-                [void] $artifactPaths.Add($shadowRawPath)
-                $shadowEpochsBySample[$sampleId] = @($shadowLines | ForEach-Object {
-                    $_ | ConvertFrom-Json -Depth 30
-                })
-            }
         }
     }
     if (-not [string]::IsNullOrWhiteSpace($campaignHostSourceStderr) -and
@@ -846,6 +844,25 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
         ) |
             Where-Object { -not [string]::IsNullOrWhiteSpace([string] $_) -and (Test-Path -LiteralPath $_ -PathType Leaf) }
     })
+}
+
+$forcedEpochPolicyValues = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+foreach ($sample in $samples) {
+    if ($ShadowOnly -or -not $shadowEpochsBySample.ContainsKey($sample.sampleId)) {
+        continue
+    }
+
+    $samplePolicy = [string] $policyByTreatment[$sample.treatment]
+    $epochPolicies = @($shadowEpochsBySample[$sample.sampleId] | ForEach-Object {
+        ConvertTo-PolicyValue -Value ([string] $_.snapshot.appliedPolicy)
+    })
+    foreach ($epochPolicy in $epochPolicies) {
+        [void] $forcedEpochPolicyValues.Add($epochPolicy)
+    }
+
+    if (@($epochPolicies | Where-Object { $_ -ne $samplePolicy }).Count -gt 0) {
+        $contractFailures.Add("$($sample.sampleId)`: policy_mismatch: declared '$samplePolicy' but one or more epoch snapshots reported a different applied policy.")
+    }
 }
 
 $endedUtc = (Get-Date).ToUniversalTime()
@@ -916,7 +933,7 @@ else {
 }
 $epochRowPaths = [System.Collections.Generic.List[string]]::new()
 $allShadowEpochs = @($shadowEpochsBySample.Values | ForEach-Object { @($_) })
-if ($ShadowOnly -and $contractFailures.Count -eq 0) {
+if ($contractFailures.Count -eq 0) {
     $quicRepository = @($repositoryIdentities | Where-Object name -eq 'quic-dotnet') | Select-Object -First 1
     $benchmarkHash = [string] $binaryIdentities[0].sha256
     $runtimeHash = [string] $binaryIdentities[1].sha256
@@ -930,7 +947,7 @@ if ($ShadowOnly -and $contractFailures.Count -eq 0) {
         }
 
         $rawPath = @($sample.artifactPaths | Where-Object {
-            [System.IO.Path]::GetFileName($_) -eq 'shadow-epochs.raw.jsonl'
+            [System.IO.Path]::GetFileName($_) -eq 'adaptive-runtime-epochs.raw.jsonl'
         }) | Select-Object -First 1
         if ([string]::IsNullOrWhiteSpace([string] $rawPath)) {
             $contractFailures.Add("$($sample.sampleId): retained shadow epochs have no raw source artifact.")
@@ -959,6 +976,7 @@ if ($ShadowOnly -and $contractFailures.Count -eq 0) {
             $lifecycleFlags = ConvertTo-LifecycleFlags -Value $epoch.observation.lifecycleFlags
             $outOfDomain = $reasonCode -eq 'out_of_domain'
             $exclusionFlags = [System.Collections.Generic.List[string]]::new()
+            if (-not $ShadowOnly -and $appliedPolicy -ne $policyByTreatment[$sample.treatment]) { $exclusionFlags.Add('policy_mismatch') }
             if ($missingSignalMask -ne 0) { $exclusionFlags.Add('observation_missing') }
             if ($staleSignalMask -ne 0) { $exclusionFlags.Add('observation_stale') }
             if ($reasonCode -eq 'arithmetic_saturated') { $exclusionFlags.Add('observation_saturated') }
@@ -970,7 +988,7 @@ if ($ShadowOnly -and $contractFailures.Count -eq 0) {
             $rowId = "$($sample.sampleId)-$connectionKey-epoch-$([uint64]$epoch.observation.connectionEpochSequence)"
             $row = [ordered]@{
                 schemaVersion = 'adaptive-runtime-policy-epoch-dataset-v1'
-                datasetId = "$CampaignId-$CellId-shadow-dataset"
+                datasetId = "$CampaignId-$CellId-$(if ($ShadowOnly) { 'shadow' } else { 'forced' })-dataset"
                 rowId = $rowId
                 campaignId = $CampaignId
                 runId = $resultRunId
@@ -1027,7 +1045,7 @@ if ($ShadowOnly -and $contractFailures.Count -eq 0) {
                     hasIssuedApplicationData = [bool] $epoch.snapshot.hasIssuedApplicationData
                 }
                 candidatePolicySelection = [ordered]@{
-                    selectionSource = 'shadow_rule'
+                    selectionSource = if ($ShadowOnly) { 'shadow_rule' } else { 'forced' }
                     selectedPolicy = $appliedPolicy
                     shadowRecommendation = $proposedPolicy
                     reasonCode = $reasonCode
@@ -1087,7 +1105,7 @@ if ($ShadowOnly -and $contractFailures.Count -eq 0) {
                     processorCount = [Environment]::ProcessorCount
                     dotnetRuntime = [System.Runtime.InteropServices.RuntimeInformation]::FrameworkDescription
                     monotonicTimerFrequencyHz = [Diagnostics.Stopwatch]::Frequency
-                    scriptVersion = 'adaptive-runtime-shadow-export-v1'
+                    scriptVersion = 'adaptive-runtime-epoch-export-v1'
                     toolVersions = [ordered]@{ powershell = $PSVersionTable.PSVersion.ToString() }
                     resultSchemaVersion = 'adaptive-runtime-policy-local-result-v1'
                     datasetSchemaVersion = 'adaptive-runtime-policy-epoch-dataset-v1'
@@ -1096,7 +1114,7 @@ if ($ShadowOnly -and $contractFailures.Count -eq 0) {
                     sourceArtifactPath = [System.IO.Path]::GetFullPath($rawPath)
                     sourceArtifactSha256 = $sourceHash
                     transformation = [ordered]@{
-                        name = 'adaptive-runtime-shadow-epoch-export'
+                        name = 'adaptive-runtime-epoch-export'
                         version = '1.0.0'
                         codeCommit = [string] $quicRepository.commit
                         inputSha256 = $sourceHash
@@ -1217,7 +1235,7 @@ foreach ($epoch in $allShadowEpochs) {
     $reasonCounts[$reason]++
 }
 $shadowSummaryArtifactPath = @($artifactPaths | Where-Object {
-    [System.IO.Path]::GetFileName($_) -eq 'shadow-epochs.raw.jsonl'
+    [System.IO.Path]::GetFileName($_) -eq 'adaptive-runtime-epochs.raw.jsonl'
 }) | Select-Object -First 1
 $resultPath = Join-Path $resolvedOutputRoot 'local-result.json'
 $result = [ordered]@{
@@ -1234,10 +1252,31 @@ $result = [ordered]@{
     policyAxis = 'receive_credit_publication'
     mode = if ($ShadowOnly) { 'shadow' } else { 'forced' }
     policyConfiguration = [ordered]@{
-        appliedPolicy = if ($ShadowOnly) { 'legacy_current' } else { 'not_applicable' }
-        forcedPolicy = $null
+        appliedPolicy = if ($ShadowOnly) {
+            'legacy_current'
+        }
+        elseif ($forcedEpochPolicyValues.Count -eq 1) {
+            $forcedEpochPolicyValues | Select-Object -First 1
+        }
+        else {
+            'not_applicable'
+        }
+        forcedPolicy = if (-not $ShadowOnly -and $forcedEpochPolicyValues.Count -eq 1) {
+            $forcedEpochPolicyValues | Select-Object -First 1
+        }
+        else {
+            $null
+        }
         shadowEnabled = [bool] $ShadowOnly
-        shadowPolicy = if ($ShadowOnly) { 'not_applicable' } else { $null }
+        shadowPolicy = if ($allShadowEpochs.Count -gt 0) {
+            $shadowPolicies = @($allShadowEpochs | ForEach-Object {
+                ConvertTo-PolicyValue -Value ([string] $_.snapshot.proposedPolicy)
+            } | Select-Object -Unique)
+            if ($shadowPolicies.Count -eq 1) { $shadowPolicies[0] } else { $null }
+        }
+        else {
+            $null
+        }
         ruleVersion = 'receive-credit-legacy-v1'
         observationContractVersion = 'adaptive-runtime-connection-observation-v1'
         anomalyBudgets = [ordered]@{
@@ -1342,7 +1381,7 @@ $result = [ordered]@{
         violations = @()
     }
     diagnosticSignals = [ordered]@{
-        observationEnabled = [bool] $ShadowOnly
+        observationEnabled = $allShadowEpochs.Count -gt 0
         shadowEpochCount = $allShadowEpochs.Count
         transitionCount = @($allShadowEpochs | Where-Object { $_.snapshot.transitioned }).Count
         outOfDomainEpochCount = @($allShadowEpochs | Where-Object { $_.snapshot.reason -eq 'OutOfDomain' }).Count
@@ -1369,11 +1408,11 @@ if (-not ($resultJson | Test-Json -SchemaFile $resultSchemaPath -ErrorAction Sto
     throw "Generated local result did not validate against $resultSchemaPath. Retained result: $resultPath"
 }
 
-if ($ShadowOnly -and $epochRowPaths.Count -gt 0) {
+if ($epochRowPaths.Count -gt 0) {
     & $evidenceValidationScript -LocalResultPath $resultPath -EpochDatasetPath @($epochRowPaths) |
         Set-Content -LiteralPath (Join-Path $resolvedOutputRoot 'evidence-validation.json') -Encoding utf8
     if ($LASTEXITCODE -ne 0) {
-        throw "Generated shadow evidence did not pass schema/join validation. Retained output: $resolvedOutputRoot"
+        throw "Generated adaptive-runtime evidence did not pass schema/join validation. Retained output: $resolvedOutputRoot"
     }
 }
 

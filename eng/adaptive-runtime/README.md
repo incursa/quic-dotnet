@@ -84,7 +84,7 @@ adding `-ShadowOnly`. The runner applies `legacy_current`, asks the internal
 controller only for a recommendation, enables one-second host/process counters,
 and exports:
 
-- the authoritative raw host stream as `shadow-epochs.raw.jsonl`;
+- the authoritative raw host stream as `adaptive-runtime-epochs.raw.jsonl`;
 - one schema-valid file per connection epoch under `epoch-rows/`;
 - a schema/join validation summary in `evidence-validation.json`; and
 - shadow epoch, transition, missing/stale, and reason counts in
@@ -105,6 +105,12 @@ the runner outside the transport. `transformation.outputSha256` is the SHA-256
 of the canonical row with that field filled by 64 zeroes, avoiding a
 self-referential file hash while keeping the transformation payload
 independently reproducible.
+
+Forced cells use the same epoch capture path and preserve the actual forced
+policy on each row while recording the controller's recommendation as the
+shadow recommendation. The summary result records whether a single forced
+policy applied across the captured epochs; mixed A/B cells keep that field
+`not_applicable` and rely on the epoch rows for the per-sample policy record.
 
 Canonical schema examples live under
 `tests/fixtures/adaptive-runtime-policy/`. Their identities and hashes are
