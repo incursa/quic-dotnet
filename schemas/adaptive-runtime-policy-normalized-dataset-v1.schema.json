@@ -324,6 +324,7 @@
         "workloadShape",
         "groupKeys",
         "normalizedMetrics",
+        "sampleScopedOutcomes",
         "provenance"
       ],
       "properties": {
@@ -571,6 +572,47 @@
             "staleSignalCount": {
               "type": "integer",
               "minimum": 0
+            }
+          }
+        },
+        "sampleScopedOutcomes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scope",
+            "throughputMiBPerSecond",
+            "latencyP95Ms",
+            "bufferPoolRentedKiB",
+            "bufferPoolOutstandingPeakKiB",
+            "managedAllocatedKiB",
+            "peakRetainedKiB",
+            "fairnessAssessed"
+          ],
+          "properties": {
+            "scope": {
+              "type": "string",
+              "const": "sample"
+            },
+            "throughputMiBPerSecond": {
+              "$ref": "#/$defs/nullableNumber"
+            },
+            "latencyP95Ms": {
+              "$ref": "#/$defs/nullableNumber"
+            },
+            "bufferPoolRentedKiB": {
+              "$ref": "#/$defs/nullableNumber"
+            },
+            "bufferPoolOutstandingPeakKiB": {
+              "$ref": "#/$defs/nullableNumber"
+            },
+            "managedAllocatedKiB": {
+              "$ref": "#/$defs/nullableNumber"
+            },
+            "peakRetainedKiB": {
+              "$ref": "#/$defs/nullableNumber"
+            },
+            "fairnessAssessed": {
+              "type": "boolean"
             }
           }
         },

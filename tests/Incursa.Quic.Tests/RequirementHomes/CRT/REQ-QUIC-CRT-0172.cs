@@ -232,6 +232,16 @@ public sealed class REQ_QUIC_CRT_0172
             Assert.Equal(JsonValueKind.Null, metrics.GetProperty("queueToServiceRatio").ValueKind);
             Assert.Equal(JsonValueKind.Null, metrics.GetProperty("flowBlockedMs").ValueKind);
 
+            JsonElement sampleOutcomes = normalized.RootElement.GetProperty("rows")[0].GetProperty("sampleScopedOutcomes");
+            Assert.Equal("sample", sampleOutcomes.GetProperty("scope").GetString());
+            Assert.Equal(0.953674, sampleOutcomes.GetProperty("throughputMiBPerSecond").GetDouble(), precision: 6);
+            Assert.Equal(15, sampleOutcomes.GetProperty("latencyP95Ms").GetDouble());
+            Assert.Equal(128, sampleOutcomes.GetProperty("bufferPoolRentedKiB").GetDouble());
+            Assert.Equal(64, sampleOutcomes.GetProperty("bufferPoolOutstandingPeakKiB").GetDouble());
+            Assert.Equal(JsonValueKind.Null, sampleOutcomes.GetProperty("managedAllocatedKiB").ValueKind);
+            Assert.Equal(JsonValueKind.Null, sampleOutcomes.GetProperty("peakRetainedKiB").ValueKind);
+            Assert.False(sampleOutcomes.GetProperty("fairnessAssessed").GetBoolean());
+
             using JsonDocument curated = JsonDocument.Parse(File.ReadAllText(curatedPath));
             Assert.Equal("excluded", curated.RootElement.GetProperty("rowDecisions")[0].GetProperty("decision").GetString());
 
