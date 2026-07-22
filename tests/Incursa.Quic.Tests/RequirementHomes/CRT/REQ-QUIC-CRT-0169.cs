@@ -118,16 +118,56 @@ public sealed class REQ_QUIC_CRT_0169
         Assert.Contains("maximumWithinTreatmentRelativeRange", runner, StringComparison.Ordinal);
         Assert.Contains("Test-Json -SchemaFile $resultSchemaPath", runner, StringComparison.Ordinal);
         Assert.Contains("[switch] $ShadowOnly", runner, StringComparison.Ordinal);
+        Assert.Contains("[switch] $StressOnly", runner, StringComparison.Ordinal);
+        Assert.Contains("elseif ($StressOnly)", runner, StringComparison.Ordinal);
         Assert.Contains("QUIC_SHADOW_EPOCH_JSON=", ReadRepositoryText(
             "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs"), StringComparison.Ordinal);
         Assert.Contains("adaptive-runtime-connection-observation-v1", runner, StringComparison.Ordinal);
         Assert.Contains("Test-AdaptiveRuntimePolicyEvidence.ps1", runner, StringComparison.Ordinal);
         Assert.Contains("'-CaptureCounters'", runner, StringComparison.Ordinal);
         Assert.Contains("counters-summary.json", runner, StringComparison.Ordinal);
-        Assert.Contains("shadow-epochs.raw.jsonl", ReadRepositoryText(
-            "eng/adaptive-runtime/README.md"), StringComparison.Ordinal);
+        Assert.Contains("counters-summary.json was not retained", runner, StringComparison.Ordinal);
+        string readme = ReadRepositoryText("eng/adaptive-runtime/README.md")
+            .Replace("\r\n", " ", StringComparison.Ordinal)
+            .Replace("\n", " ", StringComparison.Ordinal);
+        Assert.Contains("Host/process counters are captured for every sample so forced-policy evidence keeps a pressure artifact by default.", readme, StringComparison.Ordinal);
+        Assert.Contains("Every forced-policy sample also retains `counters-summary.json` as the result's pressure artifact", readme, StringComparison.Ordinal);
+        Assert.Contains("shadow-epochs.raw.jsonl", readme, StringComparison.Ordinal);
         Assert.DoesNotContain("mode = 'active_internal'", runner, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Invoke-QuicDotNetProtocolLabRun.ps1", runner, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void PermanentLocalScheduleDeclaresVariedHigherCountCellsWithoutAuthorizingRuntimeSelection()
+    {
+        string schedule = ReadRepositoryText(
+            "eng/adaptive-runtime/Invoke-AdaptiveRuntimePolicyLocalSchedule.ps1");
+
+        Assert.Contains("[ValidateSet('balanced', 'connection_first', 'stream_first')]", schedule, StringComparison.Ordinal);
+        Assert.Contains("quic.transport.stream-throughput.1mb", schedule, StringComparison.Ordinal);
+        Assert.Contains("quic.transport.stream-download.1mb", schedule, StringComparison.Ordinal);
+        Assert.Contains("quic.transport.duplex-streams-peer-matrix", schedule, StringComparison.Ordinal);
+        Assert.Contains("quic.transport.multiplex.100x1kb", schedule, StringComparison.Ordinal);
+        Assert.Contains("-Connections 16", schedule, StringComparison.Ordinal);
+        Assert.Contains("-Connections 32", schedule, StringComparison.Ordinal);
+        Assert.Contains("-StreamsPerConnection 100", schedule, StringComparison.Ordinal);
+        Assert.Contains("StressOnly = [bool] $cell.stressOnly", schedule, StringComparison.Ordinal);
+        Assert.Contains("if (($index % 2) -eq 0) { 'ABBA' } else { 'BAAB' }", schedule, StringComparison.Ordinal);
+        Assert.Contains("counterCaptureRequired = $true", schedule, StringComparison.Ordinal);
+        Assert.Contains("A permanent measurement runner changed before resume", schedule, StringComparison.Ordinal);
+        Assert.Contains("The retained measurement cells changed before resume", schedule, StringComparison.Ordinal);
+        Assert.Contains("Resume parameters do not match the retained measurement schedule", schedule, StringComparison.Ordinal);
+        Assert.Contains("continueOnFailure = [bool] $ContinueOnFailure", schedule, StringComparison.Ordinal);
+        Assert.Contains("retained_terminal_failure", schedule, StringComparison.Ordinal);
+        Assert.Contains("terminal_failure_retained", schedule, StringComparison.Ordinal);
+        Assert.Contains("retained_incomplete_artifacts", schedule, StringComparison.Ordinal);
+        Assert.Contains("activePolicyAuthorized = $false", schedule, StringComparison.Ordinal);
+        Assert.Contains("onlineLearningAuthorized = $false", schedule, StringComparison.Ordinal);
+        Assert.Contains("protocolLabSubmissionAuthorized = $false", schedule, StringComparison.Ordinal);
+        Assert.Contains("Invoke-AdaptiveRuntimePolicyLocalCell.ps1", schedule, StringComparison.Ordinal);
+        Assert.DoesNotContain("active_internal", schedule, StringComparison.OrdinalIgnoreCase);
     }
 
     private static JsonDocument ReadRepositoryJson(string relativePath)

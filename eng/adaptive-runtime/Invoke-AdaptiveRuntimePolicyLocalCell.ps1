@@ -9,7 +9,7 @@ param(
 
     [string] $CampaignId = "adaptive-receive-credit-$((Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssZ'))",
 
-    [string] $CellId = 'sustained-upload-1kb-c16',
+    [string] $CellId = 'duplex-64kb-x1-s16',
 
     [ValidateSet('ABBA', 'BAAB')]
     [string] $SequenceProtocol = 'ABBA',
@@ -22,19 +22,21 @@ param(
 
     [switch] $ShadowOnly,
 
-    [string] $ScenarioId = 'quic.transport.sustained-stream.16384x1kb',
+    [switch] $StressOnly,
+
+    [string] $ScenarioId = 'quic.transport.duplex-streams-peer-matrix',
 
     [ValidateSet('upload', 'download', 'duplex', 'request_response', 'streaming')]
-    [string] $TrafficShape = 'upload',
+    [string] $TrafficShape = 'duplex',
 
     [ValidateSet('fixed_total', 'fixed_per_stream')]
-    [string] $AccountingMode = 'fixed_total',
+    [string] $AccountingMode = 'fixed_per_stream',
 
     [ValidateSet('sparse', 'bursty', 'sustained', 'stream_churn')]
     [string] $ArrivalPattern = 'sustained',
 
     [ValidateRange(0, [int]::MaxValue)]
-    [int] $PayloadBytes = 1024,
+    [int] $PayloadBytes = 65536,
 
     [ValidateRange(1, 1024)]
     [int] $Connections = 1,
@@ -516,9 +518,8 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
     if ($NoRestore) {
         $arguments += '-NoRestore'
     }
-    if ($ShadowOnly) {
-        $arguments += @('-CaptureCounters', '-CounterRefreshInterval', '1')
-    }
+    # Always capture host/process counters so forced-policy samples retain permanent pressure evidence.
+    $arguments += @('-CaptureCounters', '-CounterRefreshInterval', '1')
 
     $commandText = 'pwsh ' + (($arguments | ForEach-Object {
         if ($_ -match '[\s"]') { '"' + ($_ -replace '"', '\"') + '"' } else { $_ }
@@ -549,14 +550,14 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
         }) | Select-Object -First 1
         [void] $artifactPaths.Add($aggregatePath)
     }
-    $pressureArtifactPath = if ($ShadowOnly) {
-        Get-ChildItem -LiteralPath $runRoot -Filter 'counters-summary.json' -Recurse -File -ErrorAction SilentlyContinue |
-            Select-Object -First 1 -ExpandProperty FullName
+    $pressureArtifactPath = Get-ChildItem -LiteralPath $runRoot -Filter 'counters-summary.json' -Recurse -File -ErrorAction SilentlyContinue |
+        Select-Object -First 1 -ExpandProperty FullName
+    if ([string]::IsNullOrWhiteSpace([string] $pressureArtifactPath)) {
+        if (-not $ShadowOnly) {
+            $contractFailures.Add("$sampleId`: counters-summary.json was not retained.")
+        }
     }
     else {
-        $null
-    }
-    if (-not [string]::IsNullOrWhiteSpace([string] $pressureArtifactPath)) {
         $pressureArtifactPaths.Add($pressureArtifactPath)
         [void] $artifactPaths.Add($pressureArtifactPath)
     }
@@ -697,6 +698,9 @@ elseif ($hasCorrectnessFailure) {
 }
 elseif ($environmentInvalid) {
     'invalid_environment'
+}
+elseif ($StressOnly) {
+    'stress_only'
 }
 else {
     if (($null -ne $baselineThroughput -and $null -ne $candidateThroughput -and $candidateThroughput -lt ($baselineThroughput * 0.95)) -or
@@ -1004,6 +1008,9 @@ $artifacts = @($artifactPaths | Sort-Object | ForEach-Object {
 $allWarnings = @($samples | ForEach-Object { $_.correctness.invariantViolations })
 $resultNotes = [System.Collections.Generic.List[string]]::new()
 $resultNotes.Add('Local diagnostic evidence only; this result does not authorize active_internal or ProtocolLab submission.')
+if ($StressOnly) {
+    $resultNotes.Add('This cell was declared stress-only and cannot serve as a regression or promotion gate.')
+}
 $resultNotes.Add('The host and generator share a machine, so target and generator health remain limited.')
 $resultNotes.Add('Allocation, retained-memory, and fairness outcomes require separate instrumentation before acceptance.')
 foreach ($failure in $contractFailures) {

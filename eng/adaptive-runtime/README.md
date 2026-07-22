@@ -30,14 +30,14 @@ source-backed raw QUIC ProtocolLab harness:
 ```powershell
 ./eng/adaptive-runtime/Invoke-AdaptiveRuntimePolicyLocalCell.ps1 `
   -CampaignId adaptive-receive-credit-20260721 `
-  -CellId sustained-upload-1kb-c16 `
+  -CellId duplex-64kb-x1-s16 `
   -SequenceProtocol ABBA `
   -PolicyA legacy_current `
   -PolicyB read_dominant_batch `
-  -ScenarioId quic.transport.sustained-stream.16384x1kb `
-  -TrafficShape upload `
-  -AccountingMode fixed_total `
-  -PayloadBytes 1024 `
+  -ScenarioId quic.transport.duplex-streams-peer-matrix `
+  -TrafficShape duplex `
+  -AccountingMode fixed_per_stream `
+  -PayloadBytes 65536 `
   -Connections 1 `
   -StreamsPerConnection 16
 ```
@@ -47,8 +47,35 @@ host and runtime hashes for every treatment, forwards the forced mode only
 through the friend-assembly campaign host, verifies the host-reported mode and
 effective workload shape, retains every sample, and emits a schema-valid v1
 result, manifest, raw ProtocolLab artifacts, commands, and checksum inventory
-under `.artifacts/adaptive-runtime/<campaignId>/<cellId>`. A single-cell result
-is diagnostic and cannot authorize activation or rack-lab submission.
+under `.artifacts/adaptive-runtime/<campaignId>/<cellId>`. Host/process
+counters are captured for every sample so forced-policy evidence keeps a
+pressure artifact by default. A single-cell result is diagnostic and cannot
+authorize activation or rack-lab submission.
+
+Run a deterministic higher-count measurement schedule with the same permanent
+cell runner:
+
+```powershell
+./eng/adaptive-runtime/Invoke-AdaptiveRuntimePolicyLocalSchedule.ps1 `
+  -CampaignId adaptive-receive-credit-varied-20260721 `
+  -ScheduleProfile balanced
+```
+
+The `balanced`, `connection_first`, and `stream_first` profiles run the same
+bounded existing ProtocolLab scenarios in different declared orders. The
+default set covers 16 simultaneous one-stream connections, one and four
+connections with 16 streams per connection, and one connection with 100
+streams. A/B/B/A and B/A/A/B alternate by cell. `-IncludeStress` appends
+32-connection and four-by-100-stream cells; those remain stress-only inputs to
+review, not regression or promotion gates.
+
+The schedule builds and freezes the campaign host once, writes an immutable
+`measurement-schedule.json`, invokes the append-only local-cell contract for
+each entry, and records every attempt separately. Use `-Resume` after an
+interruption; completed cell results are retained and skipped only after their
+frozen binary hashes match. These are measurement schedules, not alternative
+production runtime schedulers, and they do not authorize `active_internal`,
+online learning, or ProtocolLab submission.
 
 Capture one behavior-neutral shadow sample with the same permanent runner by
 adding `-ShadowOnly`. The runner applies `legacy_current`, asks the internal
@@ -61,11 +88,13 @@ and exports:
 - shadow epoch, transition, missing/stale, and reason counts in
   `local-result.json`.
 
-The shadow sample also retains `counters-summary.json` as the result's pressure
-artifact. Because target and generator still share one developer host, this
-extra evidence does not upgrade either health classification above `limited`;
-it exists to make noise and queue-pressure review concrete before any rerun or
-rack-lab eligibility decision.
+Every forced-policy sample also retains `counters-summary.json` as the result's
+pressure artifact, which keeps `environment.pressureArtifactPath` populated in
+the local result. The shadow sample retains the same
+`counters-summary.json` pressure artifact. Because target and generator still
+share one developer host, this extra evidence does not upgrade either health
+classification above `limited`; it exists to make noise and queue-pressure
+review concrete before any rerun or rack-lab eligibility decision.
 
 The raw host contract contains only a run-local connection pseudonym, the
 bounded runtime observation, and the immutable shadow snapshot. Workload
