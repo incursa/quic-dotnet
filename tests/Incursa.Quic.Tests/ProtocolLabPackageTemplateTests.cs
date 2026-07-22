@@ -75,7 +75,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Equal("Incursa.Quic Raw QUIC", providedImplementation.GetProperty("displayName").GetString());
         Assert.Equal(["quic"], ReadJsonStringArray(providedImplementation, "protocols"));
         Assert.Equal(RawQuicScenarioIds, ReadJsonStringArray(providedImplementation, "scenarios"));
-        Assert.Equal(RawQuicScenarioIds, ReadJsonStringArray(providedImplementation, "testCaseIds"));
+        Assert.False(providedImplementation.TryGetProperty("testCaseIds", out _));
         Assert.DoesNotContain("h3", ReadJsonStringArray(providedImplementation, "protocols"));
         Assert.DoesNotContain("http.core.plaintext", ReadJsonStringArray(providedImplementation, "scenarios"));
         Assert.DoesNotContain("http3.payload.bytes.64kb", ReadJsonStringArray(providedImplementation, "scenarios"));
@@ -107,6 +107,11 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.False(executionDependencies.GetProperty("requiresBash").GetBoolean());
         var executionRuntimeRequirement = Assert.Single(executionDependencies.GetProperty("requiredCapabilities").EnumerateArray());
         Assert.Equal("libmsquic", executionRuntimeRequirement.GetProperty("name").GetString());
+        var internalImplementation = Assert.Single(internalRoot.GetProperty("providedImplementations").EnumerateArray());
+        Assert.Equal("quic-dotnet-raw-dev", internalImplementation.GetProperty("implementationId").GetString());
+        Assert.Equal(["quic"], ReadJsonStringArray(internalImplementation, "protocols"));
+        Assert.Equal(RawQuicScenarioIds, ReadJsonStringArray(internalImplementation, "scenarios"));
+        Assert.Equal(RawQuicScenarioIds, ReadJsonStringArray(internalImplementation, "testCaseIds"));
 
         var implementationYaml = File.ReadAllText(implementationTemplatePath);
         Assert.Contains("id: quic-dotnet-raw-dev", implementationYaml);
