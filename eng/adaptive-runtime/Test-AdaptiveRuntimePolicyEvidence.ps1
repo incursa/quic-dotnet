@@ -410,6 +410,15 @@ foreach ($item in $validatedLocalResults) {
 
 foreach ($resultContext in $localResultContextsByRunId.Values) {
     $result = $resultContext.Document
+    $unsupportedFairnessClaim = [bool] $result.fairnessOutcomes.assessed -or
+        $null -ne $result.fairnessOutcomes.streamCompletionP95Ms -or
+        $null -ne $result.fairnessOutcomes.streamCompletionP99Ms -or
+        [int] $result.fairnessOutcomes.starvationCount -ne 0 -or
+        (Get-CollectionCount -Value $result.fairnessOutcomes.violations) -ne 0
+    if ($unsupportedFairnessClaim) {
+        $failures.Add("Local result '$($resultContext.Item.Path)' claims stream fairness, but the v1 evidence surface has no true stream-completion source; fairness must remain unassessed.")
+    }
+
     $sampleBufferPoolRentedBytes = [System.Collections.Generic.List[long]]::new()
     $sampleBufferPoolOutstandingPeakBytes = [System.Collections.Generic.List[long]]::new()
     $sampleFairnessP95Ms = [System.Collections.Generic.List[double]]::new()

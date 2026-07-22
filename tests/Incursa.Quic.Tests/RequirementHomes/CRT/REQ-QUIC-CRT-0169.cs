@@ -169,6 +169,9 @@ public sealed class REQ_QUIC_CRT_0169
         Assert.Contains("[AllowEmptyCollection()]", runner, StringComparison.Ordinal);
         Assert.Contains("selectionSource = if ($ShadowOnly) { 'shadow_rule' } else { 'forced' }", runner, StringComparison.Ordinal);
         Assert.Contains("policy_mismatch", runner, StringComparison.Ordinal);
+        Assert.Contains("$exclusionFlags.Add('target_health_invalid')", runner, StringComparison.Ordinal);
+        Assert.Contains("$exclusionFlags.Add('generator_health_invalid')", runner, StringComparison.Ordinal);
+        Assert.Contains("$exclusionFlags.Add('correctness_failed')", runner, StringComparison.Ordinal);
         Assert.Contains("if ($epochRowPaths.Count -gt 0)", runner, StringComparison.Ordinal);
         string validator = ReadRepositoryText("eng/adaptive-runtime/Test-AdaptiveRuntimePolicyEvidence.ps1");
         Assert.Contains("source sample treatment", validator, StringComparison.Ordinal);

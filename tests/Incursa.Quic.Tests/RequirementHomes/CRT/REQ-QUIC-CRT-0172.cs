@@ -151,6 +151,52 @@ public sealed class REQ_QUIC_CRT_0172
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ValidatorRejectsRequestLatencyRelabeledAsStreamFairness()
+    {
+        string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        string sourceDirectory = Path.GetDirectoryName(AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+            "tests/fixtures/adaptive-runtime-policy/local-result.shadow.checksum.example.json"))!;
+        string temporaryDirectory = Path.Combine(repoRoot, ".artifacts", "adaptive-runtime", $"fairness-overclaim-test-{Guid.NewGuid():N}");
+
+        try
+        {
+            CopyDirectory(sourceDirectory, temporaryDirectory);
+            string resultPath = Path.Combine(temporaryDirectory, "local-result.shadow.checksum.example.json");
+            using JsonDocument source = JsonDocument.Parse(File.ReadAllText(resultPath));
+            Dictionary<string, object?> result = JsonSerializer.Deserialize<Dictionary<string, object?>>(source.RootElement.GetRawText())!;
+            result["fairnessOutcomes"] = new Dictionary<string, object?>
+            {
+                ["assessed"] = true,
+                ["streamCompletionP95Ms"] = 15,
+                ["streamCompletionP99Ms"] = 20,
+                ["starvationCount"] = 0,
+                ["violations"] = Array.Empty<string>(),
+            };
+            File.WriteAllText(resultPath, JsonSerializer.Serialize(result));
+
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult validation = AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                "eng/adaptive-runtime/Test-AdaptiveRuntimePolicyEvidence.ps1",
+                "-LocalResultPath", resultPath,
+                "-EpochDatasetPath", Path.Combine(temporaryDirectory, "epoch-row.shadow.checksum.example.json"));
+
+            Assert.NotEqual(0, validation.ExitCode);
+            using JsonDocument summary = JsonDocument.Parse(validation.Output);
+            Assert.Contains(
+                summary.RootElement.GetProperty("failures").EnumerateArray().Select(static failure => failure.GetString()!).ToArray(),
+                failure => failure.Contains("v1 evidence surface has no true stream-completion source", StringComparison.Ordinal));
+        }
+        finally
+        {
+            if (Directory.Exists(temporaryDirectory))
+            {
+                Directory.Delete(temporaryDirectory, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void DatasetPipelinePreservesMissingMetricsAndProducesBlockedHoldoutManifest()

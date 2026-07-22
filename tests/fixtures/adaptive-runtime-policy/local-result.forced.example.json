@@ -182,9 +182,9 @@
     "invariantViolations": []
   },
   "fairnessOutcomes": {
-    "assessed": true,
-    "streamCompletionP95Ms": 15,
-    "streamCompletionP99Ms": 20,
+    "assessed": false,
+    "streamCompletionP95Ms": null,
+    "streamCompletionP99Ms": null,
     "starvationCount": 0,
     "violations": []
   },

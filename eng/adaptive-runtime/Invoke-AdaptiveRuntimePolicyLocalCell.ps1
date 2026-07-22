@@ -1109,6 +1109,17 @@ if ($contractFailures.Count -eq 0) {
             if ($outOfDomain) { $exclusionFlags.Add('out_of_domain') }
             if ($epochStartOffsetMicros -lt ($WarmupSeconds * 1000000L)) { $exclusionFlags.Add('warmup') }
             if (($lifecycleFlags -band 96) -ne 0) { $exclusionFlags.Add('terminal_partial_epoch') }
+            if ($environmentInvalid) {
+                $exclusionFlags.Add('target_health_invalid')
+                $exclusionFlags.Add('generator_health_invalid')
+            }
+            if (-not [bool] $sample.correctness.payloadValidated -or
+                [int] $sample.correctness.failedOperations -ne 0 -or
+                [int] $sample.correctness.timedOutOperations -ne 0 -or
+                [int] $sample.correctness.protocolErrors -ne 0 -or
+                @($sample.correctness.invariantViolations).Count -ne 0) {
+                $exclusionFlags.Add('correctness_failed')
+            }
             if ($exclusionFlags.Count -eq 0) { $exclusionFlags.Add('none') }
 
             $rowId = "$($sample.sampleId)-$connectionKey-epoch-$([uint64]$epoch.observation.connectionEpochSequence)"
