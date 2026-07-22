@@ -195,14 +195,20 @@ New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null
 $serverStdoutPath = Join-Path $outputDirectory 'same-connection-server.stdout.log'
 $serverStderrPath = Join-Path $outputDirectory 'same-connection-server.stderr.log'
 
-$serverCommand = "& { `$env:PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG='1'; & dotnet '""$resolvedServerBinaryPath""' }"
-$serverProcess = Start-Process `
-    -FilePath 'pwsh' `
-    -ArgumentList @('-NoProfile', '-Command', $serverCommand) `
-    -RedirectStandardOutput $serverStdoutPath `
-    -RedirectStandardError $serverStderrPath `
-    -PassThru `
-    -WindowStyle Hidden
+$previousDebugValue = [Environment]::GetEnvironmentVariable('PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG', 'Process')
+[Environment]::SetEnvironmentVariable('PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG', '1', 'Process')
+try {
+    $serverProcess = Start-Process `
+        -FilePath 'dotnet' `
+        -ArgumentList @("`"$resolvedServerBinaryPath`"") `
+        -RedirectStandardOutput $serverStdoutPath `
+        -RedirectStandardError $serverStderrPath `
+        -PassThru `
+        -WindowStyle Hidden
+}
+finally {
+    [Environment]::SetEnvironmentVariable('PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG', $previousDebugValue, 'Process')
+}
 
 try {
     $endpoint = $null
