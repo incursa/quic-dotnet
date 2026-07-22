@@ -2770,6 +2770,54 @@
         "Negative, noisy, and rejected rows remain addressable by ID and checksum.",
         "The evidence contract is designed for offline replay and review, not online exploration."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0170",
+      "title": "Keep the adaptive-runtime policy catalog measurement-only",
+      "statement": "The runtime and evidence pipeline MUST maintain any adaptive-runtime policy catalog as measurement-only metadata for safe seams, MUST keep catalog entries versioned and seam-local, MUST NOT apply catalog entries to production behavior, and MUST NOT activate, widen, or reclassify a controller axis solely because it appears in the catalog.",
+      "trace": {
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-seam-inventory.md",
+          "docs/design/adaptive-runtime-policy-observation-schema.md",
+          "docs/adaptive-runtime-policy-planning.md"
+        ]
+      },
+      "notes": [
+        "This requirement covers safe-seam inventory and internal candidate cataloging only.",
+        "Catalog entries are review metadata, not a second runtime scheduler."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0171",
+      "title": "Use deterministic phase-transition schedules as trace-owned measurement artifacts",
+      "statement": "Local adaptive-runtime campaigns MUST define deterministic phase-transition schedules and workload shapes, including controlled few-to-many-to-few and other regime-shift sequences, MUST retain those schedules as trace-owned measurement artifacts with stable identifiers and exact command lineage, and MUST keep schedule labels and scenario names out of runtime controller inputs.",
+      "trace": {
+        "upstream_refs": [
+          "docs/protocol-lab/adaptive-runtime-policy-local-campaign.md",
+          "docs/testing/adaptive-runtime-policy-shadow-verification.md",
+          "docs/testing/adaptive-runtime-policy-acceptance-rollback.md"
+        ]
+      },
+      "notes": [
+        "Phase transitions and regime shifts are campaign artifacts, not runtime policy inputs.",
+        "The schedule contract supports replay and counterfactual comparison only."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0172",
+      "title": "Keep the adaptive-runtime dataset pipeline append-only with explicit join semantics",
+      "statement": "The offline adaptive-runtime dataset pipeline MUST define explicit missingness and join semantics, MUST preserve the raw, normalized, curated, and split layers as append-only transformations, MUST retain excluded or rejected rows with reason codes, and MUST carry immutable provenance linking each row back to its repository state, binary hashes, workload shape, policy values, source artifacts, and transformation version.",
+      "trace": {
+        "upstream_refs": [
+          "docs/protocol-lab/adaptive-runtime-policy-dataset-provenance-contract.md",
+          "docs/protocol-lab/adaptive-runtime-policy-local-campaign.md",
+          "docs/design/adaptive-runtime-policy-observation-schema.md"
+        ]
+      },
+      "notes": [
+        "Missing or unmatched joins stay addressable and keep their exclusion reasons.",
+        "The append-only transform chain preserves raw negatives and superseded rows."
+      ]
     }
   ]
 }

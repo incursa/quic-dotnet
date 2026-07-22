@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0062",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "Adaptive runtime policy catalog, phase-transition schedule, and provenance architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the measurement-only adaptive-runtime catalog, deterministic campaign scheduling, and append-only offline provenance controls needed to review candidate policies without activating production behavior.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0059"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0170",
+    "REQ-QUIC-CRT-0171",
+    "REQ-QUIC-CRT-0172"
+  ],
+  "key_components": [
+    "docs/design/adaptive-runtime-policy-seam-inventory.md",
+    "docs/design/adaptive-runtime-policy-observation-schema.md",
+    "docs/adaptive-runtime-policy-planning.md",
+    "docs/protocol-lab/adaptive-runtime-policy-local-campaign.md",
+    "docs/protocol-lab/adaptive-runtime-policy-dataset-provenance-contract.md",
+    "docs/testing/adaptive-runtime-policy-shadow-verification.md",
+    "docs/testing/adaptive-runtime-policy-acceptance-rollback.md",
+    "schemas/adaptive-runtime-policy-local-result-v1.schema.json",
+    "schemas/adaptive-runtime-policy-epoch-dataset-v1.schema.json"
+  ],
+  "design_summary": "The current runtime remains authoritative; this tranche defines measurement surfaces only. The catalog records the safe seams and candidate policy values that may be observed or forced in review-only campaigns. Campaign manifests define deterministic phase-transition schedules and controlled regime shifts so local runs can be replayed and compared without workload labels becoming runtime inputs. The offline data pipeline remains append-only from raw through normalized, curated, and split layers, with explicit missingness and join semantics and with provenance that traces each row back to repository state, binary hashes, workload shape, and transformation version. No active controller, online learning, or production activation is introduced by this slice.",
+  "alternatives_considered": [
+    "Treat the catalog as production policy metadata. Rejected because the first tranche must stay measurement-only and cannot imply runtime activation.",
+    "Derive schedules from workload labels alone. Rejected because phase-transition schedules must be deterministic artifacts with exact command lineage and replayable treatment order.",
+    "Allow in-place dataset edits during curation. Rejected because the raw-to-split chain must stay append-only so provenance and rejected rows remain addressable."
+  ],
+  "edge_cases_and_constraints": [
+    "Catalog entries are review metadata only and cannot widen a controller axis by existence alone.",
+    "Schedule labels, scenario names, and workload families are analysis inputs, not runtime controller inputs.",
+    "Join failures, missing observations, and rejected rows remain retained evidence instead of silent deletion.",
+    "Append-only provenance must keep raw negatives and superseded rows addressable by ID and checksum."
+  ],
+  "data_and_state_considerations": "The policy catalog is versioned metadata that can be joined to campaign and dataset records, but it does not own queue mutation, packet construction, flow control, congestion control, timers, or buffers. Campaign schedules are stored as deterministic measurement artifacts with stable IDs, exact command lineage, and explicit phase transitions such as sparse-to-saturated-to-sparse or few-to-many-to-few sequences. Dataset layers are append-only transformations over the same immutable source artifacts, and join semantics must preserve missingness and mismatch reasons rather than rewriting the raw evidence. Offline provenance captures repository state, binary hashes, workload shape, policy values, source artifacts, and transformation version for every retained row.",
+  "risks": [
+    "A catalog that becomes authoritative input would quietly reintroduce production activation through metadata.",
+    "Non-deterministic schedule generation would make regime-shift comparisons impossible to replay.",
+    "Allowing destructive curation would erase the negative evidence needed for later rule review.",
+    "Incomplete provenance would make holdout analysis and later split governance unverifiable."
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0064",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Adaptive runtime policy catalog, phase-transition schedule, and provenance verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused requirement-home checks, deterministic replay of campaign schedules, append-only pipeline validation, provenance audits, and retained-negative review.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0062",
+    "WI-QUIC-CRT-0063"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0170",
+    "REQ-QUIC-CRT-0171",
+    "REQ-QUIC-CRT-0172"
+  ],
+  "preconditions": [
+    "The measurement-only catalog, deterministic schedule artifacts, and append-only dataset contract are the only new tranche under review.",
+    "No active-controller application, online learning, public adaptive-policy API, or production exploration is included in this verification slice.",
+    "The local-result and epoch-dataset schemas remain versioned review contracts for offline analysis and provenance."
+  ],
+  "scope": "Verify the measurement-only policy catalog, deterministic phase-transition schedules, explicit missingness and join semantics, and append-only raw-to-split provenance chain only. This artifact does not verify active controller application, a wider policy axis, or a publishable ProtocolLab performance claim.",
+  "expected_result": "Catalog entries remain non-authoritative and cannot affect runtime behavior; campaign schedules replay deterministically with the same phase boundaries, treatment order, and command lineage; missingness and join failures retain explicit reasons rather than being hidden; raw, normalized, curated, and split layers remain append-only; and every retained row links back to repository state, binary hashes, workload shape, policy values, source artifacts, and transformation version.",
+  "procedure": [
+    "Validate ARC-QUIC-CRT-0062, WI-QUIC-CRT-0063, and VER-QUIC-CRT-0064 individually against model/model.schema.json; verify unique IDs and reciprocal direct links to REQ-QUIC-CRT-0170 through REQ-QUIC-CRT-0172.",
+    "Run deterministic replay of the documented phase-transition schedules and confirm the same treatment order, phase boundaries, and command lineage across repeated executions.",
+    "Validate representative positive and negative catalog, schedule, and dataset records against the repository's existing review contracts and the local-result and epoch-dataset schemas.",
+    "Prove missing, stale, contradictory, and unmatched joins retain explicit reason codes and remain addressable as negative evidence.",
+    "Prove the raw, normalized, curated, and split layers are append-only and that supersession appends new records instead of rewriting prior ones.",
+    "Audit provenance fields for repository state, binary hashes, workload shape, policy values, source artifacts, and transformation version.",
+    "Run git diff --check and record the pre-existing repo-wide SpecTrace validation backlog separately from the validation status of the touched artifacts."
+  ],
+  "evidence": [
+    "specs/requirements/quic/SPEC-QUIC-CRT.json",
+    "specs/architecture/quic/ARC-QUIC-CRT-0062.json",
+    "specs/work-items/quic/WI-QUIC-CRT-0063.json",
+    "docs/design/adaptive-runtime-policy-seam-inventory.md",
+    "docs/design/adaptive-runtime-policy-observation-schema.md",
+    "docs/protocol-lab/adaptive-runtime-policy-local-campaign.md",
+    "docs/protocol-lab/adaptive-runtime-policy-dataset-provenance-contract.md",
+    "docs/testing/adaptive-runtime-policy-shadow-verification.md",
+    "docs/testing/adaptive-runtime-policy-acceptance-rollback.md",
+    "schemas/adaptive-runtime-policy-local-result-v1.schema.json",
+    "schemas/adaptive-runtime-policy-epoch-dataset-v1.schema.json",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT"
+  ]
+}

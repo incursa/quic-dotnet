@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0063",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "Adaptive runtime policy catalog, phase-transition schedule, and provenance work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add the measurement-only policy catalog, deterministic campaign schedules, and append-only dataset provenance controls needed for offline adaptive-runtime measurement while keeping production behavior unchanged.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0062"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0062"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0064"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0170",
+    "REQ-QUIC-CRT-0171",
+    "REQ-QUIC-CRT-0172"
+  ],
+  "planned_changes": "- Add a versioned policy-catalog seam that records safe-seam policy candidates and keeps the catalog measurement-only.\n- Add deterministic phase-transition schedule artifacts and workload shapes for controlled few-to-many-to-few and regime-shift campaigns, with stable IDs and exact command lineage.\n- Add explicit missingness and join handling plus append-only raw, normalized, curated, and split pipeline enforcement with reason codes and provenance checks.\n- Add focused requirement-home, replay, and provenance validation before any later implementation slice can widen the measurement contract.\n- Keep the work limited to review-only metadata, offline campaign artifacts, and trace alignment; do not introduce active policy application.",
+  "verification_plan": "Validate the touched SpecTrace artifacts individually and verify their direct links; prove the catalog remains non-authoritative; prove deterministic phase-transition schedules replay with the same treatment order and command lineage; prove join failures, missing rows, and excluded rows retain explicit reason codes; prove raw, normalized, curated, and split layers are append-only; prove provenance reaches repository state, binary hashes, workload shape, policy values, source artifacts, and transformation version; and keep all active-controller and production-activation paths out of scope.",
+  "out_of_scope": [
+    "Applying any adaptive runtime policy in production",
+    "Using workload labels, scenario names, or benchmark identifiers as runtime controller inputs",
+    "Online learning, production exploration, or self-updating thresholds",
+    "Destructive dataset curation that deletes retained evidence",
+    "Widening any policy axis beyond the measurement-only catalog"
+  ]
+}

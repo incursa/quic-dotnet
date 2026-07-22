@@ -23,10 +23,15 @@ This ledger tracks open questions, ambiguities, and follow-up decisions for QUIC
   `REQ-QUIC-CRT-0169`, which define bounded observations, internal forced
   receive-credit modes, shadow-only frozen-selector reproduction, actor-safe
   snapshot/reason/fallback/latching rules, offline-analysis boundaries, and
-  versioned provenance-rich evidence contracts. The matching design, delivery,
-  and proof homes are `ARC-QUIC-CRT-0059`, `WI-QUIC-CRT-0060`, and
-  `VER-QUIC-CRT-0061`. This gap still owns only the later active controller and
-  any wider policy beyond that shadow foundation.
+  versioned provenance-rich evidence contracts. The next measurement-only
+  tranche is now traced by `REQ-QUIC-CRT-0170` through `REQ-QUIC-CRT-0172`,
+  with `ARC-QUIC-CRT-0062`, `WI-QUIC-CRT-0063`, and `VER-QUIC-CRT-0064`
+  covering the safe-seam policy catalog, deterministic phase-transition
+  schedules, and append-only `raw->normalized->curated->split` provenance
+  pipeline. The matching design, delivery, and proof homes for the shadow
+  foundation remain `ARC-QUIC-CRT-0059`, `WI-QUIC-CRT-0060`, and
+  `VER-QUIC-CRT-0061`. This gap still owns only the later active controller
+  and any wider policy beyond that shadow foundation.
   Universal or duplex-reactivating receive-credit batching, online learning,
   production exploration, benchmark-label selection, per-packet evaluation, and
   silent migration of the retained selectors remain out of scope. The seven
