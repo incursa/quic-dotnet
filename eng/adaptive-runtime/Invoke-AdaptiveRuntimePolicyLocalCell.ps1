@@ -1693,7 +1693,10 @@ if (-not ($resultJson | Test-Json -SchemaFile $resultSchemaPath -ErrorAction Sto
 }
 
 $constructionRowPaths = [System.Collections.Generic.List[string]]::new()
-if ($isApplicationSendTurnAxis -and $contractFailures.Count -eq 0) {
+# Construction provenance is retained even when a run has already accumulated
+# a contract failure. The later validator records the failed join or exclusion;
+# suppressing the rows would silently discard the counterfactual evidence.
+if ($isApplicationSendTurnAxis) {
     $quicRepository = @($repositoryIdentities | Where-Object name -eq 'quic-dotnet') | Select-Object -First 1
     $benchmarkHash = [string] $binaryIdentities[0].sha256
     $runtimeHash = [string] $binaryIdentities[1].sha256
