@@ -43,6 +43,15 @@ public sealed class REQ_QUIC_CRT_0170
             ["forced", "shadow"],
             receiveCredit.GetProperty("measurementModes").EnumerateArray().Select(static item => item.GetString()!).Order().ToArray());
 
+        JsonElement applicationSendTurn = entries.Single(static entry =>
+            entry.GetProperty("axisId").GetString() == "application_send_turn_planning");
+        Assert.Equal("forceable_campaign_seam", applicationSendTurn.GetProperty("readiness").GetString());
+        Assert.True(applicationSendTurn.GetProperty("forceableForCampaigns").GetBoolean());
+        Assert.False(applicationSendTurn.GetProperty("shadowSupported").GetBoolean());
+        Assert.Equal(
+            ["conservative", "legacy_current"],
+            applicationSendTurn.GetProperty("policyValues").EnumerateArray().Select(static item => item.GetString()!).Order().ToArray());
+
         JsonElement advisor = entries.Single(static entry =>
             entry.GetProperty("axisId").GetString() == "runtime_pressure_advisor");
         Assert.Equal("observation_only", advisor.GetProperty("readiness").GetString());

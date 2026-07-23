@@ -63,7 +63,8 @@
             "enum": [
               "REQ-QUIC-CRT-0170",
               "REQ-QUIC-CRT-0171",
-              "REQ-QUIC-CRT-0172"
+              "REQ-QUIC-CRT-0172",
+              "REQ-QUIC-CRT-0173"
             ]
           }
         },
@@ -171,6 +172,7 @@
           "type": "string",
           "enum": [
             "executable_measurement",
+            "forceable_campaign_seam",
             "forceable_test_seam",
             "inventory_only",
             "observation_only"
@@ -227,7 +229,8 @@
             "enum": [
               "REQ-QUIC-CRT-0170",
               "REQ-QUIC-CRT-0171",
-              "REQ-QUIC-CRT-0172"
+              "REQ-QUIC-CRT-0172",
+              "REQ-QUIC-CRT-0173"
             ]
           }
         },

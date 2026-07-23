@@ -31,7 +31,8 @@ $document = [ordered]@{
         requirementIds = @(
             'REQ-QUIC-CRT-0170',
             'REQ-QUIC-CRT-0171',
-            'REQ-QUIC-CRT-0172'
+            'REQ-QUIC-CRT-0172',
+            'REQ-QUIC-CRT-0173'
         )
         axisIds = @(
             'receive_credit_publication',
@@ -109,17 +110,20 @@ $document = [ordered]@{
             entryId = 'application-send-turn-planning.inventory'
             axisId = 'application_send_turn_planning'
             catalogStatus = 'experimental_measurement_only'
-            readiness = 'forceable_test_seam'
+            readiness = 'forceable_campaign_seam'
             runtimeAuthority = 'legacy_current'
-            measurementModes = @()
-            policyValues = @('legacy_current', 'candidate')
-            candidatePolicies = @('candidate')
-            forceableForCampaigns = $false
+            measurementModes = @('forced')
+            policyValues = @('legacy_current', 'conservative')
+            candidatePolicies = @('conservative')
+            forceableForCampaigns = $true
             shadowSupported = $false
             activationAuthorized = $false
-            sourceRequirements = @('REQ-QUIC-CRT-0170')
+            sourceRequirements = @('REQ-QUIC-CRT-0170', 'REQ-QUIC-CRT-0173')
             retainedNegativeEvidenceClasses = @('scheduler_quantum')
-            notes = @('Planner injection exists in tests and benchmarks, but no executable local campaign mode is authorized here.')
+            notes = @(
+                'The internal legacy_current/conservative force seam and raw-QUIC package environment are available for measurement-only campaigns.',
+                'The permanent local runner and normalized provenance join remain separately planned; this entry does not authorize active selection or a new planner algorithm.'
+            )
         }
         [ordered]@{
             entryId = 'application-datagram-batching.inventory'
