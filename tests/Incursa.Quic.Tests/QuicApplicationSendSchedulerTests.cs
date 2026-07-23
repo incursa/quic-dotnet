@@ -412,6 +412,38 @@ public sealed class QuicApplicationSendSchedulerTests
     }
 
     [Fact]
+    public void ForcedTurnPolicyPublishesImmutableConstructionProvenance()
+    {
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        RecordingApplicationSendTurnPolicyProvenanceSink sink = new();
+        QuicClientConnectionOptions options = new()
+        {
+            ForcedApplicationSendTurnPolicyMode = QuicApplicationSendTurnPolicyMode.Conservative,
+            ApplicationSendTurnPolicyProvenanceSink = sink,
+        };
+
+        runtime.ConfigureAdaptiveRuntimePolicy(options);
+
+        QuicApplicationSendTurnPolicyProvenance provenance = Assert.Single(sink.Provenance);
+        Assert.Equal(QuicApplicationSendTurnPolicyProvenance.CurrentSchemaVersion, provenance.SchemaVersion);
+        Assert.Equal(QuicApplicationSendTurnPolicyProvenance.CurrentAxisId, provenance.AxisId);
+        Assert.Equal(QuicApplicationSendTurnPolicyProvenance.CurrentRuleVersion, provenance.RuleVersion);
+        Assert.Equal(QuicApplicationSendTurnPolicyMode.Conservative, provenance.AppliedPolicy);
+    }
+
+    [Fact]
+    public void TurnPolicyProvenanceRequiresAForcedTurnPolicy()
+    {
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicClientConnectionOptions options = new()
+        {
+            ApplicationSendTurnPolicyProvenanceSink = new RecordingApplicationSendTurnPolicyProvenanceSink(),
+        };
+
+        Assert.Throws<InvalidOperationException>(() => runtime.ConfigureAdaptiveRuntimePolicy(options));
+    }
+
+    [Fact]
     public void AdaptiveRuntimeShadowRejectsANonlegacyForcedTurnPolicy()
     {
         using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
@@ -509,6 +541,17 @@ public sealed class QuicApplicationSendSchedulerTests
         {
             SelectionCount++;
             return selectedWriteIndex;
+        }
+    }
+
+    private sealed class RecordingApplicationSendTurnPolicyProvenanceSink : IQuicApplicationSendTurnPolicyProvenanceSink
+    {
+        internal List<QuicApplicationSendTurnPolicyProvenance> Provenance { get; } = [];
+
+        public bool TryPublish(in QuicApplicationSendTurnPolicyProvenance provenance)
+        {
+            Provenance.Add(provenance);
+            return true;
         }
     }
 }

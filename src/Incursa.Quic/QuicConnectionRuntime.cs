@@ -1043,6 +1043,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         QuicApplicationSendTurnPolicyMode? forcedApplicationSendTurnMode = options.ForcedApplicationSendTurnPolicyMode;
         if (options.AdaptiveRuntimeShadowEnabled)
         {
+            if (options.ApplicationSendTurnPolicyProvenanceSink is not null)
+            {
+                throw new InvalidOperationException(
+                    "Application-send turn provenance requires a non-shadow forced policy campaign.");
+            }
+
             if (forcedMode is not null and not QuicReceiveCreditPolicyMode.LegacyCurrent)
             {
                 throw new InvalidOperationException(
@@ -1081,6 +1087,14 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         if (forcedApplicationSendTurnMode is not null)
         {
             ConfigureApplicationSendTurnPolicyMode(forcedApplicationSendTurnMode.Value);
+
+            options.ApplicationSendTurnPolicyProvenanceSink?.TryPublish(
+                QuicApplicationSendTurnPolicyProvenance.Create(forcedApplicationSendTurnMode.Value));
+        }
+        else if (options.ApplicationSendTurnPolicyProvenanceSink is not null)
+        {
+            throw new InvalidOperationException(
+                "Application-send turn provenance requires a forced application-send turn policy.");
         }
 
         if (options.AdaptiveRuntimeShadowEpochSink is not null

@@ -211,6 +211,13 @@ public sealed class ProtocolLabPackageTemplateTests
     {
         var repoRoot = FindRepoRoot();
         var builderScript = File.ReadAllText(Path.Combine(repoRoot, "eng", "protocol-lab", "New-QuicDotNetProtocolLabPackage.ps1"));
+        var rawQuicServer = File.ReadAllText(Path.Combine(
+            repoRoot,
+            "eng",
+            "protocol-lab",
+            "servers",
+            "IncursaRawQuicServer",
+            "Program.cs"));
         Assert.Contains("eng/protocol-lab/src/Incursa.ProtocolLab.Adapters.IncursaRawQuic/Incursa.ProtocolLab.Adapters.IncursaRawQuic.csproj", builderScript);
         Assert.Contains("eng/protocol-lab/servers/IncursaRawQuicServer/IncursaRawQuicServer.csproj", builderScript);
         Assert.Contains("UseProtocolLabContracts", builderScript);
@@ -240,6 +247,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("AdaptiveRuntimeReceiveCreditPolicy", builderScript);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY", builderScript);
         Assert.Contains("AdaptiveRuntimeApplicationSendTurnPolicy", builderScript);
+        Assert.Contains("QUIC_APPLICATION_SEND_TURN_POLICY_JSON=", rawQuicServer);
+        Assert.Contains("QUIC_APPLICATION_SEND_TURN_POLICY_CONTRACT=", rawQuicServer);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY", builderScript);
         Assert.Contains("Raw QUIC package implementation manifest must contain exactly one ASPNETCORE_URLS environment anchor.", builderScript);
         Assert.Contains("adaptiveRuntimeReceiveCreditPolicy", builderScript);

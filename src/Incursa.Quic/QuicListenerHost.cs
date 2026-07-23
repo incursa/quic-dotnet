@@ -2419,6 +2419,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         selectedOptions.AdaptiveRuntimeShadowEnabled = returnedOptions.AdaptiveRuntimeShadowEnabled;
         selectedOptions.AdaptiveRuntimeShadowEpochInterval = returnedOptions.AdaptiveRuntimeShadowEpochInterval;
         selectedOptions.AdaptiveRuntimeShadowEpochSink = returnedOptions.AdaptiveRuntimeShadowEpochSink;
+        selectedOptions.ApplicationSendTurnPolicyProvenanceSink = returnedOptions.ApplicationSendTurnPolicyProvenanceSink;
 
         QuicReceiveWindowSizes returnedWindowSizes = returnedOptions.InitialReceiveWindowSizes;
         selectedOptions.InitialReceiveWindowSizes = new QuicReceiveWindowSizes

@@ -164,4 +164,6 @@ public abstract class QuicConnectionOptions
     internal TimeSpan AdaptiveRuntimeShadowEpochInterval { get; set; }
 
     internal IQuicAdaptiveRuntimeShadowEpochSink? AdaptiveRuntimeShadowEpochSink { get; set; }
+
+    internal IQuicApplicationSendTurnPolicyProvenanceSink? ApplicationSendTurnPolicyProvenanceSink { get; set; }
 }
