@@ -104,21 +104,26 @@ rule table, or runtime input is derived from it here. Missing outcomes,
 environment-invalid rows, failed-correctness rows, warmup, saturation, and
 partial-terminal exclusions remain explicit and queryable.
 
-## Required next review decision
+## Review decision
 
-Review the non-overlapping cohort against the dataset provenance contract and
-record one of these outcomes before collecting or implementing anything else:
+**Decision: `remain_legacy_current`.** The non-overlapping three-host cohort
+is useful provenance-preserving review material but does not satisfy the full
+host-and-workload holdout contract. The broader corpus also contains only
+neutral, retained-negative, environment-invalid, or failed-correctness
+policy-effect outcomes; it contains no transferable, constrained winner from
+which an integer or fixed-point receive-credit rule could be honestly derived.
 
-1. `remain_legacy_current` because the cohort cannot support a safe
-   deterministic proposal;
-2. `continue_evidence_generation` with one exactly scoped host/workload cell
-   under the existing forced-policy and epoch contract; or
-3. `accept_shadow_only` with a separately reviewed deterministic proposal.
+Accordingly, no rule proposal, model, threshold, or `active_internal` request
+is produced for `receive_credit_publication`. The existing shadow foundation
+and forced-policy seam remain permanent counterfactual and rollback tools, but
+the applied runtime behavior remains the accepted `legacy_current` selector.
 
-No evidence currently authorizes `active_internal`. If the cohort is
-insufficient, the next collection must preserve the current binary cohort,
-round-robin order, and frozen adjacent axes; it must not sample until a desired
-outcome appears.
+The receive-credit evidence-review gate is closed as non-promoting. Any future
+reopening must use a new append-only campaign under the existing binary,
+provenance, round-robin, and frozen-adjacent-axis contracts; it must not sample
+until a desired outcome appears. This decision permits a separately traced,
+measurement-only inventory of `application_send_turn_planning`; it does not
+authorize that axis's runtime implementation or active behavior.
 
 ## Evidence locations
 
