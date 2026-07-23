@@ -43,6 +43,52 @@ public sealed class REQ_QUIC_CRT_0172
         Assert.Equal(0, fairness.GetProperty("starvationCount").GetInt32());
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void ValidatorAcceptsSchemaValidEvidenceThatOmitsOptionalBufferPoolOutcomes()
+    {
+        string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        string sourceDirectory = Path.GetDirectoryName(AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+            "tests/fixtures/adaptive-runtime-policy/local-result.shadow.checksum.example.json"))!;
+        string temporaryDirectory = Path.Combine(repoRoot, ".artifacts", "adaptive-runtime", $"optional-buffer-outcomes-test-{Guid.NewGuid():N}");
+
+        try
+        {
+            CopyDirectory(sourceDirectory, temporaryDirectory);
+            string resultPath = Path.Combine(temporaryDirectory, "local-result.shadow.checksum.example.json");
+            System.Text.Json.Nodes.JsonObject result =
+                System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(resultPath))!.AsObject();
+            System.Text.Json.Nodes.JsonObject sampleOutcomes =
+                result["samples"]![0]!["outcomes"]!.AsObject();
+            System.Text.Json.Nodes.JsonObject aggregateOutcomes =
+                result["aggregateOutcomes"]!.AsObject();
+            Assert.True(sampleOutcomes.Remove("bufferPoolRentedBytes"));
+            Assert.True(sampleOutcomes.Remove("bufferPoolOutstandingPeakBytes"));
+            Assert.True(aggregateOutcomes.Remove("bufferPoolRentedBytes"));
+            Assert.True(aggregateOutcomes.Remove("bufferPoolOutstandingPeakBytes"));
+            File.WriteAllText(resultPath, result.ToJsonString());
+
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult validation =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Test-AdaptiveRuntimePolicyEvidence.ps1",
+                    "-LocalResultPath", resultPath,
+                    "-EpochDatasetPath", Path.Combine(temporaryDirectory, "epoch-row.shadow.checksum.example.json"));
+
+            Assert.Equal(0, validation.ExitCode);
+            using JsonDocument summary = JsonDocument.Parse(validation.Output);
+            Assert.True(summary.RootElement.GetProperty("valid").GetBoolean());
+            Assert.Empty(summary.RootElement.GetProperty("failures").EnumerateArray());
+        }
+        finally
+        {
+            if (Directory.Exists(temporaryDirectory))
+            {
+                Directory.Delete(temporaryDirectory, recursive: true);
+            }
+        }
+    }
+
     [Theory]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]

@@ -425,6 +425,8 @@ foreach ($resultContext in $localResultContextsByRunId.Values) {
     $sampleFairnessP99Ms = [System.Collections.Generic.List[double]]::new()
     $expectedFairnessAssessable = $true
     $expectedStarvationCount = 0
+    $aggregateBufferPoolRentedBytes = Get-OptionalObjectProperty -Object $result.aggregateOutcomes -Name 'bufferPoolRentedBytes'
+    $aggregateBufferPoolOutstandingPeakBytes = Get-OptionalObjectProperty -Object $result.aggregateOutcomes -Name 'bufferPoolOutstandingPeakBytes'
 
     foreach ($sample in @($result.samples)) {
         $sampleArtifactPaths = @($sample.artifactPaths | ForEach-Object {
@@ -433,11 +435,13 @@ foreach ($resultContext in $localResultContextsByRunId.Values) {
         $bufferPoolSummaryPaths = @($sampleArtifactPaths | Where-Object {
             [System.IO.Path]::GetFileName($_).StartsWith('quic-buffer-pool-summary', [StringComparison]::OrdinalIgnoreCase)
         })
-        $sampleHasOutcomeMetrics = $null -ne $sample.outcomes.bufferPoolRentedBytes -or $null -ne $sample.outcomes.bufferPoolOutstandingPeakBytes
+        $sampleBufferPoolRentedOutcome = Get-OptionalObjectProperty -Object $sample.outcomes -Name 'bufferPoolRentedBytes'
+        $sampleBufferPoolOutstandingPeakOutcome = Get-OptionalObjectProperty -Object $sample.outcomes -Name 'bufferPoolOutstandingPeakBytes'
+        $sampleHasOutcomeMetrics = $null -ne $sampleBufferPoolRentedOutcome -or $null -ne $sampleBufferPoolOutstandingPeakOutcome
 
         if ($sampleHasOutcomeMetrics -or
-            $null -ne $result.aggregateOutcomes.bufferPoolRentedBytes -or
-            $null -ne $result.aggregateOutcomes.bufferPoolOutstandingPeakBytes) {
+            $null -ne $aggregateBufferPoolRentedBytes -or
+            $null -ne $aggregateBufferPoolOutstandingPeakBytes) {
             if ($bufferPoolSummaryPaths.Count -ne 1) {
                 $failures.Add("Sample '$($sample.sampleId)' must retain exactly one quic-buffer-pool-summary.json when buffer-pool outcomes are populated.")
             }
@@ -468,7 +472,7 @@ foreach ($resultContext in $localResultContextsByRunId.Values) {
                             if ($null -eq $expectedBufferPoolRentedBytes) {
                                 $failures.Add("Sample '$($sample.sampleId)' populated outcomes.bufferPoolRentedBytes, but quic-buffer-pool-summary.json did not retain incursa.quic.buffer_pool.bytes.rented total.")
                             }
-                            elseif ([long] $sample.outcomes.bufferPoolRentedBytes -ne $expectedBufferPoolRentedBytes) {
+                            elseif ([long] $sampleBufferPoolRentedOutcome -ne $expectedBufferPoolRentedBytes) {
                                 $failures.Add("Sample '$($sample.sampleId)' outcomes.bufferPoolRentedBytes does not match quic-buffer-pool-summary.json.")
                             }
                             else {
@@ -478,7 +482,7 @@ foreach ($resultContext in $localResultContextsByRunId.Values) {
                             if ($null -eq $expectedBufferPoolOutstandingPeakBytes) {
                                 $failures.Add("Sample '$($sample.sampleId)' populated outcomes.bufferPoolOutstandingPeakBytes, but quic-buffer-pool-summary.json did not retain incursa.quic.buffer_pool.outstanding.bytes max.")
                             }
-                            elseif ([long] $sample.outcomes.bufferPoolOutstandingPeakBytes -ne $expectedBufferPoolOutstandingPeakBytes) {
+                            elseif ([long] $sampleBufferPoolOutstandingPeakOutcome -ne $expectedBufferPoolOutstandingPeakBytes) {
                                 $failures.Add("Sample '$($sample.sampleId)' outcomes.bufferPoolOutstandingPeakBytes does not match quic-buffer-pool-summary.json.")
                             }
                             else {
@@ -535,22 +539,22 @@ foreach ($resultContext in $localResultContextsByRunId.Values) {
         }
     }
 
-    if ($null -ne $result.aggregateOutcomes.bufferPoolRentedBytes) {
+    if ($null -ne $aggregateBufferPoolRentedBytes) {
         $expectedAggregateBufferPoolRentedBytes = Get-RoundedMedianInt64 -Values @($sampleBufferPoolRentedBytes)
         if ($null -eq $expectedAggregateBufferPoolRentedBytes) {
             $failures.Add("Local result '$($resultContext.Item.Path)' populated aggregateOutcomes.bufferPoolRentedBytes without checksum-backed sample buffer-pool evidence.")
         }
-        elseif ([long] $result.aggregateOutcomes.bufferPoolRentedBytes -ne $expectedAggregateBufferPoolRentedBytes) {
+        elseif ([long] $aggregateBufferPoolRentedBytes -ne $expectedAggregateBufferPoolRentedBytes) {
             $failures.Add("Local result '$($resultContext.Item.Path)' aggregateOutcomes.bufferPoolRentedBytes does not match the checksum-backed sample median.")
         }
     }
 
-    if ($null -ne $result.aggregateOutcomes.bufferPoolOutstandingPeakBytes) {
+    if ($null -ne $aggregateBufferPoolOutstandingPeakBytes) {
         $expectedAggregateBufferPoolOutstandingPeakBytes = Get-RoundedMedianInt64 -Values @($sampleBufferPoolOutstandingPeakBytes)
         if ($null -eq $expectedAggregateBufferPoolOutstandingPeakBytes) {
             $failures.Add("Local result '$($resultContext.Item.Path)' populated aggregateOutcomes.bufferPoolOutstandingPeakBytes without checksum-backed sample buffer-pool evidence.")
         }
-        elseif ([long] $result.aggregateOutcomes.bufferPoolOutstandingPeakBytes -ne $expectedAggregateBufferPoolOutstandingPeakBytes) {
+        elseif ([long] $aggregateBufferPoolOutstandingPeakBytes -ne $expectedAggregateBufferPoolOutstandingPeakBytes) {
             $failures.Add("Local result '$($resultContext.Item.Path)' aggregateOutcomes.bufferPoolOutstandingPeakBytes does not match the checksum-backed sample median.")
         }
     }
