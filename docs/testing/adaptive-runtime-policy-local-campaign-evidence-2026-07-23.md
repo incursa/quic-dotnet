@@ -163,6 +163,31 @@ shared loopback collection. This is retained nonreproduced diagnostic evidence
 only: it neither clears nor reclassifies the original one-of-9,798 full-suite
 failure, and no policy gate is advanced from it.
 
+### Retained independent complete rerun
+
+An independent complete Release rerun then executed from
+`422d31de14bf683a6f096fcfeb6806dd65d19663` (documentation-only changes after
+the focused diagnostic) with the same command:
+
+```powershell
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --disable-build-servers --nologo -v:minimal
+```
+
+It passed in 10m18s with 9,794 passed, 4 skipped, and 0 failed. Its command
+manifest, stdout, and stderr remain at
+`.artifacts\adaptive-runtime\verification\full-release-rerun-20260723T2100Z`.
+The SHA-256 values are `754AC6CB3A478A42071E814E540E3FF54D776B913CE9723FA6B766478200502C`
+for `command.json`,
+`5811681B4BBFAFE16507F018ABC102F661FE970BFD886C6C39C4D31CA26A1723` for
+stdout, and
+`E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855` for
+stderr.
+
+This second complete-suite result is retained alongside, not in place of, the
+original failure. It establishes that the timeout did not reproduce in this
+full rerun, but does not establish cause, clear the earlier correctness
+blocker, or authorize c4, ProtocolLab, or active-policy progression.
+
 ## ProtocolLab Gate Status
 
 No `application_send_turn_planning` ProtocolLab job was submitted and no
