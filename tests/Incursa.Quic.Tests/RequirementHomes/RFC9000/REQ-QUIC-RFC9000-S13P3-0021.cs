@@ -25,6 +25,15 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0021
         Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
         Assert.Equal(default, errorCode);
 
+        QuicPeerStreamCapacityStateSnapshot pendingSnapshot =
+            state.CapturePeerStreamCapacityStateSnapshot();
+        Assert.Equal(1UL, pendingSnapshot.IncomingUnidirectionalLimit);
+        Assert.Equal(1, pendingSnapshot.TrackedUnidirectional);
+        Assert.Equal(0, pendingSnapshot.ReleaseReportedUnidirectional);
+        Assert.Equal(1, pendingSnapshot.FullyClosedUnreleasedUnidirectional);
+        Assert.Equal(0, pendingSnapshot.ReceiveOpenUnreleasedUnidirectional);
+        Assert.Equal(0, pendingSnapshot.SendOpenUnreleasedUnidirectional);
+
         Assert.True(state.TryPeekPeerStreamCapacityRelease(3, out QuicMaxStreamsFrame firstReleaseFrame));
         Assert.True(state.TryPeekPeerStreamCapacityRelease(3, out QuicMaxStreamsFrame secondReleaseFrame));
         Assert.Equal(firstReleaseFrame, secondReleaseFrame);
@@ -33,6 +42,15 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0021
         Assert.True(state.TryCommitPeerStreamCapacityRelease(3, firstReleaseFrame));
         Assert.False(state.TryPeekPeerStreamCapacityRelease(3, out _));
         Assert.Equal(2UL, state.IncomingUnidirectionalStreamLimit);
+
+        QuicPeerStreamCapacityStateSnapshot releasedSnapshot =
+            state.CapturePeerStreamCapacityStateSnapshot();
+        Assert.Equal(2UL, releasedSnapshot.IncomingUnidirectionalLimit);
+        Assert.Equal(1, releasedSnapshot.TrackedUnidirectional);
+        Assert.Equal(1, releasedSnapshot.ReleaseReportedUnidirectional);
+        Assert.Equal(0, releasedSnapshot.FullyClosedUnreleasedUnidirectional);
+        Assert.Equal(0, releasedSnapshot.ReceiveOpenUnreleasedUnidirectional);
+        Assert.Equal(0, releasedSnapshot.SendOpenUnreleasedUnidirectional);
     }
 
     [Fact]

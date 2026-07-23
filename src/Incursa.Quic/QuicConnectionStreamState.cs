@@ -1232,6 +1232,86 @@ internal sealed class QuicConnectionStreamState
         }
     }
 
+    internal QuicPeerStreamCapacityStateSnapshot CapturePeerStreamCapacityStateSnapshot()
+    {
+        lock (syncRoot)
+        {
+            int trackedBidirectional = 0;
+            int trackedUnidirectional = 0;
+            int releaseReportedBidirectional = 0;
+            int releaseReportedUnidirectional = 0;
+            int fullyClosedUnreleasedBidirectional = 0;
+            int fullyClosedUnreleasedUnidirectional = 0;
+            int receiveOpenUnreleasedBidirectional = 0;
+            int receiveOpenUnreleasedUnidirectional = 0;
+            int sendOpenUnreleasedBidirectional = 0;
+            int sendOpenUnreleasedUnidirectional = 0;
+
+            foreach (KeyValuePair<ulong, StreamState> entry in streams)
+            {
+                QuicStreamId streamId = new(entry.Key);
+                if (!IsPeerInitiated(streamId))
+                {
+                    continue;
+                }
+
+                StreamState state = entry.Value;
+                ref int tracked = ref streamId.IsBidirectional
+                    ? ref trackedBidirectional
+                    : ref trackedUnidirectional;
+                tracked++;
+
+                if (state.PeerCapacityReleaseReported)
+                {
+                    ref int releaseReported = ref streamId.IsBidirectional
+                        ? ref releaseReportedBidirectional
+                        : ref releaseReportedUnidirectional;
+                    releaseReported++;
+                    continue;
+                }
+
+                if (IsPeerStreamFullyClosed(state))
+                {
+                    ref int fullyClosedUnreleased = ref streamId.IsBidirectional
+                        ? ref fullyClosedUnreleasedBidirectional
+                        : ref fullyClosedUnreleasedUnidirectional;
+                    fullyClosedUnreleased++;
+                    continue;
+                }
+
+                if (state.HasReceivePart && !IsStreamReceiveClosed(state.ReceiveState))
+                {
+                    ref int receiveOpenUnreleased = ref streamId.IsBidirectional
+                        ? ref receiveOpenUnreleasedBidirectional
+                        : ref receiveOpenUnreleasedUnidirectional;
+                    receiveOpenUnreleased++;
+                }
+
+                if (state.HasSendPart && !IsStreamSendClosed(state.SendState))
+                {
+                    ref int sendOpenUnreleased = ref streamId.IsBidirectional
+                        ? ref sendOpenUnreleasedBidirectional
+                        : ref sendOpenUnreleasedUnidirectional;
+                    sendOpenUnreleased++;
+                }
+            }
+
+            return new QuicPeerStreamCapacityStateSnapshot(
+                incomingBidirectionalStreamLimit,
+                incomingUnidirectionalStreamLimit,
+                trackedBidirectional,
+                trackedUnidirectional,
+                releaseReportedBidirectional,
+                releaseReportedUnidirectional,
+                fullyClosedUnreleasedBidirectional,
+                fullyClosedUnreleasedUnidirectional,
+                receiveOpenUnreleasedBidirectional,
+                receiveOpenUnreleasedUnidirectional,
+                sendOpenUnreleasedBidirectional,
+                sendOpenUnreleasedUnidirectional);
+        }
+    }
+
     public bool TryCaptureSendState(ulong streamIdValue, out QuicConnectionStreamSendStateSnapshot snapshot)
     {
         lock (syncRoot)
@@ -2379,6 +2459,20 @@ internal readonly record struct QuicConnectionStreamSendStateSnapshot(
     ulong? SendFinalSize,
     ulong HighestSentOffset,
     QuicByteRangeSetSnapshot SentRanges);
+
+internal readonly record struct QuicPeerStreamCapacityStateSnapshot(
+    ulong IncomingBidirectionalLimit,
+    ulong IncomingUnidirectionalLimit,
+    int TrackedBidirectional,
+    int TrackedUnidirectional,
+    int ReleaseReportedBidirectional,
+    int ReleaseReportedUnidirectional,
+    int FullyClosedUnreleasedBidirectional,
+    int FullyClosedUnreleasedUnidirectional,
+    int ReceiveOpenUnreleasedBidirectional,
+    int ReceiveOpenUnreleasedUnidirectional,
+    int SendOpenUnreleasedBidirectional,
+    int SendOpenUnreleasedUnidirectional);
 
 internal readonly record struct QuicConnectionStreamWritePreparation(
     ulong WriteOffset,

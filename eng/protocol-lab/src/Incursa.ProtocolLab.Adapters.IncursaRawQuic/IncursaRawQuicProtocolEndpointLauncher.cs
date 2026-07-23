@@ -131,6 +131,12 @@ internal static class IncursaRawQuicProtocolEndpointLauncher
             si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_SUMMARY"] = summaryLogging;
         }
 
+        var capacitySummaryLogging = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_CAPACITY_SUMMARY");
+        if (!string.IsNullOrWhiteSpace(capacitySummaryLogging))
+        {
+            si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_CAPACITY_SUMMARY"] = capacitySummaryLogging;
+        }
+
         var receiveCreditPolicy = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY");
         if (!string.IsNullOrWhiteSpace(receiveCreditPolicy))
         {

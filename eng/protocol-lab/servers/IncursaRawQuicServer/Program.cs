@@ -61,6 +61,10 @@ var alpnProtocol = new SslApplicationProtocol(alpn);
 var debugLogging = string.Equals(Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG"), "1", StringComparison.Ordinal);
 var summaryLogging = debugLogging
     || string.Equals(Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_SUMMARY"), "1", StringComparison.Ordinal);
+var capacitySummaryLogging = string.Equals(
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_CAPACITY_SUMMARY"),
+    "1",
+    StringComparison.Ordinal);
 var connectionCount = 0;
 
 var listenerOptions = new QuicListenerOptions
@@ -127,7 +131,7 @@ try
             Console.Error.WriteLine($"IncursaRawQuicServer accepted connection #{connectionIndex} for ALPN '{alpn}'");
         }
 
-        _ = HandleConnectionAsync(connection, connectionIndex, default, debugLogging, summaryLogging, echoResponses, downloadPayload, downloadWriteSizeBytes, boundedFinalEchoBytes);
+        _ = HandleConnectionAsync(connection, connectionIndex, default, debugLogging, summaryLogging, capacitySummaryLogging, echoResponses, downloadPayload, downloadWriteSizeBytes, boundedFinalEchoBytes);
     }
 }
 catch (OperationCanceledException)
@@ -162,7 +166,7 @@ static (string Name, QuicReceiveCreditPolicyMode? ForcedMode, bool ShadowEnabled
     };
 }
 
-static async Task HandleConnectionAsync(QuicConnection connection, int connectionIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes, int? boundedFinalEchoBytes)
+static async Task HandleConnectionAsync(QuicConnection connection, int connectionIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool capacitySummaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes, int? boundedFinalEchoBytes)
 {
     try
     {
@@ -207,6 +211,23 @@ static async Task HandleConnectionAsync(QuicConnection connection, int connectio
     }
     finally
     {
+        if (capacitySummaryLogging)
+        {
+            QuicPeerStreamCapacityStateSnapshot snapshot =
+                connection.Runtime.StreamRegistry.Bookkeeping.CapturePeerStreamCapacityStateSnapshot();
+            Console.Error.WriteLine(
+                $"IncursaRawQuicServer capacity-summary connection={connectionIndex} " +
+                $"incomingBidiLimit={snapshot.IncomingBidirectionalLimit} incomingUniLimit={snapshot.IncomingUnidirectionalLimit} " +
+                $"trackedBidi={snapshot.TrackedBidirectional} trackedUni={snapshot.TrackedUnidirectional} " +
+                $"releasedBidi={snapshot.ReleaseReportedBidirectional} releasedUni={snapshot.ReleaseReportedUnidirectional} " +
+                $"fullyClosedUnreleasedBidi={snapshot.FullyClosedUnreleasedBidirectional} " +
+                $"fullyClosedUnreleasedUni={snapshot.FullyClosedUnreleasedUnidirectional} " +
+                $"receiveOpenUnreleasedBidi={snapshot.ReceiveOpenUnreleasedBidirectional} " +
+                $"receiveOpenUnreleasedUni={snapshot.ReceiveOpenUnreleasedUnidirectional} " +
+                $"sendOpenUnreleasedBidi={snapshot.SendOpenUnreleasedBidirectional} " +
+                $"sendOpenUnreleasedUni={snapshot.SendOpenUnreleasedUnidirectional}");
+        }
+
         if (debugLogging)
         {
             Console.Error.WriteLine($"IncursaRawQuicServer closing connection #{connectionIndex}");
