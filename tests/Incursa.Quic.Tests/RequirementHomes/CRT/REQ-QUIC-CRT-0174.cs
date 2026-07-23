@@ -69,6 +69,7 @@ public sealed class REQ_QUIC_CRT_0174
                     "-RuntimeSha256", new string('b', 64),
                     "-HostFingerprint", "test-host-fingerprint",
                     "-CorrectnessFlagsJson", "{\"payloadValid\":true,\"protocolValid\":true,\"timedOut\":false,\"ownershipValid\":true,\"terminalValid\":true,\"violationCodes\":[]}",
+                    "-AdditionalAnalysisExclusionFlags", "target_health_invalid", "generator_health_invalid",
                     "-ScenarioId", "quic.transport.stream-throughput.1mb",
                     "-Connections", "1",
                     "-StreamsPerConnection", "1",
@@ -83,6 +84,9 @@ public sealed class REQ_QUIC_CRT_0174
             JsonElement root = row.RootElement;
             Assert.Equal("legacy_current", root.GetProperty("constructionPolicyState").GetProperty("appliedPolicy").GetString());
             Assert.Equal("forced", root.GetProperty("constructionPolicyState").GetProperty("selectionSource").GetString());
+            Assert.Equal(
+                ["generator_health_invalid", "target_health_invalid"],
+                root.GetProperty("analysisExclusionFlags").EnumerateArray().Select(static value => value.GetString()).ToArray());
             Assert.Equal(
                 Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(
                     AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(

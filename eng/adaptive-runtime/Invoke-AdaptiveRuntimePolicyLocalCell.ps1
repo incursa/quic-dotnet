@@ -1750,7 +1750,7 @@ if ($isApplicationSendTurnAxis -and $contractFailures.Count -eq 0) {
         }
         if ($additionalExclusionFlags.Count -gt 0) {
             $constructionArguments += '-AdditionalAnalysisExclusionFlags'
-            $constructionArguments += @($additionalExclusionFlags)
+            $constructionArguments += $additionalExclusionFlags.ToArray()
         }
 
         & $constructionExporterScript @constructionArguments | Out-Null
