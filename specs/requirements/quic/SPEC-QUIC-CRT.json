@@ -2822,7 +2822,7 @@
     {
       "id": "REQ-QUIC-CRT-0173",
       "title": "Force and identify application-send turn policy campaigns without active selection",
-      "statement": "The runtime MUST support an internal, connection-construction-time forced mode for the closed application-send turn policy set; MUST keep legacy_current as the default and rollback path; MUST keep conservative distinct as a campaign identity while preserving the current legal planner behavior; MUST configure the mode once before traffic; MUST reject replacement of an explicitly injected planner and non-legacy forced modes during shadow operation; and MUST NOT use forced mode to bypass queue ordering, congestion, pacing, anti-amplification, flow-control, packet, ownership, cancellation, disposal, recovery, or terminal-state guards.",
+        "statement": "The runtime MUST expose an internal, connection-construction-time forced-mode contract for the closed application-send turn policy set that retains legacy_current as the default and rollback path, represents conservative as a distinct campaign identity while preserving the current legal planner behavior, configures the mode once before traffic, rejects replacement of an explicitly injected planner and non-legacy forced modes during shadow operation, and preserves queue ordering, congestion, pacing, anti-amplification, flow-control, packet, ownership, cancellation, disposal, recovery, and terminal-state guards.",
       "trace": {
         "upstream_refs": [
           "docs/design/adaptive-runtime-policy-axis-roadmap.md",
@@ -2838,7 +2838,7 @@
     {
       "id": "REQ-QUIC-CRT-0174",
       "title": "Record application-send turn campaign provenance without reusing receive-credit evidence",
-      "statement": "The permanent campaign contract for application_send_turn_planning MUST record the canonical axis identifier, closed legacy_current and conservative policy identities, forced and applied identity, a versioned connection-construction provenance record, and immutable source-artifact and binary identities; MUST retain host-reported identity confirmation; MUST classify missing, contradictory, or mismatched identity evidence as invalid_contract or an explicit retained exclusion; MUST keep receive-credit epoch records attributable only to receive_credit_publication; and MUST NOT use workload shape, scenario names, payload constants, requested concurrency, peer identity, URLs, or application identity as production controller inputs.",
+        "statement": "The permanent campaign contract for application_send_turn_planning MUST record a canonical application-send provenance bundle containing the closed legacy_current and conservative policy identities, forced and applied identity, a versioned connection-construction record, immutable source-artifact and binary identities, host-reported identity confirmation, explicit invalid_contract or retained-exclusion treatment for missing, contradictory, or mismatched identity evidence, receive-credit epochs attributable only to receive_credit_publication, and no production-controller input derived from workload shape, scenario names, payload constants, requested concurrency, peer identity, URLs, or application identity.",
       "trace": {
         "upstream_refs": [
           "docs/design/adaptive-runtime-policy-axis-roadmap.md",

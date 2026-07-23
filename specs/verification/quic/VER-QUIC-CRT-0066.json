@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0066",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "Application-send turn campaign provenance verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -12,5 +12,17 @@
   "scope": "Verify provenance attribution and campaign contract only; do not claim a policy winner or active behavior.",
   "expected_result": "Each forced application-send turn connection has an immutable canonical-axis record; host, result, and connection identities agree; invalid or unmatched provenance remains retained and ineligible; receive-credit epochs are not relabeled.",
   "procedure": ["Build relevant projects in Release.", "Run focused provenance, schema, and force-mode tests.", "Run the application-send turn BenchmarkDotNet mechanism suite.", "Run local forced cells only after deterministic contract tests pass."],
-  "evidence": []
+  "evidence": [
+    "src/Incursa.Quic/QuicApplicationSendTurnPolicyProvenance.cs",
+    "eng/adaptive-runtime/Convert-AdaptiveRuntimeApplicationSendTurnProvenance.ps1",
+    "eng/adaptive-runtime/Invoke-AdaptiveRuntimePolicyLocalCell.ps1",
+    "schemas/adaptive-runtime-policy-construction-dataset-v1.schema.json",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0174.cs",
+    "tests/Incursa.Quic.Tests/QuicApplicationSendSchedulerTests.cs",
+    "benchmarks/QuicApplicationSendTurnPlannerBenchmarks.cs",
+    "docs/testing/adaptive-runtime-policy-local-campaign-evidence-2026-07-23.md",
+    ".artifacts/adaptive-runtime/verification/send-turn-provenance-focused-20260723/adaptive-runtime-send-turn-provenance-20260723.trx",
+    ".artifacts/adaptive-runtime/verification/send-turn-provenance-focused-20260723/adaptive-runtime-send-turn-force-20260723.trx"
+  ],
+  "status_summary": "Passed for the measurement-only campaign-provenance contract. The focused REQ-QUIC-CRT-0174 proof passed 6/6 and the forced planner safety band passed 24/24 on 2026-07-23. The complete Release rerun retained by the local-campaign ledger passed 9,794/9,798 with four skips. BenchmarkDotNet Dry and Short completed 10/10 cases with no managed allocations. The retained c1/c4 local forced cells prove schema-valid construction export, checksum validation, and separate application-send attribution, but remain invalid_environment or neutral_local and therefore do not support policy acceptance, rule derivation, shadow conclusion, ProtocolLab progression, or active behavior. Each touched architecture, work-item, and verification artifact passes the model independently; the repository-wide core profile remains blocked by the standing malformed canonical-specification backlog, including unresolved current requirements from the invalid parent SPEC-QUIC-CRT document."
 }

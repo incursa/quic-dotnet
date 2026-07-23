@@ -123,6 +123,38 @@ BenchmarkDotNet version was `0.15.8`; host runtime was `.NET 10.0.10` and SDK
 was `10.0.204`. No production rule, threshold, or active behavior changed from
 this measurement.
 
+## Trace-Contract Verification
+
+The application-send construction-provenance contract is closed at
+measurement-only scope by `REQ-QUIC-CRT-0174`, `ARC-QUIC-CRT-0064`,
+`WI-QUIC-CRT-0065`, and `VER-QUIC-CRT-0066`. On the current source checkpoint,
+the focused requirement home passed 6/6 and the forced planner safety band
+passed 24/24:
+
+```powershell
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build --no-restore --disable-build-servers --nologo -v:minimal --filter "FullyQualifiedName~REQ_QUIC_CRT_0174"
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build --no-restore --disable-build-servers --nologo -v:minimal --filter "FullyQualifiedName~QuicApplicationSendSchedulerTests"
+```
+
+The TRX artifacts remain in
+`.artifacts\adaptive-runtime\verification\send-turn-provenance-focused-20260723`.
+Their SHA-256 values are
+`13AFEA46D19E785CB3A593B0CD1969798B3B92E83356A7966D7803EA719AB8A4`
+for the requirement home and
+`0560DB779B7603194348D8F658AA28AF653F197C5E97D8DC56CE0D782FC03CAB`
+for the forced-planner safety band. This closes construction provenance and
+permanent local validation only; it does not turn any invalid or neutral-local
+cell into an eligible policy outcome, add shadow behavior, or authorize
+ProtocolLab or active policy selection.
+
+The three touched architecture, work-item, and verification artifacts each
+validate against `model/model.schema.json`. The repository-wide core SpecTrace
+profile remains blocked by its standing canonical-specification backlog
+(`2691` reported errors); it cannot resolve the current requirements while
+`SPEC-QUIC-CRT.json` remains globally invalid. That independent repository
+blocker is retained and does not alter the completed measurement-only contract
+or promote this axis.
+
 ## Full Release Verification
 
 The complete Release suite was invoked once from the clean `c878328a`
