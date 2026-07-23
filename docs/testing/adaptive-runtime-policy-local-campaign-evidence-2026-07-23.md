@@ -668,3 +668,31 @@ candidate, rule, shadow behavior, or active production behavior is enabled.
 The c128 row remains `failed_correctness` and `diagnostic_only`, with zero
 eligible adaptive-policy epochs. Adjacent axes remain frozen at
 `legacy_current`.
+
+### c128 Repeated-Batch Failure-Shape Attribution
+
+Read-only source inspection of the exact retained Raw QUIC executor source at
+ProtocolLab commit `4e59507844e0197d6222089b4a4ae968a7fbfe1a` establishes the
+meaning of the c128 count without changing the row. For `handshake-cold`, the
+executor launches all requested connections concurrently in one batch, closes
+successful connections, and repeats that batch until the duration expires. In
+the measured phase it stops after the first batch containing an error; the
+five-second warmup intentionally discards batch errors and does not add them
+to the measured result.
+
+The retained 1,408 measured requests are exactly eleven 128-connection
+batches. The 122 timeout errors identify connection indexes within the final
+failed batch, leaving six successful connections in that batch and ten prior
+fully successful measured batches. This is therefore a repeated
+high-churn/cold-handshake failure, not evidence that the initial 128-way burst
+or a policy transition failed. It also means that the per-connection error
+labels do not carry a batch ordinal, so the current package cannot distinguish
+which earlier warmup bursts were healthy from its result document alone.
+
+This attribution removes neither the c128 correctness failure nor the
+generator/target/network uncertainty. It supplies a narrow next diagnostic
+requirement after the reviewed cleanup bound is deployed: preserve the
+terminal SUT role result and collect a per-batch ordinal with the load error,
+plus before/after target-process metrics from the SUT role. The existing
+measurement-only axis remains `application_send_turn_planning=legacy_current`;
+all adjacent axes remain `legacy_current`, and no policy behavior is enabled.
