@@ -87,6 +87,17 @@
               "type": "integer",
               "minimum": 0
             },
+            "uniqueArtifactHashCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "legacyResultLevelEnvironmentExclusionsAllowed": {
+              "type": "boolean"
+            },
+            "legacyResultLevelEnvironmentExclusionRowCount": {
+              "type": "integer",
+              "minimum": 0
+            },
             "failures": {
               "type": "array",
               "items": {

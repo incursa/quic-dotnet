@@ -408,6 +408,9 @@ $normalizedDocument = [ordered]@{
             valid = [bool] $validationSummary.valid
             localResultCount = [int] $validationSummary.localResultCount
             epochRowCount = [int] $validationSummary.epochRowCount
+            uniqueArtifactHashCount = [int] $validationSummary.uniqueArtifactHashCount
+            legacyResultLevelEnvironmentExclusionsAllowed = [bool] $validationSummary.legacyResultLevelEnvironmentExclusionsAllowed
+            legacyResultLevelEnvironmentExclusionRowCount = [int] $validationSummary.legacyResultLevelEnvironmentExclusionRowCount
             failures = @($validationSummary.failures)
         }
     }

@@ -331,6 +331,12 @@ public sealed class REQ_QUIC_CRT_0172
             Assert.True(File.Exists(splitPath));
 
             using JsonDocument normalized = JsonDocument.Parse(File.ReadAllText(normalizedPath));
+            JsonElement evidenceValidation = normalized.RootElement
+                .GetProperty("rawInputs")
+                .GetProperty("evidenceValidation");
+            Assert.Equal(6, evidenceValidation.GetProperty("uniqueArtifactHashCount").GetInt32());
+            Assert.True(evidenceValidation.GetProperty("legacyResultLevelEnvironmentExclusionsAllowed").GetBoolean());
+            Assert.Equal(0, evidenceValidation.GetProperty("legacyResultLevelEnvironmentExclusionRowCount").GetInt32());
             JsonElement normalizedRow = normalized.RootElement.GetProperty("rows")[0];
             Assert.Equal("row-shadow-checksum-001-0001", normalizedRow.GetProperty("sourceRowId").GetString());
             Assert.Equal(
