@@ -633,3 +633,52 @@ all stress-only rows must retain their exclusion labels. ARM64 Debian is the
 next controlled measurement target after toolchain provisioning; model
 training remains blocked until the resulting dataset contract can form all
 required holdouts without crossing host or workload groups.
+
+### ARM64 Contract Closure And Holdout Preparation
+
+The first ARM64 Debian guardrail campaign,
+`adaptive-receive-credit-remote-arm64-01-20260723-capacitywakeupfix-x1-guardrail-abba30s-run1`,
+is retained unchanged as `invalid_contract`. All four payload samples passed,
+but the worker did not yet have the pinned `dotnet-counters` tool, so counter
+capture, PID attribution, and buffer-pool evidence were incomplete. Those rows
+are provisioning evidence only and were not replaced or reclassified.
+
+The worker then received user-scoped .NET SDK 10.0.201, Go 1.26.5, and
+`dotnet-counters` 9.0.661903. The Go archive matched the official manifest
+SHA-256, and the deployed repositories were pinned to exact commits. Two new
+normal-instrumentation campaigns completed:
+
+| Campaign and cell | Classification | Correct samples | Epoch rows | Aggregate throughput | Aggregate p95 |
+| --- | --- | ---: | ---: | ---: | ---: |
+| `adaptive-receive-credit-remote-arm64-01-20260723-countersfix-x1-guardrail-abba30s-run1` / `upload-1mb-x1-s1` | `neutral_local` | 4 of 4 | 560 | 208.007 MB/s | 5.759 ms |
+| `adaptive-receive-credit-remote-arm64-01-20260723-countersfix-x4-confirm-abba30s-run1` / `duplex-64kb-x4-s16` | `neutral_local` | 4 of 4 | 2,215 | 101.817 MB/s | 49.189 ms |
+
+Every sample has exact payload correctness, zero failed or timed-out
+operations, zero protocol, cancellation, or disposal failures, a successful
+counter capture, valid resolved/measured/counter PID alignment, and retained
+buffer-pool outcomes. Joint evidence validation accepted both results and all
+2,775 epoch rows, verified 88 unique retained artifacts, and reported zero
+failures or unmatched rows.
+
+The constrained x64 worker then ran one final non-stress cell at the fixed
+binary:
+`adaptive-receive-credit-remote-x64-02-20260723-capacitywakeupfix-multiplex-x1-s100-abba30s-run1`.
+It is `neutral_local`; all four samples passed, aggregate throughput was
+5.921 MB/s, aggregate p95 was 18.365 ms, and the evidence validator accepted
+all 557 epoch rows and 44 unique retained artifacts with zero failures.
+
+The three-host split audit found that host count alone is not sufficient. The
+default full round-robin population crosses the same workload families between
+hosts, while the split contract requires complete host and workload holdouts
+to agree. The deterministic seed-17 ordering identifies a non-overlapping
+review cohort using ARM64 `duplex-64kb-x4-s16`, x64-02
+`multiplex-1kb-x1-s100`, and x64-03 `upload-1mb-x1-s1`. Dataset
+materialization and model training remain paused for review; no split rule was
+weakened and no online learning or production selection was enabled.
+
+At wrap-up, the controller service at `10.10.99.176` was active and its node
+API reported all six registered workers `Ready`: the three P620 workers,
+x64-02, x64-03, and the Debian ARM64 worker. Direct batch-mode SSH checks also
+passed for the controller, x64-02, x64-03, Debian ARM64, and macOS ARM64.
+macOS ARM64 remains a reachable controlled host rather than a registered lab
+worker.
