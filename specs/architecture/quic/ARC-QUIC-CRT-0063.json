@@ -11,6 +11,5 @@
   "satisfies": ["REQ-QUIC-CRT-0173"],
   "key_components": ["src/Incursa.Quic/QuicApplicationSendTurnPolicyMode.cs", "src/Incursa.Quic/QuicConnectionOptions.cs", "src/Incursa.Quic/QuicConnectionRuntime.cs", "src/Incursa.Quic/QuicListenerHost.cs"],
   "design_summary": "LegacyCurrent retains the null fast path. Conservative installs the existing current planner solely as a distinct, internal campaign identity. The runtime accepts one mode before traffic, rejects any replacement of a caller-injected planner, and rejects non-legacy turn forcing while receive-credit shadow mode is active. Existing planner validation and all send/runtime guards remain authoritative.",
-  "risks": ["A force seam could be mistaken for an active selector; the mode is internal, one-shot, and has no observation-driven consumer.", "Interface dispatch in conservative mode is campaign-only and is not the shipped default."],
-  "out_of_scope": ["Adaptive planner selection", "new queue ordering algorithm", "public API", "epoch/result provenance serialization", "ProtocolLab submission"]
+  "risks": ["A force seam could be mistaken for an active selector; the mode is internal, one-shot, and has no observation-driven consumer.", "Interface dispatch in conservative mode is campaign-only and is not the shipped default."]
 }
