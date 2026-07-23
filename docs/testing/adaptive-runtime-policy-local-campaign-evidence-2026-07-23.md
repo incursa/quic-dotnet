@@ -619,3 +619,52 @@ legacy-current c128 failure-path cell which must retain a terminal SUT role
 result, adapter child artifacts (or explicit unavailable records), and target
 metrics provenance. Adjacent axes remain frozen at `legacy_current`; no
 candidate, shadow, or active policy behavior is authorized.
+
+### Correction: Late SUT Finalization Materialized the Cross-Worker Bundle
+
+The preceding correction was necessarily provisional. Read-only controller
+reinspection after the SUT role completed at
+`2026-07-23T17:40:38.1520591-06:00` shows that the normal late-sibling merge
+did materialize the SUT bundle. The terminal SUT result has
+`failureKind=None`, reports the published endpoint
+`quic://10.10.99.248:34227`, and contributes 39 role artifacts; the job now
+has 382 controller-indexed artifacts, including `sut/`-prefixed entries. The
+SUT result root is
+`/var/lib/protocol-lab/controller/artifacts/job-ee419db137a4446988331180e4416b5d/raw-quic-c128-debug-20260723-3849008d-legacy-r002-sut-lease-4bd9188d631f44a49013e8e033e2858c`.
+
+This preserves both earlier entries as time-bound observations while changing
+the conclusion: this run does **not** prove a cross-worker child-artifact
+transfer loss. The now-readable SUT child stderr artifact
+`artifact-013-7d05748b6c2e` is 8,538,075 bytes (132,338 lines), and the child
+stdout artifact is 11,837,232 bytes. The role is a prestarted target lifecycle
+anchored at `c1-s0-r1`, so those role artifacts cover the whole campaign and
+are not a falsely per-c128 target-process record. The role's startup metrics
+(`artifact-019-63411e0a99b4`) retain child process ID 102197, 56,049,664-byte
+working set, 0.23 CPU seconds, and endpoint port 34227. This is sufficient
+provenance to establish that the SUT evidence arrived through the ordinary
+late role-completion path, although it is not per-cell target pressure
+attribution.
+
+The retained server log records 44,205 accepted handshake proposals and
+44,056 accepted/closed connection pairs across the complete diagnostic run;
+it contains no lines matching `exception`, `error`, or `timeout`. This is
+supporting context, not a clearance of c128: the c128 loader result remains
+the authoritative cell result with 1,408 attempted requests, 1,286 successes,
+and 122 `dial: timeout: no recent network activity` failures. Its root-process
+telemetry peaked at 50,483,200 bytes and sampled 0.47 CPU-seconds at most in a
+one-second interval on a six-logical-processor worker. The existing
+`load-generator-saturation-possible` warning is therefore retained, but the
+captured root-process samples do not establish CPU saturation.
+
+The actual evidence-plane defect is bounded finalization, not an absent SUT
+artifact handoff: `sut/.../adapter-stop.json` records that the old adapter
+control-plane cleanup request reached its configured 100-second
+`HttpClient.Timeout`. The role only published its result roughly ten minutes
+and 38 seconds after it was claimed. ProtocolLab commit
+`6e8b833cb8fcd78802d23cfcf68067f6fae53c96` limits that request path to 15
+seconds, but it remains review-pushed and has not been deployed; this observed
+run used the prior timeout behavior and cannot validate the fix. No policy
+candidate, rule, shadow behavior, or active production behavior is enabled.
+The c128 row remains `failed_correctness` and `diagnostic_only`, with zero
+eligible adaptive-policy epochs. Adjacent axes remain frozen at
+`legacy_current`.
