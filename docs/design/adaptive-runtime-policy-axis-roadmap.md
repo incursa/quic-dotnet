@@ -4,7 +4,8 @@ title: "Adaptive Runtime Policy Axis Roadmap"
 
 # Adaptive Runtime Policy Axis Roadmap
 
-Status: proposed portfolio plan; review required before implementation
+Status: user-approved direction for staged planning and measurement
+implementation; active policy review required
 
 ## Purpose
 

@@ -4,7 +4,8 @@ title: "Adaptive Runtime Shadow-Mode Verification"
 
 # Adaptive Runtime Shadow-Mode Verification
 
-Status: proposed verification plan; execution not started
+Status: receive-credit shadow foundation implemented and verified; evidence
+review in progress; active policy blocked
 
 Shadow mode computes and records a proposed controller snapshot while the
 existing runtime behavior remains authoritative. It is the only permitted

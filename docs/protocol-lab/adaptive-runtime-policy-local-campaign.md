@@ -4,7 +4,8 @@ title: "Adaptive Runtime Permanent Local Campaign"
 
 # Adaptive Runtime Permanent Local Campaign
 
-Status: proposed contract; runner implementation not started
+Status: implemented permanent local campaign contract; evidence review in
+progress; active policy blocked
 
 This plan defines permanent local evidence required before any adaptive policy
 is taken to ProtocolLab. Local results are diagnostic and non-publishable. A
