@@ -36,6 +36,19 @@ public sealed class REQ_QUIC_CRT_0171
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
+    public void SameConnectionHelperUsesWindowStyleOnlyOnWindows()
+    {
+        string helper = AdaptiveRuntimePolicyFixtureTestSupport.ReadRepositoryText(
+            "eng/adaptive-runtime/Invoke-AdaptiveRuntimeSameConnectionPhaseExecutor.ps1");
+
+        Assert.Contains("[OperatingSystem]::IsWindows()", helper, StringComparison.Ordinal);
+        Assert.Contains("$startProcessParameters['WindowStyle'] = 'Hidden'", helper, StringComparison.Ordinal);
+        Assert.DoesNotContain("-WindowStyle Hidden", helper, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void DryRunWritesPhaseTransitionArtifactWithSameConnectionHelperContractOnly()
     {
         string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();

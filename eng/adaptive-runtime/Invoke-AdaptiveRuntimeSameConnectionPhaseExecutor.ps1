@@ -198,13 +198,17 @@ $serverStderrPath = Join-Path $outputDirectory 'same-connection-server.stderr.lo
 $previousDebugValue = [Environment]::GetEnvironmentVariable('PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG', 'Process')
 [Environment]::SetEnvironmentVariable('PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG', '1', 'Process')
 try {
-    $serverProcess = Start-Process `
-        -FilePath 'dotnet' `
-        -ArgumentList @("`"$resolvedServerBinaryPath`"") `
-        -RedirectStandardOutput $serverStdoutPath `
-        -RedirectStandardError $serverStderrPath `
-        -PassThru `
-        -WindowStyle Hidden
+    $startProcessParameters = @{
+        FilePath = 'dotnet'
+        ArgumentList = @("`"$resolvedServerBinaryPath`"")
+        RedirectStandardOutput = $serverStdoutPath
+        RedirectStandardError = $serverStderrPath
+        PassThru = $true
+    }
+    if ([OperatingSystem]::IsWindows()) {
+        $startProcessParameters['WindowStyle'] = 'Hidden'
+    }
+    $serverProcess = Start-Process @startProcessParameters
 }
 finally {
     [Environment]::SetEnvironmentVariable('PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG', $previousDebugValue, 'Process')
