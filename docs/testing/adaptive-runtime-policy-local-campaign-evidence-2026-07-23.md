@@ -414,3 +414,37 @@ authorized work is to diagnose the retained c128 high-count failure and then
 repeat the baseline preflight under the existing evidence contract before
 scheduling any policy counterfactual cells. Adjacent axes remain frozen at
 `legacy_current`.
+
+### Retained c128 Instrumentation Attempt and Worker-Identity Exclusion
+
+The c128 investigation produced a new clean diagnostic package from commit
+`21cb2ab65ffe456e29cc7fc543d83b9bf2a4f899`, with
+`-RawQuicDebugLogging`, forced
+`application_send_turn_planning=legacy_current`, and SHA-256
+`8FDF39A96321D1DF2C20B5E8208987DA9D44BE83B5E2508356DA109A7737EDC2`.
+Controller package admission returned HTTP 201 with validation `passed`.
+Controller job `job-00fa01a5412240c7a9c2e85c8813ad84` was submitted with the
+same isolated x64 pair and retained component hashes, solely to determine
+whether c128 Initial packets reach and establish at the target.
+
+No diagnostic workload began. The load role claimed normally, but the SUT
+lease for `plab-worker-x64-02` remained unclaimed. A strict SSH check to the
+same current registry address (`10.10.99.248`) reached TCP port 22 but timed
+out during the SSH banner exchange. The job was cancelled through the normal
+controller endpoint with the exact reason
+`invalid_environment: plab-worker-x64-02 SUT lease remained unclaimed while strict SSH verification timed out during banner exchange; no diagnostic workload started.`
+Its terminal controller status is `Cancelled`; it contributes zero benchmark
+rows, connection epochs, or policy evidence and does not modify the retained
+c128 failed-correctness classification above.
+
+The live controller registry also listed the currently heartbeating Linux
+same-host diagnostic pair `plab-worker-sut-01` (`10.10.99.85`) and
+`plab-worker-load-01` (`10.10.99.108`), both labeled
+`physicalHostId=lenovo-p620`. They are unsuitable for an independent-host
+policy claim in any event. More importantly, strict SSH verification rejected
+both because each presented a changed ED25519 fingerprint conflicting with the
+local known-host entry (`SHA256:6tan1lwWz68XCz2xThVhGfkhGK7slY18c8ZhdsMw6Rg`
+for the SUT and `SHA256:QW7ClHAP1s6bui5ZFVdtCEFY2gLp60AjUszk3P45Y60` for the
+load worker). No host key was accepted, replaced, or bypassed, and neither
+worker was used. This is a preserved worker-identity environment blocker, not
+evidence that the multi-host ProtocolLab is absent.
