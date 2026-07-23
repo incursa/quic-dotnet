@@ -102,6 +102,44 @@ public sealed class QuicConnectionRuntimeWriteRequestCancellationTests
     }
 
     [Fact]
+    public async Task TryQueueStreamCapacityRelease_PostsAnotherEventAfterAnEmptyScheduledWakeupIsConsumed()
+    {
+        await using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        int releaseEventCount = 0;
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            if (connectionEvent is QuicConnectionStreamActionEvent
+                {
+                    ActionKind: QuicConnectionStreamActionKind.ReleaseCapacity,
+                })
+            {
+                releaseEventCount++;
+            }
+
+            return true;
+        });
+
+        runtime.TryQueueStreamCapacityRelease(streamId: 0);
+        Assert.Equal(1, releaseEventCount);
+
+        // A recovery flush can release a stream that was already pending and remove its duplicate
+        // scheduled entry before the corresponding coalesced wakeup reaches the actor.
+        MethodInfo clearMethod = typeof(QuicConnectionRuntime).GetMethod(
+            "ClearPeerStreamCapacityReleaseScheduled",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+        clearMethod.Invoke(runtime, [0UL]);
+
+        MethodInfo drainMethod = typeof(QuicConnectionRuntime).GetMethod(
+            "TryDeferScheduledPeerStreamCapacityReleases",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+        Assert.False((bool)drainMethod.Invoke(runtime, null)!);
+
+        runtime.TryQueueStreamCapacityRelease(streamId: 4);
+
+        Assert.Equal(2, releaseEventCount);
+    }
+
+    [Fact]
     public async Task TransitionStreamCapacityRelease_ArmsRecoveryForTheMaxStreamsPacket()
     {
         await using QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();

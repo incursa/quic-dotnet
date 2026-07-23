@@ -2117,6 +2117,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         {
             if (scheduledPeerStreamCapacityReleaseStreamIds.Count == 0)
             {
+                scheduledPeerStreamCapacityReleaseEventPending = false;
                 return false;
             }
 
