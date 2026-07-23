@@ -472,3 +472,74 @@ or external load-generator timing, so it neither clears nor reclassifies the
 retained remote c128 `failed_correctness` row. It supplies zero adaptive-policy
 dataset epochs and leaves the next remote diagnosis gated on verified worker
 identity and a healthy target lease.
+
+### Recovered Independent-Worker c128 Diagnostic
+
+After the retained worker-identity exclusion, strict SSH verification again
+succeeded for the independent `plab-worker-x64-02` SUT
+(`10.10.99.248`, x86_64, two logical processors, 3,902 MiB, .NET SDK
+10.0.302, PowerShell 7.6.4) and `plab-worker-x64-03` load worker
+(`10.10.99.77`, x86_64, six logical processors, 32,083 MiB, .NET SDK
+10.0.302, PowerShell 7.6.4). The controller registry continued to identify
+them as the isolated `offline-ml-two-host-vm` SUT/load pair with distinct
+physical-host labels. This re-verification is a contemporaneous readiness
+check; it does not erase the earlier unclaimed-lease environment row.
+
+A fresh diagnostic-only Raw QUIC package was built from clean commit
+`3849008de439dd93aa9b0951f5c4eb8d0da99534`, Release, `linux-x64`, with
+`-RawQuicDebugLogging` and only
+`application_send_turn_planning=legacy_current` forced. Its immutable package
+identity is
+`quic-dotnet-raw-dev@raw-quic-c128-debug-20260723-3849008d-legacy-current-r002#9301b914e8e14b0e6593ae40ddb31b24228ef319d554a2e6193ea7a70339dcb0`.
+The package build attestation records a clean source scope and controller
+admission returned HTTP 201 with validation `passed`. It was combined only
+with the retained raw component identities
+`protocol-lab-quic-go-raw-load@mixed-linux-20260722-4e59507#79d887af00cc3cb41375b7bf637a548b0efe78d196af67da10631b3904e366fc`
+and
+`protocol-lab-raw-quic-scenarios@mixed-linux-20260722-4e59507#10982941d384ffcd9ea26e92fee111ab777bb0ceaf896fad81d18d6f2f68d373`.
+
+Controller job `job-ee419db137a4446988331180e4416b5d` used the preserved
+`raw-quic-peer-confidence` workflow profile, `isolated-pair` placement,
+one repetition, and network path `10.10.99.77->10.10.99.248`. Both roles
+claimed, the SUT published `quic://10.10.99.248:34227`, and every cell passed
+endpoint validation. The controller retained its run root at
+`/var/lib/protocol-lab/controller/artifacts/job-ee419db137a4446988331180e4416b5d/raw-quic-c128-debug-20260723-3849008d-legacy-r002-quic-transport-v1-comparison-cell-1`
+with its artifact manifest, evidence bundle, package provenance, and per-cell
+result/validation artifacts.
+
+| Cell | Benchmark result | Classification consequence |
+| --- | --- | --- |
+| c1 | succeeded | retained diagnostic success |
+| c4 | succeeded | retained diagnostic success |
+| c16 | succeeded | retained diagnostic success |
+| c32 | succeeded | retained diagnostic success |
+| c64 | succeeded | retained diagnostic success |
+| c128 | failed `load-generator-validation-failed` | retained `failed_correctness` diagnostic |
+
+At c128, the external `quic-go-raw-load` process requested and used 128
+connections for 15 seconds after a five-second warmup. Its schema-valid result
+retains 1,408 total cold-handshake requests, 1,286 successes, 122 failures,
+122 timeouts, a 0.08664773 timeout/failure rate, 142.4726739 requests per
+second, and 177.3459417 ms mean connect time. The raw validation correctly
+failed because both failed and timeout counts must be zero. The controller
+therefore completed the job with `failureKind=Benchmark`,
+`failureReasonCode=benchmark-command-failed`, and exit code 1. This narrows
+the prior all-timeout c128 result: the current listener now accepts substantial
+independent-worker fanout, but the c128 zero-timeout correctness guard remains
+unmet.
+
+This row is `diagnostic_only` and contributes zero eligible adaptive-policy
+epochs to raw, normalized, curated, or analysis layers. Debug logging changes
+timing; only one repetition was run; target process metrics are unavailable
+for the external adapter-backed target; trace/counter capture was disabled;
+and load-process CPU attribution is unavailable despite bounded root-process
+telemetry (peak observed working set 50,483,200 bytes). The result also retains
+`load-generator-saturation-possible`, so it cannot establish whether the
+remaining c128 timeouts are target, network, or generator-limited. No earlier
+failed-correctness, invalid-environment, or diagnostic row was relabeled or
+deleted; no candidate policy, shadow recommendation, threshold, rule, or
+production behavior was enabled. The next authorized diagnostic slice is
+bounded c128 attribution with verified current worker identity and explicit
+target/load telemetry capture, followed by a clean non-debug legacy-current
+baseline only if that attribution is sufficient. Adjacent axes remain frozen
+at `legacy_current`.
