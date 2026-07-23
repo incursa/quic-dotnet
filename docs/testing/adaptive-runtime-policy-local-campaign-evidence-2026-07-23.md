@@ -143,6 +143,32 @@ at `.artifacts\adaptive-runtime\verification\full-release-20260723T1933Z.stdout.
 and `.artifacts\adaptive-runtime\verification\full-release-20260723T1933Z.stderr.log`.
 No isolated rerun has been used to replace or erase this result.
 
+## ProtocolLab Gate Status
+
+No `application_send_turn_planning` ProtocolLab job was submitted and no
+remote worker was contacted for this checkpoint. The local c4 guardrail is
+`invalid_environment`, and the complete Release suite has the retained
+correctness failure above; either condition blocks higher-count or
+independent-host policy evidence.
+
+A read-only review of the current ProtocolLab material found a reported
+cross-worker diagnostic pair (`plab-worker-x64-02` target at `10.10.99.248`
+and `plab-worker-x64-03` load generator at `10.10.99.77`) in
+`protocol-lab-internal/docs/protocol-lab/raw-quic-isolated-pair-handshake-evidence-2026-07-23.md`.
+That evidence is not this axis's provenance cohort, is explicitly
+`diagnostic`/`publishable=false`, and cannot establish physical-host
+independence for this campaign. Its controller deployment is also blocked by
+an unverified changed ED25519 host fingerprint for `10.10.99.176`.
+
+The only nearby `public-private-inventory.json` is a repository-export
+classification generated on 2026-05-30, not a live physical-host registry.
+Accordingly, before any reviewed ProtocolLab campaign, the current registry
+must independently attest the target and generator identities, physical hosts,
+architecture, hardware, operating-system/toolchain versions, health,
+calibration, exact source commit, clean state, binary hashes, and network path.
+This checkpoint does not infer those facts from addresses or older diagnostic
+evidence.
+
 ## Remaining Gate
 
 Repeat bounded c1/c4 local forced cells from the corrected runner on an
