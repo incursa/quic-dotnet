@@ -252,3 +252,79 @@ Repeat bounded c1/c4 local forced cells from the corrected runner on an
 environment that satisfies the health/noise contract, then proceed only through
 the reviewed multi-host campaign path. This record does not erase, supersede,
 or pool the invalid same-host regime with a future eligible cohort.
+
+## ProtocolLab Live-Registry Correction and Exact-Package Preflight
+
+The preceding ProtocolLab status was an accurate snapshot of this evidence
+ledger before remote work, but its reliance on an old topology export is now
+superseded by a live-controller check. On 2026-07-23 the controller at
+`http://10.10.99.176:5088` was reachable and reported six ready workers. Its
+current isolated-pair role/capability selection placed the SUT on
+`plab-worker-x64-02` (`10.10.99.248`) and the load worker on
+`plab-worker-x64-03` (`10.10.99.77`). Both workers were independently checked
+through strict SSH host-key verification and reported the controller-advertised
+architecture, CPU count, memory, and .NET SDK `10.0.302`. The controller labels
+the pair `evidenceTier=offline-ml-two-host-vm` and records
+`identityCaveat=duplicate-machine-id-user-attested-physical-separation`; that
+caveat remains attached to this evidence. The earlier statement that a changed
+controller SSH fingerprint blocked deployment is not current: the selected
+worker identities verified against their trusted SSH keys. The controller
+inventory, rather than the stale May/July export, is the source for this
+checkpoint.
+
+This correction did **not** authorize an axis comparison. It enabled one
+legacy-current raw-QUIC correctness preflight so that the exact current source
+could be tested before any forced-policy ABBA/BAAB campaign. The package was
+built without `-AllowDirtySource` from clean commit
+`2ded7f0bc5edfc4d8a75f5fc62ecab8519ed6663`:
+
+```powershell
+pwsh -NoProfile -File eng/protocol-lab/New-QuicDotNetProtocolLabPackage.ps1 `
+  -PackageTarget RawQuic `
+  -ProtocolLabRoot C:\shared\src\incursa\protocol-lab `
+  -RuntimeIdentifier linux-x64 `
+  -PackageVersion adaptive-send-turn-20260723-2ded7f0b-legacy-current `
+  -AdaptiveRuntimeApplicationSendTurnPolicy legacy_current `
+  -Force
+```
+
+The generated package is
+`artifacts\protocol-lab\packages\quic-dotnet-raw-dev.adaptive-send-turn-20260723-2ded7f0b-legacy-current.plabpkg`,
+with SHA-256
+`26DC5DE2EA18C59BD27F43D6119DE57070D57EA4BF4AA7627500622766EF7840`.
+Its embedded build provenance records the same clean source commit, Release,
+`linux-x64`, and forced `application_send_turn_planning=legacy_current`.
+Controller package admission returned HTTP 201 and validation `passed`.
+
+Controller job `job-c9014c5dc047453db4b71394e8af1acc` then ran one isolated-pair
+`quic.transport.handshake-cold` preflight with that package, the retained
+component package hashes
+`79d887af00cc3cb41375b7bf637a548b0efe78d196af67da10631b3904e366fc`
+(`protocol-lab-quic-go-raw-load`) and
+`10982941d384ffcd9ea26e92fee111ab777bb0ceaf896fad81d18d6f2f68d373`
+(`protocol-lab-raw-quic-scenarios`), and the controller-owned
+`raw-quic-peer-confidence` profile. The controller retained the job, result
+records, provenance, and checksum-bearing package records under its job root;
+the job is the permanent raw-evidence authority for this checkpoint.
+
+Classification is `failed_correctness` (unattributed preflight), not
+`invalid_environment`, `accepted`, or policy evidence. All six scheduled
+cells (`c1`, `c4`, `c16`, `c32`, `c64`, and `c128`) reached a ready target and
+passed endpoint validation; all six then failed the raw loader with
+`load-tool-exit-nonzero`. The c1 load execution artifact
+`artifact-078-c99df991e4a1` records exit code `1` and
+`connection=0 dial: timeout: no recent network activity`; c1 result artifact
+`artifact-087-27973a648055` records one request, zero successes, one timeout,
+and `comparabilityStatus=invalid`. The SUT role completed normally and served
+`quic://10.10.99.248:41261`; the failure is therefore neither worker absence
+nor package-admission failure. It is deliberately not attributed to the
+send-turn policy, because only legacy_current was forced and no counterfactual
+candidate was run.
+
+Dataset accounting for this remote preflight is zero raw connection epochs
+eligible for normalization, curation, or analysis; the six invalid benchmark
+cell records and their raw controller artifacts are retained with their reason
+codes. The immediate unresolved gate is diagnosis and repair of the raw QUIC
+cross-worker handshake timeout, followed by a fresh legacy-current preflight.
+Only after that succeeds may the permanent, round-robin forced-policy campaign
+be scheduled. Adjacent axes remain frozen at `legacy_current`.
