@@ -1,7 +1,6 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using System.Collections.Concurrent;
 using System.Buffers;
 using System.Buffers.Binary;
 using System.Net;
@@ -165,8 +164,6 @@ static (string Name, QuicReceiveCreditPolicyMode? ForcedMode, bool ShadowEnabled
 
 static async Task HandleConnectionAsync(QuicConnection connection, int connectionIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes, int? boundedFinalEchoBytes)
 {
-    ConcurrentBag<QuicStream> retainedCompletedStreams = [];
-
     try
     {
         var streamIndex = 0;
@@ -184,7 +181,7 @@ static async Task HandleConnectionAsync(QuicConnection connection, int connectio
                 Console.Error.WriteLine($"IncursaRawQuicServer accepted inbound stream #{acceptedStreamIndex} on connection #{connectionIndex}");
             }
 
-            _ = HandleStreamAsync(stream, connectionIndex, acceptedStreamIndex, cancellationToken, debugLogging, summaryLogging, echoResponses, downloadPayload, downloadWriteSizeBytes, boundedFinalEchoBytes, retainedCompletedStreams);
+            _ = HandleStreamAsync(stream, connectionIndex, acceptedStreamIndex, cancellationToken, debugLogging, summaryLogging, echoResponses, downloadPayload, downloadWriteSizeBytes, boundedFinalEchoBytes);
         }
     }
     catch (OperationCanceledException)
@@ -215,16 +212,11 @@ static async Task HandleConnectionAsync(QuicConnection connection, int connectio
             Console.Error.WriteLine($"IncursaRawQuicServer closing connection #{connectionIndex}");
         }
 
-        foreach (var retainedStream in retainedCompletedStreams)
-        {
-            await retainedStream.DisposeAsync();
-        }
-
         await connection.DisposeAsync();
     }
 }
 
-static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int streamIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes, int? boundedFinalEchoBytes, ConcurrentBag<QuicStream> retainedCompletedStreams)
+static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int streamIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes, int? boundedFinalEchoBytes)
 {
     var reachedEof = false;
     var completedWrites = false;
@@ -403,15 +395,9 @@ static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int 
             Console.Error.WriteLine($"IncursaRawQuicServer closing stream #{streamIndex} on connection #{connectionIndex}");
         }
 
-        // Keep completed streams observed until connection teardown so tail retransmissions can still be driven.
-        if (reachedEof && completedWrites && outcome == "completed")
-        {
-            retainedCompletedStreams.Add(stream);
-        }
-        else
-        {
-            await stream.DisposeAsync();
-        }
+        // The connection runtime owns sent-packet recovery after the public facade completes.
+        // Dispose promptly so completed streams no longer count as live runtime observers.
+        await stream.DisposeAsync();
     }
 }
 

@@ -213,6 +213,7 @@ public sealed class QuicListenerHostSendResilienceTests
             Volatile.Write(ref dropNextSend, 1);
             await serverStreams[0].CompleteWritesAsync();
             await WaitForConditionAsync(() => Volatile.Read(ref droppedFin) == 1, TimeSpan.FromSeconds(5));
+            await serverStreams[0].DisposeAsync();
             await Task.WhenAll(serverStreams.Skip(1).Select(stream => stream.CompleteWritesAsync().AsTask()));
 
             await Task.WhenAll(clientStreams.Select(ReadEofAsync));

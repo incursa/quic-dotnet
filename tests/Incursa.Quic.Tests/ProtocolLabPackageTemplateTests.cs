@@ -356,6 +356,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("behavior?.StartsWith(\"duplex-streams\"", source);
         Assert.Contains("payloadSize is <= 0 or > SmallApplicationWriteSizeBytes", source);
         Assert.Contains("stream.CanWrite && !completedWrites", source);
+        Assert.Contains("await stream.DisposeAsync();", source);
+        Assert.DoesNotContain("retainedCompletedStreams", source);
         Assert.True(
             source.IndexOf("var trailingBytes = await stream.TryReadTerminalAsync", StringComparison.Ordinal)
                 < source.IndexOf("await stream.WriteFinalAsync(buffer.AsMemory(0, expectedEchoBytes)", StringComparison.Ordinal),
