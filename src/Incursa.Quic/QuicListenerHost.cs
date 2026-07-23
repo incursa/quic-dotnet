@@ -2415,6 +2415,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         selectedOptions.EnableEarlyData = returnedOptions.EnableEarlyData;
         selectedOptions.PreferredAddress = returnedOptions.PreferredAddress;
         selectedOptions.ForcedReceiveCreditPolicyMode = returnedOptions.ForcedReceiveCreditPolicyMode;
+        selectedOptions.ForcedApplicationSendTurnPolicyMode = returnedOptions.ForcedApplicationSendTurnPolicyMode;
         selectedOptions.AdaptiveRuntimeShadowEnabled = returnedOptions.AdaptiveRuntimeShadowEnabled;
         selectedOptions.AdaptiveRuntimeShadowEpochInterval = returnedOptions.AdaptiveRuntimeShadowEpochInterval;
         selectedOptions.AdaptiveRuntimeShadowEpochSink = returnedOptions.AdaptiveRuntimeShadowEpochSink;

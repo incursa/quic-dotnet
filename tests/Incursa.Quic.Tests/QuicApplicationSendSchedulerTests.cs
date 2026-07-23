@@ -373,6 +373,73 @@ public sealed class QuicApplicationSendSchedulerTests
     }
 
     [Fact]
+    public void ForcedConservativeTurnPolicyUsesTheCurrentPlannerAndCanOnlyBeConfiguredOnce()
+    {
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+
+        runtime.ConfigureApplicationSendTurnPolicyMode(QuicApplicationSendTurnPolicyMode.Conservative);
+
+        Assert.Equal(QuicApplicationSendTurnPolicyMode.Conservative, runtime.ApplicationSendTurnPolicyMode);
+        Assert.Same(QuicCurrentApplicationSendTurnPlanner.Instance, runtime.ApplicationSendTurnPlanner);
+        Assert.Throws<InvalidOperationException>(
+            () => runtime.ConfigureApplicationSendTurnPolicyMode(QuicApplicationSendTurnPolicyMode.LegacyCurrent));
+    }
+
+    [Fact]
+    public void ForcedLegacyTurnPolicyPreservesTheNullPlannerFastPath()
+    {
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+
+        runtime.ConfigureApplicationSendTurnPolicyMode(QuicApplicationSendTurnPolicyMode.LegacyCurrent);
+
+        Assert.Equal(QuicApplicationSendTurnPolicyMode.LegacyCurrent, runtime.ApplicationSendTurnPolicyMode);
+        Assert.Null(runtime.ApplicationSendTurnPlanner);
+    }
+
+    [Fact]
+    public void AdaptiveRuntimeOptionsApplyTheForcedTurnPolicyBeforeTraffic()
+    {
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicClientConnectionOptions options = new()
+        {
+            ForcedApplicationSendTurnPolicyMode = QuicApplicationSendTurnPolicyMode.Conservative,
+        };
+
+        runtime.ConfigureAdaptiveRuntimePolicy(options);
+
+        Assert.Equal(QuicApplicationSendTurnPolicyMode.Conservative, runtime.ApplicationSendTurnPolicyMode);
+        Assert.Same(QuicCurrentApplicationSendTurnPlanner.Instance, runtime.ApplicationSendTurnPlanner);
+    }
+
+    [Fact]
+    public void AdaptiveRuntimeShadowRejectsANonlegacyForcedTurnPolicy()
+    {
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicClientConnectionOptions options = new()
+        {
+            AdaptiveRuntimeShadowEnabled = true,
+            ForcedApplicationSendTurnPolicyMode = QuicApplicationSendTurnPolicyMode.Conservative,
+        };
+
+        Assert.Throws<InvalidOperationException>(() => runtime.ConfigureAdaptiveRuntimePolicy(options));
+        Assert.Equal(QuicApplicationSendTurnPolicyMode.LegacyCurrent, runtime.ApplicationSendTurnPolicyMode);
+        Assert.Null(runtime.ApplicationSendTurnPlanner);
+    }
+
+    [Fact]
+    public void ForcedTurnPolicyCannotReplaceAnInjectedPlanner()
+    {
+        RecordingTurnPlanner planner = new(selectedWriteIndex: 0);
+        using QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            applicationSendTurnPlanner: planner);
+
+        Assert.Throws<InvalidOperationException>(
+            () => runtime.ConfigureApplicationSendTurnPolicyMode(QuicApplicationSendTurnPolicyMode.Conservative));
+        Assert.Same(planner, runtime.ApplicationSendTurnPlanner);
+    }
+
+    [Fact]
     public void ListenerFactoryCreatesDistinctTurnPlannersPerConnection()
     {
         int factoryCallCount = 0;

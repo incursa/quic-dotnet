@@ -1,0 +1,16 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0065",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Application-send turn forced-policy seam verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Release build and focused deterministic scheduler tests.",
+  "related_artifacts": ["ARC-QUIC-CRT-0063", "WI-QUIC-CRT-0064"],
+  "verifies": ["REQ-QUIC-CRT-0173"],
+  "scope": "Verify only internal forced identity configuration and safety boundaries for the existing planner seam.",
+  "expected_result": "LegacyCurrent retains the null fast path; Conservative installs the current planner; configuration is one-shot; injected planner replacement and non-legacy shadow combinations are rejected.",
+  "procedure": ["Build tests in Release.", "Run QuicApplicationSendSchedulerTests."],
+  "evidence": ["tests/Incursa.Quic.Tests/QuicApplicationSendSchedulerTests.cs"]
+}

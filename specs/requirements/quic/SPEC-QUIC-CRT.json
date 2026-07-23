@@ -2818,6 +2818,22 @@
         "Missing or unmatched joins stay addressable and keep their exclusion reasons.",
         "The append-only transform chain preserves raw negatives and superseded rows."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0173",
+      "title": "Force and identify application-send turn policy campaigns without active selection",
+      "statement": "The runtime MUST support an internal, connection-construction-time forced mode for the closed application-send turn policy set; MUST keep legacy_current as the default and rollback path; MUST keep conservative distinct as a campaign identity while preserving the current legal planner behavior; MUST configure the mode once before traffic; MUST reject replacement of an explicitly injected planner and non-legacy forced modes during shadow operation; and MUST NOT use forced mode to bypass queue ordering, congestion, pacing, anti-amplification, flow-control, packet, ownership, cancellation, disposal, recovery, or terminal-state guards.",
+      "trace": {
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-axis-roadmap.md",
+          "docs/design/adaptive-runtime-policy-seam-inventory.md",
+          "ARC-QUIC-CRT-0063"
+        ]
+      },
+      "notes": [
+        "This is a measurement-only force seam; it does not authorize active selection or a new planner algorithm.",
+        "Campaign result and epoch provenance integration remains a subsequent bounded slice."
+      ]
     }
   ]
 }

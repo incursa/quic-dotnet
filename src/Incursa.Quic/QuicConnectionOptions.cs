@@ -154,6 +154,11 @@ public abstract class QuicConnectionOptions
     // SEE: QuicConnectionRuntime.ConfigureAdaptiveRuntimePolicy
     internal QuicReceiveCreditPolicyMode? ForcedReceiveCreditPolicyMode { get; set; }
 
+    // CONTEXT: Internal-only campaign control. The default remains the null
+    // planner fast path; a forced conservative mode is an explicit current
+    // planner and does not grant a policy authority over runtime guards.
+    internal QuicApplicationSendTurnPolicyMode? ForcedApplicationSendTurnPolicyMode { get; set; }
+
     internal bool AdaptiveRuntimeShadowEnabled { get; set; }
 
     internal TimeSpan AdaptiveRuntimeShadowEpochInterval { get; set; }

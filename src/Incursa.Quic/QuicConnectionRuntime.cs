@@ -63,6 +63,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const int InitialHostedTimerUpdateCapacity = 8;
     private const int InitialHostedSendDatagramUpdateCapacity = 16;
     private const int UnconfiguredReceiveCreditPolicyMode = -1;
+    private const int UnconfiguredApplicationSendTurnPolicyMode = -1;
     private const int AdaptiveRuntimeObservationDisabled = 0;
     private const int AdaptiveRuntimeObservationConfiguring = 1;
     private const int AdaptiveRuntimeObservationEnabled = 2;
@@ -93,6 +94,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly object pendingStreamActionRequestsGate = new();
     private int hasIssuedApplicationDataWrite;
     private int receiveCreditPolicyMode = UnconfiguredReceiveCreditPolicyMode;
+    private int applicationSendTurnPolicyMode = UnconfiguredApplicationSendTurnPolicyMode;
     private int adaptiveRuntimeObservationConfigurationState;
     private long adaptiveRuntimeObservationEpochStartTicks;
     private ulong adaptiveRuntimeObservationEpochSequence;
@@ -105,7 +107,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly object scheduledFlowControlCreditGate = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
     private readonly IQuicApplicationDatagramBatchPolicy? applicationDatagramBatchPolicy;
-    private readonly IQuicApplicationSendTurnPlanner? applicationSendTurnPlanner;
+    private IQuicApplicationSendTurnPlanner? applicationSendTurnPlanner;
     private QuicApplicationSendPressureClassifier applicationSendPressureClassifier = default;
     private bool pendingPeerBidirectionalStreamCapacityReplay;
     private bool pendingPeerUnidirectionalStreamCapacityReplay;
@@ -1038,6 +1040,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         ArgumentNullException.ThrowIfNull(options);
 
         QuicReceiveCreditPolicyMode? forcedMode = options.ForcedReceiveCreditPolicyMode;
+        QuicApplicationSendTurnPolicyMode? forcedApplicationSendTurnMode = options.ForcedApplicationSendTurnPolicyMode;
         if (options.AdaptiveRuntimeShadowEnabled)
         {
             if (forcedMode is not null and not QuicReceiveCreditPolicyMode.LegacyCurrent)
@@ -1049,6 +1052,17 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             if (forcedMode is QuicReceiveCreditPolicyMode.LegacyCurrent)
             {
                 ConfigureReceiveCreditPolicyMode(QuicReceiveCreditPolicyMode.LegacyCurrent);
+            }
+
+            if (forcedApplicationSendTurnMode is { } applicationSendTurnMode)
+            {
+                if (applicationSendTurnMode != QuicApplicationSendTurnPolicyMode.LegacyCurrent)
+                {
+                    throw new InvalidOperationException(
+                        "Adaptive runtime shadow requires the legacy_current application-send turn policy.");
+                }
+
+                ConfigureApplicationSendTurnPolicyMode(applicationSendTurnMode);
             }
 
             ConfigureAdaptiveRuntimeEpochSink(
@@ -1064,6 +1078,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             ConfigureReceiveCreditPolicyMode(forcedMode.Value);
         }
 
+        if (forcedApplicationSendTurnMode is not null)
+        {
+            ConfigureApplicationSendTurnPolicyMode(forcedApplicationSendTurnMode.Value);
+        }
+
         if (options.AdaptiveRuntimeShadowEpochSink is not null
             || options.AdaptiveRuntimeShadowEpochInterval != TimeSpan.Zero)
         {
@@ -1077,6 +1096,32 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 options.AdaptiveRuntimeShadowEpochSink);
             EnableAdaptiveRuntimeEpochExport();
         }
+    }
+
+    internal void ConfigureApplicationSendTurnPolicyMode(QuicApplicationSendTurnPolicyMode mode)
+    {
+        if (mode is < QuicApplicationSendTurnPolicyMode.LegacyCurrent or > QuicApplicationSendTurnPolicyMode.Conservative)
+        {
+            throw new ArgumentOutOfRangeException(nameof(mode));
+        }
+
+        if (applicationSendTurnPlanner is not null)
+        {
+            throw new InvalidOperationException(
+                "A forced application-send turn policy cannot replace an explicitly injected planner.");
+        }
+
+        if (Interlocked.CompareExchange(
+                ref applicationSendTurnPolicyMode,
+                (int)mode,
+                UnconfiguredApplicationSendTurnPolicyMode) != UnconfiguredApplicationSendTurnPolicyMode)
+        {
+            throw new InvalidOperationException("The application-send turn policy mode has already been configured.");
+        }
+
+        applicationSendTurnPlanner = mode == QuicApplicationSendTurnPolicyMode.Conservative
+            ? QuicCurrentApplicationSendTurnPlanner.Instance
+            : null;
     }
 
     private void ConfigureAdaptiveRuntimeEpochSink(
@@ -1598,6 +1643,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     internal int DelayedApplicationSendCount => applicationSendQueue.Count;
 
     internal IQuicApplicationSendTurnPlanner? ApplicationSendTurnPlanner => applicationSendTurnPlanner;
+
+    internal QuicApplicationSendTurnPolicyMode ApplicationSendTurnPolicyMode
+        => Volatile.Read(ref applicationSendTurnPolicyMode) == (int)QuicApplicationSendTurnPolicyMode.Conservative
+            ? QuicApplicationSendTurnPolicyMode.Conservative
+            : QuicApplicationSendTurnPolicyMode.LegacyCurrent;
 
     internal bool TryBeginRuntimePressureSnapshot(
         long timestamp,
