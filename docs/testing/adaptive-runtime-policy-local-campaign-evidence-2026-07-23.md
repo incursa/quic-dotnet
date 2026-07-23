@@ -44,22 +44,23 @@ and validated `export-002` correction remain preserved rather than replaced.
 
 ## Dataset Disposition
 
-- Raw layer: retain all sixteen samples and all thirty-two source records
-  across the original cell and all three reruns.
+- Raw layer: retain all twenty samples and all sixty-four source records across
+  the original c1 cell, its three c1 reruns, and the c4 guardrail.
 - Construction-provenance layer: retain the original eight `export-002` rows
   with `target_health_invalid` and `generator_health_invalid` exclusions, and
-  the eight automatically exported `rerun-004` rows. The two original
-  diagnostic rows remain outside the correction join to avoid duplicate
-  identities.
+  the eight automatically exported `rerun-004` rows. Retain the c4 cell's
+  thirty-two automatically exported rows with its health exclusions. The two
+  original diagnostic rows remain outside the correction join to avoid
+  duplicate identities.
 - Curated and analysis layers: zero included rows. The invalid rows remain
   excluded; the `neutral_local` rows remain uncurated until independent-host,
   fairness, and managed-allocation gates are populated.
 - No benchmark claim, threshold tuning, rule proposal, shadow conclusion, or
   active-policy recommendation follows from any of these runs.
 
-## Subsequent Retained Reruns
+## Subsequent Retained Cells
 
-Each rerun retained its own root, command output, source commit, raw records,
+Each cell retained its own root, command output, source commit, raw records,
 and classification. They are not pooled with one another or with a future
 independent-host cohort.
 
@@ -68,6 +69,7 @@ independent-host cohort.
 | `adaptive-send-turn-local-20260723-c1-abba-rerun-002` | `18a792ffc9a477cb8e452a65b2b03470b05210ec` | 4 / 8; all payload-valid | 0 | `invalid_environment`; target and generator health invalid, maximum within-treatment relative range `0.20145001529357126`. The then-current runner still withheld construction export after the environment failure. |
 | `adaptive-send-turn-local-20260723-c1-abba-rerun-003` | `fb9d6782651bee6d0594e316b2375e0689a10ead` | 4 / 8; all payload-valid | 0 | `invalid_environment`; target and generator health invalid, maximum relative range `0.10069728847618635`. Its retained console log records the positional PowerShell argument-binding failure for `ExpectedPolicy`. |
 | `adaptive-send-turn-local-20260723-c1-abba-rerun-004` | `86b7744e0a3bc966158102ef819349a432feabfa` | 4 / 8; all payload-valid | 8 | `neutral_local`; automatically exported and validated after the named-splat fix. Maximum relative range `0.049935014487130155`; target and generator health are `limited` because the topology remains same-host. |
+| `adaptive-send-turn-local-20260723-c4-abba-r001` | `9b3398c84c073180d104ffb278c312d5e034ec68` | 4 / 32; all payload-valid | 32 | `invalid_environment`; target and generator health invalid, maximum relative range `0.05932185685129216`. This was the bounded four-connection guardrail (16 streams per connection), not a stress cell. |
 
 The `rerun-004` root is
 `C:\shared\src\incursa\quic-dotnet\.artifacts\adaptive-runtime\adaptive-send-turn-local-20260723-c1-abba-rerun-004\duplex-64kb-x1-s16`.
@@ -84,6 +86,15 @@ and evidence-validator parameters are named PowerShell splats rather than
 positional arrays. Commit `f0be4875` verifies that two exclusion flags are
 passed through that named-splat contract. The focused requirement home passed
 6/6 after the latter commit.
+
+The c4 root is
+`C:\shared\src\incursa\quic-dotnet\.artifacts\adaptive-runtime\adaptive-send-turn-local-20260723-c4-abba-r001\duplex-64kb-c4-s16`.
+Its validation reports thirty-two unique construction rows, one checksum
+inventory, forty-four unique artifact hashes, and zero failures; validation
+summary SHA-256:
+`b0999a164b94963c7a6a64f36397a8db9b77d8415c813b23978b6002cec2c10e`.
+The c4 raw records and validated construction rows remain excluded from curated
+and analysis layers because the local host-health contract failed.
 
 ## BenchmarkDotNet Mechanism Check
 
