@@ -448,3 +448,27 @@ for the SUT and `SHA256:QW7ClHAP1s6bui5ZFVdtCEFY2gLp60AjUszk3P45Y60` for the
 load worker). No host key was accepted, replaced, or bypassed, and neither
 worker was used. This is a preserved worker-identity environment blocker, not
 evidence that the multi-host ProtocolLab is absent.
+
+### Deterministic Two-Shard Fanout Gate
+
+Commit `f9fabfd6c0bc9cc5b69b2e72119c5b7cb487f5db` adds
+`ConcurrentColdHandshakesRemainAcceptableWithTwoRuntimeShards` to
+`QuicListenerHostSendResilienceTests`. It opens 128 simultaneous loopback cold
+handshakes against the same two-runtime-shard topology reported by the x64
+SUT, with an explicit 128-entry accept backlog. The focused gate:
+
+```powershell
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release `
+  --no-build --no-restore --disable-build-servers --nologo `
+  --logger "console;verbosity=normal" `
+  --filter "FullyQualifiedName~QuicListenerHostSendResilienceTests"
+```
+
+passed 20/20 in 7.576 seconds; the new 128-handshake test passed in one
+second. This is deterministic local mechanism evidence that the listener,
+backlog, and two-shard runtime can accept the complete concurrent fanout. It
+does not recreate the independent-worker network path, target CPU contention,
+or external load-generator timing, so it neither clears nor reclassifies the
+retained remote c128 `failed_correctness` row. It supplies zero adaptive-policy
+dataset epochs and leaves the next remote diagnosis gated on verified worker
+identity and a healthy target lease.
