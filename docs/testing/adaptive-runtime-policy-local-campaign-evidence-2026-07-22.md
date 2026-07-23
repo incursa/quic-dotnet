@@ -313,3 +313,112 @@ does not authorize stress expansion, online learning, active controller
 selection, ProtocolLab publication, or production implementation. Any derived
 rule must be reviewed against the shadow-mode, acceptance, and rollback
 contracts before runtime code changes begin.
+
+## Remote Linux Worker Extension
+
+Two independent Debian x64 workers were added after the post-SSD local
+campaign. They are used as separate same-host target/load regimes, not as
+publishable isolated-host benchmarks:
+
+- `plab-worker-x64-02` has 2 logical processors and about 4 GiB RAM;
+- `plab-worker-x64-03` has 6 logical processors and about 31 GiB RAM.
+
+Both workers use the clean `quic-dotnet` commit `24a046ec`, ProtocolLab
+execution snapshot `2c8e071`, .NET SDK 10.0.201, Go 1.26.5, and the repo-pinned
+`dotnet-counters` 9.0.661903 tool. The Go archive was accepted only after its
+SHA-256 matched
+`5c2c3b16caefa1d968a94c1daca04a7ca301a496d9b086e17ad77bb81393f053`.
+The fixed-policy campaigns still perform no online exploration and authorize
+no active selector.
+
+### Provisioning Negatives
+
+Every failed setup attempt remains retained:
+
+- `adaptive-receive-credit-remote-x64-03-20260723-balanced30s1` failed because
+  PowerShell on Linux does not support `Start-Process -WindowStyle`.
+  Commit `1dafd8ba` made that parameter Windows-only.
+- `adaptive-receive-credit-remote-x64-03-20260723-linuxfix-balanced30s1`
+  retained five failed samples. The adapter could not build the pinned
+  Raw QUIC server because the worker had SDK 10.0.302 while `global.json`
+  requires 10.0.201. The empty aggregate metric objects then exposed a second
+  fault: the local-cell runner accessed a missing `median` property and did
+  not retain a result document.
+- Commit `24a046ec` now maps missing aggregate medians to `null`. Its focused
+  Release build completed with zero warnings and errors, and the
+  `REQ-QUIC-CRT-0171|REQ-QUIC-CRT-0172` band passed 16 of 16 tests.
+- `adaptive-receive-credit-remote-x64-03-20260723-sdk201-metricsfix-balanced30s1`
+  then retained all five cells as `invalid_contract` instead of aborting. Its
+  missing prerequisite was the `quic-go-raw-load` executable.
+- `adaptive-receive-credit-remote-x64-03-20260723-provisioned-balanced30s1`
+  ran real payload measurements after Go 1.26.5 was installed, but all five
+  cells remained `invalid_contract` because runtime counters had not yet been
+  restored. This campaign was allowed to finish unchanged; instrumentation
+  was not changed between its samples.
+
+These rows are harness and environment evidence only. They are not silently
+merged into the contract-complete policy-effect population.
+
+### Constrained Worker Balanced Campaign
+
+Campaign
+`adaptive-receive-credit-remote-x64-02-20260723-provisioned-balanced30s1`
+completed all five fixed-policy cells. Every sample proved exact payload
+correctness, every target attribution joined, every runtime-counter capture
+succeeded, and all five evidence-validation summaries are valid.
+
+| Cell | Classification | Epoch rows | Throughput median | p95 median |
+| --- | --- | ---: | ---: | ---: |
+| `upload-1mb-x16-s1` | `invalid_environment` | 8,846 | 50.024 MB/s | 428.718 ms |
+| `duplex-64kb-x1-s16` | `invalid_environment` | 559 | 15.297 MB/s | 89.707 ms |
+| `download-1mb-x16-s1` | `invalid_environment` | 8,643 | 43.039 MB/s | 491.986 ms |
+| `multiplex-1kb-x1-s100` | `invalid_environment` | 560 | 5.651 MB/s | 19.822 ms |
+| `duplex-64kb-x4-s16` | `invalid_environment` | 2,211 | 20.465 MB/s | 272.350 ms |
+
+The 20,819 epoch rows are a coherent constrained/saturated-host regime. They
+remain useful for offline regime discovery, but their
+`invalid_environment` label excludes them from policy-effect claims.
+
+The retained archive contains 22,767 entries and 17,628,511 bytes. Its remote
+and workstation copies both have SHA-256
+`6476597dc2870f50e76ead09da4e84fcf662e1cb12d2987226a6b31f4130317b`.
+
+### Six-Core Worker Balanced Campaign
+
+Campaign
+`adaptive-receive-credit-remote-x64-03-20260723-instrumented-balanced30s1`
+retained every cell and ended `incomplete_retained`, as required when any cell
+fails a terminal gate.
+
+| Cell | Classification | Epoch rows | Review result |
+| --- | --- | ---: | --- |
+| `upload-1mb-x16-s1` | `neutral_local` | 8,785 | Four correct samples; 211.434 MB/s and 82.152 ms p95 medians. |
+| `duplex-64kb-x1-s16` | `failed_correctness` | 556 | The final candidate sample had 10 stream deadline timeouts after 14,294 completed streams. |
+| `download-1mb-x16-s1` | `negative_retained` | 8,822 | Candidate throughput and p95 were effectively flat, but median peak outstanding buffer bytes increased 9.40%, from 3,758,080 to 4,111,360. |
+| `multiplex-1kb-x1-s100` | `negative_retained` | 560 | Candidate throughput improved 1.86% and p95 improved 2.61%, but median peak outstanding buffer bytes increased 12.38%, from 206,848 to 232,448. The row also retained 412 `arithmetic_saturated` epochs. |
+| `duplex-64kb-x4-s16` | `failed_correctness` | 1,742 | Three samples across both policies had rare stream deadline timeouts; only one candidate sample completed. |
+
+All five evidence-validation summaries are valid, including the negative and
+correctness-failure rows, for 20,465 joined epoch rows and zero validation
+failures. The two negative rows demonstrate why a single universally enabled
+policy remains unacceptable: throughput or latency improvements can coexist
+with a material retained-memory regression.
+
+The retained archive contains 22,412 entries and 20,808,671 bytes. Its remote
+and workstation copies both have SHA-256
+`d169ffebd6cdb890d48ddf1344b6c7bf4920fc934e0dbaacc69019ed65777533`.
+
+### Remote Extension Gate
+
+The c32 and c4-by-s100 stress extension remains blocked at this checkpoint.
+The x4/s16 correctness failures occurred under both policies, so higher load
+must not be assumed safe. Two new non-stress campaigns provide the next
+bounded gate:
+
+- x64-02: connection-first `legacy_current` versus `immediate`;
+- x64-03: stream-first `legacy_current` versus `immediate`.
+
+They exercise a third implementation and a different temporal order while
+rechecking the failed stream shapes. No stress expansion, model training,
+active policy selection, or production runtime change is authorized by this
+checkpoint.
