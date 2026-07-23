@@ -543,3 +543,33 @@ bounded c128 attribution with verified current worker identity and explicit
 target/load telemetry capture, followed by a clean non-debug legacy-current
 baseline only if that attribution is sufficient. Adjacent axes remain frozen
 at `legacy_current`.
+
+### Cross-Worker Child-Artifact Capture Gap
+
+The recovered diagnostic also exposed a permanent-evidence transport defect.
+For c128, the controller's artifact index records both
+`artifact-105-75cb13805d59` (`server.stderr.txt`) and
+`artifact-114-017f74a8d77e` (`target.stderr.txt`) as existing and
+controller-readable, but each has `sizeBytes=0`; their stdout counterparts
+are also zero bytes. Consequently, the raw server's explicitly enabled debug
+messages were not available in the retained controller artifact bundle.
+
+This is not evidence that the server produced no diagnostics. The Raw QUIC
+adapter contract advertises stdout/stderr artifacts and its endpoint launcher
+starts bounded child-output copy tasks. The loss occurs across the
+cross-worker target/result handoff: the load-side cell record retains the
+external endpoint and its own loader artifacts, while the SUT-side child
+artifacts are not materialized in the controller-visible result bundle. The
+same handoff leaves the external target's process identity and metrics
+unresolved, which is why runtime counter capture cannot attach to the raw
+server from the load worker.
+
+Treat this as a `protocol-lab-internal` evidence-plane delivery blocker, not
+as a QUIC runtime or adaptive-policy defect. The next diagnostic implementation
+must preserve the SUT adapter's declared child stdout/stderr, endpoint-process
+identity, and bounded process-metric snapshots through the normal cross-worker
+artifact bundle, with checksums and explicit unavailable states. Until then,
+debug-mode c128 output, target pressure, and failure-side establishment reasons
+remain unavailable evidence. This gap preserves the current c128 row as
+`failed_correctness` and `diagnostic_only`; it does not justify a rerun that
+would replace or relabel it.
