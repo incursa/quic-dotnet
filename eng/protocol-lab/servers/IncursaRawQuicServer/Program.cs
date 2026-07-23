@@ -34,6 +34,8 @@ var behavior = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC
 var payloadSizeText = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_SIZE_BYTES");
 var adaptiveRuntimePolicy = ResolveAdaptiveRuntimePolicy(
     Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY"));
+var applicationSendTurnPolicy = ResolveApplicationSendTurnPolicy(
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY"));
 var epochPublisher = adaptiveRuntimePolicy.ForcedMode is not null || adaptiveRuntimePolicy.ShadowEnabled
     ? new AdaptiveRuntimeEpochPublisher()
     : null;
@@ -91,6 +93,7 @@ var listenerOptions = new QuicListenerOptions
                 UnidirectionalStream = RawQuicReceiveWindowBytes,
             },
             ForcedReceiveCreditPolicyMode = adaptiveRuntimePolicy.ForcedMode,
+            ForcedApplicationSendTurnPolicyMode = applicationSendTurnPolicy.ForcedMode,
             AdaptiveRuntimeShadowEnabled = adaptiveRuntimePolicy.ShadowEnabled,
             AdaptiveRuntimeShadowEpochInterval = epochPublisher is null
                 ? TimeSpan.Zero
@@ -115,6 +118,7 @@ Console.WriteLine($"QUIC_PORT={listenPort}");
 Console.WriteLine($"QUIC_ALPN={alpn}");
 Console.WriteLine($"QUIC_IMPLEMENTATION=incursa-raw-quic");
 Console.WriteLine($"QUIC_RECEIVE_CREDIT_POLICY={adaptiveRuntimePolicy.Name}");
+Console.WriteLine($"QUIC_APPLICATION_SEND_TURN_POLICY={applicationSendTurnPolicy.Name}");
 if (epochPublisher is not null)
 {
     Console.WriteLine("QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=adaptive-runtime-epoch-raw-v1");
@@ -163,6 +167,18 @@ static (string Name, QuicReceiveCreditPolicyMode? ForcedMode, bool ShadowEnabled
         "shadow" => ("shadow", QuicReceiveCreditPolicyMode.LegacyCurrent, true),
         _ => throw new InvalidOperationException(
             "PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY must be unset, legacy_current, immediate, read_dominant_batch, or shadow."),
+    };
+}
+
+static (string Name, QuicApplicationSendTurnPolicyMode? ForcedMode) ResolveApplicationSendTurnPolicy(string? value)
+{
+    return value?.Trim().ToLowerInvariant() switch
+    {
+        null or "" => ("unset", null),
+        "legacy_current" => ("legacy_current", QuicApplicationSendTurnPolicyMode.LegacyCurrent),
+        "conservative" => ("conservative", QuicApplicationSendTurnPolicyMode.Conservative),
+        _ => throw new InvalidOperationException(
+            "PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY must be unset, legacy_current, or conservative."),
     };
 }
 

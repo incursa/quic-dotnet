@@ -239,8 +239,11 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("$executionManifest.dependencies.requiresDotNet", builderScript);
         Assert.Contains("AdaptiveRuntimeReceiveCreditPolicy", builderScript);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY", builderScript);
+        Assert.Contains("AdaptiveRuntimeApplicationSendTurnPolicy", builderScript);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY", builderScript);
         Assert.Contains("Raw QUIC package implementation manifest must contain exactly one ASPNETCORE_URLS environment anchor.", builderScript);
         Assert.Contains("adaptiveRuntimeReceiveCreditPolicy", builderScript);
+        Assert.Contains("adaptiveRuntimeApplicationSendTurnPolicy", builderScript);
         Assert.Contains("$resolvedWorkRoot", builderScript);
         Assert.Contains("Join-Path $resolvedWorkRoot \"package-source/", builderScript);
         Assert.Contains("Join-Path $resolvedWorkRoot \"publish/", builderScript);
