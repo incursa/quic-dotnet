@@ -1753,9 +1753,11 @@ if ($isApplicationSendTurnAxis -and $contractFailures.Count -eq 0) {
             $constructionArguments += $additionalExclusionFlags.ToArray()
         }
 
-        & $constructionExporterScript @constructionArguments | Out-Null
-        if ($LASTEXITCODE -ne 0) {
-            throw "Application-send-turn construction provenance export failed. Retained output: $constructionRoot"
+        try {
+            & $constructionExporterScript @constructionArguments | Out-Null
+        }
+        catch {
+            throw "Application-send-turn construction provenance export failed. Retained output: $constructionRoot. $($_.Exception.Message)"
         }
 
         $sampleConstructionRows = @(Get-ChildItem -LiteralPath $constructionRoot -Filter 'construction-row-*.json' -File)
@@ -1780,7 +1782,8 @@ if ($epochRowPaths.Count -gt 0 -or $constructionRowPaths.Count -gt 0) {
     }
     & $evidenceValidationScript @validationArguments |
         Set-Content -LiteralPath (Join-Path $resolvedOutputRoot 'evidence-validation.json') -Encoding utf8
-    if ($LASTEXITCODE -ne 0) {
+    $evidenceValidationExitCode = $LASTEXITCODE
+    if ($null -ne $evidenceValidationExitCode -and $evidenceValidationExitCode -ne 0) {
         throw "Generated adaptive-runtime evidence did not pass schema/join validation. Retained output: $resolvedOutputRoot"
     }
 }
