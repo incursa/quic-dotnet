@@ -49,6 +49,29 @@ public sealed class REQ_QUIC_CRT_0171
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
+    public void LocalCellRetainsMissingAggregateMediansAsNullEvidence()
+    {
+        string runner = AdaptiveRuntimePolicyFixtureTestSupport.ReadRepositoryText(
+            "eng/adaptive-runtime/Invoke-AdaptiveRuntimePolicyLocalCell.ps1");
+
+        Assert.Contains("function Get-AggregateMedian", runner, StringComparison.Ordinal);
+        Assert.Contains(
+            "Get-OptionalObjectProperty -Object $metric -Name 'median'",
+            runner,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "throughputBytesPerSecond = Get-AggregateMedian -Aggregate $Aggregate -MetricName 'throughputBytesPerSecond'",
+            runner,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain(
+            "$Aggregate.throughputBytesPerSecond.median",
+            runner,
+            StringComparison.Ordinal);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void DryRunWritesPhaseTransitionArtifactWithSameConnectionHelperContractOnly()
     {
         string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();

@@ -174,6 +174,18 @@ function Get-RoundedMedianInt64 {
     return [long] [Math]::Round([double] $median, 0, [MidpointRounding]::AwayFromZero)
 }
 
+function Get-AggregateMedian {
+    param(
+        [AllowNull()][object] $Aggregate,
+
+        [Parameter(Mandatory = $true)]
+        [string] $MetricName
+    )
+
+    $metric = Get-OptionalObjectProperty -Object $Aggregate -Name $MetricName
+    return Get-OptionalObjectProperty -Object $metric -Name 'median'
+}
+
 function Get-Outcome {
     param(
         [AllowNull()][object] $Aggregate,
@@ -199,11 +211,11 @@ function Get-Outcome {
     }
 
     return [ordered]@{
-        throughputBytesPerSecond = $Aggregate.throughputBytesPerSecond.median
-        operationsPerSecond = $Aggregate.requestsPerSecond.median
-        latencyP50Ms = $Aggregate.latencyP50Ms.median
-        latencyP95Ms = $Aggregate.latencyP95Ms.median
-        latencyP99Ms = $Aggregate.latencyP99Ms.median
+        throughputBytesPerSecond = Get-AggregateMedian -Aggregate $Aggregate -MetricName 'throughputBytesPerSecond'
+        operationsPerSecond = Get-AggregateMedian -Aggregate $Aggregate -MetricName 'requestsPerSecond'
+        latencyP50Ms = Get-AggregateMedian -Aggregate $Aggregate -MetricName 'latencyP50Ms'
+        latencyP95Ms = Get-AggregateMedian -Aggregate $Aggregate -MetricName 'latencyP95Ms'
+        latencyP99Ms = Get-AggregateMedian -Aggregate $Aggregate -MetricName 'latencyP99Ms'
         allocatedBytes = $null
         peakRetainedBytes = $null
         bufferPoolRentedBytes = if ($null -eq $RunEvidence) { $null } else { $RunEvidence.bufferPoolRentedBytes }
