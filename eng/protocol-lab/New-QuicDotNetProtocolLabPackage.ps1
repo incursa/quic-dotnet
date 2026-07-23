@@ -19,6 +19,8 @@ param(
     [ValidateSet("", "legacy_current", "conservative")]
     [string] $AdaptiveRuntimeApplicationSendTurnPolicy = "",
 
+    [switch] $RawQuicDebugLogging,
+
     [string] $OutputPath,
 
     [string] $WorkRoot,
@@ -397,6 +399,9 @@ if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy) -and 
 if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy) -and $PackageTarget -ne "RawQuic") {
     throw "AdaptiveRuntimeApplicationSendTurnPolicy is supported only for the RawQuic package target."
 }
+if ($RawQuicDebugLogging -and $PackageTarget -ne "RawQuic") {
+    throw "RawQuicDebugLogging is supported only for the RawQuic package target."
+}
 if ([string]::IsNullOrWhiteSpace($Project)) {
     $Project = $targetConfig.DefaultProject
 }
@@ -461,7 +466,7 @@ if (Test-Path -LiteralPath $scriptsRoot -PathType Container) {
     Copy-Item -LiteralPath $scriptsRoot -Destination (Join-Path $stageRoot "scripts") -Recurse
 }
 
-if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy) -or -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy)) {
+if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy) -or -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy) -or $RawQuicDebugLogging) {
     $implementationManifestPath = Join-Path $stageRoot "implementations/quic-dotnet-raw-dev.yaml"
     $implementationText = Get-Content -LiteralPath $implementationManifestPath -Raw
     $environmentAnchorPattern = '(?m)^(  ASPNETCORE_URLS: http://127\.0\.0\.1:53591)(\r?)$'
@@ -470,7 +475,16 @@ if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy) -or -
         throw "Raw QUIC package implementation manifest must contain exactly one ASPNETCORE_URLS environment anchor."
     }
 
-    $environmentReplacement = '$1$2' + "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY: $AdaptiveRuntimeReceiveCreditPolicy" + "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY: $AdaptiveRuntimeApplicationSendTurnPolicy"
+    $environmentReplacement = '$1$2'
+    if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy)) {
+        $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY: $AdaptiveRuntimeReceiveCreditPolicy"
+    }
+    if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy)) {
+        $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY: $AdaptiveRuntimeApplicationSendTurnPolicy"
+    }
+    if ($RawQuicDebugLogging) {
+        $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG: 1"
+    }
     $implementationText = [regex]::Replace(
         $implementationText,
         $environmentAnchorPattern,
@@ -581,6 +595,7 @@ $embeddedProvenance = [ordered]@{
         packageTarget = $PackageTarget
         adaptiveRuntimeReceiveCreditPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy)) { $null } else { $AdaptiveRuntimeReceiveCreditPolicy }
         adaptiveRuntimeApplicationSendTurnPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy)) { $null } else { $AdaptiveRuntimeApplicationSendTurnPolicy }
+        rawQuicDebugLogging = [bool]$RawQuicDebugLogging
     }
 }
 Write-JsonFile -Value $embeddedProvenance -Path (Join-Path $stageRoot "package-build-provenance.json")
@@ -602,6 +617,7 @@ $attestation = [ordered]@{
         packageTarget = $PackageTarget
         adaptiveRuntimeReceiveCreditPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy)) { $null } else { $AdaptiveRuntimeReceiveCreditPolicy }
         adaptiveRuntimeApplicationSendTurnPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy)) { $null } else { $AdaptiveRuntimeApplicationSendTurnPolicy }
+        rawQuicDebugLogging = [bool]$RawQuicDebugLogging
         sha256 = $sha256
         materializationPath = [System.IO.Path]::GetFullPath($OutputPath)
         buildAttestationPath = [System.IO.Path]::GetFullPath($attestationPath)
@@ -623,6 +639,7 @@ Write-JsonFile -Value $attestation -Path $attestationPath
     packageVersion = $PackageVersion
     adaptiveRuntimeReceiveCreditPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy)) { $null } else { $AdaptiveRuntimeReceiveCreditPolicy }
     adaptiveRuntimeApplicationSendTurnPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy)) { $null } else { $AdaptiveRuntimeApplicationSendTurnPolicy }
+    rawQuicDebugLogging = [bool]$RawQuicDebugLogging
     workRoot = $resolvedWorkRoot
     sha256 = $sha256
     buildAttestationPath = [System.IO.Path]::GetFullPath($attestationPath)
