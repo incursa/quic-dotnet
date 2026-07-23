@@ -40,6 +40,9 @@ param(
     [string] $HostFingerprint,
 
     [Parameter(Mandatory = $true)]
+    [string] $CorrectnessFlagsJson,
+
+    [Parameter(Mandatory = $true)]
     [string] $ScenarioId,
 
     [Parameter(Mandatory = $true)]
@@ -81,6 +84,36 @@ if (Test-Path -LiteralPath $resolvedOutputDirectory) {
 New-Item -ItemType Directory -Path $resolvedOutputDirectory -Force | Out-Null
 
 $sourceHash = (Get-FileHash -LiteralPath $rawPath -Algorithm SHA256).Hash.ToLowerInvariant()
+try {
+    $correctnessFlags = $CorrectnessFlagsJson | ConvertFrom-Json -Depth 8
+}
+catch {
+    throw "CorrectnessFlagsJson is not valid JSON. $($_.Exception.Message)"
+}
+
+foreach ($propertyName in @('payloadValid', 'protocolValid', 'timedOut', 'ownershipValid', 'terminalValid', 'violationCodes')) {
+    if ($null -eq $correctnessFlags.PSObject.Properties[$propertyName]) {
+        throw "CorrectnessFlagsJson is missing required property '$propertyName'."
+    }
+}
+
+$normalizedCorrectnessFlags = [ordered]@{
+    payloadValid = [bool] $correctnessFlags.payloadValid
+    protocolValid = [bool] $correctnessFlags.protocolValid
+    timedOut = [bool] $correctnessFlags.timedOut
+    ownershipValid = [bool] $correctnessFlags.ownershipValid
+    terminalValid = [bool] $correctnessFlags.terminalValid
+    violationCodes = @($correctnessFlags.violationCodes | ForEach-Object { [string] $_ })
+}
+
+$correctnessInvalid = -not $normalizedCorrectnessFlags.payloadValid -or
+    -not $normalizedCorrectnessFlags.protocolValid -or
+    $normalizedCorrectnessFlags.timedOut -or
+    -not $normalizedCorrectnessFlags.ownershipValid -or
+    -not $normalizedCorrectnessFlags.terminalValid -or
+    $normalizedCorrectnessFlags.violationCodes.Count -ne 0
+[string[]] $analysisExclusionFlags = if ($correctnessInvalid) { , 'correctness_failed' } else { , 'none' }
+
 $records = @(
     Get-Content -LiteralPath $rawPath | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | ForEach-Object {
         try { $_ | ConvertFrom-Json -Depth 16 }
@@ -134,14 +167,7 @@ foreach ($record in $records) {
             appliedPolicy = $appliedPolicy
             selectionSource = 'forced'
         }
-        correctnessFlags = [ordered]@{
-            payloadValid = $true
-            protocolValid = $true
-            timedOut = $false
-            ownershipValid = $true
-            terminalValid = $true
-            violationCodes = @()
-        }
+        correctnessFlags = $normalizedCorrectnessFlags
         provenance = [ordered]@{
             repositoryCommit = $RepositoryCommit
             repositoryDirty = [bool] $RepositoryDirty
@@ -171,7 +197,7 @@ foreach ($record in $records) {
             warmupMicros = $WarmupMicros
             measurementMicros = $MeasurementMicros
         }
-        analysisExclusionFlags = @('none')
+        analysisExclusionFlags = $analysisExclusionFlags
     }
 
     $canonical = $row | ConvertTo-Json -Depth 30 -Compress

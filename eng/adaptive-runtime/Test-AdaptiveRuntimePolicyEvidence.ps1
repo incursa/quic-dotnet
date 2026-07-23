@@ -6,8 +6,9 @@ param(
     [Parameter(Mandatory = $true)]
     [string[]] $LocalResultPath,
 
-    [Parameter(Mandatory = $true)]
-    [string[]] $EpochDatasetPath,
+    [string[]] $EpochDatasetPath = @(),
+
+    [string[]] $ConstructionDatasetPath = @(),
 
     [switch] $AllowUnmatchedEpochRows,
 
@@ -21,9 +22,11 @@ $ErrorActionPreference = 'Stop'
 
 $localResultSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-policy-local-result-v1.schema.json'
 $epochDatasetSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-policy-epoch-dataset-v1.schema.json'
+$constructionDatasetSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-policy-construction-dataset-v1.schema.json'
 $failures = [System.Collections.Generic.List[string]]::new()
 $validatedLocalResults = [System.Collections.Generic.List[object]]::new()
 $validatedEpochRows = [System.Collections.Generic.List[object]]::new()
+$validatedConstructionRows = [System.Collections.Generic.List[object]]::new()
 $verifiedArtifactSha256ByPath = [System.Collections.Generic.Dictionary[string,string]]::new(
     [StringComparer]::OrdinalIgnoreCase)
 $legacyResultLevelEnvironmentExclusionRows = [System.Collections.Generic.HashSet[string]]::new(
@@ -347,6 +350,48 @@ function Add-ExpectedExclusionFlags {
     }
 }
 
+function Add-ExpectedConstructionExclusionFlags {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [System.Collections.Generic.HashSet[string]] $Flags,
+
+        [Parameter(Mandatory = $true)]
+        [object] $Row,
+
+        [Parameter(Mandatory = $true)]
+        [object] $Result
+    )
+
+    $correctnessInvalid = -not [bool] $Row.correctnessFlags.payloadValid -or
+        -not [bool] $Row.correctnessFlags.protocolValid -or
+        [bool] $Row.correctnessFlags.timedOut -or
+        -not [bool] $Row.correctnessFlags.ownershipValid -or
+        -not [bool] $Row.correctnessFlags.terminalValid -or
+        (Get-CollectionCount -Value $Row.correctnessFlags.violationCodes) -ne 0
+    if ($correctnessInvalid) {
+        [void] $Flags.Add('correctness_failed')
+    }
+
+    if ([long] $Row.workloadAnalysisOnly.requestedConnections -ne [long] $Row.workloadAnalysisOnly.effectiveConnections -or
+        [long] $Row.workloadAnalysisOnly.requestedStreamsPerConnection -ne [long] $Row.workloadAnalysisOnly.effectiveStreamsPerConnection -or
+        [long] $Row.workloadAnalysisOnly.requestedConcurrency -ne [long] $Row.workloadAnalysisOnly.effectiveConcurrency) {
+        [void] $Flags.Add('requested_effective_mismatch')
+    }
+
+    if (-not [bool] $Result.binaryProvenance.frozen) {
+        [void] $Flags.Add('binary_identity_missing')
+    }
+
+    if ([string] $Result.environment.targetHealth -eq 'invalid') {
+        [void] $Flags.Add('target_health_invalid')
+    }
+
+    if ([string] $Result.environment.generatorHealth -eq 'invalid') {
+        [void] $Flags.Add('generator_health_invalid')
+    }
+}
+
 function Test-SchemaDocument {
     param(
         [Parameter(Mandatory = $true)]
@@ -386,6 +431,10 @@ foreach ($path in $LocalResultPath) {
 
 foreach ($path in $EpochDatasetPath) {
     Test-SchemaDocument -Path $path -SchemaPath $epochDatasetSchemaPath -Destination $validatedEpochRows
+}
+
+foreach ($path in $ConstructionDatasetPath) {
+    Test-SchemaDocument -Path $path -SchemaPath $constructionDatasetSchemaPath -Destination $validatedConstructionRows
 }
 
 $localResultsByRunId = @{}
@@ -789,12 +838,160 @@ foreach ($item in $validatedEpochRows) {
     }
 }
 
+$seenConstructionRowIds = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+$seenConstructionKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+foreach ($item in $validatedConstructionRows) {
+    $row = $item.Document
+    $scopedRowId = "$($row.runId)|$($row.rowId)"
+    if (-not $seenConstructionRowIds.Add($scopedRowId)) {
+        $failures.Add("Duplicate construction-row rowId '$($row.rowId)' within run '$($row.runId)'.")
+    }
+
+    $constructionKey = "$($row.runId)|$($row.sampleId)|$($row.connectionKey)"
+    if (-not $seenConstructionKeys.Add($constructionKey)) {
+        $failures.Add("Duplicate construction identity '$constructionKey'.")
+    }
+
+    if (-not $row.workloadAnalysisOnly.excludedFromProductionFeatures) {
+        $failures.Add("Construction row '$($row.rowId)' does not exclude workload identity from production features.")
+    }
+
+    if (-not $localResultContextsByRunId.ContainsKey($row.runId)) {
+        $failures.Add("Construction row '$($row.rowId)' cannot be joined to local-result runId '$($row.runId)'.")
+        continue
+    }
+
+    $resultContext = $localResultContextsByRunId[$row.runId]
+    $result = $resultContext.Document
+    if ($result.policyAxis -ne 'application_send_turn_planning') {
+        $failures.Add("Construction row '$($row.rowId)' joined a local result for axis '$($result.policyAxis)', not application_send_turn_planning.")
+    }
+
+    if ($row.campaignId -ne $result.campaignId -or $row.cellId -ne $result.cellId) {
+        $failures.Add("Construction row '$($row.rowId)' does not match its local-result campaign/cell identity.")
+    }
+
+    if ($row.provenance.resultSchemaVersion -ne $result.schemaVersion) {
+        $failures.Add("Construction row '$($row.rowId)' does not name its source result schema version.")
+    }
+
+    if ($result.mode -ne 'forced' -or $null -eq $result.policyConfiguration.forcedPolicy) {
+        $failures.Add("Construction row '$($row.rowId)' requires a forced local result with an explicit forced policy.")
+    }
+    elseif ($row.constructionPolicyState.appliedPolicy -ne $result.policyConfiguration.forcedPolicy -or
+        $result.policyConfiguration.appliedPolicy -ne $result.policyConfiguration.forcedPolicy) {
+        $failures.Add("Construction row '$($row.rowId)' does not match the forced policy recorded on the local result.")
+    }
+
+    if ($row.constructionPolicyState.selectionSource -ne 'forced') {
+        $failures.Add("Construction row '$($row.rowId)' did not record selectionSource='forced'.")
+    }
+
+    if ($row.constructionPolicyState.ruleVersion -ne 'application-send-turn-force-v1' -or
+        $row.constructionPolicyState.provenanceContractVersion -ne 'adaptive-runtime-application-send-turn-provenance-v1') {
+        $failures.Add("Construction row '$($row.rowId)' does not use the application-send-turn forced-policy contract.")
+    }
+
+    if ($row.constructionPolicyState.ruleVersion -ne $result.policyConfiguration.ruleVersion) {
+        $failures.Add("Construction row '$($row.rowId)' does not match its local-result ruleVersion.")
+    }
+
+    if (-not $resultContext.SamplesById.ContainsKey($row.sampleId)) {
+        $failures.Add("Construction row '$($row.rowId)' does not resolve to source sample '$($row.sampleId)'.")
+        continue
+    }
+
+    $sourceSample = $resultContext.SamplesById[$row.sampleId]
+    $treatmentProperty = $result.treatments.PSObject.Properties[[string] $sourceSample.treatment]
+    if ($null -eq $treatmentProperty) {
+        $failures.Add("Construction row '$($row.rowId)' source sample names unknown treatment '$($sourceSample.treatment)'.")
+    }
+    elseif ($row.constructionPolicyState.appliedPolicy -ne [string] $treatmentProperty.Value.policy) {
+        $failures.Add("Construction row '$($row.rowId)' applied policy does not match source sample treatment '$($sourceSample.treatment)'.")
+    }
+
+    $expectedPayloadValid = [bool] $sourceSample.correctness.payloadValidated -and [int] $sourceSample.correctness.failedOperations -eq 0
+    $expectedProtocolValid = [int] $sourceSample.correctness.protocolErrors -eq 0
+    $expectedTimedOut = [int] $sourceSample.correctness.timedOutOperations -ne 0
+    $expectedOwnershipValid = (Get-CollectionCount -Value $sourceSample.correctness.invariantViolations) -eq 0
+    $expectedTerminalValid = [int] $sourceSample.exitCode -eq 0 -and
+        [int] $sourceSample.correctness.cancellationFailures -eq 0 -and
+        [int] $sourceSample.correctness.disposalFailures -eq 0
+    if ([bool] $row.correctnessFlags.payloadValid -ne $expectedPayloadValid -or
+        [bool] $row.correctnessFlags.protocolValid -ne $expectedProtocolValid -or
+        [bool] $row.correctnessFlags.timedOut -ne $expectedTimedOut -or
+        [bool] $row.correctnessFlags.ownershipValid -ne $expectedOwnershipValid -or
+        [bool] $row.correctnessFlags.terminalValid -ne $expectedTerminalValid) {
+        $failures.Add("Construction row '$($row.rowId)' correctness flags do not match its retained source sample outcomes.")
+    }
+
+    if ([string]::IsNullOrWhiteSpace([string] $row.provenance.sourceArtifactPath)) {
+        $failures.Add("Construction row '$($row.rowId)' did not retain provenance.sourceArtifactPath.")
+    }
+
+    if ($row.provenance.transformation.inputSha256 -ne $row.provenance.sourceArtifactSha256) {
+        $failures.Add("Construction row '$($row.rowId)' does not keep transformation.inputSha256 aligned with sourceArtifactSha256.")
+    }
+
+    $normalizedSourceArtifactPath = Test-InventoryJoin `
+        -InventoryContext $resultContext.ChecksumInventory `
+        -BasePath $item.Directory `
+        -DeclaredPath ([string] $row.provenance.sourceArtifactPath) `
+        -ExpectedSha256 ([string] $row.provenance.sourceArtifactSha256) `
+        -Description "Construction row '$($row.rowId)' source artifact"
+
+    if ($null -ne $normalizedSourceArtifactPath) {
+        $sampleArtifactPaths = @($sourceSample.artifactPaths | ForEach-Object {
+            Resolve-NormalizedEvidencePath -BasePath $resultContext.Item.Directory -Path ([string] $_)
+        })
+        if ($sampleArtifactPaths -notcontains $normalizedSourceArtifactPath) {
+            $failures.Add("Construction row '$($row.rowId)' source artifact is not retained on source sample '$($row.sampleId)'.")
+        }
+    }
+
+    foreach ($artifactPath in @($sourceSample.artifactPaths)) {
+        [void] (Test-InventoryJoin `
+            -InventoryContext $resultContext.ChecksumInventory `
+            -BasePath $resultContext.Item.Directory `
+            -DeclaredPath ([string] $artifactPath) `
+            -ExpectedSha256 $null `
+            -Description "Source sample '$($row.sampleId)' artifact '$artifactPath'")
+    }
+
+    $expectedExclusionFlags = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    Add-ExpectedConstructionExclusionFlags -Flags $expectedExclusionFlags -Row $row -Result $result
+    $actualFlags = @($row.analysisExclusionFlags | ForEach-Object { [string] $_ })
+    $actualFlagsSet = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    foreach ($flag in $actualFlags) {
+        [void] $actualFlagsSet.Add($flag)
+    }
+
+    if ($expectedExclusionFlags.Count -eq 0) {
+        if ($actualFlags.Count -ne 1 -or $actualFlags[0] -ne 'none') {
+            $failures.Add("Construction row '$($row.rowId)' should be analysis-clean and use analysisExclusionFlags=['none'].")
+        }
+    }
+    else {
+        if ($actualFlagsSet.Contains('none')) {
+            $failures.Add("Construction row '$($row.rowId)' cannot retain analysisExclusionFlags=['none'] when observed exclusions are present.")
+        }
+
+        foreach ($flag in $expectedExclusionFlags) {
+            if (-not $actualFlagsSet.Contains($flag)) {
+                $failures.Add("Construction row '$($row.rowId)' is missing required analysis exclusion flag '$flag'.")
+            }
+        }
+    }
+}
+
 $summary = [ordered]@{
     schemaVersion = 'adaptive-runtime-policy-evidence-validation-v1'
     valid = $failures.Count -eq 0
     localResultCount = $validatedLocalResults.Count
     epochRowCount = $validatedEpochRows.Count
     uniqueEpochRowCount = $seenRowIds.Count
+    constructionRowCount = $validatedConstructionRows.Count
+    uniqueConstructionRowCount = $seenConstructionRowIds.Count
     checksumInventoryCount = @($localResultContextsByRunId.Values | Where-Object { $null -ne $_.ChecksumInventory }).Count
     uniqueArtifactHashCount = $verifiedArtifactSha256ByPath.Count
     legacyResultLevelEnvironmentExclusionsAllowed = [bool] $AllowLegacyResultLevelEnvironmentExclusions

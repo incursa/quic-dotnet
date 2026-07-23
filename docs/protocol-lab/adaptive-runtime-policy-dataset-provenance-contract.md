@@ -18,6 +18,18 @@ snapshot, currently `application_send_turn_planning`, instead uses the distinct
 It is a provenance join record, not an epoch row, and must never be substituted
 for one in epoch-based analysis.
 
+For `application_send_turn_planning`, the retained raw connection records are
+exported by
+[`../../eng/adaptive-runtime/Convert-AdaptiveRuntimeApplicationSendTurnProvenance.ps1`](../../eng/adaptive-runtime/Convert-AdaptiveRuntimeApplicationSendTurnProvenance.ps1).
+The exporter is write-once: it preserves the raw SHA-256, records a semantic
+row hash and an output checksum inventory, normalizes the runtime enum to the
+closed dataset values, and requires caller-supplied source correctness flags.
+[`../../eng/adaptive-runtime/Test-AdaptiveRuntimePolicyEvidence.ps1`](../../eng/adaptive-runtime/Test-AdaptiveRuntimePolicyEvidence.ps1)
+validates these construction rows separately from epochs: each must join a
+forced send-turn result, its source sample, and the retained raw artifact in
+that result's checksum inventory. A join failure remains invalid or excluded;
+it is never repaired by relabeling a receive-credit epoch.
+
 ## Row Semantics
 
 An epoch row contains pre-decision observations, the policy applied during the

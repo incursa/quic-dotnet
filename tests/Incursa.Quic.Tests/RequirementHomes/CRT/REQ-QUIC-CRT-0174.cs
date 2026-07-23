@@ -68,6 +68,7 @@ public sealed class REQ_QUIC_CRT_0174
                     "-BenchmarkSha256", new string('a', 64),
                     "-RuntimeSha256", new string('b', 64),
                     "-HostFingerprint", "test-host-fingerprint",
+                    "-CorrectnessFlagsJson", "{\"payloadValid\":true,\"protocolValid\":true,\"timedOut\":false,\"ownershipValid\":true,\"terminalValid\":true,\"violationCodes\":[]}",
                     "-ScenarioId", "quic.transport.stream-throughput.1mb",
                     "-Connections", "1",
                     "-StreamsPerConnection", "1",
@@ -128,6 +129,7 @@ public sealed class REQ_QUIC_CRT_0174
                     "-BenchmarkSha256", new string('a', 64),
                     "-RuntimeSha256", new string('b', 64),
                     "-HostFingerprint", "test-host-fingerprint",
+                    "-CorrectnessFlagsJson", "{\"payloadValid\":true,\"protocolValid\":true,\"timedOut\":false,\"ownershipValid\":true,\"terminalValid\":true,\"violationCodes\":[]}",
                     "-ScenarioId", "quic.transport.stream-throughput.1mb",
                     "-Connections", "1",
                     "-StreamsPerConnection", "1",
@@ -146,6 +148,111 @@ public sealed class REQ_QUIC_CRT_0174
             {
                 Directory.Delete(temporaryDirectory, recursive: true);
             }
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void EvidenceValidatorJoinsConstructionRowsToForcedSendTurnEvidence()
+    {
+        string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        string sourceDirectory = Path.GetDirectoryName(AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+            "tests/fixtures/adaptive-runtime-policy/local-result.shadow.checksum.example.json"))!;
+        string temporaryDirectory = Path.Combine(repoRoot, ".artifacts", "adaptive-runtime", $"send-turn-construction-join-{Guid.NewGuid():N}");
+
+        try
+        {
+            CopyDirectory(sourceDirectory, temporaryDirectory);
+            string rawPath = Path.Combine(temporaryDirectory, "fixture-artifacts", "application-send-turn-policy.raw.jsonl");
+            File.Copy(
+                AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                    "tests/fixtures/adaptive-runtime-policy/application-send-turn-provenance.raw.example.jsonl"),
+                rawPath);
+
+            string inventoryPath = Path.Combine(temporaryDirectory, "checksum-inventory.shadow.example.json");
+            System.Text.Json.Nodes.JsonObject inventory =
+                System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(inventoryPath))!.AsObject();
+            inventory["files"]!.AsArray().Add(new System.Text.Json.Nodes.JsonObject
+            {
+                ["path"] = "fixture-artifacts/application-send-turn-policy.raw.jsonl",
+                ["sha256"] = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(rawPath))).ToLowerInvariant(),
+            });
+            File.WriteAllText(inventoryPath, inventory.ToJsonString());
+
+            string localResultPath = Path.Combine(temporaryDirectory, "local-result.shadow.checksum.example.json");
+            System.Text.Json.Nodes.JsonObject localResult =
+                System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(localResultPath))!.AsObject();
+            localResult["policyAxis"] = "application_send_turn_planning";
+            localResult["mode"] = "forced";
+            System.Text.Json.Nodes.JsonObject configuration = localResult["policyConfiguration"]!.AsObject();
+            configuration["appliedPolicy"] = "legacy_current";
+            configuration["forcedPolicy"] = "legacy_current";
+            configuration["shadowEnabled"] = false;
+            configuration["shadowPolicy"] = null;
+            configuration["ruleVersion"] = "application-send-turn-force-v1";
+            configuration["observationContractVersion"] = "adaptive-runtime-application-send-turn-provenance-v1";
+            localResult["treatments"]!["A"]!["policy"] = "legacy_current";
+            localResult["samples"]![0]!["artifactPaths"]!.AsArray().Add(
+                "fixture-artifacts/application-send-turn-policy.raw.jsonl");
+            localResult["artifacts"]![0]!["sha256"] = Convert.ToHexString(
+                System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(inventoryPath))).ToLowerInvariant();
+            File.WriteAllText(localResultPath, localResult.ToJsonString());
+
+            string outputDirectory = Path.Combine(temporaryDirectory, "construction");
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult export =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Convert-AdaptiveRuntimeApplicationSendTurnProvenance.ps1",
+                    "-RawProvenancePath", rawPath,
+                    "-OutputDirectory", outputDirectory,
+                    "-DatasetId", "send-turn-test-dataset",
+                    "-CampaignId", localResult["campaignId"]!.GetValue<string>(),
+                    "-RunId", localResult["runId"]!.GetValue<string>(),
+                    "-CellId", localResult["cellId"]!.GetValue<string>(),
+                    "-SampleId", localResult["samples"]![0]!["sampleId"]!.GetValue<string>(),
+                    "-ExpectedPolicy", "legacy_current",
+                    "-BenchmarkSha256", new string('a', 64),
+                    "-RuntimeSha256", new string('b', 64),
+                    "-HostFingerprint", "test-host-fingerprint",
+                    "-CorrectnessFlagsJson", "{\"payloadValid\":true,\"protocolValid\":true,\"timedOut\":false,\"ownershipValid\":true,\"terminalValid\":true,\"violationCodes\":[]}",
+                    "-ScenarioId", "quic.transport.stream-throughput.1mb",
+                    "-Connections", "1",
+                    "-StreamsPerConnection", "1",
+                    "-WarmupMicros", "0",
+                    "-MeasurementMicros", "1000",
+                    "-RepositoryRoot", repoRoot,
+                    "-RepositoryCommit", "0123456789abcdef0123456789abcdef01234567");
+            Assert.Equal(0, export.ExitCode);
+
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult validation =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Test-AdaptiveRuntimePolicyEvidence.ps1",
+                    "-LocalResultPath", localResultPath,
+                    "-ConstructionDatasetPath", Assert.Single(Directory.GetFiles(outputDirectory, "construction-row-*.json")));
+
+            Assert.Equal(0, validation.ExitCode);
+            using JsonDocument summary = JsonDocument.Parse(validation.Output);
+            Assert.True(summary.RootElement.GetProperty("valid").GetBoolean());
+            Assert.Equal(1, summary.RootElement.GetProperty("constructionRowCount").GetInt32());
+            Assert.Empty(summary.RootElement.GetProperty("failures").EnumerateArray());
+        }
+        finally
+        {
+            if (Directory.Exists(temporaryDirectory))
+            {
+                Directory.Delete(temporaryDirectory, recursive: true);
+            }
+        }
+    }
+
+    private static void CopyDirectory(string sourceDirectory, string destinationDirectory)
+    {
+        foreach (string sourcePath in Directory.GetFiles(sourceDirectory, "*", SearchOption.AllDirectories))
+        {
+            string relativePath = Path.GetRelativePath(sourceDirectory, sourcePath);
+            string destinationPath = Path.Combine(destinationDirectory, relativePath);
+            Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
+            File.Copy(sourcePath, destinationPath, overwrite: true);
         }
     }
 }
