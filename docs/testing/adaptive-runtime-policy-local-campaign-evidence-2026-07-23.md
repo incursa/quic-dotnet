@@ -328,3 +328,89 @@ codes. The immediate unresolved gate is diagnosis and repair of the raw QUIC
 cross-worker handshake timeout, followed by a fresh legacy-current preflight.
 Only after that succeeds may the permanent, round-robin forced-policy campaign
 be scheduled. Adjacent axes remain frozen at `legacy_current`.
+
+## Raw QUIC Listener-Failure Diagnosis and Recovery Checkpoint
+
+The failed legacy-current preflight above was preserved and investigated; it
+was not replaced. A diagnostic-only package capability was added in commit
+`29b70f8a6ec8605447f5448f8a94ae59c8278cb6` so that the raw QUIC server can
+emit bounded handshake messages when, and only when,
+`-RawQuicDebugLogging` is specified. The focused package-template gate passed
+22/22. The resulting clean, explicitly forced legacy-current diagnostic
+package had SHA-256
+`84A0409759F11E392CD705579CCEC574DF9CB3F5E2466CA4A11032ABF38F6926` and was
+admitted by the controller (HTTP 201, validation `passed`). This package is
+diagnostic instrumentation, not a candidate policy implementation and not a
+performance cohort.
+
+The exact same isolated pair, scenario, component packages, and
+`raw-quic-peer-confidence` profile ran as controller job
+`job-00580dbcd319403c91f0c6a3d806331c`. Its c1 cell passed with 3,202/3,202
+successful handshakes; c4, c16, c32, c64, and c128 each timed out during
+loading. The retained server stderr for the shared target session showed
+5,046 accepted handshake proposals, 5,041 accepted-and-closed connections,
+and then exactly one listener failure:
+`The listener connection terminated during establishment.` This proves that
+the controller, both workers, UDP reachability, and the server's normal
+handshake path were present. It also proves the target process could exit its
+accept loop after an unrelated failed inbound establishment while the adapter
+control plane remained ready. Because debug logging is an intrusive timing
+change, this run remains `diagnostic_only`; it supplies zero policy-dataset
+epochs and cannot be compared with the preceding non-debug c1 failure.
+
+The failure path was then repaired in the raw ProtocolLab server only, in
+commit `352939e3ff5d1bd50d2f40f1d4d6924b40e0d000`: a failed inbound
+establishment is discarded (and only diagnostic-logged when enabled), while
+the listener continues accepting subsequent connections. It does not alter a
+policy value, controller input, safety guard, or active runtime policy. The
+focused `ProtocolLabPackageTemplateTests` suite passed 22/22 and
+`eng/protocol-lab/servers/IncursaRawQuicServer/IncursaRawQuicServer.csproj`
+built Release with 0 warnings and 0 errors.
+
+The recovery package was built from that clean, pushed commit without
+`-AllowDirtySource`:
+
+```powershell
+pwsh -NoProfile -File eng/protocol-lab/New-QuicDotNetProtocolLabPackage.ps1 `
+  -PackageTarget RawQuic `
+  -ProtocolLabRoot C:\shared\src\incursa\protocol-lab `
+  -RuntimeIdentifier linux-x64 `
+  -PackageVersion raw-quic-listener-resilience-20260723-352939e3-legacy-current `
+  -AdaptiveRuntimeApplicationSendTurnPolicy legacy_current `
+  -Force
+```
+
+It has SHA-256
+`A34D60B18BA3C4142BC664A4654DD843CF24EB57C72A3A6E5BC44B6AA58CBC1D`, debug
+logging disabled, `application_send_turn_planning=legacy_current`, and passed
+controller package admission. Controller job
+`job-e3ce7ea32b9e48aca4ec76c3408c916a` used the identical x64 isolated pair
+and retained component package hashes. Its permanent result artifacts show:
+
+| Cell | Result artifact | Classification | Requests | Successes | Timeouts |
+| --- | --- | --- | ---: | ---: | ---: |
+| c1 | `artifact-048-472197d8455d` | comparable-with-warnings | 3,277 | 3,277 | 0 |
+| c4 | `artifact-267-d2d0fd458276` | comparable-with-warnings | 7,116 | 7,116 | 0 |
+| c16 | `artifact-157-467034c783ad` | comparable-with-warnings | 7,696 | 7,696 | 0 |
+| c32 | `artifact-212-83ddc2978057` | comparable-with-warnings | 7,648 | 7,648 | 0 |
+| c64 | `artifact-322-0085fbe3665a` | comparable-with-warnings | 5,248 | 5,248 | 0 |
+| c128 | `artifact-103-6114b61b69b9` | failed_correctness | 128 | 0 | 128 |
+
+The c128 loader returned exit code 0 but its validation correctly failed:
+`Raw QUIC failed request count was 128, expected 0` and `Raw QUIC timeout
+request count was 128, expected 0`. Its artifacts also retain
+`load-generator-saturation-possible`; it is a separate high-concurrency
+correctness/attribution blocker, not a valid throughput result and not an
+excuse to relabel the row. The corrected listener mechanism is therefore
+proven through c64 on the independent-worker preflight, while c128 remains a
+retained failed-correctness row requiring its own diagnosis.
+
+Dataset accounting remains zero eligible adaptive-policy epochs: all three
+remote jobs in this section are legacy-current diagnostics, the controller did
+not capture target process metrics for the external adapter-backed target, and
+the profile has one repetition. No forced candidate, shadow recommendation,
+threshold, rule table, or production behavior has been enabled. The next
+authorized work is to diagnose the retained c128 high-count failure and then
+repeat the baseline preflight under the existing evidence contract before
+scheduling any policy counterfactual cells. Adjacent axes remain frozen at
+`legacy_current`.
