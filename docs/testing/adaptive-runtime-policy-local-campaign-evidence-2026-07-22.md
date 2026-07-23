@@ -422,3 +422,98 @@ They exercise a third implementation and a different temporal order while
 rechecking the failed stream shapes. No stress expansion, model training,
 active policy selection, or production runtime change is authorized by this
 checkpoint.
+
+### Immediate-Policy Non-Stress Gate
+
+Both bounded follow-up campaigns finished without changing their schedule or
+instrumentation. They compare `legacy_current` with `immediate`; they do not
+exercise an adaptive selector.
+
+Campaign
+`adaptive-receive-credit-remote-x64-02-20260723-instrumented-connection-first-immediate30s1`
+completed its connection-first schedule:
+
+| Cell | Classification | Epoch rows | Candidate-versus-baseline review |
+| --- | --- | ---: | --- |
+| `upload-1mb-x16-s1` | `invalid_environment` | 8,881 | Throughput -2.22%; p95 -1.52%; peak outstanding buffer bytes +7.80%. |
+| `download-1mb-x16-s1` | `invalid_environment` | 8,667 | Throughput -2.00%; p95 -7.25%; peak outstanding buffer bytes +1.14%. |
+| `duplex-64kb-x1-s16` | `neutral_local` | 559 | Throughput +2.43%; p95 -0.93%; peak outstanding buffer bytes +3.59%. |
+| `duplex-64kb-x4-s16` | `invalid_environment` | 2,111 | Throughput -13.78%; p95 +3.07%; peak outstanding buffer bytes -17.83%. |
+| `multiplex-1kb-x1-s100` | `negative_retained` | 556 | Throughput -2.99%; p95 +2.40%; peak outstanding buffer bytes +14.71%. |
+
+All 20,774 rows passed the evidence contract. The three
+`invalid_environment` rows remain saturation/regime evidence only. The
+retained archive contains 22,722 entries and 17,658,151 bytes. Its remote and
+workstation copies both have SHA-256
+`716edcf2a391ec75d0595cdead17528a935ae14bc399b4ad9faf5d7dd02a1c43`.
+
+Campaign
+`adaptive-receive-credit-remote-x64-03-20260723-instrumented-stream-first-immediate30s1`
+ended `incomplete_retained` after completing its stream-first schedule:
+
+| Cell | Classification | Epoch rows | Candidate-versus-baseline review |
+| --- | --- | ---: | --- |
+| `duplex-64kb-x1-s16` | `negative_retained` | 559 | Throughput -9.99% and p95 +5.65%, despite peak outstanding buffer bytes decreasing 17.71%. |
+| `duplex-64kb-x4-s16` | `failed_correctness` | 1,962 | Both baseline samples failed exact-payload validation with four protocol errors each; both candidate samples passed. The row is excluded rather than attributed to either policy. |
+| `multiplex-1kb-x1-s100` | `neutral_local` | 560 | Throughput -0.70%; p95 +1.01%; peak outstanding buffer bytes -5.88%. |
+| `upload-1mb-x16-s1` | `negative_retained` | 8,790 | Throughput -0.49%; p95 +0.37%; peak outstanding buffer bytes +6.20%. |
+| `download-1mb-x16-s1` | `neutral_local` | 8,824 | Throughput +0.26%; p95 +0.75%; peak outstanding buffer bytes -6.16%. |
+
+All 20,695 rows passed the evidence contract, including the explicitly
+excluded correctness-failure row. The retained archive contains 22,642
+entries and 21,080,641 bytes. Its remote and workstation copies both have
+SHA-256
+`06e576a13d21f98581579b0f812b6a64b1e13bb5f2f8edf6a074070ecb51e04c`.
+
+The immediate-policy evidence reinforces the conservative decision. It
+contains useful neutral rows and memory reductions in some shapes, but also
+throughput/latency losses, memory regressions, saturation-sensitive rows, and
+a repeated x4/s16 correctness boundary. The c32 and c4-by-s100 stress
+extension therefore remains blocked.
+
+### Remote Round-Robin Offline Dataset
+
+The four contract-complete remote campaigns were materialized together on
+`plab-worker-x64-03` as
+`offline-review-remote-roundrobin-20260723-v1`. The input contained 20 local
+results and 82,753 epoch rows. Evidence validation joined every row, with zero
+unmatched results and zero unmatched epoch rows.
+
+The normalized classification population is:
+
+| Classification | Rows |
+| --- | ---: |
+| `invalid_environment` | 40,478 |
+| `failed_correctness` | 4,260 |
+| `neutral_local` | 18,728 |
+| `negative_retained` | 19,287 |
+
+Default curation includes 25,981 rows and excludes 56,772. Inclusion requires
+the row-level analysis exclusion flag to be exactly `none`; 12,931 included
+rows are `neutral_local`, and 13,050 are explicitly retained negative
+evidence. The excluded population preserves environment-invalid,
+correctness-failed, warmup, observation-saturated, observation-missing, and
+terminal-partial epochs rather than dropping or relabeling them.
+
+The dataset contains four campaigns, five workload-family keys, two host
+fingerprints, and one frozen binary cohort. Its split status is
+`insufficient_group_diversity`: the contract requires at least three workload
+families and three host fingerprints before train, validation, and test can be
+populated without crossing host and workload holdouts. All 82,753 rows are
+therefore `holdout_blocked`; no training split and no model were produced.
+
+The validated artifact identities are:
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `catalog/policy-catalog.json` | 11,030 | `1815d9e8222eef980ae95f9dd498a3ef20be1078130921e677df748fdcd9606a` |
+| `normalized/normalized-dataset.json` | 391,489,331 | `aedfa8a7cfd05da816182384c145d5842f68d8330866b561a06473e5c20bb096` |
+| `curated/curated-manifest.json` | 95,030,728 | `90b400c2331f90e73ce58aea7061465b269cfcd8f1f6b166e36617d90ffeba23` |
+| `split/split-manifest.json` | 75,280,748 | `b76177b8f7f124a271780093bbcef6683a8426d02366bc47822a36e816db846e` |
+
+The full materialization took about 94 minutes on the six-core worker. Its
+append-only local archive contains nine entries and 18,843,666 bytes, with
+SHA-256
+`f1898c28c9eea24fe44c06ca7530bbfa46f8a89be58b51d28f544d8fea523f54`.
+This run time is capacity-planning evidence for later pipeline work, not
+authorization to optimize or change the pipeline during this planning period.
