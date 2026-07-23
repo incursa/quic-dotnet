@@ -76,7 +76,7 @@
       "enum": [
         "receive_credit_publication",
         "oversized_write_admission",
-        "application_send_planning",
+        "application_send_turn_planning",
         "application_datagram_batching",
         "queued_send_burst",
         "actor_work_quantum",

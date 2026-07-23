@@ -115,6 +115,26 @@ public sealed class REQ_QUIC_CRT_0169
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void LocalResultSchemaUsesTheCanonicalApplicationSendTurnAxisId()
+    {
+        using JsonDocument schema = ReadRepositoryJson(
+            "schemas/adaptive-runtime-policy-local-result-v1.schema.json");
+
+        string[] axisIds = schema.RootElement
+            .GetProperty("properties")
+            .GetProperty("policyAxis")
+            .GetProperty("enum")
+            .EnumerateArray()
+            .Select(static item => item.GetString()!)
+            .ToArray();
+
+        Assert.Contains("application_send_turn_planning", axisIds);
+        Assert.DoesNotContain("application_send_planning", axisIds);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RuntimeObservationProhibitsTransportAndApplicationIdentity()

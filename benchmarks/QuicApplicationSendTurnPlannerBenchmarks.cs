@@ -14,6 +14,7 @@ public class QuicApplicationSendTurnPlannerBenchmarks
     private PendingApplicationSendRequest[] queuedWrites = [];
     private QuicQueuedApplicationSendBudget budget;
     private IQuicApplicationSendTurnPlanner explicitCurrentPlanner = null!;
+    private QuicApplicationSendTurnContext turnContext;
 
     /// <summary>
     /// Gets or sets the number of queued writes visible to one selection decision.
@@ -44,6 +45,11 @@ public class QuicApplicationSendTurnPlannerBenchmarks
 
         budget = QuicQueuedApplicationSendBudget.AllowSingleDatagram(totalPayloadBytes);
         explicitCurrentPlanner = QuicCurrentApplicationSendTurnPlanner.Instance;
+        turnContext = new QuicApplicationSendTurnContext(
+            InitialQueuedWriteCount: QueuedWriteCount,
+            RemainingQueuedWriteCount: QueuedWriteCount,
+            FlushedDatagramCount: 0,
+            Budget: budget);
     }
 
     /// <summary>
@@ -89,6 +95,28 @@ public class QuicApplicationSendTurnPlannerBenchmarks
             out _);
         return plan.SelectedWriteCount + frame.StreamDataLength;
     }
+
+    /// <summary>
+    /// Measures continuation dispatch for the default legacy_current null-planner path.
+    /// </summary>
+    [Benchmark]
+    public bool LegacyCurrentContinuationDispatch()
+        => QuicApplicationSendTurnPlannerDispatch.ShouldScheduleNext(
+            planner: null,
+            turnContext);
+
+    /// <summary>
+    /// Measures continuation dispatch for the forceable conservative campaign identity.
+    /// </summary>
+    /// <remarks>
+    /// Conservative currently delegates to the existing planner. This is a mechanism-cost
+    /// comparison only and does not imply an active selection rule.
+    /// </remarks>
+    [Benchmark]
+    public bool ForcedConservativeContinuationDispatch()
+        => QuicApplicationSendTurnPlannerDispatch.ShouldScheduleNext(
+            explicitCurrentPlanner,
+            turnContext);
 
     private static byte[] CreateQueuedWritePayload(ulong streamId, int dataLength)
     {
