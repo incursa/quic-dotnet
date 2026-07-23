@@ -192,9 +192,15 @@ else {
     Read-ValidatedJsonDocument -Path $CatalogPath -SchemaPath $catalogSchemaPath
 }
 
-$validationSummary = (& $validatorPath -LocalResultPath $LocalResultPath -EpochDatasetPath $EpochDatasetPath -AllowUnmatchedEpochRows -RepositoryRoot $repositoryRoot | ConvertFrom-Json -Depth 50)
+$validationSummary = (& $validatorPath `
+        -LocalResultPath $LocalResultPath `
+        -EpochDatasetPath $EpochDatasetPath `
+        -AllowUnmatchedEpochRows `
+        -AllowLegacyResultLevelEnvironmentExclusions `
+        -RepositoryRoot $repositoryRoot | ConvertFrom-Json -Depth 50)
 if (-not $validationSummary.valid) {
-    throw "Adaptive-runtime evidence validation failed before dataset materialization."
+    $failurePreview = @($validationSummary.failures | Select-Object -First 20) -join ' | '
+    throw "Adaptive-runtime evidence validation failed before dataset materialization with $(@($validationSummary.failures).Count) failure(s): $failurePreview"
 }
 
 $localResults = @(

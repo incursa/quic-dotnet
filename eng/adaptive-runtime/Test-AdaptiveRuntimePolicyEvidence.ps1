@@ -11,6 +11,8 @@ param(
 
     [switch] $AllowUnmatchedEpochRows,
 
+    [switch] $AllowLegacyResultLevelEnvironmentExclusions,
+
     [string] $RepositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 )
 
@@ -24,6 +26,8 @@ $validatedLocalResults = [System.Collections.Generic.List[object]]::new()
 $validatedEpochRows = [System.Collections.Generic.List[object]]::new()
 $verifiedArtifactSha256ByPath = [System.Collections.Generic.Dictionary[string,string]]::new(
     [StringComparer]::OrdinalIgnoreCase)
+$legacyResultLevelEnvironmentExclusionRows = [System.Collections.Generic.HashSet[string]]::new(
+    [StringComparer]::Ordinal)
 
 function Resolve-NormalizedEvidencePath {
     param(
@@ -734,7 +738,26 @@ foreach ($item in $validatedEpochRows) {
         [void] $actualFlagsSet.Add($flag)
     }
 
-    if ($expectedExclusionFlags.Count -eq 0) {
+    $requiredExclusionFlags = [System.Collections.Generic.HashSet[string]]::new(
+        $expectedExclusionFlags,
+        [StringComparer]::Ordinal)
+    if ($AllowLegacyResultLevelEnvironmentExclusions -and
+        [string] $result.classification -eq 'invalid_environment') {
+        $toleratedLegacyResultFlag = $false
+        foreach ($resultLevelFlag in @('target_health_invalid', 'generator_health_invalid')) {
+            if ($requiredExclusionFlags.Contains($resultLevelFlag) -and
+                -not $actualFlagsSet.Contains($resultLevelFlag)) {
+                [void] $requiredExclusionFlags.Remove($resultLevelFlag)
+                $toleratedLegacyResultFlag = $true
+            }
+        }
+
+        if ($toleratedLegacyResultFlag) {
+            [void] $legacyResultLevelEnvironmentExclusionRows.Add($scopedRowId)
+        }
+    }
+
+    if ($requiredExclusionFlags.Count -eq 0) {
         if ($actualFlags.Count -ne 1 -or $actualFlags[0] -ne 'none') {
             $failures.Add("Epoch row '$($row.rowId)' should be analysis-clean and use analysisExclusionFlags=['none'].")
         }
@@ -744,7 +767,7 @@ foreach ($item in $validatedEpochRows) {
             $failures.Add("Epoch row '$($row.rowId)' cannot retain analysisExclusionFlags=['none'] when observed exclusions are present.")
         }
 
-        foreach ($flag in $expectedExclusionFlags) {
+        foreach ($flag in $requiredExclusionFlags) {
             if (-not $actualFlagsSet.Contains($flag)) {
                 $failures.Add("Epoch row '$($row.rowId)' is missing required analysis exclusion flag '$flag'.")
             }
@@ -774,6 +797,8 @@ $summary = [ordered]@{
     uniqueEpochRowCount = $seenRowIds.Count
     checksumInventoryCount = @($localResultContextsByRunId.Values | Where-Object { $null -ne $_.ChecksumInventory }).Count
     uniqueArtifactHashCount = $verifiedArtifactSha256ByPath.Count
+    legacyResultLevelEnvironmentExclusionsAllowed = [bool] $AllowLegacyResultLevelEnvironmentExclusions
+    legacyResultLevelEnvironmentExclusionRowCount = $legacyResultLevelEnvironmentExclusionRows.Count
     failures = @($failures)
 }
 

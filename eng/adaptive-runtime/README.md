@@ -31,6 +31,15 @@ the summary reports `uniqueArtifactHashCount`. Input files are read-only.
 Negative, noisy, excluded, and failed campaign rows remain in their source
 evidence set.
 
+The standalone validator remains strict about epoch-local exclusion flags.
+The dataset pipeline uses the explicit
+`-AllowLegacyResultLevelEnvironmentExclusions` compatibility gate for retained
+campaigns created before result-level target/generator health was propagated
+into every epoch row. The validation summary counts each tolerated legacy row;
+the curated manifest still excludes it through the joined
+`invalid_environment` result classification. Source rows are never rewritten
+or silently promoted.
+
 Materialize the measurement-only catalog metadata for the known adaptive seams:
 
 ```powershell

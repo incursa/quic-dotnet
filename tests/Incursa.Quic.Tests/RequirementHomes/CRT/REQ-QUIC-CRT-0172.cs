@@ -90,6 +90,65 @@ public sealed class REQ_QUIC_CRT_0172
         }
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void PipelineCompatibilityGateRetainsLegacyEnvironmentRowsForResultLevelExclusion()
+    {
+        string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        string sourceDirectory = Path.GetDirectoryName(AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+            "tests/fixtures/adaptive-runtime-policy/local-result.shadow.checksum.example.json"))!;
+        string temporaryDirectory = Path.Combine(repoRoot, ".artifacts", "adaptive-runtime", $"legacy-environment-flags-test-{Guid.NewGuid():N}");
+
+        try
+        {
+            CopyDirectory(sourceDirectory, temporaryDirectory);
+            string resultPath = Path.Combine(temporaryDirectory, "local-result.shadow.checksum.example.json");
+            System.Text.Json.Nodes.JsonObject result =
+                System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(resultPath))!.AsObject();
+            result["classification"] = "invalid_environment";
+            result["environment"]!["targetHealth"] = "invalid";
+            result["environment"]!["generatorHealth"] = "invalid";
+            File.WriteAllText(resultPath, result.ToJsonString());
+            string epochPath = Path.Combine(temporaryDirectory, "epoch-row.shadow.checksum.example.json");
+
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult strictValidation =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Test-AdaptiveRuntimePolicyEvidence.ps1",
+                    "-LocalResultPath", resultPath,
+                    "-EpochDatasetPath", epochPath);
+            Assert.NotEqual(0, strictValidation.ExitCode);
+            using (JsonDocument strictSummary = JsonDocument.Parse(strictValidation.Output))
+            {
+                Assert.Contains(
+                    strictSummary.RootElement.GetProperty("failures").EnumerateArray().Select(static failure => failure.GetString()!).ToArray(),
+                    failure => failure.Contains("target_health_invalid", StringComparison.Ordinal));
+            }
+
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult compatibilityValidation =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Test-AdaptiveRuntimePolicyEvidence.ps1",
+                    "-LocalResultPath", resultPath,
+                    "-EpochDatasetPath", epochPath,
+                    "-AllowLegacyResultLevelEnvironmentExclusions");
+
+            Assert.Equal(0, compatibilityValidation.ExitCode);
+            using JsonDocument compatibilitySummary = JsonDocument.Parse(compatibilityValidation.Output);
+            Assert.True(compatibilitySummary.RootElement.GetProperty("valid").GetBoolean());
+            Assert.True(compatibilitySummary.RootElement.GetProperty("legacyResultLevelEnvironmentExclusionsAllowed").GetBoolean());
+            Assert.Equal(
+                1,
+                compatibilitySummary.RootElement.GetProperty("legacyResultLevelEnvironmentExclusionRowCount").GetInt32());
+        }
+        finally
+        {
+            if (Directory.Exists(temporaryDirectory))
+            {
+                Directory.Delete(temporaryDirectory, recursive: true);
+            }
+        }
+    }
+
     [Theory]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
