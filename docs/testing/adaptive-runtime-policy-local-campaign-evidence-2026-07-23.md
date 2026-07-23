@@ -85,6 +85,33 @@ positional arrays. Commit `f0be4875` verifies that two exclusion flags are
 passed through that named-splat contract. The focused requirement home passed
 6/6 after the latter commit.
 
+## BenchmarkDotNet Mechanism Check
+
+`QuicApplicationSendTurnPlannerBenchmarks` was built in Release and run on
+2026-07-23 against commit `937db223`. The permanent benchmark class compares
+the direct legacy selector with the null and explicit planner dispatch paths at
+one and sixteen queued writes; it also checks forced conservative continuation
+dispatch. This is a local mechanism-cost and allocation check, not a policy
+acceptance result.
+
+- Dry run: 10/10 cases completed. Report SHA-256:
+  `58cbc9498cc4a8ea6c50dfbfab79dc901f6f0a52e0a6df4491c5a270089cfbe6`.
+- Short run: 10/10 cases completed with no managed allocations. Report
+  SHA-256: `dbfe650f23af239601cc6a0538a3333bd1e1c2db9f9ac43584d9beed937814fe`.
+- Selector mean, one queued write: direct `42.4505 ns`, null dispatch
+  `39.8114 ns` (ratio `0.939`), explicit planner `45.1284 ns` (ratio `1.065`).
+- Selector mean, sixteen queued writes: direct `52.0590 ns`, null dispatch
+  `52.8650 ns` (ratio `1.016`), explicit planner `57.4535 ns` (ratio `1.104`).
+- The two continuation methods measured below timer resolution in this short
+  run. They prove neither allocation nor execution failure, but provide no
+  useful timing comparison.
+
+The retained reports and full console logs are under
+`C:\shared\src\incursa\quic-dotnet\.artifacts\adaptive-runtime\benchmarkdotnet\send-turn-planner-20260723`.
+BenchmarkDotNet version was `0.15.8`; host runtime was `.NET 10.0.10` and SDK
+was `10.0.204`. No production rule, threshold, or active behavior changed from
+this measurement.
+
 ## Remaining Gate
 
 Repeat bounded c1/c4 local forced cells from the corrected runner on an
