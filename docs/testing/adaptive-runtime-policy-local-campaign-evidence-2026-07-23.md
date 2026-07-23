@@ -573,3 +573,49 @@ debug-mode c128 output, target pressure, and failure-side establishment reasons
 remain unavailable evidence. This gap preserves the current c128 row as
 `failed_correctness` and `diagnostic_only`; it does not justify a rerun that
 would replace or relabel it.
+
+### Correction: Incomplete SUT Role, Not a Proven Artifact-Transfer Loss
+
+Read-only controller reinspection at `2026-07-23T17:40:11-06:00` refines the
+preceding diagnosis without removing it. The `sut` lease for
+`plab-worker-x64-02` was claimed at `2026-07-23T17:25:45-06:00`, but its
+`completedAt`, `result`, and artifact count remained absent after the load
+role terminalized the job at `2026-07-23T17:30:00-06:00`. The controller index
+contains no `sut/` role artifacts. Thus no SUT role bundle was available to
+transfer or materialize for this job.
+
+The zero-byte `server.stdout.txt`, `server.stderr.txt`, `target.stdout.txt`,
+and `target.stderr.txt` files named above are load-worker external-target
+placeholders. Their recorded source paths are under the load worker's
+`raw-quic-c128-debug-20260723-3849008d-legacy-r002-quic-transport-v1-comparison-cell-1`
+run root; they are not proof that a SUT child-artifact bundle was dropped in
+transit. The original diagnostic statement is therefore retained as a
+superseded hypothesis, not silently deleted or relabeled.
+
+The target descriptor was published and the remote server did serve the
+successful c1--c64 requests plus the partially successful c128 requests, so
+the c128 outcome remains a retained `failed_correctness`,
+`diagnostic_only` runtime row. It remains unsuitable for adaptive-policy data
+because the target role did not publish its terminal observation/artifact
+result. A strict SSH attempt after the job timed out during the SUT banner
+exchange; this is retained as a contemporaneous environment observation, but
+does not by itself identify why the role did not complete.
+
+To prevent a non-responsive adapter control plane from withholding the target
+role result indefinitely, ProtocolLab internal commit
+`6e8b833cb8fcd78802d23cfcf68067f6fae53c96`
+(`Bound adapter control-plane cleanup`, branch
+`codex/cross-worker-artifact-capture-20260723`) bounds each adapter control
+plane request to 15 seconds. It adds `PB-ARTIFACT-0003` as a partial
+traceability requirement and passed its focused Release build plus 61
+`RuntimeDiagnosticsTests`/`LabSchedulerTests` tests. It is pushed for review
+but has not been deployed to the lab; no fresh campaign is authorized from
+this code until the exact reviewed commit is deployed and the target worker
+is re-verified.
+
+The next diagnostic gate is therefore: deploy the exact reviewed ProtocolLab
+commit, verify the SUT worker's current identity and role health, and run one
+legacy-current c128 failure-path cell which must retain a terminal SUT role
+result, adapter child artifacts (or explicit unavailable records), and target
+metrics provenance. Adjacent axes remain frozen at `legacy_current`; no
+candidate, shadow, or active policy behavior is authorized.
