@@ -517,3 +517,78 @@ SHA-256
 `f1898c28c9eea24fe44c06ca7530bbfa46f8a89be58b51d28f544d8fea523f54`.
 This run time is capacity-planning evidence for later pipeline work, not
 authorization to optimize or change the pipeline during this planning period.
+
+### Stream-Capacity Correctness Closure
+
+The later x4/s16 investigation remained append-only. Every observer, qlog,
+replay, and capacity-snapshot campaign below is retained with its original
+classification; none was merged into the policy-effect population.
+
+- `adaptive-receive-credit-remote-x64-03-20260723-correctness-x4-observerfix-abba30s-run1`
+  proved that completed-stream observers returned to zero, but all four
+  samples still failed while opening peer streams. The observer lifetime fix
+  was valid but not the stream-capacity root cause.
+- `adaptive-receive-credit-remote-x64-03-20260723-capacitytrace-abba30s-run1`
+  retained filtered qlogs and three correctness-failed samples. Qlog overhead
+  changed the workload regime, so the row remains diagnostic-only and excluded
+  from policy-effect analysis.
+- Commit `79e995c3` retained a pending MAX_STREAMS replay when packet protection
+  was temporarily blocked by congestion. Its focused regression passed, but
+  `adaptive-receive-credit-remote-x64-03-20260723-capacityreplayfix-x4-abba30s-run1`
+  still had one immediate-policy open-stream deadline failure. The replay fix
+  was therefore kept without being misclassified as the full root cause.
+- Commit `0c78b2b9` added an opt-in connection-close capacity snapshot.
+  Campaign
+  `adaptive-receive-credit-remote-x64-03-20260723-capacitysnapshot-x4-abba30s-run1`
+  failed in samples 2, 3, and 4. In every failed sample, the client timeout
+  mapped to the one server connection with exactly 256 fully closed,
+  unreleased bidirectional streams. Every receive and send half was closed.
+  This ruled out application stream lifecycle completion and isolated the
+  capacity-release wakeup path.
+
+The established race involved a duplicate close notification for a stream
+already in the pending-release set. Recovery could release that stream and
+remove its duplicate scheduled entry before the queued coalesced wakeup was
+consumed. The empty wakeup then returned without clearing its event-pending
+flag. Later closes accumulated without posting another work item until all 256
+peer-stream credits were stranded.
+
+A deterministic regression recreated that interleaving and failed before the
+fix with one posted event where two were required. Commit `ac20fd67` clears the
+event-pending flag whenever the actor consumes an empty scheduled wakeup. This
+is a liveness correction only; it does not change receive-credit policy
+selection or authorize a wider policy.
+
+Post-fix campaign
+`adaptive-receive-credit-remote-x64-03-20260723-capacitywakeupfix-x4-abba30s-run1`
+passed exact payload and protocol correctness in all four samples. All 32
+warmup and benchmark connection snapshots reported zero fully closed,
+unreleased streams and zero open receive or send halves. Its classification is
+`invalid_environment` because the maximum within-treatment relative range was
+6.396 percent, above the five-percent gate. It remains diagnostic evidence and
+is not a policy-effect row.
+
+Two normal-instrumentation confirmations on the same frozen commit then passed:
+
+| Campaign and cell | Classification | Correct samples | Aggregate throughput | Aggregate p95 |
+| --- | --- | ---: | ---: | ---: |
+| `adaptive-receive-credit-remote-x64-03-20260723-capacitywakeupfix-x4-confirm-abba30s-run1` / `duplex-64kb-x4-s16` | `neutral_local` | 4 of 4 | 85.265 MB/s | 50.810 ms |
+| `adaptive-receive-credit-remote-x64-03-20260723-capacitywakeupfix-x1-guardrail-abba30s-run1` / `upload-1mb-x1-s1` | `neutral_local` | 4 of 4 | 98.801 MB/s | 12.349 ms |
+
+Both neutral rows retain same-host `limited` target and generator health. They
+are eligible for the ordinary evidence validator and later dataset curation;
+they do not establish a performance win or authorize online learning.
+
+The local Release build completed without warnings, and the focused
+stream-capacity, MAX_STREAMS, and congestion-retry band passed 41 of 41 tests
+on Windows. The full Windows test project then passed 9,780 tests with four
+expected skips and zero failures in 10 minutes 13 seconds. The new lost-wakeup,
+capacity snapshot, and congestion-retry subset passed 6 of 6 on the Debian
+worker. One pre-existing timer-effect assertion remains platform-sensitive on
+that worker: the MAX_STREAMS datagram is emitted, but the test observes
+ACK-delay timer cancellation rather than a recovery-arm effect. That finding
+is retained separately and was not silently incorporated into the wakeup fix.
+
+The c32 and c4-by-s100 stress extension remains blocked pending review of these
+correctness confirmations and a decision on whether another host must repeat
+the non-stress gate first.
