@@ -107,6 +107,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly IQuicApplicationDatagramBatchPolicy? applicationDatagramBatchPolicy;
     private readonly IQuicApplicationSendTurnPlanner? applicationSendTurnPlanner;
     private QuicApplicationSendPressureClassifier applicationSendPressureClassifier = default;
+    private bool pendingPeerBidirectionalStreamCapacityReplay;
+    private bool pendingPeerUnidirectionalStreamCapacityReplay;
     private readonly HashSet<ulong> pendingPeerStreamCapacityReleaseStreamIds = new(capacity: 16);
     private readonly HashSet<ulong> scheduledPeerStreamCapacityReleaseStreamIds = new(capacity: 16);
     private readonly Dictionary<ulong, QuicMaxStreamDataFrame> pendingFlowControlStreamCreditFrames = [];

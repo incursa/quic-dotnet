@@ -2024,6 +2024,80 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         Assert.False(runtime.StreamRegistry.Bookkeeping.TryPeekPeerStreamCapacityRelease(0, out _));
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void RecoveryProgress_RetriesPeerStreamCapacityReplayBlockedByCongestion(bool isBidirectional)
+    {
+        using QuicConnectionRuntime runtime = CreateFinishedServerRuntimeWithActivePath(
+            connectionFlowControlLimit: 64 * 1024,
+            streamFlowControlLimit: 64 * 1024,
+            validateActivePath: true);
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedApplicationPacket =
+            runtime.SendRuntime.SentPackets
+                .Where(static entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData)
+                .OrderBy(static entry => entry.Key.PacketNumber)
+                .Last();
+
+        ulong currentLimit = isBidirectional
+            ? runtime.StreamRegistry.Bookkeeping.IncomingBidirectionalStreamLimit
+            : runtime.StreamRegistry.Bookkeeping.IncomingUnidirectionalStreamLimit;
+        Assert.True(currentLimit > 0);
+
+        QuicCongestionControlState congestion = runtime.SendRuntime.FlowController.CongestionControlState;
+        if (congestion.BytesInFlightBytes < congestion.CongestionWindowBytes)
+        {
+            congestion.RegisterPacketSent(congestion.CongestionWindowBytes - congestion.BytesInFlightBytes);
+        }
+
+        Assert.False(congestion.CanSend(1));
+
+        byte[] streamsBlockedPayload = QuicS19P14StreamsBlockedFrameTestSupport.BuildStreamsBlockedFrame(
+            isBidirectional,
+            maximumStreams: currentLimit - 1);
+        byte[] streamsBlockedPacket = BuildProtectedPeerApplicationPacket(runtime, streamsBlockedPayload);
+
+        QuicConnectionTransitionResult blockedResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                runtime.ActivePath!.Value.Identity,
+                streamsBlockedPacket),
+            nowTicks: 10);
+        string[] blockedDescriptions = blockedResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+
+        Assert.DoesNotContain(
+            blockedDescriptions,
+            description => description.Contains("max_streams(", StringComparison.Ordinal));
+
+        congestion.Reset();
+        byte[] protectedAckPacket = BuildProtectedAckPacketForAcknowledgedPackets(
+            runtime,
+            runtime.CurrentHandshakeSourceConnectionId.Span,
+            trackedApplicationPacket.Key.PacketNumber);
+
+        QuicConnectionTransitionResult ackResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 100,
+                runtime.ActivePath.Value.Identity,
+                protectedAckPacket),
+            nowTicks: 100);
+        string[] ackDescriptions = ackResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+
+        Assert.Contains(
+            ackDescriptions,
+            description => description.Contains(
+                $"max_streams(bidi={isBidirectional},max={currentLimit})",
+                StringComparison.Ordinal));
+    }
+
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -2185,9 +2259,16 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         Span<byte> pingPayload = stackalloc byte[1];
         Assert.True(QuicFrameCodec.TryFormatPingFrame(pingPayload, out int pingBytesWritten));
 
+        return BuildProtectedPeerApplicationPacket(runtime, pingPayload[..pingBytesWritten]);
+    }
+
+    private static byte[] BuildProtectedPeerApplicationPacket(
+        QuicConnectionRuntime runtime,
+        ReadOnlySpan<byte> payload)
+    {
         QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
         Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
-            pingPayload[..pingBytesWritten],
+            payload,
             runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
             runtime.TlsState.CurrentOneRttKeyPhase == 1,
             out byte[] protectedPacket));

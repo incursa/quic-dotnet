@@ -1909,6 +1909,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         stateChanged |= TryFlushPendingFlowControlCreditUpdates(ref effects);
+        stateChanged |= TryFlushPendingPeerStreamCapacityReplays(ref effects);
         stateChanged |= TryFlushPendingPeerStreamCapacityReleases(ref effects);
         return stateChanged;
     }
@@ -2899,6 +2900,19 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         QuicMaxStreamsFrame maxStreamsFrame = new(streamsBlockedFrame.IsBidirectional, currentLimit);
+        if (!TrySendPeerStreamCapacityReplay(maxStreamsFrame, ref effects))
+        {
+            return TryDeferPeerStreamCapacityReplay(streamsBlockedFrame.IsBidirectional);
+        }
+
+        ClearPendingPeerStreamCapacityReplay(streamsBlockedFrame.IsBidirectional);
+        return true;
+    }
+
+    private bool TrySendPeerStreamCapacityReplay(
+        QuicMaxStreamsFrame maxStreamsFrame,
+        ref QuicConnectionEffectAccumulator effects)
+    {
         byte[]? streamPayloadOwner = null;
         if (!TryBuildOutboundMaxStreamsPayload(
                 maxStreamsFrame,
@@ -2942,6 +2956,84 @@ internal sealed partial class QuicConnectionRuntime
                 QuicBufferPool.ReturnBytes(streamPayloadOwner);
             }
         }
+    }
+
+    private bool TryDeferPeerStreamCapacityReplay(bool isBidirectional)
+    {
+        if (IsDisposed || terminalState is not null)
+        {
+            return false;
+        }
+
+        ref bool pendingReplay = ref isBidirectional
+            ? ref pendingPeerBidirectionalStreamCapacityReplay
+            : ref pendingPeerUnidirectionalStreamCapacityReplay;
+        if (pendingReplay)
+        {
+            return false;
+        }
+
+        pendingReplay = true;
+        return true;
+    }
+
+    private void ClearPendingPeerStreamCapacityReplay(bool isBidirectional)
+    {
+        if (isBidirectional)
+        {
+            pendingPeerBidirectionalStreamCapacityReplay = false;
+        }
+        else
+        {
+            pendingPeerUnidirectionalStreamCapacityReplay = false;
+        }
+    }
+
+    private bool TryFlushPendingPeerStreamCapacityReplays(ref QuicConnectionEffectAccumulator effects)
+    {
+        if (!pendingPeerBidirectionalStreamCapacityReplay
+            && !pendingPeerUnidirectionalStreamCapacityReplay)
+        {
+            return false;
+        }
+
+        if (IsDisposed || terminalState is not null)
+        {
+            pendingPeerBidirectionalStreamCapacityReplay = false;
+            pendingPeerUnidirectionalStreamCapacityReplay = false;
+            return false;
+        }
+
+        bool stateChanged = false;
+        if (pendingPeerBidirectionalStreamCapacityReplay)
+        {
+            QuicMaxStreamsFrame maxStreamsFrame = new(
+                true,
+                streamRegistry.Bookkeeping.IncomingBidirectionalStreamLimit);
+            if (!TrySendPeerStreamCapacityReplay(maxStreamsFrame, ref effects))
+            {
+                return stateChanged;
+            }
+
+            pendingPeerBidirectionalStreamCapacityReplay = false;
+            stateChanged = true;
+        }
+
+        if (pendingPeerUnidirectionalStreamCapacityReplay)
+        {
+            QuicMaxStreamsFrame maxStreamsFrame = new(
+                false,
+                streamRegistry.Bookkeeping.IncomingUnidirectionalStreamLimit);
+            if (!TrySendPeerStreamCapacityReplay(maxStreamsFrame, ref effects))
+            {
+                return stateChanged;
+            }
+
+            pendingPeerUnidirectionalStreamCapacityReplay = false;
+            stateChanged = true;
+        }
+
+        return stateChanged;
     }
 
     private bool TryDeferPeerStreamCapacityRelease(ulong streamId)
