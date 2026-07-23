@@ -589,6 +589,47 @@ that worker: the MAX_STREAMS datagram is emitted, but the test observes
 ACK-delay timer cancellation rather than a recovery-arm effect. That finding
 is retained separately and was not silently incorporated into the wakeup fix.
 
-The c32 and c4-by-s100 stress extension remains blocked pending review of these
-correctness confirmations and a decision on whether another host must repeat
-the non-stress gate first.
+The c32 and c4-by-s100 stress extension remained blocked at this point pending
+an independent-host x4 repeat.
+
+### Cross-Host Confirmation And Stress-Only Extension
+
+The constrained two-core worker was fast-forwarded to `ea2f3472`, which
+contains runtime fix `ac20fd67` and the preceding diagnostic commit. Its clean
+Release build completed with zero warnings, and the focused cross-platform
+correctness subset passed 6 of 6 tests.
+
+Campaign
+`adaptive-receive-credit-remote-x64-02-20260723-capacitywakeupfix-x4-confirm-abba30s-run1`
+then repeated `duplex-64kb-x4-s16`. All four samples passed exact payload,
+protocol, timeout, and process gates. The row is `invalid_environment`, not a
+policy-effect result, because the constrained host produced a 10.093 percent
+maximum within-treatment relative range. Aggregate throughput was 20.571 MB/s
+and aggregate p95 was 266.842 ms. Together with the x64-03 confirmation, the
+former x4 correctness boundary passed 8 of 8 normal-instrumentation samples on
+two physical hosts.
+
+Review then opened only the predeclared stress-only extension. Campaign
+`adaptive-receive-credit-remote-x64-03-20260723-capacitywakeupfix-stress30s-run1`
+retained three independent cells:
+
+| Cell | Classification | Correct samples | Aggregate throughput | Aggregate p95 | Maximum within-treatment range |
+| --- | --- | ---: | ---: | ---: | ---: |
+| `upload-1mb-x32-s1-stress` | `stress_only` | 4 of 4 | 201.280 MB/s | 170.898 ms | 3.209% |
+| `download-1mb-x32-s1-stress` | `stress_only` | 4 of 4 | 192.440 MB/s | 179.217 ms | 1.533% |
+| `multiplex-1kb-x4-s100-stress` | `stress_only` | 4 of 4 | 25.969 MB/s | 12.806 ms | 2.644% |
+
+The 12 stress samples contain no failed operations, timeouts, protocol errors,
+cancellation failures, disposal failures, or invariant violations. They prove
+that the fixed stream-capacity wakeup survived these bounded higher-count
+measurements. They remain outside the supported acceptance envelope and cannot
+authorize a policy promotion, production activation, online exploration, or a
+general stress-safety claim.
+
+The ordinary offline dataset still lacks the third host fingerprint required
+for honest train, validation, and test holdouts. The new neutral x64-03 rows
+can be offered to the validator, while the x64-02 environment-invalid row and
+all stress-only rows must retain their exclusion labels. ARM64 Debian is the
+next controlled measurement target after toolchain provisioning; model
+training remains blocked until the resulting dataset contract can form all
+required holdouts without crossing host or workload groups.
