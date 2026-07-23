@@ -696,3 +696,33 @@ terminal SUT role result and collect a per-batch ordinal with the load error,
 plus before/after target-process metrics from the SUT role. The existing
 measurement-only axis remains `application_send_turn_planning=legacy_current`;
 all adjacent axes remain `legacy_current`, and no policy behavior is enabled.
+
+### c128 Diagnostic Instrumentation Review Checkpoint
+
+ProtocolLab internal review PR [#10](https://github.com/incursa/protocol-lab-internal/pull/10)
+now carries two isolated commits based on current `origin/main`:
+`50f75445109b9742f701fb4ec94f1a71fab8ad0b` (`Bound adapter control-plane
+cleanup`) and `52c81da0f49c7d74a72cf8105f75106d4b94ef7d` (`Record cold
+handshake batch provenance`). The first bounds adapter control-plane requests
+at 15 seconds; the second adds a one-based `handshake-batch` coordinate to
+each Raw QUIC cold-handshake dial error while retaining the connection index.
+`PB-ARTIFACT-0003` and `PB-ARTIFACT-0004` keep both changes explicitly
+partial until a fresh independent-host failure-path result is retained.
+
+The review branch's narrow verification is retained in the PR: the Release
+test-project build passed with zero warnings and errors; the focused
+`RuntimeDiagnosticsTests|LabSchedulerTests` filter passed 60 tests in 8.720
+seconds; and `go test ./cmd/quic-go-raw-load` passed in 1.392 seconds. Read-only
+PR state at `2026-07-23T23:59Z` is `OPEN`, `REVIEW_REQUIRED`, and
+`mergeStateStatus=BLOCKED`; the Contributor Agreement check passed and the CI
+`build-test` check is in progress. This is an implementation-ready diagnostic
+checkpoint, not a deployment or campaign authorization.
+
+The next c128 action remains deliberately ordered: complete review and CI,
+deploy only the exact reviewed commit through the normal ProtocolLab workflow,
+re-verify independent host identity and health, then retain one
+legacy-current c128 diagnostic with terminal SUT role artifacts, bounded
+cleanup evidence, and batch-coordinate output. The old and new diagnostic
+rows remain separate and append-only. No policy candidate, shadow rule,
+threshold, or active behavior is enabled; all adjacent axes remain
+`legacy_current`.
