@@ -143,6 +143,26 @@ at `.artifacts\adaptive-runtime\verification\full-release-20260723T1933Z.stdout.
 and `.artifacts\adaptive-runtime\verification\full-release-20260723T1933Z.stderr.log`.
 No isolated rerun has been used to replace or erase this result.
 
+### Retained focused diagnostic
+
+After the full-suite result, a fixed, predeclared 20-repetition diagnostic
+probe ran from `080c74aadfd26989658e5f329248b08bd6f0f1a1` with no source or test
+changes:
+
+```powershell
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build --no-restore --disable-build-servers --nologo -v:minimal --filter "FullyQualifiedName~Http3MinimalServerTests.RequestDataBeforeHeaders_ClosesConnectionWithFrameUnexpected"
+```
+
+All 20 isolated repetitions passed (one test per repetition). The immutable
+summary and each stdout/stderr pair remain under
+`.artifacts\adaptive-runtime\verification\http3-request-data-before-headers-repeat-20260723T2030Z`;
+the summary SHA-256 is
+`BCCC0F1EF1253E0134EE7B07DC555649A0EE800FDE2848692200F4C6361157A5`.
+`QuicLoopbackNetworkTestCollection` disables parallel execution within its
+shared loopback collection. This is retained nonreproduced diagnostic evidence
+only: it neither clears nor reclassifies the original one-of-9,798 full-suite
+failure, and no policy gate is advanced from it.
+
 ## ProtocolLab Gate Status
 
 No `application_send_turn_planning` ProtocolLab job was submitted and no
