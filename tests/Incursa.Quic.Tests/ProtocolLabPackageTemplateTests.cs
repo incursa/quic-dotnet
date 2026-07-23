@@ -248,6 +248,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY", builderScript);
         Assert.Contains("AdaptiveRuntimeApplicationSendTurnPolicy", builderScript);
         Assert.Contains("RawQuicDebugLogging", builderScript);
+        Assert.Contains("IncursaRawQuicServer ignored failed inbound establishment", rawQuicServer);
+        Assert.Contains("connection = await listener.AcceptConnectionAsync(default);", rawQuicServer);
         Assert.Contains("QUIC_APPLICATION_SEND_TURN_POLICY_JSON=", rawQuicServer);
         Assert.Contains("QUIC_APPLICATION_SEND_TURN_POLICY_CONTRACT=", rawQuicServer);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY", builderScript);

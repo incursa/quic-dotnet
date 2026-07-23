@@ -138,7 +138,21 @@ try
 {
     while (true)
     {
-        var connection = await listener.AcceptConnectionAsync(default);
+        QuicConnection connection;
+        try
+        {
+            connection = await listener.AcceptConnectionAsync(default);
+        }
+        catch (QuicException ex)
+        {
+            if (debugLogging)
+            {
+                Console.Error.WriteLine($"IncursaRawQuicServer ignored failed inbound establishment: {ex.Message}");
+            }
+
+            continue;
+        }
+
         var connectionIndex = Interlocked.Increment(ref connectionCount);
         if (debugLogging)
         {
