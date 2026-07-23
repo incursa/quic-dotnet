@@ -186,13 +186,19 @@ public sealed class REQ_QUIC_CRT_0174
             localResult["policyAxis"] = "application_send_turn_planning";
             localResult["mode"] = "forced";
             System.Text.Json.Nodes.JsonObject configuration = localResult["policyConfiguration"]!.AsObject();
-            configuration["appliedPolicy"] = "legacy_current";
-            configuration["forcedPolicy"] = "legacy_current";
+            configuration["appliedPolicy"] = "not_applicable";
+            configuration["forcedPolicy"] = null;
             configuration["shadowEnabled"] = false;
             configuration["shadowPolicy"] = null;
             configuration["ruleVersion"] = "application-send-turn-force-v1";
             configuration["observationContractVersion"] = "adaptive-runtime-application-send-turn-provenance-v1";
             localResult["treatments"]!["A"]!["policy"] = "legacy_current";
+            localResult["treatments"]!["B"] = new System.Text.Json.Nodes.JsonObject
+            {
+                ["policy"] = "conservative",
+                ["benchmarkBinaryRole"] = "candidate_benchmark",
+                ["runtimeBinaryRole"] = "candidate_runtime",
+            };
             localResult["samples"]![0]!["artifactPaths"]!.AsArray().Add(
                 "fixture-artifacts/application-send-turn-policy.raw.jsonl");
             localResult["artifacts"]![0]!["sha256"] = Convert.ToHexString(
@@ -243,6 +249,27 @@ public sealed class REQ_QUIC_CRT_0174
                 Directory.Delete(temporaryDirectory, recursive: true);
             }
         }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void LocalRunnerKeepsSendTurnConstructionEvidenceSeparateFromReceiveCreditEpochs()
+    {
+        string runner = File.ReadAllText(AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+            "eng/adaptive-runtime/Invoke-AdaptiveRuntimePolicyLocalCell.ps1"));
+
+        Assert.Contains("[ValidateSet('receive_credit_publication', 'application_send_turn_planning')]", runner, StringComparison.Ordinal);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY", runner, StringComparison.Ordinal);
+        Assert.Contains("QUIC_APPLICATION_SEND_TURN_POLICY_CONTRACT=", runner, StringComparison.Ordinal);
+        Assert.Contains("QUIC_APPLICATION_SEND_TURN_POLICY_JSON=", runner, StringComparison.Ordinal);
+        Assert.Contains("application-send-turn-policy.raw.jsonl", runner, StringComparison.Ordinal);
+        Assert.Contains("Convert-AdaptiveRuntimeApplicationSendTurnProvenance.ps1", runner, StringComparison.Ordinal);
+        Assert.Contains("-ConstructionDatasetPath", runner, StringComparison.Ordinal);
+        Assert.Contains("application_send_turn_planning does not have shadow behavior yet", runner, StringComparison.Ordinal);
+        Assert.Contains("policy_mismatch", runner, StringComparison.Ordinal);
+        Assert.Contains("policyAxis = $PolicyAxis", runner, StringComparison.Ordinal);
+        Assert.DoesNotContain("mode = 'active_internal'", runner, StringComparison.OrdinalIgnoreCase);
     }
 
     private static void CopyDirectory(string sourceDirectory, string destinationDirectory)

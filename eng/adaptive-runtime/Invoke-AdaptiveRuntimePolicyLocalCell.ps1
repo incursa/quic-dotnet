@@ -11,13 +11,14 @@ param(
 
     [string] $CellId = 'duplex-64kb-x1-s16',
 
+    [ValidateSet('receive_credit_publication', 'application_send_turn_planning')]
+    [string] $PolicyAxis = 'receive_credit_publication',
+
     [ValidateSet('ABBA', 'BAAB')]
     [string] $SequenceProtocol = 'ABBA',
 
-    [ValidateSet('legacy_current', 'immediate', 'read_dominant_batch')]
     [string] $PolicyA = 'legacy_current',
 
-    [ValidateSet('legacy_current', 'immediate', 'read_dominant_batch')]
     [string] $PolicyB = 'read_dominant_batch',
 
     [switch] $ShadowOnly,
@@ -66,7 +67,9 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $localBenchmarkScript = Join-Path $repoRoot 'scripts\perf\Invoke-ProtocolLabLocalQuicBenchmark.ps1'
 $resultSchemaPath = Join-Path $repoRoot 'schemas\adaptive-runtime-policy-local-result-v1.schema.json'
 $epochSchemaPath = Join-Path $repoRoot 'schemas\adaptive-runtime-policy-epoch-dataset-v1.schema.json'
+$constructionSchemaPath = Join-Path $repoRoot 'schemas\adaptive-runtime-policy-construction-dataset-v1.schema.json'
 $evidenceValidationScript = Join-Path $repoRoot 'eng\adaptive-runtime\Test-AdaptiveRuntimePolicyEvidence.ps1'
+$constructionExporterScript = Join-Path $repoRoot 'eng\adaptive-runtime\Convert-AdaptiveRuntimeApplicationSendTurnProvenance.ps1'
 $serverProjectPath = Join-Path $repoRoot 'eng\protocol-lab\servers\IncursaRawQuicServer\IncursaRawQuicServer.csproj'
 $serverBinaryPath = Join-Path $repoRoot 'eng\protocol-lab\servers\IncursaRawQuicServer\bin\Release\net10.0\IncursaRawQuicServer.dll'
 $runtimeBinaryPath = Join-Path $repoRoot 'src\Incursa.Quic\bin\Release\net10.0\Incursa.Quic.dll'
@@ -283,7 +286,10 @@ function Get-ArtifactKind {
     if ($name -eq 'cell-manifest.json') { return 'manifest' }
     if ($name -eq 'checksum-inventory.json') { return 'checksum_inventory' }
     if ($name -eq 'aggregate-results.json') { return 'metrics' }
-    if ($name -eq 'adaptive-runtime-epochs.raw.jsonl' -or $name.StartsWith('epoch-row-', [StringComparison]::OrdinalIgnoreCase)) { return 'dataset' }
+    if ($name -eq 'adaptive-runtime-epochs.raw.jsonl' -or
+        $name -eq 'application-send-turn-policy.raw.jsonl' -or
+        $name.StartsWith('epoch-row-', [StringComparison]::OrdinalIgnoreCase) -or
+        $name.StartsWith('construction-row-', [StringComparison]::OrdinalIgnoreCase)) { return 'dataset' }
     if ($name.EndsWith('.stdout.log', [StringComparison]::OrdinalIgnoreCase) -or $name -eq 'server.stdout.txt') { return 'stdout' }
     if ($name.EndsWith('.stderr.log', [StringComparison]::OrdinalIgnoreCase) -or $name -eq 'server.stderr.txt') { return 'stderr' }
     return 'other'
@@ -585,6 +591,16 @@ function ConvertTo-PolicyValue {
     }
 }
 
+function ConvertTo-ApplicationSendTurnPolicyValue {
+    param([Parameter(Mandatory = $true)][string] $Value)
+
+    switch ($Value) {
+        'LegacyCurrent' { 'legacy_current' }
+        'Conservative' { 'conservative' }
+        default { throw "Unknown application-send-turn policy '$Value'." }
+    }
+}
+
 function ConvertTo-ReasonCode {
     param([Parameter(Mandatory = $true)][string] $Value)
 
@@ -694,9 +710,34 @@ function Get-ScenarioShape {
     throw "Scenario '$Scenario' was not found under $scenarioRoot."
 }
 
-foreach ($requiredPath in @($localBenchmarkScript, $resultSchemaPath, $epochSchemaPath, $evidenceValidationScript, $serverProjectPath)) {
+$isReceiveCreditAxis = $PolicyAxis -eq 'receive_credit_publication'
+$isApplicationSendTurnAxis = $PolicyAxis -eq 'application_send_turn_planning'
+$requiredInputs = @($localBenchmarkScript, $resultSchemaPath, $evidenceValidationScript, $serverProjectPath)
+if ($isReceiveCreditAxis) {
+    $requiredInputs += $epochSchemaPath
+}
+else {
+    $requiredInputs += @($constructionSchemaPath, $constructionExporterScript)
+}
+foreach ($requiredPath in $requiredInputs) {
     if (-not (Test-Path -LiteralPath $requiredPath -PathType Leaf)) {
         throw "Required campaign input was not found: $requiredPath"
+    }
+}
+
+if ($isApplicationSendTurnAxis -and $ShadowOnly) {
+    throw 'application_send_turn_planning does not have shadow behavior yet; run forced counterfactual cells only.'
+}
+
+$allowedPolicyValues = if ($isReceiveCreditAxis) {
+    @('legacy_current', 'immediate', 'read_dominant_batch')
+}
+else {
+    @('legacy_current', 'conservative')
+}
+foreach ($policyValue in @($PolicyA, $PolicyB)) {
+    if ($policyValue -notin $allowedPolicyValues) {
+        throw "Policy '$policyValue' is not valid for axis '$PolicyAxis'. Allowed values: $($allowedPolicyValues -join ', ')."
     }
 }
 
@@ -778,6 +819,7 @@ $sequence = @($sequence)
 $policyByTreatment = if ($ShadowOnly) { @{ A = 'legacy_current' } } else { @{ A = $PolicyA; B = $PolicyB } }
 $samples = [System.Collections.Generic.List[object]]::new()
 $shadowEpochsBySample = @{}
+$applicationSendTurnRecordsBySample = @{}
 $sampleRunEvidenceBySampleId = @{}
 $artifactPaths = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
 $commands = [System.Collections.Generic.List[object]]::new()
@@ -833,14 +875,20 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
     [void] $artifactPaths.Add($commandPath)
 
     $sampleStartedUtc = (Get-Date).ToUniversalTime()
-    $previousPolicy = [Environment]::GetEnvironmentVariable('PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY')
+    $policyEnvironmentVariable = if ($isReceiveCreditAxis) {
+        'PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY'
+    }
+    else {
+        'PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY'
+    }
+    $previousPolicy = [Environment]::GetEnvironmentVariable($policyEnvironmentVariable)
     try {
-        [Environment]::SetEnvironmentVariable('PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY', $hostPolicy)
+        [Environment]::SetEnvironmentVariable($policyEnvironmentVariable, $hostPolicy)
         & pwsh @arguments 1> $stdoutPath 2> $stderrPath
         $exitCode = $LASTEXITCODE
     }
     finally {
-        [Environment]::SetEnvironmentVariable('PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY', $previousPolicy)
+        [Environment]::SetEnvironmentVariable($policyEnvironmentVariable, $previousPolicy)
     }
     $sampleEndedUtc = (Get-Date).ToUniversalTime()
     [void] $artifactPaths.Add($stdoutPath)
@@ -871,6 +919,7 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
     $campaignHostStdoutPath = Join-Path $sampleRoot 'campaign-host.stdout.log'
     $campaignHostStderrPath = Join-Path $sampleRoot 'campaign-host.stderr.log'
     $shadowRawPath = $null
+    $applicationSendTurnRawPath = $null
     $campaignHostSourceStdout = $null
     $campaignHostSourceStderr = $null
     if ($null -ne $adapterArtifactsPath) {
@@ -889,36 +938,75 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
     else {
         Copy-Item -LiteralPath $campaignHostSourceStdout -Destination $campaignHostStdoutPath
         [void] $artifactPaths.Add($campaignHostStdoutPath)
-        $reportedPolicy = [regex]::Match(
-            (Get-Content -LiteralPath $campaignHostStdoutPath -Raw),
-            'QUIC_RECEIVE_CREDIT_POLICY=([^\r\n]+)').Groups[1].Value
+        $campaignHostStdout = Get-Content -LiteralPath $campaignHostStdoutPath -Raw
+        $reportedPolicyPattern = if ($isReceiveCreditAxis) {
+            'QUIC_RECEIVE_CREDIT_POLICY=([^\r\n]+)'
+        }
+        else {
+            'QUIC_APPLICATION_SEND_TURN_POLICY=([^\r\n]+)'
+        }
+        $reportedPolicy = [regex]::Match($campaignHostStdout, $reportedPolicyPattern).Groups[1].Value
         if ($reportedPolicy -ne $hostPolicy) {
             $contractFailures.Add("$sampleId`: requested host mode '$hostPolicy' but host reported '$reportedPolicy'.")
         }
 
-        $shadowContract = [regex]::Match(
-            (Get-Content -LiteralPath $campaignHostStdoutPath -Raw),
-            'QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=([^\r\n]+)').Groups[1].Value
-        if ($shadowContract -ne 'adaptive-runtime-epoch-raw-v1') {
-            $contractFailures.Add("$sampleId`: adaptive-runtime epoch raw contract was not reported.")
-        }
+        if ($isReceiveCreditAxis) {
+            $shadowContract = [regex]::Match(
+                $campaignHostStdout,
+                'QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=([^\r\n]+)').Groups[1].Value
+            if ($shadowContract -ne 'adaptive-runtime-epoch-raw-v1') {
+                $contractFailures.Add("$sampleId`: adaptive-runtime epoch raw contract was not reported.")
+            }
 
-        $shadowRawPath = Join-Path $sampleRoot 'adaptive-runtime-epochs.raw.jsonl'
-        $shadowPrefix = 'QUIC_ADAPTIVE_RUNTIME_EPOCH_JSON='
-        $shadowLines = @(Get-Content -LiteralPath $campaignHostStdoutPath | Where-Object {
-            $_.StartsWith($shadowPrefix, [StringComparison]::Ordinal)
-        } | ForEach-Object {
-            $_.Substring($shadowPrefix.Length)
-        })
-        if ($shadowLines.Count -eq 0) {
-            $contractFailures.Add("$sampleId`: no adaptive-runtime epochs were retained.")
+            $shadowRawPath = Join-Path $sampleRoot 'adaptive-runtime-epochs.raw.jsonl'
+            $shadowPrefix = 'QUIC_ADAPTIVE_RUNTIME_EPOCH_JSON='
+            $shadowLines = @(Get-Content -LiteralPath $campaignHostStdoutPath | Where-Object {
+                $_.StartsWith($shadowPrefix, [StringComparison]::Ordinal)
+            } | ForEach-Object {
+                $_.Substring($shadowPrefix.Length)
+            })
+            if ($shadowLines.Count -eq 0) {
+                $contractFailures.Add("$sampleId`: no adaptive-runtime epochs were retained.")
+            }
+            else {
+                [System.IO.File]::WriteAllLines($shadowRawPath, $shadowLines, [System.Text.UTF8Encoding]::new($false))
+                [void] $artifactPaths.Add($shadowRawPath)
+                $shadowEpochsBySample[$sampleId] = @($shadowLines | ForEach-Object {
+                    $_ | ConvertFrom-Json -Depth 30
+                })
+            }
         }
         else {
-            [System.IO.File]::WriteAllLines($shadowRawPath, $shadowLines, [System.Text.UTF8Encoding]::new($false))
-            [void] $artifactPaths.Add($shadowRawPath)
-            $shadowEpochsBySample[$sampleId] = @($shadowLines | ForEach-Object {
-                $_ | ConvertFrom-Json -Depth 30
+            $constructionContract = [regex]::Match(
+                $campaignHostStdout,
+                'QUIC_APPLICATION_SEND_TURN_POLICY_CONTRACT=([^\r\n]+)').Groups[1].Value
+            if ($constructionContract -ne 'adaptive-runtime-application-send-turn-provenance-v1') {
+                $contractFailures.Add("$sampleId`: application-send-turn provenance contract was not reported.")
+            }
+
+            $applicationSendTurnRawPath = Join-Path $sampleRoot 'application-send-turn-policy.raw.jsonl'
+            $constructionPrefix = 'QUIC_APPLICATION_SEND_TURN_POLICY_JSON='
+            $constructionLines = @(Get-Content -LiteralPath $campaignHostStdoutPath | Where-Object {
+                $_.StartsWith($constructionPrefix, [StringComparison]::Ordinal)
+            } | ForEach-Object {
+                $_.Substring($constructionPrefix.Length)
             })
+            if ($constructionLines.Count -eq 0) {
+                $contractFailures.Add("$sampleId`: no application-send-turn provenance records were retained.")
+            }
+            else {
+                [System.IO.File]::WriteAllLines($applicationSendTurnRawPath, $constructionLines, [System.Text.UTF8Encoding]::new($false))
+                [void] $artifactPaths.Add($applicationSendTurnRawPath)
+                $applicationSendTurnRecordsBySample[$sampleId] = @($constructionLines | ForEach-Object {
+                    $_ | ConvertFrom-Json -Depth 30
+                })
+                $reportedPolicies = @($applicationSendTurnRecordsBySample[$sampleId] | ForEach-Object {
+                    ConvertTo-ApplicationSendTurnPolicyValue -Value ([string] $_.appliedPolicy)
+                })
+                if (@($reportedPolicies | Where-Object { $_ -ne $policy }).Count -gt 0) {
+                    $contractFailures.Add("$sampleId`: policy_mismatch: declared '$policy' but one or more construction records reported a different applied policy.")
+                }
+            }
         }
     }
     if (-not [string]::IsNullOrWhiteSpace($campaignHostSourceStderr) -and
@@ -974,6 +1062,7 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
             $campaignHostStdoutPath,
             $campaignHostStderrPath,
             $shadowRawPath,
+            $applicationSendTurnRawPath,
             $pressureArtifactPath,
             $targetAttribution.resultArtifactPath,
             $targetAttribution.diagnosticTargetArtifactPath,
@@ -985,21 +1074,36 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
 }
 
 $forcedEpochPolicyValues = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
-foreach ($sample in $samples) {
-    if ($ShadowOnly -or -not $shadowEpochsBySample.ContainsKey($sample.sampleId)) {
-        continue
-    }
+$forcedPolicyValues = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+if ($isReceiveCreditAxis) {
+    foreach ($sample in $samples) {
+        if ($ShadowOnly -or -not $shadowEpochsBySample.ContainsKey($sample.sampleId)) {
+            continue
+        }
 
-    $samplePolicy = [string] $policyByTreatment[$sample.treatment]
-    $epochPolicies = @($shadowEpochsBySample[$sample.sampleId] | ForEach-Object {
-        ConvertTo-PolicyValue -Value ([string] $_.snapshot.appliedPolicy)
-    })
-    foreach ($epochPolicy in $epochPolicies) {
-        [void] $forcedEpochPolicyValues.Add($epochPolicy)
-    }
+        $samplePolicy = [string] $policyByTreatment[$sample.treatment]
+        $epochPolicies = @($shadowEpochsBySample[$sample.sampleId] | ForEach-Object {
+            ConvertTo-PolicyValue -Value ([string] $_.snapshot.appliedPolicy)
+        })
+        foreach ($epochPolicy in $epochPolicies) {
+            [void] $forcedEpochPolicyValues.Add($epochPolicy)
+            [void] $forcedPolicyValues.Add($epochPolicy)
+        }
 
-    if (@($epochPolicies | Where-Object { $_ -ne $samplePolicy }).Count -gt 0) {
-        $contractFailures.Add("$($sample.sampleId)`: policy_mismatch: declared '$samplePolicy' but one or more epoch snapshots reported a different applied policy.")
+        if (@($epochPolicies | Where-Object { $_ -ne $samplePolicy }).Count -gt 0) {
+            $contractFailures.Add("$($sample.sampleId)`: policy_mismatch: declared '$samplePolicy' but one or more epoch snapshots reported a different applied policy.")
+        }
+    }
+}
+else {
+    foreach ($sample in $samples) {
+        if (-not $applicationSendTurnRecordsBySample.ContainsKey($sample.sampleId)) {
+            continue
+        }
+
+        foreach ($record in @($applicationSendTurnRecordsBySample[$sample.sampleId])) {
+            [void] $forcedPolicyValues.Add((ConvertTo-ApplicationSendTurnPolicyValue -Value ([string] $record.appliedPolicy)))
+        }
     }
 }
 
@@ -1324,6 +1428,7 @@ $manifest = [ordered]@{
     schemaVersion = 'adaptive-runtime-policy-local-cell-manifest-v1'
     campaignId = $CampaignId
     cellId = $CellId
+    policyAxis = $PolicyAxis
     sequenceProtocol = $effectiveSequenceProtocol
     sequence = $sequence
     treatments = if ($ShadowOnly) { [ordered]@{ A = 'legacy_current' } } else { [ordered]@{ A = $PolicyA; B = $PolicyB } }
@@ -1400,6 +1505,33 @@ foreach ($epoch in $allShadowEpochs) {
 $shadowSummaryArtifactPath = @($artifactPaths | Where-Object {
     [System.IO.Path]::GetFileName($_) -eq 'adaptive-runtime-epochs.raw.jsonl'
 }) | Select-Object -First 1
+$cellAppliedPolicy = if ($ShadowOnly) {
+    'legacy_current'
+}
+elseif ($forcedPolicyValues.Count -eq 1) {
+    $forcedPolicyValues | Select-Object -First 1
+}
+else {
+    'not_applicable'
+}
+$cellForcedPolicy = if (-not $ShadowOnly -and $forcedPolicyValues.Count -eq 1) {
+    $forcedPolicyValues | Select-Object -First 1
+}
+else {
+    $null
+}
+$axisRuleVersion = if ($isReceiveCreditAxis) {
+    'receive-credit-legacy-v1'
+}
+else {
+    'application-send-turn-force-v1'
+}
+$axisObservationContractVersion = if ($isReceiveCreditAxis) {
+    'adaptive-runtime-connection-observation-v1'
+}
+else {
+    'adaptive-runtime-application-send-turn-provenance-v1'
+}
 $resultPath = Join-Path $resolvedOutputRoot 'local-result.json'
 $result = [ordered]@{
     schemaVersion = 'adaptive-runtime-policy-local-result-v1'
@@ -1412,26 +1544,13 @@ $result = [ordered]@{
     classification = $classification
     repositoryIdentities = $repositoryIdentities
     binaryProvenance = [ordered]@{ frozen = $true; assemblies = $binaryIdentities }
-    policyAxis = 'receive_credit_publication'
+    policyAxis = $PolicyAxis
     mode = if ($ShadowOnly) { 'shadow' } else { 'forced' }
     policyConfiguration = [ordered]@{
-        appliedPolicy = if ($ShadowOnly) {
-            'legacy_current'
-        }
-        elseif ($forcedEpochPolicyValues.Count -eq 1) {
-            $forcedEpochPolicyValues | Select-Object -First 1
-        }
-        else {
-            'not_applicable'
-        }
-        forcedPolicy = if (-not $ShadowOnly -and $forcedEpochPolicyValues.Count -eq 1) {
-            $forcedEpochPolicyValues | Select-Object -First 1
-        }
-        else {
-            $null
-        }
-        shadowEnabled = [bool] $ShadowOnly
-        shadowPolicy = if ($allShadowEpochs.Count -gt 0) {
+        appliedPolicy = $cellAppliedPolicy
+        forcedPolicy = $cellForcedPolicy
+        shadowEnabled = [bool] ($isReceiveCreditAxis -and $ShadowOnly)
+        shadowPolicy = if ($isReceiveCreditAxis -and $allShadowEpochs.Count -gt 0) {
             $shadowPolicies = @($allShadowEpochs | ForEach-Object {
                 ConvertTo-PolicyValue -Value ([string] $_.snapshot.proposedPolicy)
             } | Select-Object -Unique)
@@ -1440,16 +1559,16 @@ $result = [ordered]@{
         else {
             $null
         }
-        ruleVersion = 'receive-credit-legacy-v1'
-        observationContractVersion = 'adaptive-runtime-connection-observation-v1'
+        ruleVersion = $axisRuleVersion
+        observationContractVersion = $axisObservationContractVersion
         anomalyBudgets = [ordered]@{
             maxMissingEpochPercent = 0
             maxStaleEpochPercent = 0
             maxOutOfDomainEpochPercent = 0
             maxContradictoryEpochPercent = 0
         }
-        legacySelectorCommit = '1b2611e1'
-        stickyWriteEligibilityBypassed = -not $ShadowOnly -and ($PolicyA -eq 'read_dominant_batch' -or $PolicyB -eq 'read_dominant_batch')
+        legacySelectorCommit = if ($isReceiveCreditAxis) { '1b2611e1' } else { $null }
+        stickyWriteEligibilityBypassed = $isReceiveCreditAxis -and -not $ShadowOnly -and ($PolicyA -eq 'read_dominant_batch' -or $PolicyB -eq 'read_dominant_batch')
         axisSettings = [ordered]@{
             treatmentA = $PolicyA
             treatmentB = $PolicyB
@@ -1573,8 +1692,93 @@ if (-not ($resultJson | Test-Json -SchemaFile $resultSchemaPath -ErrorAction Sto
     throw "Generated local result did not validate against $resultSchemaPath. Retained result: $resultPath"
 }
 
-if ($epochRowPaths.Count -gt 0) {
-    & $evidenceValidationScript -LocalResultPath $resultPath -EpochDatasetPath @($epochRowPaths) |
+$constructionRowPaths = [System.Collections.Generic.List[string]]::new()
+if ($isApplicationSendTurnAxis -and $contractFailures.Count -eq 0) {
+    $quicRepository = @($repositoryIdentities | Where-Object name -eq 'quic-dotnet') | Select-Object -First 1
+    $benchmarkHash = [string] $binaryIdentities[0].sha256
+    $runtimeHash = [string] $binaryIdentities[1].sha256
+    $hostFingerprint = "$env:COMPUTERNAME|$([System.Runtime.InteropServices.RuntimeInformation]::OSDescription)|$([Environment]::ProcessorCount)"
+    foreach ($sample in $samples) {
+        $rawPath = @($sample.artifactPaths | Where-Object {
+            [System.IO.Path]::GetFileName($_) -eq 'application-send-turn-policy.raw.jsonl'
+        }) | Select-Object -First 1
+        if ([string]::IsNullOrWhiteSpace([string] $rawPath)) {
+            $contractFailures.Add("$($sample.sampleId): retained application-send-turn provenance has no raw source artifact.")
+            continue
+        }
+
+        $correctnessFlags = [ordered]@{
+            payloadValid = [bool] $sample.correctness.payloadValidated -and [int] $sample.correctness.failedOperations -eq 0
+            protocolValid = [int] $sample.correctness.protocolErrors -eq 0
+            timedOut = [int] $sample.correctness.timedOutOperations -ne 0
+            ownershipValid = @($sample.correctness.invariantViolations).Count -eq 0
+            terminalValid = [int] $sample.exitCode -eq 0 -and
+                [int] $sample.correctness.cancellationFailures -eq 0 -and
+                [int] $sample.correctness.disposalFailures -eq 0
+            violationCodes = @($sample.correctness.invariantViolations)
+        }
+        $additionalExclusionFlags = [System.Collections.Generic.List[string]]::new()
+        if ($environmentInvalid) {
+            $additionalExclusionFlags.Add('target_health_invalid')
+            $additionalExclusionFlags.Add('generator_health_invalid')
+        }
+
+        $constructionRoot = Join-Path (Split-Path -Parent $rawPath) 'construction-rows'
+        $constructionArguments = @(
+            '-RawProvenancePath', $rawPath,
+            '-OutputDirectory', $constructionRoot,
+            '-DatasetId', "$CampaignId-$CellId-forced-construction-dataset",
+            '-CampaignId', $CampaignId,
+            '-RunId', $resultRunId,
+            '-CellId', $CellId,
+            '-SampleId', [string] $sample.sampleId,
+            '-ExpectedPolicy', [string] $policyByTreatment[$sample.treatment],
+            '-BenchmarkSha256', $benchmarkHash,
+            '-RuntimeSha256', $runtimeHash,
+            '-HostFingerprint', $hostFingerprint,
+            '-CorrectnessFlagsJson', ($correctnessFlags | ConvertTo-Json -Depth 10 -Compress),
+            '-ScenarioId', $ScenarioId,
+            '-Connections', $Connections,
+            '-StreamsPerConnection', $StreamsPerConnection,
+            '-WarmupMicros', ($WarmupSeconds * 1000000L),
+            '-MeasurementMicros', ($DurationSeconds * 1000000L),
+            '-RepositoryRoot', $repoRoot,
+            '-RepositoryCommit', [string] $quicRepository.commit
+        )
+        if ([bool] $quicRepository.dirty) {
+            $constructionArguments += '-RepositoryDirty'
+        }
+        if ($additionalExclusionFlags.Count -gt 0) {
+            $constructionArguments += '-AdditionalAnalysisExclusionFlags'
+            $constructionArguments += @($additionalExclusionFlags)
+        }
+
+        & $constructionExporterScript @constructionArguments | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            throw "Application-send-turn construction provenance export failed. Retained output: $constructionRoot"
+        }
+
+        $sampleConstructionRows = @(Get-ChildItem -LiteralPath $constructionRoot -Filter 'construction-row-*.json' -File)
+        if ($sampleConstructionRows.Count -eq 0) {
+            throw "Application-send-turn construction provenance export retained no rows. Retained output: $constructionRoot"
+        }
+        foreach ($constructionRow in $sampleConstructionRows) {
+            $constructionRowPaths.Add($constructionRow.FullName)
+        }
+    }
+}
+
+if ($epochRowPaths.Count -gt 0 -or $constructionRowPaths.Count -gt 0) {
+    $validationArguments = @('-LocalResultPath', $resultPath)
+    if ($epochRowPaths.Count -gt 0) {
+        $validationArguments += '-EpochDatasetPath'
+        $validationArguments += @($epochRowPaths)
+    }
+    if ($constructionRowPaths.Count -gt 0) {
+        $validationArguments += '-ConstructionDatasetPath'
+        $validationArguments += @($constructionRowPaths)
+    }
+    & $evidenceValidationScript @validationArguments |
         Set-Content -LiteralPath (Join-Path $resolvedOutputRoot 'evidence-validation.json') -Encoding utf8
     if ($LASTEXITCODE -ne 0) {
         throw "Generated adaptive-runtime evidence did not pass schema/join validation. Retained output: $resolvedOutputRoot"

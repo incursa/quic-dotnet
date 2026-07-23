@@ -48,8 +48,10 @@ Materialize the measurement-only catalog metadata for the known adaptive seams:
 ```
 
 The catalog records all currently known seams as review metadata while keeping
-`receive_credit_publication` as the only executable measurement seam in this
-v1 substrate. Every catalog entry remains seam-local, versioned,
+`receive_credit_publication` as the only controller-epoch measurement seam in
+this v1 substrate. `application_send_turn_planning` also has a separate
+forced construction-provenance path; it is not an epoch controller seam.
+Every catalog entry remains seam-local, versioned,
 `activationAuthorized = false`, and non-authoritative for runtime behavior.
 
 Build the deterministic raw -> normalized -> curated -> split chain from
@@ -133,6 +135,31 @@ request-level result latency is not relabeled as stream fairness. Per-epoch
 completion and memory outcomes remain null because the contract does not claim
 same-connection phase-local attribution. A single-cell
 result is diagnostic and cannot authorize activation or rack-lab submission.
+
+The same runner can execute the independent forced-only construction campaign
+for `application_send_turn_planning`:
+
+```powershell
+./eng/adaptive-runtime/Invoke-AdaptiveRuntimePolicyLocalCell.ps1 `
+  -CampaignId adaptive-send-turn-20260723 `
+  -PolicyAxis application_send_turn_planning `
+  -SequenceProtocol ABBA `
+  -PolicyA legacy_current `
+  -PolicyB conservative `
+  -ScenarioId quic.transport.duplex-streams-peer-matrix `
+  -TrafficShape duplex `
+  -AccountingMode fixed_per_stream `
+  -PayloadBytes 65536 `
+  -Connections 1 `
+  -StreamsPerConnection 16
+```
+
+That path sets only the internal application-send-turn force environment
+variable, requires the host-reported forced identity, retains the raw
+`application-send-turn-policy.raw.jsonl` record stream for each sample, and
+exports checksum-joined construction rows. It never relabels receive-credit
+epochs, has no send-turn shadow mode yet, and does not authorize active policy
+selection or a ProtocolLab submission.
 
 The local classifier is conjunctive. Known throughput, p95, or peak outstanding
 buffer-pool regressions beyond five percent retain a negative result. It cannot

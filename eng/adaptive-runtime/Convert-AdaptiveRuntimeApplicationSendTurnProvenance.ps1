@@ -42,6 +42,8 @@ param(
     [Parameter(Mandatory = $true)]
     [string] $CorrectnessFlagsJson,
 
+    [string[]] $AdditionalAnalysisExclusionFlags = @(),
+
     [Parameter(Mandatory = $true)]
     [string] $ScenarioId,
 
@@ -112,7 +114,17 @@ $correctnessInvalid = -not $normalizedCorrectnessFlags.payloadValid -or
     -not $normalizedCorrectnessFlags.ownershipValid -or
     -not $normalizedCorrectnessFlags.terminalValid -or
     $normalizedCorrectnessFlags.violationCodes.Count -ne 0
-[string[]] $analysisExclusionFlags = if ($correctnessInvalid) { , 'correctness_failed' } else { , 'none' }
+$analysisExclusionFlagSet = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+if ($correctnessInvalid) {
+    [void] $analysisExclusionFlagSet.Add('correctness_failed')
+}
+foreach ($flag in $AdditionalAnalysisExclusionFlags) {
+    if ($flag -notin @('requested_effective_mismatch', 'binary_identity_missing', 'binary_changed', 'target_health_invalid', 'generator_health_invalid', 'policy_mismatch', 'source_join_failed')) {
+        throw "Additional analysis exclusion flag '$flag' is not valid for application-send-turn construction evidence."
+    }
+    [void] $analysisExclusionFlagSet.Add($flag)
+}
+[string[]] $analysisExclusionFlags = if ($analysisExclusionFlagSet.Count -eq 0) { , 'none' } else { @($analysisExclusionFlagSet | Sort-Object) }
 
 $records = @(
     Get-Content -LiteralPath $rawPath | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | ForEach-Object {

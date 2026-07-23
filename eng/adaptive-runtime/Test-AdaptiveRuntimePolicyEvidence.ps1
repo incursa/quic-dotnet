@@ -875,12 +875,13 @@ foreach ($item in $validatedConstructionRows) {
         $failures.Add("Construction row '$($row.rowId)' does not name its source result schema version.")
     }
 
-    if ($result.mode -ne 'forced' -or $null -eq $result.policyConfiguration.forcedPolicy) {
-        $failures.Add("Construction row '$($row.rowId)' requires a forced local result with an explicit forced policy.")
+    if ($result.mode -ne 'forced') {
+        $failures.Add("Construction row '$($row.rowId)' requires a forced local result.")
     }
-    elseif ($row.constructionPolicyState.appliedPolicy -ne $result.policyConfiguration.forcedPolicy -or
-        $result.policyConfiguration.appliedPolicy -ne $result.policyConfiguration.forcedPolicy) {
-        $failures.Add("Construction row '$($row.rowId)' does not match the forced policy recorded on the local result.")
+    elseif ($null -ne $result.policyConfiguration.forcedPolicy -and
+        ($row.constructionPolicyState.appliedPolicy -ne $result.policyConfiguration.forcedPolicy -or
+            $result.policyConfiguration.appliedPolicy -ne $result.policyConfiguration.forcedPolicy)) {
+        $failures.Add("Construction row '$($row.rowId)' does not match the singular forced policy recorded on the local result.")
     }
 
     if ($row.constructionPolicyState.selectionSource -ne 'forced') {
