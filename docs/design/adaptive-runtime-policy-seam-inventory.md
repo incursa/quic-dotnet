@@ -4,7 +4,8 @@ title: "Adaptive Runtime Policy Seam Inventory"
 
 # Adaptive Runtime Policy Seam Inventory
 
-Status: proposed for joint planning review
+Status: implementation inventory reconciled; send-turn campaign-force planning
+authorized; active policy blocked
 
 This inventory describes controls that already exist in the runtime and the
 minimum seam work that would be required before a controller could observe or
@@ -20,11 +21,15 @@ rule remain retained runtime behavior. The behavior-neutral application-send
 pressure classifier remains diagnostic only. Rejected receive-credit cadences
 and active scheduler experiments remain negative evidence.
 
-The first controller migration proposed for later review is the
-receive-credit publication axis because it has both an immediate conservative
-path and a retained bounded selector. Migration must first reproduce the
-current selector in shadow mode. Until a separately approved implementation
-slice passes that gate, the legacy selector remains authoritative.
+The receive-credit publication axis completed its evidence review on
+2026-07-23 with a non-promoting `remain_legacy_current` decision. Its shadow
+and forced-policy seams remain permanent rollback and counterfactual tools;
+the accepted selector remains authoritative. The next permitted axis is
+`application_send_turn_planning`, but only at inventory and campaign-force
+contract scope. Its current planner seam is already independently injectable
+for tests and benchmarks. It must not gain adaptive selection, new runtime
+input signals, or active behavior until its own trace, forced-campaign,
+observation, and review gates are complete.
 
 ## Non-Negotiable Authority
 

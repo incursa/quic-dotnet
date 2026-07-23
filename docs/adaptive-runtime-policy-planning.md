@@ -352,3 +352,19 @@ The bundle was reviewed together on 2026-07-20. `REQ-QUIC-CRT-0164` through
 observation, internal forced-policy, provenance, and shadow-only foundation.
 That approval does not authorize `active_internal`, a wider receive-credit
 selector, any other policy axis, online learning, or production exploration.
+
+## 2026-07-23 Evidence Review Decision
+
+The append-only receive-credit evidence review is recorded in
+[`testing/adaptive-runtime-policy-evidence-review-checkpoint-2026-07-23.md`](testing/adaptive-runtime-policy-evidence-review-checkpoint-2026-07-23.md).
+It concluded `remain_legacy_current`: the three-host review cohort does not
+satisfy the complete host-and-workload holdout contract, and the broader
+corpus does not support a transferable deterministic rule. This is a
+non-promoting decision; it does not change the applied selector or authorize
+`active_internal`.
+
+It closes the receive-credit evidence-review gate and permits only the
+separately traced, measurement-only inventory of
+`application_send_turn_planning`. All other adjacent axes remain
+`legacy_current` or inventory-only until their own force, evidence, and
+review gates are complete.
