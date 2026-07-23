@@ -26,6 +26,7 @@ public sealed class REQ_QUIC_CRT_0172
         Assert.True(root.GetProperty("valid").GetBoolean());
         Assert.Equal(1, root.GetProperty("checksumInventoryCount").GetInt32());
         Assert.Equal(1, root.GetProperty("uniqueEpochRowCount").GetInt32());
+        Assert.Equal(6, root.GetProperty("uniqueArtifactHashCount").GetInt32());
         Assert.Empty(root.GetProperty("failures").EnumerateArray());
 
         using JsonDocument localResult = AdaptiveRuntimePolicyScriptTestSupport.ReadRepositoryJson(

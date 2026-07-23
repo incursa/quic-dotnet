@@ -25,8 +25,11 @@ also requires
 
 The command emits a machine-readable
 `adaptive-runtime-policy-evidence-validation-v1` summary and exits nonzero on
-any schema or join failure. Input files are read-only. Negative, noisy,
-excluded, and failed campaign rows remain in their source evidence set.
+any schema or join failure. Each append-only artifact path is hashed once per
+invocation while every repeated join is checked against the verified digest;
+the summary reports `uniqueArtifactHashCount`. Input files are read-only.
+Negative, noisy, excluded, and failed campaign rows remain in their source
+evidence set.
 
 Materialize the measurement-only catalog metadata for the known adaptive seams:
 

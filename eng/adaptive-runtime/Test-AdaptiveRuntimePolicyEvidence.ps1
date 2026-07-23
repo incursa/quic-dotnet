@@ -22,6 +22,8 @@ $epochDatasetSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-po
 $failures = [System.Collections.Generic.List[string]]::new()
 $validatedLocalResults = [System.Collections.Generic.List[object]]::new()
 $validatedEpochRows = [System.Collections.Generic.List[object]]::new()
+$verifiedArtifactSha256ByPath = [System.Collections.Generic.Dictionary[string,string]]::new(
+    [StringComparer]::OrdinalIgnoreCase)
 
 function Resolve-NormalizedEvidencePath {
     param(
@@ -257,12 +259,22 @@ function Test-InventoryJoin {
         $failures.Add("$Description expected sha256 '$ExpectedSha256' but checksum inventory '$($InventoryContext.Path)' recorded '$($entry.Sha256)'.")
     }
 
-    if (-not (Test-Path -LiteralPath $normalizedPath -PathType Leaf)) {
-        $failures.Add("$Description points to '$normalizedPath', but that file was not found.")
-        return $normalizedPath
+    if ($verifiedArtifactSha256ByPath.ContainsKey($normalizedPath)) {
+        $actualSha256 = $verifiedArtifactSha256ByPath[$normalizedPath]
+    }
+    else {
+        if (-not (Test-Path -LiteralPath $normalizedPath -PathType Leaf)) {
+            $failures.Add("$Description points to '$normalizedPath', but that file was not found.")
+            return $normalizedPath
+        }
+
+        # Evidence artifacts are append-only for one validation invocation.
+        # Hash each unique path once while still checking every declared join
+        # and every inventory digest against that verified value.
+        $actualSha256 = (Get-FileHash -LiteralPath $normalizedPath -Algorithm SHA256).Hash.ToLowerInvariant()
+        $verifiedArtifactSha256ByPath[$normalizedPath] = $actualSha256
     }
 
-    $actualSha256 = (Get-FileHash -LiteralPath $normalizedPath -Algorithm SHA256).Hash.ToLowerInvariant()
     if (-not [string]::Equals($actualSha256, [string] $entry.Sha256, [StringComparison]::OrdinalIgnoreCase)) {
         $failures.Add("$Description path '$normalizedPath' does not match checksum inventory '$($InventoryContext.Path)'.")
     }
@@ -761,6 +773,7 @@ $summary = [ordered]@{
     epochRowCount = $validatedEpochRows.Count
     uniqueEpochRowCount = $seenRowIds.Count
     checksumInventoryCount = @($localResultContextsByRunId.Values | Where-Object { $null -ne $_.ChecksumInventory }).Count
+    uniqueArtifactHashCount = $verifiedArtifactSha256ByPath.Count
     failures = @($failures)
 }
 
