@@ -334,6 +334,57 @@ public sealed class QuicListenerHostSendResilienceTests
         await listenerTask;
     }
 
+    [Fact]
+    public async Task ConcurrentColdHandshakesRemainAcceptableWithTwoRuntimeShards()
+    {
+        const int connectionCount = 128;
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        using QuicListenerHost listenerHost = new(
+            new IPEndPoint(IPAddress.Loopback, 0),
+            [SslApplicationProtocol.Http3],
+            (_, _, _) => ValueTask.FromResult(
+                QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate)),
+            listenBacklog: connectionCount,
+            runtimeShardCount: 2);
+
+        Task listenerTask = listenerHost.RunAsync();
+        IPEndPoint listenerEndPoint = (IPEndPoint)listenerHost.Socket.LocalEndPoint!;
+        Task<QuicConnection>[] acceptTasks = Enumerable.Range(0, connectionCount)
+            .Select(_ => listenerHost.AcceptConnectionAsync().AsTask())
+            .ToArray();
+        Task<QuicConnection>[] connectTasks = Enumerable.Range(0, connectionCount)
+            .Select(_ => QuicConnection.ConnectAsync(
+                QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(listenerEndPoint)).AsTask())
+            .ToArray();
+
+        QuicConnection[] clientConnections = [];
+        QuicConnection[] serverConnections = [];
+        try
+        {
+            clientConnections = await Task.WhenAll(connectTasks).WaitAsync(TimeSpan.FromSeconds(30));
+            serverConnections = await Task.WhenAll(acceptTasks).WaitAsync(TimeSpan.FromSeconds(30));
+
+            Assert.Equal(connectionCount, clientConnections.Length);
+            Assert.Equal(connectionCount, serverConnections.Length);
+            Assert.False(listenerTask.IsFaulted);
+        }
+        finally
+        {
+            foreach (QuicConnection connection in clientConnections)
+            {
+                await connection.DisposeAsync();
+            }
+
+            foreach (QuicConnection connection in serverConnections)
+            {
+                await connection.DisposeAsync();
+            }
+
+            await listenerHost.DisposeAsync();
+            await listenerTask;
+        }
+    }
+
     private static QuicListenerHost CreateHost(Func<ReadOnlyMemory<byte>, SocketAddress, int> datagramSender)
         => new(
             new IPEndPoint(IPAddress.Loopback, 0),
