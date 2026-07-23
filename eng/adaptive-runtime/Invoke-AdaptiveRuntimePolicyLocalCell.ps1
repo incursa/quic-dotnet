@@ -1727,33 +1727,32 @@ if ($isApplicationSendTurnAxis) {
         }
 
         $constructionRoot = Join-Path (Split-Path -Parent $rawPath) 'construction-rows'
-        $constructionArguments = @(
-            '-RawProvenancePath', $rawPath,
-            '-OutputDirectory', $constructionRoot,
-            '-DatasetId', "$CampaignId-$CellId-forced-construction-dataset",
-            '-CampaignId', $CampaignId,
-            '-RunId', $resultRunId,
-            '-CellId', $CellId,
-            '-SampleId', [string] $sample.sampleId,
-            '-ExpectedPolicy', [string] $policyByTreatment[$sample.treatment],
-            '-BenchmarkSha256', $benchmarkHash,
-            '-RuntimeSha256', $runtimeHash,
-            '-HostFingerprint', $hostFingerprint,
-            '-CorrectnessFlagsJson', ($correctnessFlags | ConvertTo-Json -Depth 10 -Compress),
-            '-ScenarioId', $ScenarioId,
-            '-Connections', $Connections,
-            '-StreamsPerConnection', $StreamsPerConnection,
-            '-WarmupMicros', ($WarmupSeconds * 1000000L),
-            '-MeasurementMicros', ($DurationSeconds * 1000000L),
-            '-RepositoryRoot', $repoRoot,
-            '-RepositoryCommit', [string] $quicRepository.commit
-        )
+        $constructionArguments = [ordered]@{
+            RawProvenancePath = $rawPath
+            OutputDirectory = $constructionRoot
+            DatasetId = "$CampaignId-$CellId-forced-construction-dataset"
+            CampaignId = $CampaignId
+            RunId = $resultRunId
+            CellId = $CellId
+            SampleId = [string] $sample.sampleId
+            ExpectedPolicy = [string] $policyByTreatment[$sample.treatment]
+            BenchmarkSha256 = $benchmarkHash
+            RuntimeSha256 = $runtimeHash
+            HostFingerprint = $hostFingerprint
+            CorrectnessFlagsJson = ($correctnessFlags | ConvertTo-Json -Depth 10 -Compress)
+            ScenarioId = $ScenarioId
+            Connections = $Connections
+            StreamsPerConnection = $StreamsPerConnection
+            WarmupMicros = ($WarmupSeconds * 1000000L)
+            MeasurementMicros = ($DurationSeconds * 1000000L)
+            RepositoryRoot = $repoRoot
+            RepositoryCommit = [string] $quicRepository.commit
+        }
         if ([bool] $quicRepository.dirty) {
-            $constructionArguments += '-RepositoryDirty'
+            $constructionArguments.RepositoryDirty = $true
         }
         if ($additionalExclusionFlags.Count -gt 0) {
-            $constructionArguments += '-AdditionalAnalysisExclusionFlags'
-            $constructionArguments += $additionalExclusionFlags.ToArray()
+            $constructionArguments.AdditionalAnalysisExclusionFlags = $additionalExclusionFlags.ToArray()
         }
 
         try {
@@ -1774,14 +1773,12 @@ if ($isApplicationSendTurnAxis) {
 }
 
 if ($epochRowPaths.Count -gt 0 -or $constructionRowPaths.Count -gt 0) {
-    $validationArguments = @('-LocalResultPath', $resultPath)
+    $validationArguments = [ordered]@{ LocalResultPath = $resultPath }
     if ($epochRowPaths.Count -gt 0) {
-        $validationArguments += '-EpochDatasetPath'
-        $validationArguments += @($epochRowPaths)
+        $validationArguments.EpochDatasetPath = @($epochRowPaths)
     }
     if ($constructionRowPaths.Count -gt 0) {
-        $validationArguments += '-ConstructionDatasetPath'
-        $validationArguments += @($constructionRowPaths)
+        $validationArguments.ConstructionDatasetPath = @($constructionRowPaths)
     }
     & $evidenceValidationScript @validationArguments |
         Set-Content -LiteralPath (Join-Path $resolvedOutputRoot 'evidence-validation.json') -Encoding utf8

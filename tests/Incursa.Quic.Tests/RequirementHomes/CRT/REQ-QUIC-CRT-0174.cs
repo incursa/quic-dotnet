@@ -269,7 +269,9 @@ public sealed class REQ_QUIC_CRT_0174
         Assert.Contains("QUIC_APPLICATION_SEND_TURN_POLICY_JSON=", runner, StringComparison.Ordinal);
         Assert.Contains("application-send-turn-policy.raw.jsonl", runner, StringComparison.Ordinal);
         Assert.Contains("Convert-AdaptiveRuntimeApplicationSendTurnProvenance.ps1", runner, StringComparison.Ordinal);
-        Assert.Contains("-ConstructionDatasetPath", runner, StringComparison.Ordinal);
+        Assert.Contains("ConstructionDatasetPath = @($constructionRowPaths)", runner, StringComparison.Ordinal);
+        Assert.Contains("$constructionArguments = [ordered]@{", runner, StringComparison.Ordinal);
+        Assert.Contains("$validationArguments = [ordered]@{ LocalResultPath = $resultPath }", runner, StringComparison.Ordinal);
         Assert.Contains("application_send_turn_planning does not have shadow behavior yet", runner, StringComparison.Ordinal);
         Assert.Contains("policy_mismatch", runner, StringComparison.Ordinal);
         Assert.Contains("policyAxis = $PolicyAxis", runner, StringComparison.Ordinal);
