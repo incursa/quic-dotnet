@@ -53,30 +53,37 @@ public sealed class REQ_QUIC_CRT_0174
 
         try
         {
+            string exporterScriptPath = AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                "eng/adaptive-runtime/Convert-AdaptiveRuntimeApplicationSendTurnProvenance.ps1");
+            string rawProvenancePath = AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                "tests/fixtures/adaptive-runtime-policy/application-send-turn-provenance.raw.example.jsonl");
+            string command = $$"""
+                $parameters = [ordered]@{
+                    RawProvenancePath = {{AdaptiveRuntimePolicyScriptTestSupport.QuotePowerShellLiteral(rawProvenancePath)}}
+                    OutputDirectory = {{AdaptiveRuntimePolicyScriptTestSupport.QuotePowerShellLiteral(outputDirectory)}}
+                    DatasetId = 'send-turn-test-dataset'
+                    CampaignId = 'send-turn-test-campaign'
+                    RunId = 'send-turn-test-run'
+                    CellId = 'send-turn-test-cell'
+                    SampleId = 'send-turn-test-sample'
+                    ExpectedPolicy = 'legacy_current'
+                    BenchmarkSha256 = '{{new string('a', 64)}}'
+                    RuntimeSha256 = '{{new string('b', 64)}}'
+                    HostFingerprint = 'test-host-fingerprint'
+                    CorrectnessFlagsJson = '{"payloadValid":true,"protocolValid":true,"timedOut":false,"ownershipValid":true,"terminalValid":true,"violationCodes":[]}'
+                    AdditionalAnalysisExclusionFlags = @('target_health_invalid', 'generator_health_invalid')
+                    ScenarioId = 'quic.transport.stream-throughput.1mb'
+                    Connections = 1
+                    StreamsPerConnection = 1
+                    WarmupMicros = 0
+                    MeasurementMicros = 1000
+                    RepositoryRoot = {{AdaptiveRuntimePolicyScriptTestSupport.QuotePowerShellLiteral(repoRoot)}}
+                    RepositoryCommit = '0123456789abcdef0123456789abcdef01234567'
+                }
+                & {{AdaptiveRuntimePolicyScriptTestSupport.QuotePowerShellLiteral(exporterScriptPath)}} @parameters
+                """;
             AdaptiveRuntimePolicyScriptTestSupport.ProcessResult result =
-                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
-                    "eng/adaptive-runtime/Convert-AdaptiveRuntimeApplicationSendTurnProvenance.ps1",
-                    "-RawProvenancePath", AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
-                        "tests/fixtures/adaptive-runtime-policy/application-send-turn-provenance.raw.example.jsonl"),
-                    "-OutputDirectory", outputDirectory,
-                    "-DatasetId", "send-turn-test-dataset",
-                    "-CampaignId", "send-turn-test-campaign",
-                    "-RunId", "send-turn-test-run",
-                    "-CellId", "send-turn-test-cell",
-                    "-SampleId", "send-turn-test-sample",
-                    "-ExpectedPolicy", "legacy_current",
-                    "-BenchmarkSha256", new string('a', 64),
-                    "-RuntimeSha256", new string('b', 64),
-                    "-HostFingerprint", "test-host-fingerprint",
-                    "-CorrectnessFlagsJson", "{\"payloadValid\":true,\"protocolValid\":true,\"timedOut\":false,\"ownershipValid\":true,\"terminalValid\":true,\"violationCodes\":[]}",
-                    "-AdditionalAnalysisExclusionFlags", "target_health_invalid", "generator_health_invalid",
-                    "-ScenarioId", "quic.transport.stream-throughput.1mb",
-                    "-Connections", "1",
-                    "-StreamsPerConnection", "1",
-                    "-WarmupMicros", "0",
-                    "-MeasurementMicros", "1000",
-                    "-RepositoryRoot", repoRoot,
-                    "-RepositoryCommit", "0123456789abcdef0123456789abcdef01234567");
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellCommand(command);
 
             Assert.Equal(0, result.ExitCode);
             string rowPath = Assert.Single(Directory.GetFiles(outputDirectory, "construction-row-*.json"));
@@ -86,7 +93,7 @@ public sealed class REQ_QUIC_CRT_0174
             Assert.Equal("forced", root.GetProperty("constructionPolicyState").GetProperty("selectionSource").GetString());
             Assert.Equal(
                 ["generator_health_invalid", "target_health_invalid"],
-                root.GetProperty("analysisExclusionFlags").EnumerateArray().Select(static value => value.GetString()).ToArray());
+                root.GetProperty("analysisExclusionFlags").EnumerateArray().Select(static value => value.GetString()!).ToArray());
             Assert.Equal(
                 Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(
                     AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
