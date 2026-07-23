@@ -223,6 +223,7 @@ public sealed class DnsServiceBindingSelectionTests
 
     [Theory]
     [InlineData("https://resolver.example/dns-query{?dns}")]
+    [InlineData("//resolver.example/dns-query{?dns}")]
     [InlineData("/dns-query")]
     [InlineData("")]
     [Requirement("RFC9461-S5-P1-R01")]

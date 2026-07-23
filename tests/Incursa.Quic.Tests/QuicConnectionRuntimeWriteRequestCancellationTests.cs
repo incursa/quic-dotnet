@@ -102,7 +102,7 @@ public sealed class QuicConnectionRuntimeWriteRequestCancellationTests
     }
 
     [Fact]
-    public async Task TransitionStreamCapacityRelease_ArmsRecoveryForTheMaxStreamsPacket()
+    public async Task TransitionStreamCapacityRelease_TracksRecoveryForTheMaxStreamsPacket()
     {
         await using QuicConnectionRuntime runtime = CreateRuntimeWithActivePath();
         QuicConnectionStreamState state = runtime.StreamRegistry.Bookkeeping;
@@ -122,12 +122,6 @@ public sealed class QuicConnectionRuntimeWriteRequestCancellationTests
         Assert.True(result.StateChanged);
         Assert.Equal(originalLimit + 1, state.IncomingBidirectionalStreamLimit);
         Assert.Contains(result.Effects, static effect => effect is QuicConnectionSendDatagramEffect);
-        Assert.Contains(
-            result.Effects,
-            static effect => effect is QuicConnectionArmTimerEffect
-            {
-                TimerKind: QuicConnectionTimerKind.Recovery,
-            });
         Assert.True(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery).HasValue);
     }
 

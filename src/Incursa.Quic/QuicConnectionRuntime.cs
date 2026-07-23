@@ -191,6 +191,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private Exception? inboundStreamQueueCompletionException;
     private Exception? inboundDatagramQueueCompletionException;
     private Func<QuicConnectionEvent, bool>? localApiEventDispatcher;
+    private TaskCompletionSource? localCloseDispatchCompletion;
     private Func<bool>? streamCapacityReleaseDispatcher;
     private Func<bool>? flowControlCreditUpdateDispatcher;
     private Func<long, QuicStreamType, bool>? streamOpenDispatcher;
@@ -1747,6 +1748,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal Func<QuicConnectionEvent, bool>? LocalApiEventDispatcher => localApiEventDispatcher;
 
+    internal Task? PendingLocalCloseDispatch => Volatile.Read(ref localCloseDispatchCompletion)?.Task;
+
     internal Action<int, int>? StreamCapacityObserver => streamCapacityObserver;
 
     internal QuicInitialPacketProtection? InitialPacketProtection => initialPacketProtection;
@@ -2038,6 +2041,27 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         flowControlCreditUpdateDispatcher = null;
         streamOpenDispatcher = null;
         streamWriteDispatcher = null;
+    }
+
+    internal Task BeginLocalCloseDispatch()
+    {
+        TaskCompletionSource completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        TaskCompletionSource? existing = Interlocked.CompareExchange(
+            ref localCloseDispatchCompletion,
+            completion,
+            comparand: null);
+        return (existing ?? completion).Task;
+    }
+
+    internal void CompleteLocalCloseDispatch()
+    {
+        Volatile.Read(ref localCloseDispatchCompletion)?.TrySetResult();
+    }
+
+    internal void FailLocalCloseDispatch(Exception exception)
+    {
+        ArgumentNullException.ThrowIfNull(exception);
+        Volatile.Read(ref localCloseDispatchCompletion)?.TrySetException(exception);
     }
 
     internal void SetStreamCapacityReleaseDispatcher(Func<bool> dispatcher)

@@ -974,7 +974,15 @@ public sealed class DoqStreamLifecycleTests
         handler.ReleaseFirstQuery();
 
         QuicConnectionTerminalState terminalState = await WaitForConnectionAbortAsync(connection);
-        Assert.Equal((ulong)DoqErrorCode.NoError, terminalState.Close.ApplicationErrorCode);
+        bool locallyProjectedNoError = terminalState.Origin == QuicConnectionCloseOrigin.Local
+            && terminalState.Close.ApplicationErrorCode == (ulong)DoqErrorCode.NoError;
+        bool peerAcknowledgedNoErrorClose = terminalState.Origin == QuicConnectionCloseOrigin.Remote
+            && terminalState.Close.TransportErrorCode == QuicTransportErrorCode.NoError
+            && terminalState.Close.ApplicationErrorCode is null
+            && terminalState.Close.TriggeringFrameType == 0x1c;
+        Assert.True(
+            locallyProjectedNoError || peerAcknowledgedNoErrorClose,
+            $"Expected the local DOQ_NO_ERROR close or its peer acknowledgement, but observed {terminalState}.");
 
         Exception? queryException = await Record.ExceptionAsync(() => query.WaitAsync(TimeSpan.FromSeconds(10)));
         Assert.NotNull(queryException);

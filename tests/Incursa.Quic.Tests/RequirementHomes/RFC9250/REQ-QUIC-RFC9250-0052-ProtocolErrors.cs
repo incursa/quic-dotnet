@@ -338,7 +338,8 @@ public sealed class REQ_QUIC_RFC9250_0052_ProtocolErrors
         string lifecycleTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs");
 
         Assert.Contains("CloseAsync((long)DoqErrorCode.NoError", client, StringComparison.Ordinal);
-        Assert.Contains("Assert.Equal((ulong)DoqErrorCode.NoError", lifecycleTests, StringComparison.Ordinal);
+        Assert.Contains("locallyProjectedNoError", lifecycleTests, StringComparison.Ordinal);
+        Assert.Contains("terminalState.Close.ApplicationErrorCode == (ulong)DoqErrorCode.NoError", lifecycleTests, StringComparison.Ordinal);
     }
 
     private static string ReadRepositoryFile(string relativePath)
