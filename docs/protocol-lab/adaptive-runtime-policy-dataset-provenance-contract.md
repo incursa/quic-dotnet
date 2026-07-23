@@ -10,8 +10,13 @@ The offline dataset contains one row per bounded connection epoch. Rows are
 generated from forced-policy and shadow campaigns so offline analysis can
 compare policies without asking production traffic to explore.
 
-The row schema is
+The general epoch row schema is
 [`../../schemas/adaptive-runtime-policy-epoch-dataset-v1.schema.json`](../../schemas/adaptive-runtime-policy-epoch-dataset-v1.schema.json).
+An axis that has only connection-construction provenance and no controller epoch
+snapshot, currently `application_send_turn_planning`, instead uses the distinct
+[`../../schemas/adaptive-runtime-policy-construction-dataset-v1.schema.json`](../../schemas/adaptive-runtime-policy-construction-dataset-v1.schema.json).
+It is a provenance join record, not an epoch row, and must never be substituted
+for one in epoch-based analysis.
 
 ## Row Semantics
 

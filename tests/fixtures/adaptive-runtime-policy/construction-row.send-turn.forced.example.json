@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "adaptive-runtime-policy-construction-dataset-v1",
+  "datasetId": "adaptive-send-turn-forced-dataset-001",
+  "rowId": "sample-a-connection-0001-construction",
+  "campaignId": "adaptive-send-turn-local-001",
+  "runId": "adaptive-send-turn-local-001-duplex-64kb-x1-s16-abba",
+  "cellId": "duplex-64kb-x1-s16",
+  "sampleId": "sample-1-A-legacy_current",
+  "repetition": 0,
+  "connectionKey": "connection-0001",
+  "axisId": "application_send_turn_planning",
+  "constructionPolicyState": {
+    "provenanceContractVersion": "adaptive-runtime-application-send-turn-provenance-v1",
+    "ruleVersion": "application-send-turn-force-v1",
+    "appliedPolicy": "legacy_current",
+    "selectionSource": "forced"
+  },
+  "correctnessFlags": {
+    "payloadValid": true,
+    "protocolValid": true,
+    "timedOut": false,
+    "ownershipValid": true,
+    "terminalValid": true,
+    "violationCodes": []
+  },
+  "provenance": {
+    "repositoryCommit": "6565779f",
+    "repositoryDirty": false,
+    "benchmarkSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "runtimeSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "hostFingerprint": "fixture-host|Windows|12",
+    "resultSchemaVersion": "adaptive-runtime-policy-local-result-v1",
+    "sourceArtifactPath": "fixture-artifacts/application-send-turn-provenance.raw.jsonl",
+    "sourceArtifactSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "transformation": {
+      "name": "adaptive-runtime-construction-provenance-export",
+      "version": "1.0.0",
+      "codeCommit": "6565779f",
+      "inputSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "outputSha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+  },
+  "workloadAnalysisOnly": {
+    "excludedFromProductionFeatures": true,
+    "scenarioId": "quic.transport.duplex-streams-peer-matrix",
+    "requestedConnections": 1,
+    "effectiveConnections": 1,
+    "requestedStreamsPerConnection": 16,
+    "effectiveStreamsPerConnection": 16,
+    "requestedConcurrency": 16,
+    "effectiveConcurrency": 16,
+    "warmupMicros": 2000000,
+    "measurementMicros": 5000000
+  },
+  "analysisExclusionFlags": ["none"]
+}

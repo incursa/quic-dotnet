@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-policy-construction-dataset-v1.schema.json",
+  "title": "Adaptive Runtime Policy Construction Provenance Dataset Row v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "datasetId", "rowId", "campaignId", "runId", "cellId", "sampleId", "repetition", "connectionKey", "axisId", "constructionPolicyState", "correctnessFlags", "provenance", "workloadAnalysisOnly", "analysisExclusionFlags"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "adaptive-runtime-policy-construction-dataset-v1" },
+    "datasetId": { "$ref": "#/$defs/nonEmptyString" },
+    "rowId": { "$ref": "#/$defs/nonEmptyString" },
+    "campaignId": { "$ref": "#/$defs/nonEmptyString" },
+    "runId": { "$ref": "#/$defs/nonEmptyString" },
+    "cellId": { "$ref": "#/$defs/nonEmptyString" },
+    "sampleId": { "$ref": "#/$defs/nonEmptyString" },
+    "repetition": { "type": "integer", "minimum": 0 },
+    "connectionKey": { "$ref": "#/$defs/nonEmptyString" },
+    "axisId": { "type": "string", "const": "application_send_turn_planning" },
+    "constructionPolicyState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provenanceContractVersion", "ruleVersion", "appliedPolicy", "selectionSource"],
+      "properties": {
+        "provenanceContractVersion": { "type": "string", "const": "adaptive-runtime-application-send-turn-provenance-v1" },
+        "ruleVersion": { "type": "string", "const": "application-send-turn-force-v1" },
+        "appliedPolicy": { "$ref": "#/$defs/policyValue" },
+        "selectionSource": { "type": "string", "const": "forced" }
+      }
+    },
+    "correctnessFlags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["payloadValid", "protocolValid", "timedOut", "ownershipValid", "terminalValid", "violationCodes"],
+      "properties": {
+        "payloadValid": { "type": "boolean" },
+        "protocolValid": { "type": "boolean" },
+        "timedOut": { "type": "boolean" },
+        "ownershipValid": { "type": "boolean" },
+        "terminalValid": { "type": "boolean" },
+        "violationCodes": { "type": "array", "items": { "$ref": "#/$defs/nonEmptyString" } }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repositoryCommit", "repositoryDirty", "benchmarkSha256", "runtimeSha256", "hostFingerprint", "resultSchemaVersion", "sourceArtifactPath", "sourceArtifactSha256", "transformation"],
+      "properties": {
+        "repositoryCommit": { "type": "string", "pattern": "^[0-9a-fA-F]{7,40}$" },
+        "repositoryDirty": { "type": "boolean" },
+        "benchmarkSha256": { "$ref": "#/$defs/sha256" },
+        "runtimeSha256": { "$ref": "#/$defs/sha256" },
+        "hostFingerprint": { "$ref": "#/$defs/nonEmptyString" },
+        "resultSchemaVersion": { "type": "string", "const": "adaptive-runtime-policy-local-result-v1" },
+        "sourceArtifactPath": { "$ref": "#/$defs/nonEmptyString" },
+        "sourceArtifactSha256": { "$ref": "#/$defs/sha256" },
+        "transformation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "version", "codeCommit", "inputSha256", "outputSha256"],
+          "properties": {
+            "name": { "type": "string", "const": "adaptive-runtime-construction-provenance-export" },
+            "version": { "type": "string", "const": "1.0.0" },
+            "codeCommit": { "type": "string", "pattern": "^[0-9a-fA-F]{7,40}$" },
+            "inputSha256": { "$ref": "#/$defs/sha256" },
+            "outputSha256": { "$ref": "#/$defs/sha256" }
+          }
+        }
+      }
+    },
+    "workloadAnalysisOnly": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["excludedFromProductionFeatures", "scenarioId", "requestedConnections", "effectiveConnections", "requestedStreamsPerConnection", "effectiveStreamsPerConnection", "requestedConcurrency", "effectiveConcurrency", "warmupMicros", "measurementMicros"],
+      "properties": {
+        "excludedFromProductionFeatures": { "type": "boolean", "const": true },
+        "scenarioId": { "$ref": "#/$defs/nonEmptyString" },
+        "requestedConnections": { "type": "integer", "minimum": 1 },
+        "effectiveConnections": { "type": "integer", "minimum": 1 },
+        "requestedStreamsPerConnection": { "type": "integer", "minimum": 1 },
+        "effectiveStreamsPerConnection": { "type": "integer", "minimum": 1 },
+        "requestedConcurrency": { "type": "integer", "minimum": 1 },
+        "effectiveConcurrency": { "type": "integer", "minimum": 1 },
+        "warmupMicros": { "type": "integer", "minimum": 0 },
+        "measurementMicros": { "type": "integer", "exclusiveMinimum": 0 }
+      }
+    },
+    "analysisExclusionFlags": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "enum": ["correctness_failed", "requested_effective_mismatch", "binary_identity_missing", "binary_changed", "target_health_invalid", "generator_health_invalid", "policy_mismatch", "source_join_failed", "none"] }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "sha256": { "type": "string", "pattern": "^[0-9a-fA-F]{64}$" },
+    "policyValue": { "type": "string", "enum": ["legacy_current", "conservative"] }
+  }
+}
