@@ -123,6 +123,26 @@ BenchmarkDotNet version was `0.15.8`; host runtime was `.NET 10.0.10` and SDK
 was `10.0.204`. No production rule, threshold, or active behavior changed from
 this measurement.
 
+## Full Release Verification
+
+The complete Release suite was invoked once from the clean `c878328a`
+checkpoint with:
+
+```powershell
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --disable-build-servers --nologo -v:minimal
+```
+
+It completed in 10m36s with 9,793 passed, 4 skipped, and 1 failed. The failed
+test was
+`Http3MinimalServerTests.RequestDataBeforeHeaders_ClosesConnectionWithFrameUnexpected`:
+it timed out waiting for the peer HTTP/3 connection close at
+`Http3MinimalServerTests.cs:2851`. This is retained as a full-suite
+correctness blocker; it is not attributed to, and does not validate, the
+application-send-turn policy axis. The original stdout and stderr logs remain
+at `.artifacts\adaptive-runtime\verification\full-release-20260723T1933Z.stdout.log`
+and `.artifacts\adaptive-runtime\verification\full-release-20260723T1933Z.stderr.log`.
+No isolated rerun has been used to replace or erase this result.
+
 ## Remaining Gate
 
 Repeat bounded c1/c4 local forced cells from the corrected runner on an
