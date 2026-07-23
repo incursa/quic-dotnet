@@ -1,0 +1,17 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0065",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "Application-send turn campaign provenance work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add bounded connection-construction provenance and axis-specific local-campaign validation for the existing application-send turn forced-policy seam.",
+  "related_artifacts": ["ARC-QUIC-CRT-0064"],
+  "design_links": ["ARC-QUIC-CRT-0064"],
+  "verification_links": ["VER-QUIC-CRT-0066"],
+  "addresses": ["REQ-QUIC-CRT-0174"],
+  "planned_changes": "Introduce a versioned bounded provenance record, host emission and retention, local-result axis support, checksum-verified connection joins, and invalid-contract/exclusion handling. Update schemas and deterministic tests while preserving receive-credit rows unchanged.",
+  "verification_plan": "Build Release; test every forced value and host mismatch; test missing, duplicate, and contradictory joins; validate schema and checksums; run the focused BenchmarkDotNet mechanism suite; then run only local forced-policy cells after the contract is implemented.",
+  "out_of_scope": ["Active selection", "planner candidate tuning", "shadow recommendation", "ProtocolLab deployment", "reclassification or deletion of prior receive-credit evidence"]
+}

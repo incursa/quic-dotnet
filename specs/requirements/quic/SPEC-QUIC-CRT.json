@@ -2834,6 +2834,24 @@
         "This is a measurement-only force seam; it does not authorize active selection or a new planner algorithm.",
         "Campaign result and epoch provenance integration remains a subsequent bounded slice."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0174",
+      "title": "Record application-send turn campaign provenance without reusing receive-credit evidence",
+      "statement": "The permanent campaign contract for application_send_turn_planning MUST record the canonical axis identifier, closed legacy_current and conservative policy identities, forced and applied identity, a versioned connection-construction provenance record, and immutable source-artifact and binary identities; MUST retain host-reported identity confirmation; MUST classify missing, contradictory, or mismatched identity evidence as invalid_contract or an explicit retained exclusion; MUST keep receive-credit epoch records attributable only to receive_credit_publication; and MUST NOT use workload shape, scenario names, payload constants, requested concurrency, peer identity, URLs, or application identity as production controller inputs.",
+      "trace": {
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-axis-roadmap.md",
+          "docs/design/adaptive-runtime-policy-observation-schema.md",
+          "docs/protocol-lab/adaptive-runtime-policy-local-campaign.md",
+          "docs/protocol-lab/adaptive-runtime-policy-dataset-provenance-contract.md",
+          "ARC-QUIC-CRT-0064"
+        ]
+      },
+      "notes": [
+        "This requirement authorizes provenance and campaign plumbing only; it does not authorize active selection, a new planner implementation, or shadow recommendation logic.",
+        "A receive-credit epoch record must never be relabeled as application-send turn evidence merely because both identities were present in one process."
+      ]
     }
   ]
 }

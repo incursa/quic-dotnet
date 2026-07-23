@@ -187,6 +187,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-CRT-0052.json`](ARC-QUIC-CRT-0052.json): canonical CRT QUIC and HTTP/3 metrics boundary architecture source
 - [`ARC-QUIC-CRT-0059.json`](ARC-QUIC-CRT-0059.json): canonical CRT adaptive runtime receive-credit shadow foundation architecture source
 - [`ARC-QUIC-CRT-0062.json`](ARC-QUIC-CRT-0062.json): canonical CRT adaptive runtime policy catalog, phase-transition schedule, and provenance architecture source
+- [`ARC-QUIC-CRT-0064.json`](ARC-QUIC-CRT-0064.json): canonical application-send turn campaign provenance architecture source
 
 ## Notes
 

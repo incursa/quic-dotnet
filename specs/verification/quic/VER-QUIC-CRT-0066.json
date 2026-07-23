@@ -1,0 +1,16 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0066",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Application-send turn campaign provenance verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused deterministic provenance tests, schema/checksum validation, Release build, and BenchmarkDotNet mechanism checks.",
+  "related_artifacts": ["ARC-QUIC-CRT-0064", "WI-QUIC-CRT-0065"],
+  "verifies": ["REQ-QUIC-CRT-0174"],
+  "scope": "Verify provenance attribution and campaign contract only; do not claim a policy winner or active behavior.",
+  "expected_result": "Each forced application-send turn connection has an immutable canonical-axis record; host, result, and connection identities agree; invalid or unmatched provenance remains retained and ineligible; receive-credit epochs are not relabeled.",
+  "procedure": ["Build relevant projects in Release.", "Run focused provenance, schema, and force-mode tests.", "Run the application-send turn BenchmarkDotNet mechanism suite.", "Run local forced cells only after deterministic contract tests pass."],
+  "evidence": []
+}
