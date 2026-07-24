@@ -114,7 +114,7 @@ public sealed class QuicListenerHostSendResilienceTests
                     Interlocked.Increment(ref droppedSends);
                     Interlocked.Exchange(
                         ref droppedFinPacketNumber,
-                        checked((long)GetLatestApplicationPacketNumber(serverConnection.Runtime)));
+                        checked((long)GetLatestApplicationPacketNumber(serverConnection!.Runtime)));
                     Volatile.Write(ref droppedFin, 1);
 
                     throw new SocketException((int)SocketError.NoBufferSpaceAvailable);
