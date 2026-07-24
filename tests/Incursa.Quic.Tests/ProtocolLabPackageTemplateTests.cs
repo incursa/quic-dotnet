@@ -123,9 +123,11 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Equal("__SOURCE_REPOSITORY__", internalRoot.GetProperty("sourceRepository").GetString());
         Assert.Equal("__SOURCE_COMMIT__", internalRoot.GetProperty("sourceCommit").GetString());
         var environments = internalRoot.GetProperty("environments").EnumerateArray().ToArray();
-        Assert.Equal(2, environments.Length);
+        Assert.Equal(4, environments.Length);
         AssertPackageEnvironment(environments, "linux", "x64");
+        AssertPackageEnvironment(environments, "linux", "arm64");
         AssertPackageEnvironment(environments, "windows", "x64");
+        AssertPackageEnvironment(environments, "macos", "arm64");
         var executionDependencies = internalRoot.GetProperty("dependencies");
         Assert.True(executionDependencies.GetProperty("requiresDotNet").GetBoolean());
         Assert.True(executionDependencies.GetProperty("requiresPwsh").GetBoolean());
@@ -290,6 +292,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("adaptiveRuntimeReceiveCreditPolicy", builderScript);
         Assert.Contains("adaptiveRuntimeApplicationSendTurnPolicy", builderScript);
         Assert.Contains("rawQuicDebugLogging", builderScript);
+        Assert.Contains("\"linux-arm64\" { return \"linux/arm64\" }", builderScript);
+        Assert.Contains("\"osx-arm64\" { return \"macos/arm64\" }", builderScript);
         Assert.Contains("$resolvedWorkRoot", builderScript);
         Assert.Contains("Join-Path $resolvedWorkRoot \"package-source/", builderScript);
         Assert.Contains("Join-Path $resolvedWorkRoot \"publish/", builderScript);
@@ -309,6 +313,18 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains(
             "\"conservative\", \"observe_only\", \"shadow\"",
             builderScript);
+
+        var rawLauncher = File.ReadAllText(Path.Combine(
+            repoRoot,
+            "eng",
+            "protocol-lab",
+            "templates",
+            "raw-quic",
+            "scripts",
+            "run-current-platform.ps1"));
+        Assert.Contains("Architecture]::Arm64", rawLauncher);
+        Assert.Contains("linux-$architectureName", rawLauncher);
+        Assert.Contains("osx-$architectureName", rawLauncher);
 
         Assert.True(File.Exists(Path.Combine(repoRoot, "eng", "protocol-lab", "src", "Incursa.ProtocolLab.Adapters.IncursaRawQuic", "Incursa.ProtocolLab.Adapters.IncursaRawQuic.csproj")));
         Assert.True(File.Exists(Path.Combine(repoRoot, "eng", "protocol-lab", "servers", "IncursaRawQuicServer", "IncursaRawQuicServer.csproj")));

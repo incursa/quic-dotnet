@@ -14,8 +14,28 @@
       }
     },
     {
+      "os": "linux",
+      "arch": "arm64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "scripts/run-current-platform.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
       "os": "windows",
       "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "scripts/run-current-platform.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "macos",
+      "arch": "arm64",
       "entrypoint": {
         "kind": "pwsh",
         "path": "scripts/run-current-platform.ps1",

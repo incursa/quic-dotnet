@@ -1,12 +1,35 @@
 $ErrorActionPreference = "Stop"
 
 function Get-PackageRuntimeIdentifier {
+    $architecture = [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture
+    $architectureName = if ($architecture -eq [System.Runtime.InteropServices.Architecture]::X64) {
+        "x64"
+    }
+    elseif ($architecture -eq [System.Runtime.InteropServices.Architecture]::Arm64) {
+        "arm64"
+    }
+    else {
+        throw "Unsupported architecture for quic-dotnet raw QUIC ProtocolLab package: $architecture"
+    }
+
     if ($IsWindows) {
-        return "win-x64"
+        if ($architectureName -ne "x64") {
+            throw "Unsupported Windows architecture for quic-dotnet raw QUIC ProtocolLab package: $architectureName"
+        }
+
+        return "win-$architectureName"
     }
 
     if ($IsLinux) {
-        return "linux-x64"
+        return "linux-$architectureName"
+    }
+
+    if ($IsMacOS) {
+        if ($architectureName -ne "arm64") {
+            throw "Unsupported macOS architecture for quic-dotnet raw QUIC ProtocolLab package: $architectureName"
+        }
+
+        return "osx-$architectureName"
     }
 
     throw "Unsupported OS for quic-dotnet raw QUIC ProtocolLab package."

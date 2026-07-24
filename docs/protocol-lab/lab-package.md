@@ -8,7 +8,13 @@ This repo can produce trusted internal ProtocolLab package v2 implementation arc
 
 The default package target is `samples/Incursa.Http3.Samples.TechEmpower`. It is staged as the ProtocolLab implementation `quic-dotnet-dev` and supports HTTP/3 application scenarios only, including deterministic 1KB, 64KB, and 1MB byte-payload downloads.
 
-Raw QUIC uses a separate package target, `quic-dotnet-raw-dev`. It packages framework-dependent Linux x64 and Windows x64 raw QUIC adapter/server payloads owned under `eng/protocol-lab` and built against this working tree, then launches the right payload through a package-local PowerShell entrypoint. Do not use `quic-dotnet-dev` for raw QUIC validation.
+Raw QUIC uses a separate package target, `quic-dotnet-raw-dev`. It packages
+framework-dependent Linux x64 and Windows x64 raw QUIC adapter/server payloads
+by default. Explicit Linux ARM64 and macOS ARM64 package payloads are also
+supported for architecture-specific campaigns. All payloads are owned under
+`eng/protocol-lab`, built against this working tree, and selected through a
+package-local PowerShell entrypoint. Do not use `quic-dotnet-dev` for raw QUIC
+validation.
 
 The package and run helpers enforce that separation. `quic-dotnet-dev` stays on the HTTP/3 suite/protocol/scenario declarations in its package template, and `quic-dotnet-raw-dev` accepts only the raw QUIC suite, protocol `quic`, and the currently declared raw scenarios. H3-shaped raw invocations are rejected before packaging, upload, or controller submission.
 
@@ -42,7 +48,11 @@ pwsh ./eng/protocol-lab/New-QuicDotNetProtocolLabPackage.ps1 `
   -Force
 ```
 
-The raw target builds both `linux-x64` and `win-x64` payloads by default. Pass `-RuntimeIdentifier linux-x64` or `-RuntimeIdentifier win-x64` when you need a single-platform package.
+The raw target builds both `linux-x64` and `win-x64` payloads by default. Pass
+one or more explicit values from `linux-x64`, `win-x64`, `linux-arm64`, and
+`osx-arm64` for a platform cohort. ARM64 payload support proves package
+materialization only; the returned controller topology and platform-specific
+correctness gates still decide whether a row is evidence-eligible.
 
 For an adaptive-runtime application-send turn campaign, stamp exactly one
 internal treatment into the raw package:
@@ -137,4 +147,7 @@ For raw QUIC, the run helper also builds and uploads the public ProtocolLab raw 
 - Scenario packs and test-executor packages are supplied separately by public ProtocolLab package tooling or another package producer; quic-dotnet only produces implementation packages.
 - The `-ProtocolLabRoot` argument is still required for neutral package tooling, submission scripts, schemas, and shared public contract/model projects. Raw QUIC implementation source is local to quic-dotnet and is not resolved from public production adapter projects. Package project paths must resolve under the quic-dotnet repository root.
 - `quic-dotnet-dev` advertises HTTP/3 only, including `http3.payload.bytes.1kb`.
-- `quic-dotnet-raw-dev` is the only package target for raw QUIC lab validation. Its default package carries `linux-x64` and `win-x64` framework-dependent payloads without duplicate self-contained .NET runtime trees.
+- `quic-dotnet-raw-dev` is the only package target for raw QUIC lab validation.
+  Its default package carries `linux-x64` and `win-x64`; explicit
+  `linux-arm64` and `osx-arm64` payloads are supported without duplicate
+  self-contained .NET runtime trees.

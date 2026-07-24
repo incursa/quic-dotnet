@@ -297,7 +297,9 @@ function Get-ProtocolLabEnvironmentKey {
 
     switch ($RuntimeIdentifier) {
         "linux-x64" { return "linux/x64" }
+        "linux-arm64" { return "linux/arm64" }
         "win-x64" { return "windows/x64" }
+        "osx-arm64" { return "macos/arm64" }
         default {
             throw "RuntimeIdentifier '$RuntimeIdentifier' does not have a ProtocolLab package environment mapping."
         }
