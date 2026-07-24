@@ -16,7 +16,8 @@ internal readonly record struct PendingApplicationSendRequest(
     int StreamPayloadOffset = 0,
     bool ContainsRawStreamData = false,
     ulong StreamOffset = 0,
-    bool IsFinal = false)
+    bool IsFinal = false,
+    QuicBufferCopyLifetimeToken LifetimeToken = default)
 {
     internal bool TryGetStreamFrame(out QuicStreamFrame frame)
     {
@@ -97,6 +98,7 @@ internal sealed class QuicApplicationSendQueue
     private long retainedCapacityBytes;
     private ulong? oldestEnqueuedAtMicros;
     private bool pendingRequestsOrdered = true;
+    private IQuicBufferCopyOperationObserver? bufferCopyOperationObserver;
 
     internal QuicApplicationSendQueue(long initialSequence = 0)
     {
@@ -104,6 +106,20 @@ internal sealed class QuicApplicationSendQueue
     }
 
     public int Count => pendingRequests.Count;
+
+    internal void ConfigureBufferCopyOperationObserver(
+        IQuicBufferCopyOperationObserver observer)
+    {
+        ArgumentNullException.ThrowIfNull(observer);
+        if (Interlocked.CompareExchange(
+                ref bufferCopyOperationObserver,
+                observer,
+                comparand: null) is not null)
+        {
+            throw new InvalidOperationException(
+                "The application-send queue buffer-copy observer has already been configured.");
+        }
+    }
 
     internal QuicRetentionSnapshot CaptureRetentionSnapshot(
         ulong? nowMicros = null,
@@ -365,7 +381,8 @@ internal sealed class QuicApplicationSendQueue
         ulong streamOffset,
         bool isFinal,
         ulong firstEnqueuedAtMicros = 0,
-        QuicApplicationSendQueueCause queueCause = QuicApplicationSendQueueCause.OversizedWrite)
+        QuicApplicationSendQueueCause queueCause = QuicApplicationSendQueueCause.OversizedWrite,
+        QuicBufferCopyLifetimeToken lifetimeToken = default)
     {
         PendingApplicationSendRequest request = new(
             TakeNextSequence(),
@@ -378,7 +395,8 @@ internal sealed class QuicApplicationSendQueue
             StreamPayloadOffset: 0,
             ContainsRawStreamData: true,
             StreamOffset: streamOffset,
-            IsFinal: isFinal);
+            IsFinal: isFinal,
+            LifetimeToken: lifetimeToken);
 
         if (pendingRequestsOrdered && pendingRequests.Count < MaintainedOrderThreshold)
         {
@@ -446,7 +464,11 @@ internal sealed class QuicApplicationSendQueue
         return true;
     }
 
-    public bool TryReplaceQueuedWritePayload(long sequence, byte[] streamPayload, int streamPayloadLength)
+    public bool TryReplaceQueuedWritePayload(
+        long sequence,
+        byte[] streamPayload,
+        int streamPayloadLength,
+        QuicBufferCopyLifetimeToken lifetimeToken = default)
     {
         for (int index = 0; index < pendingRequests.Count; index++)
         {
@@ -456,12 +478,15 @@ internal sealed class QuicApplicationSendQueue
                 continue;
             }
 
-            QuicBufferPool.ReturnBytes(queuedWrite.StreamPayload);
+            ReleasePayload(
+                in queuedWrite,
+                QuicBufferReleaseReason.Replaced);
             pendingRequests[index] = queuedWrite with
             {
                 StreamPayload = streamPayload,
                 StreamPayloadLength = streamPayloadLength,
                 StreamPayloadOffset = 0,
+                LifetimeToken = lifetimeToken,
             };
             retainedCapacityBytes +=
                 streamPayload.Length - queuedWrite.StreamPayload.Length;
@@ -636,7 +661,11 @@ internal sealed class QuicApplicationSendQueue
     public bool TryRemoveQueuedWritesForStream(ulong streamId)
         => TryRemoveQueuedWritesForStream(streamId, returnPayloads: false);
 
-    public bool TryRemoveQueuedWritesForStream(ulong streamId, bool returnPayloads)
+    public bool TryRemoveQueuedWritesForStream(
+        ulong streamId,
+        bool returnPayloads,
+        QuicBufferReleaseReason releaseReason =
+            QuicBufferReleaseReason.Canceled)
     {
         bool removedAny = false;
         bool removedOldest = false;
@@ -649,7 +678,11 @@ internal sealed class QuicApplicationSendQueue
 
             if (returnPayloads)
             {
-                QuicBufferPool.ReturnBytes(pendingRequests[index].StreamPayload);
+                PendingApplicationSendRequest pendingWrite =
+                    pendingRequests[index];
+                ReleasePayload(
+                    in pendingWrite,
+                    releaseReason);
             }
 
             RecordRemoval(
@@ -668,7 +701,11 @@ internal sealed class QuicApplicationSendQueue
         return removedAny;
     }
 
-    public bool TryRemoveQueuedWrite(long sequence, bool returnPayloads = false)
+    public bool TryRemoveQueuedWrite(
+        long sequence,
+        bool returnPayloads = false,
+        QuicBufferReleaseReason releaseReason =
+            QuicBufferReleaseReason.Completed)
     {
         for (int index = 0; index < pendingRequests.Count; index++)
         {
@@ -680,7 +717,9 @@ internal sealed class QuicApplicationSendQueue
 
             if (returnPayloads)
             {
-                QuicBufferPool.ReturnBytes(pendingWrite.StreamPayload);
+                ReleasePayload(
+                    in pendingWrite,
+                    releaseReason);
             }
 
             bool removedOldest = false;
@@ -700,7 +739,9 @@ internal sealed class QuicApplicationSendQueue
 
     public bool TryRemoveQueuedWrites(
         ReadOnlySpan<PendingApplicationSendRequest> selectedWrites,
-        bool returnPayloads = false)
+        bool returnPayloads = false,
+        QuicBufferReleaseReason releaseReason =
+            QuicBufferReleaseReason.Completed)
     {
         bool removedAny = false;
         bool removedOldest = false;
@@ -715,7 +756,11 @@ internal sealed class QuicApplicationSendQueue
 
                 if (returnPayloads)
                 {
-                    QuicBufferPool.ReturnBytes(pendingRequests[index].StreamPayload);
+                    PendingApplicationSendRequest pendingWrite =
+                        pendingRequests[index];
+                    ReleasePayload(
+                        in pendingWrite,
+                        releaseReason);
                 }
 
                 RecordRemoval(
@@ -736,17 +781,49 @@ internal sealed class QuicApplicationSendQueue
         return removedAny;
     }
 
-    public void Clear()
+    public void Clear(
+        QuicBufferReleaseReason releaseReason =
+            QuicBufferReleaseReason.Terminal)
     {
         foreach (PendingApplicationSendRequest pendingWrite in pendingRequests)
         {
-            QuicBufferPool.ReturnBytes(pendingWrite.StreamPayload);
+            ReleasePayload(
+                in pendingWrite,
+                releaseReason);
         }
 
         pendingRequests.Clear();
         retainedCapacityBytes = 0;
         oldestEnqueuedAtMicros = null;
         pendingRequestsOrdered = true;
+    }
+
+    private void ReleasePayload(
+        in PendingApplicationSendRequest pendingWrite,
+        QuicBufferReleaseReason reason)
+    {
+        QuicBufferPool.ReturnBytes(pendingWrite.StreamPayload);
+        IQuicBufferCopyOperationObserver? observer =
+            bufferCopyOperationObserver;
+        if (observer is null || pendingWrite.LifetimeToken.IsEmpty)
+        {
+            return;
+        }
+
+        try
+        {
+            QuicBufferCopyLifetimeToken token =
+                pendingWrite.LifetimeToken;
+            observer.ObserveBufferRelease(
+                in token,
+                reason,
+                pendingWrite.StreamPayload.Length);
+        }
+        catch (Exception)
+        {
+            // Release evidence follows the authoritative pool return and
+            // cannot change queue ownership or send progress.
+        }
     }
 
     private void RecordEnqueue(

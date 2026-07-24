@@ -234,8 +234,9 @@ stream reset emits exactly one `Reset` release. Capacity reuse does not create
 a second token. Construction and release are retained as separate raw records
 joined by `connectionKey + operationSequence`; current schemas are
 `adaptive-runtime-buffer-copy-raw-v2` and
-`adaptive-runtime-buffer-release-raw-v2`, while the receive-only release v1
-schemas remain immutable. A bounded writer rejection emits
+`adaptive-runtime-buffer-release-raw-v3`. The receive-only release v1 and
+receive-plus-write-request release v2 schemas remain immutable. A bounded
+writer rejection emits
 `quic-buffer-evidence-export-failure-v1` and invalidates the evidence rather
 than changing ownership or runtime progress. The raw construction stream is
 limited to lifetimes that promise terminal-release correlation; all other
@@ -249,3 +250,15 @@ releases the old token before installing the new owner. Downstream copy,
 success, failure, cancellation, terminal completion, disposal, and defensive
 pool recycle use closed v2 release reasons, return the array first, clear the
 token exactly once, and keep a rejecting or throwing sink behavior-neutral.
+
+The oversized raw queue checkpoint implements the third item. The
+`oversized_raw_queue` construction now requests terminal correlation and
+places its compact token beside the existing `QueuedRawStreamData` owner in
+`PendingApplicationSendRequest`. Partial advancement preserves the token and
+original retained capacity. Successful formatting or combination emits
+`CopiedToNextOwner`; stream removal emits `Canceled`; replacement emits
+`Replaced`; and terminal or disposal clear emits its exact closed reason.
+Every release follows the authoritative pool return, and a rejecting or
+throwing evidence sink cannot change queue mutation or send progress. Release
+observation/raw v3 adds only this closed path; it does not make
+`buffer_copy_coalescing` forceable.

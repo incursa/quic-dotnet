@@ -2046,6 +2046,7 @@ internal sealed partial class QuicConnectionRuntime :
             sink as IQuicBufferReleaseEvidenceSink;
         sendRuntime.ConfigureBufferCopyOperationObserver(this);
         streamRegistry.Bookkeeping.ConfigureBufferCopyOperationObserver(this);
+        applicationSendQueue.ConfigureBufferCopyOperationObserver(this);
     }
 
     private void ConfigureQueuedSendBurstObservation(
@@ -2974,6 +2975,10 @@ internal sealed partial class QuicConnectionRuntime :
             QuicBufferCopyPath.ApplicationWriteRequest =>
                 reason is QuicBufferReleaseReason.Delivered
                     or QuicBufferReleaseReason.Reset,
+            QuicBufferCopyPath.OversizedRawQueue =>
+                reason is QuicBufferReleaseReason.Delivered
+                    or QuicBufferReleaseReason.Reset
+                    or QuicBufferReleaseReason.Recycled,
             _ => false,
         })
         {

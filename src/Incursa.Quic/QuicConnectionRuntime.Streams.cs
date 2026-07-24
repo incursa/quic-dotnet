@@ -867,17 +867,19 @@ internal sealed partial class QuicConnectionRuntime
                 QuicBufferPoolOwner.QueuedRawStreamData);
             committedStreamData.CopyTo(queuedStreamData);
             committedStreamDataSuffix.CopyTo(queuedStreamData.AsSpan(committedStreamData.Length));
-            TryPublishBufferCopyObservation(
-                QuicBufferCopyPath.OversizedRawQueue,
-                QuicBufferCopyOperation.Copy,
-                QuicBufferCopyDecisionBoundary.LogicalWriteAdmission,
-                requestId,
-                committedStreamDataLength,
-                committedStreamDataLength,
-                (committedStreamData.IsEmpty ? 0 : 1)
-                    + (committedStreamDataSuffix.IsEmpty ? 0 : 1),
-                committedStreamDataLength,
-                queuedStreamData.Length);
+            QuicBufferCopyLifetimeToken queuedStreamDataLifetimeToken =
+                TryPublishBufferCopyObservation(
+                    QuicBufferCopyPath.OversizedRawQueue,
+                    QuicBufferCopyOperation.Copy,
+                    QuicBufferCopyDecisionBoundary.LogicalWriteAdmission,
+                    requestId,
+                    committedStreamDataLength,
+                    committedStreamDataLength,
+                    (committedStreamData.IsEmpty ? 0 : 1)
+                        + (committedStreamDataSuffix.IsEmpty ? 0 : 1),
+                    committedStreamDataLength,
+                    queuedStreamData.Length,
+                    trackTerminalRelease: true);
             completion.ReleaseOwnedStreamData(
                 QuicBufferReleaseReason.CopiedToNextOwner);
 
@@ -894,6 +896,7 @@ internal sealed partial class QuicConnectionRuntime
                 finishWrites,
                 queuedStreamData,
                 committedStreamDataLength,
+                queuedStreamDataLifetimeToken,
                 retransmissionPending
                     ? QuicApplicationSendQueueCause.PendingRetransmission
                     : QuicApplicationSendQueueCause.OversizedWrite,
@@ -1178,7 +1181,11 @@ internal sealed partial class QuicConnectionRuntime
                 throw new InvalidOperationException("The connection runtime could not update the queued stream write after a partial send.");
             }
         }
-        else if (!applicationSendQueue.TryRemoveQueuedWrite(queuedWrite.Sequence, returnPayloads: true))
+        else if (!applicationSendQueue.TryRemoveQueuedWrite(
+            queuedWrite.Sequence,
+            returnPayloads: true,
+            releaseReason:
+                QuicBufferReleaseReason.CopiedToNextOwner))
         {
             throw new InvalidOperationException("The connection runtime could not remove the completed queued stream write.");
         }
@@ -1331,6 +1338,7 @@ internal sealed partial class QuicConnectionRuntime
         bool isFinal,
         byte[] streamData,
         int streamDataLength,
+        QuicBufferCopyLifetimeToken lifetimeToken,
         QuicApplicationSendQueueCause queueCause,
         long nowTicks,
         bool tryFlushPendingApplicationSendsAfterEnqueue,
@@ -1344,7 +1352,8 @@ internal sealed partial class QuicConnectionRuntime
             streamOffset,
             isFinal,
             GetElapsedMicros(nowTicks),
-            queueCause);
+            queueCause,
+            lifetimeToken);
 
         if (applicationSendQueue.Count == 1)
         {
@@ -1791,11 +1800,19 @@ internal sealed partial class QuicConnectionRuntime
                 combinedPayloadOwner = null;
                 if (hasOnlyQueuedWrite)
                 {
-                    applicationSendQueue.TryRemoveQueuedWrite(onlyQueuedWrite.Sequence, returnPayloads: true);
+                    applicationSendQueue.TryRemoveQueuedWrite(
+                        onlyQueuedWrite.Sequence,
+                        returnPayloads: true,
+                        releaseReason:
+                            QuicBufferReleaseReason.CopiedToNextOwner);
                 }
                 else
                 {
-                    applicationSendQueue.TryRemoveQueuedWrites(selectedWrites, returnPayloads: true);
+                    applicationSendQueue.TryRemoveQueuedWrites(
+                        selectedWrites,
+                        returnPayloads: true,
+                        releaseReason:
+                            QuicBufferReleaseReason.CopiedToNextOwner);
                 }
             }
             else if (hasOnlyQueuedWrite)
@@ -1805,7 +1822,11 @@ internal sealed partial class QuicConnectionRuntime
             else
             {
                 combinedPayloadOwner = null;
-                applicationSendQueue.TryRemoveQueuedWrites(selectedWrites, returnPayloads: true);
+                applicationSendQueue.TryRemoveQueuedWrites(
+                    selectedWrites,
+                    returnPayloads: true,
+                    releaseReason:
+                        QuicBufferReleaseReason.CopiedToNextOwner);
             }
 
             if (applicationSendQueue.Count == 0)
@@ -7116,7 +7137,10 @@ internal sealed partial class QuicConnectionRuntime
         CompletePendingStreamOpenRequests(completionException);
         CompletePendingStreamActionRequests(completionException);
         CompletePendingDatagramSendRequests(completionException);
-        applicationSendQueue.Clear();
+        applicationSendQueue.Clear(
+            IsDisposed
+                ? QuicBufferReleaseReason.Disposed
+                : QuicBufferReleaseReason.Terminal);
         pendingApplicationSendDelayDueTicks = null;
     }
 

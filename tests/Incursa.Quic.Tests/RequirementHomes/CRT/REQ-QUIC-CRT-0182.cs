@@ -865,6 +865,181 @@ public sealed class REQ_QUIC_CRT_0182
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void OversizedRawQueueReleaseCorrelatesSuccessfulHandoffAfterPartialAdvance()
+    {
+        RecordingOperationObserver observer = new();
+        QuicApplicationSendQueue queue = new();
+        queue.ConfigureBufferCopyOperationObserver(observer);
+        byte[] owner = QuicBufferPool.RentBytes(
+            64,
+            QuicBufferPoolOwner.QueuedRawStreamData);
+        QuicBufferCopyLifetimeToken token = new(
+            OperationSequence: 71,
+            QuicBufferCopyPath.OversizedRawQueue,
+            ConstructionTicks: 1,
+            RetainedCapacityBytes: (ulong)owner.Length);
+        queue.EnqueueRawStreamData(
+            streamId: 4,
+            priority: 0,
+            owner,
+            streamDataLength: 48,
+            streamOffset: 0,
+            isFinal: false,
+            lifetimeToken: token);
+        Assert.True(queue.TryGetOnlyQueuedWrite(
+            out PendingApplicationSendRequest pendingWrite));
+        Assert.True(queue.TryAdvanceQueuedRawStreamData(
+            pendingWrite.Sequence,
+            owner,
+            consumedDataLength: 16));
+
+        Assert.True(queue.TryRemoveQueuedWrite(
+            pendingWrite.Sequence,
+            returnPayloads: true,
+            QuicBufferReleaseReason.CopiedToNextOwner));
+
+        QuicBufferReleaseObservation release =
+            Assert.Single(observer.Releases);
+        Assert.Equal(token.OperationSequence, release.OperationSequence);
+        Assert.Equal(
+            QuicBufferCopyPath.OversizedRawQueue,
+            release.Path);
+        Assert.Equal(
+            QuicBufferReleaseReason.CopiedToNextOwner,
+            release.Reason);
+        Assert.Equal((ulong)owner.Length, release.ReleasedCapacityBytes);
+        Assert.Equal(0, queue.Count);
+    }
+
+    [Theory]
+    [InlineData((byte)QuicBufferReleaseReason.Canceled)]
+    [InlineData((byte)QuicBufferReleaseReason.Terminal)]
+    [InlineData((byte)QuicBufferReleaseReason.Disposed)]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void OversizedRawQueueReportsNonSuccessRelease(
+        byte reasonValue)
+    {
+        QuicBufferReleaseReason reason =
+            (QuicBufferReleaseReason)reasonValue;
+        RecordingOperationObserver observer = new();
+        QuicApplicationSendQueue queue = new();
+        queue.ConfigureBufferCopyOperationObserver(observer);
+        byte[] owner = QuicBufferPool.RentBytes(
+            32,
+            QuicBufferPoolOwner.QueuedRawStreamData);
+        QuicBufferCopyLifetimeToken token = new(
+            OperationSequence: 72,
+            QuicBufferCopyPath.OversizedRawQueue,
+            ConstructionTicks: 1,
+            RetainedCapacityBytes: (ulong)owner.Length);
+        queue.EnqueueRawStreamData(
+            streamId: 8,
+            priority: 0,
+            owner,
+            streamDataLength: 24,
+            streamOffset: 0,
+            isFinal: false,
+            lifetimeToken: token);
+
+        if (reason == QuicBufferReleaseReason.Canceled)
+        {
+            Assert.True(queue.TryRemoveQueuedWritesForStream(
+                streamId: 8,
+                returnPayloads: true,
+                releaseReason: reason));
+        }
+        else
+        {
+            queue.Clear(reason);
+        }
+
+        QuicBufferReleaseObservation release =
+            Assert.Single(observer.Releases);
+        Assert.Equal(token.OperationSequence, release.OperationSequence);
+        Assert.Equal(reason, release.Reason);
+        Assert.Equal((ulong)owner.Length, release.ReleasedCapacityBytes);
+        Assert.Equal(0, queue.Count);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void OversizedRawQueueReplacementReleasesOriginalTokenOnly()
+    {
+        RecordingOperationObserver observer = new();
+        QuicApplicationSendQueue queue = new();
+        queue.ConfigureBufferCopyOperationObserver(observer);
+        byte[] owner = QuicBufferPool.RentBytes(
+            16,
+            QuicBufferPoolOwner.QueuedRawStreamData);
+        byte[] replacement = QuicBufferPool.RentBytes(
+            32,
+            QuicBufferPoolOwner.QueuedRawStreamData);
+        QuicBufferCopyLifetimeToken token = new(
+            OperationSequence: 73,
+            QuicBufferCopyPath.OversizedRawQueue,
+            ConstructionTicks: 1,
+            RetainedCapacityBytes: (ulong)owner.Length);
+        queue.EnqueueRawStreamData(
+            streamId: 12,
+            priority: 0,
+            owner,
+            streamDataLength: 16,
+            streamOffset: 0,
+            isFinal: false,
+            lifetimeToken: token);
+        Assert.True(queue.TryGetOnlyQueuedWrite(
+            out PendingApplicationSendRequest pendingWrite));
+
+        Assert.True(queue.TryReplaceQueuedWritePayload(
+            pendingWrite.Sequence,
+            replacement,
+            streamPayloadLength: 24));
+        QuicBufferReleaseObservation release =
+            Assert.Single(observer.Releases);
+        Assert.Equal(token.OperationSequence, release.OperationSequence);
+        Assert.Equal(QuicBufferReleaseReason.Replaced, release.Reason);
+
+        queue.Clear();
+        Assert.Single(observer.Releases);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void OversizedRawQueueReleaseObserverFailureCannotBlockRemoval()
+    {
+        QuicApplicationSendQueue queue = new();
+        queue.ConfigureBufferCopyOperationObserver(
+            new ReleaseThrowingOperationObserver());
+        byte[] owner = QuicBufferPool.RentBytes(
+            16,
+            QuicBufferPoolOwner.QueuedRawStreamData);
+        QuicBufferCopyLifetimeToken token = new(
+            OperationSequence: 74,
+            QuicBufferCopyPath.OversizedRawQueue,
+            ConstructionTicks: 1,
+            RetainedCapacityBytes: (ulong)owner.Length);
+        queue.EnqueueRawStreamData(
+            streamId: 16,
+            priority: 0,
+            owner,
+            streamDataLength: 16,
+            streamOffset: 0,
+            isFinal: false,
+            lifetimeToken: token);
+
+        Assert.True(queue.TryRemoveQueuedWritesForStream(
+            streamId: 16,
+            returnPayloads: true,
+            releaseReason: QuicBufferReleaseReason.Canceled));
+        Assert.Equal(0, queue.Count);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void BufferReleaseReportsContradictoryAndOutOfDomainState()
@@ -906,8 +1081,25 @@ public sealed class REQ_QUIC_CRT_0182
                 in outOfDomain,
                 (QuicBufferReleaseReason)byte.MaxValue,
                 releasedCapacityBytes: 1);
+        QuicBufferCopyLifetimeToken oversizedRawQueue =
+            runtime.TryPublishBufferCopyObservation(
+                QuicBufferCopyPath.OversizedRawQueue,
+                QuicBufferCopyOperation.Copy,
+                QuicBufferCopyDecisionBoundary.LogicalWriteAdmission,
+                joinOperationSequence: 3,
+                logicalBytes: 8,
+                copiedBytes: 8,
+                sourceSegmentCount: 1,
+                requestedCapacityBytes: 8,
+                retainedCapacityBytes: 8,
+                trackTerminalRelease: true);
+        ((IQuicBufferCopyOperationObserver)runtime)
+            .ObserveBufferRelease(
+                in oversizedRawQueue,
+                QuicBufferReleaseReason.Delivered,
+                releasedCapacityBytes: 8);
 
-        Assert.Equal(2, sink.Releases.Count);
+        Assert.Equal(3, sink.Releases.Count);
         Assert.True(sink.Releases[0].Validity.HasFlag(
             QuicBufferReleaseValidity.Contradictory));
         Assert.True(sink.Releases[0].Validity.HasFlag(
@@ -916,6 +1108,8 @@ public sealed class REQ_QUIC_CRT_0182
             QuicBufferReleaseValidity.ArithmeticSaturated));
         Assert.True(sink.Releases[1].Validity.HasFlag(
             QuicBufferReleaseValidity.OutOfDomain));
+        Assert.True(sink.Releases[2].Validity.HasFlag(
+            QuicBufferReleaseValidity.Contradictory));
     }
 
     [Fact]
@@ -1165,7 +1359,7 @@ public sealed class REQ_QUIC_CRT_0182
                 JsonSerializer.Serialize(
                     new
                     {
-                        schemaVersion = "quic-buffer-release-raw-v2",
+                        schemaVersion = "quic-buffer-release-raw-v3",
                         connectionKey = "connection-0001",
                         observation = release,
                     },

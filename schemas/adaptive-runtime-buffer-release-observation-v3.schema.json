@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-buffer-release-observation-v3.schema.json",
+  "title": "Adaptive Runtime Buffer Release Observation v3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "releaseSequence",
+    "operationSequence",
+    "path",
+    "reason",
+    "releasedCapacityBytes",
+    "lifetimeMicros",
+    "phaseAfter",
+    "disposalStarted",
+    "validity",
+    "observationContractVersion",
+    "tokenContractVersion",
+    "reasonVersion",
+    "provenanceVersion"
+  ],
+  "properties": {
+    "releaseSequence": { "$ref": "#/$defs/positiveInteger" },
+    "operationSequence": { "$ref": "#/$defs/positiveInteger" },
+    "path": {
+      "enum": [
+        "ApplicationWriteRequest",
+        "ReceiveSegment",
+        "OversizedRawQueue"
+      ]
+    },
+    "reason": {
+      "enum": [
+        "Delivered",
+        "Reset",
+        "CopiedToNextOwner",
+        "Completed",
+        "Failed",
+        "Canceled",
+        "Terminal",
+        "Disposed",
+        "Replaced",
+        "Recycled"
+      ]
+    },
+    "releasedCapacityBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "lifetimeMicros": { "$ref": "#/$defs/unsignedInteger" },
+    "phaseAfter": {
+      "enum": ["Establishing", "Active", "Closing", "Draining", "Discarded"]
+    },
+    "disposalStarted": { "type": "boolean" },
+    "validity": { "type": ["string", "integer"] },
+    "observationContractVersion": {
+      "const": "quic-buffer-release-observation-v3"
+    },
+    "tokenContractVersion": {
+      "const": "quic-buffer-copy-lifetime-token-v1"
+    },
+    "reasonVersion": {
+      "const": "quic-buffer-release-reason-v3"
+    },
+    "provenanceVersion": {
+      "const": "quic-buffer-release-provenance-v3"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "path": { "const": "ReceiveSegment" }
+        }
+      },
+      "then": {
+        "properties": {
+          "reason": {
+            "enum": ["Delivered", "Reset"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "path": { "const": "ApplicationWriteRequest" }
+        }
+      },
+      "then": {
+        "properties": {
+          "reason": {
+            "enum": [
+              "CopiedToNextOwner",
+              "Completed",
+              "Failed",
+              "Canceled",
+              "Terminal",
+              "Disposed",
+              "Replaced",
+              "Recycled"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "path": { "const": "OversizedRawQueue" }
+        }
+      },
+      "then": {
+        "properties": {
+          "reason": {
+            "enum": [
+              "CopiedToNextOwner",
+              "Completed",
+              "Failed",
+              "Canceled",
+              "Terminal",
+              "Disposed",
+              "Replaced"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "unsignedInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

@@ -20,10 +20,22 @@ $copyRawSchemaPath = Join-Path $RepositoryRoot `
     'schemas\adaptive-runtime-buffer-copy-raw-v2.schema.json'
 $copyObservationSchemaPath = Join-Path $RepositoryRoot `
     'schemas\adaptive-runtime-buffer-copy-observation-v2.schema.json'
-$releaseRawSchemaPath = Join-Path $RepositoryRoot `
-    'schemas\adaptive-runtime-buffer-release-raw-v2.schema.json'
-$releaseObservationSchemaPath = Join-Path $RepositoryRoot `
-    'schemas\adaptive-runtime-buffer-release-observation-v2.schema.json'
+$releaseRawSchemaPaths = @{
+    'quic-buffer-release-raw-v1' = Join-Path $RepositoryRoot `
+        'schemas\adaptive-runtime-buffer-release-raw-v1.schema.json'
+    'quic-buffer-release-raw-v2' = Join-Path $RepositoryRoot `
+        'schemas\adaptive-runtime-buffer-release-raw-v2.schema.json'
+    'quic-buffer-release-raw-v3' = Join-Path $RepositoryRoot `
+        'schemas\adaptive-runtime-buffer-release-raw-v3.schema.json'
+}
+$releaseObservationSchemaPaths = @{
+    'quic-buffer-release-observation-v1' = Join-Path $RepositoryRoot `
+        'schemas\adaptive-runtime-buffer-release-observation-v1.schema.json'
+    'quic-buffer-release-observation-v2' = Join-Path $RepositoryRoot `
+        'schemas\adaptive-runtime-buffer-release-observation-v2.schema.json'
+    'quic-buffer-release-observation-v3' = Join-Path $RepositoryRoot `
+        'schemas\adaptive-runtime-buffer-release-observation-v3.schema.json'
+}
 $failures = [System.Collections.Generic.List[string]]::new()
 $copiesByKey = @{}
 $trackedCopyKeys = [System.Collections.Generic.HashSet[string]]::new(
@@ -90,17 +102,41 @@ foreach ($line in Get-Content -LiteralPath $ReleasePath) {
         continue
     }
 
+    try {
+        $record = $line | ConvertFrom-Json -Depth 100
+    }
+    catch {
+        $failures.Add('A buffer-release raw record was not valid JSON.')
+        continue
+    }
+
+    $rawSchemaVersion = [string] $record.schemaVersion
+    if (-not $releaseRawSchemaPaths.ContainsKey($rawSchemaVersion)) {
+        $failures.Add(
+            "Unsupported buffer-release raw schema '$rawSchemaVersion'.")
+        continue
+    }
     if (-not ($line |
-            Test-Json -SchemaFile $releaseRawSchemaPath -ErrorAction Stop)) {
+            Test-Json -SchemaFile `
+                $releaseRawSchemaPaths[$rawSchemaVersion] `
+                -ErrorAction Stop)) {
         $failures.Add('A buffer-release raw record failed schema validation.')
         continue
     }
 
-    $record = $line | ConvertFrom-Json -Depth 100
+    $observationSchemaVersion =
+        [string] $record.observation.observationContractVersion
+    if (-not $releaseObservationSchemaPaths.ContainsKey(
+            $observationSchemaVersion)) {
+        $failures.Add(
+            "Unsupported buffer-release observation schema '$observationSchemaVersion'.")
+        continue
+    }
     $observationJson = $record.observation |
         ConvertTo-Json -Depth 100 -Compress
     if (-not ($observationJson |
-            Test-Json -SchemaFile $releaseObservationSchemaPath `
+            Test-Json -SchemaFile `
+                $releaseObservationSchemaPaths[$observationSchemaVersion] `
                 -ErrorAction Stop)) {
         $failures.Add(
             'A buffer-release raw observation failed schema validation.')

@@ -1181,7 +1181,7 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
             }
             if (-not $bufferReleaseContract.Success -or
                 $bufferReleaseContract.Groups[1].Value -ne
-                    'quic-buffer-release-raw-v2') {
+                    'quic-buffer-release-raw-v3') {
                 $contractFailures.Add(
                     "$sampleId`: buffer-release contract was not reported.")
             }
