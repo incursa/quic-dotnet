@@ -33,9 +33,11 @@ single-consumer inbox and one deadline scheduler. The current consumer:
 8. waits for either new inbox work or the next deadline wake.
 
 The current loop drains available work. It has no stable maximum-work policy,
-no exactly-once repost token, no connection-level remaining-work contract, and
-no reviewed preemption point inside a transition or effect loop. Therefore an
-actor quantum cannot yet be applied safely.
+no connection-level remaining-work contract, and no reviewed preemption point
+inside a transition or effect loop. A behavior-neutral exactly-once repost
+primitive now exists, but it is deliberately disconnected from the shard
+until those remaining gates can drive it safely. Therefore an actor quantum
+cannot yet be applied.
 
 The existing `QuicMetrics` instruments aggregate queue delay, service time,
 wake cycles, work items per wake, packet runs, and follow-on flush counts.
@@ -134,6 +136,54 @@ flag requires a reviewed observation-version change, deterministic mechanism
 tests, and evidence that the proposed unit predicts service cost across
 packet, API, timer, recovery, and terminal work without workload identity.
 
+`quic-actor-useful-work-vector-v1` formalizes this representation in
+`QuicActorUsefulWorkVector`. It preserves exactly one dispatch plus the closed
+work kind, effect count, three follow-on counts, service duration, and optional
+queue delay. It is intentionally not the sum of those fields and does not
+define a threshold, cap, controller input, or policy value.
+
+## Exactly-Once Continuation Repost Primitive
+
+`QuicActorContinuationRepostGate` is a connection-local behavior-neutral
+ownership primitive. It packs one monotonic generation and one closed state
+into a single atomic value. It has no queue reference, callback, protocol
+state, timer, model, threshold, or policy lookup.
+
+The closed states are:
+
+- `Idle`: no continuation token is posted or in service;
+- `Posted`: exactly one caller owns enqueue of the current token;
+- `Servicing`: the exact current token is executing;
+- `RepostRequested`: the current token is executing and one or more concurrent
+  requests have coalesced into a single required follow-on; and
+- `Stopped`: no later request, begin, or completion can create work.
+
+The transition contract is:
+
+1. `Idle -> Posted` increments the generation and returns the only token whose
+   caller may enqueue that generation.
+2. Another request while `Posted` is already represented and cannot create a
+   second enqueue owner.
+3. `Posted -> Servicing` requires the exact nonempty generation token.
+4. A request while `Servicing` atomically changes the state to
+   `RepostRequested`; further requests coalesce.
+5. At a reviewed safe boundary, completion changes `Servicing` to `Idle` when
+   no exact remaining work exists.
+6. Completion changes `Servicing` or `RepostRequested` to one new `Posted`
+   generation when exact remaining work or a concurrent request exists.
+7. An enqueue owner that cannot post must abandon the exact `Posted` token,
+   which changes the gate to `Stopped`. Returning to `Idle` would be unsafe
+   because another requester may already have coalesced with the failed post.
+8. Cancellation, disposal, shutdown, or terminal teardown may stop the gate
+   from any state. Stale, duplicate, empty, or mismatched tokens cannot change
+   state.
+
+This closes the token-ownership and lost-request state-machine design; it does
+not close the actor quantum. The shard does not instantiate or call the gate.
+The exact remaining-work producer, cooperative yield sites, enqueue-failure
+owner, timer priority, terminal bypass, and buffer ownership across yield
+remain required before integration.
+
 ## Epoch Aggregation
 
 `QuicActorServiceEpochAccumulator` consumes observation records and produces
@@ -203,14 +253,14 @@ lateness. Event count is not relabeled as a useful-work quantum.
 
 ## Actor-Quantum Safety Gate
 
-Before `actor_work_quantum` becomes forceable, a separate architecture and
-verification checkpoint must define and prove:
+Before `actor_work_quantum` becomes forceable, architecture and verification
+must define and prove:
 
 - a cooperative safe boundary for each preemptible work kind;
 - the exact remaining-work signal without enumerating unbounded queues;
-- an exactly-once connection repost token;
-- no lost wakeup between remaining-work publication and repost;
-- no duplicate repost during concurrent producers;
+- integration of the proven generation-token repost gate;
+- no lost wakeup between exact remaining-work publication and repost;
+- no duplicate enqueue or service of a repost generation;
 - timer and deadline priority;
 - recovery, probe, ACK, credit, cancellation, disposal, close, and terminal
   bypass rules;
@@ -305,14 +355,16 @@ outside correctness CI.
 
 ## Remaining Stage 2 Order
 
-1. Extend the proven receive-segment and application-write-request
-   copy-lifetime token and exact terminal release to every remaining observed
-   owner without object identity or an outstanding-operation dictionary.
-2. Complete actor service, wake, follow-on, timer-lateness, runnable-state, and
-   fairness observations.
-3. Review useful-work units and exactly-once repost ownership.
+1. Complete actor timer-lateness, runnable-state, complete-shard coverage, and
+   fairness observations without relabeling inbox depth as runnable
+   connections.
+2. Define exact remaining-work signals and reviewed cooperative yield sites
+   for every preemptible kind.
+3. Integrate the proven generation-token repost gate only after timer,
+   recovery, cancellation, disposal, terminal, and ownership tests exist.
 4. Design and force `actor_work_quantum` only after the safety gate.
-5. Design and force `buffer_copy_coalescing` only after ownership tests.
+5. Design and force `buffer_copy_coalescing` only after a distinct
+   conservative implementation and ownership tests.
 6. Review conservative-only `adaptive_backpressure` application-visible
    behavior.
 

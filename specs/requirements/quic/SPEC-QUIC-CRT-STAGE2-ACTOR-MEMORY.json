@@ -23,7 +23,7 @@
   "scope": "This specification covers behavior-neutral per-connection actor service and selected send-side and receive-side buffer-copy observations, bounded epoch aggregation, a versioned post-service Stage 1 and Stage 2 join boundary, append-only permanent raw export, explicit missing-state handling, schema and semantic validation, and the safety gates required before actor_work_quantum or buffer_copy_coalescing. It does not define a forceable actor policy, scalar work-unit threshold, distinct conservative buffer implementation, backpressure policy, active_internal behavior, or production activation.",
   "context": "The shard already exposes aggregate queue-delay, service-time, wake, packet-run, and follow-on metrics, but it does not expose a versioned connection-attributable evidence contract or an exactly-once repost seam. Stage 2 must preserve the current drain loop and record honest primitives before proposing a quantum.",
   "open_questions": [
-    "Which cooperative transition and effect boundaries can yield while preserving exactly-once repost, timer priority, recovery, terminal drain, and buffer ownership?",
+    "Which cooperative transition and effect boundaries can yield while preserving timer priority, recovery, terminal drain, and buffer ownership?",
     "How should complete shard observation coverage and runnable intervals be proven before cross-connection fairness statistics are accepted?"
   ],
   "requirements": [
@@ -181,6 +181,31 @@
       "notes": [
         "Receive-segment, flow-control retry request, oversized raw queue, formatted and combined application-send payload, sent-packet plaintext retention, path-migration retransmission-clone, and pooled protected-packet ownership through hosted endpoint handoff are checkpointed; platform staging and unimplemented owner paths stay explicit and non-forceable until separately checkpointed.",
         "Ownership transfer is not terminal release and cannot create a duplicate completion outcome."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0186",
+      "title": "Define actor work vectors and exactly-once continuation repost ownership",
+      "statement": "The runtime MUST preserve one actor dispatch as a versioned bounded vector of closed work kind, dispatch count, effect count, application-send follow-ons, flow-control follow-ons, stream-capacity follow-ons, service duration, and optional queue delay without collapsing unlike work into an unreviewed scalar; provide a connection-local generation-token repost primitive whose idle, posted, servicing, repost-requested, and stopped transitions coalesce concurrent requests, reject stale or duplicate tokens, create at most one enqueue owner per generation, fail closed after an abandoned post or stop, and avoid lost requests across service completion; and keep that primitive behavior-neutral and disconnected from shard scheduling until exact remaining-work signals, reviewed cooperative boundaries, timer priority, recovery, terminal drain, cancellation, disposal, and buffer ownership across yield are implemented and verified.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0067"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0068"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0069"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md",
+          "src/Incursa.Quic/QuicActorWorkFoundation.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0186.cs"
+        ]
+      },
+      "notes": [
+        "The useful-work vector is evidence, not a scalar quantum or production controller rule.",
+        "The repost gate does not enqueue, execute, preempt, or own protocol work and is not yet connected to the legacy_current shard drain."
       ]
     }
   ]

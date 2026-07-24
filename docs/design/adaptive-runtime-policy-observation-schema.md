@@ -98,6 +98,15 @@ item age, deadline lateness, and useful work units unavailable. It does not
 define policy values, forcing, shadow selection, or a latch for
 `actor_work_quantum`; the applied shard behavior remains `legacy_current`.
 
+`quic-actor-useful-work-vector-v1` is a code-level interpretation of the same
+v1 primitives. It preserves one dispatch, closed work kind, effects, three
+follow-on counts, service duration, and optional queue delay as separate
+components. It is not serialized as a replacement observation, summed into a
+scalar, or accepted as a controller rule. The separate generation-token repost
+gate is scheduling infrastructure only: its tokens are not epoch fields,
+policy snapshots, or provenance, and the gate remains disconnected until an
+exact remaining-work signal and reviewed cooperative boundary exist.
+
 The versioned
 [`../../schemas/adaptive-runtime-post-service-boundary-v1.schema.json`](../../schemas/adaptive-runtime-post-service-boundary-v1.schema.json)
 record replaces the earlier pre-service callback location. A hosted-shard
