@@ -577,9 +577,144 @@ public sealed class REQ_QUIC_CRT_0176
         }
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void EvidenceValidatorJoinsSendTurnShadowRowsToTheirResultAndRawSource()
+    {
+        string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        string sourceDirectory = Path.GetDirectoryName(AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+            "tests/fixtures/adaptive-runtime-policy/local-result.shadow.checksum.example.json"))!;
+        string temporaryDirectory = Path.Combine(
+            repoRoot,
+            ".artifacts",
+            "adaptive-runtime",
+            $"send-turn-shadow-join-{Guid.NewGuid():N}");
+
+        try
+        {
+            CopyDirectory(sourceDirectory, temporaryDirectory);
+            string rawPath = Path.Combine(
+                temporaryDirectory,
+                "fixture-artifacts",
+                "application-send-turn-evidence.raw.jsonl");
+            File.Copy(
+                AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                    "tests/fixtures/adaptive-runtime-policy/application-send-turn-evidence.raw.example.jsonl"),
+                rawPath);
+            string rawSha256 = Convert.ToHexString(
+                System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(rawPath)))
+                .ToLowerInvariant();
+
+            string inventoryPath = Path.Combine(
+                temporaryDirectory,
+                "checksum-inventory.shadow.example.json");
+            System.Text.Json.Nodes.JsonObject inventory =
+                System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(inventoryPath))!.AsObject();
+            inventory["files"]!.AsArray().Add(new System.Text.Json.Nodes.JsonObject
+            {
+                ["path"] = "fixture-artifacts/application-send-turn-evidence.raw.jsonl",
+                ["sha256"] = rawSha256,
+            });
+            File.WriteAllText(inventoryPath, inventory.ToJsonString());
+
+            string localResultPath = Path.Combine(
+                temporaryDirectory,
+                "local-result.shadow.checksum.example.json");
+            System.Text.Json.Nodes.JsonObject localResult =
+                System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(localResultPath))!.AsObject();
+            localResult["policyAxis"] = "application_send_turn_planning";
+            localResult["mode"] = "shadow";
+            System.Text.Json.Nodes.JsonObject configuration = localResult["policyConfiguration"]!.AsObject();
+            configuration["appliedPolicy"] = "legacy_current";
+            configuration["forcedPolicy"] = null;
+            configuration["shadowEnabled"] = true;
+            configuration["shadowPolicy"] = null;
+            configuration["ruleVersion"] = "application-send-turn-shadow-neutral-v1";
+            configuration["observationContractVersion"] =
+                "adaptive-runtime-application-send-turn-observation-v1";
+            configuration["legacySelectorCommit"] = null;
+            localResult["treatments"]!["A"]!["policy"] = "legacy_current";
+
+            System.Text.Json.Nodes.JsonObject sample = localResult["samples"]![0]!.AsObject();
+            System.Text.Json.Nodes.JsonArray sampleArtifacts = sample["artifactPaths"]!.AsArray();
+            string bufferPoolArtifact = sampleArtifacts
+                .Select(static value => value!.GetValue<string>())
+                .Single(static path => path.Contains("quic-buffer-pool-summary", StringComparison.Ordinal));
+            sampleArtifacts.Clear();
+            sampleArtifacts.Add("fixture-artifacts/application-send-turn-evidence.raw.jsonl");
+            sampleArtifacts.Add(bufferPoolArtifact);
+
+            System.Text.Json.Nodes.JsonObject diagnosticSignals =
+                localResult["diagnosticSignals"]!.AsObject();
+            diagnosticSignals["observationEnabled"] = true;
+            diagnosticSignals["shadowEpochCount"] = 2;
+            diagnosticSignals["transitionCount"] = 1;
+            diagnosticSignals["outOfDomainEpochCount"] = 0;
+            diagnosticSignals["contradictoryEpochCount"] = 0;
+            diagnosticSignals["missingEpochCount"] = 0;
+            diagnosticSignals["staleEpochCount"] = 0;
+            diagnosticSignals["summaryArtifactPath"] =
+                "fixture-artifacts/application-send-turn-evidence.raw.jsonl";
+
+            localResult["artifacts"]!.AsArray().Add(new System.Text.Json.Nodes.JsonObject
+            {
+                ["kind"] = "dataset",
+                ["path"] = "fixture-artifacts/application-send-turn-evidence.raw.jsonl",
+                ["sha256"] = rawSha256,
+            });
+            localResult["artifacts"]![0]!["sha256"] = Convert.ToHexString(
+                System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(inventoryPath)))
+                .ToLowerInvariant();
+            File.WriteAllText(localResultPath, localResult.ToJsonString());
+
+            string outputDirectory = Path.Combine(temporaryDirectory, "send-turn-epochs");
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult export =
+                RunSendTurnEvidenceExporter(
+                    rawPath,
+                    outputDirectory,
+                    localResult["campaignId"]!.GetValue<string>(),
+                    localResult["runId"]!.GetValue<string>(),
+                    localResult["cellId"]!.GetValue<string>(),
+                    sample["sampleId"]!.GetValue<string>());
+            Assert.Equal(0, export.ExitCode);
+
+            string[] rowPaths = Directory.GetFiles(outputDirectory, "send-turn-row-*.json");
+            Assert.Equal(2, rowPaths.Length);
+            string validatorScript = AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                "eng/adaptive-runtime/Test-AdaptiveRuntimePolicyEvidence.ps1");
+            string rowArguments = string.Join(
+                ",",
+                rowPaths.Select(AdaptiveRuntimePolicyScriptTestSupport.QuotePowerShellLiteral));
+            string validationCommand =
+                $"& {AdaptiveRuntimePolicyScriptTestSupport.QuotePowerShellLiteral(validatorScript)} " +
+                $"-LocalResultPath {AdaptiveRuntimePolicyScriptTestSupport.QuotePowerShellLiteral(localResultPath)} " +
+                $"-EpochDatasetPath @({rowArguments})";
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult validation =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellCommand(validationCommand);
+
+            Assert.True(validation.ExitCode == 0, validation.Output);
+            using JsonDocument summary = JsonDocument.Parse(validation.Output);
+            Assert.True(summary.RootElement.GetProperty("valid").GetBoolean());
+            Assert.Equal(2, summary.RootElement.GetProperty("epochRowCount").GetInt32());
+            Assert.Empty(summary.RootElement.GetProperty("failures").EnumerateArray());
+        }
+        finally
+        {
+            if (Directory.Exists(temporaryDirectory))
+            {
+                Directory.Delete(temporaryDirectory, recursive: true);
+            }
+        }
+    }
+
     private static AdaptiveRuntimePolicyScriptTestSupport.ProcessResult RunSendTurnEvidenceExporter(
         string rawEvidencePath,
-        string outputDirectory)
+        string outputDirectory,
+        string campaignId = "send-turn-test-campaign",
+        string runId = "send-turn-test-run",
+        string cellId = "send-turn-test-cell",
+        string sampleId = "send-turn-test-sample")
     {
         string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
         return AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
@@ -587,10 +722,10 @@ public sealed class REQ_QUIC_CRT_0176
             "-RawEvidencePath", rawEvidencePath,
             "-OutputDirectory", outputDirectory,
             "-DatasetId", "send-turn-test-dataset",
-            "-CampaignId", "send-turn-test-campaign",
-            "-RunId", "send-turn-test-run",
-            "-CellId", "send-turn-test-cell",
-            "-SampleId", "send-turn-test-sample",
+            "-CampaignId", campaignId,
+            "-RunId", runId,
+            "-CellId", cellId,
+            "-SampleId", sampleId,
             "-BenchmarkSha256", new string('a', 64),
             "-RuntimeSha256", new string('b', 64),
             "-HostFingerprint", "test-host-fingerprint",
@@ -608,6 +743,17 @@ public sealed class REQ_QUIC_CRT_0176
             "-MonotonicTimerFrequencyHz", "1000000",
             "-RepositoryRoot", repoRoot,
             "-RepositoryCommit", "0123456789abcdef0123456789abcdef01234567");
+    }
+
+    private static void CopyDirectory(string sourceDirectory, string destinationDirectory)
+    {
+        foreach (string sourcePath in Directory.GetFiles(sourceDirectory, "*", SearchOption.AllDirectories))
+        {
+            string relativePath = Path.GetRelativePath(sourceDirectory, sourcePath);
+            string destinationPath = Path.Combine(destinationDirectory, relativePath);
+            Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
+            File.Copy(sourcePath, destinationPath, overwrite: true);
+        }
     }
 
     private static void AssertFallback(

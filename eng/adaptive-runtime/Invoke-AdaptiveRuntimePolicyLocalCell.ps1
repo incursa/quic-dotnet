@@ -68,8 +68,10 @@ $localBenchmarkScript = Join-Path $repoRoot 'scripts\perf\Invoke-ProtocolLabLoca
 $resultSchemaPath = Join-Path $repoRoot 'schemas\adaptive-runtime-policy-local-result-v1.schema.json'
 $epochSchemaPath = Join-Path $repoRoot 'schemas\adaptive-runtime-policy-epoch-dataset-v1.schema.json'
 $constructionSchemaPath = Join-Path $repoRoot 'schemas\adaptive-runtime-policy-construction-dataset-v1.schema.json'
+$applicationSendTurnRawSchemaPath = Join-Path $repoRoot 'schemas\adaptive-runtime-application-send-turn-raw-v1.schema.json'
 $evidenceValidationScript = Join-Path $repoRoot 'eng\adaptive-runtime\Test-AdaptiveRuntimePolicyEvidence.ps1'
 $constructionExporterScript = Join-Path $repoRoot 'eng\adaptive-runtime\Convert-AdaptiveRuntimeApplicationSendTurnProvenance.ps1'
+$applicationSendTurnEvidenceExporterScript = Join-Path $repoRoot 'eng\adaptive-runtime\Convert-AdaptiveRuntimeApplicationSendTurnEvidence.ps1'
 $serverProjectPath = Join-Path $repoRoot 'eng\protocol-lab\servers\IncursaRawQuicServer\IncursaRawQuicServer.csproj'
 $serverBinaryPath = Join-Path $repoRoot 'eng\protocol-lab\servers\IncursaRawQuicServer\bin\Release\net10.0\IncursaRawQuicServer.dll'
 $runtimeBinaryPath = Join-Path $repoRoot 'src\Incursa.Quic\bin\Release\net10.0\Incursa.Quic.dll'
@@ -288,7 +290,10 @@ function Get-ArtifactKind {
     if ($name -eq 'aggregate-results.json') { return 'metrics' }
     if ($name -eq 'adaptive-runtime-epochs.raw.jsonl' -or
         $name -eq 'application-send-turn-policy.raw.jsonl' -or
+        $name -eq 'application-send-turn-evidence.raw.jsonl' -or
+        $name -eq 'send-turn-epoch-export-manifest.json' -or
         $name.StartsWith('epoch-row-', [StringComparison]::OrdinalIgnoreCase) -or
+        $name.StartsWith('send-turn-row-', [StringComparison]::OrdinalIgnoreCase) -or
         $name.StartsWith('construction-row-', [StringComparison]::OrdinalIgnoreCase)) { return 'dataset' }
     if ($name.EndsWith('.stdout.log', [StringComparison]::OrdinalIgnoreCase) -or $name -eq 'server.stdout.txt') { return 'stdout' }
     if ($name.EndsWith('.stderr.log', [StringComparison]::OrdinalIgnoreCase) -or $name -eq 'server.stderr.txt') { return 'stderr' }
@@ -605,6 +610,7 @@ function ConvertTo-ReasonCode {
     param([Parameter(Mandatory = $true)][string] $Value)
 
     switch ($Value) {
+        'LegacyCurrent' { 'legacy_selector' }
         'LegacyImmediate' { 'legacy_selector' }
         'LegacyReadDominantBatch' { 'legacy_selector' }
         'MissingSignal' { 'missing_signal' }
@@ -621,6 +627,38 @@ function ConvertTo-ReasonCode {
         'Shutdown' { 'shutdown' }
         default { throw "Unknown adaptive policy reason '$Value'." }
     }
+}
+
+function ConvertTo-ApplicationSendTurnSignalMask {
+    param([AllowNull()][object] $Value)
+
+    [uint64] $numeric = 0
+    if ($null -eq $Value -or [string]::IsNullOrWhiteSpace([string] $Value) -or [string] $Value -eq 'None') {
+        return $numeric
+    }
+    if ([uint64]::TryParse([string] $Value, [ref] $numeric)) {
+        return $numeric
+    }
+
+    foreach ($name in ([string] $Value -split ',' | ForEach-Object { $_.Trim() })) {
+        $bit = switch ($name) {
+            'QueuedApplicationWrites' { 1 }
+            'OutboundBacklogBytes' { 2 }
+            'DistinctQueuedStreams' { 4 }
+            'OldestQueuedSendAge' { 8 }
+            'QueueDelayEwma' { 16 }
+            'ActorServiceTimeEwma' { 32 }
+            'BurstLimitHits' { 64 }
+            'Congestion' { 128 }
+            'RetainedSendState' { 256 }
+            'Lifecycle' { 512 }
+            'Recovery' { 1024 }
+            'Resource' { 2048 }
+            default { throw "Unknown application-send-turn observation signal '$name'." }
+        }
+        $numeric = $numeric -bor $bit
+    }
+    return $numeric
 }
 
 function ConvertTo-SignalMask {
@@ -716,6 +754,12 @@ $requiredInputs = @($localBenchmarkScript, $resultSchemaPath, $evidenceValidatio
 if ($isReceiveCreditAxis) {
     $requiredInputs += $epochSchemaPath
 }
+elseif ($ShadowOnly) {
+    $requiredInputs += @(
+        $epochSchemaPath,
+        $applicationSendTurnRawSchemaPath,
+        $applicationSendTurnEvidenceExporterScript)
+}
 else {
     $requiredInputs += @($constructionSchemaPath, $constructionExporterScript)
 }
@@ -723,10 +767,6 @@ foreach ($requiredPath in $requiredInputs) {
     if (-not (Test-Path -LiteralPath $requiredPath -PathType Leaf)) {
         throw "Required campaign input was not found: $requiredPath"
     }
-}
-
-if ($isApplicationSendTurnAxis -and $ShadowOnly) {
-    throw 'application_send_turn_planning does not have shadow behavior yet; run forced counterfactual cells only.'
 }
 
 $allowedPolicyValues = if ($isReceiveCreditAxis) {
@@ -820,6 +860,7 @@ $policyByTreatment = if ($ShadowOnly) { @{ A = 'legacy_current' } } else { @{ A 
 $samples = [System.Collections.Generic.List[object]]::new()
 $shadowEpochsBySample = @{}
 $applicationSendTurnRecordsBySample = @{}
+$applicationSendTurnEvidenceBySample = @{}
 $sampleRunEvidenceBySampleId = @{}
 $artifactPaths = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
 $commands = [System.Collections.Generic.List[object]]::new()
@@ -920,6 +961,7 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
     $campaignHostStderrPath = Join-Path $sampleRoot 'campaign-host.stderr.log'
     $shadowRawPath = $null
     $applicationSendTurnRawPath = $null
+    $applicationSendTurnEvidenceRawPath = $null
     $campaignHostSourceStdout = $null
     $campaignHostSourceStderr = $null
     if ($null -ne $adapterArtifactsPath) {
@@ -977,34 +1019,68 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
             }
         }
         else {
-            $constructionContract = [regex]::Match(
-                $campaignHostStdout,
-                'QUIC_APPLICATION_SEND_TURN_POLICY_CONTRACT=([^\r\n]+)').Groups[1].Value
-            if ($constructionContract -ne 'adaptive-runtime-application-send-turn-provenance-v1') {
-                $contractFailures.Add("$sampleId`: application-send-turn provenance contract was not reported.")
-            }
+            if ($ShadowOnly) {
+                $evidenceContract = [regex]::Match(
+                    $campaignHostStdout,
+                    'QUIC_APPLICATION_SEND_TURN_EVIDENCE_CONTRACT=([^\r\n]+)').Groups[1].Value
+                if ($evidenceContract -ne 'adaptive-runtime-application-send-turn-raw-v1') {
+                    $contractFailures.Add("$sampleId`: application-send-turn evidence contract was not reported.")
+                }
 
-            $applicationSendTurnRawPath = Join-Path $sampleRoot 'application-send-turn-policy.raw.jsonl'
-            $constructionPrefix = 'QUIC_APPLICATION_SEND_TURN_POLICY_JSON='
-            $constructionLines = @(Get-Content -LiteralPath $campaignHostStdoutPath | Where-Object {
-                $_.StartsWith($constructionPrefix, [StringComparison]::Ordinal)
-            } | ForEach-Object {
-                $_.Substring($constructionPrefix.Length)
-            })
-            if ($constructionLines.Count -eq 0) {
-                $contractFailures.Add("$sampleId`: no application-send-turn provenance records were retained.")
+                $applicationSendTurnEvidenceRawPath = Join-Path $sampleRoot 'application-send-turn-evidence.raw.jsonl'
+                $evidencePrefix = 'QUIC_APPLICATION_SEND_TURN_EVIDENCE_JSON='
+                $evidenceLines = @(Get-Content -LiteralPath $campaignHostStdoutPath | Where-Object {
+                    $_.StartsWith($evidencePrefix, [StringComparison]::Ordinal)
+                } | ForEach-Object {
+                    $_.Substring($evidencePrefix.Length)
+                })
+                if ($evidenceLines.Count -eq 0) {
+                    $contractFailures.Add("$sampleId`: no application-send-turn evidence records were retained.")
+                }
+                else {
+                    [System.IO.File]::WriteAllLines(
+                        $applicationSendTurnEvidenceRawPath,
+                        $evidenceLines,
+                        [System.Text.UTF8Encoding]::new($false))
+                    [void] $artifactPaths.Add($applicationSendTurnEvidenceRawPath)
+                    $applicationSendTurnEvidenceBySample[$sampleId] = @($evidenceLines | ForEach-Object {
+                        $_ | ConvertFrom-Json -Depth 30
+                    })
+                }
             }
             else {
-                [System.IO.File]::WriteAllLines($applicationSendTurnRawPath, $constructionLines, [System.Text.UTF8Encoding]::new($false))
-                [void] $artifactPaths.Add($applicationSendTurnRawPath)
-                $applicationSendTurnRecordsBySample[$sampleId] = @($constructionLines | ForEach-Object {
-                    $_ | ConvertFrom-Json -Depth 30
+                $constructionContract = [regex]::Match(
+                    $campaignHostStdout,
+                    'QUIC_APPLICATION_SEND_TURN_POLICY_CONTRACT=([^\r\n]+)').Groups[1].Value
+                if ($constructionContract -ne 'adaptive-runtime-application-send-turn-provenance-v1') {
+                    $contractFailures.Add("$sampleId`: application-send-turn provenance contract was not reported.")
+                }
+
+                $applicationSendTurnRawPath = Join-Path $sampleRoot 'application-send-turn-policy.raw.jsonl'
+                $constructionPrefix = 'QUIC_APPLICATION_SEND_TURN_POLICY_JSON='
+                $constructionLines = @(Get-Content -LiteralPath $campaignHostStdoutPath | Where-Object {
+                    $_.StartsWith($constructionPrefix, [StringComparison]::Ordinal)
+                } | ForEach-Object {
+                    $_.Substring($constructionPrefix.Length)
                 })
-                $reportedPolicies = @($applicationSendTurnRecordsBySample[$sampleId] | ForEach-Object {
-                    ConvertTo-ApplicationSendTurnPolicyValue -Value ([string] $_.appliedPolicy)
-                })
-                if (@($reportedPolicies | Where-Object { $_ -ne $policy }).Count -gt 0) {
-                    $contractFailures.Add("$sampleId`: policy_mismatch: declared '$policy' but one or more construction records reported a different applied policy.")
+                if ($constructionLines.Count -eq 0) {
+                    $contractFailures.Add("$sampleId`: no application-send-turn provenance records were retained.")
+                }
+                else {
+                    [System.IO.File]::WriteAllLines(
+                        $applicationSendTurnRawPath,
+                        $constructionLines,
+                        [System.Text.UTF8Encoding]::new($false))
+                    [void] $artifactPaths.Add($applicationSendTurnRawPath)
+                    $applicationSendTurnRecordsBySample[$sampleId] = @($constructionLines | ForEach-Object {
+                        $_ | ConvertFrom-Json -Depth 30
+                    })
+                    $reportedPolicies = @($applicationSendTurnRecordsBySample[$sampleId] | ForEach-Object {
+                        ConvertTo-ApplicationSendTurnPolicyValue -Value ([string] $_.appliedPolicy)
+                    })
+                    if (@($reportedPolicies | Where-Object { $_ -ne $policy }).Count -gt 0) {
+                        $contractFailures.Add("$sampleId`: policy_mismatch: declared '$policy' but one or more construction records reported a different applied policy.")
+                    }
                 }
             }
         }
@@ -1063,6 +1139,7 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
             $campaignHostStderrPath,
             $shadowRawPath,
             $applicationSendTurnRawPath,
+            $applicationSendTurnEvidenceRawPath,
             $pressureArtifactPath,
             $targetAttribution.resultArtifactPath,
             $targetAttribution.diagnosticTargetArtifactPath,
@@ -1185,8 +1262,16 @@ else {
     "$CampaignId-$CellId-$($SequenceProtocol.ToLowerInvariant())"
 }
 $epochRowPaths = [System.Collections.Generic.List[string]]::new()
-$allShadowEpochs = @($shadowEpochsBySample.Values | ForEach-Object { @($_) })
-if ($contractFailures.Count -eq 0) {
+$allShadowEpochs = if ($isReceiveCreditAxis) {
+    @($shadowEpochsBySample.Values | ForEach-Object { @($_) })
+}
+elseif ($ShadowOnly) {
+    @($applicationSendTurnEvidenceBySample.Values | ForEach-Object { @($_) })
+}
+else {
+    @()
+}
+if ($isReceiveCreditAxis -and $contractFailures.Count -eq 0) {
     $quicRepository = @($repositoryIdentities | Where-Object name -eq 'quic-dotnet') | Select-Object -First 1
     $benchmarkHash = [string] $binaryIdentities[0].sha256
     $runtimeHash = [string] $binaryIdentities[1].sha256
@@ -1423,6 +1508,96 @@ if ($contractFailures.Count -eq 0) {
     }
 }
 
+if ($isApplicationSendTurnAxis -and $ShadowOnly) {
+    $quicRepository = @($repositoryIdentities | Where-Object name -eq 'quic-dotnet') | Select-Object -First 1
+    $benchmarkHash = [string] $binaryIdentities[0].sha256
+    $runtimeHash = [string] $binaryIdentities[1].sha256
+    $hostFingerprint = "$env:COMPUTERNAME|$([System.Runtime.InteropServices.RuntimeInformation]::OSDescription)|$([Environment]::ProcessorCount)"
+    foreach ($sample in $samples) {
+        $rawPath = @($sample.artifactPaths | Where-Object {
+            [System.IO.Path]::GetFileName($_) -eq 'application-send-turn-evidence.raw.jsonl'
+        }) | Select-Object -First 1
+        if ([string]::IsNullOrWhiteSpace([string] $rawPath)) {
+            $contractFailures.Add("$($sample.sampleId): retained application-send-turn evidence has no raw source artifact.")
+            continue
+        }
+
+        $correctnessFlags = [ordered]@{
+            payloadValid = [bool] $sample.correctness.payloadValidated -and
+                [int] $sample.correctness.failedOperations -eq 0
+            protocolValid = [int] $sample.correctness.protocolErrors -eq 0
+            timedOut = [int] $sample.correctness.timedOutOperations -ne 0
+            ownershipValid = @($sample.correctness.invariantViolations).Count -eq 0
+            terminalValid = [int] $sample.exitCode -eq 0 -and
+                [int] $sample.correctness.cancellationFailures -eq 0 -and
+                [int] $sample.correctness.disposalFailures -eq 0
+            violationCodes = @($sample.correctness.invariantViolations)
+        }
+        $additionalExclusionFlags = [System.Collections.Generic.List[string]]::new()
+        if ($contractFailures.Count -gt 0) {
+            $additionalExclusionFlags.Add('requested_effective_mismatch')
+        }
+        if ($environmentInvalid) {
+            $additionalExclusionFlags.Add('target_health_invalid')
+            $additionalExclusionFlags.Add('generator_health_invalid')
+        }
+
+        $epochExportRoot = Join-Path (Split-Path -Parent $rawPath) 'send-turn-epoch-rows'
+        $exportArguments = [ordered]@{
+            RawEvidencePath = $rawPath
+            OutputDirectory = $epochExportRoot
+            DatasetId = "$CampaignId-$CellId-shadow-dataset"
+            CampaignId = $CampaignId
+            RunId = $resultRunId
+            CellId = $CellId
+            SampleId = [string] $sample.sampleId
+            BenchmarkSha256 = $benchmarkHash
+            RuntimeSha256 = $runtimeHash
+            HostFingerprint = $hostFingerprint
+            CorrectnessFlagsJson = ($correctnessFlags | ConvertTo-Json -Depth 10 -Compress)
+            ScenarioId = $ScenarioId
+            TrafficShape = $TrafficShape
+            AccountingMode = $AccountingMode
+            ArrivalPattern = $ArrivalPattern
+            PayloadBytes = $PayloadBytes
+            Connections = $Connections
+            StreamsPerConnection = $StreamsPerConnection
+            WarmupMicros = ($WarmupSeconds * 1000000L)
+            MeasurementMicros = ($DurationSeconds * 1000000L)
+            MonotonicTimerFrequencyHz = [Diagnostics.Stopwatch]::Frequency
+            RepositoryRoot = $repoRoot
+            RepositoryCommit = [string] $quicRepository.commit
+        }
+        if ([bool] $quicRepository.dirty) {
+            $exportArguments.RepositoryDirty = $true
+        }
+        if ($additionalExclusionFlags.Count -gt 0) {
+            $exportArguments.AdditionalAnalysisExclusionFlags = $additionalExclusionFlags.ToArray()
+        }
+
+        try {
+            & $applicationSendTurnEvidenceExporterScript @exportArguments | Out-Null
+        }
+        catch {
+            throw "Application-send-turn epoch export failed. Retained output: $epochExportRoot. $($_.Exception.Message)"
+        }
+
+        $sampleEpochRows = @(Get-ChildItem -LiteralPath $epochExportRoot -Filter 'send-turn-row-*.json' -File)
+        if ($sampleEpochRows.Count -eq 0) {
+            throw "Application-send-turn epoch export retained no rows. Retained output: $epochExportRoot"
+        }
+        foreach ($epochRow in $sampleEpochRows) {
+            $epochRowPaths.Add($epochRow.FullName)
+            [void] $artifactPaths.Add($epochRow.FullName)
+        }
+        $exportManifestPath = Join-Path $epochExportRoot 'send-turn-epoch-export-manifest.json'
+        if (-not (Test-Path -LiteralPath $exportManifestPath -PathType Leaf)) {
+            throw "Application-send-turn epoch export retained no manifest. Retained output: $epochExportRoot"
+        }
+        [void] $artifactPaths.Add($exportManifestPath)
+    }
+}
+
 $manifestPath = Join-Path $resolvedOutputRoot 'cell-manifest.json'
 $manifest = [ordered]@{
     schemaVersion = 'adaptive-runtime-policy-local-cell-manifest-v1'
@@ -1503,7 +1678,13 @@ foreach ($epoch in $allShadowEpochs) {
     $reasonCounts[$reason]++
 }
 $shadowSummaryArtifactPath = @($artifactPaths | Where-Object {
-    [System.IO.Path]::GetFileName($_) -eq 'adaptive-runtime-epochs.raw.jsonl'
+    $expectedName = if ($isReceiveCreditAxis) {
+        'adaptive-runtime-epochs.raw.jsonl'
+    }
+    else {
+        'application-send-turn-evidence.raw.jsonl'
+    }
+    [System.IO.Path]::GetFileName($_) -eq $expectedName
 }) | Select-Object -First 1
 $cellAppliedPolicy = if ($ShadowOnly) {
     'legacy_current'
@@ -1523,11 +1704,17 @@ else {
 $axisRuleVersion = if ($isReceiveCreditAxis) {
     'receive-credit-legacy-v1'
 }
+elseif ($ShadowOnly) {
+    'application-send-turn-shadow-neutral-v1'
+}
 else {
     'application-send-turn-force-v1'
 }
 $axisObservationContractVersion = if ($isReceiveCreditAxis) {
     'adaptive-runtime-connection-observation-v1'
+}
+elseif ($ShadowOnly) {
+    'adaptive-runtime-application-send-turn-observation-v1'
 }
 else {
     'adaptive-runtime-application-send-turn-provenance-v1'
@@ -1549,11 +1736,18 @@ $result = [ordered]@{
     policyConfiguration = [ordered]@{
         appliedPolicy = $cellAppliedPolicy
         forcedPolicy = $cellForcedPolicy
-        shadowEnabled = [bool] ($isReceiveCreditAxis -and $ShadowOnly)
-        shadowPolicy = if ($isReceiveCreditAxis -and $allShadowEpochs.Count -gt 0) {
-            $shadowPolicies = @($allShadowEpochs | ForEach-Object {
-                ConvertTo-PolicyValue -Value ([string] $_.snapshot.proposedPolicy)
-            } | Select-Object -Unique)
+        shadowEnabled = [bool] $ShadowOnly
+        shadowPolicy = if ($ShadowOnly -and $allShadowEpochs.Count -gt 0) {
+            $shadowPolicies = if ($isReceiveCreditAxis) {
+                @($allShadowEpochs | ForEach-Object {
+                    ConvertTo-PolicyValue -Value ([string] $_.snapshot.proposedPolicy)
+                } | Select-Object -Unique)
+            }
+            else {
+                @($allShadowEpochs | ForEach-Object {
+                    ConvertTo-ApplicationSendTurnPolicyValue -Value ([string] $_.snapshot.recommendedPolicy)
+                } | Select-Object -Unique)
+            }
             if ($shadowPolicies.Count -eq 1) { $shadowPolicies[0] } else { $null }
         }
         else {
@@ -1670,8 +1864,22 @@ $result = [ordered]@{
         transitionCount = @($allShadowEpochs | Where-Object { $_.snapshot.transitioned }).Count
         outOfDomainEpochCount = @($allShadowEpochs | Where-Object { $_.snapshot.reason -eq 'OutOfDomain' }).Count
         contradictoryEpochCount = @($allShadowEpochs | Where-Object { $_.snapshot.reason -eq 'ContradictorySignals' }).Count
-        missingEpochCount = @($allShadowEpochs | Where-Object { (ConvertTo-SignalMask -Value $_.observation.missingSignalMask) -ne 0 }).Count
-        staleEpochCount = @($allShadowEpochs | Where-Object { (ConvertTo-SignalMask -Value $_.observation.staleSignalMask) -ne 0 }).Count
+        missingEpochCount = @($allShadowEpochs | Where-Object {
+            if ($isReceiveCreditAxis) {
+                (ConvertTo-SignalMask -Value $_.observation.missingSignalMask) -ne 0
+            }
+            else {
+                (ConvertTo-ApplicationSendTurnSignalMask -Value $_.observation.missingSignalMask) -ne 0
+            }
+        }).Count
+        staleEpochCount = @($allShadowEpochs | Where-Object {
+            if ($isReceiveCreditAxis) {
+                (ConvertTo-SignalMask -Value $_.observation.staleSignalMask) -ne 0
+            }
+            else {
+                (ConvertTo-ApplicationSendTurnSignalMask -Value $_.observation.staleSignalMask) -ne 0
+            }
+        }).Count
         reasonCounts = $reasonCounts
         summaryArtifactPath = if ([string]::IsNullOrWhiteSpace([string] $shadowSummaryArtifactPath)) { $null } else { [string] $shadowSummaryArtifactPath }
     }
@@ -1696,7 +1904,7 @@ $constructionRowPaths = [System.Collections.Generic.List[string]]::new()
 # Construction provenance is retained even when a run has already accumulated
 # a contract failure. The later validator records the failed join or exclusion;
 # suppressing the rows would silently discard the counterfactual evidence.
-if ($isApplicationSendTurnAxis) {
+if ($isApplicationSendTurnAxis -and -not $ShadowOnly) {
     $quicRepository = @($repositoryIdentities | Where-Object name -eq 'quic-dotnet') | Select-Object -First 1
     $benchmarkHash = [string] $binaryIdentities[0].sha256
     $runtimeHash = [string] $binaryIdentities[1].sha256

@@ -265,7 +265,7 @@ public sealed class REQ_QUIC_CRT_0174
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void LocalRunnerKeepsSendTurnConstructionEvidenceSeparateFromReceiveCreditEpochs()
+    public void LocalRunnerKeepsForcedConstructionAndShadowEpochEvidenceSeparate()
     {
         string runner = File.ReadAllText(AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
             "eng/adaptive-runtime/Invoke-AdaptiveRuntimePolicyLocalCell.ps1"));
@@ -278,8 +278,17 @@ public sealed class REQ_QUIC_CRT_0174
         Assert.Contains("Convert-AdaptiveRuntimeApplicationSendTurnProvenance.ps1", runner, StringComparison.Ordinal);
         Assert.Contains("ConstructionDatasetPath = @($constructionRowPaths)", runner, StringComparison.Ordinal);
         Assert.Contains("$constructionArguments = [ordered]@{", runner, StringComparison.Ordinal);
+        Assert.Contains("QUIC_APPLICATION_SEND_TURN_EVIDENCE_CONTRACT=", runner, StringComparison.Ordinal);
+        Assert.Contains("QUIC_APPLICATION_SEND_TURN_EVIDENCE_JSON=", runner, StringComparison.Ordinal);
+        Assert.Contains("application-send-turn-evidence.raw.jsonl", runner, StringComparison.Ordinal);
+        Assert.Contains("Convert-AdaptiveRuntimeApplicationSendTurnEvidence.ps1", runner, StringComparison.Ordinal);
+        Assert.Contains("EpochDatasetPath = @($epochRowPaths)", runner, StringComparison.Ordinal);
+        Assert.Contains("$exportArguments = [ordered]@{", runner, StringComparison.Ordinal);
+        Assert.Contains("application-send-turn-shadow-neutral-v1", runner, StringComparison.Ordinal);
+        Assert.Contains("adaptive-runtime-application-send-turn-observation-v1", runner, StringComparison.Ordinal);
+        Assert.Contains("if ($isApplicationSendTurnAxis -and -not $ShadowOnly)", runner, StringComparison.Ordinal);
         Assert.Contains("$validationArguments = [ordered]@{ LocalResultPath = $resultPath }", runner, StringComparison.Ordinal);
-        Assert.Contains("application_send_turn_planning does not have shadow behavior yet", runner, StringComparison.Ordinal);
+        Assert.DoesNotContain("application_send_turn_planning does not have shadow behavior yet", runner, StringComparison.Ordinal);
         Assert.Contains("policy_mismatch", runner, StringComparison.Ordinal);
         Assert.Contains("policyAxis = $PolicyAxis", runner, StringComparison.Ordinal);
         Assert.DoesNotContain("mode = 'active_internal'", runner, StringComparison.OrdinalIgnoreCase);

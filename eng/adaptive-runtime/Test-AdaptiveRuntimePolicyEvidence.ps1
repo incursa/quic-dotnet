@@ -323,7 +323,13 @@ function Add-ExpectedExclusionFlags {
         [void] $Flags.Add('warmup')
     }
 
-    if (([long] $Row.preDecisionObservations.lifecycleFlags -band 96) -ne 0) {
+    $isSendTurnTerminalPartialEpoch =
+        [string] $Row.provenance.transformation.name -eq 'adaptive-runtime-send-turn-epoch-export' -and
+        [string] $Row.provenance.transformation.version -eq '1.0.0' -and
+        [string] $Row.provenance.observationContractVersion -eq 'adaptive-runtime-application-send-turn-observation-v1' -and
+        [long] $Row.epochDurationMicros -eq 1
+    if (([long] $Row.preDecisionObservations.lifecycleFlags -band 96) -ne 0 -or
+        $isSendTurnTerminalPartialEpoch) {
         [void] $Flags.Add('terminal_partial_epoch')
     }
 

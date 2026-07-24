@@ -6,7 +6,8 @@ title: "Adaptive Runtime Connection Observation Schema"
 
 Status: receive-credit v1 and application-send turn runtime subset
 implemented; send-turn raw-host export and standalone epoch conversion
-implemented; permanent runner joins pending
+implemented; permanent runner capture and result/checksum joins implemented;
+campaign evidence pending
 
 The controller consumes one immutable, connection-local observation per
 bounded epoch. Actor work updates primitive counters; snapshot construction

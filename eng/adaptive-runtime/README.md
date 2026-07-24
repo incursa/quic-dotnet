@@ -47,12 +47,13 @@ Materialize the measurement-only catalog metadata for the known adaptive seams:
   -OutputPath ./.artifacts/adaptive-runtime/catalog/policy-catalog.json
 ```
 
-The catalog records all currently known seams as review metadata while keeping
-`receive_credit_publication` as the only runner-integrated controller-epoch
-measurement seam in this v1 substrate. `application_send_turn_planning` has a
-separate forced construction-provenance path and a standalone raw-to-epoch
-converter, but its epoch rows are not yet joined by the permanent runner.
-Every catalog entry remains seam-local, versioned,
+The catalog records all currently known seams as review metadata.
+`receive_credit_publication` and shadow-only
+`application_send_turn_planning` now have separate runner-integrated
+controller-epoch measurement paths. Forced
+`application_send_turn_planning` retains its distinct construction-provenance
+path and is never relabeled as shadow epoch evidence. Every catalog entry
+remains seam-local, versioned,
 `activationAuthorized = false`, and non-authoritative for runtime behavior.
 
 Build the deterministic raw -> normalized -> curated -> split chain from
@@ -190,9 +191,14 @@ record streams. Convert a retained stream independently with:
 The converter validates the closed raw schema and snapshot versions, retains
 the source SHA-256, and emits schema-valid interval rows plus a checksum
 manifest. The last interval is retained with `terminal_partial_epoch`; missing
-axis-external signals remain null. This runner does not yet invoke the
-converter, add its rows to the result checksum inventory, or perform the
-result-to-epoch join, so standalone output is not campaign evidence.
+axis-external signals remain null. With
+`-PolicyAxis application_send_turn_planning -ShadowOnly`, the permanent runner
+captures this raw stream per sample, invokes the converter, adds the completed
+rows and export manifest to the cell checksum inventory, and validates each
+row's result, sample, and raw-source join. Standalone fixture output and a dry
+run remain verification evidence rather than campaign evidence; an executed
+schema-valid cell must still be classified and retained before it can enter a
+campaign dataset.
 
 The local classifier is conjunctive. Known throughput, p95, or peak outstanding
 buffer-pool regressions beyond five percent retain a negative result. It cannot

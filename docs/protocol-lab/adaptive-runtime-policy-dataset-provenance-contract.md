@@ -53,10 +53,13 @@ join attributable outcomes. `hasIssuedApplicationData` also remains null
 because the send-turn v1 observation does not capture that receive-credit
 signal.
 
-The standalone converter and canonical fixtures now prove raw-to-epoch schema
-materialization. Until the permanent runner invokes it and joins the rows to
-schema-valid local results and checksum inventories, those fixture results are
-verification artifacts, not campaign evidence and not inputs to analysis.
+The standalone converter and canonical fixtures prove raw-to-epoch schema
+materialization. The permanent runner now invokes the same converter for
+send-turn shadow cells and joins completed rows to schema-valid local results,
+source samples, raw artifacts, and checksum inventories. Canonical fixtures,
+dry runs, and focused tests remain verification artifacts rather than campaign
+evidence or analysis inputs; only executed, classified, schema-valid cells may
+enter the append-only campaign layers.
 
 ## Row Semantics
 

@@ -57,9 +57,11 @@ The `application_send_turn_planning` raw host accepts independently selected
 Forced construction provenance and observe-only/shadow turn records use
 separate versioned output streams. The host rejects simultaneous receive-credit
 and send-turn selection and explicitly configures adjacent receive-credit
-behavior as `legacy_current`. The permanent local runner must not claim
-send-turn shadow completion until it converts, validates, and checksum-joins
-the raw turn records.
+behavior as `legacy_current`. For a send-turn `-ShadowOnly` cell, the permanent
+local runner now converts and validates the raw turn records, adds the epoch
+rows and export manifest to the checksum inventory, and verifies their result,
+sample, and raw-source joins. This implements the evidence path; it does not
+classify an unexecuted campaign or authorize active behavior.
 
 ## Permanent Workload Matrix
 
