@@ -1738,7 +1738,7 @@ $result = [ordered]@{
         forcedPolicy = $cellForcedPolicy
         shadowEnabled = [bool] $ShadowOnly
         shadowPolicy = if ($ShadowOnly -and $allShadowEpochs.Count -gt 0) {
-            $shadowPolicies = if ($isReceiveCreditAxis) {
+            [string[]] $shadowPolicies = if ($isReceiveCreditAxis) {
                 @($allShadowEpochs | ForEach-Object {
                     ConvertTo-PolicyValue -Value ([string] $_.snapshot.proposedPolicy)
                 } | Select-Object -Unique)

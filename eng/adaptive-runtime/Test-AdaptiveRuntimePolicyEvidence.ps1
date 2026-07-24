@@ -299,7 +299,9 @@ function Add-ExpectedExclusionFlags {
         [object] $Row,
 
         [Parameter(Mandatory = $true)]
-        [object] $Result
+        [object] $Result,
+
+        [bool] $IsSendTurnTerminalPartialEpoch = $false
     )
 
     if ([long] $Row.preDecisionObservations.missingSignalMask -ne 0) {
@@ -323,13 +325,8 @@ function Add-ExpectedExclusionFlags {
         [void] $Flags.Add('warmup')
     }
 
-    $isSendTurnTerminalPartialEpoch =
-        [string] $Row.provenance.transformation.name -eq 'adaptive-runtime-send-turn-epoch-export' -and
-        [string] $Row.provenance.transformation.version -eq '1.0.0' -and
-        [string] $Row.provenance.observationContractVersion -eq 'adaptive-runtime-application-send-turn-observation-v1' -and
-        [long] $Row.epochDurationMicros -eq 1
     if (([long] $Row.preDecisionObservations.lifecycleFlags -band 96) -ne 0 -or
-        $isSendTurnTerminalPartialEpoch) {
+        $IsSendTurnTerminalPartialEpoch) {
         [void] $Flags.Add('terminal_partial_epoch')
     }
 
@@ -668,6 +665,22 @@ foreach ($resultContext in $localResultContextsByRunId.Values) {
 
 $seenRowIds = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $seenEpochKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+$sendTurnLastEpochIndexByConnection = @{}
+foreach ($item in $validatedEpochRows) {
+    $row = $item.Document
+    if ([string] $row.provenance.transformation.name -ne 'adaptive-runtime-send-turn-epoch-export' -or
+        [string] $row.provenance.transformation.version -ne '1.0.0' -or
+        [string] $row.provenance.observationContractVersion -ne 'adaptive-runtime-application-send-turn-observation-v1') {
+        continue
+    }
+
+    $connectionEpochKey = "$($row.runId)|$($row.sampleId)|$($row.connectionKey)"
+    $epochIndex = [long] $row.epochIndex
+    if (-not $sendTurnLastEpochIndexByConnection.ContainsKey($connectionEpochKey) -or
+        $epochIndex -gt [long] $sendTurnLastEpochIndexByConnection[$connectionEpochKey]) {
+        $sendTurnLastEpochIndexByConnection[$connectionEpochKey] = $epochIndex
+    }
+}
 foreach ($item in $validatedEpochRows) {
     $row = $item.Document
     $scopedRowId = "$($row.runId)|$($row.rowId)"
@@ -786,11 +799,23 @@ foreach ($item in $validatedEpochRows) {
     }
 
     $expectedExclusionFlags = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
-    Add-ExpectedExclusionFlags -Flags $expectedExclusionFlags -Row $row -Result $result
+    $connectionEpochKey = "$($row.runId)|$($row.sampleId)|$($row.connectionKey)"
+    $isSendTurnTerminalPartialEpoch =
+        $sendTurnLastEpochIndexByConnection.ContainsKey($connectionEpochKey) -and
+        [long] $row.epochIndex -eq [long] $sendTurnLastEpochIndexByConnection[$connectionEpochKey]
+    Add-ExpectedExclusionFlags `
+        -Flags $expectedExclusionFlags `
+        -Row $row `
+        -Result $result `
+        -IsSendTurnTerminalPartialEpoch $isSendTurnTerminalPartialEpoch
     $actualFlags = @($row.analysisExclusionFlags | ForEach-Object { [string] $_ })
     $actualFlagsSet = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
     foreach ($flag in $actualFlags) {
         [void] $actualFlagsSet.Add($flag)
+    }
+    if ($actualFlagsSet.Contains('terminal_partial_epoch') -and
+        -not $expectedExclusionFlags.Contains('terminal_partial_epoch')) {
+        $failures.Add("Epoch row '$($row.rowId)' retains terminal_partial_epoch but is not terminal by lifecycle or exporter ordering.")
     }
 
     $requiredExclusionFlags = [System.Collections.Generic.HashSet[string]]::new(

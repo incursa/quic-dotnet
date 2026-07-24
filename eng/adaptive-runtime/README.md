@@ -245,8 +245,12 @@ adding `-ShadowOnly`. The runner applies `legacy_current`, asks the internal
 controller only for a recommendation, enables one-second host/process counters,
 and exports:
 
-- the authoritative raw host stream as `adaptive-runtime-epochs.raw.jsonl`;
-- one schema-valid file per connection epoch under `epoch-rows/`;
+- the authoritative receive-credit raw stream as
+  `adaptive-runtime-epochs.raw.jsonl`, or the axis-specific send-turn stream as
+  `application-send-turn-evidence.raw.jsonl`;
+- one schema-valid file per receive-credit connection epoch under
+  `epoch-rows/`, or per send-turn interval under
+  `send-turn-epoch-rows/`;
 - a schema/join validation summary in `evidence-validation.json`; and
 - shadow epoch, transition, missing/stale, and reason counts in
   `local-result.json`.

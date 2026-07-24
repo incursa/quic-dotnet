@@ -286,6 +286,7 @@ public sealed class REQ_QUIC_CRT_0174
         Assert.Contains("$exportArguments = [ordered]@{", runner, StringComparison.Ordinal);
         Assert.Contains("application-send-turn-shadow-neutral-v1", runner, StringComparison.Ordinal);
         Assert.Contains("adaptive-runtime-application-send-turn-observation-v1", runner, StringComparison.Ordinal);
+        Assert.Contains("[string[]] $shadowPolicies =", runner, StringComparison.Ordinal);
         Assert.Contains("if ($isApplicationSendTurnAxis -and -not $ShadowOnly)", runner, StringComparison.Ordinal);
         Assert.Contains("$validationArguments = [ordered]@{ LocalResultPath = $resultPath }", runner, StringComparison.Ordinal);
         Assert.DoesNotContain("application_send_turn_planning does not have shadow behavior yet", runner, StringComparison.Ordinal);

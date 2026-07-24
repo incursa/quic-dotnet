@@ -602,6 +602,15 @@ public sealed class REQ_QUIC_CRT_0176
                 AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
                     "tests/fixtures/adaptive-runtime-policy/application-send-turn-evidence.raw.example.jsonl"),
                 rawPath);
+            string[] rawLines = File.ReadAllLines(rawPath);
+            System.Text.Json.Nodes.JsonObject firstRaw =
+                System.Text.Json.Nodes.JsonNode.Parse(rawLines[0])!.AsObject();
+            System.Text.Json.Nodes.JsonObject secondRaw =
+                System.Text.Json.Nodes.JsonNode.Parse(rawLines[1])!.AsObject();
+            long firstCapturedAtTicks =
+                firstRaw["observation"]!["capturedAtTicks"]!.GetValue<long>();
+            secondRaw["observation"]!["capturedAtTicks"] = firstCapturedAtTicks + 1;
+            File.WriteAllLines(rawPath, [firstRaw.ToJsonString(), secondRaw.ToJsonString()]);
             string rawSha256 = Convert.ToHexString(
                 System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(rawPath)))
                 .ToLowerInvariant();
@@ -681,6 +690,20 @@ public sealed class REQ_QUIC_CRT_0176
 
             string[] rowPaths = Directory.GetFiles(outputDirectory, "send-turn-row-*.json");
             Assert.Equal(2, rowPaths.Length);
+            System.Text.Json.Nodes.JsonObject[] exportedRows = rowPaths
+                .Select(static path =>
+                    System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(path))!.AsObject())
+                .OrderBy(static row => row["epochIndex"]!.GetValue<int>())
+                .ToArray();
+            Assert.Equal(1, exportedRows[0]["epochDurationMicros"]!.GetValue<long>());
+            Assert.DoesNotContain(
+                "terminal_partial_epoch",
+                exportedRows[0]["analysisExclusionFlags"]!.AsArray()
+                    .Select(static value => value!.GetValue<string>()));
+            Assert.Contains(
+                "terminal_partial_epoch",
+                exportedRows[1]["analysisExclusionFlags"]!.AsArray()
+                    .Select(static value => value!.GetValue<string>()));
             string validatorScript = AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
                 "eng/adaptive-runtime/Test-AdaptiveRuntimePolicyEvidence.ps1");
             string rowArguments = string.Join(
