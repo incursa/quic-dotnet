@@ -1379,7 +1379,8 @@ internal sealed class QuicConnectionSendRuntime
             QuicBufferPool.ReturnBytes(plaintextPayloadOwner);
         }
 
-        if (packetBytesOwner is not null)
+        if (packetBytesOwner is not null
+            && !ReferenceEquals(plaintextPayloadOwner, packetBytesOwner))
         {
             QuicBufferPool.ReturnBytes(packetBytesOwner);
         }

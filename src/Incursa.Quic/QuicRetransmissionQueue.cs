@@ -9,28 +9,14 @@ namespace Incursa.Quic;
 internal sealed class QuicRetransmissionQueue
 {
     private readonly Queue<QuicConnectionRetransmissionPlan> pendingRetransmissions = [];
+    private long retainedBufferCount;
+    private long retainedByteCount;
+    private ulong? oldestSentAtMicros;
 
     public int Count => pendingRetransmissions.Count;
 
     internal QuicRetentionSnapshot CaptureRetentionSnapshot(ulong nowMicros)
     {
-        long retainedBufferCount = 0;
-        long retainedByteCount = 0;
-        ulong? oldestSentAtMicros = null;
-
-        foreach (QuicConnectionRetransmissionPlan retransmission in pendingRetransmissions)
-        {
-            QuicRetentionSnapshot.AddOwners(
-                retransmission.PlaintextPayloadOwner,
-                retransmission.PacketBytesOwner,
-                ref retainedBufferCount,
-                ref retainedByteCount);
-            oldestSentAtMicros = !oldestSentAtMicros.HasValue
-                || retransmission.SentAtMicros < oldestSentAtMicros.Value
-                ? retransmission.SentAtMicros
-                : oldestSentAtMicros;
-        }
-
         return new QuicRetentionSnapshot(
             retainedBufferCount,
             retainedByteCount,
@@ -74,6 +60,7 @@ internal sealed class QuicRetransmissionQueue
     public void QueueRetransmission(QuicConnectionRetransmissionPlan retransmission)
     {
         pendingRetransmissions.Enqueue(retransmission);
+        RecordEnqueue(retransmission);
     }
 
     // CONTEXT: retransmission scans preserve queue order
@@ -93,12 +80,14 @@ internal sealed class QuicRetransmissionQueue
         }
 
         bool removed = false;
+        bool removedOldest = false;
         for (int index = 0; index < pendingCount; index++)
         {
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
             if (retransmission.PacketNumberSpace == key.PacketNumberSpace
                 && retransmission.PacketNumber == key.PacketNumber)
             {
+                removedOldest |= RecordRemoval(retransmission);
                 QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
                 removed = true;
                 continue;
@@ -107,6 +96,7 @@ internal sealed class QuicRetransmissionQueue
             pendingRetransmissions.Enqueue(retransmission);
         }
 
+        RefreshOldestSentAtMicros(removedOldest);
         return removed;
     }
 
@@ -119,11 +109,13 @@ internal sealed class QuicRetransmissionQueue
         }
 
         bool updated = false;
+        bool removedOldest = false;
         for (int index = 0; index < pendingCount; index++)
         {
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
             if (retransmission.PacketNumberSpace == packetNumberSpace)
             {
+                removedOldest |= RecordRemoval(retransmission);
                 QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
                 updated = true;
                 continue;
@@ -132,6 +124,7 @@ internal sealed class QuicRetransmissionQueue
             pendingRetransmissions.Enqueue(retransmission);
         }
 
+        RefreshOldestSentAtMicros(removedOldest);
         return updated;
     }
 
@@ -144,11 +137,13 @@ internal sealed class QuicRetransmissionQueue
         }
 
         bool updated = false;
+        bool removedOldest = false;
         for (int index = 0; index < pendingCount; index++)
         {
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
             if (retransmission.PacketProtectionLevel == packetProtectionLevel)
             {
+                removedOldest |= RecordRemoval(retransmission);
                 QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
                 updated = true;
                 continue;
@@ -157,6 +152,7 @@ internal sealed class QuicRetransmissionQueue
             pendingRetransmissions.Enqueue(retransmission);
         }
 
+        RefreshOldestSentAtMicros(removedOldest);
         return updated;
     }
 
@@ -169,12 +165,14 @@ internal sealed class QuicRetransmissionQueue
         }
 
         bool updated = false;
+        bool removedOldest = false;
         for (int index = 0; index < pendingCount; index++)
         {
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
             if (retransmission.PacketProtectionLevel == QuicTlsEncryptionLevel.OneRtt
                 && retransmission.OneRttKeyPhase == keyPhase)
             {
+                removedOldest |= RecordRemoval(retransmission);
                 QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
                 updated = true;
                 continue;
@@ -183,6 +181,7 @@ internal sealed class QuicRetransmissionQueue
             pendingRetransmissions.Enqueue(retransmission);
         }
 
+        RefreshOldestSentAtMicros(removedOldest);
         return updated;
     }
 
@@ -195,11 +194,13 @@ internal sealed class QuicRetransmissionQueue
         }
 
         bool updated = false;
+        bool removedOldest = false;
         for (int index = 0; index < pendingCount; index++)
         {
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
             if (retransmission.SentAtMicros < discardBeforeSentAtMicros)
             {
+                removedOldest |= RecordRemoval(retransmission);
                 QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
                 updated = true;
                 continue;
@@ -208,6 +209,7 @@ internal sealed class QuicRetransmissionQueue
             pendingRetransmissions.Enqueue(retransmission);
         }
 
+        RefreshOldestSentAtMicros(removedOldest);
         return updated;
     }
 
@@ -220,6 +222,7 @@ internal sealed class QuicRetransmissionQueue
         }
 
         bool updated = false;
+        bool removedOldest = false;
         for (int index = 0; index < pendingCount; index++)
         {
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
@@ -233,9 +236,11 @@ internal sealed class QuicRetransmissionQueue
             }
 
             updated = true;
+            removedOldest |= RecordRemoval(retransmission);
             QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
         }
 
+        RefreshOldestSentAtMicros(removedOldest);
         return updated;
     }
 
@@ -248,6 +253,7 @@ internal sealed class QuicRetransmissionQueue
         }
 
         bool updated = false;
+        bool removedOldest = false;
         for (int index = 0; index < pendingCount; index++)
         {
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
@@ -258,9 +264,11 @@ internal sealed class QuicRetransmissionQueue
             }
 
             updated = true;
+            removedOldest |= RecordRemoval(retransmission);
             QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
         }
 
+        RefreshOldestSentAtMicros(removedOldest);
         return updated;
     }
 
@@ -273,6 +281,7 @@ internal sealed class QuicRetransmissionQueue
         }
 
         bool updated = false;
+        bool removedOldest = false;
         for (int index = 0; index < pendingCount; index++)
         {
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
@@ -283,9 +292,11 @@ internal sealed class QuicRetransmissionQueue
             }
 
             updated = true;
+            removedOldest |= RecordRemoval(retransmission);
             QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
         }
 
+        RefreshOldestSentAtMicros(removedOldest);
         return updated;
     }
 
@@ -298,7 +309,60 @@ internal sealed class QuicRetransmissionQueue
         }
 
         retransmission = pendingRetransmissions.Dequeue();
+        RefreshOldestSentAtMicros(RecordRemoval(retransmission));
         return true;
+    }
+
+    private void RecordEnqueue(QuicConnectionRetransmissionPlan retransmission)
+    {
+        QuicRetentionSnapshot.AddOwners(
+            retransmission.PlaintextPayloadOwner,
+            retransmission.PacketBytesOwner,
+            ref retainedBufferCount,
+            ref retainedByteCount);
+        if (!oldestSentAtMicros.HasValue
+            || retransmission.SentAtMicros < oldestSentAtMicros.Value)
+        {
+            oldestSentAtMicros = retransmission.SentAtMicros;
+        }
+    }
+
+    private bool RecordRemoval(QuicConnectionRetransmissionPlan retransmission)
+    {
+        if (retransmission.PlaintextPayloadOwner is not null)
+        {
+            retainedBufferCount--;
+            retainedByteCount -= retransmission.PlaintextPayloadOwner.Length;
+        }
+
+        if (retransmission.PacketBytesOwner is not null
+            && !ReferenceEquals(
+                retransmission.PlaintextPayloadOwner,
+                retransmission.PacketBytesOwner))
+        {
+            retainedBufferCount--;
+            retainedByteCount -= retransmission.PacketBytesOwner.Length;
+        }
+
+        return oldestSentAtMicros == retransmission.SentAtMicros;
+    }
+
+    private void RefreshOldestSentAtMicros(bool removedOldest)
+    {
+        if (!removedOldest)
+        {
+            return;
+        }
+
+        oldestSentAtMicros = null;
+        foreach (QuicConnectionRetransmissionPlan retained in pendingRetransmissions)
+        {
+            if (!oldestSentAtMicros.HasValue
+                || retained.SentAtMicros < oldestSentAtMicros.Value)
+            {
+                oldestSentAtMicros = retained.SentAtMicros;
+            }
+        }
     }
 
     internal void CaptureBuildableApplicationRetransmissions(

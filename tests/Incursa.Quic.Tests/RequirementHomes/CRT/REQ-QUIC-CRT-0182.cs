@@ -221,6 +221,91 @@ public sealed class REQ_QUIC_CRT_0182
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void MaintainedRetransmissionRetentionTracksOwnershipTransitions()
+    {
+        QuicRetransmissionQueue queue = new();
+        byte[] first = QuicBufferPool.RentBytes(
+            20,
+            QuicBufferPoolOwner.Retransmission);
+        byte[] second = QuicBufferPool.RentBytes(
+            40,
+            QuicBufferPoolOwner.Retransmission);
+        byte[] shared = QuicBufferPool.RentBytes(
+            80,
+            QuicBufferPoolOwner.Retransmission);
+        queue.QueueRetransmission(new QuicConnectionRetransmissionPlan(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 1,
+            PayloadBytes: 20,
+            SentAtMicros: 1_000,
+            ProbePacket: false,
+            CryptoMetadata: null,
+            PacketBytes: default,
+            PlaintextPayload: first.AsMemory(0, 20),
+            PlaintextPayloadOwner: first));
+        queue.QueueRetransmission(new QuicConnectionRetransmissionPlan(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 2,
+            PayloadBytes: 40,
+            SentAtMicros: 2_000,
+            ProbePacket: false,
+            CryptoMetadata: null,
+            PacketBytes: second.AsMemory(0, 40),
+            PacketBytesOwner: second));
+        queue.QueueRetransmission(new QuicConnectionRetransmissionPlan(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 3,
+            PayloadBytes: 80,
+            SentAtMicros: 3_000,
+            ProbePacket: false,
+            CryptoMetadata: null,
+            PacketBytes: shared.AsMemory(0, 80),
+            PlaintextPayload: shared.AsMemory(0, 80),
+            PlaintextPayloadOwner: shared,
+            PacketBytesOwner: shared));
+
+        QuicRetentionSnapshot initial =
+            queue.CaptureRetentionSnapshot(nowMicros: 5_000);
+        Assert.Equal(3, initial.RetainedBufferCount);
+        Assert.Equal(
+            first.Length + second.Length + shared.Length,
+            initial.RetainedByteCount);
+        Assert.Equal(4, initial.OldestAgeMilliseconds);
+
+        Assert.True(
+            queue.TryDiscardPendingRetransmissionsOlderThan(2_000));
+        QuicRetentionSnapshot retained =
+            queue.CaptureRetentionSnapshot(nowMicros: 5_000);
+        Assert.Equal(2, retained.RetainedBufferCount);
+        Assert.Equal(
+            second.Length + shared.Length,
+            retained.RetainedByteCount);
+        Assert.Equal(3, retained.OldestAgeMilliseconds);
+
+        Assert.True(queue.TryDequeueRetransmission(
+            out QuicConnectionRetransmissionPlan dequeuedSecond));
+        QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+            dequeuedSecond);
+        QuicRetentionSnapshot remaining =
+            queue.CaptureRetentionSnapshot(nowMicros: 5_000);
+        Assert.Equal(1, remaining.RetainedBufferCount);
+        Assert.Equal(shared.Length, remaining.RetainedByteCount);
+        Assert.Equal(2, remaining.OldestAgeMilliseconds);
+
+        Assert.True(queue.TryDequeueRetransmission(
+            out QuicConnectionRetransmissionPlan dequeuedShared));
+        QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+            dequeuedShared);
+        QuicRetentionSnapshot empty =
+            queue.CaptureRetentionSnapshot(nowMicros: 5_000);
+        Assert.Equal(0, empty.RetainedBufferCount);
+        Assert.Equal(0, empty.RetainedByteCount);
+        Assert.Null(empty.OldestAgeMilliseconds);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void ObservationAndEpochSummaryPassSchemaAndSemanticValidation()
     {
         string repoRoot =
