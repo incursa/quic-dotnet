@@ -1,0 +1,238 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-application-send-turn-raw-v1.schema.json",
+  "title": "Adaptive Runtime Application Send Turn Raw Evidence v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "connectionKey",
+    "mode",
+    "observation",
+    "hasRecommendation",
+    "snapshot"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "adaptive-runtime-application-send-turn-raw-v1"
+    },
+    "connectionKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["ObserveOnly", "Shadow"]
+    },
+    "observation": {
+      "$ref": "#/$defs/observation"
+    },
+    "hasRecommendation": {
+      "type": "boolean"
+    },
+    "snapshot": {
+      "anyOf": [
+        { "$ref": "#/$defs/snapshot" },
+        { "type": "null" }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mode": { "const": "Shadow" }
+        }
+      },
+      "then": {
+        "properties": {
+          "hasRecommendation": { "const": true },
+          "snapshot": { "$ref": "#/$defs/snapshot" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "mode": { "const": "ObserveOnly" }
+        }
+      },
+      "then": {
+        "properties": {
+          "hasRecommendation": { "const": false },
+          "snapshot": { "type": "null" }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "unsignedInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "turnSequence",
+        "capturedAtTicks",
+        "observationContractVersion",
+        "policyRuleVersion",
+        "missingSignalMask",
+        "staleSignalMask",
+        "conditions",
+        "lifecycleFlags",
+        "queuedApplicationWrites",
+        "outboundBacklogBytes",
+        "distinctQueuedStreams",
+        "oldestQueuedSendAgeMicros",
+        "queueDelayEwmaMicros",
+        "actorServiceTimeEwmaMicros",
+        "burstLimitHits",
+        "bytesInFlight",
+        "congestionWindowBytes",
+        "retainedSendBuffers",
+        "retainedSendBytes"
+      ],
+      "properties": {
+        "turnSequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "capturedAtTicks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "observationContractVersion": {
+          "type": "string",
+          "const": "adaptive-runtime-application-send-turn-observation-v1"
+        },
+        "policyRuleVersion": {
+          "type": "string",
+          "const": "application-send-turn-shadow-neutral-v1"
+        },
+        "missingSignalMask": {
+          "type": ["string", "integer"],
+          "minimum": 0,
+          "maximum": 4095
+        },
+        "staleSignalMask": {
+          "type": ["string", "integer"],
+          "minimum": 0,
+          "maximum": 4095
+        },
+        "conditions": {
+          "type": ["string", "integer"],
+          "minimum": 0,
+          "maximum": 31
+        },
+        "lifecycleFlags": {
+          "type": ["string", "integer"],
+          "minimum": 0,
+          "maximum": 127
+        },
+        "queuedApplicationWrites": { "$ref": "#/$defs/unsignedInteger" },
+        "outboundBacklogBytes": { "$ref": "#/$defs/unsignedInteger" },
+        "distinctQueuedStreams": { "$ref": "#/$defs/unsignedInteger" },
+        "oldestQueuedSendAgeMicros": { "$ref": "#/$defs/unsignedInteger" },
+        "queueDelayEwmaMicros": { "$ref": "#/$defs/unsignedInteger" },
+        "actorServiceTimeEwmaMicros": { "$ref": "#/$defs/unsignedInteger" },
+        "burstLimitHits": { "$ref": "#/$defs/unsignedInteger" },
+        "bytesInFlight": { "$ref": "#/$defs/unsignedInteger" },
+        "congestionWindowBytes": { "$ref": "#/$defs/unsignedInteger" },
+        "retainedSendBuffers": { "$ref": "#/$defs/unsignedInteger" },
+        "retainedSendBytes": { "$ref": "#/$defs/unsignedInteger" }
+      }
+    },
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "snapshotSequence",
+        "snapshotContractVersion",
+        "observationContractVersion",
+        "ruleVersion",
+        "reasonVersion",
+        "provenanceVersion",
+        "axisId",
+        "turnSequence",
+        "previousState",
+        "state",
+        "transitioned",
+        "appliedPolicy",
+        "recommendedPolicy",
+        "reason"
+      ],
+      "properties": {
+        "snapshotSequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "snapshotContractVersion": {
+          "type": "string",
+          "const": "adaptive-runtime-application-send-turn-snapshot-v1"
+        },
+        "observationContractVersion": {
+          "type": "string",
+          "const": "adaptive-runtime-application-send-turn-observation-v1"
+        },
+        "ruleVersion": {
+          "type": "string",
+          "const": "application-send-turn-shadow-neutral-v1"
+        },
+        "reasonVersion": {
+          "type": "string",
+          "const": "adaptive-runtime-application-send-turn-reasons-v1"
+        },
+        "provenanceVersion": {
+          "type": "string",
+          "const": "adaptive-runtime-application-send-turn-shadow-provenance-v1"
+        },
+        "axisId": {
+          "type": "string",
+          "const": "application_send_turn_planning"
+        },
+        "turnSequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "previousState": {
+          "type": "string",
+          "enum": ["LegacyCurrent", "Fallback", "Terminal"]
+        },
+        "state": {
+          "type": "string",
+          "enum": ["LegacyCurrent", "Fallback", "Terminal"]
+        },
+        "transitioned": {
+          "type": "boolean"
+        },
+        "appliedPolicy": {
+          "type": "string",
+          "enum": ["LegacyCurrent", "Conservative"]
+        },
+        "recommendedPolicy": {
+          "type": "string",
+          "enum": ["LegacyCurrent", "Conservative"]
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "LegacyCurrent",
+            "MissingSignal",
+            "StaleSignal",
+            "ContradictorySignals",
+            "OutOfDomain",
+            "RuleVersionMismatch",
+            "ArithmeticSaturated",
+            "TerminalStarted",
+            "ResourceGuard",
+            "RecoveryGuard",
+            "CancellationOrDisposal"
+          ]
+        }
+      }
+    }
+  }
+}

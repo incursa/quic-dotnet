@@ -42,10 +42,13 @@
     "tests/Incursa.Quic.Tests/QuicApplicationSendSchedulerTests.cs",
     "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs",
     "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
+    "eng/adaptive-runtime/Convert-AdaptiveRuntimeApplicationSendTurnEvidence.ps1",
+    "schemas/adaptive-runtime-application-send-turn-raw-v1.schema.json",
+    "schemas/adaptive-runtime-policy-epoch-dataset-v1.schema.json",
     "benchmarks/QuicApplicationSendTurnPlannerBenchmarks.cs",
     "docs/testing/adaptive-runtime-policy-shadow-verification.md",
     "docs/testing/adaptive-runtime-policy-acceptance-rollback.md",
     "docs/testing/adaptive-runtime-policy-local-campaign-evidence-2026-07-23.md"
   ],
-  "status_summary": "In progress. The deterministic controller, bounded runtime observe-only and shadow capture, null-planner rollback, and separate raw-host evidence stream are implemented. Release builds passed with zero warnings and focused axis plus adjacent scheduler, cancellation, FIN-delivery, recovery-metadata, and raw-host contract tests passed. Permanent dataset conversion, schema/checksum joins, local shadow campaigns, complete Release correctness, offline replay, multi-host review, and rollback evidence remain open. No behavior-distinct planner, policy winner, active behavior, or production readiness is claimed."
+  "status_summary": "In progress. The deterministic controller, bounded runtime observe-only and shadow capture, null-planner rollback, separate raw-host evidence stream, closed raw schema, and standalone raw-to-epoch conversion with checksum manifest are implemented. Release builds passed with zero warnings; focused controller, runtime, rollback, raw-host, schema, observe-only conversion, shadow conversion, checksum, and duplicate-turn tests passed. Permanent runner invocation and result joins, local shadow campaigns, complete Release correctness, offline replay, multi-host review, and campaign rollback evidence remain open. No behavior-distinct planner, policy winner, active behavior, or production readiness is claimed."
 }

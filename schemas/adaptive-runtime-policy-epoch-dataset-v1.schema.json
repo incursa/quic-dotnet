@@ -172,7 +172,7 @@
     },
     "controllerState": {
       "type": "string",
-      "enum": ["quiescent", "conservative", "promotion_pending", "candidate", "demotion_pending", "fallback", "terminal"]
+      "enum": ["quiescent", "legacy_current", "conservative", "promotion_pending", "candidate", "demotion_pending", "fallback", "terminal"]
     },
     "reasonCode": {
       "type": "string",
@@ -291,7 +291,7 @@
         "managedMemoryPressureQ16": { "$ref": "#/$defs/nullableUnsigned" },
         "socketSendBacklogQ16": { "$ref": "#/$defs/nullableUnsigned" },
         "advisorAgeMicros": { "$ref": "#/$defs/nullableUnsigned" },
-        "hasIssuedApplicationData": { "type": "boolean" },
+        "hasIssuedApplicationData": { "type": ["boolean", "null"] },
         "missingSignalMask": { "type": "integer", "minimum": 0 },
         "staleSignalMask": { "type": "integer", "minimum": 0 },
         "lifecycleFlags": { "type": "integer", "minimum": 0 },
@@ -308,7 +308,7 @@
         "observationContractVersion": { "$ref": "#/$defs/nonEmptyString" },
         "state": { "$ref": "#/$defs/controllerState" },
         "appliedPolicy": { "$ref": "#/$defs/policyValue" },
-        "hasIssuedApplicationData": { "type": "boolean" }
+        "hasIssuedApplicationData": { "type": ["boolean", "null"] }
       }
     },
     "outcomes": {

@@ -1,6 +1,8 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Text.Json;
+
 namespace Incursa.Quic.Tests;
 
 [Requirement("REQ-QUIC-CRT-0176")]
@@ -391,6 +393,221 @@ public sealed class REQ_QUIC_CRT_0176
         long allocatedAfter = GC.GetAllocatedBytesForCurrentThread();
         Assert.True(allEvaluated);
         Assert.Equal(allocatedBefore, allocatedAfter);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void SendTurnEvidenceExporterEmitsVersionedEpochRowsAndRetainsChecksums()
+    {
+        string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        string temporaryDirectory = Path.Combine(
+            repoRoot,
+            ".artifacts",
+            "adaptive-runtime",
+            $"send-turn-epoch-export-{Guid.NewGuid():N}");
+        string outputDirectory = Path.Combine(temporaryDirectory, "export");
+        string rawEvidencePath = AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+            "tests/fixtures/adaptive-runtime-policy/application-send-turn-evidence.raw.example.jsonl");
+
+        try
+        {
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult result =
+                RunSendTurnEvidenceExporter(rawEvidencePath, outputDirectory);
+
+            Assert.Equal(0, result.ExitCode);
+            string[] rowPaths = Directory.GetFiles(outputDirectory, "send-turn-row-*.json")
+                .OrderBy(static path => path, StringComparer.Ordinal)
+                .ToArray();
+            Assert.Equal(2, rowPaths.Length);
+
+            using JsonDocument firstRow = JsonDocument.Parse(File.ReadAllText(rowPaths[0]));
+            using JsonDocument secondRow = JsonDocument.Parse(File.ReadAllText(rowPaths[1]));
+            JsonElement first = firstRow.RootElement;
+            JsonElement second = secondRow.RootElement;
+
+            Assert.Equal("adaptive-runtime-policy-epoch-dataset-v1", first.GetProperty("schemaVersion").GetString());
+            Assert.Equal(0, first.GetProperty("epochIndex").GetInt32());
+            Assert.Equal(1_000, first.GetProperty("epochDurationMicros").GetInt64());
+            Assert.Equal(
+                JsonValueKind.Null,
+                first.GetProperty("preDecisionObservations").GetProperty("hasIssuedApplicationData").ValueKind);
+            Assert.Equal(
+                131_072,
+                first.GetProperty("preDecisionObservations").GetProperty("queueToServiceRatioQ16").GetInt64());
+            Assert.Equal(
+                "legacy_current",
+                first.GetProperty("currentPolicyState").GetProperty("state").GetString());
+            Assert.Equal(
+                "legacy_current",
+                first.GetProperty("candidatePolicySelection").GetProperty("selectedPolicy").GetString());
+            Assert.Equal(
+                "legacy_current",
+                first.GetProperty("candidatePolicySelection").GetProperty("shadowRecommendation").GetString());
+            Assert.Equal(
+                ["none"],
+                first.GetProperty("analysisExclusionFlags").EnumerateArray()
+                    .Select(static value => value.GetString()!)
+                    .ToArray());
+
+            Assert.Equal(1, second.GetProperty("epochIndex").GetInt32());
+            Assert.Equal(1, second.GetProperty("epochDurationMicros").GetInt64());
+            Assert.Equal(
+                "fallback",
+                second.GetProperty("currentPolicyState").GetProperty("state").GetString());
+            Assert.Equal(
+                "conservative",
+                second.GetProperty("candidatePolicySelection").GetProperty("shadowRecommendation").GetString());
+            Assert.Equal(
+                "resource_guard",
+                second.GetProperty("transitionState").GetProperty("reasonCode").GetString());
+            Assert.Contains(
+                "terminal_partial_epoch",
+                second.GetProperty("analysisExclusionFlags").EnumerateArray()
+                    .Select(static value => value.GetString()));
+
+            string sourceSha256 = Convert.ToHexString(
+                System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(rawEvidencePath)))
+                .ToLowerInvariant();
+            Assert.Equal(
+                sourceSha256,
+                first.GetProperty("provenance").GetProperty("sourceArtifactSha256").GetString());
+            Assert.Equal(
+                sourceSha256,
+                second.GetProperty("provenance").GetProperty("sourceArtifactSha256").GetString());
+
+            using JsonDocument manifest = JsonDocument.Parse(File.ReadAllText(
+                Path.Combine(outputDirectory, "send-turn-epoch-export-manifest.json")));
+            Assert.Equal(2, manifest.RootElement.GetProperty("rowCount").GetInt32());
+            Assert.Equal(sourceSha256, manifest.RootElement.GetProperty("sourceArtifactSha256").GetString());
+            Assert.Equal(2, manifest.RootElement.GetProperty("rowChecksums").GetArrayLength());
+        }
+        finally
+        {
+            if (Directory.Exists(temporaryDirectory))
+            {
+                Directory.Delete(temporaryDirectory, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void SendTurnEvidenceExporterKeepsObserveOnlyRowsRecommendationFree()
+    {
+        string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        string temporaryDirectory = Path.Combine(
+            repoRoot,
+            ".artifacts",
+            "adaptive-runtime",
+            $"send-turn-observe-only-export-{Guid.NewGuid():N}");
+        string outputDirectory = Path.Combine(temporaryDirectory, "export");
+        string rawEvidencePath = AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+            "tests/fixtures/adaptive-runtime-policy/application-send-turn-observe-only.raw.example.jsonl");
+
+        try
+        {
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult result =
+                RunSendTurnEvidenceExporter(rawEvidencePath, outputDirectory);
+
+            Assert.Equal(0, result.ExitCode);
+            string rowPath = Assert.Single(Directory.GetFiles(outputDirectory, "send-turn-row-*.json"));
+            using JsonDocument row = JsonDocument.Parse(File.ReadAllText(rowPath));
+            JsonElement root = row.RootElement;
+            JsonElement state = root.GetProperty("currentPolicyState");
+            JsonElement selection = root.GetProperty("candidatePolicySelection");
+
+            Assert.Equal("quiescent", state.GetProperty("state").GetString());
+            Assert.Equal("legacy_current", state.GetProperty("appliedPolicy").GetString());
+            Assert.Equal("legacy", selection.GetProperty("selectionSource").GetString());
+            Assert.Equal("legacy_current", selection.GetProperty("selectedPolicy").GetString());
+            Assert.Equal(JsonValueKind.Null, selection.GetProperty("shadowRecommendation").ValueKind);
+            Assert.Equal("none", selection.GetProperty("reasonCode").GetString());
+            Assert.Contains(
+                "terminal_partial_epoch",
+                root.GetProperty("analysisExclusionFlags").EnumerateArray()
+                    .Select(static value => value.GetString()));
+        }
+        finally
+        {
+            if (Directory.Exists(temporaryDirectory))
+            {
+                Directory.Delete(temporaryDirectory, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void SendTurnEvidenceExporterRejectsDuplicateTurnsWithoutEmittingRows()
+    {
+        string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        string temporaryDirectory = Path.Combine(
+            repoRoot,
+            ".artifacts",
+            "adaptive-runtime",
+            $"send-turn-epoch-duplicate-{Guid.NewGuid():N}");
+        string outputDirectory = Path.Combine(temporaryDirectory, "export");
+        string rawEvidencePath = Path.Combine(temporaryDirectory, "duplicate.raw.jsonl");
+
+        try
+        {
+            Directory.CreateDirectory(temporaryDirectory);
+            string fixture = File.ReadAllText(AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                "tests/fixtures/adaptive-runtime-policy/application-send-turn-evidence.raw.example.jsonl"));
+            File.WriteAllText(
+                rawEvidencePath,
+                fixture.Replace("\"turnSequence\":2", "\"turnSequence\":1", StringComparison.Ordinal));
+
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult result =
+                RunSendTurnEvidenceExporter(rawEvidencePath, outputDirectory);
+
+            Assert.NotEqual(0, result.ExitCode);
+            Assert.Contains("duplicate or out of order", result.Output, StringComparison.Ordinal);
+            Assert.Empty(Directory.GetFiles(outputDirectory, "send-turn-row-*.json"));
+        }
+        finally
+        {
+            if (Directory.Exists(temporaryDirectory))
+            {
+                Directory.Delete(temporaryDirectory, recursive: true);
+            }
+        }
+    }
+
+    private static AdaptiveRuntimePolicyScriptTestSupport.ProcessResult RunSendTurnEvidenceExporter(
+        string rawEvidencePath,
+        string outputDirectory)
+    {
+        string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        return AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+            "eng/adaptive-runtime/Convert-AdaptiveRuntimeApplicationSendTurnEvidence.ps1",
+            "-RawEvidencePath", rawEvidencePath,
+            "-OutputDirectory", outputDirectory,
+            "-DatasetId", "send-turn-test-dataset",
+            "-CampaignId", "send-turn-test-campaign",
+            "-RunId", "send-turn-test-run",
+            "-CellId", "send-turn-test-cell",
+            "-SampleId", "send-turn-test-sample",
+            "-BenchmarkSha256", new string('a', 64),
+            "-RuntimeSha256", new string('b', 64),
+            "-HostFingerprint", "test-host-fingerprint",
+            "-CorrectnessFlagsJson",
+            "{\"payloadValid\":true,\"protocolValid\":true,\"timedOut\":false,\"ownershipValid\":true,\"terminalValid\":true,\"violationCodes\":[]}",
+            "-ScenarioId", "quic.transport.stream-throughput.1mb",
+            "-TrafficShape", "upload",
+            "-AccountingMode", "fixed_per_stream",
+            "-ArrivalPattern", "sustained",
+            "-PayloadBytes", "4096",
+            "-Connections", "1",
+            "-StreamsPerConnection", "4",
+            "-WarmupMicros", "0",
+            "-MeasurementMicros", "10000",
+            "-MonotonicTimerFrequencyHz", "1000000",
+            "-RepositoryRoot", repoRoot,
+            "-RepositoryCommit", "0123456789abcdef0123456789abcdef01234567");
     }
 
     private static void AssertFallback(

@@ -34,9 +34,29 @@ The raw QUIC host also emits the separate
 `adaptive-runtime-application-send-turn-raw-v1` trace for observe-only and
 shadow turns. That trace contains only a run-local connection pseudonym, the
 versioned observation, and the optional versioned recommendation snapshot.
-Until the permanent runner converts and validates that trace into joined epoch
-rows, it remains raw retained evidence and cannot be substituted for either a
-construction row or a schema-valid epoch row.
+[`../../schemas/adaptive-runtime-application-send-turn-raw-v1.schema.json`](../../schemas/adaptive-runtime-application-send-turn-raw-v1.schema.json)
+closes that raw contract. The write-once standalone
+[`../../eng/adaptive-runtime/Convert-AdaptiveRuntimeApplicationSendTurnEvidence.ps1`](../../eng/adaptive-runtime/Convert-AdaptiveRuntimeApplicationSendTurnEvidence.ps1)
+validates every raw record and version identity, rejects duplicate or
+out-of-order turns, maps observe-only and shadow records to the common epoch
+schema, retains the source checksum, and writes a checksum manifest. Rows stay
+under a retained `.pending` directory until the complete input validates, so a
+failed conversion cannot expose partial rows as completed output.
+
+For this axis, one exported epoch is the interval from a planning capture to
+the next planning capture for the same run-local connection. This interval is
+not the one-turn policy latch lifetime and is not an exact actor-service
+duration. The last record has no next boundary, so it receives the minimum
+positive schema duration and `terminal_partial_epoch`; it is retained but
+excluded. Post-epoch outcome fields remain null until the permanent runner can
+join attributable outcomes. `hasIssuedApplicationData` also remains null
+because the send-turn v1 observation does not capture that receive-credit
+signal.
+
+The standalone converter and canonical fixtures now prove raw-to-epoch schema
+materialization. Until the permanent runner invokes it and joins the rows to
+schema-valid local results and checksum inventories, those fixture results are
+verification artifacts, not campaign evidence and not inputs to analysis.
 
 ## Row Semantics
 

@@ -5,8 +5,8 @@ title: "Adaptive Runtime Connection Observation Schema"
 # Adaptive Runtime Connection Observation Schema
 
 Status: receive-credit v1 and application-send turn runtime subset
-implemented; send-turn raw-host export implemented; dataset integration
-pending
+implemented; send-turn raw-host export and standalone epoch conversion
+implemented; permanent runner joins pending
 
 The controller consumes one immutable, connection-local observation per
 bounded epoch. Actor work updates primitive counters; snapshot construction
@@ -61,6 +61,17 @@ two values are not silently combined. Recovery probe sends bypass this
 observation boundary and remain attributable only to recovery.
 Receive-credit epochs remain attributable only to
 `receive_credit_publication`.
+
+The raw send-turn record is validated by
+[`../../schemas/adaptive-runtime-application-send-turn-raw-v1.schema.json`](../../schemas/adaptive-runtime-application-send-turn-raw-v1.schema.json)
+before standalone conversion. The resulting send-turn epoch interval begins at
+one planning capture and ends at the next capture for the same connection. It
+is evidence timing, not the one-turn policy latch lifetime and not a claim of
+exact actor service duration. The final record has no following boundary, so
+the exporter gives it the minimum positive schema duration and retains
+`terminal_partial_epoch`; it is never analysis-clean. Signals not captured by
+the axis-specific runtime record, including `has_issued_application_data`,
+remain null rather than being fabricated as zero or false.
 
 ## Signal Inventory
 

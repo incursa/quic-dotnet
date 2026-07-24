@@ -48,9 +48,10 @@ Materialize the measurement-only catalog metadata for the known adaptive seams:
 ```
 
 The catalog records all currently known seams as review metadata while keeping
-`receive_credit_publication` as the only controller-epoch measurement seam in
-this v1 substrate. `application_send_turn_planning` also has a separate
-forced construction-provenance path; it is not an epoch controller seam.
+`receive_credit_publication` as the only runner-integrated controller-epoch
+measurement seam in this v1 substrate. `application_send_turn_planning` has a
+separate forced construction-provenance path and a standalone raw-to-epoch
+converter, but its epoch rows are not yet joined by the permanent runner.
 Every catalog entry remains seam-local, versioned,
 `activationAuthorized = false`, and non-authoritative for runtime behavior.
 
@@ -160,8 +161,38 @@ variable, requires the host-reported forced identity, retains the raw
 exports checksum-joined construction rows. It never relabels receive-credit
 epochs and does not authorize active policy selection or a ProtocolLab
 submission. The raw host now exposes separate `observe_only` and `shadow`
-record streams, but this runner does not yet ingest or convert those records
-into schema-valid send-turn epoch rows.
+record streams. Convert a retained stream independently with:
+
+```powershell
+./eng/adaptive-runtime/Convert-AdaptiveRuntimeApplicationSendTurnEvidence.ps1 `
+  -RawEvidencePath ./path/to/application-send-turn-evidence.raw.jsonl `
+  -OutputDirectory ./.artifacts/adaptive-runtime/send-turn-epoch-export `
+  -DatasetId send-turn-dataset-v1 `
+  -CampaignId send-turn-campaign-v1 `
+  -RunId send-turn-run-v1 `
+  -CellId send-turn-cell-v1 `
+  -SampleId send-turn-sample-v1 `
+  -BenchmarkSha256 <64-hex-digest> `
+  -RuntimeSha256 <64-hex-digest> `
+  -HostFingerprint <pseudonymous-host-fingerprint> `
+  -CorrectnessFlagsJson '{"payloadValid":true,"protocolValid":true,"timedOut":false,"ownershipValid":true,"terminalValid":true,"violationCodes":[]}' `
+  -ScenarioId quic.transport.stream-throughput.1mb `
+  -TrafficShape upload `
+  -AccountingMode fixed_per_stream `
+  -ArrivalPattern sustained `
+  -PayloadBytes 1048576 `
+  -Connections 1 `
+  -StreamsPerConnection 1 `
+  -WarmupMicros 0 `
+  -MeasurementMicros 1000000
+```
+
+The converter validates the closed raw schema and snapshot versions, retains
+the source SHA-256, and emits schema-valid interval rows plus a checksum
+manifest. The last interval is retained with `terminal_partial_epoch`; missing
+axis-external signals remain null. This runner does not yet invoke the
+converter, add its rows to the result checksum inventory, or perform the
+result-to-epoch join, so standalone output is not campaign evidence.
 
 The local classifier is conjunctive. Known throughput, p95, or peak outstanding
 buffer-pool regressions beyond five percent retain a negative result. It cannot
