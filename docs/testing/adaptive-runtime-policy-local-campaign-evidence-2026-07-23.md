@@ -2226,3 +2226,137 @@ the small four-axis correctness-only smoke. All adjacent axes remain applied
 as `legacy_current`; active behavior and production activation remain
 unauthorized. After the smoke, the roadmap proceeds to Stage 2 before any
 large transform or offline ML analysis.
+
+## Unified Stage 1 Smoke And Materialization Checkpoint
+
+Local runtime commit `15191a0a` permits forced send-turn construction
+provenance to remain separate from unified shadow evidence. Local
+evidence-plane commit `e9d04f92` adds the permanent raw exporter, append-only
+raw-export manifest, canonical unified materializer, materialization manifest,
+schema validation, semantic validation, source-to-sample joins, and
+deterministic tests. Nothing was pushed.
+
+The first permanent smoke,
+`adaptive-stage1-unified-smoke-local-20260724-r001`, is retained as
+`invalid_contract`. All four ABBA samples reached the warmup timeout before an
+accepted connection, and no unified rows were emitted. The failure exposed
+the obsolete forced-construction-plus-shadow restriction fixed by
+`15191a0a`. A separate one-sample diagnostic under the ProtocolLab internal
+artifact root is retained as `diagnostic_only`; it reproduced the same
+pre-fix warmup timeout. Neither artifact was deleted, overwritten, relabeled,
+or used as passing evidence.
+
+The post-fix correctness-only smoke used exact committed source `15191a0a`:
+
+```powershell
+pwsh -NoProfile -File .\eng\adaptive-runtime\Invoke-AdaptiveRuntimePolicyLocalCell.ps1 `
+  -CampaignId adaptive-stage1-unified-smoke-local-20260724-r002 `
+  -CellId duplex-64kb-x1-s16 `
+  -PolicyAxis application_send_turn_planning `
+  -SequenceProtocol ABBA `
+  -PolicyA legacy_current `
+  -PolicyB conservative `
+  -WarmupSeconds 0 `
+  -DurationSeconds 1 `
+  -OutputRoot .\.artifacts\adaptive-runtime\adaptive-stage1-unified-smoke-local-20260724-r002 `
+  -NoRestore
+```
+
+All four samples exited zero, validated the exact payload, reported zero
+protocol errors, and matched requested to effective workload identity. The
+campaign remains `invalid_environment`, because target and generator health
+counters did not satisfy the environment gate. It is excluded from policy
+acceptance and supports no performance claim. Host logs contain 189 unified
+epochs, 26,011 send-turn records, 62,073 batch records, 25,168 burst records,
+and zero oversized-write events.
+
+Each unified epoch contains all four Stage 1 axes. The 189 send-turn axis
+records include 185 event-bearing and four explicitly missing records, all
+189 forced identities, 95 conservative applied values, 94 legacy applied
+values, and 189 shadow recommendations. Batch and burst each include 185
+event-bearing and four explicitly missing records, 189 shadow
+recommendations, zero forced values, and zero non-legacy applied values.
+Oversized-write includes 189 explicitly missing records, 189 shadow
+recommendations, zero forced values, and zero non-legacy applied values.
+Thus exactly one axis varied and all adjacent Stage 1 axes remained applied
+as `legacy_current`. Receive-credit publication also remained
+`legacy_current`.
+
+The first export directory,
+`unified-raw-export-v1`, is retained as `diagnostic_incomplete`. It contains
+the partial JSONL produced before the validator recognized that
+connection-local keys restart in separate sample processes. It was not
+deleted or overwritten. The completed append-only export is
+`unified-raw-export-v1-r002`:
+
+- 189 raw epoch rows;
+- 756 axis records;
+- 201 explicitly missing-event axis records;
+- six source-local connection-key resets;
+- zero validation failures;
+- raw JSONL SHA-256
+  `eff62d0858d4271b13f669b71f55fe22139e77e1e9393e1b5e3de533d31b8780`;
+- validation SHA-256
+  `75343b95a0f56d6ba250ea0871ce49a91123f1ba4c7518c49d65c74454d7e87e`;
+  and
+- raw-export manifest SHA-256
+  `7ad402a5d733aac6eb7e41fce16d0bfb23fe1e44efa77f20e239470712216e55`.
+
+The four ordered host-log cohorts contain 47, 48, 47, and 47 rows. Their
+respective source SHA-256 values are
+`e55ca9c5409c96e6e0e3b94a61fcd3e0dd3aaad3fd0f7c7677ed29513973ce54`,
+`4721a46afe4d7db58a1929c1673f1e79888c4f17c3b759a896920338ef6b4a05`,
+`6cc9c847359796f9c1895a5feba0b56d37c2a38cfc49aa430b22611daaf10e6f`,
+and
+`a847c352896ff46c070673d8e7811a71ba9e91f66bbd4ca95478bdf46254cc53`.
+
+Canonical materialization
+`unified-materialized-v1-r001` produced 189 schema-valid unified epoch rows
+and 756 separate `epoch_summary` decision rows. The validator reports 189
+varied send-turn epochs and zero varied epochs for each adjacent axis, with
+zero failures. The materialization preserves `invalid_environment` and
+`excludedFromPolicyAcceptance=true`. Its hashes are:
+
+- unified epochs:
+  `ea2d5ca5c964f92e6bc1eee607d7f5139315e54b60d03256b131b14c86241017`;
+- axis decisions:
+  `8e839d8d4fd56a5942108b0f8e28e1473df74ee207f4c2f1dfd2d2333767604c`;
+- validation:
+  `5174bdb7e01d59130b89d5f276be212bcd1f66cc75f8b46138b65bc2aca90ffe`;
+  and
+- local-result input:
+  `9f0be486a18f17fff224e19f88347de31a537c8767ecd82579d27498809b64fd`.
+
+The final focused verification commands were:
+
+```powershell
+dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj `
+  -c Release --no-restore
+
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj `
+  -c Release --no-build --no-restore `
+  --filter "FullyQualifiedName~REQ_QUIC_CRT_0177" `
+  --logger "console;verbosity=minimal"
+```
+
+The Release build passed with zero warnings and zero errors in 46.72 seconds.
+The final requirement-home run passed 29 of 29 tests with zero failures and
+zero skips in 12 seconds. It covers raw schema and semantic validation,
+permanent extraction, source checksums, source-to-sample joins, four-axis
+canonical rows, separate axis decisions, analysis-only workload provenance,
+classification preservation, and append-only rejection.
+
+No BenchmarkDotNet run, ProtocolLab deployment, large campaign, large
+normalization, split construction, or ML training was performed. The stopped
+55,658-row send-turn-only transform remains `diagnostic_incomplete`,
+append-only, and untouched. CI was not used and no performance work was added
+to CI.
+
+The four-axis unified instrumentation smoke gate is complete for architecture
+progression. It is not policy-acceptance evidence. The next authorized work is
+Stage 2 actor and memory foundations: bounded actor service, wake, follow-on,
+and fairness observations first, followed by `actor_work_quantum`, buffer
+ownership/copy inventory, `buffer_copy_coalescing`, and separately reviewed
+conservative-only `adaptive_backpressure`. Large Stage 1 campaigns and offline
+ML analysis remain deferred until that architecture work is complete.
+`active_internal` and production activation remain unauthorized.
