@@ -1159,3 +1159,55 @@ The first incomplete gate is permanent-runner capture and result/checksum join
 for the new send-turn raw stream. Local forced/shadow campaigns, multi-host
 ProtocolLab work, offline analysis, and review remain downstream and
 unauthorized until that join is implemented and the correctness gates pass.
+
+## Application-Send Turn Permanent Runner Join Checkpoint
+
+Local checkpoint commit `71206236` closes the permanent-runner capture and
+result/checksum join implementation gate for shadow-only
+`application_send_turn_planning`. The runner now retains the versioned raw
+turn stream per sample, invokes the standalone exporter, retains completed
+epoch rows and the export manifest, adds those artifacts to the cell checksum
+inventory, and validates each row's result, sample, and raw-source joins. The
+forced construction-provenance path remains separate. The final one-tick
+exporter sentinel remains retained and excluded as
+`terminal_partial_epoch`; the validator recognizes that exclusion only for the
+closed exporter, transformation, and observation version tuple.
+
+The active axis remained `application_send_turn_planning`; receive-credit and
+all adjacent axes remained `legacy_current`. No runtime policy consumer,
+production default, threshold, BenchmarkDotNet job, CI trigger, CI run, local
+campaign, ProtocolLab submission, dataset pipeline, offline model, or
+active-internal behavior changed. Commit `71206236` is local only and was not
+pushed.
+
+The exact verification commands and results were:
+
+```powershell
+dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --nologo -m:1 -nodeReuse:false -p:UseSharedCompilation=false
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build --nologo --filter "FullyQualifiedName~REQ_QUIC_CRT_0172|FullyQualifiedName~REQ_QUIC_CRT_0174|FullyQualifiedName~REQ_QUIC_CRT_0176" --logger "console;verbosity=minimal"
+pwsh -NoProfile -File ./eng/adaptive-runtime/Invoke-AdaptiveRuntimePolicyLocalCell.ps1 -PolicyAxis application_send_turn_planning -ShadowOnly -PolicyA legacy_current -PolicyB conservative -DryRun -OutputRoot ./.artifacts/adaptive-runtime/send-turn-shadow-runner-dryrun-20260723
+```
+
+The Release build passed with zero warnings and zero errors. The evidence
+validator, permanent-runner contract, and raw-to-epoch requirement homes passed
+45 of 45 tests with zero failures and zero skips. PowerShell parsing passed for
+the runner, send-turn exporter, and evidence validator. The dry run selected
+one custom shadow-only sample with `legacy_current` applied and created only
+the empty `protocol-lab-runs` and `samples` scaffold under
+`.artifacts/adaptive-runtime/send-turn-shadow-runner-dryrun-20260723`.
+`ARC-QUIC-CRT-0065`, `WI-QUIC-CRT-0066`, and `VER-QUIC-CRT-0067` each passed
+`model/model.schema.json` independently.
+
+The repository-wide command
+`pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -Profiles core`
+remains a `diagnostic_only` blocked baseline: it reported 2,692 errors across
+the pre-existing corpus, including unrelated aggregate specifications and RFC
+artifact families. The changed trace artifacts pass the narrow schema gate;
+this checkpoint neither repairs nor hides that broader repository condition.
+
+No executed campaign rows were produced. Campaign inclusion and exclusion
+counts therefore remain zero, and there is no policy or neutrality
+classification. The next gate is an executed permanent local shadow
+correctness/evidence cell, followed by disabled-versus-observe-only neutrality
+and the already-planned manual or nightly BenchmarkDotNet mechanism checks.
+No multi-host or active-policy work is authorized by this checkpoint.
