@@ -1612,19 +1612,15 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                     "Application-send turn observation requires the legacy_current receive-credit policy.");
             }
 
-            if (options.ApplicationSendTurnPolicyProvenanceSink is not null)
-            {
-                throw new InvalidOperationException(
-                    "Application-send turn construction provenance is reserved for forced-policy campaigns.");
-            }
         }
 
         if (options.AdaptiveRuntimeShadowEnabled)
         {
-            if (options.ApplicationSendTurnPolicyProvenanceSink is not null)
+            if (options.ApplicationSendTurnPolicyProvenanceSink is not null
+                && forcedApplicationSendTurnMode is null)
             {
                 throw new InvalidOperationException(
-                    "Application-send turn provenance requires a non-shadow forced policy campaign.");
+                    "Application-send turn provenance requires a forced application-send turn policy.");
             }
 
             if (forcedMode is not null and not QuicReceiveCreditPolicyMode.LegacyCurrent)
@@ -1641,6 +1637,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             if (forcedApplicationSendTurnMode is { } applicationSendTurnMode)
             {
                 ConfigureApplicationSendTurnPolicyMode(applicationSendTurnMode);
+                options.ApplicationSendTurnPolicyProvenanceSink?.TryPublish(
+                    QuicApplicationSendTurnPolicyProvenance.Create(
+                        applicationSendTurnMode));
             }
 
             if (forcedApplicationSendBatchMode is { } applicationSendBatchMode)

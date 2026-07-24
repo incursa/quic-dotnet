@@ -107,6 +107,59 @@ public sealed partial class REQ_QUIC_CRT_0177
     }
 
     [Fact]
+    public void ForcedSendTurnConstructionProvenanceRemainsSeparateFromUnifiedShadow()
+    {
+        QuicAdaptiveRuntimeStage1PolicySnapshot configured =
+            QuicAdaptiveRuntimeStage1ConfiguredPolicy.Create(
+                QuicApplicationSendTurnPolicyMode.Conservative,
+                QuicApplicationSendTurnObservationMode.Shadow,
+                sendBatchForced: null,
+                QuicApplicationSendBatchObservationMode.Shadow,
+                burstForced: null,
+                QuicQueuedSendBurstObservationMode.Shadow,
+                oversizedForced: null,
+                QuicOversizedWriteAdmissionObservationMode.Shadow);
+        QuicAdaptiveRuntimeStage1EvidenceAccumulator accumulator =
+            new(in configured);
+        RecordingProvenanceSink provenanceSink = new();
+        using QuicConnectionRuntime runtime =
+            new(QuicConnectionStreamStateTestHelpers.CreateState());
+
+        runtime.ConfigureAdaptiveRuntimePolicy(new QuicClientConnectionOptions
+        {
+            ForcedReceiveCreditPolicyMode =
+                QuicReceiveCreditPolicyMode.LegacyCurrent,
+            ForcedApplicationSendTurnPolicyMode =
+                QuicApplicationSendTurnPolicyMode.Conservative,
+            ApplicationSendTurnPolicyProvenanceSink = provenanceSink,
+            AdaptiveRuntimeShadowEnabled = true,
+            AdaptiveRuntimeShadowEpochInterval = TimeSpan.FromMilliseconds(250),
+            AdaptiveRuntimeShadowEpochSink = new RecordingEpochSink(),
+            ApplicationSendTurnObservationMode =
+                QuicApplicationSendTurnObservationMode.Shadow,
+            ApplicationSendTurnEvidenceSink = accumulator,
+            ApplicationSendBatchObservationMode =
+                QuicApplicationSendBatchObservationMode.Shadow,
+            ApplicationSendBatchEvidenceSink = accumulator,
+            QueuedSendBurstObservationMode =
+                QuicQueuedSendBurstObservationMode.Shadow,
+            QueuedSendBurstEvidenceSink = accumulator,
+            OversizedWriteAdmissionObservationMode =
+                QuicOversizedWriteAdmissionObservationMode.Shadow,
+            OversizedWriteAdmissionEvidenceSink = accumulator,
+        });
+
+        QuicApplicationSendTurnPolicyProvenance provenance =
+            Assert.Single(provenanceSink.Evidence);
+        Assert.Equal(
+            QuicApplicationSendTurnPolicyMode.Conservative,
+            provenance.AppliedPolicy);
+        Assert.Equal(
+            QuicApplicationSendTurnPolicyMode.Conservative,
+            runtime.ApplicationSendTurnPolicyMode);
+    }
+
+    [Fact]
     public void EmptyEpochReportsAllFourAxesAsMissingWithoutInventingOperations()
     {
         QuicAdaptiveRuntimeStage1PolicySnapshot configured = new(
@@ -380,5 +433,17 @@ public sealed partial class REQ_QUIC_CRT_0177
             in QuicAdaptiveRuntimeConnectionObservation observation,
             in QuicReceiveCreditPolicySnapshot snapshot)
             => true;
+    }
+
+    private sealed class RecordingProvenanceSink :
+        IQuicApplicationSendTurnPolicyProvenanceSink
+    {
+        internal List<QuicApplicationSendTurnPolicyProvenance> Evidence { get; } = [];
+
+        public bool TryPublish(in QuicApplicationSendTurnPolicyProvenance provenance)
+        {
+            Evidence.Add(provenance);
+            return true;
+        }
     }
 }
