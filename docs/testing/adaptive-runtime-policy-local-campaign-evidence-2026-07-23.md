@@ -1676,3 +1676,40 @@ new x64 plans nor ARM64 packages were uploaded. This is not a claim that the
 multi-host lab is unavailable. `application_send_turn_planning` remains the
 only active work axis and still applies `legacy_current`; the next portfolio
 axis remains unauthorized.
+
+## Complete Release Correctness Gate
+
+The complete local correctness-only Release gate ran at exact commit
+`1a67664753d38fa7c98b733deb10f23e9e2d519b` after a full solution Release
+build:
+
+```powershell
+dotnet build Incursa.Quic.slnx -c Release --no-restore
+dotnet test Incursa.Quic.slnx -c Release --no-build `
+  --filter "Category!=Performance" `
+  --results-directory .artifacts/adaptive-runtime/full-release/20260724-current-axis `
+  --logger "trx;LogFileName=correctness.trx" `
+  --logger "console;verbosity=minimal"
+```
+
+The solution build completed in 60.88 seconds with zero warnings and zero
+errors. The test run completed in 7 minutes 17 seconds:
+
+```text
+total    9,840
+passed   9,837
+failed   0
+skipped  3
+```
+
+The three skips are the existing ProtocolLab-sized live-loopback echo stress
+tests whose own metadata directs default Release evidence to the package smoke
+lane. They are not new failures or performance tests silently moved into CI.
+
+The retained TRX is
+`.artifacts/adaptive-runtime/full-release/20260724-current-axis/correctness.trx`,
+14,166,449 bytes, with SHA-256
+`c508b0c2637daa6d8008ed3993b0c2a162cdf53619e6b8690fe8e3e2da323b75`.
+This closes the complete local Release correctness gate for the current
+checkpoint. It does not close broader neutrality, independent-host execution,
+host/workload holdouts, offline rule replay, fairness, or campaign rollback.
