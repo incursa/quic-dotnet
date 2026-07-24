@@ -3207,3 +3207,70 @@ owners and endpoint handoff remain explicitly uncorrelated and non-forceable.
 Those paths remain ahead of Stage 2 actor work-unit, fairness, exactly-once
 repost, force-readiness, and rollback gates. Production activation remains
 unauthorized.
+
+## Stage 2 Protected-Packet And Hosted-Endpoint Buffer Release
+
+Local commit
+`7b2b21cf939f9e39c353a27209548f6e8b9e6a41` completes the reviewed managed
+owner chain for `outbound_packet_protection` and hosted
+`endpoint_datagram_handoff` without changing packet selection, packet-number
+authority, protection, congestion, pacing, amplification, recovery,
+flow-control, socket batching, or buffer limits.
+
+Each non-batched pooled protection output now receives a compact lifetime
+token after successful construction. Admission failure releases it as
+`Failed`; an ACK-only copy releases it as `CopiedToNextOwner`; sent-packet and
+retransmission state move the same token through loss, replacement, ACK,
+terminal cleanup, and disposal. Hosted rebuildable sends detach both the owner
+and token into `QuicConnectionSendDatagramUpdate`. A shared hosted
+UDP-segmentation array emits one construction and one release for the one
+shared owner, not a fabricated record per protected slice. The shard returns
+the owner after synchronous endpoint-observer processing and then publishes
+`Completed` or `Failed`; pending suppression cleanup publishes `Canceled`.
+The reason describes host-observer completion and does not claim independently
+verified kernel acceptance.
+
+Construction observation/epoch/raw v3 adds the closed
+`OutboundPacketProtection`, `Protect`, and `PacketProtection` values. Release
+observation/raw v7 adds only that owner path. Unified evidence/raw and the raw
+export manifest advance to v2 because the nested buffer summary is now v3.
+All earlier schemas remain immutable, and the lifetime validator accepts both
+retained construction v2/release v6 pairs and current v3/v7 pairs.
+
+The focused verification sequence is:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| First test-project Release build | Failed with one `CS8156` error because a record property was passed directly by `in` to the diagnostic release observer | `diagnostic_only`; compile-time implementation correction only. A local token copy replaced the invalid call. No runtime or evidence row was produced. |
+| Final test-project Release build | Zero warnings and zero errors in 53.32 seconds | `accepted` focused build evidence. |
+| Stage 2 contracts, send-runtime ownership, and raw-package band | 83 passed, zero failed, zero skipped in 16 seconds | `accepted`; includes v3/v7 schemas, v2 unified schemas, loss/retransmission transfer, hosted detachment, exact release, and permanent host contract identity. |
+| Shard, listener send-resilience, UDP-segmentation, application-datagram batching, recovery, and retransmission band | 286 passed, zero failed, zero skipped in eight seconds | `accepted`; endpoint, batching, recovery, and ownership behavior remain correct. |
+| Final `REQ-QUIC-CRT-0182` run after retained-contract routing was added | 34 passed, zero failed, zero skipped in two seconds | `accepted`; current v3/v7 and retained v2/v6 construction/release joins both validate. |
+| Raw-host Release build | Zero warnings and zero errors in 5.01 seconds | `accepted`; v3 construction, v7 release, and unified raw v2 identities compile in the permanent host. |
+| Focused SpecTrace model validation | `SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY`, `ARC-QUIC-CRT-0067`, `WI-QUIC-CRT-0068`, and `VER-QUIC-CRT-0069` each returned `True` | `accepted` focused trace evidence. |
+| New-schema parse validation | Eight new construction, release, unified, and manifest schemas parsed successfully | `accepted` contract syntax evidence. |
+| Initial generated-schema destination | The first apply-patch orchestration placed the eight new unstaged schema files in `C:\shared\src\incursa\schemas` because its patch paths were relative to the desktop workspace root | `diagnostic_only`; the exact files were moved into the repository with apply-patch, the verified empty accidental directory was removed, and no evidence or user-authored file was overwritten. |
+
+No campaign axis varied and no new raw, unified, normalized, curated, split,
+or analysis rows were generated. Receive credit, all four Stage 1 axes,
+`actor_work_quantum`, and `buffer_copy_coalescing` remain applied as
+`legacy_current` outside earlier explicitly retained Stage 1 smoke treatments.
+Dataset inclusion and exclusion counts are unchanged. No BenchmarkDotNet run,
+performance claim, large campaign, ProtocolLab deployment, dataset transform,
+ML analysis, CI run, push, or active behavior occurred.
+
+Eight closed managed construction paths are now terminally correlated:
+`receive_segment`, `application_write_request`, `oversized_raw_queue`,
+`formatted_stream_payload`, `combined_application_send`,
+`retransmission_clone`, `sent_packet_plaintext_retention`, and
+`outbound_packet_protection`. Hosted endpoint handoff continues the protected
+owner rather than creating a second construction. Linux unmanaged `sendmmsg`
+staging and independently verified kernel-send outcome remain explicit
+platform/outcome gaps, not production-controller inputs.
+
+The next architecture slice remains Stage 2 actor work-unit definition,
+ready-stream and connection fairness outcomes, cooperative safe checkpoints,
+and exactly-once follow-on/repost design. A distinct conservative
+`buffer_copy_coalescing` implementation, force-legacy rollback, and shadow
+readiness remain open. No large dataset or ML analysis is authorized before
+those architecture gates, and production activation remains unauthorized.
