@@ -1952,3 +1952,92 @@ publisher-loss provenance, the batch BenchmarkDotNet cost slice, permanent
 campaign inputs, the remaining two Stage 1 axes, full Release correctness, and
 the small four-axis smoke remain open. `active_internal` and production
 activation remain unauthorized.
+
+## Stage 1 Queued-Send Burst Runtime Checkpoint
+
+Local commit `fb520dd7` implements the `queued_send_burst_budget` runtime seam.
+The closed policy set is `legacy_current` and `single_datagram`.
+`legacy_current` retains the existing four-datagram pre-confirmation and
+twelve-datagram post-confirmation cap. `single_datagram` lowers an
+already-legal recovery-progress actor-turn budget to one datagram. The runtime
+still recomputes congestion, pacing, anti-amplification, recovery,
+retransmission, handshake, packet, endpoint, flow-control, queue, buffer, and
+lifecycle authority before every datagram. A forced value cannot turn a
+blocked budget into an allowed budget.
+
+The actor-turn record contains versioned observation, rule, snapshot, reason,
+and provenance identities; bounded missing, stale, saturated, contradictory,
+out-of-domain, recovery, and resource state; forced and shadow identities;
+selected and applied values; bounded reasons and safety overrides; a
+one-actor-turn latch; legal and configured caps; queue count, logical backlog,
+stream diversity, age, queue-delay and actor-service observations; congestion
+and retained-send state; prior burst-limit hits; and legal, applied, emitted,
+queue-before, queue-after, recovery-outcome, and blocked-reason outcomes. A
+failing evidence sink is diagnostic-only and cannot escape the actor turn.
+
+The runtime integration proof used a confirmed connection with one tracked
+application packet and 48 delayed writes across four streams. In shadow
+without forcing, the legacy cap drained the queue and the shadow
+recommendation did not change applied behavior. With `single_datagram` forced,
+the same recovery-progress boundary emitted exactly one datagram, retained
+queued work, reported `burst_limit_reached`, and kept receive-credit,
+application-send turn planning, and application-send batch formation applied
+as `legacy_current`. The adjacent axes were observed concurrently but were not
+forced.
+
+The final verification commands were:
+
+```powershell
+dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release `
+  --no-restore --nologo -m:1 -nodeReuse:false `
+  -p:UseSharedCompilation=false -v:minimal
+
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release `
+  --no-build --no-restore `
+  --filter "FullyQualifiedName~REQ_QUIC_CRT_0175|FullyQualifiedName~REQ_QUIC_CRT_0176|FullyQualifiedName~REQ_QUIC_CRT_0177|FullyQualifiedName~REQ_QUIC_CRT_0178|FullyQualifiedName~REQ_QUIC_CRT_0179|FullyQualifiedName~QuicApplicationSendSchedulerTests|FullyQualifiedName~QuicApplicationSendQueueTests|FullyQualifiedName~QuicConnectionRuntimeWriteRequestCancellationTests|FullyQualifiedName~MetricsTests" `
+  --logger "console;verbosity=minimal"
+
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release `
+  --no-build --no-restore `
+  --filter "FullyQualifiedName~REQ_QUIC_CRT_0179" `
+  --logger "console;verbosity=minimal"
+```
+
+The final Release build passed with zero warnings and zero errors in 47.92
+seconds. The combined focused band passed 257 of 257 tests with zero failures
+and zero skips in 20 seconds. The final `REQ-QUIC-CRT-0179` home passed 38 of
+38 tests with zero failures and zero skips in 649 milliseconds. It includes a
+256-turn deterministic bounded-sequence property test. The Stage 1
+specification, architecture, work item, and verification JSON artifacts each
+passed `model/model.schema.json`.
+
+Five failed runtime-test iterations are retained as `diagnostic_only`; none
+was relabeled as passing evidence:
+
+| Run | Result | Classification | Disposition |
+| --- | --- | --- | --- |
+| Initial 36-test runtime run | 35 passed, 1 failed | `diagnostic_only` | The test used 1,000-byte writes, which correctly took the existing direct-send path and therefore did not arm the small-write timer. |
+| Second 36-test runtime run | 35 passed, 1 failed | `diagnostic_only` | The test attempted 48 simultaneous bidirectional streams although the fixture's peer stream limit is four. |
+| Third 36-test runtime run | 35 passed, 1 failed | `diagnostic_only` | Expiring the ordinary small-write timer exercised the single-packet flush boundary, not the multi-datagram recovery-progress burst boundary. |
+| Fourth 36-test runtime run | 35 passed, 1 failed | `diagnostic_only` | A largest-only ACK over several tracked packets correctly created pending retransmission, so the recovery guard overrode the forced burst. |
+| Fifth 36-test runtime run | 35 passed, 1 failed | `diagnostic_only` | Artificial congestion bytes were not associated with tracked packets and therefore remained authoritative after direct packet acknowledgement. |
+
+A code-review correction made terminal and disposal safety overrides retain
+their specific bounded reason codes instead of collapsing them into the
+generic resource reason. The final requirement home covers both cases.
+
+No BenchmarkDotNet run, permanent local campaign, ProtocolLab campaign,
+dataset transform, or unified epoch materialization was performed for this
+checkpoint. Unified-schema row counts, classifications, and exclusions are
+zero for this slice. The stopped 55,658-row send-turn-only source remains
+`diagnostic_incomplete`, append-only, and untouched.
+
+Nothing was pushed, no CI workflow was used, and no performance work was added
+to correctness CI. The next implementation axis is
+`oversized_write_admission_quantum`. Receive-credit, send-turn planning, batch
+formation, and burst budget return to `legacy_current` when that treatment is
+varied. Unified raw export, bounded publisher-loss provenance, manual or
+nightly BenchmarkDotNet cost evidence, permanent campaign inputs, full Release
+correctness, and the small unified four-axis smoke remain open. After that
+smoke, the roadmap proceeds to Stage 2 before any large transform or offline
+ML analysis. `active_internal` and production activation remain unauthorized.
