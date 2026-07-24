@@ -61,6 +61,30 @@ Forced identities bypass selection only, observe-only emits no recommendation,
 shadow still applies `legacy_current`, and all runtime safety guards remain
 authoritative.
 
+## Plan an Adaptive-Runtime Campaign
+
+Generate the permanent four-cell ABBA plan without uploading or submitting:
+
+```powershell
+pwsh ./eng/adaptive-runtime/Invoke-AdaptiveRuntimeProtocolLabCampaign.ps1 `
+  -CampaignId application-send-turn-shadow-20260724-r001 `
+  -ControllerUri http://10.10.99.176:5088 `
+  -CampaignKind shadow `
+  -Sequence ABBA `
+  -ProtocolLabRoot ../protocol-lab `
+  -ProtocolLabExecutionRoot ../protocol-lab-internal
+```
+
+The plan uses distinct immutable treatment package versions, freezes adjacent
+axes at `legacy_current`, requests `isolated-pair`, leaves worker selection to
+the controller, and records exact cell commands in a schema-valid manifest.
+Use `-CampaignKind forced_counterfactual` for the separate
+`legacy_current`/`conservative` identity campaign. Add `-Execute` only after
+the plan is reviewed and the package-source worktree is clean. The driver then
+retains every package, upload, job, returned worker pair, physical-host
+classification, and checksum; it does not turn a completed job into an
+accepted policy result.
+
 ## Submit a Lab Run
 
 ```powershell
@@ -71,7 +95,11 @@ pwsh ./eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1 `
   -LoadProfileId smoke
 ```
 
-The script packages the current working tree, uploads the package, submits a job for `quic-dotnet-dev`, polls until completion unless `-NoWait` is provided, and writes job result JSON under `artifacts/protocol-lab/results/`.
+The script requires a clean package-source scope by default, packages the
+current commit, uploads the package, submits a job for `quic-dotnet-dev`, polls
+until completion unless `-NoWait` is provided, and writes job result JSON under
+`artifacts/protocol-lab/results/`. `-AllowDirtySource` is diagnostic-only and
+must never be used for an evidence-eligible adaptive-runtime campaign.
 
 Submit raw QUIC explicitly:
 
@@ -94,7 +122,9 @@ capabilities. The package requires worker-installed `dotnet` and `pwsh`, does
 not require `bash`, and still requires the worker environment primitive
 `libmsquic`. The submit helper accepts the same application-send turn
 measurement identities as the package builder and rejects them for the HTTP/3
-package target.
+package target. It also accepts explicit package version, run-ID prefix,
+placement policy, and result-root values so a permanent campaign can retain
+ordered immutable identities.
 
 For raw QUIC, the run helper also builds and uploads the public ProtocolLab raw QUIC test-executor and scenario-pack packages with the `quic-dotnet-raw-dev` implementation package. Use `-PackageReference` to append prebuilt or environment-specific component package references when the controller should resolve an additional package that has already been uploaded. Use `-UsePackageReferenceOnly` when all selected packages have already been admitted by the controller and the helper should submit pinned package references without rebuilding or uploading.
 

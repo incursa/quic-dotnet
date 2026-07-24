@@ -27,6 +27,7 @@
     "eng/adaptive-runtime/Invoke-AdaptiveRuntimePolicyLocalCell.ps1",
     "eng/adaptive-runtime/Convert-AdaptiveRuntimeApplicationSendTurnEvidence.ps1",
     "eng/adaptive-runtime/Invoke-AdaptiveRuntimeDatasetPipeline.ps1",
+    "eng/adaptive-runtime/Invoke-AdaptiveRuntimeProtocolLabCampaign.ps1",
     "eng/adaptive-runtime/Measure-AdaptiveRuntimeApplicationSendTurnDataset.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimePolicyEvidence.ps1",
     "eng/protocol-lab/New-QuicDotNetProtocolLabPackage.ps1",
@@ -35,6 +36,7 @@
     "docs/design/adaptive-runtime-policy-observation-schema.md",
     "schemas/adaptive-runtime-application-send-turn-raw-v1.schema.json",
     "schemas/adaptive-runtime-application-send-turn-analysis-v1.schema.json",
+    "schemas/adaptive-runtime-protocol-lab-campaign-v1.schema.json",
     "schemas/adaptive-runtime-policy-construction-dataset-v1.schema.json",
     "schemas/adaptive-runtime-policy-epoch-dataset-v1.schema.json"
   ],

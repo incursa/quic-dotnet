@@ -16,6 +16,8 @@ param(
 
     [string[]] $RuntimeIdentifier = @("linux-x64"),
 
+    [string] $PackageVersion,
+
     [string] $SuiteId = "h3-local-v1",
 
     [string[]] $ScenarioId = @("http3.payload.bytes.1kb"),
@@ -32,6 +34,11 @@ param(
 
     [switch] $CaptureTrace,
 
+    [ValidateSet("controller-decides", "any-ready", "single-node", "sut", "load", "isolated-pair")]
+    [string] $PlacementPolicy = "controller-decides",
+
+    [string] $RunIdPrefix,
+
     [ValidateSet("", "legacy_current", "conservative", "observe_only", "shadow")]
     [string] $AdaptiveRuntimeApplicationSendTurnPolicy = "",
 
@@ -44,6 +51,10 @@ param(
     [string] $RawQuicTestExecutorRuntimeIdentifier = "linux-x64",
 
     [switch] $BinaryBackedRawQuicTestExecutor,
+
+    [string] $ResultRoot,
+
+    [switch] $AllowDirtySource,
 
     [int] $TimeoutSeconds = 1800,
 
@@ -363,20 +374,31 @@ function Wait-LabJob {
 
 $packageResult = $null
 if (-not $UsePackageReferenceOnly) {
-    $packageResultJson = & (Join-Path $PSScriptRoot "New-QuicDotNetProtocolLabPackage.ps1") `
-        -PackageTarget $PackageTarget `
-        -ProtocolLabRoot $protocolLabRootFullPath `
-        -Project $Project `
-        -Configuration $Configuration `
-        -RuntimeIdentifier $RuntimeIdentifier `
-        -AdaptiveRuntimeApplicationSendTurnPolicy $AdaptiveRuntimeApplicationSendTurnPolicy `
-        -AllowDirtySource `
-        -Force
+    $packageBuilderArguments = @{
+        PackageTarget = $PackageTarget
+        ProtocolLabRoot = $protocolLabRootFullPath
+        Project = $Project
+        Configuration = $Configuration
+        RuntimeIdentifier = $RuntimeIdentifier
+        AdaptiveRuntimeApplicationSendTurnPolicy = $AdaptiveRuntimeApplicationSendTurnPolicy
+        AllowDirtySource = [bool]$AllowDirtySource
+        Force = $true
+    }
+    if (-not [string]::IsNullOrWhiteSpace($PackageVersion)) {
+        $packageBuilderArguments.PackageVersion = $PackageVersion
+    }
+
+    $packageResultJson = & (Join-Path $PSScriptRoot "New-QuicDotNetProtocolLabPackage.ps1") @packageBuilderArguments
 
     $packageResult = $packageResultJson | ConvertFrom-Json
 }
-$resultRoot = Join-Path (Get-Location) "artifacts/protocol-lab/results"
-New-Item -ItemType Directory -Force -Path $resultRoot | Out-Null
+if ([string]::IsNullOrWhiteSpace($ResultRoot)) {
+    $ResultRoot = Join-Path (Get-Location) "artifacts/protocol-lab/results"
+}
+elseif (-not [System.IO.Path]::IsPathRooted($ResultRoot)) {
+    $ResultRoot = [System.IO.Path]::GetFullPath((Join-Path (Get-Location) $ResultRoot))
+}
+New-Item -ItemType Directory -Force -Path $ResultRoot | Out-Null
 
 $componentPackageResult = $null
 $componentPackageReferences = @()
@@ -441,7 +463,7 @@ elseif (-not $UsePackageReferenceOnly -and $PackageTarget -eq "Http3" -and $h3Co
     )
 }
 
-$artifactPath = Join-Path $resultRoot "latest.zip"
+$artifactPath = Join-Path $ResultRoot "latest.zip"
 $uploadedPackages = @()
 if (-not $UsePackageReferenceOnly) {
     $uploadedPackages += Upload-LabPackage -ControllerUri $ControllerUri -Path $packageResult.path
@@ -464,7 +486,9 @@ if ($requiredCapabilityWasSpecified) {
         })
 }
 
-$runIdPrefix = "$($targetConfig.ImplementationId)-$((Get-Date -AsUTC -Format 'yyyyMMddTHHmmssZ'))"
+if ([string]::IsNullOrWhiteSpace($RunIdPrefix)) {
+    $RunIdPrefix = "$($targetConfig.ImplementationId)-$((Get-Date -AsUTC -Format 'yyyyMMddTHHmmssZ'))"
+}
 $jobRequest = [ordered]@{
     suiteIds = @($SuiteId)
     implementationIds = @($targetConfig.ImplementationId)
@@ -472,7 +496,8 @@ $jobRequest = [ordered]@{
     protocols = @($Protocol)
     testExecutorIds = @($TestExecutorId)
     loadProfileId = $LoadProfileId
-    runIdPrefix = $runIdPrefix
+    runIdPrefix = $RunIdPrefix
+    placementPolicy = $PlacementPolicy
     maxAttempts = 1
     packages = $allPackageReferences
     requiredCapabilities = $requiredCapabilities
@@ -497,7 +522,7 @@ else {
 }
 
 $jobResultJson = $jobResult | ConvertTo-Json -Depth 32
-$jobResultPath = Join-Path $resultRoot "$($jobResult.jobId).json"
+$jobResultPath = Join-Path $ResultRoot "$($jobResult.jobId).json"
 $jobResultJson | Set-Content -LiteralPath $jobResultPath
 
 [ordered]@{
@@ -508,6 +533,7 @@ $jobResultJson | Set-Content -LiteralPath $jobResultPath
     protocolLabRoot = $protocolLabRootFullPath
     protocolLabExecutionRoot = $protocolLabExecutionRootFullPath
     uploadedPackages = $uploadedPackages
+    jobRequest = $jobRequest
     artifactOutputPath = $artifactPath
     job = $jobResult
     jobResultPath = $jobResultPath

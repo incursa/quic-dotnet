@@ -1,0 +1,449 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-protocol-lab-campaign-v1.schema.json",
+  "title": "Adaptive runtime ProtocolLab campaign manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "campaignId",
+    "axisId",
+    "campaignKind",
+    "executionMode",
+    "sequence",
+    "createdAtUtc",
+    "updatedAtUtc",
+    "source",
+    "policy",
+    "workload",
+    "controller",
+    "cells",
+    "hostRotation",
+    "classification",
+    "unresolvedBlockers",
+    "activeInternalAuthorized",
+    "checksumInventoryPath"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "adaptive-runtime-protocol-lab-campaign-v1"
+    },
+    "campaignId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,95}$"
+    },
+    "axisId": {
+      "const": "application_send_turn_planning"
+    },
+    "campaignKind": {
+      "enum": [
+        "shadow",
+        "forced_counterfactual"
+      ]
+    },
+    "executionMode": {
+      "enum": [
+        "plan_only",
+        "execute"
+      ]
+    },
+    "sequence": {
+      "enum": [
+        "ABBA",
+        "BAAB"
+      ]
+    },
+    "createdAtUtc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAtUtc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "commitSha",
+        "clean",
+        "dirtyEntries"
+      ],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "minLength": 1
+        },
+        "commitSha": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{40}$"
+        },
+        "clean": {
+          "type": "boolean"
+        },
+        "dirtyEntries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "appliedPolicy",
+        "adjacentAxesFrozenAt",
+        "treatments"
+      ],
+      "properties": {
+        "appliedPolicy": {
+          "const": "legacy_current"
+        },
+        "adjacentAxesFrozenAt": {
+          "const": "legacy_current"
+        },
+        "treatments": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label",
+              "requestedPolicy"
+            ],
+            "properties": {
+              "label": {
+                "enum": [
+                  "A",
+                  "B"
+                ]
+              },
+              "requestedPolicy": {
+                "enum": [
+                  "legacy_current",
+                  "conservative",
+                  "shadow"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "workload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "packageTarget",
+        "suiteId",
+        "scenarioIds",
+        "protocol",
+        "testExecutorId",
+        "loadProfileId",
+        "repetitionsPerJob",
+        "placementPolicy",
+        "runtimeIdentifiers"
+      ],
+      "properties": {
+        "packageTarget": {
+          "const": "RawQuic"
+        },
+        "suiteId": {
+          "const": "quic-transport-v1-comparison"
+        },
+        "scenarioIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^quic\\.transport\\."
+          }
+        },
+        "protocol": {
+          "const": "quic"
+        },
+        "testExecutorId": {
+          "const": "quic-go-raw-load"
+        },
+        "loadProfileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "repetitionsPerJob": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "placementPolicy": {
+          "const": "isolated-pair"
+        },
+        "runtimeIdentifiers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "linux-x64",
+              "win-x64",
+              "linux-arm64",
+              "osx-arm64"
+            ]
+          }
+        }
+      }
+    },
+    "controller": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uri",
+        "workerSelectionOwner",
+        "explicitWorkerIds",
+        "inventoryPath",
+        "inventoryError"
+      ],
+      "properties": {
+        "uri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "workerSelectionOwner": {
+          "const": "controller"
+        },
+        "explicitWorkerIds": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "inventoryPath": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "inventoryError": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "cells": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sequenceIndex",
+          "treatmentLabel",
+          "requestedPolicy",
+          "appliedPolicy",
+          "packageVersion",
+          "runIdPrefix",
+          "state",
+          "command",
+          "resultRoot",
+          "invocationResultPath",
+          "jobId",
+          "jobStatus",
+          "jobResultPath",
+          "package",
+          "uploadedPackages",
+          "topology",
+          "error"
+        ],
+        "properties": {
+          "sequenceIndex": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4
+          },
+          "treatmentLabel": {
+            "enum": [
+              "A",
+              "B"
+            ]
+          },
+          "requestedPolicy": {
+            "enum": [
+              "legacy_current",
+              "conservative",
+              "shadow"
+            ]
+          },
+          "appliedPolicy": {
+            "const": "legacy_current"
+          },
+          "packageVersion": {
+            "type": "string",
+            "minLength": 1
+          },
+          "runIdPrefix": {
+            "type": "string",
+            "minLength": 1
+          },
+          "state": {
+            "enum": [
+              "planned",
+              "executing",
+              "completed",
+              "failed"
+            ]
+          },
+          "command": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resultRoot": {
+            "type": "string",
+            "minLength": 1
+          },
+          "invocationResultPath": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "jobId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "jobStatus": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "jobResultPath": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "package": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "uploadedPackages": {
+            "type": "array"
+          },
+          "topology": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sutNodeId",
+              "loadNodeId",
+              "sutPhysicalHostId",
+              "loadPhysicalHostId",
+              "classification"
+            ],
+            "properties": {
+              "sutNodeId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "loadNodeId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "sutPhysicalHostId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "loadPhysicalHostId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "classification": {
+                "enum": [
+                  "topology_unverified",
+                  "physical_host_unverified",
+                  "shared_physical_host",
+                  "independent_physical_hosts"
+                ]
+              }
+            }
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "hostRotation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "distinctPhysicalHostPairs",
+        "observedPairKeys"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "not_evaluated",
+            "topology_unverified",
+            "host_rotation_unverified",
+            "observed"
+          ]
+        },
+        "distinctPhysicalHostPairs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "observedPairKeys": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "classification": {
+      "enum": [
+        "planned",
+        "execution_in_progress",
+        "completed_unclassified",
+        "diagnostic_only",
+        "environment_invalid"
+      ]
+    },
+    "unresolvedBlockers": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "activeInternalAuthorized": {
+      "const": false
+    },
+    "checksumInventoryPath": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

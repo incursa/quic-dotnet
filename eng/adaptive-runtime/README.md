@@ -2,8 +2,9 @@
 
 This directory contains the local validation gate for adaptive-runtime policy
 campaign results plus the measurement-only catalog and offline dataset
-materialization scripts. It does not train a model, submit a ProtocolLab job,
-or provide runtime controller inputs.
+materialization scripts. It does not train a model or provide runtime
+controller inputs. The ProtocolLab campaign driver is plan-only by default and
+submits jobs only when its explicit `-Execute` switch is supplied.
 
 Validate one or more result documents and their joined epoch rows from the
 repository root:
@@ -127,6 +128,38 @@ sample and labeled `descriptive_only_not_epoch_independent`; they are not
 treated as thousands of independent epoch outcomes. Insufficient host or
 workload diversity emits `ruleProposal.status = holdout_blocked`, a null
 candidate rule, and `activeInternalAuthorized = false`.
+
+Create a permanent controller-owned, independent-host ProtocolLab campaign
+plan for the current send-turn axis without contacting the controller:
+
+```powershell
+./eng/adaptive-runtime/Invoke-AdaptiveRuntimeProtocolLabCampaign.ps1 `
+  -CampaignId application-send-turn-shadow-20260724-r001 `
+  -ControllerUri http://10.10.99.176:5088 `
+  -CampaignKind shadow `
+  -Sequence ABBA `
+  -ProtocolLabRoot ../protocol-lab `
+  -ProtocolLabExecutionRoot ../protocol-lab-internal
+```
+
+The schema-valid plan freezes every adjacent axis at `legacy_current`, uses
+distinct `legacy_current` and `shadow` package versions, requests
+controller-owned `isolated-pair` placement, records no explicit worker ID, and
+emits four ordered cell commands plus a checksum inventory under
+`.artifacts/adaptive-runtime/protocol-lab/<campaignId>`. Use
+`-CampaignKind forced_counterfactual` for the independently forceable
+`legacy_current` versus `conservative` identity campaign. Both identities
+retain the current legal scheduler in this measurement-only slice.
+
+After reviewing the plan, commit the package-source slice and add `-Execute`.
+Execution refuses a dirty worktree, snapshots the live controller registry,
+runs the four jobs sequentially in the declared ABBA or BAAB order, and records
+each package, upload, job result, SUT/load node, physical-host identity, and
+topology classification. A completed job remains
+`completed_unclassified` until dataset ingestion applies correctness,
+environment, workload, and policy gates. Repeated physical-host pairs remain
+`host_rotation_unverified`; shared physical hosts are
+`environment_invalid`. The driver never authorizes `active_internal`.
 
 Run one permanent forced-policy A/B/B/A or B/A/A/B local cell with the
 source-backed raw QUIC ProtocolLab harness:

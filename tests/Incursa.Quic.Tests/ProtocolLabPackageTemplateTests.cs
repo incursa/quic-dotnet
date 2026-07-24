@@ -297,10 +297,11 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.DoesNotContain("@($RepoRoot, $ProtocolLabRoot)", builderScript, StringComparison.Ordinal);
 
         var runScript = File.ReadAllText(Path.Combine(repoRoot, "eng", "protocol-lab", "Invoke-QuicDotNetProtocolLabRun.ps1"));
-        Assert.Contains("-AllowDirtySource", runScript);
+        Assert.Contains("[switch] $AllowDirtySource", runScript);
+        Assert.Contains("AllowDirtySource = [bool]$AllowDirtySource", runScript);
         Assert.Contains("AdaptiveRuntimeApplicationSendTurnPolicy", runScript);
         Assert.Contains(
-            "-AdaptiveRuntimeApplicationSendTurnPolicy $AdaptiveRuntimeApplicationSendTurnPolicy",
+            "AdaptiveRuntimeApplicationSendTurnPolicy = $AdaptiveRuntimeApplicationSendTurnPolicy",
             runScript);
         Assert.Contains(
             "AdaptiveRuntimeApplicationSendTurnPolicy is supported only for the RawQuic package target.",
@@ -510,6 +511,97 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("ConvertFrom-PackageReferenceString", helperScript);
         Assert.Contains("packageId|packageVersion|sha256", helperScript);
         Assert.Contains("componentPackages = $componentPackageResult", helperScript);
+        Assert.Contains("[string] $PackageVersion", helperScript);
+        Assert.Contains("[string] $RunIdPrefix", helperScript);
+        Assert.Contains("[string] $PlacementPolicy", helperScript);
+        Assert.Contains("placementPolicy = $PlacementPolicy", helperScript);
+        Assert.Contains("jobRequest = $jobRequest", helperScript);
+        Assert.Contains("AllowDirtySource = [bool]$AllowDirtySource", helperScript);
+        Assert.DoesNotContain("-AllowDirtySource `", helperScript);
+    }
+
+    [Theory]
+    [InlineData("shadow", "ABBA", "legacy_current", "shadow")]
+    [InlineData("forced_counterfactual", "BAAB", "legacy_current", "conservative")]
+    public void Adaptive_runtime_protocol_lab_campaign_plan_is_schema_valid_and_behavior_neutral(
+        string campaignKind,
+        string sequence,
+        string treatmentA,
+        string treatmentB)
+    {
+        var repoRoot = FindRepoRoot();
+        var temporaryRoot = Path.Combine(Path.GetTempPath(), "adaptive-protocol-lab-plan-" + Guid.NewGuid().ToString("N"));
+        var scriptPath = Path.Combine(
+            repoRoot,
+            "eng",
+            "adaptive-runtime",
+            "Invoke-AdaptiveRuntimeProtocolLabCampaign.ps1");
+        var campaignId = "send-turn-" + campaignKind.Replace('_', '-') + "-test";
+
+        try
+        {
+            var result = RunPowerShellFile(
+                scriptPath,
+                "-CampaignId",
+                campaignId,
+                "-ControllerUri",
+                "http://127.0.0.1:1",
+                "-CampaignKind",
+                campaignKind,
+                "-Sequence",
+                sequence,
+                "-ProtocolLabRoot",
+                repoRoot,
+                "-OutputRoot",
+                temporaryRoot);
+
+            Assert.Equal(0, result.ExitCode);
+            using var summary = JsonDocument.Parse(result.Output);
+            Assert.Equal("planned", summary.RootElement.GetProperty("classification").GetString());
+            Assert.Equal("plan_only", summary.RootElement.GetProperty("executionMode").GetString());
+            Assert.False(summary.RootElement.GetProperty("activeInternalAuthorized").GetBoolean());
+
+            var manifestPath = Path.Combine(temporaryRoot, "campaign-manifest.json");
+            var inventoryPath = Path.Combine(temporaryRoot, "checksum-inventory.json");
+            Assert.True(File.Exists(manifestPath));
+            Assert.True(File.Exists(inventoryPath));
+
+            using var document = JsonDocument.Parse(File.ReadAllText(manifestPath));
+            var root = document.RootElement;
+            Assert.Equal("adaptive-runtime-protocol-lab-campaign-v1", root.GetProperty("schemaVersion").GetString());
+            Assert.Equal("application_send_turn_planning", root.GetProperty("axisId").GetString());
+            Assert.Equal(campaignKind, root.GetProperty("campaignKind").GetString());
+            Assert.Equal(sequence, root.GetProperty("sequence").GetString());
+            Assert.Equal("legacy_current", root.GetProperty("policy").GetProperty("appliedPolicy").GetString());
+            Assert.Equal("legacy_current", root.GetProperty("policy").GetProperty("adjacentAxesFrozenAt").GetString());
+            Assert.False(root.GetProperty("activeInternalAuthorized").GetBoolean());
+
+            var treatments = root.GetProperty("policy").GetProperty("treatments").EnumerateArray().ToArray();
+            Assert.Equal(treatmentA, treatments[0].GetProperty("requestedPolicy").GetString());
+            Assert.Equal(treatmentB, treatments[1].GetProperty("requestedPolicy").GetString());
+
+            var controller = root.GetProperty("controller");
+            Assert.Equal("controller", controller.GetProperty("workerSelectionOwner").GetString());
+            Assert.Empty(controller.GetProperty("explicitWorkerIds").EnumerateArray());
+
+            var cells = root.GetProperty("cells").EnumerateArray().ToArray();
+            Assert.Equal(4, cells.Length);
+            Assert.Equal(sequence.Select(value => value.ToString()), cells.Select(cell => cell.GetProperty("treatmentLabel").GetString()));
+            Assert.All(cells, cell =>
+            {
+                Assert.Equal("legacy_current", cell.GetProperty("appliedPolicy").GetString());
+                Assert.Equal("planned", cell.GetProperty("state").GetString());
+                Assert.Contains("-PlacementPolicy isolated-pair", cell.GetProperty("command").GetString(), StringComparison.Ordinal);
+                Assert.DoesNotContain("-AllowDirtySource", cell.GetProperty("command").GetString(), StringComparison.Ordinal);
+            });
+        }
+        finally
+        {
+            if (Directory.Exists(temporaryRoot))
+            {
+                Directory.Delete(temporaryRoot, recursive: true);
+            }
+        }
     }
 
     [Theory]
