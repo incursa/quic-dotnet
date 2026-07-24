@@ -3473,3 +3473,65 @@ a controller input. The next checkpoint must version the actor and unified
 evidence contracts before exposing it and must keep
 `MissingRunnableConnectionCount` authoritative. Active behavior remains
 unauthorized.
+
+## Stage 2 Versioned Service-Contender Evidence
+
+Local commit `19f69274` advances the behavior-neutral actor evidence spine
+without changing shard scheduling or any applied policy. Actor observation
+and provenance advance to v3, actor epoch aggregation advances to v3, the
+sample-scoped actor raw wrapper advances to v2, unified internal evidence and
+raw wrappers advance to v4, and the append-only export manifest advances to
+v5. Every retained schema remains unchanged and readable.
+
+Each observed service turn captures the exact shard-wide count of connections
+with one or more accepted posted-or-servicing work items before the current
+work item completes its accounting lifetime. A valid value is at least one.
+Missing, invalid, and saturated accounting produces a null value plus explicit
+validity. `MissingRunnableConnectionCount` remains asserted because this count
+does not establish runnable state, continuous runnable intervals, starvation,
+or fairness.
+
+The v3 epoch summary records the number of turns with a valid contender value,
+the maximum valid value, and the number of valid turns whose value was greater
+than one. The unified validator joins every raw dispatch by
+`source + connectionKey + serviceSequence` to exactly one inclusive epoch
+range, then requires these three aggregates to match that epoch exactly.
+Contradictory value/validity combinations, invalid exposed values, aggregate
+mismatches, missing, duplicate, orphan, and out-of-order records fail the
+contract.
+
+The exact verification sequence is:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| Initial solution build command using the nonexistent `quic-dotnet.slnx` name | MSBuild `MSB1009`, project file does not exist | `diagnostic_only`; the repository solution was resolved as `Incursa.Quic.slnx` and no test or runtime evidence was inferred. |
+| First corrected `dotnet build Incursa.Quic.slnx -c Release --no-restore` | Zero warnings and zero errors in 66.57 seconds | `accepted`; core v3 observation and epoch compilation before focused testing. |
+| First PowerShell AST one-liners run through an extra nested shell | Three parser errors because the outer shell expanded the command variables | `diagnostic_only`; command construction only. Direct AST parsing was then used and all four scripts parsed successfully. |
+| Interim complete Release build after schema, host, validator, and test integration | Zero warnings and zero errors in 52.65 seconds | `accepted`; the versioned evidence spine and permanent raw host compile. |
+| First actor, unified, and package band | 44 passed, zero failed, zero skipped in 22.61 seconds | `accepted`; positive raw-to-epoch contender joins and host contract versions are covered. |
+| Final solution Release build before the new negative aggregate test | Zero warnings and zero errors in 47.83 seconds | `accepted`; build-before-test gate. |
+| First 44-test rerun with the intentional aggregate-mismatch case | 43 passed and one failed because the test expected an internal row-reason token while the validator's stable public error reported only `joinFailures=1` | `diagnostic_only`; the intentionally mismatched evidence was rejected correctly. Only the assertion was changed to the stable public error contract, and the failed result is retained. |
+| Final test-project Release build | Zero warnings and zero errors in 48.17 seconds | `accepted`; build-before-rerun gate. |
+| Corrected actor, unified, and package band | 44 passed, zero failed, zero skipped in 18 seconds | `accepted`; includes exact service-start values `2, 2, 1`, epoch coverage/maximum/count-above-one aggregation, value/validity semantics, raw membership, aggregate-mismatch rejection, append-only export, and retained failure classifications. |
+| Stage 2 requirement-home and compact-layout band | 70 passed, zero failed, zero skipped in 9 seconds | `accepted`; `REQ-QUIC-CRT-0181` through `0186` plus work-item layout remain correct, including the retained 144-byte layout. |
+| PowerShell AST and JSON syntax validation | Four edited PowerShell scripts parsed with zero AST errors; six new schemas and four edited SpecTrace artifacts parsed as JSON | `accepted`; contract syntax evidence. |
+| Focused SpecTrace model validation | `SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY`, `ARC-QUIC-CRT-0067`, `WI-QUIC-CRT-0068`, and `VER-QUIC-CRT-0069` each returned `True` | `accepted`; reciprocal v3/v4/v5 schema, implementation, test, and evidence references are present. |
+
+No campaign axis varied. Receive credit, all four Stage 1 axes,
+`actor_work_quantum`, `ready_stream_fairness`,
+`buffer_copy_coalescing`, and `adaptive_backpressure` remain applied as
+`legacy_current` outside earlier explicitly retained Stage 1 smoke
+treatments. No BenchmarkDotNet run, performance claim, ProtocolLab
+deployment, raw campaign, normalized transform, curated or split dataset,
+ML analysis, CI run, push, or active behavior occurred. Dataset inclusion and
+exclusion counts remain unchanged: zero rows added and zero rows excluded by
+this slice.
+
+The stopped
+`application-send-turn-neutrality-download-20260724-r002` normalization
+remains preserved as `diagnostic_incomplete`; its 55,658 raw epochs, five
+cell results, hashes, classifications, and partial output were not restarted,
+deleted, overwritten, or relabeled. The next actor checkpoint remains exact
+remaining-work signals and reviewed cooperative yield boundaries. Complete
+runnable intervals and fairness outcomes still do not exist. Active behavior
+remains unauthorized.
