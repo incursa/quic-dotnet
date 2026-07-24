@@ -349,6 +349,15 @@ public sealed class REQ_QUIC_CRT_0172
             Assert.Equal(JsonValueKind.Null, metrics.GetProperty("queueToServiceRatio").ValueKind);
             Assert.Equal(JsonValueKind.Null, metrics.GetProperty("flowBlockedMs").ValueKind);
 
+            JsonElement modelFeatures = normalizedRow.GetProperty("modelFeatures");
+            Assert.Equal(0, modelFeatures.GetProperty("queuedApplicationWrites").GetInt64());
+            Assert.Equal(JsonValueKind.Null, modelFeatures.GetProperty("outboundBacklogBytes").ValueKind);
+            Assert.Equal(JsonValueKind.Null, modelFeatures.GetProperty("distinctQueuedSendStreams").ValueKind);
+            Assert.Equal(8, modelFeatures.GetProperty("missingSignalMask").GetInt64());
+            Assert.Equal(0, modelFeatures.GetProperty("staleSignalMask").GetInt64());
+            Assert.Equal(2, modelFeatures.GetProperty("lifecycleFlags").GetInt64());
+            Assert.False(modelFeatures.GetProperty("outOfDomain").GetBoolean());
+
             JsonElement sampleOutcomes = normalizedRow.GetProperty("sampleScopedOutcomes");
             Assert.Equal("sample", sampleOutcomes.GetProperty("scope").GetString());
             Assert.Equal(0.953674, sampleOutcomes.GetProperty("throughputMiBPerSecond").GetDouble(), precision: 6);

@@ -68,6 +68,14 @@ must not pool their observations, rule identities, counterfactual groups, or
 curation claims. Construction-only send-turn provenance remains outside the
 epoch pipeline.
 
+Each normalized epoch also retains a closed `modelFeatures` block copied only
+from bounded pre-decision runtime observations. For the send-turn v1 axis this
+includes queue depth and bytes, distinct queued streams, oldest-send age,
+queue and actor-service EWMAs, their fixed-point ratio, burst-limit hits,
+congestion window, bytes in flight, retained send buffers and bytes, and the
+missing, stale, lifecycle, and out-of-domain flags. Workload identity remains
+in the separate analysis-only block and is not copied into `modelFeatures`.
+
 ## Row Semantics
 
 An epoch row contains pre-decision observations, the policy applied during the

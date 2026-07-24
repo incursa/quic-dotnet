@@ -88,6 +88,10 @@ the checksum-backed sample throughput, p95 latency, buffer-pool measurements,
 and explicit availability of managed-memory and fairness outcomes. The block is
 marked `scope = sample` because its values repeat across the sample's epoch rows
 and must not be treated as independent epoch observations.
+The separate closed `modelFeatures` block retains only bounded pre-decision
+runtime observations suitable for offline regime discovery. Scenario,
+payload, requested concurrency, peer, URL, and application identity remain
+outside that block and cannot become production controller inputs.
 Raw epoch `rowId` values are scoped to their source run. Normalized rows preserve
 that value as `sourceRowId` and use `campaignId|runId|sourceRowId` as the stable,
 dataset-wide `rowId`, so independent append-only campaigns can be combined

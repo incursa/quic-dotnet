@@ -329,6 +329,24 @@ foreach ($epochItem in ($epochRows | Sort-Object { $_.Document.campaignId }, { $
             preDecisionRegimeKey = $preDecisionRegimeKey
             counterfactualGroupKey = $counterfactualGroupKey
         }
+        modelFeatures = [ordered]@{
+            queuedApplicationWrites = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'queuedApplicationWrites'
+            outboundBacklogBytes = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'outboundBacklogBytes'
+            distinctQueuedSendStreams = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'distinctQueuedSendStreams'
+            oldestQueuedSendAgeMicros = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'oldestQueuedSendAgeMicros'
+            queueDelayEwmaMicros = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'queueDelayEwmaMicros'
+            actorServiceTimeEwmaMicros = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'actorServiceTimeEwmaMicros'
+            queueToServiceRatioQ16 = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'queueToServiceRatioQ16'
+            burstLimitHitsEpoch = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'burstLimitHitsEpoch'
+            congestionWindowBytes = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'congestionWindowBytes'
+            bytesInFlight = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'bytesInFlight'
+            retainedSendBuffers = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'retainedSendBuffers'
+            retainedSendBytes = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'retainedSendBytes'
+            missingSignalMask = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'missingSignalMask'
+            staleSignalMask = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'staleSignalMask'
+            lifecycleFlags = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'lifecycleFlags'
+            outOfDomain = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'outOfDomain'
+        }
         normalizedMetrics = [ordered]@{
             throughputMiBPerSecond = Convert-BytesToMiB -Value $row.postEpochOutcomes.throughputBytesPerSecond
             latencyP95Ms = Convert-MicrosToMilliseconds -Value $row.postEpochOutcomes.latencyP95Micros

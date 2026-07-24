@@ -334,6 +334,7 @@
         "defaultCurationReasons",
         "workloadShape",
         "groupKeys",
+        "modelFeatures",
         "normalizedMetrics",
         "provenance"
       ],
@@ -546,6 +547,93 @@
             },
             "counterfactualGroupKey": {
               "$ref": "#/$defs/nonEmptyString"
+            }
+          }
+        },
+        "modelFeatures": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "queuedApplicationWrites",
+            "outboundBacklogBytes",
+            "distinctQueuedSendStreams",
+            "oldestQueuedSendAgeMicros",
+            "queueDelayEwmaMicros",
+            "actorServiceTimeEwmaMicros",
+            "queueToServiceRatioQ16",
+            "burstLimitHitsEpoch",
+            "congestionWindowBytes",
+            "bytesInFlight",
+            "retainedSendBuffers",
+            "retainedSendBytes",
+            "missingSignalMask",
+            "staleSignalMask",
+            "lifecycleFlags",
+            "outOfDomain"
+          ],
+          "properties": {
+            "queuedApplicationWrites": {
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "outboundBacklogBytes": {
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "distinctQueuedSendStreams": {
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "oldestQueuedSendAgeMicros": {
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "queueDelayEwmaMicros": {
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "actorServiceTimeEwmaMicros": {
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "queueToServiceRatioQ16": {
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "burstLimitHitsEpoch": {
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "congestionWindowBytes": {
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "bytesInFlight": {
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "retainedSendBuffers": {
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "retainedSendBytes": {
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "missingSignalMask": {
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "staleSignalMask": {
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "lifecycleFlags": {
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "outOfDomain": {
+              "type": ["boolean", "null"]
             }
           }
         },
