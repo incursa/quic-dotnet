@@ -936,3 +936,45 @@ package identity. Until that explicit release work is approved and complete,
 ProtocolLab internal's `1.0.6` correctness failure, PR #10's red check, and
 the package-parity gate remain open; no test exclusion, source-root override,
 or policy experiment may substitute for them.
+
+### Unpublished Package-Candidate Conformance Diagnostic
+
+To distinguish a current-source project reference from the bytes that a future
+release would carry, a local-only prerelease package candidate was packed from
+the clean current checkout at
+`653381b90ae8997ca7f49a2444d587edcd24817c`. The candidate identity is
+`Incursa.Quic` `1.0.8-rc.20260723.1`; its SHA-256 is
+`5199e4c041e3b691c6dbbc40a2608d9237439df8ed794d46d9a4fc8986560bee`.
+It was restored through an explicit local PackageSourceMapping in an isolated
+ProtocolLab internal checkout at
+`db96f41ec1421fc6f299283f31a5be444efbc52e`, rather than through
+`PROTOCOL_LAB_INCURSA_QUIC_SOURCE_ROOT`. The built Raw QUIC server dependency
+file names that exact prerelease package and has SHA-256
+`a9de436ab1e8cf741484282dfdc9539719a9425deaa07d13c247c8b71fce3791`; its
+copied `Incursa.Quic.dll` has SHA-256
+`6226e213776c67987eaf7ed75237939794434c02f642afa06848b9efdf1edcbf`.
+
+The first isolated invocation is retained as `environment_invalid`: the fresh
+checkout did not yet contain the adapter executable, so all five selected
+tests failed before a Raw QUIC server could start. Building that unchanged
+adapter in the isolated checkout corrected only the test environment. The
+candidate package itself, server selection, test filter, and source-root
+absence were unchanged.
+
+The subsequent deterministic package-backed command was:
+
+```powershell
+dotnet test tests/Incursa.ProtocolLab.Tests/Incursa.ProtocolLab.Tests.csproj -c Debug --no-build --no-restore --disable-build-servers --nologo --results-directory C:\shared\src\incursa\quic-dotnet\.artifacts\adaptive-runtime\package-conformance-candidate-20260723 --logger "trx;LogFileName=candidate-package-conformance.trx" --filter "FullyQualifiedName~IncursaRawQuicAdapterConformanceTests.Adapter_writes_exact_deterministic_download_payload|FullyQualifiedName~IncursaRawQuicAdapterConformanceTests.Adapter_echoes_slow_reader_stream_work_concurrently"
+```
+
+It passed 5 of 5 in 23 seconds: 1 MiB, 4 MiB, and both 16 MiB deterministic
+download shapes plus concurrent slow-reader echo. The retained TRX is
+`C:\shared\src\incursa\quic-dotnet\.artifacts\adaptive-runtime\package-conformance-candidate-20260723\candidate-package-conformance.trx`
+with SHA-256
+`5670cd574cca0efc84aad56929ab5d2df525a19c6679ff3e51d2ca552a35983d`.
+
+This is a local release-candidate correctness diagnostic only. It strengthens
+the case for a reviewed patch release but does not publish the package, alter
+the internal `1.0.6` pin, clear the released-package failure, establish
+source/package parity for a published artifact, enable an adaptive policy, or
+authorize a ProtocolLab campaign.
