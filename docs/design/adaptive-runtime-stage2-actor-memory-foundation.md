@@ -223,6 +223,12 @@ backpressure strategy. The next inventory must map every owner, rent, copy,
 segment, crypto reference, socket reference, completion, cancellation, and
 return path before `buffer_copy_coalescing` is forceable.
 
+That implementation inventory is now recorded in
+[`adaptive-runtime-stage2-buffer-ownership-copy-inventory.md`](adaptive-runtime-stage2-buffer-ownership-copy-inventory.md).
+It confirms that only `legacy_current` is presently a real policy value and
+defines the bounded observation and maintained-retention work required before
+a conservative value can be implemented honestly.
+
 `adaptive_backpressure` remains conservative-only and separately reviewable.
 It may eventually lower an admission cap below an authoritative hard bound.
 It may never raise a hard bound or delay progress, recovery, credit,
