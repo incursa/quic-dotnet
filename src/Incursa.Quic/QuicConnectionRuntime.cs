@@ -67,6 +67,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const int UnconfiguredApplicationSendTurnObservationMode = -1;
     private const int UnconfiguredApplicationSendBatchPolicyMode = -1;
     private const int UnconfiguredApplicationSendBatchObservationMode = -1;
+    private const int UnconfiguredQueuedSendBurstPolicyMode = -1;
+    private const int UnconfiguredQueuedSendBurstObservationMode = -1;
     private const int MaximumObservedApplicationSendTurnWrites = 64;
     private const int AdaptiveRuntimeObservationDisabled = 0;
     private const int AdaptiveRuntimeObservationConfiguring = 1;
@@ -102,7 +104,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private int applicationSendTurnObservationMode = UnconfiguredApplicationSendTurnObservationMode;
     private int applicationSendBatchPolicyMode = UnconfiguredApplicationSendBatchPolicyMode;
     private int applicationSendBatchObservationMode = UnconfiguredApplicationSendBatchObservationMode;
+    private int queuedSendBurstPolicyMode = UnconfiguredQueuedSendBurstPolicyMode;
+    private int queuedSendBurstObservationMode = UnconfiguredQueuedSendBurstObservationMode;
     private ulong applicationSendBatchPlanSequence;
+    private ulong queuedSendBurstTurnSequence;
+    private uint queuedSendBurstLimitHits;
     private ulong applicationSendTurnSequence;
     private uint applicationSendTurnBurstLimitHits;
     private uint applicationSendTurnActorServiceTimeEwmaMicros;
@@ -118,6 +124,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private IQuicApplicationSendTurnEvidenceSink? applicationSendTurnEvidenceSink;
     private QuicApplicationSendTurnShadowController applicationSendTurnShadowController = default;
     private IQuicApplicationSendBatchEvidenceSink? applicationSendBatchEvidenceSink;
+    private IQuicQueuedSendBurstEvidenceSink? queuedSendBurstEvidenceSink;
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
     private readonly object scheduledFlowControlCreditGate = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
@@ -1062,6 +1069,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             options.ApplicationSendTurnObservationMode;
         QuicApplicationSendBatchObservationMode requestedApplicationSendBatchObservationMode =
             options.ApplicationSendBatchObservationMode;
+        QuicQueuedSendBurstPolicyMode? forcedQueuedSendBurstMode =
+            options.ForcedQueuedSendBurstPolicyMode;
+        QuicQueuedSendBurstObservationMode requestedQueuedSendBurstObservationMode =
+            options.QueuedSendBurstObservationMode;
         if (requestedApplicationSendTurnObservationMode is < QuicApplicationSendTurnObservationMode.Disabled
             or > QuicApplicationSendTurnObservationMode.Shadow)
         {
@@ -1093,6 +1104,27 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         bool applicationSendBatchObservationEnabled =
             requestedApplicationSendBatchObservationMode
                 != QuicApplicationSendBatchObservationMode.Disabled;
+        if (requestedQueuedSendBurstObservationMode
+                is < QuicQueuedSendBurstObservationMode.Disabled
+                or > QuicQueuedSendBurstObservationMode.Shadow)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(options),
+                "The queued-send burst observation mode is invalid.");
+        }
+
+        if (forcedQueuedSendBurstMode
+                is < QuicQueuedSendBurstPolicyMode.LegacyCurrent
+                or > QuicQueuedSendBurstPolicyMode.SingleDatagram)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(options),
+                "The forced queued-send burst policy mode is invalid.");
+        }
+
+        bool queuedSendBurstObservationEnabled =
+            requestedQueuedSendBurstObservationMode
+                != QuicQueuedSendBurstObservationMode.Disabled;
         if (!applicationSendTurnObservationEnabled && options.ApplicationSendTurnEvidenceSink is not null)
         {
             throw new InvalidOperationException(
@@ -1113,6 +1145,20 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 "Application-send batch observe-only and shadow modes require an evidence sink.");
         }
 
+        if (!queuedSendBurstObservationEnabled
+            && options.QueuedSendBurstEvidenceSink is not null)
+        {
+            throw new InvalidOperationException(
+                "Queued-send burst evidence export requires observe-only or shadow mode.");
+        }
+
+        if (queuedSendBurstObservationEnabled
+            && options.QueuedSendBurstEvidenceSink is null)
+        {
+            throw new InvalidOperationException(
+                "Queued-send burst observe-only and shadow modes require an evidence sink.");
+        }
+
         bool applicationSendBatchTreatmentSelected =
             forcedApplicationSendBatchMode
                 is QuicApplicationSendBatchPolicyMode.SingleEligible;
@@ -1129,6 +1175,39 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             {
                 throw new InvalidOperationException(
                     "Application-send batch policy requires the legacy_current application-send turn policy.");
+            }
+
+            if (forcedQueuedSendBurstMode is not null
+                and not QuicQueuedSendBurstPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Application-send batch policy requires the legacy_current queued-send burst policy.");
+            }
+        }
+
+        bool queuedSendBurstTreatmentSelected =
+            forcedQueuedSendBurstMode
+                is QuicQueuedSendBurstPolicyMode.SingleDatagram;
+        if (queuedSendBurstTreatmentSelected)
+        {
+            if (forcedMode is not null and not QuicReceiveCreditPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Queued-send burst policy requires the legacy_current receive-credit policy.");
+            }
+
+            if (forcedApplicationSendTurnMode is not null
+                and not QuicApplicationSendTurnPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Queued-send burst policy requires the legacy_current application-send turn policy.");
+            }
+
+            if (forcedApplicationSendBatchMode is not null
+                and not QuicApplicationSendBatchPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Queued-send burst policy requires the legacy_current application-send batch policy.");
             }
         }
 
@@ -1201,6 +1280,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 ConfigureApplicationSendBatchPolicyMode(applicationSendBatchMode);
             }
 
+            if (forcedQueuedSendBurstMode is { } queuedSendBurstMode)
+            {
+                ConfigureQueuedSendBurstPolicyMode(queuedSendBurstMode);
+            }
+
             if (applicationSendTurnObservationEnabled)
             {
                 ConfigureApplicationSendTurnObservation(
@@ -1213,6 +1297,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 ConfigureApplicationSendBatchObservation(
                     requestedApplicationSendBatchObservationMode,
                     options.ApplicationSendBatchEvidenceSink!);
+            }
+
+            if (queuedSendBurstObservationEnabled)
+            {
+                ConfigureQueuedSendBurstObservation(
+                    requestedQueuedSendBurstObservationMode,
+                    options.QueuedSendBurstEvidenceSink!);
             }
 
             ConfigureAdaptiveRuntimeEpochSink(
@@ -1246,6 +1337,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             ConfigureApplicationSendBatchPolicyMode(forcedApplicationSendBatchMode.Value);
         }
 
+        if (forcedQueuedSendBurstMode is not null)
+        {
+            ConfigureQueuedSendBurstPolicyMode(forcedQueuedSendBurstMode.Value);
+        }
+
         if (applicationSendTurnObservationEnabled)
         {
             ConfigureApplicationSendTurnObservation(
@@ -1258,6 +1354,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             ConfigureApplicationSendBatchObservation(
                 requestedApplicationSendBatchObservationMode,
                 options.ApplicationSendBatchEvidenceSink!);
+        }
+
+        if (queuedSendBurstObservationEnabled)
+        {
+            ConfigureQueuedSendBurstObservation(
+                requestedQueuedSendBurstObservationMode,
+                options.QueuedSendBurstEvidenceSink!);
         }
 
         if (options.AdaptiveRuntimeShadowEpochSink is not null
@@ -1321,6 +1424,21 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
     }
 
+    internal void ConfigureQueuedSendBurstPolicyMode(
+        QuicQueuedSendBurstPolicyMode mode)
+    {
+        QuicQueuedSendBurstPolicy.ValidateMode(mode);
+        if (Interlocked.CompareExchange(
+                ref queuedSendBurstPolicyMode,
+                (int)mode,
+                UnconfiguredQueuedSendBurstPolicyMode)
+            != UnconfiguredQueuedSendBurstPolicyMode)
+        {
+            throw new InvalidOperationException(
+                "The queued-send burst policy mode has already been configured.");
+        }
+    }
+
     private void ConfigureApplicationSendTurnObservation(
         QuicApplicationSendTurnObservationMode mode,
         IQuicApplicationSendTurnEvidenceSink sink)
@@ -1359,6 +1477,23 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         applicationSendBatchEvidenceSink = sink;
+    }
+
+    private void ConfigureQueuedSendBurstObservation(
+        QuicQueuedSendBurstObservationMode mode,
+        IQuicQueuedSendBurstEvidenceSink sink)
+    {
+        if (Interlocked.CompareExchange(
+                ref queuedSendBurstObservationMode,
+                (int)mode,
+                UnconfiguredQueuedSendBurstObservationMode)
+            != UnconfiguredQueuedSendBurstObservationMode)
+        {
+            throw new InvalidOperationException(
+                "The queued-send burst observation mode has already been configured.");
+        }
+
+        queuedSendBurstEvidenceSink = sink;
     }
 
     private void ConfigureAdaptiveRuntimeEpochSink(
@@ -1910,6 +2045,22 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             (int)QuicApplicationSendBatchObservationMode.Shadow =>
                 QuicApplicationSendBatchObservationMode.Shadow,
             _ => QuicApplicationSendBatchObservationMode.Disabled,
+        };
+
+    internal QuicQueuedSendBurstPolicyMode QueuedSendBurstPolicyMode
+        => Volatile.Read(ref queuedSendBurstPolicyMode)
+            == (int)QuicQueuedSendBurstPolicyMode.SingleDatagram
+                ? QuicQueuedSendBurstPolicyMode.SingleDatagram
+                : QuicQueuedSendBurstPolicyMode.LegacyCurrent;
+
+    internal QuicQueuedSendBurstObservationMode QueuedSendBurstObservationMode
+        => Volatile.Read(ref queuedSendBurstObservationMode) switch
+        {
+            (int)QuicQueuedSendBurstObservationMode.ObserveOnly =>
+                QuicQueuedSendBurstObservationMode.ObserveOnly,
+            (int)QuicQueuedSendBurstObservationMode.Shadow =>
+                QuicQueuedSendBurstObservationMode.Shadow,
+            _ => QuicQueuedSendBurstObservationMode.Disabled,
         };
 
     internal bool TryBeginRuntimePressureSnapshot(

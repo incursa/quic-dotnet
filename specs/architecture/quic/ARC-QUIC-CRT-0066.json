@@ -24,6 +24,7 @@
     "src/Incursa.Quic/QuicAdaptiveRuntimeStage1Policy.cs",
     "src/Incursa.Quic/QuicApplicationSendScheduler.cs",
     "src/Incursa.Quic/QuicApplicationSendQueue.cs",
+    "src/Incursa.Quic/QuicQueuedSendBurstPolicy.cs",
     "src/Incursa.Quic/QuicSendPolicy.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.cs",

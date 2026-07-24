@@ -4,10 +4,10 @@ title: "Adaptive Runtime Controller State Machine"
 
 # Adaptive Runtime Controller State Machine
 
-Status: receive-credit, application-send turn, and application-send batch
-shadow runtimes implemented; send-turn raw-host export and permanent-runner
-epoch joins implemented; one local send-turn shadow cell and one
-retained-negative observation-neutrality cell executed; unified export and
+Status: receive-credit, application-send turn, application-send batch, and
+queued-send burst shadow runtimes implemented; send-turn raw-host export and
+permanent-runner epoch joins implemented; one local send-turn shadow cell and
+one retained-negative observation-neutrality cell executed; unified export and
 broader campaign verification remain open; active policy blocked
 
 The controller is a deterministic connection-local selector evaluated only at
@@ -53,6 +53,17 @@ for exactly one packet plan. Observe-only records the legacy decision; shadow
 may recommend but never applies a new value; forcing can only shorten the
 prefix and cannot bypass a blocked, terminal, disposed, or otherwise
 authoritative runtime plan.
+
+The implemented `queued_send_burst_budget` selector resolves `legacy_current`
+or `single_datagram` after `QuicSendPolicy` has computed the legal
+recovery-progress service budget. Its snapshot and cap latch for exactly one
+actor turn. The correctness-critical loop recomputes congestion, pacing,
+anti-amplification, recovery, retransmission, handshake, packet, endpoint, and
+resource authority before every datagram, then applies the latch only as a
+lower cap. Observe-only and shadow keep `legacy_current` applied. A forced
+single-datagram treatment requires receive credit, send-turn planning, and
+batch formation to remain `legacy_current`, and it cannot convert a blocked
+budget into progress.
 
 ## States
 

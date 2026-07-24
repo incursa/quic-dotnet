@@ -53,7 +53,7 @@ evidence and are not rewritten into v2.
 | Axis | Legacy implementation | Initial closed values | Boundary and latch | Missing minimum seam |
 | --- | --- | --- | --- | --- |
 | `application_send_batch_formation` | `QuicApplicationSendScheduler` calls `QuicApplicationSendQueue.SelectQueuedApplicationSendBatchCount` to fill the already-computed payload budget; raw stream data stays single. | `legacy_current`, `single_eligible` | One packet plan; latched until that plan commits or aborts. | Implemented: connection-local forcing, lower-only selection, observe/shadow decision, bounded validity and safety reasons, plan outcome, listener copy, replay, guarded sink, and force-legacy rollback. Still open: unified raw export, permanent campaign control, BenchmarkDotNet cost evidence, full Release, and multi-host verification. |
-| `queued_send_burst_budget` | `QuicSendPolicy` caps queued work at 4 datagrams before handshake confirmation and 12 after, then congestion and anti-amplification reduce the legal budget. | `legacy_current`, `single_datagram` | One actor turn; an in-progress packet plan remains latched. | Connection-local lower-only cap, observe/shadow snapshot, requested/legal/applied cap outcome, burst-hit/follow-on counters, force-legacy rollback. |
+| `queued_send_burst_budget` | `QuicSendPolicy` caps queued work at 4 datagrams before handshake confirmation and 12 after, then congestion and anti-amplification reduce the legal budget. | `legacy_current`, `single_datagram` | One actor turn; an in-progress packet plan remains latched. | Implemented: connection-local lower-only forcing, observe/shadow decision, bounded validity and safety reasons, legal/applied/emitted outcome, burst-hit counter, listener copy, deterministic replay, guarded sink, adjacent-axis rejection, and force-legacy rollback. Still open: unified raw export, permanent campaign control, BenchmarkDotNet cost evidence, full Release, and multi-host verification. |
 | `oversized_write_admission_quantum` | At logical-write admission, the retained selector chooses two 32 KiB chunks per actor turn only with a dispatcher and 16-24 distinct observed streams; otherwise one chunk. | `legacy_current`, `single_fragment`, `bounded_multi_fragment` | Logical-write admission; immutable through fragmentation, continuation, cancellation, disposal, and completion. | Explicit mode stored with the completion, observe/shadow admission snapshot, quantum/continuation outcome, internal force seam, exact rollback. |
 
 `receive_credit_publication` remains preserved and applies
@@ -161,7 +161,8 @@ will relate to, not be replaced by, the unified Stage 1 set.
    locally; focused Release build and requirement/scheduler tests are green.
 4. Add the burst-budget lower-only policy where the runtime computes the
    existing 4/12 cap, with actor-turn latching and authoritative safety
-   reduction.
+   reduction. Completed locally; focused Release build and requirement tests
+   are green.
 5. Store the oversized admission policy and resolved quantum in the existing
    request completion, then expose forced/observe/shadow admission records and
    operation outcomes.

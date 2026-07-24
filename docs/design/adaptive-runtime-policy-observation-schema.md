@@ -4,12 +4,13 @@ title: "Adaptive Runtime Connection Observation Schema"
 
 # Adaptive Runtime Connection Observation Schema
 
-Status: receive-credit v1, application-send turn, and application-send batch
-runtime subsets implemented; send-turn raw-host export and standalone epoch
-conversion implemented; permanent runner capture and result/checksum joins
-implemented; the common Stage 1 four-axis in-memory contract, unified epoch
-schema, separate decision schema, and semantic join validator are implemented
-but unified runtime emission for all four axes remains pending;
+Status: receive-credit v1, application-send turn, application-send batch, and
+queued-send burst runtime subsets implemented; send-turn raw-host export and
+standalone epoch conversion implemented; permanent runner capture and
+result/checksum joins implemented; the common Stage 1 four-axis in-memory
+contract, unified epoch schema, separate decision schema, and semantic join
+validator are implemented but unified runtime emission for all four axes
+remains pending;
 one local shadow cell and one retained-negative observation-neutrality cell
 executed; broader neutrality, independent-host, and active-policy review remain
 open
@@ -144,6 +145,35 @@ The initial shadow rule is deliberately neutral for complete inputs:
 the conservative `single_eligible` value but still apply `legacy_current`.
 Forced modes bypass selection only; a blocked, terminal, or disposed plan
 records the safety override and leaves runtime authority unchanged.
+
+## Queued-Send Burst Budget V1 Subset
+
+The implemented `queued_send_burst_budget` record is captured once when the
+runtime enters the existing recovery-progress queued-send service loop. Its
+closed values are `legacy_current` and `single_datagram`. `legacy_current`
+retains the legal cap computed by `QuicSendPolicy`; `single_datagram` may lower
+an allowed cap to one but cannot turn a blocked budget into an allowed budget
+or raise any congestion, pacing, anti-amplification, recovery, retransmission,
+handshake, packet, endpoint, flow-control, queue, or buffer limit.
+
+The actor-turn observation retains a nonzero turn sequence, monotonic capture
+ticks, the legal and configured datagram caps, handshake state, bounded queue
+count, logical backlog, stream diversity, oldest age, queue-delay and
+actor-service EWMAs, prior burst-limit hits, congestion state, retained send
+state, lifecycle flags, missing and stale masks, and bounded
+saturated/contradictory/out-of-domain/recovery/resource conditions. The
+decision retains observation, rule, snapshot, reason, and provenance versions;
+forced and shadow identities; selected and applied values; selection source;
+bounded reason and safety override; and a one-actor-turn latch.
+
+The outcome records the legal and applied caps, emitted datagrams, queue counts
+before and after service, authoritative recovery-flush outcome, and blocked
+reason. The runtime recomputes the legal budget before every datagram and
+applies the latched value only as a lower cap. A diagnostic sink exception is
+swallowed and cannot affect transport work. The initial complete-input shadow
+rule is neutral and recommends `legacy_current`; invalid shadow inputs retain
+their explicit validity and conservative recommendation while applying
+`legacy_current`. Forced values still pass every safety guard.
 
 ## Signal Inventory
 

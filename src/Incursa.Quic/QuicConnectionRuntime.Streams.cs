@@ -1854,13 +1854,15 @@ internal sealed partial class QuicConnectionRuntime
         bool stateChanged = false;
         int queuedWritesBefore = applicationSendQueue.Count;
         bool observeApplicationSendTurn = HasApplicationSendTurnObservation();
+        bool observeQueuedSendBurst = HasQueuedSendBurstObservation();
         bool observePressure = QuicMetrics.ApplicationSendPressureShadowEnabled
-            || observeApplicationSendTurn;
+            || observeApplicationSendTurn
+            || observeQueuedSendBurst;
         int distinctQueuedStreamCount = 0;
         QuicApplicationSendTurnQueueSnapshot applicationSendTurnQueueSnapshot = default;
         if (observePressure && queuedWritesBefore > 0)
         {
-            if (observeApplicationSendTurn)
+            if (observeApplicationSendTurn || observeQueuedSendBurst)
             {
                 applicationSendTurnQueueSnapshot = applicationSendQueue.CaptureBoundedTurnSnapshot(
                     GetElapsedMicros(nowTicks),
@@ -1886,15 +1888,33 @@ internal sealed partial class QuicConnectionRuntime
             if (queuedWritesBefore > 0)
             {
                 QuicSendPolicySnapshot policySnapshot = CaptureQueuedApplicationSendPolicySnapshot();
-                QuicQueuedApplicationSendBudget sendBudget =
+                QuicQueuedApplicationSendBudget legalSendBudget =
                     QuicSendPolicy.ComputeQueuedApplicationSendBudget(policySnapshot);
+                QuicQueuedSendBurstPolicyMode queuedSendBurstMode =
+                    QueuedSendBurstPolicyMode;
+                QuicQueuedApplicationSendBudget sendBudget =
+                    QuicQueuedSendBurstPolicy.Apply(
+                        queuedSendBurstMode,
+                        legalSendBudget);
+                int latchedMaximumDatagrams = sendBudget.MaxDatagrams;
+                QuicQueuedSendBurstObservation queuedSendBurstObservation = default;
+                QuicAdaptiveRuntimeStage1AxisDecision queuedSendBurstDecision = default;
+                bool hasQueuedSendBurstDecision =
+                    observeQueuedSendBurst
+                    && TryBeginQueuedSendBurstDecisionAtActorBoundary(
+                        nowTicks,
+                        in applicationSendTurnQueueSnapshot,
+                        in policySnapshot,
+                        in legalSendBudget,
+                        out queuedSendBurstObservation,
+                        out queuedSendBurstDecision);
                 if (observeApplicationSendTurn)
                 {
                     TryPublishApplicationSendTurnEvidenceAtPlanningBoundary(
                         nowTicks,
                         in applicationSendTurnQueueSnapshot,
                         in policySnapshot,
-                        in sendBudget);
+                        in legalSendBudget);
                 }
 
                 QuicApplicationSendRecoveryFlushOutcome outcome =
@@ -1904,11 +1924,15 @@ internal sealed partial class QuicConnectionRuntime
                 while (applicationSendQueue.Count > 0)
                 {
                     policySnapshot = CaptureQueuedApplicationSendPolicySnapshot();
-                    sendBudget = QuicSendPolicy.ComputeQueuedApplicationSendBudget(policySnapshot);
-                    if (!sendBudget.CanSendQueuedApplicationData)
+                    legalSendBudget =
+                        QuicSendPolicy.ComputeQueuedApplicationSendBudget(policySnapshot);
+                    sendBudget = ApplyLatchedQueuedSendBurstCap(
+                        legalSendBudget,
+                        latchedMaximumDatagrams);
+                    if (!legalSendBudget.CanSendQueuedApplicationData)
                     {
                         outcome = QuicApplicationSendRecoveryFlushOutcome.BudgetBlocked;
-                        blockedReason = sendBudget.BlockedReason;
+                        blockedReason = legalSendBudget.BlockedReason;
                         break;
                     }
 
@@ -1963,6 +1987,27 @@ internal sealed partial class QuicConnectionRuntime
                     outcome = QuicApplicationSendRecoveryFlushOutcome.QueueDrained;
                 }
 
+                if (outcome == QuicApplicationSendRecoveryFlushOutcome.BurstLimitReached)
+                {
+                    queuedSendBurstLimitHits =
+                        queuedSendBurstLimitHits == uint.MaxValue
+                            ? uint.MaxValue
+                            : queuedSendBurstLimitHits + 1;
+                }
+
+                if (hasQueuedSendBurstDecision)
+                {
+                    TryPublishQueuedSendBurstEvidenceAtActorBoundary(
+                        in queuedSendBurstObservation,
+                        in queuedSendBurstDecision,
+                        latchedMaximumDatagrams,
+                        flushedDatagrams,
+                        queuedWritesBefore,
+                        applicationSendQueue.Count,
+                        outcome,
+                        blockedReason);
+                }
+
                 QuicMetrics.RecordApplicationSendRecoveryFlush(
                     tlsState.Role,
                     policySnapshot,
@@ -2015,6 +2060,184 @@ internal sealed partial class QuicConnectionRuntime
         int mode = Volatile.Read(ref applicationSendBatchObservationMode);
         return mode is (int)QuicApplicationSendBatchObservationMode.ObserveOnly
             or (int)QuicApplicationSendBatchObservationMode.Shadow;
+    }
+
+    private bool HasQueuedSendBurstObservation()
+    {
+        int mode = Volatile.Read(ref queuedSendBurstObservationMode);
+        return mode is (int)QuicQueuedSendBurstObservationMode.ObserveOnly
+            or (int)QuicQueuedSendBurstObservationMode.Shadow;
+    }
+
+    private bool TryBeginQueuedSendBurstDecisionAtActorBoundary(
+        long nowTicks,
+        in QuicApplicationSendTurnQueueSnapshot queueSnapshot,
+        in QuicSendPolicySnapshot policySnapshot,
+        in QuicQueuedApplicationSendBudget legalBudget,
+        out QuicQueuedSendBurstObservation observation,
+        out QuicAdaptiveRuntimeStage1AxisDecision decision)
+    {
+        observation = default;
+        decision = default;
+        if (!HasQueuedSendBurstObservation()
+            || queuedSendBurstEvidenceSink is null
+            || queuedSendBurstTurnSequence == ulong.MaxValue)
+        {
+            return false;
+        }
+
+        QuicQueuedSendBurstSignalMask missingSignalMask =
+            QuicQueuedSendBurstSignalMask.None;
+        uint queueDelayEwmaMicros = 0;
+        if (applicationSendPressureClassifier.HasQueueDelay)
+        {
+            queueDelayEwmaMicros =
+                (uint)applicationSendPressureClassifier.QueueDelayEwmaMicros;
+        }
+        else
+        {
+            missingSignalMask |= QuicQueuedSendBurstSignalMask.QueueDelayEwma;
+        }
+
+        uint actorServiceTimeEwmaMicros = 0;
+        if (hasApplicationSendTurnActorServiceTime != 0)
+        {
+            actorServiceTimeEwmaMicros =
+                applicationSendTurnActorServiceTimeEwmaMicros;
+        }
+        else
+        {
+            missingSignalMask |=
+                QuicQueuedSendBurstSignalMask.ActorServiceTimeEwma;
+        }
+
+        QuicQueuedSendBurstObservationCondition conditions =
+            QuicQueuedSendBurstObservationCondition.None;
+        if (!queueSnapshot.Complete
+            || queuedSendBurstLimitHits == uint.MaxValue)
+        {
+            conditions |=
+                QuicQueuedSendBurstObservationCondition.ArithmeticSaturated;
+        }
+
+        if (queueSnapshot.QueuedApplicationWrites == 0
+            || (legalBudget.CanSendQueuedApplicationData
+                && legalBudget.MaxDatagrams <= 0))
+        {
+            conditions |= QuicQueuedSendBurstObservationCondition.Contradictory;
+        }
+
+        if (legalBudget.BlockedReason
+            == QuicSendPolicyBlockedReason.ApplicationDataRetransmissionPending)
+        {
+            conditions |=
+                QuicQueuedSendBurstObservationCondition.RecoveryUnstable;
+        }
+        else if (!legalBudget.CanSendQueuedApplicationData)
+        {
+            conditions |=
+                QuicQueuedSendBurstObservationCondition.ResourceConstrained;
+        }
+
+        if (legalBudget.BlockedReason
+            is QuicSendPolicyBlockedReason.InvalidPayloadBudget
+                or QuicSendPolicyBlockedReason.InvalidQueuedApplicationSend)
+        {
+            conditions |= QuicQueuedSendBurstObservationCondition.OutOfDomain;
+        }
+
+        ulong turnSequence = queuedSendBurstTurnSequence + 1;
+        uint priorBurstLimitHits = queuedSendBurstLimitHits;
+        queuedSendBurstLimitHits = 0;
+        observation = new QuicQueuedSendBurstObservation(
+            turnSequence,
+            nowTicks,
+            QuicQueuedSendBurstObservation.CurrentObservationContractVersion,
+            QuicQueuedSendBurstObservation.CurrentRuleVersion,
+            missingSignalMask,
+            QuicQueuedSendBurstSignalMask.None,
+            conditions,
+            CaptureAdaptiveRuntimeLifecycleFlags(),
+            queueSnapshot.QueuedApplicationWrites,
+            queueSnapshot.OutboundBacklogBytes,
+            queueSnapshot.DistinctQueuedStreams,
+            queueSnapshot.OldestQueuedSendAgeMicros,
+            queueDelayEwmaMicros,
+            actorServiceTimeEwmaMicros,
+            priorBurstLimitHits,
+            policySnapshot.BytesInFlightBytes,
+            policySnapshot.CongestionWindowBytes,
+            queueSnapshot.RetainedSendBuffers,
+            queueSnapshot.RetainedSendBytes,
+            policySnapshot.HandshakeConfirmed,
+            legalBudget.MaxDatagrams,
+            policySnapshot.MaximumQueuedApplicationSendBurstDatagrams);
+
+        int configuredPolicy = Volatile.Read(ref queuedSendBurstPolicyMode);
+        bool hasForcedValue =
+            configuredPolicy != UnconfiguredQueuedSendBurstPolicyMode;
+        QuicQueuedSendBurstPolicyMode forcedValue =
+            configuredPolicy == (int)QuicQueuedSendBurstPolicyMode.SingleDatagram
+                ? QuicQueuedSendBurstPolicyMode.SingleDatagram
+                : QuicQueuedSendBurstPolicyMode.LegacyCurrent;
+        decision = QuicQueuedSendBurstPolicy.Evaluate(
+            in observation,
+            QueuedSendBurstObservationMode,
+            hasForcedValue,
+            forcedValue,
+            in legalBudget);
+        queuedSendBurstTurnSequence = turnSequence;
+        return true;
+    }
+
+    private static QuicQueuedApplicationSendBudget ApplyLatchedQueuedSendBurstCap(
+        QuicQueuedApplicationSendBudget legalBudget,
+        int latchedMaximumDatagrams)
+    {
+        if (!legalBudget.CanSendQueuedApplicationData)
+        {
+            return legalBudget;
+        }
+
+        return QuicQueuedApplicationSendBudget.Allowed(
+            Math.Min(legalBudget.MaxDatagrams, latchedMaximumDatagrams),
+            legalBudget.MaxPayloadBytes);
+    }
+
+    private void TryPublishQueuedSendBurstEvidenceAtActorBoundary(
+        in QuicQueuedSendBurstObservation observation,
+        in QuicAdaptiveRuntimeStage1AxisDecision decision,
+        int appliedMaximumDatagrams,
+        int emittedDatagrams,
+        int queuedWritesBefore,
+        int queuedWritesAfter,
+        QuicApplicationSendRecoveryFlushOutcome outcome,
+        QuicSendPolicyBlockedReason blockedReason)
+    {
+        if (queuedSendBurstEvidenceSink is not { } sink)
+        {
+            return;
+        }
+
+        QuicQueuedSendBurstEvidence evidence = new(
+            QueuedSendBurstObservationMode,
+            observation,
+            decision,
+            observation.LegalMaximumDatagrams,
+            appliedMaximumDatagrams,
+            emittedDatagrams,
+            queuedWritesBefore,
+            queuedWritesAfter,
+            outcome,
+            blockedReason);
+        try
+        {
+            _ = sink.TryPublish(in evidence);
+        }
+        catch (Exception)
+        {
+            // Evidence export is diagnostic-only. A failed sink must never affect transport behavior.
+        }
     }
 
     private void TryPublishApplicationSendBatchEvidenceAtPlanningBoundary(

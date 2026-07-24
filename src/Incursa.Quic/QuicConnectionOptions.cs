@@ -178,4 +178,12 @@ public abstract class QuicConnectionOptions
     internal QuicApplicationSendBatchObservationMode ApplicationSendBatchObservationMode { get; set; }
 
     internal IQuicApplicationSendBatchEvidenceSink? ApplicationSendBatchEvidenceSink { get; set; }
+
+    // CONTEXT: Internal-only Stage 1 actor-turn cap. This policy may lower
+    // only the datagram budget already authorized by transport guards.
+    internal QuicQueuedSendBurstPolicyMode? ForcedQueuedSendBurstPolicyMode { get; set; }
+
+    internal QuicQueuedSendBurstObservationMode QueuedSendBurstObservationMode { get; set; }
+
+    internal IQuicQueuedSendBurstEvidenceSink? QueuedSendBurstEvidenceSink { get; set; }
 }
