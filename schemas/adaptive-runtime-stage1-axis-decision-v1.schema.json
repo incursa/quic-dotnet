@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-stage1-axis-decision-v1.schema.json",
+  "title": "Adaptive Runtime Stage 1 Separate Axis Decision v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "epochRowId",
+    "campaignId",
+    "runId",
+    "cellId",
+    "sampleId",
+    "connectionKey",
+    "epochIndex",
+    "axisId",
+    "decisionSequence",
+    "recordKind",
+    "operationKey",
+    "planKey",
+    "forcedValue",
+    "selectedValue",
+    "appliedValue",
+    "sourceArtifactPath",
+    "sourceArtifactSha256"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "adaptive-runtime-stage1-axis-decision-v1" },
+    "epochRowId": { "type": "string", "minLength": 1 },
+    "campaignId": { "type": "string", "minLength": 1 },
+    "runId": { "type": "string", "minLength": 1 },
+    "cellId": { "type": "string", "minLength": 1 },
+    "sampleId": { "type": "string", "minLength": 1 },
+    "connectionKey": { "type": "string", "minLength": 1 },
+    "epochIndex": { "type": "integer", "minimum": 0 },
+    "axisId": {
+      "enum": [
+        "application_send_turn_planning",
+        "application_send_batch_formation",
+        "queued_send_burst_budget",
+        "oversized_write_admission_quantum"
+      ]
+    },
+    "decisionSequence": { "type": "integer", "minimum": 1 },
+    "recordKind": {
+      "enum": ["construction", "packet_plan", "actor_turn", "logical_write"]
+    },
+    "operationKey": { "type": ["string", "null"], "minLength": 1 },
+    "planKey": { "type": ["string", "null"], "minLength": 1 },
+    "forcedValue": {
+      "type": ["string", "null"],
+      "enum": [
+        null,
+        "legacy_current",
+        "conservative",
+        "single_eligible",
+        "single_datagram",
+        "single_fragment",
+        "bounded_multi_fragment"
+      ]
+    },
+    "selectedValue": {
+      "enum": [
+        "legacy_current",
+        "conservative",
+        "single_eligible",
+        "single_datagram",
+        "single_fragment",
+        "bounded_multi_fragment"
+      ]
+    },
+    "appliedValue": {
+      "enum": [
+        "legacy_current",
+        "conservative",
+        "single_eligible",
+        "single_datagram",
+        "single_fragment",
+        "bounded_multi_fragment"
+      ]
+    },
+    "sourceArtifactPath": { "type": "string", "minLength": 1 },
+    "sourceArtifactSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

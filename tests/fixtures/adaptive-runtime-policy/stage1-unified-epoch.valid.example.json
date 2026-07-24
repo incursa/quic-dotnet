@@ -1,0 +1,227 @@
+{
+  "schemaVersion": "adaptive-runtime-stage1-unified-epoch-v1",
+  "rowId": "campaign-1|run-1|cell-1|sample-1|connection-1|0",
+  "campaignId": "campaign-1",
+  "runId": "run-1",
+  "cellId": "cell-1",
+  "sampleId": "sample-1",
+  "connectionKey": "connection-1",
+  "epochIndex": 0,
+  "epochStartOffsetMicros": 0,
+  "epochDurationMicros": 1000000,
+  "axisRecords": [
+    {
+      "axisId": "application_send_turn_planning",
+      "observationContractVersion": "application-send-turn-observation-v1",
+      "ruleVersion": "application-send-turn-rule-v1",
+      "snapshotVersion": "stage1-snapshot-v1",
+      "reasonVersion": "stage1-reasons-v1",
+      "provenanceVersion": "stage1-provenance-v1",
+      "decisionSequence": 1,
+      "observationValues": {
+        "queuedApplicationWrites": 4,
+        "outboundBacklogBytes": 65536,
+        "distinctQueuedSendStreams": 4,
+        "oldestQueuedSendAgeMicros": 250
+      },
+      "validity": {
+        "missing": false,
+        "stale": false,
+        "saturated": false,
+        "contradictory": false,
+        "outOfDomain": false
+      },
+      "forcedValue": null,
+      "shadowRecommendation": "conservative",
+      "selectedValue": "conservative",
+      "appliedValue": "legacy_current",
+      "selectionSource": "shadow_rule",
+      "reasonCode": "bounded_backlog_shadow",
+      "safetyOverride": {
+        "applied": false,
+        "reasonCode": null
+      },
+      "decisionBoundary": "actor_turn",
+      "latch": {
+        "lifetime": "actor_turn",
+        "state": "completed",
+        "sequence": 1,
+        "operationKey": null,
+        "planKey": null
+      },
+      "fallbackState": "not_required",
+      "outcomes": {
+        "scope": "actor_turn",
+        "selectedWriteCount": 4,
+        "selectedPayloadBytes": 65536,
+        "completedOperations": 4
+      }
+    },
+    {
+      "axisId": "application_send_batch_formation",
+      "observationContractVersion": "application-send-batch-observation-v1",
+      "ruleVersion": "application-send-batch-rule-v1",
+      "snapshotVersion": "stage1-snapshot-v1",
+      "reasonVersion": "stage1-reasons-v1",
+      "provenanceVersion": "stage1-provenance-v1",
+      "decisionSequence": 2,
+      "observationValues": {
+        "maximumPayloadBytes": 1200,
+        "eligibleWriteCount": 4,
+        "eligibleWriteBytes": 65536
+      },
+      "validity": {
+        "missing": false,
+        "stale": false,
+        "saturated": false,
+        "contradictory": false,
+        "outOfDomain": false
+      },
+      "forcedValue": "single_eligible",
+      "shadowRecommendation": null,
+      "selectedValue": "single_eligible",
+      "appliedValue": "single_eligible",
+      "selectionSource": "forced",
+      "reasonCode": "forced_internal",
+      "safetyOverride": {
+        "applied": false,
+        "reasonCode": null
+      },
+      "decisionBoundary": "packet_plan",
+      "latch": {
+        "lifetime": "packet_plan",
+        "state": "completed",
+        "sequence": 2,
+        "operationKey": null,
+        "planKey": "plan-1"
+      },
+      "fallbackState": "not_required",
+      "outcomes": {
+        "scope": "plan",
+        "selectedWriteCount": 1,
+        "selectedPayloadBytes": 1200,
+        "completedOperations": 1
+      }
+    },
+    {
+      "axisId": "queued_send_burst_budget",
+      "observationContractVersion": "queued-send-burst-observation-v1",
+      "ruleVersion": "queued-send-burst-rule-v1",
+      "snapshotVersion": "stage1-snapshot-v1",
+      "reasonVersion": "stage1-reasons-v1",
+      "provenanceVersion": "stage1-provenance-v1",
+      "decisionSequence": 3,
+      "observationValues": {
+        "legalMaximumDatagrams": 12,
+        "configuredMaximumDatagrams": 12,
+        "burstLimitHits": 0,
+        "bytesInFlight": 2400,
+        "congestionWindowBytes": 12000,
+        "handshakeConfirmed": true
+      },
+      "validity": {
+        "missing": false,
+        "stale": false,
+        "saturated": false,
+        "contradictory": false,
+        "outOfDomain": false
+      },
+      "forcedValue": null,
+      "shadowRecommendation": null,
+      "selectedValue": "legacy_current",
+      "appliedValue": "legacy_current",
+      "selectionSource": "legacy_selector",
+      "reasonCode": "legacy_current",
+      "safetyOverride": {
+        "applied": false,
+        "reasonCode": null
+      },
+      "decisionBoundary": "actor_turn",
+      "latch": {
+        "lifetime": "actor_turn",
+        "state": "completed",
+        "sequence": 3,
+        "operationKey": null,
+        "planKey": null
+      },
+      "fallbackState": "not_required",
+      "outcomes": {
+        "scope": "actor_turn",
+        "appliedDatagramCap": 12,
+        "emittedDatagrams": 4
+      }
+    },
+    {
+      "axisId": "oversized_write_admission_quantum",
+      "observationContractVersion": "oversized-write-observation-v1",
+      "ruleVersion": "oversized-write-rule-v1",
+      "snapshotVersion": "stage1-snapshot-v1",
+      "reasonVersion": "stage1-reasons-v1",
+      "provenanceVersion": "stage1-provenance-v1",
+      "decisionSequence": 4,
+      "observationValues": {
+        "logicalWriteRemainingBytes": 131072,
+        "maximumChunkBytes": 32768,
+        "distinctQueuedSendStreams": 18,
+        "retainedSendBuffers": 2,
+        "retainedSendBytes": 65536
+      },
+      "validity": {
+        "missing": false,
+        "stale": false,
+        "saturated": false,
+        "contradictory": false,
+        "outOfDomain": false
+      },
+      "forcedValue": null,
+      "shadowRecommendation": null,
+      "selectedValue": "legacy_current",
+      "appliedValue": "legacy_current",
+      "selectionSource": "legacy_selector",
+      "reasonCode": "legacy_current",
+      "safetyOverride": {
+        "applied": false,
+        "reasonCode": null
+      },
+      "decisionBoundary": "logical_write_admission",
+      "latch": {
+        "lifetime": "logical_write",
+        "state": "completed",
+        "sequence": 4,
+        "operationKey": "write-1",
+        "planKey": null
+      },
+      "fallbackState": "not_required",
+      "outcomes": {
+        "scope": "operation",
+        "admittedFragments": 2,
+        "continuationCount": 1,
+        "completedOperations": 1
+      }
+    }
+  ],
+  "correctnessFlags": {
+    "payloadValid": true,
+    "protocolValid": true,
+    "timedOut": false,
+    "ownershipValid": true,
+    "terminalValid": true,
+    "violationCodes": []
+  },
+  "provenance": {
+    "repositoryCommit": "1111111111111111111111111111111111111111",
+    "benchmarkSha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "runtimeSha256": "3333333333333333333333333333333333333333333333333333333333333333",
+    "hostFingerprint": "host-fingerprint-1",
+    "sourceArtifactPath": "raw/stage1-unified-epoch.json",
+    "sourceArtifactSha256": "4444444444444444444444444444444444444444444444444444444444444444"
+  },
+  "workloadAnalysisOnly": {
+    "excludedFromProductionFeatures": true,
+    "scenarioId": "analysis-only-smoke",
+    "trafficShape": "upload",
+    "payloadBytes": 131072,
+    "requestedConcurrency": 4,
+    "effectiveConcurrency": 4
+  }
+}

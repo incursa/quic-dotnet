@@ -1,0 +1,368 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-stage1-unified-epoch-v1.schema.json",
+  "title": "Adaptive Runtime Stage 1 Unified Connection Epoch v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "rowId",
+    "campaignId",
+    "runId",
+    "cellId",
+    "sampleId",
+    "connectionKey",
+    "epochIndex",
+    "epochStartOffsetMicros",
+    "epochDurationMicros",
+    "axisRecords",
+    "correctnessFlags",
+    "provenance",
+    "workloadAnalysisOnly"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "adaptive-runtime-stage1-unified-epoch-v1"
+    },
+    "rowId": { "$ref": "#/$defs/nonEmptyString" },
+    "campaignId": { "$ref": "#/$defs/nonEmptyString" },
+    "runId": { "$ref": "#/$defs/nonEmptyString" },
+    "cellId": { "$ref": "#/$defs/nonEmptyString" },
+    "sampleId": { "$ref": "#/$defs/nonEmptyString" },
+    "connectionKey": { "$ref": "#/$defs/nonEmptyString" },
+    "epochIndex": { "$ref": "#/$defs/unsignedInteger" },
+    "epochStartOffsetMicros": { "$ref": "#/$defs/unsignedInteger" },
+    "epochDurationMicros": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "axisRecords": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "prefixItems": [
+        {
+          "allOf": [
+            { "$ref": "#/$defs/axisRecord" },
+            {
+              "properties": {
+                "axisId": { "const": "application_send_turn_planning" },
+                "decisionBoundary": { "const": "actor_turn" },
+                "latch": {
+                  "properties": {
+                    "lifetime": { "const": "actor_turn" }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            { "$ref": "#/$defs/axisRecord" },
+            {
+              "properties": {
+                "axisId": { "const": "application_send_batch_formation" },
+                "decisionBoundary": { "const": "packet_plan" },
+                "latch": {
+                  "properties": {
+                    "lifetime": { "const": "packet_plan" }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            { "$ref": "#/$defs/axisRecord" },
+            {
+              "properties": {
+                "axisId": { "const": "queued_send_burst_budget" },
+                "decisionBoundary": { "const": "actor_turn" },
+                "latch": {
+                  "properties": {
+                    "lifetime": { "const": "actor_turn" }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            { "$ref": "#/$defs/axisRecord" },
+            {
+              "properties": {
+                "axisId": { "const": "oversized_write_admission_quantum" },
+                "decisionBoundary": { "const": "logical_write_admission" },
+                "latch": {
+                  "properties": {
+                    "lifetime": { "const": "logical_write" }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "items": false
+    },
+    "correctnessFlags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "payloadValid",
+        "protocolValid",
+        "timedOut",
+        "ownershipValid",
+        "terminalValid",
+        "violationCodes"
+      ],
+      "properties": {
+        "payloadValid": { "type": "boolean" },
+        "protocolValid": { "type": "boolean" },
+        "timedOut": { "type": "boolean" },
+        "ownershipValid": { "type": "boolean" },
+        "terminalValid": { "type": "boolean" },
+        "violationCodes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/nonEmptyString" },
+          "maxItems": 32
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repositoryCommit",
+        "benchmarkSha256",
+        "runtimeSha256",
+        "hostFingerprint",
+        "sourceArtifactPath",
+        "sourceArtifactSha256"
+      ],
+      "properties": {
+        "repositoryCommit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "benchmarkSha256": { "$ref": "#/$defs/sha256" },
+        "runtimeSha256": { "$ref": "#/$defs/sha256" },
+        "hostFingerprint": { "$ref": "#/$defs/nonEmptyString" },
+        "sourceArtifactPath": { "$ref": "#/$defs/nonEmptyString" },
+        "sourceArtifactSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "workloadAnalysisOnly": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "excludedFromProductionFeatures",
+        "scenarioId",
+        "trafficShape",
+        "payloadBytes",
+        "requestedConcurrency",
+        "effectiveConcurrency"
+      ],
+      "properties": {
+        "excludedFromProductionFeatures": { "const": true },
+        "scenarioId": { "$ref": "#/$defs/nonEmptyString" },
+        "trafficShape": {
+          "enum": ["upload", "download", "duplex", "request_response", "streaming"]
+        },
+        "payloadBytes": { "$ref": "#/$defs/unsignedInteger" },
+        "requestedConcurrency": { "$ref": "#/$defs/unsignedInteger" },
+        "effectiveConcurrency": { "$ref": "#/$defs/unsignedInteger" }
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "unsignedInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "nullableUnsignedInteger": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "policyValue": {
+      "enum": [
+        "legacy_current",
+        "conservative",
+        "single_eligible",
+        "single_datagram",
+        "single_fragment",
+        "bounded_multi_fragment"
+      ]
+    },
+    "nullablePolicyValue": {
+      "anyOf": [
+        { "$ref": "#/$defs/policyValue" },
+        { "type": "null" }
+      ]
+    },
+    "axisRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "axisId",
+        "observationContractVersion",
+        "ruleVersion",
+        "snapshotVersion",
+        "reasonVersion",
+        "provenanceVersion",
+        "decisionSequence",
+        "observationValues",
+        "validity",
+        "forcedValue",
+        "shadowRecommendation",
+        "selectedValue",
+        "appliedValue",
+        "selectionSource",
+        "reasonCode",
+        "safetyOverride",
+        "decisionBoundary",
+        "latch",
+        "fallbackState",
+        "outcomes"
+      ],
+      "properties": {
+        "axisId": {
+          "enum": [
+            "application_send_turn_planning",
+            "application_send_batch_formation",
+            "queued_send_burst_budget",
+            "oversized_write_admission_quantum"
+          ]
+        },
+        "observationContractVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "ruleVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "snapshotVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "reasonVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "provenanceVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "decisionSequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "observationValues": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "queuedApplicationWrites": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "outboundBacklogBytes": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "distinctQueuedSendStreams": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "oldestQueuedSendAgeMicros": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "queueDelayEwmaMicros": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "actorServiceTimeEwmaMicros": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "maximumPayloadBytes": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "eligibleWriteCount": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "eligibleWriteBytes": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "legalMaximumDatagrams": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "configuredMaximumDatagrams": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "burstLimitHits": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "logicalWriteRemainingBytes": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "maximumChunkBytes": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "retainedSendBuffers": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "retainedSendBytes": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "bytesInFlight": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "congestionWindowBytes": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "handshakeConfirmed": { "type": ["boolean", "null"] },
+            "cancellationRequested": { "type": ["boolean", "null"] },
+            "disposalStarted": { "type": ["boolean", "null"] },
+            "terminalStarted": { "type": ["boolean", "null"] }
+          },
+          "maxProperties": 24
+        },
+        "validity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "missing",
+            "stale",
+            "saturated",
+            "contradictory",
+            "outOfDomain"
+          ],
+          "properties": {
+            "missing": { "type": "boolean" },
+            "stale": { "type": "boolean" },
+            "saturated": { "type": "boolean" },
+            "contradictory": { "type": "boolean" },
+            "outOfDomain": { "type": "boolean" }
+          }
+        },
+        "forcedValue": { "$ref": "#/$defs/nullablePolicyValue" },
+        "shadowRecommendation": { "$ref": "#/$defs/nullablePolicyValue" },
+        "selectedValue": { "$ref": "#/$defs/policyValue" },
+        "appliedValue": { "$ref": "#/$defs/policyValue" },
+        "selectionSource": {
+          "enum": [
+            "legacy_selector",
+            "forced",
+            "shadow_rule",
+            "fallback",
+            "safety_override"
+          ]
+        },
+        "reasonCode": { "$ref": "#/$defs/nonEmptyString" },
+        "safetyOverride": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["applied", "reasonCode"],
+          "properties": {
+            "applied": { "type": "boolean" },
+            "reasonCode": {
+              "type": ["string", "null"],
+              "minLength": 1
+            }
+          }
+        },
+        "decisionBoundary": {
+          "enum": ["actor_turn", "packet_plan", "logical_write_admission"]
+        },
+        "latch": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["lifetime", "state", "sequence", "operationKey", "planKey"],
+          "properties": {
+            "lifetime": { "enum": ["actor_turn", "packet_plan", "logical_write"] },
+            "state": { "enum": ["unlatched", "latched", "completed", "fallback", "terminal"] },
+            "sequence": { "$ref": "#/$defs/unsignedInteger" },
+            "operationKey": { "type": ["string", "null"], "minLength": 1 },
+            "planKey": { "type": ["string", "null"], "minLength": 1 }
+          }
+        },
+        "fallbackState": {
+          "enum": ["not_required", "eligible", "applied", "terminal"]
+        },
+        "outcomes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["scope"],
+          "properties": {
+            "scope": {
+              "enum": ["epoch", "operation", "plan", "actor_turn", "sample_descriptive_only"]
+            },
+            "selectedWriteCount": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "selectedPayloadBytes": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "appliedDatagramCap": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "emittedDatagrams": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "admittedFragments": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "continuationCount": { "$ref": "#/$defs/nullableUnsignedInteger" },
+            "completedOperations": { "$ref": "#/$defs/nullableUnsignedInteger" }
+          }
+        }
+      }
+    }
+  }
+}

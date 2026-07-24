@@ -32,6 +32,26 @@ the summary reports `uniqueArtifactHashCount`. Input files are read-only.
 Negative, noisy, excluded, and failed campaign rows remain in their source
 evidence set.
 
+Validate the Stage 1 four-axis unified epoch and its separate construction,
+packet-plan, actor-turn, and logical-write decision records:
+
+```powershell
+./eng/adaptive-runtime/Test-AdaptiveRuntimeStage1UnifiedEvidence.ps1 `
+  -UnifiedEpochPath ./path/to/stage1-unified-epoch.json `
+  -AxisDecisionPath ./path/to/stage1-axis-decisions.json
+```
+
+This gate accepts individual JSON objects, JSON arrays, or JSONL inputs and
+validates every record against the versioned Stage 1 schemas. It then enforces
+the semantic rules JSON Schema cannot express: the canonical four-axis order,
+axis-specific closed policy values, at most one forced axis per epoch,
+`legacy_current` on every unforced adjacent axis, forced/selected/applied
+identity unless a named safety guard overrides it, shadow neutrality, exact
+decision-boundary and latch identity, unique deterministic join keys, and
+complete epoch-to-decision joins. Separate decision artifacts retain their own
+source path and SHA-256 provenance; they are not relabeled as the unified epoch
+artifact.
+
 The standalone validator remains strict about epoch-local exclusion flags.
 The dataset pipeline uses the explicit
 `-AllowLegacyResultLevelEnvironmentExclusions` compatibility gate for retained

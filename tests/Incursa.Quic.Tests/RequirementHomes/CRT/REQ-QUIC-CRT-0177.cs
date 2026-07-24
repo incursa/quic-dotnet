@@ -1,6 +1,9 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Text.Json;
+using System.Text.Json.Nodes;
+
 namespace Incursa.Quic.Tests.RequirementHomes.CRT;
 
 public sealed class REQ_QUIC_CRT_0177
@@ -162,6 +165,208 @@ public sealed class REQ_QUIC_CRT_0177
             invalid,
             CreateDecision(QuicAdaptiveRuntimeStage1Axis.QueuedSendBurstBudget),
             CreateDecision(QuicAdaptiveRuntimeStage1Axis.OversizedWriteAdmissionQuantum)));
+    }
+
+    [Fact]
+    public void UnifiedEvidenceValidatorAcceptsExactFourAxisJoin()
+    {
+        AdaptiveRuntimePolicyScriptTestSupport.ProcessResult result =
+            AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                "eng/adaptive-runtime/Test-AdaptiveRuntimeStage1UnifiedEvidence.ps1",
+                "-UnifiedEpochPath",
+                AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                    "tests/fixtures/adaptive-runtime-policy/stage1-unified-epoch.valid.example.json"),
+                "-AxisDecisionPath",
+                AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                    "tests/fixtures/adaptive-runtime-policy/stage1-axis-decisions.valid.example.json"));
+
+        Assert.Equal(0, result.ExitCode);
+        using JsonDocument summary = JsonDocument.Parse(result.Output);
+        JsonElement root = summary.RootElement;
+        Assert.True(root.GetProperty("valid").GetBoolean());
+        Assert.Equal(1, root.GetProperty("unifiedEpochRowCount").GetInt32());
+        Assert.Equal(4, root.GetProperty("axisRecordCount").GetInt32());
+        Assert.Equal(4, root.GetProperty("axisDecisionRowCount").GetInt32());
+        Assert.Equal(
+            1,
+            root.GetProperty("variedAxisEpochCounts")
+                .GetProperty("application_send_batch_formation")
+                .GetInt32());
+    }
+
+    [Fact]
+    public void UnifiedEvidenceValidatorRejectsNonLegacyAdjacentAxis()
+    {
+        string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        string temporaryDirectory = Path.Combine(
+            repoRoot,
+            ".artifacts",
+            "adaptive-runtime",
+            $"stage1-unified-validator-test-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(temporaryDirectory);
+
+        try
+        {
+            JsonObject row = JsonNode.Parse(File.ReadAllText(
+                AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                    "tests/fixtures/adaptive-runtime-policy/stage1-unified-epoch.valid.example.json")))!.AsObject();
+            JsonObject adjacentBurstAxis = row["axisRecords"]![2]!.AsObject();
+            adjacentBurstAxis["selectedValue"] = "single_datagram";
+            adjacentBurstAxis["appliedValue"] = "single_datagram";
+            string rowPath = Path.Combine(temporaryDirectory, "invalid-adjacent-axis.json");
+            File.WriteAllText(rowPath, row.ToJsonString());
+
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult result =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                "eng/adaptive-runtime/Test-AdaptiveRuntimeStage1UnifiedEvidence.ps1",
+                "-UnifiedEpochPath",
+                rowPath,
+                "-AxisDecisionPath",
+                AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                    "tests/fixtures/adaptive-runtime-policy/stage1-axis-decisions.valid.example.json"));
+
+            Assert.NotEqual(0, result.ExitCode);
+            using JsonDocument summary = JsonDocument.Parse(result.Output);
+            Assert.Contains(
+                summary.RootElement.GetProperty("failures")
+                    .EnumerateArray()
+                    .Select(static failure => failure.GetString()!),
+                failure => failure.Contains(
+                    "unforced axis 'queued_send_burst_budget' applied 'single_datagram'",
+                    StringComparison.Ordinal));
+        }
+        finally
+        {
+            Directory.Delete(temporaryDirectory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void UnifiedEvidenceValidatorRejectsDecisionJoinDrift()
+    {
+        string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        string temporaryDirectory = Path.Combine(
+            repoRoot,
+            ".artifacts",
+            "adaptive-runtime",
+            $"stage1-unified-join-test-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(temporaryDirectory);
+
+        try
+        {
+            JsonArray decisions = JsonNode.Parse(File.ReadAllText(
+                AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                    "tests/fixtures/adaptive-runtime-policy/stage1-axis-decisions.valid.example.json")))!.AsArray();
+            decisions[1]!["decisionSequence"] = 99;
+            string decisionPath = Path.Combine(temporaryDirectory, "invalid-decision-join.json");
+            File.WriteAllText(decisionPath, decisions.ToJsonString());
+
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult result =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Test-AdaptiveRuntimeStage1UnifiedEvidence.ps1",
+                    "-UnifiedEpochPath",
+                    AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                        "tests/fixtures/adaptive-runtime-policy/stage1-unified-epoch.valid.example.json"),
+                    "-AxisDecisionPath",
+                    decisionPath);
+
+            Assert.NotEqual(0, result.ExitCode);
+            using JsonDocument summary = JsonDocument.Parse(result.Output);
+            Assert.Contains(
+                summary.RootElement.GetProperty("failures")
+                    .EnumerateArray()
+                    .Select(static failure => failure.GetString()!),
+                failure => failure.Contains(
+                    "does not resolve to a unified epoch axis record",
+                    StringComparison.Ordinal));
+        }
+        finally
+        {
+            Directory.Delete(temporaryDirectory, recursive: true);
+        }
+    }
+
+    [Theory]
+    [InlineData("invalid_axis_value", "recorded invalid forcedValue 'single_datagram'")]
+    [InlineData("multiple_forced", "forced 2 Stage 1 axes")]
+    [InlineData("safety_source", "marked safetyOverride.applied=true without selectionSource='safety_override'")]
+    [InlineData("record_kind_key", "recorded recordKind 'packet_plan' instead of 'actor_turn'")]
+    public void UnifiedEvidenceValidatorRejectsSemanticContractDrift(
+        string mutation,
+        string expectedFailure)
+    {
+        string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        string temporaryDirectory = Path.Combine(
+            repoRoot,
+            ".artifacts",
+            "adaptive-runtime",
+            $"stage1-unified-semantic-test-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(temporaryDirectory);
+
+        try
+        {
+            JsonObject row = JsonNode.Parse(File.ReadAllText(
+                AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                    "tests/fixtures/adaptive-runtime-policy/stage1-unified-epoch.valid.example.json")))!.AsObject();
+            JsonArray decisions = JsonNode.Parse(File.ReadAllText(
+                AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                    "tests/fixtures/adaptive-runtime-policy/stage1-axis-decisions.valid.example.json")))!.AsArray();
+
+            switch (mutation)
+            {
+                case "invalid_axis_value":
+                    foreach (string property in new[] { "forcedValue", "selectedValue", "appliedValue" })
+                    {
+                        row["axisRecords"]![1]![property] = "single_datagram";
+                        decisions[1]![property] = "single_datagram";
+                    }
+                    break;
+                case "multiple_forced":
+                    row["axisRecords"]![2]!["forcedValue"] = "single_datagram";
+                    row["axisRecords"]![2]!["selectedValue"] = "single_datagram";
+                    row["axisRecords"]![2]!["appliedValue"] = "single_datagram";
+                    row["axisRecords"]![2]!["selectionSource"] = "forced";
+                    decisions[2]!["forcedValue"] = "single_datagram";
+                    decisions[2]!["selectedValue"] = "single_datagram";
+                    decisions[2]!["appliedValue"] = "single_datagram";
+                    break;
+                case "safety_source":
+                    row["axisRecords"]![1]!["safetyOverride"]!["applied"] = true;
+                    row["axisRecords"]![1]!["safetyOverride"]!["reasonCode"] = "recovery_guard";
+                    break;
+                case "record_kind_key":
+                    decisions[2]!["recordKind"] = "packet_plan";
+                    decisions[2]!["planKey"] = "wrong-plan";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(mutation));
+            }
+
+            string rowPath = Path.Combine(temporaryDirectory, "row.json");
+            string decisionPath = Path.Combine(temporaryDirectory, "decisions.json");
+            File.WriteAllText(rowPath, row.ToJsonString());
+            File.WriteAllText(decisionPath, decisions.ToJsonString());
+
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult result =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Test-AdaptiveRuntimeStage1UnifiedEvidence.ps1",
+                    "-UnifiedEpochPath",
+                    rowPath,
+                    "-AxisDecisionPath",
+                    decisionPath);
+
+            Assert.NotEqual(0, result.ExitCode);
+            using JsonDocument summary = JsonDocument.Parse(result.Output);
+            Assert.Contains(
+                summary.RootElement.GetProperty("failures")
+                    .EnumerateArray()
+                    .Select(static failure => failure.GetString()!),
+                failure => failure.Contains(expectedFailure, StringComparison.Ordinal));
+        }
+        finally
+        {
+            Directory.Delete(temporaryDirectory, recursive: true);
+        }
     }
 
     private static QuicAdaptiveRuntimeStage1PolicySnapshot CreateSnapshot(

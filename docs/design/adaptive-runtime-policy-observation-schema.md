@@ -7,6 +7,9 @@ title: "Adaptive Runtime Connection Observation Schema"
 Status: receive-credit v1 and application-send turn runtime subset
 implemented; send-turn raw-host export and standalone epoch conversion
 implemented; permanent runner capture and result/checksum joins implemented;
+the common Stage 1 four-axis in-memory contract, unified epoch schema,
+separate decision schema, and semantic join validator are implemented but
+runtime emission for all four axes remains pending;
 one local shadow cell and one retained-negative observation-neutrality cell
 executed; broader neutrality, independent-host, and active-policy review remain
 open
@@ -19,6 +22,37 @@ dictionary, metric tag set, stream enumeration, or global lock is permitted.
 This schema is an internal decision record and offline dataset source. It is
 not a public metrics contract. Existing low-cardinality instruments in
 [`../metrics.md`](../metrics.md) remain the operational metrics surface.
+
+## Stage 1 Unified Epoch V1
+
+The Stage 1 send-path library uses
+[`../../schemas/adaptive-runtime-stage1-unified-epoch-v1.schema.json`](../../schemas/adaptive-runtime-stage1-unified-epoch-v1.schema.json)
+for one bounded connection epoch containing exactly four axis records in this
+order:
+
+1. `application_send_turn_planning`;
+2. `application_send_batch_formation`;
+3. `queued_send_burst_budget`; and
+4. `oversized_write_admission_quantum`.
+
+Each record keeps its own observation, rule, snapshot, reason, and provenance
+versions; validity flags; forced, shadow, selected, and applied identities;
+bounded reason and safety override; decision boundary and latch; fallback
+state; and explicitly scoped outcomes. Scenario, payload, and requested
+concurrency are retained only under `workloadAnalysisOnly`, which is
+permanently excluded from production features.
+
+Construction, packet-plan, actor-turn, and logical-write records remain
+separate and validate against
+[`../../schemas/adaptive-runtime-stage1-axis-decision-v1.schema.json`](../../schemas/adaptive-runtime-stage1-axis-decision-v1.schema.json).
+The semantic validator
+[`../../eng/adaptive-runtime/Test-AdaptiveRuntimeStage1UnifiedEvidence.ps1`](../../eng/adaptive-runtime/Test-AdaptiveRuntimeStage1UnifiedEvidence.ps1)
+requires the deterministic campaign/run/cell/sample/connection/epoch/axis/
+decision-sequence join, rejects duplicate or missing joins, permits at most one
+forced axis per epoch, and requires every unforced adjacent axis to apply
+`legacy_current`. Forced and applied values must match unless an explicit
+safety override is recorded; shadow recommendations never change the applied
+value.
 
 ## Epoch Envelope
 
