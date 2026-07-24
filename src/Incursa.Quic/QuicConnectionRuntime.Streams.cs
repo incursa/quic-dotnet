@@ -2467,13 +2467,33 @@ internal sealed partial class QuicConnectionRuntime
             return;
         }
 
+        int configuredPolicy = Volatile.Read(ref applicationSendTurnPolicyMode);
+        bool hasForcedValue =
+            configuredPolicy != UnconfiguredApplicationSendTurnPolicyMode;
+        QuicApplicationSendTurnPolicyMode forcedValue =
+            configuredPolicy == (int)QuicApplicationSendTurnPolicyMode.Conservative
+                ? QuicApplicationSendTurnPolicyMode.Conservative
+                : QuicApplicationSendTurnPolicyMode.LegacyCurrent;
+        QuicApplicationSendTurnPolicyMode shadowRecommendation =
+            hasRecommendation
+                ? snapshot.RecommendedPolicy
+                : QuicApplicationSendTurnPolicyMode.LegacyCurrent;
+        QuicAdaptiveRuntimeStage1AxisDecision decision =
+            QuicApplicationSendTurnStage1Policy.Evaluate(
+                in observation,
+                mode,
+                hasForcedValue,
+                forcedValue,
+                hasRecommendation,
+                shadowRecommendation);
         applicationSendTurnSequence = turnSequence;
         applicationSendTurnBurstLimitHits = 0;
         QuicApplicationSendTurnEvidence evidence = new(
             mode,
             observation,
             hasRecommendation,
-            snapshot);
+            snapshot,
+            decision);
         try
         {
             _ = sink.TryPublish(in evidence);

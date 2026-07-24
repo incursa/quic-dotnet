@@ -1599,7 +1599,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                     "Application-send turn observe-only and shadow modes require an evidence sink.");
             }
 
-            if (applicationSendTurnPlanner is not null)
+            if (applicationSendTurnPlanner is not null
+                && forcedApplicationSendTurnMode is null)
             {
                 throw new InvalidOperationException(
                     "Application-send turn observation requires the null-planner legacy_current path.");
@@ -1609,13 +1610,6 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             {
                 throw new InvalidOperationException(
                     "Application-send turn observation requires the legacy_current receive-credit policy.");
-            }
-
-            if (forcedApplicationSendTurnMode is not null
-                and not QuicApplicationSendTurnPolicyMode.LegacyCurrent)
-            {
-                throw new InvalidOperationException(
-                    "Application-send turn observation requires the legacy_current application-send turn policy.");
             }
 
             if (options.ApplicationSendTurnPolicyProvenanceSink is not null)
@@ -1646,12 +1640,6 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
             if (forcedApplicationSendTurnMode is { } applicationSendTurnMode)
             {
-                if (applicationSendTurnMode != QuicApplicationSendTurnPolicyMode.LegacyCurrent)
-                {
-                    throw new InvalidOperationException(
-                        "Adaptive runtime shadow requires the legacy_current application-send turn policy.");
-                }
-
                 ConfigureApplicationSendTurnPolicyMode(applicationSendTurnMode);
             }
 
@@ -1848,7 +1836,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         QuicApplicationSendTurnObservationMode mode,
         IQuicApplicationSendTurnEvidenceSink sink)
     {
-        if (applicationSendTurnPlanner is not null)
+        if (applicationSendTurnPlanner is not null
+            && Volatile.Read(ref applicationSendTurnPolicyMode)
+                == UnconfiguredApplicationSendTurnPolicyMode)
         {
             throw new InvalidOperationException(
                 "Application-send turn observation requires the null-planner legacy_current path.");

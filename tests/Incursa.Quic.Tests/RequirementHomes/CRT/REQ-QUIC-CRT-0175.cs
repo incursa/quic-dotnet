@@ -75,12 +75,27 @@ public sealed class REQ_QUIC_CRT_0175
     }
 
     [Theory]
-    [InlineData((int)QuicApplicationSendTurnObservationMode.ObserveOnly, false)]
-    [InlineData((int)QuicApplicationSendTurnObservationMode.Shadow, true)]
+    [InlineData(
+        (int)QuicApplicationSendTurnObservationMode.ObserveOnly,
+        (int)QuicApplicationSendTurnPolicyMode.LegacyCurrent,
+        false)]
+    [InlineData(
+        (int)QuicApplicationSendTurnObservationMode.Shadow,
+        (int)QuicApplicationSendTurnPolicyMode.LegacyCurrent,
+        true)]
+    [InlineData(
+        (int)QuicApplicationSendTurnObservationMode.ObserveOnly,
+        (int)QuicApplicationSendTurnPolicyMode.Conservative,
+        false)]
+    [InlineData(
+        (int)QuicApplicationSendTurnObservationMode.Shadow,
+        (int)QuicApplicationSendTurnPolicyMode.Conservative,
+        true)]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task RuntimePublishesAtTheExistingSendTurnBoundaryWithoutInstallingAPlanner(
+    public async Task RuntimePublishesAtTheExistingSendTurnBoundaryForEveryForcedValue(
         int modeValue,
+        int forcedModeValue,
         bool expectedRecommendation)
     {
         await using QuicConnectionRuntime runtime =
@@ -101,10 +116,12 @@ public sealed class REQ_QUIC_CRT_0175
         RecordingApplicationSendTurnEvidenceSink sink = new();
         QuicApplicationSendTurnObservationMode mode =
             (QuicApplicationSendTurnObservationMode)modeValue;
+        QuicApplicationSendTurnPolicyMode forcedMode =
+            (QuicApplicationSendTurnPolicyMode)forcedModeValue;
         runtime.ConfigureAdaptiveRuntimePolicy(new QuicClientConnectionOptions
         {
             ForcedReceiveCreditPolicyMode = QuicReceiveCreditPolicyMode.LegacyCurrent,
-            ForcedApplicationSendTurnPolicyMode = QuicApplicationSendTurnPolicyMode.LegacyCurrent,
+            ForcedApplicationSendTurnPolicyMode = forcedMode,
             ApplicationSendTurnObservationMode = mode,
             ApplicationSendTurnEvidenceSink = sink,
         });
@@ -145,6 +162,20 @@ public sealed class REQ_QUIC_CRT_0175
         Assert.Equal(1U, evidence.Observation.QueuedApplicationWrites);
         Assert.Equal(1U, evidence.Observation.RetainedSendBuffers);
         Assert.Equal(QuicAdaptiveRuntimeLifecycle.Active, evidence.Observation.LifecycleFlags);
+        Assert.Equal(
+            QuicAdaptiveRuntimeStage1Axis.ApplicationSendTurnPlanning,
+            evidence.Decision.Axis);
+        Assert.True(evidence.Decision.HasForcedValue);
+        Assert.Equal(
+            forcedMode == QuicApplicationSendTurnPolicyMode.Conservative
+                ? QuicAdaptiveRuntimeStage1PolicyValue.Conservative
+                : QuicAdaptiveRuntimeStage1PolicyValue.LegacyCurrent,
+            evidence.Decision.ForcedValue);
+        Assert.Equal(evidence.Decision.ForcedValue, evidence.Decision.AppliedValue);
+        Assert.Equal(
+            QuicAdaptiveRuntimeStage1SelectionSource.Forced,
+            evidence.Decision.SelectionSource);
+        Assert.Equal(expectedRecommendation, evidence.Decision.HasShadowRecommendation);
         if (expectedRecommendation)
         {
             Assert.Equal(
@@ -162,7 +193,16 @@ public sealed class REQ_QUIC_CRT_0175
             Assert.Equal(default, evidence.Snapshot);
         }
 
-        Assert.Null(runtime.ApplicationSendTurnPlanner);
+        if (forcedMode == QuicApplicationSendTurnPolicyMode.Conservative)
+        {
+            Assert.NotNull(runtime.ApplicationSendTurnPlanner);
+        }
+        else
+        {
+            Assert.Null(runtime.ApplicationSendTurnPlanner);
+        }
+
+        Assert.Equal(forcedMode, runtime.ApplicationSendTurnPolicyMode);
         Assert.Equal(mode, runtime.ApplicationSendTurnObservationMode);
         await write.WaitAsync(TimeSpan.FromSeconds(5));
     }
@@ -217,10 +257,9 @@ public sealed class REQ_QUIC_CRT_0175
 
     [Theory]
     [InlineData((int)QuicReceiveCreditPolicyMode.Immediate, (int)QuicApplicationSendTurnPolicyMode.LegacyCurrent)]
-    [InlineData((int)QuicReceiveCreditPolicyMode.LegacyCurrent, (int)QuicApplicationSendTurnPolicyMode.Conservative)]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void AdjacentOrAppliedCandidateModesAreRejected(
+    public void AdjacentReceiveCreditCandidateModeIsRejected(
         int receiveCreditModeValue,
         int applicationSendTurnModeValue)
     {

@@ -126,7 +126,8 @@ internal readonly record struct QuicApplicationSendTurnEvidence(
     QuicApplicationSendTurnObservationMode Mode,
     QuicApplicationSendTurnObservation Observation,
     bool HasRecommendation,
-    QuicApplicationSendTurnPolicySnapshot Snapshot);
+    QuicApplicationSendTurnPolicySnapshot Snapshot,
+    QuicAdaptiveRuntimeStage1AxisDecision Decision);
 
 internal interface IQuicApplicationSendTurnEvidenceSink
 {

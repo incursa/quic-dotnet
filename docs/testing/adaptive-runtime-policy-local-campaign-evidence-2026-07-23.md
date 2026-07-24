@@ -2122,3 +2122,40 @@ slice is unified runtime export plus the small correctness-only four-axis
 smoke. After that smoke, the roadmap proceeds to Stage 2 before any large
 transform or offline ML analysis. `active_internal` and production activation
 remain unauthorized.
+
+## Stage 1 Send-Turn Common-Decision Adaptation
+
+The unified Stage 1 spine exposed an obsolete configuration restriction:
+`application_send_turn_planning=conservative` could not retain observe-only or
+shadow instrumentation. That restriction prevented a forced send-turn
+counterfactual from reporting its actual applied value in the same common
+decision contract used by the other three Stage 1 axes.
+
+The runtime now adapts each send-turn observation into a versioned
+`QuicAdaptiveRuntimeStage1AxisDecision`. Forced and applied identity are
+reported independently from the shadow recommendation. A forced
+`conservative` value may therefore compose with observe-only or shadow
+evidence, while the shadow controller remains behavior-neutral and cannot
+replace the forced planner. An independently injected planner is still
+rejected because it has no closed policy identity or deterministic provenance.
+Receive credit and every unforced Stage 1 axis remain `legacy_current`.
+
+The first focused invocation compiled and ran 57 tests, of which 56 passed and
+one failed. The failure was the old negative test that required forced
+`conservative` plus shadow observation to throw. It is retained as
+`diagnostic_only`; the approved unified contract makes that combination
+necessary and legal. The test was replaced with coverage of all four
+observe/shadow by forced-legacy/forced-conservative combinations.
+
+The final command was:
+
+```powershell
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release `
+  --no-restore `
+  --filter "FullyQualifiedName~REQ_QUIC_CRT_0175|FullyQualifiedName~REQ_QUIC_CRT_0176|FullyQualifiedName~REQ_QUIC_CRT_0177"
+```
+
+The final focused band passed 58 of 58 tests with zero failures and zero
+skips in 17 seconds. No BenchmarkDotNet, campaign, dataset transform,
+ProtocolLab run, or unified-row export was performed in this slice. Nothing
+was pushed, CI was not used, and active behavior remains unauthorized.

@@ -34,18 +34,20 @@ must reproduce the frozen legacy selector before any active behavior is
 considered.
 
 The implemented `application_send_turn_planning` shadow extension reuses the
-state and fallback vocabulary but emits an
-axis-specific recommendation at the existing application-send actor-turn
-planning boundary. `legacy_current` remains applied, the recommendation has no
-planner consumer, and the snapshot expires after one actor turn. The initial
-closed recommendation set is `legacy_current` and `conservative`; both retain
-the current legal planner behavior until a later behavior-distinct proposal
-has its own reviewed requirement and evidence package. Observe-only and shadow
-configuration is connection-local. Multiple implemented axes may observe or
-shadow-recommend in the same connection so unified epochs retain
-contemporaneous evidence. Treatment ownership remains singular: at most one
-axis may be forced to a behavior-distinct value and every adjacent applied
-value remains `legacy_current`.
+state and fallback vocabulary but emits an axis-specific recommendation at the
+existing application-send actor-turn planning boundary. The recommendation
+has no planner consumer and the snapshot expires after one actor turn. Its
+common Stage 1 decision separately records a forced value, when present, and
+the neutral shadow recommendation. Thus a forced `conservative`
+counterfactual may be observed or shadowed without misreporting its actual
+applied value, while an unforced shadow execution still applies
+`legacy_current`. The initial closed set is `legacy_current` and
+`conservative`. Observe-only and shadow configuration is connection-local.
+Multiple implemented axes may observe or shadow-recommend in the same
+connection so unified epochs retain contemporaneous evidence. Treatment
+ownership remains singular: at most one axis may be forced to a
+behavior-distinct value and every adjacent applied value remains
+`legacy_current`.
 
 The implemented `application_send_batch_formation` selector resolves
 `legacy_current` or `single_eligible` after the correctness-critical runtime
