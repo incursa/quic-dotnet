@@ -211,7 +211,7 @@ public sealed class REQ_QUIC_CRT_0176
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void RawHostKeepsShadowEvidenceSeparateFromForcedConstructionProvenance()
+    public void RawHostKeepsDetailedEvidenceSeparateWhileUnifyingObservation()
     {
         string source = File.ReadAllText(AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
             "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs"));
@@ -241,11 +241,27 @@ public sealed class REQ_QUIC_CRT_0176
             source,
             StringComparison.Ordinal);
         Assert.Contains(
-            "Only one adaptive-runtime policy axis can be forced or observed",
+            "Only one Stage 1 adaptive-runtime policy axis can be forced",
             source,
             StringComparison.Ordinal);
         Assert.Contains(
             "? QuicReceiveCreditPolicyMode.LegacyCurrent",
+            source,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "adaptive-runtime-stage1-unified-epoch-raw-v1",
+            source,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "IQuicApplicationSendBatchEvidenceSink",
+            source,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "IQuicQueuedSendBurstEvidenceSink",
+            source,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "IQuicOversizedWriteAdmissionEvidenceSink",
             source,
             StringComparison.Ordinal);
     }

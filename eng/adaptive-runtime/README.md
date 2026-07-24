@@ -52,6 +52,20 @@ complete epoch-to-decision joins. Separate decision artifacts retain their own
 source path and SHA-256 provenance; they are not relabeled as the unified epoch
 artifact.
 
+Validate the raw four-axis epoch emitted by the permanent raw QUIC host:
+
+```powershell
+./eng/adaptive-runtime/Test-AdaptiveRuntimeStage1RawEvidence.ps1 `
+  -RawEpochPath ./.artifacts/adaptive-runtime/stage1-smoke/raw-unified-epochs.jsonl
+```
+
+The raw validator requires exactly the canonical four axis properties,
+monotonic per-connection epochs, matching common decisions and policy
+snapshots, at most one forced axis, and `LegacyCurrent` on every unforced
+adjacent axis. An axis without an event remains present as missing and
+unlatched; the later curated `epoch_summary` join keeps operation and plan keys
+null rather than inventing an operation identity.
+
 The standalone validator remains strict about epoch-local exclusion flags.
 The dataset pipeline uses the explicit
 `-AllowLegacyResultLevelEnvironmentExclusions` compatibility gate for retained

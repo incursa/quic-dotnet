@@ -43,17 +43,22 @@
   "expected_result": "Every Stage 1 axis is independently forceable, observable, shadow-evaluable, safely latched, attributable, replayable, and rollback-tested while one stable correctness-critical runtime remains authoritative; every smoke row contains all four axes with at most one varied treatment and all adjacent axes applied as legacy_current; safety guards remain authoritative under forcing; invalid and negative evidence remains append-only; and no active behavior or production rule is authorized.",
   "evidence": [
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0177.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0177.Accumulator.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0178.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0179.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0180.cs",
     "tests/Incursa.Quic.Tests/QuicApplicationSendSchedulerTests.cs",
     "src/Incursa.Quic/QuicAdaptiveRuntimeStage1Policy.cs",
+    "src/Incursa.Quic/QuicAdaptiveRuntimeStage1EvidenceAccumulator.cs",
     "src/Incursa.Quic/QuicOversizedWriteAdmissionPolicy.cs",
+    "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeStage1RawEvidence.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeStage1UnifiedEvidence.ps1",
+    "schemas/adaptive-runtime-stage1-unified-epoch-raw-v1.schema.json",
     "schemas/adaptive-runtime-stage1-unified-epoch-v1.schema.json",
     "schemas/adaptive-runtime-stage1-axis-decision-v1.schema.json",
     "docs/design/adaptive-runtime-stage1-unified-execution-map.md",
     "docs/testing/adaptive-runtime-policy-local-campaign-evidence-2026-07-23.md"
   ],
-  "status_summary": "In progress. The common in-memory four-axis snapshot, unified epoch schema, separate decision schema, semantic validator, and representative fixtures are implemented. application_send_batch_formation and queued_send_burst_budget have connection-local forcing, observe-only and neutral shadow capture, bounded validity and safety reasons, seam-scoped outcomes, listener copy, guarded evidence export, deterministic replay, adjacent-axis rejection, and force-legacy rollback. oversized_write_admission_quantum now exposes legacy_current, single_fragment, and bounded_multi_fragment at logical-write admission; preserves the exact retained selector; latches the resolved quantum through fragmentation and completion; records bounded admission and terminal outcomes; retains dispatcher, lifecycle, recovery, ownership, and transport guards; and has 28 green REQ-QUIC-CRT-0180 tests plus 36 green retained oversized-write and cancellation tests. Unified raw epoch export, permanent campaign inputs, manual or nightly mechanism-cost evidence, the complete Release correctness suite, multi-host verification, and the small four-axis smoke remain open. No policy acceptance, rule derivation, active behavior, or production readiness is claimed."
+  "status_summary": "In progress. All four Stage 1 axes are independently forceable, observable, and shadow-evaluable. The common snapshot now distinguishes actual forced send-turn application from neutral shadow recommendation. A connection-local bounded accumulator consumes all four evidence sinks, emits exactly four summaries per epoch, resets at the boundary, and marks a missing boundary event as missing and unlatched instead of fabricating an operation or carrying prior evidence as fresh. The permanent raw QUIC host now enables all four observation streams whenever any Stage 1 axis is selected, permits at most one forced axis, holds receive credit at legacy_current, emits detailed axis events, and emits the versioned unified raw epoch at the existing connection epoch boundary. The raw and curated schemas accept explicit epoch_summary decision joins with null operation and plan keys. The focused REQ-QUIC-CRT-0177 accumulator, configuration, serialization, schema, and semantic tests are green. Canonical raw-to-curated materialization, permanent campaign extraction, manual or nightly mechanism-cost evidence, the complete Release correctness suite, multi-host verification, and the small four-axis smoke remain open. No policy acceptance, rule derivation, active behavior, or production readiness is claimed."
 }

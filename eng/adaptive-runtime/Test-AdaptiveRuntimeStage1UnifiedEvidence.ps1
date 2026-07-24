@@ -378,7 +378,8 @@ foreach ($item in $validatedAxisDecisions) {
         }
     }
 
-    if ([string] $decision.recordKind -ne $expectedRecordKindByAxis[$axisId]) {
+    if ([string] $decision.recordKind -ne $expectedRecordKindByAxis[$axisId] -and
+        [string] $decision.recordKind -ne 'epoch_summary') {
         $failures.Add("Axis decision '$joinKey' recorded recordKind '$($decision.recordKind)' instead of '$($expectedRecordKindByAxis[$axisId])'.")
     }
 
@@ -407,6 +408,12 @@ foreach ($item in $validatedAxisDecisions) {
             if ($null -ne (Get-NullableString -Value $decision.operationKey) -or
                 $null -ne (Get-NullableString -Value $decision.planKey)) {
                 $failures.Add("Axis decision '$joinKey' must not set operationKey or planKey for recordKind='actor_turn'.")
+            }
+        }
+        'epoch_summary' {
+            if ($null -ne (Get-NullableString -Value $decision.operationKey) -or
+                $null -ne (Get-NullableString -Value $decision.planKey)) {
+                $failures.Add("Axis decision '$joinKey' must not invent operationKey or planKey for recordKind='epoch_summary'.")
             }
         }
     }

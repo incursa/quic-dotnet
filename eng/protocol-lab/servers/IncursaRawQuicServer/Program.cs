@@ -36,19 +36,68 @@ var adaptiveRuntimePolicy = ResolveAdaptiveRuntimePolicy(
     Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY"));
 var applicationSendTurnPolicy = ResolveApplicationSendTurnPolicy(
     Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY"));
-var applicationSendTurnAxisSelected = applicationSendTurnPolicy.ForcedMode is not null
-    || applicationSendTurnPolicy.ObservationMode != QuicApplicationSendTurnObservationMode.Disabled;
-if (applicationSendTurnAxisSelected
-    && (adaptiveRuntimePolicy.ForcedMode is not null || adaptiveRuntimePolicy.ShadowEnabled))
+var applicationSendBatchPolicy = ResolveApplicationSendBatchPolicy(
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_BATCH_POLICY"));
+var queuedSendBurstPolicy = ResolveQueuedSendBurstPolicy(
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_BURST_POLICY"));
+var oversizedWriteAdmissionPolicy = ResolveOversizedWriteAdmissionPolicy(
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_OVERSIZED_WRITE_ADMISSION_POLICY"));
+var stage1AxisSelected =
+    applicationSendTurnPolicy.ForcedMode is not null
+    || applicationSendTurnPolicy.ObservationMode != QuicApplicationSendTurnObservationMode.Disabled
+    || applicationSendBatchPolicy.ForcedMode is not null
+    || applicationSendBatchPolicy.ObservationMode != QuicApplicationSendBatchObservationMode.Disabled
+    || queuedSendBurstPolicy.ForcedMode is not null
+    || queuedSendBurstPolicy.ObservationMode != QuicQueuedSendBurstObservationMode.Disabled
+    || oversizedWriteAdmissionPolicy.ForcedMode is not null
+    || oversizedWriteAdmissionPolicy.ObservationMode != QuicOversizedWriteAdmissionObservationMode.Disabled;
+var forcedStage1AxisCount =
+    (applicationSendTurnPolicy.ForcedMode is null ? 0 : 1)
+    + (applicationSendBatchPolicy.ForcedMode is null ? 0 : 1)
+    + (queuedSendBurstPolicy.ForcedMode is null ? 0 : 1)
+    + (oversizedWriteAdmissionPolicy.ForcedMode is null ? 0 : 1);
+if (forcedStage1AxisCount > 1)
 {
     throw new InvalidOperationException(
-        "Only one adaptive-runtime policy axis can be forced or observed by a raw QUIC host process.");
+        "Only one Stage 1 adaptive-runtime policy axis can be forced by a raw QUIC host process.");
 }
 
+if (stage1AxisSelected
+    && adaptiveRuntimePolicy.ForcedMode is not null
+    and not QuicReceiveCreditPolicyMode.LegacyCurrent)
+{
+    throw new InvalidOperationException(
+        "Stage 1 send-path evidence requires receive_credit_publication=legacy_current.");
+}
+
+var sendTurnObservationMode = stage1AxisSelected
+    ? EnableUnifiedSendTurnObservation(applicationSendTurnPolicy.ObservationMode)
+    : applicationSendTurnPolicy.ObservationMode;
+var sendBatchObservationMode = stage1AxisSelected
+    ? EnableUnifiedSendBatchObservation(applicationSendBatchPolicy.ObservationMode)
+    : applicationSendBatchPolicy.ObservationMode;
+var burstObservationMode = stage1AxisSelected
+    ? EnableUnifiedBurstObservation(queuedSendBurstPolicy.ObservationMode)
+    : queuedSendBurstPolicy.ObservationMode;
+var oversizedObservationMode = stage1AxisSelected
+    ? EnableUnifiedOversizedObservation(oversizedWriteAdmissionPolicy.ObservationMode)
+    : oversizedWriteAdmissionPolicy.ObservationMode;
+QuicAdaptiveRuntimeStage1PolicySnapshot? configuredStage1Policy =
+    stage1AxisSelected
+        ? QuicAdaptiveRuntimeStage1ConfiguredPolicy.Create(
+            applicationSendTurnPolicy.ForcedMode,
+            sendTurnObservationMode,
+            applicationSendBatchPolicy.ForcedMode,
+            sendBatchObservationMode,
+            queuedSendBurstPolicy.ForcedMode,
+            burstObservationMode,
+            oversizedWriteAdmissionPolicy.ForcedMode,
+            oversizedObservationMode)
+        : null;
 var epochPublisher = adaptiveRuntimePolicy.ForcedMode is not null
     || adaptiveRuntimePolicy.ShadowEnabled
-    || applicationSendTurnAxisSelected
-    ? new AdaptiveRuntimeEpochPublisher()
+    || stage1AxisSelected
+    ? new AdaptiveRuntimeEpochPublisher(configuredStage1Policy)
     : null;
 var echoResponses = string.Equals(payloadDirection, "bidirectional", StringComparison.OrdinalIgnoreCase);
 var downloadPayload = string.Equals(payloadDirection, "server-to-client", StringComparison.OrdinalIgnoreCase)
@@ -104,25 +153,49 @@ var listenerOptions = new QuicListenerOptions
                 RemotelyInitiatedBidirectionalStream = RawQuicReceiveWindowBytes,
                 UnidirectionalStream = RawQuicReceiveWindowBytes,
             },
-            ForcedReceiveCreditPolicyMode = applicationSendTurnAxisSelected
+            ForcedReceiveCreditPolicyMode = stage1AxisSelected
                 ? QuicReceiveCreditPolicyMode.LegacyCurrent
                 : adaptiveRuntimePolicy.ForcedMode,
             ForcedApplicationSendTurnPolicyMode = applicationSendTurnPolicy.ForcedMode,
-            AdaptiveRuntimeShadowEnabled = adaptiveRuntimePolicy.ShadowEnabled,
-            AdaptiveRuntimeShadowEpochInterval = adaptiveRuntimePolicy.ForcedMode is null && !adaptiveRuntimePolicy.ShadowEnabled
+            ForcedApplicationSendBatchPolicyMode = applicationSendBatchPolicy.ForcedMode,
+            ForcedQueuedSendBurstPolicyMode = queuedSendBurstPolicy.ForcedMode,
+            ForcedOversizedWriteAdmissionPolicyMode =
+                oversizedWriteAdmissionPolicy.ForcedMode,
+            AdaptiveRuntimeShadowEnabled =
+                adaptiveRuntimePolicy.ShadowEnabled || stage1AxisSelected,
+            AdaptiveRuntimeShadowEpochInterval = adaptiveRuntimePolicy.ForcedMode is null
+                && !adaptiveRuntimePolicy.ShadowEnabled
+                && !stage1AxisSelected
                 ? TimeSpan.Zero
                 : TimeSpan.FromMilliseconds(250),
-            AdaptiveRuntimeShadowEpochSink = adaptiveRuntimePolicy.ForcedMode is null && !adaptiveRuntimePolicy.ShadowEnabled
+            AdaptiveRuntimeShadowEpochSink = adaptiveRuntimePolicy.ForcedMode is null
+                && !adaptiveRuntimePolicy.ShadowEnabled
+                && !stage1AxisSelected
                 ? null
                 : connectionSinks?.EpochSink,
             ApplicationSendTurnPolicyProvenanceSink = applicationSendTurnPolicy.ForcedMode is null
                 ? null
                 : connectionSinks?.ApplicationSendTurnPolicySink,
-            ApplicationSendTurnObservationMode = applicationSendTurnPolicy.ObservationMode,
+            ApplicationSendTurnObservationMode = sendTurnObservationMode,
             ApplicationSendTurnEvidenceSink =
-                applicationSendTurnPolicy.ObservationMode == QuicApplicationSendTurnObservationMode.Disabled
+                sendTurnObservationMode == QuicApplicationSendTurnObservationMode.Disabled
                     ? null
                     : connectionSinks?.ApplicationSendTurnEvidenceSink,
+            ApplicationSendBatchObservationMode = sendBatchObservationMode,
+            ApplicationSendBatchEvidenceSink =
+                sendBatchObservationMode == QuicApplicationSendBatchObservationMode.Disabled
+                    ? null
+                    : connectionSinks?.ApplicationSendBatchEvidenceSink,
+            QueuedSendBurstObservationMode = burstObservationMode,
+            QueuedSendBurstEvidenceSink =
+                burstObservationMode == QuicQueuedSendBurstObservationMode.Disabled
+                    ? null
+                    : connectionSinks?.QueuedSendBurstEvidenceSink,
+            OversizedWriteAdmissionObservationMode = oversizedObservationMode,
+            OversizedWriteAdmissionEvidenceSink =
+                oversizedObservationMode == QuicOversizedWriteAdmissionObservationMode.Disabled
+                    ? null
+                    : connectionSinks?.OversizedWriteAdmissionEvidenceSink,
             ServerAuthenticationOptions = new SslServerAuthenticationOptions
             {
                 ServerCertificate = certificate,
@@ -142,8 +215,11 @@ Console.WriteLine($"QUIC_PORT={listenPort}");
 Console.WriteLine($"QUIC_ALPN={alpn}");
 Console.WriteLine($"QUIC_IMPLEMENTATION=incursa-raw-quic");
 Console.WriteLine(
-    $"QUIC_RECEIVE_CREDIT_POLICY={(applicationSendTurnAxisSelected ? "legacy_current" : adaptiveRuntimePolicy.Name)}");
+    $"QUIC_RECEIVE_CREDIT_POLICY={(stage1AxisSelected ? "legacy_current" : adaptiveRuntimePolicy.Name)}");
 Console.WriteLine($"QUIC_APPLICATION_SEND_TURN_POLICY={applicationSendTurnPolicy.Name}");
+Console.WriteLine($"QUIC_APPLICATION_SEND_BATCH_POLICY={applicationSendBatchPolicy.Name}");
+Console.WriteLine($"QUIC_QUEUED_SEND_BURST_POLICY={queuedSendBurstPolicy.Name}");
+Console.WriteLine($"QUIC_OVERSIZED_WRITE_ADMISSION_POLICY={oversizedWriteAdmissionPolicy.Name}");
 if (adaptiveRuntimePolicy.ForcedMode is not null || adaptiveRuntimePolicy.ShadowEnabled)
 {
     Console.WriteLine("QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=adaptive-runtime-epoch-raw-v1");
@@ -152,9 +228,25 @@ if (applicationSendTurnPolicy.ForcedMode is not null)
 {
     Console.WriteLine("QUIC_APPLICATION_SEND_TURN_POLICY_CONTRACT=adaptive-runtime-application-send-turn-provenance-v1");
 }
-if (applicationSendTurnPolicy.ObservationMode != QuicApplicationSendTurnObservationMode.Disabled)
+if (sendTurnObservationMode != QuicApplicationSendTurnObservationMode.Disabled)
 {
     Console.WriteLine("QUIC_APPLICATION_SEND_TURN_EVIDENCE_CONTRACT=adaptive-runtime-application-send-turn-raw-v1");
+}
+if (sendBatchObservationMode != QuicApplicationSendBatchObservationMode.Disabled)
+{
+    Console.WriteLine("QUIC_APPLICATION_SEND_BATCH_EVIDENCE_CONTRACT=adaptive-runtime-application-send-batch-raw-v1");
+}
+if (burstObservationMode != QuicQueuedSendBurstObservationMode.Disabled)
+{
+    Console.WriteLine("QUIC_QUEUED_SEND_BURST_EVIDENCE_CONTRACT=adaptive-runtime-queued-send-burst-raw-v1");
+}
+if (oversizedObservationMode != QuicOversizedWriteAdmissionObservationMode.Disabled)
+{
+    Console.WriteLine("QUIC_OVERSIZED_WRITE_ADMISSION_EVIDENCE_CONTRACT=adaptive-runtime-oversized-write-admission-raw-v1");
+}
+if (stage1AxisSelected)
+{
+    Console.WriteLine("QUIC_ADAPTIVE_RUNTIME_STAGE1_UNIFIED_CONTRACT=adaptive-runtime-stage1-unified-epoch-raw-v1");
 }
 
 try
@@ -245,6 +337,124 @@ static (
             "PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY must be unset, legacy_current, conservative, observe_only, or shadow."),
     };
 }
+
+static (
+    string Name,
+    QuicApplicationSendBatchPolicyMode? ForcedMode,
+    QuicApplicationSendBatchObservationMode ObservationMode) ResolveApplicationSendBatchPolicy(
+    string? value)
+{
+    return value?.Trim().ToLowerInvariant() switch
+    {
+        null or "" => ("unset", null, QuicApplicationSendBatchObservationMode.Disabled),
+        "legacy_current" => (
+            "legacy_current",
+            QuicApplicationSendBatchPolicyMode.LegacyCurrent,
+            QuicApplicationSendBatchObservationMode.Disabled),
+        "single_eligible" => (
+            "single_eligible",
+            QuicApplicationSendBatchPolicyMode.SingleEligible,
+            QuicApplicationSendBatchObservationMode.Disabled),
+        "observe_only" => (
+            "observe_only",
+            null,
+            QuicApplicationSendBatchObservationMode.ObserveOnly),
+        "shadow" => (
+            "shadow",
+            null,
+            QuicApplicationSendBatchObservationMode.Shadow),
+        _ => throw new InvalidOperationException(
+            "PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_BATCH_POLICY must be unset, legacy_current, single_eligible, observe_only, or shadow."),
+    };
+}
+
+static (
+    string Name,
+    QuicQueuedSendBurstPolicyMode? ForcedMode,
+    QuicQueuedSendBurstObservationMode ObservationMode) ResolveQueuedSendBurstPolicy(
+    string? value)
+{
+    return value?.Trim().ToLowerInvariant() switch
+    {
+        null or "" => ("unset", null, QuicQueuedSendBurstObservationMode.Disabled),
+        "legacy_current" => (
+            "legacy_current",
+            QuicQueuedSendBurstPolicyMode.LegacyCurrent,
+            QuicQueuedSendBurstObservationMode.Disabled),
+        "single_datagram" => (
+            "single_datagram",
+            QuicQueuedSendBurstPolicyMode.SingleDatagram,
+            QuicQueuedSendBurstObservationMode.Disabled),
+        "observe_only" => (
+            "observe_only",
+            null,
+            QuicQueuedSendBurstObservationMode.ObserveOnly),
+        "shadow" => (
+            "shadow",
+            null,
+            QuicQueuedSendBurstObservationMode.Shadow),
+        _ => throw new InvalidOperationException(
+            "PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_BURST_POLICY must be unset, legacy_current, single_datagram, observe_only, or shadow."),
+    };
+}
+
+static (
+    string Name,
+    QuicOversizedWriteAdmissionPolicyMode? ForcedMode,
+    QuicOversizedWriteAdmissionObservationMode ObservationMode) ResolveOversizedWriteAdmissionPolicy(
+    string? value)
+{
+    return value?.Trim().ToLowerInvariant() switch
+    {
+        null or "" => ("unset", null, QuicOversizedWriteAdmissionObservationMode.Disabled),
+        "legacy_current" => (
+            "legacy_current",
+            QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent,
+            QuicOversizedWriteAdmissionObservationMode.Disabled),
+        "single_fragment" => (
+            "single_fragment",
+            QuicOversizedWriteAdmissionPolicyMode.SingleFragment,
+            QuicOversizedWriteAdmissionObservationMode.Disabled),
+        "bounded_multi_fragment" => (
+            "bounded_multi_fragment",
+            QuicOversizedWriteAdmissionPolicyMode.BoundedMultiFragment,
+            QuicOversizedWriteAdmissionObservationMode.Disabled),
+        "observe_only" => (
+            "observe_only",
+            null,
+            QuicOversizedWriteAdmissionObservationMode.ObserveOnly),
+        "shadow" => (
+            "shadow",
+            null,
+            QuicOversizedWriteAdmissionObservationMode.Shadow),
+        _ => throw new InvalidOperationException(
+            "PROTOCOL_LAB_INCURSA_RAW_QUIC_OVERSIZED_WRITE_ADMISSION_POLICY must be unset, legacy_current, single_fragment, bounded_multi_fragment, observe_only, or shadow."),
+    };
+}
+
+static QuicApplicationSendTurnObservationMode EnableUnifiedSendTurnObservation(
+    QuicApplicationSendTurnObservationMode mode)
+    => mode == QuicApplicationSendTurnObservationMode.Disabled
+        ? QuicApplicationSendTurnObservationMode.Shadow
+        : mode;
+
+static QuicApplicationSendBatchObservationMode EnableUnifiedSendBatchObservation(
+    QuicApplicationSendBatchObservationMode mode)
+    => mode == QuicApplicationSendBatchObservationMode.Disabled
+        ? QuicApplicationSendBatchObservationMode.Shadow
+        : mode;
+
+static QuicQueuedSendBurstObservationMode EnableUnifiedBurstObservation(
+    QuicQueuedSendBurstObservationMode mode)
+    => mode == QuicQueuedSendBurstObservationMode.Disabled
+        ? QuicQueuedSendBurstObservationMode.Shadow
+        : mode;
+
+static QuicOversizedWriteAdmissionObservationMode EnableUnifiedOversizedObservation(
+    QuicOversizedWriteAdmissionObservationMode mode)
+    => mode == QuicOversizedWriteAdmissionObservationMode.Disabled
+        ? QuicOversizedWriteAdmissionObservationMode.Shadow
+        : mode;
 
 static async Task HandleConnectionAsync(QuicConnection connection, int connectionIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool capacitySummaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes, int? boundedFinalEchoBytes)
 {
@@ -589,6 +799,11 @@ internal sealed class AdaptiveRuntimeEpochPublisher
     private const string OutputPrefix = "QUIC_ADAPTIVE_RUNTIME_EPOCH_JSON=";
     private const string ApplicationSendTurnProvenanceOutputPrefix = "QUIC_APPLICATION_SEND_TURN_POLICY_JSON=";
     private const string ApplicationSendTurnEvidenceOutputPrefix = "QUIC_APPLICATION_SEND_TURN_EVIDENCE_JSON=";
+    private const string ApplicationSendBatchEvidenceOutputPrefix = "QUIC_APPLICATION_SEND_BATCH_EVIDENCE_JSON=";
+    private const string QueuedSendBurstEvidenceOutputPrefix = "QUIC_QUEUED_SEND_BURST_EVIDENCE_JSON=";
+    private const string OversizedWriteAdmissionEvidenceOutputPrefix = "QUIC_OVERSIZED_WRITE_ADMISSION_EVIDENCE_JSON=";
+    private const string Stage1UnifiedEpochOutputPrefix = "QUIC_ADAPTIVE_RUNTIME_STAGE1_UNIFIED_EPOCH_JSON=";
+    private readonly QuicAdaptiveRuntimeStage1PolicySnapshot? configuredStage1Policy;
     private readonly Channel<AdaptiveRuntimeEpochRecord> epochs = Channel.CreateBounded<AdaptiveRuntimeEpochRecord>(
         new BoundedChannelOptions(4096)
         {
@@ -614,20 +829,47 @@ internal sealed class AdaptiveRuntimeEpochPublisher
                 FullMode = BoundedChannelFullMode.Wait,
                 AllowSynchronousContinuations = false,
             });
+    private readonly Channel<ApplicationSendBatchEvidenceRecord> applicationSendBatchEvidence =
+        CreateEvidenceChannel<ApplicationSendBatchEvidenceRecord>();
+    private readonly Channel<QueuedSendBurstEvidenceRecord> queuedSendBurstEvidence =
+        CreateEvidenceChannel<QueuedSendBurstEvidenceRecord>();
+    private readonly Channel<OversizedWriteAdmissionEvidenceRecord> oversizedWriteAdmissionEvidence =
+        CreateEvidenceChannel<OversizedWriteAdmissionEvidenceRecord>();
+    private readonly Channel<Stage1UnifiedEpochRecord> stage1UnifiedEpochs =
+        CreateEvidenceChannel<Stage1UnifiedEpochRecord>();
     private long nextConnectionKey;
 
-    internal AdaptiveRuntimeEpochPublisher()
+    internal AdaptiveRuntimeEpochPublisher(
+        QuicAdaptiveRuntimeStage1PolicySnapshot? configuredStage1Policy)
     {
+        this.configuredStage1Policy = configuredStage1Policy;
         _ = WriteEpochsAsync();
         _ = WriteApplicationSendTurnProvenanceAsync();
         _ = WriteApplicationSendTurnEvidenceAsync();
+        _ = WriteApplicationSendBatchEvidenceAsync();
+        _ = WriteQueuedSendBurstEvidenceAsync();
+        _ = WriteOversizedWriteAdmissionEvidenceAsync();
+        _ = WriteStage1UnifiedEpochsAsync();
     }
 
     internal ConnectionSinks CreateConnectionSinks()
     {
-        ConnectionSink sink = new(this, $"connection-{Interlocked.Increment(ref nextConnectionKey):D4}");
-        return new ConnectionSinks(sink, sink, sink);
+        ConnectionSink sink = new(
+            this,
+            $"connection-{Interlocked.Increment(ref nextConnectionKey):D4}",
+            configuredStage1Policy);
+        return new ConnectionSinks(sink, sink, sink, sink, sink, sink);
     }
+
+    private static Channel<T> CreateEvidenceChannel<T>()
+        => Channel.CreateBounded<T>(
+            new BoundedChannelOptions(4096)
+            {
+                SingleReader = true,
+                SingleWriter = false,
+                FullMode = BoundedChannelFullMode.Wait,
+                AllowSynchronousContinuations = false,
+            });
 
     private async Task WriteEpochsAsync()
     {
@@ -678,21 +920,118 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         }
     }
 
+    private async Task WriteApplicationSendBatchEvidenceAsync()
+    {
+        try
+        {
+            await foreach (ApplicationSendBatchEvidenceRecord evidence in applicationSendBatchEvidence.Reader.ReadAllAsync())
+            {
+                Console.WriteLine(ApplicationSendBatchEvidenceOutputPrefix + JsonSerializer.Serialize(
+                    evidence,
+                    AdaptiveRuntimeEpochJsonContext.Default.ApplicationSendBatchEvidenceRecord));
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"IncursaRawQuicServer application-send batch evidence writer stopped: {ex.Message}");
+        }
+    }
+
+    private async Task WriteQueuedSendBurstEvidenceAsync()
+    {
+        try
+        {
+            await foreach (QueuedSendBurstEvidenceRecord evidence in queuedSendBurstEvidence.Reader.ReadAllAsync())
+            {
+                Console.WriteLine(QueuedSendBurstEvidenceOutputPrefix + JsonSerializer.Serialize(
+                    evidence,
+                    AdaptiveRuntimeEpochJsonContext.Default.QueuedSendBurstEvidenceRecord));
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"IncursaRawQuicServer queued-send burst evidence writer stopped: {ex.Message}");
+        }
+    }
+
+    private async Task WriteOversizedWriteAdmissionEvidenceAsync()
+    {
+        try
+        {
+            await foreach (OversizedWriteAdmissionEvidenceRecord evidence in oversizedWriteAdmissionEvidence.Reader.ReadAllAsync())
+            {
+                Console.WriteLine(OversizedWriteAdmissionEvidenceOutputPrefix + JsonSerializer.Serialize(
+                    evidence,
+                    AdaptiveRuntimeEpochJsonContext.Default.OversizedWriteAdmissionEvidenceRecord));
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"IncursaRawQuicServer oversized-write admission evidence writer stopped: {ex.Message}");
+        }
+    }
+
+    private async Task WriteStage1UnifiedEpochsAsync()
+    {
+        try
+        {
+            await foreach (Stage1UnifiedEpochRecord epoch in stage1UnifiedEpochs.Reader.ReadAllAsync())
+            {
+                Console.WriteLine(Stage1UnifiedEpochOutputPrefix + JsonSerializer.Serialize(
+                    epoch,
+                    AdaptiveRuntimeEpochJsonContext.Default.Stage1UnifiedEpochRecord));
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"IncursaRawQuicServer Stage 1 unified epoch writer stopped: {ex.Message}");
+        }
+    }
+
     private sealed class ConnectionSink(
         AdaptiveRuntimeEpochPublisher owner,
-        string connectionKey) :
+        string connectionKey,
+        QuicAdaptiveRuntimeStage1PolicySnapshot? configuredStage1Policy) :
         IQuicAdaptiveRuntimeShadowEpochSink,
         IQuicApplicationSendTurnPolicyProvenanceSink,
-        IQuicApplicationSendTurnEvidenceSink
+        IQuicApplicationSendTurnEvidenceSink,
+        IQuicApplicationSendBatchEvidenceSink,
+        IQuicQueuedSendBurstEvidenceSink,
+        IQuicOversizedWriteAdmissionEvidenceSink
     {
+        private readonly QuicAdaptiveRuntimeStage1EvidenceAccumulator? stage1Accumulator =
+            CreateAccumulator(configuredStage1Policy);
+        private ulong nextEpochStartOffsetMicros;
+
         public bool TryPublish(
             in QuicAdaptiveRuntimeConnectionObservation observation,
             in QuicReceiveCreditPolicySnapshot snapshot)
-            => owner.epochs.Writer.TryWrite(new AdaptiveRuntimeEpochRecord(
+        {
+            bool published = owner.epochs.Writer.TryWrite(new AdaptiveRuntimeEpochRecord(
                 "adaptive-runtime-epoch-raw-v1",
                 connectionKey,
                 observation,
                 snapshot));
+            if (stage1Accumulator is null)
+            {
+                return published;
+            }
+
+            ulong durationMicros = Math.Max(observation.ActiveDurationMicros, 1);
+            QuicAdaptiveRuntimeStage1EpochEvidence unifiedEpoch =
+                stage1Accumulator.CaptureEpoch(
+                    observation.ConnectionEpochSequence,
+                    nextEpochStartOffsetMicros,
+                    durationMicros);
+            nextEpochStartOffsetMicros = SaturatingAdd(
+                nextEpochStartOffsetMicros,
+                durationMicros);
+            return owner.stage1UnifiedEpochs.Writer.TryWrite(
+                new Stage1UnifiedEpochRecord(
+                    "adaptive-runtime-stage1-unified-epoch-raw-v1",
+                    connectionKey,
+                    unifiedEpoch)) && published;
+        }
 
         public bool TryPublish(in QuicApplicationSendTurnPolicyProvenance provenance)
             => owner.applicationSendTurnProvenance.Writer.TryWrite(new ApplicationSendTurnPolicyProvenanceRecord(
@@ -703,19 +1042,70 @@ internal sealed class AdaptiveRuntimeEpochPublisher
                 provenance.AppliedPolicy));
 
         public bool TryPublish(in QuicApplicationSendTurnEvidence evidence)
-            => owner.applicationSendTurnEvidence.Writer.TryWrite(new ApplicationSendTurnEvidenceRecord(
+        {
+            bool accumulated = stage1Accumulator?.TryPublish(in evidence) ?? true;
+            return owner.applicationSendTurnEvidence.Writer.TryWrite(new ApplicationSendTurnEvidenceRecord(
                 "adaptive-runtime-application-send-turn-raw-v1",
                 connectionKey,
                 evidence.Mode,
                 evidence.Observation,
                 evidence.HasRecommendation,
-                evidence.HasRecommendation ? evidence.Snapshot : null));
+                evidence.HasRecommendation ? evidence.Snapshot : null)) && accumulated;
+        }
+
+        public bool TryPublish(in QuicApplicationSendBatchEvidence evidence)
+        {
+            bool accumulated = stage1Accumulator?.TryPublish(in evidence) ?? true;
+            return owner.applicationSendBatchEvidence.Writer.TryWrite(
+                new ApplicationSendBatchEvidenceRecord(
+                    "adaptive-runtime-application-send-batch-raw-v1",
+                    connectionKey,
+                    evidence)) && accumulated;
+        }
+
+        public bool TryPublish(in QuicQueuedSendBurstEvidence evidence)
+        {
+            bool accumulated = stage1Accumulator?.TryPublish(in evidence) ?? true;
+            return owner.queuedSendBurstEvidence.Writer.TryWrite(
+                new QueuedSendBurstEvidenceRecord(
+                    "adaptive-runtime-queued-send-burst-raw-v1",
+                    connectionKey,
+                    evidence)) && accumulated;
+        }
+
+        public bool TryPublish(in QuicOversizedWriteAdmissionEvidence evidence)
+        {
+            bool accumulated = stage1Accumulator?.TryPublish(in evidence) ?? true;
+            return owner.oversizedWriteAdmissionEvidence.Writer.TryWrite(
+                new OversizedWriteAdmissionEvidenceRecord(
+                    "adaptive-runtime-oversized-write-admission-raw-v1",
+                    connectionKey,
+                    evidence)) && accumulated;
+        }
+
+        private static QuicAdaptiveRuntimeStage1EvidenceAccumulator? CreateAccumulator(
+            QuicAdaptiveRuntimeStage1PolicySnapshot? configuredPolicy)
+        {
+            if (!configuredPolicy.HasValue)
+            {
+                return null;
+            }
+
+            QuicAdaptiveRuntimeStage1PolicySnapshot policy = configuredPolicy.Value;
+            return new QuicAdaptiveRuntimeStage1EvidenceAccumulator(in policy);
+        }
+
+        private static ulong SaturatingAdd(ulong left, ulong right)
+            => ulong.MaxValue - left < right ? ulong.MaxValue : left + right;
     }
 
     internal readonly record struct ConnectionSinks(
         IQuicAdaptiveRuntimeShadowEpochSink EpochSink,
         IQuicApplicationSendTurnPolicyProvenanceSink ApplicationSendTurnPolicySink,
-        IQuicApplicationSendTurnEvidenceSink ApplicationSendTurnEvidenceSink);
+        IQuicApplicationSendTurnEvidenceSink ApplicationSendTurnEvidenceSink,
+        IQuicApplicationSendBatchEvidenceSink ApplicationSendBatchEvidenceSink,
+        IQuicQueuedSendBurstEvidenceSink QueuedSendBurstEvidenceSink,
+        IQuicOversizedWriteAdmissionEvidenceSink OversizedWriteAdmissionEvidenceSink);
 }
 
 internal readonly record struct AdaptiveRuntimeEpochRecord(
@@ -739,9 +1129,33 @@ internal readonly record struct ApplicationSendTurnEvidenceRecord(
     bool HasRecommendation,
     QuicApplicationSendTurnPolicySnapshot? Snapshot);
 
+internal readonly record struct ApplicationSendBatchEvidenceRecord(
+    string SchemaVersion,
+    string ConnectionKey,
+    QuicApplicationSendBatchEvidence Evidence);
+
+internal readonly record struct QueuedSendBurstEvidenceRecord(
+    string SchemaVersion,
+    string ConnectionKey,
+    QuicQueuedSendBurstEvidence Evidence);
+
+internal readonly record struct OversizedWriteAdmissionEvidenceRecord(
+    string SchemaVersion,
+    string ConnectionKey,
+    QuicOversizedWriteAdmissionEvidence Evidence);
+
+internal readonly record struct Stage1UnifiedEpochRecord(
+    string SchemaVersion,
+    string ConnectionKey,
+    QuicAdaptiveRuntimeStage1EpochEvidence Epoch);
+
 [System.Text.Json.Serialization.JsonSerializable(typeof(AdaptiveRuntimeEpochRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(ApplicationSendTurnPolicyProvenanceRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(ApplicationSendTurnEvidenceRecord))]
+[System.Text.Json.Serialization.JsonSerializable(typeof(ApplicationSendBatchEvidenceRecord))]
+[System.Text.Json.Serialization.JsonSerializable(typeof(QueuedSendBurstEvidenceRecord))]
+[System.Text.Json.Serialization.JsonSerializable(typeof(OversizedWriteAdmissionEvidenceRecord))]
+[System.Text.Json.Serialization.JsonSerializable(typeof(Stage1UnifiedEpochRecord))]
 [System.Text.Json.Serialization.JsonSourceGenerationOptions(
     PropertyNamingPolicy = System.Text.Json.Serialization.JsonKnownNamingPolicy.CamelCase,
     UseStringEnumConverter = true)]

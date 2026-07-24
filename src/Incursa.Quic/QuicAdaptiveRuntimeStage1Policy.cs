@@ -189,13 +189,13 @@ internal readonly record struct QuicAdaptiveRuntimeStage1PolicySnapshot
         OversizedWriteAdmissionQuantum = oversizedWriteAdmissionQuantum;
     }
 
-    internal QuicAdaptiveRuntimeStage1AxisDecision ApplicationSendTurnPlanning { get; }
+    public QuicAdaptiveRuntimeStage1AxisDecision ApplicationSendTurnPlanning { get; }
 
-    internal QuicAdaptiveRuntimeStage1AxisDecision ApplicationSendBatchFormation { get; }
+    public QuicAdaptiveRuntimeStage1AxisDecision ApplicationSendBatchFormation { get; }
 
-    internal QuicAdaptiveRuntimeStage1AxisDecision QueuedSendBurstBudget { get; }
+    public QuicAdaptiveRuntimeStage1AxisDecision QueuedSendBurstBudget { get; }
 
-    internal QuicAdaptiveRuntimeStage1AxisDecision OversizedWriteAdmissionQuantum { get; }
+    public QuicAdaptiveRuntimeStage1AxisDecision OversizedWriteAdmissionQuantum { get; }
 
     private static void ValidateDecision(
         in QuicAdaptiveRuntimeStage1AxisDecision decision,
@@ -283,5 +283,141 @@ internal readonly record struct QuicAdaptiveRuntimeStage1PolicySnapshot
             throw new ArgumentException(
                 $"Policy value '{value}' is not valid for Stage 1 axis '{axis}'.");
         }
+    }
+}
+
+internal static class QuicAdaptiveRuntimeStage1ConfiguredPolicy
+{
+    internal static QuicAdaptiveRuntimeStage1PolicySnapshot Create(
+        QuicApplicationSendTurnPolicyMode? sendTurnForced,
+        QuicApplicationSendTurnObservationMode sendTurnObservation,
+        QuicApplicationSendBatchPolicyMode? sendBatchForced,
+        QuicApplicationSendBatchObservationMode sendBatchObservation,
+        QuicQueuedSendBurstPolicyMode? burstForced,
+        QuicQueuedSendBurstObservationMode burstObservation,
+        QuicOversizedWriteAdmissionPolicyMode? oversizedForced,
+        QuicOversizedWriteAdmissionObservationMode oversizedObservation)
+        => new(
+            CreateDecision(
+                QuicAdaptiveRuntimeStage1Axis.ApplicationSendTurnPlanning,
+                QuicApplicationSendTurnObservation.CurrentObservationContractVersion,
+                QuicApplicationSendTurnObservation.CurrentPolicyRuleVersion,
+                QuicApplicationSendTurnPolicySnapshot.CurrentSnapshotContractVersion,
+                QuicApplicationSendTurnPolicySnapshot.CurrentReasonVersion,
+                QuicApplicationSendTurnPolicySnapshot.CurrentProvenanceVersion,
+                sendTurnForced.HasValue,
+                sendTurnForced == QuicApplicationSendTurnPolicyMode.Conservative
+                    ? QuicAdaptiveRuntimeStage1PolicyValue.Conservative
+                    : QuicAdaptiveRuntimeStage1PolicyValue.LegacyCurrent,
+                sendTurnObservation == QuicApplicationSendTurnObservationMode.Shadow,
+                QuicAdaptiveRuntimeStage1PolicyValue.Conservative,
+                QuicAdaptiveRuntimeStage1DecisionBoundary.ActorTurn,
+                QuicAdaptiveRuntimeStage1LatchLifetime.ActorTurn),
+            CreateDecision(
+                QuicAdaptiveRuntimeStage1Axis.ApplicationSendBatchFormation,
+                QuicApplicationSendBatchObservation.CurrentObservationContractVersion,
+                QuicApplicationSendBatchObservation.CurrentRuleVersion,
+                QuicApplicationSendBatchPolicy.CurrentSnapshotVersion,
+                QuicApplicationSendBatchPolicy.CurrentReasonVersion,
+                QuicApplicationSendBatchPolicy.CurrentProvenanceVersion,
+                sendBatchForced.HasValue,
+                sendBatchForced == QuicApplicationSendBatchPolicyMode.SingleEligible
+                    ? QuicAdaptiveRuntimeStage1PolicyValue.SingleEligible
+                    : QuicAdaptiveRuntimeStage1PolicyValue.LegacyCurrent,
+                sendBatchObservation == QuicApplicationSendBatchObservationMode.Shadow,
+                QuicAdaptiveRuntimeStage1PolicyValue.SingleEligible,
+                QuicAdaptiveRuntimeStage1DecisionBoundary.PacketPlan,
+                QuicAdaptiveRuntimeStage1LatchLifetime.PacketPlan),
+            CreateDecision(
+                QuicAdaptiveRuntimeStage1Axis.QueuedSendBurstBudget,
+                QuicQueuedSendBurstObservation.CurrentObservationContractVersion,
+                QuicQueuedSendBurstObservation.CurrentRuleVersion,
+                QuicQueuedSendBurstPolicy.CurrentSnapshotVersion,
+                QuicQueuedSendBurstPolicy.CurrentReasonVersion,
+                QuicQueuedSendBurstPolicy.CurrentProvenanceVersion,
+                burstForced.HasValue,
+                burstForced == QuicQueuedSendBurstPolicyMode.SingleDatagram
+                    ? QuicAdaptiveRuntimeStage1PolicyValue.SingleDatagram
+                    : QuicAdaptiveRuntimeStage1PolicyValue.LegacyCurrent,
+                burstObservation == QuicQueuedSendBurstObservationMode.Shadow,
+                QuicAdaptiveRuntimeStage1PolicyValue.SingleDatagram,
+                QuicAdaptiveRuntimeStage1DecisionBoundary.ActorTurn,
+                QuicAdaptiveRuntimeStage1LatchLifetime.ActorTurn),
+            CreateDecision(
+                QuicAdaptiveRuntimeStage1Axis.OversizedWriteAdmissionQuantum,
+                QuicOversizedWriteAdmissionObservation.CurrentObservationContractVersion,
+                QuicOversizedWriteAdmissionObservation.CurrentRuleVersion,
+                QuicOversizedWriteAdmissionPolicy.CurrentSnapshotVersion,
+                QuicOversizedWriteAdmissionPolicy.CurrentReasonVersion,
+                QuicOversizedWriteAdmissionPolicy.CurrentProvenanceVersion,
+                oversizedForced.HasValue,
+                oversizedForced switch
+                {
+                    QuicOversizedWriteAdmissionPolicyMode.SingleFragment =>
+                        QuicAdaptiveRuntimeStage1PolicyValue.SingleFragment,
+                    QuicOversizedWriteAdmissionPolicyMode.BoundedMultiFragment =>
+                        QuicAdaptiveRuntimeStage1PolicyValue.BoundedMultiFragment,
+                    _ => QuicAdaptiveRuntimeStage1PolicyValue.LegacyCurrent,
+                },
+                oversizedObservation
+                    == QuicOversizedWriteAdmissionObservationMode.Shadow,
+                QuicAdaptiveRuntimeStage1PolicyValue.SingleFragment,
+                QuicAdaptiveRuntimeStage1DecisionBoundary.LogicalWriteAdmission,
+                QuicAdaptiveRuntimeStage1LatchLifetime.LogicalWrite));
+
+    private static QuicAdaptiveRuntimeStage1AxisDecision CreateDecision(
+        QuicAdaptiveRuntimeStage1Axis axis,
+        string observationContractVersion,
+        string ruleVersion,
+        string snapshotVersion,
+        string reasonVersion,
+        string provenanceVersion,
+        bool hasForcedValue,
+        QuicAdaptiveRuntimeStage1PolicyValue forcedValue,
+        bool hasShadowRecommendation,
+        QuicAdaptiveRuntimeStage1PolicyValue shadowRecommendation,
+        QuicAdaptiveRuntimeStage1DecisionBoundary boundary,
+        QuicAdaptiveRuntimeStage1LatchLifetime lifetime)
+    {
+        QuicAdaptiveRuntimeStage1PolicyValue selectedValue =
+            QuicAdaptiveRuntimeStage1PolicyValue.LegacyCurrent;
+        QuicAdaptiveRuntimeStage1SelectionSource selectionSource =
+            QuicAdaptiveRuntimeStage1SelectionSource.LegacySelector;
+        if (hasForcedValue)
+        {
+            selectedValue = forcedValue;
+            selectionSource = QuicAdaptiveRuntimeStage1SelectionSource.Forced;
+        }
+        else if (hasShadowRecommendation)
+        {
+            selectedValue = shadowRecommendation;
+            selectionSource = QuicAdaptiveRuntimeStage1SelectionSource.ShadowRule;
+        }
+
+        return new QuicAdaptiveRuntimeStage1AxisDecision(
+            axis,
+            observationContractVersion,
+            ruleVersion,
+            snapshotVersion,
+            reasonVersion,
+            provenanceVersion,
+            QuicAdaptiveRuntimeStage1Validity.None,
+            hasForcedValue,
+            forcedValue,
+            hasShadowRecommendation,
+            shadowRecommendation,
+            selectedValue,
+            hasForcedValue
+                ? forcedValue
+                : QuicAdaptiveRuntimeStage1PolicyValue.LegacyCurrent,
+            selectionSource,
+            ReasonCode: 0,
+            QuicAdaptiveRuntimeStage1SafetyOverrideReason.None,
+            boundary,
+            lifetime,
+            QuicAdaptiveRuntimeStage1LatchState.Unlatched,
+            QuicAdaptiveRuntimeStage1FallbackState.NotRequired,
+            DecisionSequence: 1,
+            LatchSequence: 0);
     }
 }

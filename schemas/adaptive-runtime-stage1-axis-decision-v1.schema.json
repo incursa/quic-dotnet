@@ -43,7 +43,7 @@
     },
     "decisionSequence": { "type": "integer", "minimum": 1 },
     "recordKind": {
-      "enum": ["construction", "packet_plan", "actor_turn", "logical_write"]
+      "enum": ["construction", "packet_plan", "actor_turn", "logical_write", "epoch_summary"]
     },
     "operationKey": { "type": ["string", "null"], "minLength": 1 },
     "planKey": { "type": ["string", "null"], "minLength": 1 },

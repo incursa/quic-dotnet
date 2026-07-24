@@ -6,7 +6,7 @@ using System.Text.Json.Nodes;
 
 namespace Incursa.Quic.Tests.RequirementHomes.CRT;
 
-public sealed class REQ_QUIC_CRT_0177
+public sealed partial class REQ_QUIC_CRT_0177
 {
     [Fact]
     public void UnifiedSnapshotAcceptsFourLegacyAxesInCanonicalOrder()
@@ -192,6 +192,66 @@ public sealed class REQ_QUIC_CRT_0177
             root.GetProperty("variedAxisEpochCounts")
                 .GetProperty("application_send_batch_formation")
                 .GetInt32());
+    }
+
+    [Fact]
+    public void UnifiedEvidenceValidatorAcceptsHonestEpochSummaryJoins()
+    {
+        string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        string temporaryDirectory = Path.Combine(
+            repoRoot,
+            ".artifacts",
+            "adaptive-runtime",
+            $"stage1-unified-epoch-summary-test-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(temporaryDirectory);
+
+        try
+        {
+            JsonObject row = JsonNode.Parse(File.ReadAllText(
+                AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                    "tests/fixtures/adaptive-runtime-policy/stage1-unified-epoch.valid.example.json")))!.AsObject();
+            foreach (JsonNode? axisRecord in row["axisRecords"]!.AsArray())
+            {
+                axisRecord!["latch"]!["operationKey"] = null;
+                axisRecord["latch"]!["planKey"] = null;
+            }
+
+            JsonArray decisions = JsonNode.Parse(File.ReadAllText(
+                AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                    "tests/fixtures/adaptive-runtime-policy/stage1-axis-decisions.valid.example.json")))!.AsArray();
+            foreach (JsonNode? decision in decisions)
+            {
+                decision!["recordKind"] = "epoch_summary";
+                decision["operationKey"] = null;
+                decision["planKey"] = null;
+            }
+
+            string rowPath =
+                Path.Combine(temporaryDirectory, "epoch-summary-row.json");
+            string decisionPath =
+                Path.Combine(temporaryDirectory, "epoch-summary-decisions.json");
+            File.WriteAllText(rowPath, row.ToJsonString());
+            File.WriteAllText(decisionPath, decisions.ToJsonString());
+
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult result =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Test-AdaptiveRuntimeStage1UnifiedEvidence.ps1",
+                    "-UnifiedEpochPath",
+                    rowPath,
+                    "-AxisDecisionPath",
+                    decisionPath);
+
+            Assert.True(result.ExitCode == 0, result.Output);
+            using JsonDocument summary = JsonDocument.Parse(result.Output);
+            Assert.True(summary.RootElement.GetProperty("valid").GetBoolean());
+            Assert.Equal(
+                4,
+                summary.RootElement.GetProperty("axisDecisionRowCount").GetInt32());
+        }
+        finally
+        {
+            Directory.Delete(temporaryDirectory, recursive: true);
+        }
     }
 
     [Fact]
@@ -396,7 +456,8 @@ public sealed class REQ_QUIC_CRT_0177
 
     private static QuicAdaptiveRuntimeStage1AxisDecision CreateDecision(
         QuicAdaptiveRuntimeStage1Axis axis,
-        QuicAdaptiveRuntimeStage1PolicyValue? forcedValue = null)
+        QuicAdaptiveRuntimeStage1PolicyValue? forcedValue = null,
+        bool shadow = false)
     {
         (QuicAdaptiveRuntimeStage1DecisionBoundary boundary,
             QuicAdaptiveRuntimeStage1LatchLifetime lifetime) = axis switch
@@ -416,6 +477,23 @@ public sealed class REQ_QUIC_CRT_0177
             _ => throw new ArgumentOutOfRangeException(nameof(axis)),
         };
 
+        QuicAdaptiveRuntimeStage1PolicyValue conservativeValue = axis switch
+        {
+            QuicAdaptiveRuntimeStage1Axis.ApplicationSendTurnPlanning =>
+                QuicAdaptiveRuntimeStage1PolicyValue.Conservative,
+            QuicAdaptiveRuntimeStage1Axis.ApplicationSendBatchFormation =>
+                QuicAdaptiveRuntimeStage1PolicyValue.SingleEligible,
+            QuicAdaptiveRuntimeStage1Axis.QueuedSendBurstBudget =>
+                QuicAdaptiveRuntimeStage1PolicyValue.SingleDatagram,
+            QuicAdaptiveRuntimeStage1Axis.OversizedWriteAdmissionQuantum =>
+                QuicAdaptiveRuntimeStage1PolicyValue.SingleFragment,
+            _ => throw new ArgumentOutOfRangeException(nameof(axis)),
+        };
+        QuicAdaptiveRuntimeStage1PolicyValue selectedValue =
+            forcedValue ?? (shadow
+                ? conservativeValue
+                : QuicAdaptiveRuntimeStage1PolicyValue.LegacyCurrent);
+
         return new QuicAdaptiveRuntimeStage1AxisDecision(
             axis,
             ObservationContractVersion: $"{axis}-observation-v1",
@@ -426,13 +504,15 @@ public sealed class REQ_QUIC_CRT_0177
             QuicAdaptiveRuntimeStage1Validity.None,
             HasForcedValue: forcedValue.HasValue,
             ForcedValue: forcedValue.GetValueOrDefault(),
-            HasShadowRecommendation: false,
-            ShadowRecommendation: QuicAdaptiveRuntimeStage1PolicyValue.LegacyCurrent,
-            SelectedValue: forcedValue ?? QuicAdaptiveRuntimeStage1PolicyValue.LegacyCurrent,
+            HasShadowRecommendation: shadow,
+            ShadowRecommendation: conservativeValue,
+            SelectedValue: selectedValue,
             AppliedValue: forcedValue ?? QuicAdaptiveRuntimeStage1PolicyValue.LegacyCurrent,
             SelectionSource: forcedValue.HasValue
                 ? QuicAdaptiveRuntimeStage1SelectionSource.Forced
-                : QuicAdaptiveRuntimeStage1SelectionSource.LegacySelector,
+                : shadow
+                    ? QuicAdaptiveRuntimeStage1SelectionSource.ShadowRule
+                    : QuicAdaptiveRuntimeStage1SelectionSource.LegacySelector,
             ReasonCode: 0,
             QuicAdaptiveRuntimeStage1SafetyOverrideReason.None,
             boundary,

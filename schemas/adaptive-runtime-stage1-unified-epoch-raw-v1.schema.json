@@ -1,0 +1,264 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-stage1-unified-epoch-raw-v1.schema.json",
+  "title": "Adaptive Runtime Stage 1 Unified Connection Epoch Raw v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "connectionKey", "epoch"],
+  "properties": {
+    "schemaVersion": {
+      "const": "adaptive-runtime-stage1-unified-epoch-raw-v1"
+    },
+    "connectionKey": { "$ref": "#/$defs/nonEmptyString" },
+    "epoch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "epochIndex",
+        "epochStartOffsetMicros",
+        "epochDurationMicros",
+        "policySnapshot",
+        "applicationSendTurnPlanning",
+        "applicationSendBatchFormation",
+        "queuedSendBurstBudget",
+        "oversizedWriteAdmissionQuantum"
+      ],
+      "properties": {
+        "epochIndex": { "type": "integer", "minimum": 1 },
+        "epochStartOffsetMicros": { "$ref": "#/$defs/unsignedInteger" },
+        "epochDurationMicros": { "type": "integer", "minimum": 1 },
+        "policySnapshot": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "applicationSendTurnPlanning",
+            "applicationSendBatchFormation",
+            "queuedSendBurstBudget",
+            "oversizedWriteAdmissionQuantum"
+          ],
+          "properties": {
+            "applicationSendTurnPlanning": { "$ref": "#/$defs/decision" },
+            "applicationSendBatchFormation": { "$ref": "#/$defs/decision" },
+            "queuedSendBurstBudget": { "$ref": "#/$defs/decision" },
+            "oversizedWriteAdmissionQuantum": { "$ref": "#/$defs/decision" }
+          }
+        },
+        "applicationSendTurnPlanning": { "$ref": "#/$defs/axisRecord" },
+        "applicationSendBatchFormation": { "$ref": "#/$defs/axisRecord" },
+        "queuedSendBurstBudget": { "$ref": "#/$defs/axisRecord" },
+        "oversizedWriteAdmissionQuantum": { "$ref": "#/$defs/axisRecord" }
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "unsignedInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "nullableUnsignedInteger": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "axis": {
+      "enum": [
+        "ApplicationSendTurnPlanning",
+        "ApplicationSendBatchFormation",
+        "QueuedSendBurstBudget",
+        "OversizedWriteAdmissionQuantum"
+      ]
+    },
+    "policyValue": {
+      "enum": [
+        "LegacyCurrent",
+        "Conservative",
+        "SingleEligible",
+        "SingleDatagram",
+        "SingleFragment",
+        "BoundedMultiFragment"
+      ]
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "axis",
+        "observationContractVersion",
+        "ruleVersion",
+        "snapshotVersion",
+        "reasonVersion",
+        "provenanceVersion",
+        "validity",
+        "hasForcedValue",
+        "forcedValue",
+        "hasShadowRecommendation",
+        "shadowRecommendation",
+        "selectedValue",
+        "appliedValue",
+        "selectionSource",
+        "reasonCode",
+        "safetyOverrideReason",
+        "decisionBoundary",
+        "latchLifetime",
+        "latchState",
+        "fallbackState",
+        "decisionSequence",
+        "latchSequence"
+      ],
+      "properties": {
+        "axis": { "$ref": "#/$defs/axis" },
+        "observationContractVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "ruleVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "snapshotVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "reasonVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "provenanceVersion": { "$ref": "#/$defs/nonEmptyString" },
+        "validity": { "type": ["string", "integer"] },
+        "hasForcedValue": { "type": "boolean" },
+        "forcedValue": { "$ref": "#/$defs/policyValue" },
+        "hasShadowRecommendation": { "type": "boolean" },
+        "shadowRecommendation": { "$ref": "#/$defs/policyValue" },
+        "selectedValue": { "$ref": "#/$defs/policyValue" },
+        "appliedValue": { "$ref": "#/$defs/policyValue" },
+        "selectionSource": {
+          "enum": [
+            "LegacySelector",
+            "Forced",
+            "ShadowRule",
+            "Fallback",
+            "SafetyOverride"
+          ]
+        },
+        "reasonCode": { "$ref": "#/$defs/unsignedInteger" },
+        "safetyOverrideReason": {
+          "enum": [
+            "None",
+            "MissingSignal",
+            "StaleSignal",
+            "Saturated",
+            "Contradictory",
+            "OutOfDomain",
+            "Recovery",
+            "Congestion",
+            "Pacing",
+            "FlowControl",
+            "Resource",
+            "Cancellation",
+            "Disposal",
+            "Terminal"
+          ]
+        },
+        "decisionBoundary": {
+          "enum": ["ActorTurn", "PacketPlan", "LogicalWriteAdmission"]
+        },
+        "latchLifetime": {
+          "enum": ["ActorTurn", "PacketPlan", "LogicalWrite"]
+        },
+        "latchState": {
+          "enum": ["Unlatched", "Latched", "Completed", "Fallback", "Terminal"]
+        },
+        "fallbackState": {
+          "enum": ["NotRequired", "Eligible", "Applied", "Terminal"]
+        },
+        "decisionSequence": { "type": "integer", "minimum": 1 },
+        "latchSequence": { "$ref": "#/$defs/unsignedInteger" }
+      }
+    },
+    "observationValues": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "queuedApplicationWrites",
+        "outboundBacklogBytes",
+        "distinctQueuedSendStreams",
+        "oldestQueuedSendAgeMicros",
+        "queueDelayEwmaMicros",
+        "actorServiceTimeEwmaMicros",
+        "maximumPayloadBytes",
+        "eligibleWriteCount",
+        "eligibleWriteBytes",
+        "legalMaximumDatagrams",
+        "configuredMaximumDatagrams",
+        "burstLimitHits",
+        "logicalWriteRemainingBytes",
+        "maximumChunkBytes",
+        "retainedSendBuffers",
+        "retainedSendBytes",
+        "bytesInFlight",
+        "congestionWindowBytes",
+        "handshakeConfirmed",
+        "cancellationRequested",
+        "disposalStarted",
+        "terminalStarted"
+      ],
+      "properties": {
+        "queuedApplicationWrites": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "outboundBacklogBytes": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "distinctQueuedSendStreams": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "oldestQueuedSendAgeMicros": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "queueDelayEwmaMicros": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "actorServiceTimeEwmaMicros": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "maximumPayloadBytes": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "eligibleWriteCount": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "eligibleWriteBytes": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "legalMaximumDatagrams": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "configuredMaximumDatagrams": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "burstLimitHits": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "logicalWriteRemainingBytes": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "maximumChunkBytes": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "retainedSendBuffers": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "retainedSendBytes": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "bytesInFlight": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "congestionWindowBytes": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "handshakeConfirmed": { "type": ["boolean", "null"] },
+        "cancellationRequested": { "type": ["boolean", "null"] },
+        "disposalStarted": { "type": ["boolean", "null"] },
+        "terminalStarted": { "type": ["boolean", "null"] }
+      }
+    },
+    "outcomes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "selectedWriteCount",
+        "selectedPayloadBytes",
+        "appliedDatagramCap",
+        "emittedDatagrams",
+        "admittedFragments",
+        "continuationCount",
+        "completedOperations"
+      ],
+      "properties": {
+        "scope": { "enum": ["Epoch", "Operation", "Plan", "ActorTurn"] },
+        "selectedWriteCount": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "selectedPayloadBytes": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "appliedDatagramCap": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "emittedDatagrams": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "admittedFragments": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "continuationCount": { "$ref": "#/$defs/nullableUnsignedInteger" },
+        "completedOperations": { "$ref": "#/$defs/unsignedInteger" }
+      }
+    },
+    "axisRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision",
+        "observationValues",
+        "outcomes",
+        "eventCount",
+        "hasEvent"
+      ],
+      "properties": {
+        "decision": { "$ref": "#/$defs/decision" },
+        "observationValues": { "$ref": "#/$defs/observationValues" },
+        "outcomes": { "$ref": "#/$defs/outcomes" },
+        "eventCount": { "$ref": "#/$defs/unsignedInteger" },
+        "hasEvent": { "type": "boolean" }
+      }
+    }
+  }
+}

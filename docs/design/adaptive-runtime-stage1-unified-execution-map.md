@@ -167,7 +167,9 @@ will relate to, not be replaced by, the unified Stage 1 set.
    request completion, then expose forced/observe/shadow admission records and
    operation outcomes.
 6. Export one unified raw row per bounded connection epoch, plus separate
-   joined construction/plan/turn/operation records.
+   joined construction/plan/turn/operation records. The connection-local raw
+   accumulator and raw-host emission are implemented; canonical provenance
+   materialization and permanent campaign extraction remain open.
 7. Add focused deterministic tests for every value, safety override, latch,
    fallback, lifecycle, cancellation, disposal, recovery, congestion, pacing,
    flow-control, ownership, terminal path, and force-legacy rollback.

@@ -43,7 +43,18 @@ state; and explicitly scoped outcomes. Scenario, payload, and requested
 concurrency are retained only under `workloadAnalysisOnly`, which is
 permanently excluded from production features.
 
-Construction, packet-plan, actor-turn, and logical-write records remain
+The permanent raw host first emits
+[`../../schemas/adaptive-runtime-stage1-unified-epoch-raw-v1.schema.json`](../../schemas/adaptive-runtime-stage1-unified-epoch-raw-v1.schema.json).
+A connection-local accumulator consumes all four seam-specific evidence sinks
+and closes the summary at the existing connection epoch boundary. It retains
+only bounded scalar values and counters. If an axis has no decision boundary
+in an epoch, the raw record marks that axis `missing` and `unlatched`, reports
+the configured forced and shadow identities, and leaves its event count and
+outcomes at zero. It never invents an operation key, carries an earlier event
+forward as fresh, or substitutes zero for an unavailable observation.
+
+Construction, packet-plan, actor-turn, logical-write, and explicit
+`epoch_summary` records remain
 separate and validate against
 [`../../schemas/adaptive-runtime-stage1-axis-decision-v1.schema.json`](../../schemas/adaptive-runtime-stage1-axis-decision-v1.schema.json).
 The semantic validator
@@ -54,6 +65,10 @@ forced axis per epoch, and requires every unforced adjacent axis to apply
 `legacy_current`. Forced and applied values must match unless an explicit
 safety override is recorded; shadow recommendations never change the applied
 value.
+An `epoch_summary` decision has null operation and plan keys. It is used only
+for the unified per-epoch projection; it does not relabel or replace the
+detailed construction, packet-plan, actor-turn, or logical-write source
+record.
 
 Observation ownership is independent from treatment ownership. A connection
 may enable receive-credit, send-turn, and batch observation together so one
