@@ -1713,3 +1713,118 @@ The retained TRX is
 This closes the complete local Release correctness gate for the current
 checkpoint. It does not close broader neutrality, independent-host execution,
 host/workload holdouts, offline rule replay, fairness, or campaign rollback.
+
+## Application Send Turn Counterfactual And Shadow Dataset Checkpoint
+
+This checkpoint keeps `application_send_turn_planning` as the only active
+measurement axis. The applied runtime policy remains `legacy_current`, every
+adjacent axis remains frozen at `legacy_current`, and
+`activeInternalAuthorized` remains false. No CI workflow or CI performance
+lane was used, and no commit was pushed.
+
+The implementation and evidence corrections are preserved in separate local
+commits:
+
+| Commit | Checkpoint |
+| --- | --- |
+| `2f9a1996` | Correct forced send-turn evidence materialization when PowerShell returns a scalar for a single artifact. |
+| `ef5e632a` | Permit the documented send-turn `shadow` and observation-neutrality modes without validating the unused receive-axis policy value. |
+| `1682a493` | Replay adjacent raw send-turn ticks so valid `instrumentation_mismatch` exclusions survive schema validation. |
+| `3196a58b` | Add the permanent cell-median send-turn counterfactual analyzer and its versioned schema. |
+| `ad865388` | Preserve `oldestApplicationSendAgeMicros` as the normalized `oldestQueuedSendAgeMicros` offline feature. |
+
+The first forced c1 attempt completed its four samples and then failed during
+evidence materialization because a single PowerShell result was treated as an
+array. A post-fix attempt used a pre-commit frozen binary, so its first
+materialized sample carried a different source revision and was classified
+`invalid_contract`. Both attempts are retained as diagnostic evidence. The
+first two counterfactual-analysis invocations also failed before producing an
+output because `Measure-Object` was applied to ordered-dictionary keys; the
+permanent analyzer uses an explicit fold instead. These failures were not
+rerun away or relabeled as measurements.
+
+An upload-direction shadow cell was also retained as `invalid_contract`:
+payload correctness passed, but client-to-server traffic did not exercise the
+server application-send seam. Consequently, the earlier upload forced curve
+is retained for harness and environment diagnostics only and is not treated as
+mechanism-sensitive evidence.
+
+### Mechanism-sensitive forced download curve
+
+Campaign `adaptive-send-turn-forced-download-local-20260724-r005` used exact
+binary commit `1682a493`. All cells passed payload, protocol, schema, and join
+validation. The permanent analyzer treats cell medians as repeated-cell
+outcomes rather than independent epoch samples.
+
+| Effective concurrency | Classification | Conservative throughput delta | Conservative p95 latency delta | Maximum within-treatment range | Construction rows |
+| ---: | --- | ---: | ---: | ---: | ---: |
+| 1 | `invalid_environment` | +1.801% | -3.444% | 0.0822 | 8 |
+| 4 | `invalid_environment` | +5.066% | +1.464% | 0.0735 | 32 |
+| 16 | `invalid_environment` | -6.081% | +1.611% | 0.0823 | 128 |
+| 24 | `neutral_local` | +0.086% | -1.690% | 0.0489 | 192 |
+| 32 | `neutral_local` | -1.882% | -0.177% | 0.0216 | 256 |
+
+At c24, the legacy and conservative medians were respectively
+18,807,928.64 and 18,824,126.69 bytes/second, with p95 latencies of
+1,379.215 and 1,355.911 milliseconds. At c32 they were respectively
+16,745,480.28 and 16,430,379.75 bytes/second, with p95 latencies of
+1,842.211 and 1,838.948 milliseconds.
+
+The final report is
+`.artifacts/adaptive-runtime/analysis/application-send-turn-forced-download-20260724-r005-final/counterfactual-analysis.json`,
+11,399 bytes, SHA-256
+`aff5833d81312f978f96efbffb78d37d281bf913bb66a43b791a7d896b037dd9`.
+It contains five cells, 616 construction rows, two analysis-eligible cells,
+and three retained environment exclusions. Its recommendation is
+`continue_evidence_generation`; it does not authorize active behavior.
+
+### Shadow download observations and corrected offline dataset
+
+Campaign `adaptive-send-turn-shadow-local-20260724-r003` used exact binary
+commit `ef5e632a` and produced 19,267 connection-epoch rows:
+
+| Effective concurrency | Classification | Epoch rows | Throughput (bytes/second) | p95 latency (milliseconds) |
+| ---: | --- | ---: | ---: | ---: |
+| 1 | `neutral_local` | 1,322 | 3,048,400.50 | 383.8588 |
+| 4 | `neutral_local` | 3,394 | 10,695,478.96 | 459.5877 |
+| 16 | `neutral_local` | 6,575 | 18,373,420.70 | 995.2280 |
+| 24 | `neutral_local` | 7,976 | 17,529,303.36 | 1,372.58855 |
+
+All rows applied `legacy_current` and recorded the `legacy_selector` reason.
+No row reported missing, stale, contradictory, saturated, or out-of-domain
+controller inputs. The c24 source contained two clean rows with adjacent
+non-monotonic instrumentation ticks; after the replay-validation correction,
+all 7,976 c24 rows validate while retaining their
+`instrumentation_mismatch` exclusion. Across the cohort there are 20 such
+flags, 90 `terminal_partial_epoch` flags, 9,327 `warmup` flags, and 9,863
+rows with no exclusion flag. Flags can overlap.
+
+The initial r003 normalized dataset is preserved as superseded diagnostic
+evidence because its send-age feature mapping produced nulls. The corrected
+append-only r004 dataset has 19,267 total rows, 9,863 included rows, 9,404
+excluded rows, and zero retained-negative rows:
+
+| Layer | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Catalog | 11,673 | `e5798d52ab6c02542ee2c40f4bf0ecf4f5a846191d080a97b3b9f80da32943bc` |
+| Normalized | 100,457,473 | `caea02f250be1b433208430810a78d7711b2de3595daf3fbf9721bb941345729` |
+| Curated | 20,615,164 | `e451d1abd4509c5e208fa55df8ac0b6207fda82702bb3fcb2379ce1e39c0ef5f` |
+| Split | 16,422,333 | `1d03d99bd2168249a55e6997d8e136ef2ae2af88ce5a48319b922ce78a2fc0ee` |
+
+The r004 analysis report is
+`.artifacts/adaptive-runtime/analysis/application-send-turn-shadow-download-20260724-r004/application-send-turn-analysis.json`,
+6,240 bytes, SHA-256
+`eb78cbf2955e9399da13c734128d76200b17bdca3061da1d9b45dfa0d9e1237d`.
+All 9,863 curated rows now have a send-age feature: minimum 0, p50 3,788,
+p95 33,142, and maximum 585,262 microseconds. The leakage audit passed and
+found none of the forbidden scenario, payload, requested-concurrency, peer,
+URL, or application-identity fields in production model features.
+
+The split remains `insufficient_group_diversity`: it contains four workload
+families but only one host fingerprint, so it creates no train, validation, or
+test assignments. The deterministic rule proposal remains `holdout_blocked`,
+has no candidate rule, and leaves active-internal behavior unauthorized.
+Independent-host execution and honest host holdouts therefore remain required.
+The current workstation still lacks a route to the controller subnet; this is
+a workstation-routing diagnostic, not a claim that the multi-machine
+ProtocolLab or its three physical hosts are unavailable.
