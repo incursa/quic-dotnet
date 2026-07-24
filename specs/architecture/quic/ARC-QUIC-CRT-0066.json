@@ -1,0 +1,66 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0066",
+  "artifact_type": "architecture",
+  "status": "proposed",
+  "title": "Stage 1 adaptive send-path policy architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define seam-local force, observe, shadow, latch, safety, and evidence paths for the four Stage 1 send-path axes while one stable correctness-critical runtime remains authoritative.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE1-SEND-PATH",
+    "SPEC-QUIC-CRT-SEND-TURN-SHADOW",
+    "ARC-QUIC-CRT-0065",
+    "WI-QUIC-CRT-0067",
+    "VER-QUIC-CRT-0068"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0177",
+    "REQ-QUIC-CRT-0178",
+    "REQ-QUIC-CRT-0179",
+    "REQ-QUIC-CRT-0180"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicAdaptiveRuntimeStage1Policy.cs",
+    "src/Incursa.Quic/QuicApplicationSendScheduler.cs",
+    "src/Incursa.Quic/QuicApplicationSendQueue.cs",
+    "src/Incursa.Quic/QuicSendPolicy.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeStage1UnifiedEvidence.ps1",
+    "schemas/adaptive-runtime-stage1-unified-epoch-v1.schema.json",
+    "schemas/adaptive-runtime-stage1-axis-decision-v1.schema.json",
+    "docs/design/adaptive-runtime-stage1-unified-execution-map.md"
+  ],
+  "design_summary": "One immutable connection-local Stage 1 snapshot contains four ordered axis decisions with common versions, validity flags, selection identities, bounded reasons, safety overrides, decision boundaries, latch state, fallback state, and outcomes. Only one axis may be forced in a counterfactual treatment; all unforced adjacent axes apply legacy_current, and shadow recommendations have no behavior consumer. application_send_turn_planning adapts its retained construction and actor-turn evidence into the common envelope. application_send_batch_formation resolves legacy_current or single_eligible immediately before the scheduler consumes the already-legal payload budget, and the resolved value expires with that packet plan. queued_send_burst_budget resolves legacy_current or single_datagram at an actor-turn boundary, then lowers but never raises the legal datagram cap returned after authoritative congestion and anti-amplification checks. oversized_write_admission_quantum resolves legacy_current, single_fragment, or bounded_multi_fragment once when a logical write is admitted and stores the result with the write completion until terminal completion. Policies return values, caps, or plans; they do not execute work or own protocol state.",
+  "data_and_state_considerations": "Every axis uses compact enums or immutable structs and bounded connection-local counters. The unified epoch exporter retains all four axis records even when three remain legacy_current. Separate construction, packet-plan, actor-turn, and logical-write records carry the deterministic campaign, run, cell, sample, connection, epoch, axis, and decision-sequence join plus a planKey or operationKey when applicable. Each separate record retains its own source path and SHA-256 provenance. Required observation absence, staleness, saturation, contradiction, or domain failure remains explicit; values are never fabricated as zero. Scenario, payload, requested concurrency, peer, URL, and application identity are analysis-only and never enter a policy snapshot, selector, or rule. No per-packet dependency injection, dictionary, allocation, global lock, unbounded stream scan, model file, or online update path is introduced.",
+  "edge_cases_and_constraints": [
+    "The batch policy may shorten only the legal eligible prefix; it cannot select an ineligible write or increase payload capacity.",
+    "The burst policy is a lower-only cap and cannot supersede congestion, pacing, anti-amplification, recovery, handshake, retransmission, or endpoint budgets.",
+    "The oversized-write decision is immutable from admission through cancellation, disposal, reset, FIN, shutdown, continuation, and exactly-once completion.",
+    "Forced modes bypass selection only and continue through every correctness and safety guard.",
+    "Missing, stale, saturated, contradictory, and out-of-domain inputs use deterministic fallback and bounded reasons.",
+    "Shadow recommendations never change the applied value.",
+    "Receive-credit publication remains legacy_current during Stage 1 campaigns.",
+    "A counterfactual campaign varies at most one axis; factorial interaction work requires a separate reviewed plan.",
+    "Active_internal and production activation remain unauthorized."
+  ],
+  "alternatives_considered": [
+    "Create independent single-axis datasets. Rejected because later offline analysis could not honestly reconstruct contemporaneous adjacent-axis observations and provenance.",
+    "Move scheduling or protocol state into policy objects. Rejected because policies must return legal proposals while the correctness-critical runtime remains the sole executor and owner.",
+    "Evaluate or inject policies per packet. Rejected because the safe boundaries are packet plan, actor turn, or logical-write admission and the hot path must remain bounded.",
+    "Use scenario, payload, concurrency, peer, URL, or application identity as controller features. Rejected because those values are workload provenance and would leak benchmark or application identity into production selection.",
+    "Allow a forced policy to bypass safety limits. Rejected because forcing is counterfactual selection, not protocol authority."
+  ],
+  "risks": [
+    "A common envelope can obscure axis-specific outcome scope; every outcome therefore records epoch, plan, actor-turn, operation, or sample-descriptive-only scope.",
+    "Construction and operation records can be silently double counted; deterministic exact joins and separate source provenance are mandatory.",
+    "Observation capture can perturb the stable runtime; disabled and observe-only neutrality plus allocation checks remain required outside correctness CI.",
+    "A behavior-neutral or conservative result can be mistaken for a production winner; no active behavior is authorized by this architecture."
+  ],
+  "open_questions": [
+    "Which bounded batch and burst outcome counters can be emitted without adding a new hot-path allocation?",
+    "Whether one common epoch cadence is sufficient for all four axes or later observation versions need axis-local capture cadence with deterministic aggregation."
+  ]
+}

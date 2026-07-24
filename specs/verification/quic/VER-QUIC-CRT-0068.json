@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0068",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Stage 1 adaptive send-path policy verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE1-SEND-PATH",
+    "ARC-QUIC-CRT-0066",
+    "WI-QUIC-CRT-0067",
+    "VER-QUIC-CRT-0067"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0177",
+    "REQ-QUIC-CRT-0178",
+    "REQ-QUIC-CRT-0179",
+    "REQ-QUIC-CRT-0180"
+  ],
+  "scope": "Verify the common unified evidence contract and force, observe, shadow, latch, safety, outcome, replay, and force-legacy rollback behavior for all four Stage 1 send-path axes. Do not claim a policy winner, throughput or latency improvement, active behavior, production readiness, or an ML-derived rule.",
+  "verification_method": "Canonical SpecTrace validation, deterministic requirement-home and bounded property tests, focused scheduler and lifecycle correctness tests, manual or nightly mechanism-cost benchmarks outside correctness CI, one small permanent unified four-axis smoke, schema and checksum validation, and deterministic replay.",
+  "preconditions": [
+    "The receive-credit and stream-capacity correctness checkpoint remains preserved.",
+    "The accepted oversized-write selector and send-turn force and shadow checkpoints remain preserved.",
+    "The stopped application-send-turn-only normalization remains diagnostic_incomplete and is not restarted.",
+    "Every Stage 1 campaign varies at most one axis while all adjacent applied values remain legacy_current.",
+    "Active_internal and production activation remain unauthorized."
+  ],
+  "procedure": [
+    "Validate SPEC-QUIC-CRT-STAGE1-SEND-PATH, ARC-QUIC-CRT-0066, WI-QUIC-CRT-0067, and VER-QUIC-CRT-0068 individually against the canonical model and check reciprocal trace links.",
+    "Build the relevant projects in Release before every focused test slice.",
+    "Run REQ-QUIC-CRT-0177 tests for canonical axis order, closed values, one forced axis, adjacent legacy_current, safety override, version, provenance, decision kind, deterministic join, duplicate, mismatch, shadow-neutrality, and force-legacy behavior.",
+    "Run REQ-QUIC-CRT-0178 tests for legacy_current and single_eligible batch values, packet-plan latch, legal-prefix validation, payload, ordering, FIN, ownership, cancellation, disposal, lifecycle, recovery, congestion, pacing, flow-control, queue, buffer, terminal, replay, and rollback behavior.",
+    "Run REQ-QUIC-CRT-0179 tests for legacy_current and single_datagram burst values, actor-turn latch, lower-only safety guards, handshake, recovery, congestion, pacing, anti-amplification, retransmission, endpoint, terminal, replay, and rollback behavior.",
+    "Run REQ-QUIC-CRT-0180 tests for every oversized-write value, admission latch, quantum validation, byte identity and order, continuation, ownership, cancellation, disposal, reset, FIN, shutdown, recovery, flow-control, terminal, exactly-once completion, replay, and rollback behavior.",
+    "Run bounded property sequences for duplicate, delayed, missing, stale, saturated, contradictory, out-of-domain, out-of-order, terminal, cancellation, disposal, reset, loss, and recovery events.",
+    "Run focused BenchmarkDotNet mechanism and allocation checks only through manual or nightly performance workflows.",
+    "Run the complete correctness-only Release suite with performance categories excluded.",
+    "Run one small permanent correctness-only smoke and require every unified row to contain all four axis records, exactly one varied axis, adjacent legacy_current applied values, exact forced and applied joins, shadow neutrality, and append-only exclusions.",
+    "Validate raw artifacts, decision records, results, unified epochs, manifests, checksums, classifications, and deterministic replay before proceeding to Stage 2."
+  ],
+  "expected_result": "Every Stage 1 axis is independently forceable, observable, shadow-evaluable, safely latched, attributable, replayable, and rollback-tested while one stable correctness-critical runtime remains authoritative; every smoke row contains all four axes with at most one varied treatment and all adjacent axes applied as legacy_current; safety guards remain authoritative under forcing; invalid and negative evidence remains append-only; and no active behavior or production rule is authorized.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0177.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0178.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0179.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0180.cs",
+    "tests/Incursa.Quic.Tests/QuicApplicationSendSchedulerTests.cs",
+    "src/Incursa.Quic/QuicAdaptiveRuntimeStage1Policy.cs",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeStage1UnifiedEvidence.ps1",
+    "schemas/adaptive-runtime-stage1-unified-epoch-v1.schema.json",
+    "schemas/adaptive-runtime-stage1-axis-decision-v1.schema.json",
+    "docs/design/adaptive-runtime-stage1-unified-execution-map.md",
+    "docs/testing/adaptive-runtime-policy-local-campaign-evidence-2026-07-23.md"
+  ],
+  "status_summary": "Planned. The common in-memory four-axis snapshot, unified epoch schema, separate decision schema, semantic validator, representative fixtures, and focused REQ-QUIC-CRT-0177 tests are implemented and green. Runtime emission and force, observe, shadow, latch, outcome, replay, and rollback seams for application_send_batch_formation, queued_send_burst_budget, and oversized_write_admission_quantum remain open. No unified four-axis smoke, policy acceptance, rule derivation, active behavior, or production readiness is claimed."
+}

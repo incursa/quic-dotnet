@@ -34,6 +34,13 @@ This ledger tracks open questions, ambiguities, and follow-up decisions for QUIC
   `SPEC-QUIC-CRT-SEND-TURN-SHADOW`, with `ARC-QUIC-CRT-0065`,
   `WI-QUIC-CRT-0066`, and `VER-QUIC-CRT-0067` defining a behavior-neutral
   recommendation, axis-specific evidence, deterministic fallback, replay, and
+  force-legacy rollback. The complete Stage 1 send-path force and unified
+  evidence library is now trace-owned by `REQ-QUIC-CRT-0177` through
+  `REQ-QUIC-CRT-0180` in `SPEC-QUIC-CRT-STAGE1-SEND-PATH`, with
+  `ARC-QUIC-CRT-0066`, `WI-QUIC-CRT-0067`, and `VER-QUIC-CRT-0068`
+  covering exact four-axis epoch records, deterministic decision joins,
+  application-send batch formation, queued-send burst budget, oversized-write
+  admission quantum, safety-authoritative forcing, shadow neutrality, and
   force-legacy rollback. The matching design, delivery, and proof homes for
   the shadow foundation remain `ARC-QUIC-CRT-0059`, `WI-QUIC-CRT-0060`, and
   `VER-QUIC-CRT-0061`. This gap still owns only the later active controller and

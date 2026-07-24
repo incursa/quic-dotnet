@@ -28,6 +28,8 @@ Each canonical artifact is authored in `.json`.
 - [`SPEC-QUIC-RFC9368.json`](SPEC-QUIC-RFC9368.json): canonical RFC 9368 compatible-version negotiation floor source
 - [`SPEC-QUIC-RFC9369.json`](SPEC-QUIC-RFC9369.json): canonical RFC 9369 QUIC v2 static version floor source
 - [`SPEC-QUIC-CRT.json`](SPEC-QUIC-CRT.json): canonical connection-runtime source
+- [`SPEC-QUIC-CRT-SEND-TURN-SHADOW.json`](SPEC-QUIC-CRT-SEND-TURN-SHADOW.json): canonical behavior-neutral application-send turn shadow source
+- [`SPEC-QUIC-CRT-STAGE1-SEND-PATH.json`](SPEC-QUIC-CRT-STAGE1-SEND-PATH.json): canonical four-axis Stage 1 adaptive send-path policy source
 - [`SPEC-QUIC-API.json`](SPEC-QUIC-API.json): canonical public API surface source
 - [`REQUIREMENT-GAPS.md`](REQUIREMENT-GAPS.md): the local gap ledger
 - [`../rfcs/README.md`](../rfcs/README.md): local QUIC RFC text corpus index for the later planning-only families

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0067",
+  "artifact_type": "work_item",
+  "status": "in_progress",
+  "title": "Implement the Stage 1 send-path counterfactual library",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add the common four-axis evidence spine and seam-local force, observe, shadow, latch, safety, outcome, replay, and rollback paths for the Stage 1 adaptive-runtime send-path axes.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE1-SEND-PATH",
+    "ARC-QUIC-CRT-0066",
+    "WI-QUIC-CRT-0066",
+    "VER-QUIC-CRT-0068"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0066"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0068"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0177",
+    "REQ-QUIC-CRT-0178",
+    "REQ-QUIC-CRT-0179",
+    "REQ-QUIC-CRT-0180"
+  ],
+  "planned_changes": "Retain the existing send-turn force and shadow streams while adapting them into the common Stage 1 snapshot; add the versioned unified epoch and separate decision schemas plus semantic join validation; add application_send_batch_formation legacy_current and single_eligible selection at the packet-plan boundary; add queued_send_burst_budget legacy_current and single_datagram selection as a lower-only actor-turn cap; formalize oversized_write_admission_quantum with legacy_current, single_fragment, and bounded_multi_fragment values latched for one logical write; expose internal forcing, observe-only, shadow recommendation, bounded reasons, safety overrides, attributable outcomes, deterministic replay, and force-legacy rollback for every axis; and update permanent local and ProtocolLab campaign inputs only after the four-axis runtime emission path is correctness-green.",
+  "verification_plan": "Build before testing. Add requirement-home tests for the common four-axis contract and each axis value, boundary, latch, transition, fallback, safety override, terminal path, cancellation, disposal, FIN, reset, shutdown, recovery, congestion, pacing, flow-control, ownership, queue, buffer, and rollback invariant. Add bounded property sequences and focused manual or nightly BenchmarkDotNet checks outside correctness CI. Run focused correctness tests after each axis slice and the complete correctness-only Release suite before a small permanent unified smoke. Validate exactly four axis records, exactly one varied treatment, adjacent legacy_current values, forced and applied joins, shadow neutrality, checksums, exclusions, and append-only classifications. Proceed to Stage 2 before any large campaign, dataset transform, or offline ML analysis.",
+  "out_of_scope": [
+    "Active or active_internal selection",
+    "Production thresholds or a policy winner",
+    "Online learning, bandits, reinforcement learning, exploration, self-updating thresholds, runtime model training, or model-file deployment",
+    "Performance work in correctness CI",
+    "A large Stage 1 campaign, normalized dataset transform, or offline ML analysis before Stage 2 begins",
+    "Factorial multi-axis treatment variation without a separate reviewed plan",
+    "Reclassification, deletion, relabeling, or silent combination of negative, failed, invalid, diagnostic, excluded, or partial evidence"
+  ]
+}

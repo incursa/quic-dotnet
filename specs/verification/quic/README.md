@@ -194,6 +194,8 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-CRT-0061.json`](VER-QUIC-CRT-0061.json): canonical CRT adaptive runtime receive-credit shadow foundation verification source
 - [`VER-QUIC-CRT-0064.json`](VER-QUIC-CRT-0064.json): canonical CRT adaptive runtime policy catalog, phase-transition schedule, and provenance verification source
 - [`VER-QUIC-CRT-0066.json`](VER-QUIC-CRT-0066.json): canonical application-send turn campaign provenance verification source
+- [`VER-QUIC-CRT-0067.json`](VER-QUIC-CRT-0067.json): canonical application-send turn shadow policy verification source
+- [`VER-QUIC-CRT-0068.json`](VER-QUIC-CRT-0068.json): canonical four-axis Stage 1 adaptive send-path policy verification source
 
 ## Notes
 

@@ -1,0 +1,133 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-CRT-STAGE1-SEND-PATH",
+  "artifact_type": "specification",
+  "title": "Stage 1 adaptive send-path policy contract",
+  "domain": "quic",
+  "capability": "adaptive-runtime-stage1-send-path",
+  "status": "proposed",
+  "owner": "quic-maintainers",
+  "tags": [
+    "adaptive-runtime",
+    "send-path",
+    "counterfactual",
+    "measurement-only"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-SEND-TURN-SHADOW",
+    "ARC-QUIC-CRT-0066",
+    "WI-QUIC-CRT-0067",
+    "VER-QUIC-CRT-0068"
+  ],
+  "purpose": "Define the common force, observe, shadow, latch, safety, evidence, and rollback contract for the four Stage 1 adaptive-runtime send-path axes without authorizing active production selection.",
+  "scope": "This specification covers application_send_turn_planning, application_send_batch_formation, queued_send_burst_budget, and oversized_write_admission_quantum as independently forceable and observable connection-local axes. One counterfactual treatment may vary one axis while every adjacent applied axis remains legacy_current. It does not define a policy winner, production threshold, active_internal behavior, online learning, or a large campaign.",
+  "context": "The send-turn axis already has a behavior-neutral force and shadow foundation, while batch formation, queued-send burst budget, and oversized-write admission retain existing legal mechanisms that need named policy seams. Unified connection-epoch evidence must represent every implemented axis even when only one treatment varies, and separate construction, packet-plan, actor-turn, and logical-write records must remain independently attributable through deterministic joins.",
+  "open_questions": [
+    "Which bounded pre-decision observation subset will remain useful across three or more independent host fingerprints without encoding workload identity?",
+    "Which Stage 1 axes will have evidence strong enough to justify a later one-axis active_internal review after Stage 2 foundations are complete?"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-QUIC-CRT-0177",
+      "title": "Retain one unified Stage 1 epoch and exact decision joins",
+      "statement": "Every bounded Stage 1 connection epoch MUST retain exactly one versioned record for application_send_turn_planning, application_send_batch_formation, queued_send_burst_budget, and oversized_write_admission_quantum in canonical order; permit at most one forced treatment; keep every unforced adjacent applied value at legacy_current; preserve forced, shadow, selected, applied, reason, safety, latch, fallback, outcome, run, binary, host, workload, and source provenance; and validate separate construction or operation records through the deterministic campaign, run, cell, sample, connection, epoch, axis, and decision-sequence join without admitting analysis-only workload identity into production controller inputs.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0066"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0067"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0068"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-stage1-unified-execution-map.md",
+          "docs/design/adaptive-runtime-policy-axis-roadmap.md",
+          "docs/design/adaptive-runtime-policy-observation-schema.md",
+          "schemas/adaptive-runtime-stage1-unified-epoch-v1.schema.json",
+          "schemas/adaptive-runtime-stage1-axis-decision-v1.schema.json"
+        ]
+      },
+      "notes": [
+        "Scenario, payload, requested concurrency, peer, URL, and application identity remain analysis-only provenance.",
+        "Separate decision artifacts retain their own source path and checksum; they are not relabeled as the unified epoch source."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0178",
+      "title": "Select a safe application-send batch at the packet-plan boundary",
+      "statement": "The application_send_batch_formation axis MUST select one value from the closed legacy_current and single_eligible set at the packet-plan boundary, latch that value for exactly one packet plan, expose forced, observe-only, shadow, missing, stale, saturated, contradictory, out-of-domain, safety-override, outcome, replay, and force-legacy evidence, and restrict every proposal to a legal prefix already bounded by payload, priority, same-stream ordering, FIN, ownership, recovery, congestion, pacing, anti-amplification, flow-control, packet, queue, buffer, cancellation, disposal, lifecycle, and terminal-state authority.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0066"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0067"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0068"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-axis-roadmap.md",
+          "docs/design/adaptive-runtime-policy-seam-inventory.md",
+          "docs/design/adaptive-runtime-stage1-unified-execution-map.md"
+        ]
+      },
+      "notes": [
+        "single_eligible means the first already-eligible write only; it does not choose a different stream, bypass eligibility, or increase a legal payload budget.",
+        "Shadow recommendation cannot alter the packet plan."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0179",
+      "title": "Lower the queued-send burst cap without bypassing transport authority",
+      "statement": "The queued_send_burst_budget axis MUST select one value from the closed legacy_current and single_datagram set at the application-send actor-turn boundary, latch that value for exactly one actor turn, expose forced, observe-only, shadow, validity, safety, outcome, replay, and force-legacy evidence, and apply its proposal only as a lower bound beneath congestion, pacing, anti-amplification, handshake, recovery, packet, endpoint, retransmission, flow-control, queue, buffer, cancellation, disposal, lifecycle, and terminal-state limits.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0066"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0067"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0068"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-axis-roadmap.md",
+          "docs/design/adaptive-runtime-policy-seam-inventory.md",
+          "docs/design/adaptive-runtime-stage1-unified-execution-map.md"
+        ]
+      },
+      "notes": [
+        "The existing established and pre-handshake caps remain the legacy_current mechanism.",
+        "Forced selection never increases a legal datagram budget."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0180",
+      "title": "Latch oversized-write admission for one logical write",
+      "statement": "The oversized_write_admission_quantum axis MUST select one value from the closed legacy_current, single_fragment, and bounded_multi_fragment set at logical-write admission, retain the resolved quantum immutably for the entire logical write, expose forced, observe-only, shadow, validity, safety, outcome, replay, and force-legacy evidence, and preserve byte identity, byte order, stream ordering, FIN, ownership, continuation, recovery, congestion, pacing, anti-amplification, flow-control, packet, queue, buffer, cancellation, disposal, lifecycle, terminal-state, and exactly-once completion authority.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0066"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0067"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0068"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-axis-roadmap.md",
+          "docs/design/adaptive-runtime-policy-seam-inventory.md",
+          "docs/design/adaptive-runtime-stage1-unified-execution-map.md"
+        ]
+      },
+      "notes": [
+        "The retained c16-c24 two-fragment selector remains the legacy_current mechanism until counterfactual evidence supports a reviewed rule proposal.",
+        "A later epoch cannot change the latch for an admitted logical write."
+      ]
+    }
+  ]
+}

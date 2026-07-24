@@ -20,6 +20,8 @@ repository-config tooling.
 - [`adaptive-runtime-policy-split-manifest-v1.schema.json`](adaptive-runtime-policy-split-manifest-v1.schema.json)
 - [`adaptive-runtime-application-send-turn-analysis-v1.schema.json`](adaptive-runtime-application-send-turn-analysis-v1.schema.json)
 - [`adaptive-runtime-protocol-lab-campaign-v1.schema.json`](adaptive-runtime-protocol-lab-campaign-v1.schema.json)
+- [`adaptive-runtime-stage1-unified-epoch-v1.schema.json`](adaptive-runtime-stage1-unified-epoch-v1.schema.json)
+- [`adaptive-runtime-stage1-axis-decision-v1.schema.json`](adaptive-runtime-stage1-axis-decision-v1.schema.json)
 
 ## Notes
 
