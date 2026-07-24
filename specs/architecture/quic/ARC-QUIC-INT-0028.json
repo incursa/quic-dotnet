@@ -24,16 +24,19 @@
     "eng/protocol-lab/templates/raw-quic/implementations/quic-dotnet-raw-dev.yaml",
     "eng/protocol-lab/src/Incursa.ProtocolLab.Adapters.IncursaRawQuic",
     "eng/protocol-lab/servers/IncursaRawQuicServer",
+    "scripts/release/Test-IncursaQuicPackageConformance.ps1",
+    ".github/workflows/publish-nuget-packages.yml",
     "docs/protocol-lab/lab-package.md",
     "docs/protocol-lab/rack-lab-controller.md",
     "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs"
   ],
-  "design_summary": "The package producer exposes two explicit targets. `Http3` stages the TechEmpower-shaped HTTP/3 sample as package ID `quic-dotnet-dev` and advertises only `h3` plus HTTP application scenarios. `RawQuic` stages the repo-local raw QUIC adapter and raw QUIC server as package ID `quic-dotnet-raw-dev` and advertises only protocol `quic`, workload family `quic.transport`, and the two enabled transport scenarios. The package builder copies package v2 templates, publishes target payloads, constrains implementation project paths to the quic-dotnet root, and calls the public ProtocolLab package builder only as neutral package tooling. The run helper validates the requested suite, protocol, scenarios, and capabilities before package generation or controller interaction so raw QUIC cannot silently route through managed HTTP/3 helpers.",
+  "design_summary": "The package producer exposes two explicit targets. `Http3` stages the TechEmpower-shaped HTTP/3 sample as package ID `quic-dotnet-dev` and advertises only `h3` plus HTTP application scenarios. `RawQuic` stages the repo-local raw QUIC adapter and raw QUIC server as package ID `quic-dotnet-raw-dev` and advertises only protocol `quic`, workload family `quic.transport`, and the two enabled transport scenarios. The package builder copies package v2 templates, publishes target payloads, constrains implementation project paths to the quic-dotnet root, and calls the public ProtocolLab package builder only as neutral package tooling. The run helper validates the requested suite, protocol, scenarios, and capabilities before package generation or controller interaction so raw QUIC cannot silently route through managed HTTP/3 helpers. The NuGet release workflow packs `Incursa.Quic`, checks out the private internal conformance fixture through a dedicated read-only token, and invokes a release helper that restores the exact package from an isolated local feed, rejects source-root fallback, verifies the server dependency manifest and copied assembly hash, and executes the fixed five-test Raw QUIC correctness band before NuGet push.",
   "edge_cases_and_constraints": [
     "Raw QUIC support is intentionally limited to `quic.transport.multiplex.100x64kb` and `quic.transport.duplex-streams` until a later requirement expands the package declaration.",
     "The public ProtocolLab checkout remains acceptable for package tooling, schemas, submission helpers, component-package tooling, and shared contract/model projects; concrete quic-dotnet adapter or server implementation projects must resolve under this repository.",
     "The raw package is framework-dependent and expects worker-provided `dotnet`, `pwsh`, and `libmsquic` rather than carrying duplicate self-contained runtime trees.",
-    "Scenario-pack and test-executor component packages are supplied separately from the quic-dotnet implementation package."
+    "Scenario-pack and test-executor component packages are supplied separately from the quic-dotnet implementation package.",
+    "The release fixture credential is required rather than silently skipping package-backed conformance; missing credential, package identity mismatch, binary mismatch, or a non-passing test result blocks publication."
   ],
   "risks": [
     "ProtocolLab package v2 contract drift could invalidate template terminology unless the template tests stay aligned with the public package contract.",

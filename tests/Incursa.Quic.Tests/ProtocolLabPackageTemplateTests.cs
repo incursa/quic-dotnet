@@ -56,6 +56,31 @@ public sealed class ProtocolLabPackageTemplateTests
     ];
 
     [Fact]
+    public void Nuget_publish_workflow_runs_package_backed_raw_quic_conformance_before_push()
+    {
+        var repoRoot = FindRepoRoot();
+        var workflow = File.ReadAllText(Path.Combine(repoRoot, ".github", "workflows", "publish-nuget-packages.yml"));
+        var releaseScript = File.ReadAllText(Path.Combine(repoRoot, "scripts", "release", "Test-IncursaQuicPackageConformance.ps1"));
+
+        const string conformanceStep = "Run package-backed Raw QUIC conformance before publish";
+        const string pushStep = "Push to NuGet";
+        Assert.Contains(conformanceStep, workflow, StringComparison.Ordinal);
+        Assert.Contains("PROTOCOL_LAB_INTERNAL_READ_TOKEN", workflow, StringComparison.Ordinal);
+        Assert.Contains("repository: incursa/protocol-lab-internal", workflow, StringComparison.Ordinal);
+        Assert.Contains("Test-IncursaQuicPackageConformance.ps1", workflow, StringComparison.Ordinal);
+        Assert.True(
+            workflow.IndexOf(conformanceStep, StringComparison.Ordinal) < workflow.IndexOf(pushStep, StringComparison.Ordinal),
+            "Package-backed Raw QUIC conformance must complete before NuGet push.");
+        Assert.DoesNotContain("BenchmarkDotNet", workflow, StringComparison.Ordinal);
+
+        Assert.Contains("PROTOCOL_LAB_INCURSA_QUIC_SOURCE_ROOT must be unset", releaseScript, StringComparison.Ordinal);
+        Assert.Contains("Incursa.Quic/$PackageVersion", releaseScript, StringComparison.Ordinal);
+        Assert.Contains("Raw QUIC server binary hash does not match", releaseScript, StringComparison.Ordinal);
+        Assert.Contains("expected 5 passing tests", releaseScript, StringComparison.Ordinal);
+        Assert.Contains("package-backed-raw-quic-conformance.v1", releaseScript, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void Raw_quic_package_template_advertises_transport_contract()
     {
         var repoRoot = FindRepoRoot();

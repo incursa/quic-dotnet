@@ -11,6 +11,7 @@ The required workflow boundary is:
 | Lane | Trigger | Permitted work | Evidence status |
 | --- | --- | --- | --- |
 | `CI` | pull request and push | build, deterministic correctness tests, trace validation, package construction and package smoke | correctness and packaging only |
+| `NuGet release` | version tag or explicit manual release | package construction plus package-backed Raw QUIC deterministic conformance before publish | correctness and packaging only |
 | `Nightly Performance Diagnostics` | scheduled or manually dispatched | bounded BenchmarkDotNet baseline execution and retained raw reports | diagnostic only |
 | ProtocolLab | reviewed, operator-controlled campaign | forced-policy/shadow counterfactuals and independent-host measurements | evaluated only under the adaptive-runtime campaign contracts |
 
@@ -26,6 +27,11 @@ payload or exercises concurrent streams. For example, exact payload, EOF,
 flow-control progress, cancellation, reset, recovery, and shutdown checks are
 correctness tests; they do not become performance tests merely because they
 exercise a non-trivial workload.
+
+The NuGet release gate uses the newly packed `Incursa.Quic` candidate through
+the private ProtocolLab Raw QUIC fixture, verifies the exact consumed package
+and assembly hashes, rejects source-root fallback, and runs exact download and
+slow-reader checks. It is a release correctness gate, not a performance lane.
 
 ## Nightly diagnostic limits
 

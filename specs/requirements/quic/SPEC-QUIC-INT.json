@@ -1228,7 +1228,7 @@
     {
       "id": "REQ-QUIC-INT-0033",
       "title": "Keep ProtocolLab package targets lane-separated",
-      "statement": "The repository MUST produce ProtocolLab package v2 implementation archives through repo-owned templates and helper scripts such that `quic-dotnet-dev` advertises only HTTP/3 protocol and HTTP application scenarios, `quic-dotnet-raw-dev` advertises only protocol `quic`, workload family `quic.transport`, and scenarios `quic.transport.multiplex.100x64kb` and `quic.transport.duplex-streams`, raw package generation resolves adapter and server implementation projects only under the quic-dotnet repository root while using the public ProtocolLab checkout only for neutral package tooling, schema validation, component-package tooling, and shared contract/model projects, and raw run submission rejects HTTP/3 suite, protocol, scenario, or capability selections before packaging, upload, or controller submission instead of falling back to managed HTTP/3 helpers.",
+      "statement": "The repository MUST produce ProtocolLab package v2 implementation archives through repo-owned templates and helper scripts such that `quic-dotnet-dev` advertises only HTTP/3 protocol and HTTP application scenarios, `quic-dotnet-raw-dev` advertises only protocol `quic`, workload family `quic.transport`, and scenarios `quic.transport.multiplex.100x64kb` and `quic.transport.duplex-streams`, raw package generation resolves adapter and server implementation projects only under the quic-dotnet repository root while using the public ProtocolLab checkout only for neutral package tooling, schema validation, component-package tooling, and shared contract/model projects, and raw run submission rejects HTTP/3 suite, protocol, scenario, or capability selections before packaging, upload, or controller submission instead of falling back to managed HTTP/3 helpers. Before a NuGet push, the release workflow MUST use an explicit read-only private-fixture credential to test the newly packed `Incursa.Quic` candidate through the ProtocolLab internal Raw QUIC server, reject a source-root project-reference fallback, verify the consumed package identity and binary hash, retain deterministic download and slow-reader conformance results, and stop before publication when the candidate cannot pass that correctness gate.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-INT-0028"
@@ -1253,6 +1253,8 @@
           "eng/protocol-lab/templates/raw-quic/implementations/quic-dotnet-raw-dev.yaml",
           "eng/protocol-lab/src/Incursa.ProtocolLab.Adapters.IncursaRawQuic/Incursa.ProtocolLab.Adapters.IncursaRawQuic.csproj",
           "eng/protocol-lab/servers/IncursaRawQuicServer/IncursaRawQuicServer.csproj",
+          "scripts/release/Test-IncursaQuicPackageConformance.ps1",
+          ".github/workflows/publish-nuget-packages.yml",
           "docs/protocol-lab/lab-package.md",
           "docs/protocol-lab/rack-lab-controller.md",
           "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs",
@@ -1266,13 +1268,14 @@
           "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs::Raw_quic_package_builder_uses_quic_dotnet_owned_projects",
           "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs::Raw_quic_adapter_project_uses_public_contracts_not_public_adapters",
           "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs::Run_helper_submits_raw_quic_component_package_references",
-          "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs::Run_helper_rejects_raw_quic_h3_fallback_arguments"
+          "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs::Run_helper_rejects_raw_quic_h3_fallback_arguments",
+          "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs::Nuget_publish_workflow_runs_package_backed_raw_quic_conformance_before_push"
         ]
       },
       "notes": [
         "The raw package target is an implementation package producer only; public ProtocolLab scenario-pack and test-executor component packages remain separate package inputs.",
         "This requirement does not broaden raw QUIC validation beyond the two named transport scenarios and does not change HTTP/3 or QPACK protocol support claims.",
-        "Package dry-runs prove archive shape and metadata. Rack-lab jobs remain separate performance evidence and must record package identity, SHA-256, job ID, run ID, and outcome in verification artifacts when used for claims."
+        "Package dry-runs prove archive shape and metadata. The release candidate gate is correctness-only and must not be replaced with a source-root override or a performance result. Rack-lab jobs remain separate performance evidence and must record package identity, SHA-256, job ID, run ID, and outcome in verification artifacts when used for claims."
       ]
     }
   ]

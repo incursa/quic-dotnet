@@ -21,12 +21,13 @@
   "addresses": [
     "REQ-QUIC-INT-0033"
   ],
-  "planned_changes": "- Keep package v2 templates aligned with `providedImplementations` metadata and package-local manifests.\n- Keep `quic-dotnet-dev` HTTP/3-only and `quic-dotnet-raw-dev` raw-QUIC-only.\n- Guard raw package generation so adapter/server project paths resolve under the quic-dotnet repository root.\n- Guard raw run submission so H3 protocol/scenario/capability selections fail before packaging, upload, or controller submission.\n- Update operator docs for the enforced package boundary.\n- Run focused template tests and package dry-runs for the H3 and raw package targets when locally supported.",
+  "planned_changes": "- Keep package v2 templates aligned with `providedImplementations` metadata and package-local manifests.\n- Keep `quic-dotnet-dev` HTTP/3-only and `quic-dotnet-raw-dev` raw-QUIC-only.\n- Guard raw package generation so adapter/server project paths resolve under the quic-dotnet repository root.\n- Guard raw run submission so H3 protocol/scenario/capability selections fail before packaging, upload, or controller submission.\n- Add a release-time package-backed Raw QUIC conformance helper that requires a private-fixture checkout, rejects source-root fallback, verifies exact package/binary identity, and retains TRX and JSON evidence.\n- Require the release workflow to run that correctness helper before NuGet push through a read-only internal-fixture credential.\n- Update operator docs for the enforced package boundary.\n- Run focused template tests, candidate-package conformance, and package dry-runs for the H3 and raw package targets when locally supported.",
   "out_of_scope": [
     "Broadening raw QUIC scenarios beyond `quic.transport.multiplex.100x64kb` and `quic.transport.duplex-streams`.",
     "Routing raw QUIC validation through managed HTTP/3 helpers.",
     "Depending on public ProtocolLab concrete production adapter projects for quic-dotnet implementation source.",
-    "Claiming rack-lab performance provenance without a controller job, package SHA-256, run ID, and outcome artifact."
+    "Claiming rack-lab performance provenance without a controller job, package SHA-256, run ID, and outcome artifact.",
+    "BenchmarkDotNet or ProtocolLab performance measurement in the NuGet release correctness gate."
   ],
-  "verification_plan": "Run `ProtocolLabPackageTemplateTests`, run H3 and raw package generation dry-runs when the sibling ProtocolLab package builder is locally available, inspect produced package IDs, versions, manifests, and SHA-256 values, validate touched SpecTrace JSON, and run diff hygiene checks."
+  "verification_plan": "Run `ProtocolLabPackageTemplateTests`; pack an exact `Incursa.Quic` candidate; run the package-backed Raw QUIC conformance helper against an isolated internal checkout without `PROTOCOL_LAB_INCURSA_QUIC_SOURCE_ROOT`; verify its server dependency and binary hashes plus its 5/5 TRX; validate touched SpecTrace JSON; and run diff hygiene checks."
 }

@@ -91,6 +91,41 @@ jobs:
           dotnet pack src/Incursa.Qpack/Incursa.Qpack.csproj --configuration Release --no-build --output artifacts/packages --include-symbols --include-source /p:Version=${{ steps.version.outputs.version }} /p:ContinuousIntegrationBuild=true
           dotnet pack src/Incursa.Quic.Http3/Incursa.Quic.Http3.csproj --configuration Release --no-build --output artifacts/packages --include-symbols --include-source /p:Version=${{ steps.version.outputs.version }} /p:ContinuousIntegrationBuild=true
 
+      - name: Validate ProtocolLab internal fixture token
+        shell: pwsh
+        env:
+          PROTOCOL_LAB_INTERNAL_READ_TOKEN: ${{ secrets.PROTOCOL_LAB_INTERNAL_READ_TOKEN }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:PROTOCOL_LAB_INTERNAL_READ_TOKEN)) {
+            throw "PROTOCOL_LAB_INTERNAL_READ_TOKEN secret is required for package-backed Raw QUIC release conformance."
+          }
+
+      - name: Checkout ProtocolLab internal conformance fixture
+        uses: actions/checkout@v6
+        with:
+          repository: incursa/protocol-lab-internal
+          token: ${{ secrets.PROTOCOL_LAB_INTERNAL_READ_TOKEN }}
+          path: protocol-lab-internal
+          fetch-depth: 1
+
+      - name: Run package-backed Raw QUIC conformance before publish
+        shell: pwsh
+        run: |
+          ./scripts/release/Test-IncursaQuicPackageConformance.ps1 `
+            -PackagePath "artifacts/packages/Incursa.Quic.${{ steps.version.outputs.version }}.nupkg" `
+            -PackageVersion "${{ steps.version.outputs.version }}" `
+            -ProtocolLabInternalRoot "protocol-lab-internal" `
+            -ArtifactsRoot "artifacts/release/package-backed-raw-quic-conformance"
+
+      - name: Upload package-backed Raw QUIC conformance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-backed-raw-quic-conformance-${{ steps.version.outputs.version }}
+          path: artifacts/release/package-backed-raw-quic-conformance/
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Push to NuGet
         run: |
           dotnet nuget push artifacts/packages/*.nupkg --api-key "${{ secrets.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate

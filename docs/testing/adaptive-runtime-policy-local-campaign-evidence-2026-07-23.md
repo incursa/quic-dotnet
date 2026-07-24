@@ -995,3 +995,29 @@ an exact post-`79e995c3` commit, followed by the unchanged package-backed Raw
 QUIC conformance suite against that published identity. This audit changes no
 package, tag, NuGet state, dependency pin, ProtocolLab deployment, controller
 job, or runtime policy behavior.
+
+### Release-Candidate Package Conformance Guard
+
+The remediation path now has a permanent pre-publish correctness guard. The
+NuGet publish workflow packs the candidate, checks out the private ProtocolLab
+internal fixture through a dedicated read-only credential, and runs
+`Test-IncursaQuicPackageConformance.ps1` before any NuGet push. The helper
+rejects `PROTOCOL_LAB_INCURSA_QUIC_SOURCE_ROOT`, restores the exact candidate
+from an isolated local feed, verifies that the Raw QUIC server resolves that
+package and consumes the matching `Incursa.Quic.dll`, then retains its TRX and
+JSON summary. It runs no BenchmarkDotNet or ProtocolLab performance campaign.
+
+The guard was proven against the retained local candidate
+`Incursa.Quic` `1.0.8-rc.20260723.1`: package SHA-256
+`5199e4c041e3b691c6dbbc40a2608d9237439df8ed794d46d9a4fc8986560bee`,
+package/server assembly SHA-256
+`6226e213776c67987eaf7ed75237939794434c02f642afa06848b9efdf1edcbf`,
+and source-root absence all matched. Its exact deterministic download and
+slow-reader filter passed 5 of 5 with zero failures; the TRX at
+`.artifacts/adaptive-runtime/release-gate-candidate-20260723/package-backed-raw-quic-conformance.trx`
+has SHA-256
+`727d18b6e5e0956fdab9cdbf77056ecec5dca438435591584251e293a46ce7fb`.
+An attempted run with a populated source-root override failed before restore or
+build, as required. This proves the pre-publish gate implementation; it does
+not publish a package, clear the retained `1.0.6` failure, update an internal
+pin, clear PR #10, authorize a controller job, or enable policy behavior.
