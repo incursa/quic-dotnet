@@ -2360,3 +2360,73 @@ ownership/copy inventory, `buffer_copy_coalescing`, and separately reviewed
 conservative-only `adaptive_backpressure`. Large Stage 1 campaigns and offline
 ML analysis remain deferred until that architecture work is complete.
 `active_internal` and production activation remain unauthorized.
+
+## Stage 2 Actor-Service Observation Foundation
+
+Local commit `0d1fe4fa` adds the first behavior-neutral Stage 2 actor and
+memory foundation. It does not add a forceable `actor_work_quantum` value,
+change shard scheduling, or authorize active behavior.
+
+The implemented slice contains:
+
+- disabled and observe-only connection configuration with an exact sink pair;
+- one immutable versioned record after an observed complete shard dispatch;
+- connection-local monotonic service sequence, shard/wake identity, closed
+  work kind, enqueue delay, complete transition-and-effect service duration,
+  pending-work count, effect and existing follow-on counts, lifecycle
+  disposition, and explicit validity flags;
+- a fixed-field bounded epoch accumulator with saturating totals, maxima,
+  integer EWMAs, closed-kind and disposition counts, wake changes, and reset;
+- guarded evidence publication so a rejecting or throwing sink cannot affect
+  progress or ownership;
+- observation and epoch JSON schemas plus semantic validation; and
+- `REQ-QUIC-CRT-0181`, `ARC-QUIC-CRT-0067`,
+  `WI-QUIC-CRT-0068`, and `VER-QUIC-CRT-0069` trace homes.
+
+The exact focused verification commands were:
+
+```powershell
+dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj `
+  -c Release --no-restore
+
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj `
+  -c Release --no-build `
+  --filter "FullyQualifiedName~REQ_QUIC_CRT_0181|FullyQualifiedName~MetricsTests|FullyQualifiedName~QuicConnectionRuntimeShard|FullyQualifiedName~REQ_QUIC_CRT_0050|FullyQualifiedName~REQ_QUIC_CRT_0054|FullyQualifiedName~REQ_QUIC_CRT_0163"
+```
+
+The final Release build passed with zero warnings and zero errors. The focused
+actor, shard, metrics, receive-credit, flow-control, ownership, and lifecycle
+band passed 59 of 59 tests with zero failures and zero skips. Five of those
+tests are the `REQ-QUIC-CRT-0181` requirement home and cover actual shard
+emission, exact configuration, throwing-sink neutrality, fixed-field
+aggregation/reset, and schema plus semantic validation.
+
+The following incomplete or failing checks remain preserved:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| First Stage 2 Release build | Two S109 analyzer errors for the EWMA shift literal | `diagnostic_only`; replaced by the named `EwmaShift` constant, then rebuilt cleanly. |
+| `Validate-SpecTraceJson.ps1 -Profiles core` | 2,692 schema and unresolved-reference errors across the existing repository-wide QUIC corpus | `diagnostic_only`; this is an unrelated dirty-baseline gate rather than Stage 2 evidence. The four new trace artifacts passed focused model validation and the Stage 2 requirement home validates both new evidence schemas. No unrelated SpecTrace artifact was changed to hide the baseline. |
+
+The actor record deliberately keeps
+`MissingRunnableConnectionCount`,
+`MissingOldestShardItemAge`,
+`MissingDeadlineLateness`, and
+`UsefulWorkUnitsUndefined`. Queue delay is not relabeled as oldest-item age,
+pending inbox depth is not relabeled as runnable-connection count, and an
+event is not relabeled as a reviewed scalar work unit. Complete fairness
+outcomes, cooperative yield and exactly-once repost, a post-service permanent
+epoch export boundary, `actor_work_quantum`, `buffer_copy_coalescing`, and
+`adaptive_backpressure` remain open.
+
+No campaign axis varied in this checkpoint. Receive-credit publication and
+all four Stage 1 axes remain applied as `legacy_current`; actor work remains
+the unchanged legacy drain. Stage 2 unified-schema row count is zero, with
+zero new inclusions or exclusions. No BenchmarkDotNet run, local performance
+campaign, ProtocolLab deployment, dataset transform, ML analysis, CI run, or
+push occurred. The stopped 55,658-row send-turn-only transform remains
+`diagnostic_incomplete`, append-only, and untouched.
+
+The next authorized slice is the Stage 2 buffer ownership/copy inventory and
+the exact post-service evidence boundary needed before designing a forceable
+actor quantum. Active behavior and production activation remain unauthorized.
