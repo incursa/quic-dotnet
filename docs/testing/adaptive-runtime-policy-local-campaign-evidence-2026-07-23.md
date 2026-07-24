@@ -3326,3 +3326,54 @@ fairness observations, exact remaining-work signals, complete-shard coverage,
 and reviewed cooperative yield sites. The repost gate cannot be wired until
 timer, recovery, cancellation, disposal, terminal, and buffer-ownership
 priority tests exist. Active behavior remains unauthorized.
+
+## Stage 2 Actor Timer-Lateness And Service-Cadence Evidence
+
+Local commit
+`889f498d08dcf1508f3dba5b8d86f4ffdd2905b4` advances actor observation and
+epoch contracts to v2 and unified evidence, raw rows, validation, export, and
+manifest contracts to v3 without changing shard scheduling or any applied
+policy.
+
+Deadline-scheduler timer work now retains its exact scheduled due tick in a
+storage slot that is inactive for ordinary event work. The shard work item
+remains 144 bytes. At actor service start, the observation records
+nonnegative deadline lateness. A timer without scheduler provenance remains
+explicitly missing; non-timer work treats lateness as not applicable. Invalid
+time-domain state is explicit and never changes timer order or priority.
+
+Each observed connection also retains one previous service-start timestamp.
+After the first observation, the next dispatch records the connection-local
+inter-service gap. This is only a service-cadence precursor: it is not
+continuous runnable time, cross-connection coverage, or starvation. Actor
+epoch v2 aggregates gap and lateness counts, totals, maxima, and integer EWMAs
+with saturating arithmetic. Retained actor v1 and unified v1/v2 schemas remain
+immutable.
+
+The focused verification sequence is:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| Final test-project Release build | Zero warnings and zero errors in 64.22 seconds | `accepted` focused build evidence. |
+| Actor v2, unified v3, work-item layout, repost foundation, shard, deadline scheduler, and permanent-package correctness band | 74 passed, zero failed, zero skipped in 16 seconds | `accepted`; includes exact scheduled lateness, first and later service-gap validity, bounded aggregation, unified raw export, 144-byte layout, deadline ordering, shard behavior, and current host contract identities. |
+| Final actor and unified requirement rerun after numeric/string validity parsing was hardened | 15 passed, zero failed, zero skipped in four seconds | `accepted`; the actor validator accepts both schema-legal validity encodings and still rejects contradictory gap or deadline state. |
+| Raw QUIC host Release build | Zero warnings and zero errors in 5.51 seconds | `accepted`; actor epoch v2 and unified raw v3 compile in the permanent evidence host. |
+| New-schema and PowerShell parse validation | Five new actor, unified, raw, and manifest schemas parsed successfully; all four edited evidence scripts had zero PowerShell AST parse errors | `accepted` focused contract syntax evidence. |
+| Focused SpecTrace model validation | `SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY`, `ARC-QUIC-CRT-0067`, `WI-QUIC-CRT-0068`, and `VER-QUIC-CRT-0069` each returned `True` | `accepted` focused trace evidence. |
+
+No campaign axis varied and no new raw, unified, normalized, curated, split,
+or analysis rows were generated. Receive credit, all four Stage 1 axes,
+`actor_work_quantum`, `ready_stream_fairness`,
+`buffer_copy_coalescing`, and `adaptive_backpressure` remain applied as
+`legacy_current` outside earlier explicitly retained Stage 1 smoke
+treatments. Dataset inclusion and exclusion counts are unchanged. No
+BenchmarkDotNet run, performance claim, large campaign, ProtocolLab
+deployment, dataset transform, ML analysis, CI run, push, or active behavior
+occurred.
+
+Timer lateness and connection-local service cadence are now available in
+every observed actor epoch. Honest runnable-state, complete-shard coverage,
+cross-connection fairness outcomes, exact remaining work, and reviewed
+cooperative yield sites remain the next actor gates. Inter-service gap cannot
+be used as a runnable or starvation label. Active behavior remains
+unauthorized.
