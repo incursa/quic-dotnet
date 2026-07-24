@@ -773,3 +773,54 @@ cleanup evidence, and batch-coordinate output. The old and new diagnostic
 rows remain separate and append-only. No policy candidate, shadow rule,
 threshold, or active behavior is enabled; all adjacent axes remain
 `legacy_current`.
+
+### Raw QUIC Download Conformance: Package Baseline Versus Current Source
+
+The `protocol-lab-internal` Raw QUIC adapter conformance fixture initially ran
+without `PROTOCOL_LAB_INCURSA_QUIC_SOURCE_ROOT`. Its server therefore resolved
+the declared `Incursa.Quic` package version `1.0.6`, rather than the current
+source tree. The focused package-baseline command was:
+
+```powershell
+dotnet test tests/Incursa.ProtocolLab.Tests/Incursa.ProtocolLab.Tests.csproj -c Debug --no-build --no-restore --disable-build-servers --nologo --filter "FullyQualifiedName~IncursaRawQuicAdapterConformanceTests.Adapter_writes_exact_deterministic_download_payload&DisplayName~stream-download.1mb" --logger "console;verbosity=normal"
+```
+
+It retained one `failed_correctness` package-baseline row: the
+`quic.transport.stream-download.1mb` server sent its first 65,536 bytes, then
+its next write failed with `NotSupportedException: Writes that wait for
+additional flow-control credit are not supported by this slice.` The client
+then received the expected idle timeout. The complete server stderr is
+preserved at
+`C:\Users\Samuel\AppData\Local\Temp\protocol-lab-raw-quic-download-debug-20260723\server.stderr-package-1.0.6.log`
+with SHA-256
+`4bb2adb42ed51c895100879c7efcc67903d2084ada89e8ded2ab16e8a0bc3d56`.
+This is retained negative package evidence only; it is not a result for the
+current quic-dotnet commit and must not be silently combined with source-backed
+results.
+
+The same fixture was then run with
+`PROTOCOL_LAB_INCURSA_QUIC_SOURCE_ROOT=C:\shared\src\incursa\quic-dotnet`
+at quic-dotnet commit `cb276ec5e7ee46ea3f0c3c39e347579025a05aa9`. The
+adapter rebuilt `Incursa.Quic` from that source tree and rebuilt
+`IncursaRawQuicServer` successfully with zero warnings and errors. The
+source-backed correctness command was:
+
+```powershell
+dotnet test tests/Incursa.ProtocolLab.Tests/Incursa.ProtocolLab.Tests.csproj -c Debug --no-build --no-restore --disable-build-servers --nologo --filter "FullyQualifiedName~IncursaRawQuicAdapterConformanceTests.Adapter_writes_exact_deterministic_download_payload|FullyQualifiedName~IncursaRawQuicAdapterConformanceTests.Adapter_echoes_slow_reader_stream_work_concurrently" --logger "console;verbosity=normal"
+```
+
+It passed 5/5 in 41.6380 seconds: exact deterministic download completion for
+1 MiB, 4 MiB, 16 MiB with 1 KiB server writes, and 16 MiB with 64 KiB server
+writes, plus concurrent slow-reader echo. The 1 MiB server summary records
+`readBytes=16`, `sentBytes=1048576`, `reachedEof=True`, and
+`completedWrites=True`. The retained source-backed test log is
+`C:\Users\Samuel\AppData\Local\Temp\protocol-lab-raw-quic-download-debug-20260723\stdout-source-backed-download-and-slow-reader.log`
+with SHA-256
+`316e6745f137ad56684b174d2a1eb909f79fd1269064962f62ebca9007f24b1d`.
+
+This clears the current-source local receive-credit/progress checkpoint only
+for these deterministic Raw QUIC conformance shapes. It does not clear the
+independent-host c128 handshake row, contribute adaptive-policy epochs, or
+authorize a Stage 1 axis. The active measurement-only axis remains
+`application_send_turn_planning=legacy_current`, and all adjacent axes remain
+`legacy_current`.
