@@ -120,9 +120,10 @@ This is not yet a selectable axis. `forcedValue` and
 `shadowRecommendation` are null; `selectedValue` and `appliedValue` are both
 `legacy_current`; `selectionSource` is `legacy_current`; and fallback is
 false. Terminal-release correlation, retained age, and pool outstanding state
-remain explicit missing flags. The v2 schema defines retransmission-clone and
-receive-segment values; separate mechanism tests establish actual producer
-coverage.
+remain explicit missing flags. The v2 runtime producers record owned
+path-migration retransmission clones and both new and capacity-reusing receive
+segment copies through a connection-local observer. Producer or sink failures
+remain diagnostic-only and cannot change ownership or progress.
 
 The fixed-field accumulator retains closed path and operation counts plus
 logical, copied, requested-capacity, and retained-capacity totals and maxima.

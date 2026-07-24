@@ -150,20 +150,17 @@ and release chain.
 
 Before a forceable value is implemented:
 
-1. extend the implemented connection-local copy-operation counters from the
-   write-request, oversized raw queue, formatted payload, combined-send, and
-   sent-retention points to retransmission clones and receive segments;
-2. keep sent-packet storage and packet-number-span scans diagnostic-only unless
+1. keep sent-packet storage and packet-number-span scans diagnostic-only unless
    a separately reviewed controller input justifies maintained bounded state;
-3. define exact transfer and terminal-release correlation without retaining
+2. define exact transfer and terminal-release correlation without retaining
    object identity in the dataset;
-4. add ownership tests for admission failure, partial construction, blocked
+3. add ownership tests for admission failure, partial construction, blocked
    send, cancellation, disposal, reset, FIN, loss, retransmission, shutdown,
    and sink failure;
-5. add permanent export only after the record can join to a completed
+4. add permanent export only after the record can join to a completed
    post-service epoch without shifting attribution;
-6. run manual or nightly mechanism-cost and allocation checks outside CI; and
-7. review application-visible and memory-pressure behavior before designing
+5. run manual or nightly mechanism-cost and allocation checks outside CI; and
+6. review application-visible and memory-pressure behavior before designing
    conservative-only `adaptive_backpressure`.
 
 No large campaign, dataset transform, offline model, shadow rule, or active

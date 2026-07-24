@@ -2565,3 +2565,57 @@ with retransmission-clone and receive-segment copy observation. The
 post-service export boundary, a distinct `memory_conservative` value, forcing,
 and shadow selection remain open. Active behavior and production activation
 remain unauthorized.
+
+## Stage 2 Buffer Observation V2 And Producer Coverage
+
+Local contract commit
+`a239a350009ddbe438d6085ec5becc460b604ab9` preserves the two v1
+buffer schemas unchanged and adds:
+
+- `quic-buffer-copy-observation-v2`;
+- `quic-buffer-copy-epoch-v2`;
+- closed `RetransmissionClone` and `ReceiveSegment` paths;
+- closed `Clone` operation;
+- exact `RetransmissionClone` and `ReceiveSegmentInsertion` boundaries; and
+- fixed retransmission-clone, receive-segment, and clone epoch counts.
+
+Local implementation commit
+`66943c96bc1eba7de1397638380989e2ad47780c` installs one
+configure-once connection-local operation observer behind the existing
+observe-only sink. The path-migration retention clone reports only when it
+actually creates a new owned plaintext buffer. Receive bookkeeping reports
+both a new segment copy and a contiguous copy that reuses retained segment
+capacity. Both producers guard the observer, and the runtime separately
+guards the sink, so evidence failure cannot interrupt recovery, receive
+progress, or ownership.
+
+The retained diagnostic and verification sequence is:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| v2 contract test-project Release build | Zero warnings and zero errors in 63.00 seconds | `accepted`; the v1 schemas had no diff and the three revised trace artifacts passed direct model validation. |
+| v2 contract `REQ-QUIC-CRT-0182` | Eight passed, zero failed, zero skipped in one second | `accepted`; closed path, operation, fixed-count, schema, and semantic validation evidence. |
+| First producer test-project Release build | CS1739 because the new test used `streamId` instead of the existing `streamIdValue` parameter | `diagnostic_only`; test call-site mismatch, corrected before any test evidence was accepted. |
+| Producer test-project Release rebuild | Zero warnings and zero errors in 44.44 seconds | `accepted` build evidence after the call-site correction. |
+| First producer ownership band | One failure and 53 passes because the receive fixture configured the local rather than peer bidirectional receive limit | `diagnostic_only`; fixture-domain error retained, with no runtime or policy failure inferred. |
+| Second producer ownership band | One failure and 53 passes because the 1,000-byte first segment was below the existing 1,024-byte coalescing threshold and correctly allocated a second segment | `diagnostic_only`; the fixture was moved to the exact existing threshold. No threshold was tuned. |
+| Third producer ownership band | One failure and 53 passes because the assertion still expected 1,000 copied bytes after the fixture moved to 1,024 | `diagnostic_only`; stale test expectation corrected without changing runtime behavior. |
+| Final producer ownership band | 54 passed, zero failed, zero skipped in one second | `accepted`; covers v2 schema, receive allocation/reuse, receive release, path-migration clone identity, clone release, observer failure neutrality, send ownership, and retransmission behavior. |
+| Final complete Release build | Zero warnings and zero errors in 59.37 seconds | `accepted` build evidence for the producer checkpoint. |
+| Stage 1 requirement homes plus buffer, receive, send-runtime, retransmission, and application-send queue suites | 212 passed, zero failed, zero skipped in 14 seconds | `accepted` adjacent-axis and ownership correctness evidence. |
+
+Terminal-release correlation, copy-scope retained age, pool-outstanding state,
+and exact permanent post-service export remain explicit missing fields. This
+checkpoint adds no policy value, force seam, shadow recommendation, selector,
+threshold, or active behavior. No campaign axis varied. Receive credit, all
+four Stage 1 axes, and both Stage 2 candidates remain applied as
+`legacy_current`. Stage 2 unified-schema row count remains zero, with zero new
+dataset inclusions or exclusions.
+
+No BenchmarkDotNet run, local performance campaign, ProtocolLab deployment,
+dataset transform, ML analysis, CI run, or push occurred. The stopped
+55,658-row send-turn-only transform remains `diagnostic_incomplete`,
+append-only, and untouched. The next bounded buffer slice is exact
+terminal-release correlation; the post-service epoch export remains the next
+shared evidence-boundary design. Active behavior and production activation
+remain unauthorized.
