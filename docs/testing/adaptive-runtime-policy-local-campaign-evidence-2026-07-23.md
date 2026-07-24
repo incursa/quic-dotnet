@@ -1211,3 +1211,188 @@ classification. The next gate is an executed permanent local shadow
 correctness/evidence cell, followed by disabled-versus-observe-only neutrality
 and the already-planned manual or nightly BenchmarkDotNet mechanism checks.
 No multi-host or active-policy work is authorized by this checkpoint.
+
+## Application-Send Turn Executed Shadow And Validation Correction
+
+The first two executed permanent-runner shadow cells remain append-only under:
+
+- `.artifacts/adaptive-runtime/adaptive-send-turn-shadow-local-20260723-r001/`;
+  and
+- `.artifacts/adaptive-runtime/adaptive-send-turn-shadow-local-20260723-r002-diagnostic/`.
+
+Both executed exact committed source `a4fb7f5c`. The target benchmark SHA-256
+was
+`ed1a1ffba26f3d4ca9ae50501fe2beba200a1797b9f35ed08e059584ac68a910`;
+the runtime SHA-256 was
+`f22377bd10cd3e470393a5f458de72e6c00716479a9e14f42d713edf26f0de88`.
+The retained cell manifests contain the exact inner ProtocolLab commands.
+Both were same-host local correctness/evidence cells, not independent-host
+performance claims.
+
+The `r001` cell captured 5,754 raw turns from two connection keys. Every turn
+recommended `conservative` for `missing_signal`. The raw stream SHA-256 is
+`a44961c996cf1528c5323344615115f3d891df94736531f896cfaed4c441466a`.
+The exporter completed its 5,754 row files and checksum inventory, but the
+runner failed while finalizing a single distinct shadow-policy value because
+PowerShell unwrapped that one-element collection to a scalar. It emitted no
+`local-result.json` and no evidence-validation result. This cell is retained
+unchanged as `diagnostic_only`; it is not admitted to normalized or curated
+data. Commit `98941aad` fixes that runner finalization defect using an explicit
+string array and adds a permanent contract assertion.
+
+The bounded `r002` diagnostic cell used one connection, sixteen streams,
+64-KiB per stream, zero warmup seconds, one measurement second, and
+`legacy_current` applied in shadow mode. Requested and effective workload
+identity matched. It retained 6,328 raw turns and 6,328 unique epoch rows across
+two connection keys. The schema-valid local result is `neutral_local`; target
+and generator health are both `limited` because the topology is `same_host`.
+It records 46 transitions, no missing, stale, contradictory, or out-of-domain
+epochs, 2,208 `legacy_selector` reasons, and 4,120
+`arithmetic_saturated` reasons. The raw stream SHA-256 is
+`49efc480584ba2fe823025cbc129613e55abc8cadbd4cdfc3650f95ae13d567c`.
+The local-result SHA-256 is
+`1acbcd34b50ab4872196dea6d2ca7523c4f2d49e5d8bc525d569becd18e500cc`.
+
+The originally retained `evidence-validation.json` remains invalid with 42
+failures. Those failures exposed a validator defect: it treated every
+legitimate one-microsecond interval as the exporter's terminal sentinel.
+Commit `98941aad` instead precomputes the maximum epoch index for each exact
+run/sample/connection/exporter/version tuple, requires
+`terminal_partial_epoch` only on that row, and rejects the flag on any earlier
+row. The original invalid validation file remains at SHA-256
+`37ce833adf231657a23b03839da864192617196ae3e8aad20a628058e3985a1e`.
+The append-only correction is
+`evidence-validation.correction-98941aad.json`, SHA-256
+`b37d39a456b0702b810bde6c75f4c92040536830730e7e1b7ca437b11a8445f0`.
+It is valid with 1 local result, 6,328 rows, 6,328 unique rows, 1 checksum
+inventory, 11 unique artifact hashes, and zero failures. The original
+validation was not overwritten or relabeled.
+
+The single sample's descriptive outcomes were 1,462,383.419 bytes per second,
+22.314 operations per second, 662.392 ms p50, 736.322 ms p95, 161,769,248
+buffer-pool rented bytes, and 475,136 peak outstanding buffer-pool bytes.
+Managed allocation, peak retained memory, and true stream fairness remain
+unavailable. These are one sample's same-host descriptive outcomes, not an
+accepted performance claim and not 6,328 independent measurements.
+
+The Release test build passed with zero warnings and zero errors. The focused
+requirement homes for `REQ-QUIC-CRT-0169`, `0172`, `0174`, and `0176` passed
+54 of 54 listed tests after the validation correction and later analysis
+adapter. No CI workflow was monitored or changed, and no performance test ran
+in CI.
+
+## Application-Send Turn Normalized Dataset And Offline Analysis Checkpoint
+
+Commit `e289bb10` admits `application_send_turn_planning` as a distinct closed
+normalized-dataset axis. Commit `a092dafd` adds the closed `modelFeatures`
+block containing only bounded pre-decision runtime observations. Workload,
+scenario, payload, requested concurrency, peer, URL, and application identity
+remain outside that production-eligible feature block.
+
+The first materialization attempt at
+`.artifacts/adaptive-runtime/datasets/send-turn-shadow-r002-98941aad/`
+correctly failed because the normalized schema still required
+`receive_credit_publication`. Its catalog remains retained at SHA-256
+`4406580afa069baa2e53afa5146c4485862eb97d49a30a83cfcc005813258f35`;
+the attempt is `diagnostic_only` and was not silently completed.
+
+The first completed append-only materialization is
+`.artifacts/adaptive-runtime/datasets/send-turn-shadow-r002-e289bb10/`.
+Its four artifact hashes are:
+
+```text
+catalog     4fb01bb5da59c8ec7cff2687efea3d8abf0829504fd350028b15d3da04449895
+normalized  d7dcd9858fb774fa405745c6f800a82870c645fdee61e5e35083207d677afb0c
+curated     a69187f069aea72ac04843298fe996b08db4887f785bb610db31f819450f2730
+split       6c9541b7cf92846734ec3876561cb06fdec15f69a68e090635bbd3a12a7c9c36
+```
+
+It joined all 6,328 rows with zero unmatched results and zero unmatched epochs.
+The curated layer includes 2,206 rows and preserves 4,122 excluded rows:
+4,120 carry `observation_saturated`, 41 carry
+`instrumentation_mismatch`, and 2 carry `terminal_partial_epoch`; flags can
+overlap. No retained-negative row is present. All 6,328 split assignments are
+`holdout_blocked`; train, validation, and test each contain zero rows because
+the source has only one host fingerprint and one workload family.
+
+The model-feature materialization is
+`.artifacts/adaptive-runtime/datasets/send-turn-shadow-r002-a092dafd/`.
+Its hashes are:
+
+```text
+catalog     32bb5ea175b0492b4ba7a960d4ab7830b36add914b6141221dc5b15cc3b06daf
+normalized  c99b7777add81fc5f00e0b3b5c8e2cefbf27977f7ff0e47b5c98c35f2da5ba8e
+curated     67e6baa2569f963027d52d70f79ba7361e5af54775b24486adc128b95cb046e4
+split       916ccffeb7f8f6d3c788341ec7983b34a5976e1d50576d647b0e24ead2b5bd9f
+```
+
+It preserves the same 6,328 joined, 2,206 included, 4,122 excluded, zero
+unmatched, and 6,328 holdout-blocked counts. It is suitable for descriptive
+offline inspection but not model training or a policy-effect claim.
+
+Local commit `56704568` adds the versioned application-send analysis adapter
+and schema. The adapter validates each source schema, the exact
+normalized-to-curated-to-split IDs and checksums, complete unique row-ID
+coverage, closed send-turn policy values, source summary counts, and prohibited
+production inputs. It keeps sample outcomes separate from epoch feature
+distributions and cannot authorize active behavior.
+
+The exact analysis command was:
+
+```powershell
+pwsh -NoProfile -File eng/adaptive-runtime/Measure-AdaptiveRuntimeApplicationSendTurnDataset.ps1 `
+  -NormalizedDatasetPath .artifacts/adaptive-runtime/datasets/send-turn-shadow-r002-a092dafd/normalized/normalized-dataset.json `
+  -CuratedManifestPath .artifacts/adaptive-runtime/datasets/send-turn-shadow-r002-a092dafd/curated/curated-manifest.json `
+  -SplitManifestPath .artifacts/adaptive-runtime/datasets/send-turn-shadow-r002-a092dafd/split/split-manifest.json `
+  -OutputPath .artifacts/adaptive-runtime/analysis/send-turn-shadow-r002-56704568/application-send-turn-analysis.json `
+  -AnalysisId application-send-turn-shadow-r002-analysis-v1
+```
+
+The report SHA-256 is
+`88289cdc29011ebe3f8af498f659759623d4c1532f0b67b51c46a7fef8273801`
+and its exact code commit is
+`567045684c3546bb874cdeb4ac4e089bc912207f`. The leakage audit passed
+with zero forbidden features found. It reports one included sample, one host
+fingerprint, one workload family, 2,206 included epochs, and 4,122 excluded
+epochs. Selected feature summaries over included rows are:
+
+| Feature | Minimum | p50 | p95 | Maximum |
+| --- | ---: | ---: | ---: | ---: |
+| queued application writes | 1 | 4 | 12 | 14 |
+| outbound backlog bytes | 9 | 22,069 | 145,700 | 165,978 |
+| distinct queued streams | 1 | 4 | 12 | 12 |
+| queue-delay EWMA microseconds | 8,400 | 66,794 | 100,591 | 109,327 |
+| actor-service EWMA microseconds | 152 | 533 | 1,278 | 6,897 |
+| queue-to-service ratio Q16 | 429,116 | 7,716,590 | 22,535,393 | 41,214,819 |
+| congestion window bytes | 6,000 | 118,589 | 161,909 | 166,494 |
+| bytes in flight | 167 | 98,681 | 157,258 | 164,834 |
+| retained send bytes | 2,048 | 32,768 | 182,272 | 198,656 |
+
+`oldestQueuedSendAgeMicros` is missing for all 2,206 included rows and remains
+null rather than being imputed. All included rows have zero missing and stale
+masks. The report status is `holdout_blocked`, the candidate rule is null, and
+`activeInternalAuthorized` is false. This is the honest result of insufficient
+group diversity, not a ProtocolLab availability blocker.
+
+The analysis checkpoint verification commands were:
+
+```powershell
+dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --nologo -m:1 -nodeReuse:false -p:UseSharedCompilation=false -p:BuildProjectReferences=false
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build --no-restore --nologo -m:1 -nodeReuse:false -p:UseSharedCompilation=false -p:BuildProjectReferences=false --filter "FullyQualifiedName~REQ_QUIC_CRT_0169|FullyQualifiedName~REQ_QUIC_CRT_0172|FullyQualifiedName~REQ_QUIC_CRT_0174|FullyQualifiedName~REQ_QUIC_CRT_0176" --logger "console;verbosity=normal"
+```
+
+The build passed with zero warnings and zero errors. All 54 focused tests
+passed. `ARC-QUIC-CRT-0065` and `VER-QUIC-CRT-0067` each passed
+`model/model.schema.json` independently. The repository-wide SpecTrace core
+baseline remains the previously retained 2,692-error `diagnostic_only`
+condition; this slice did not hide or repair unrelated corpus failures.
+
+At this checkpoint the branch is local-only and six commits ahead of
+`origin/main`; no push was attempted. BenchmarkDotNet has not run in this
+slice. No multi-host ProtocolLab cell has run yet, but the known lab is not
+classified as unavailable. The next current-axis gate is the permanent local
+disabled-versus-observe-only neutrality comparison, followed by manual or
+nightly BenchmarkDotNet mechanism checks and independently hosted
+counterfactual cells. `application_send_turn_planning` remains applied as
+`legacy_current`, every adjacent axis remains `legacy_current`, and the next
+portfolio axis remains unauthorized.
