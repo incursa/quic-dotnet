@@ -159,11 +159,13 @@
           "eng/adaptive-runtime/Test-AdaptiveRuntimeBufferLifetimeEvidence.ps1",
           "schemas/adaptive-runtime-buffer-copy-raw-v2.schema.json",
           "schemas/adaptive-runtime-buffer-release-observation-v1.schema.json",
-          "schemas/adaptive-runtime-buffer-release-raw-v1.schema.json"
+          "schemas/adaptive-runtime-buffer-release-observation-v2.schema.json",
+          "schemas/adaptive-runtime-buffer-release-raw-v1.schema.json",
+          "schemas/adaptive-runtime-buffer-release-raw-v2.schema.json"
         ]
       },
       "notes": [
-        "Receive-segment ownership is the first implementation slice; remaining owner paths stay explicit and non-forceable until separately checkpointed.",
+        "Receive-segment and flow-control retry request ownership are the first implementation slices; remaining owner paths stay explicit and non-forceable until separately checkpointed.",
         "Ownership transfer is not terminal release and cannot create a duplicate completion outcome."
       ]
     }

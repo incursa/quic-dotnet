@@ -672,6 +672,255 @@ public sealed class REQ_QUIC_CRT_0182
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public async Task ApplicationWriteRequestOwnerReportsReplacementAndCompletion()
+    {
+        RecordingSink sink = new();
+        await using QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState());
+        runtime.ConfigureAdaptiveRuntimePolicy(
+            new QuicServerConnectionOptions
+            {
+                BufferCopyObservationMode =
+                    QuicBufferCopyObservationMode.ObserveOnly,
+                BufferCopyEvidenceSink = sink,
+            });
+        QuicConnectionRuntime.StreamActionRequestCompletionSource
+            completion = new(runtime);
+        completion.Prepare();
+        completion.ConfigureWrite(
+            QuicConnectionStreamActionKind.Write,
+            streamId: 0,
+            streamDataLength: 16);
+
+        byte[] first = Enumerable.Repeat((byte)0x61, 16).ToArray();
+        Assert.False(completion.EnsureOwnedStreamData(
+            first,
+            ReadOnlySpan<byte>.Empty));
+        TrackApplicationWriteRequestLifetime(
+            runtime,
+            completion,
+            copiedBytes: first.Length,
+            sourceSegmentCount: 1,
+            reusedCapacity: false,
+            joinOperationSequence: 1);
+
+        int replacementLength =
+            checked(completion.OwnedStreamDataCapacity + 1);
+        byte[] replacement =
+            Enumerable.Repeat((byte)0x62, replacementLength).ToArray();
+        Assert.False(completion.EnsureOwnedStreamData(
+            replacement,
+            ReadOnlySpan<byte>.Empty));
+        TrackApplicationWriteRequestLifetime(
+            runtime,
+            completion,
+            copiedBytes: replacement.Length,
+            sourceSegmentCount: 1,
+            reusedCapacity: false,
+            joinOperationSequence: 1);
+
+        ValueTask<bool> task = completion.Task;
+        completion.TrySetResult();
+        Assert.True(await task);
+
+        Assert.False(completion.HasOwnedStreamData);
+        Assert.Equal(2, sink.Observations.Count);
+        Assert.Equal(2, sink.Releases.Count);
+        Assert.Equal(
+            QuicBufferReleaseReason.Replaced,
+            sink.Releases[0].Reason);
+        Assert.Equal(
+            QuicBufferReleaseReason.Completed,
+            sink.Releases[1].Reason);
+        for (int index = 0; index < sink.Releases.Count; index++)
+        {
+            Assert.Equal(
+                sink.Observations[index].OperationSequence,
+                sink.Releases[index].OperationSequence);
+            Assert.Equal(
+                QuicBufferCopyPath.ApplicationWriteRequest,
+                sink.Releases[index].Path);
+            Assert.Equal(
+                sink.Observations[index].RetainedCapacityBytes,
+                sink.Releases[index].ReleasedCapacityBytes);
+            Assert.Equal(
+                QuicBufferReleaseValidity.None,
+                sink.Releases[index].Validity);
+        }
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ApplicationWriteRequestCancellationReportsRelease()
+    {
+        RecordingSink sink = new();
+        await using QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState());
+        runtime.ConfigureAdaptiveRuntimePolicy(
+            new QuicServerConnectionOptions
+            {
+                BufferCopyObservationMode =
+                    QuicBufferCopyObservationMode.ObserveOnly,
+                BufferCopyEvidenceSink = sink,
+            });
+        QuicConnectionRuntime.StreamActionRequestCompletionSource
+            completion = new(runtime);
+        completion.Prepare();
+        completion.ConfigureWrite(
+            QuicConnectionStreamActionKind.Write,
+            streamId: 0,
+            streamDataLength: 32);
+        byte[] data = Enumerable.Repeat((byte)0x71, 32).ToArray();
+        Assert.False(completion.EnsureOwnedStreamData(
+            data,
+            ReadOnlySpan<byte>.Empty));
+        TrackApplicationWriteRequestLifetime(
+            runtime,
+            completion,
+            copiedBytes: data.Length,
+            sourceSegmentCount: 1,
+            reusedCapacity: false,
+            joinOperationSequence: 2);
+
+        using CancellationTokenSource cancellation = new();
+        cancellation.Cancel();
+        ValueTask<bool> task = completion.Task;
+        completion.TrySetCanceled(cancellation.Token);
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => task.AsTask());
+
+        QuicBufferReleaseObservation release =
+            Assert.Single(sink.Releases);
+        Assert.Equal(
+            Assert.Single(sink.Observations).OperationSequence,
+            release.OperationSequence);
+        Assert.Equal(
+            QuicBufferReleaseReason.Canceled,
+            release.Reason);
+        Assert.Equal(
+            QuicBufferReleaseValidity.None,
+            release.Validity);
+        Assert.False(completion.HasOwnedStreamData);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ApplicationWriteRequestCapacityReuseKeepsOriginalToken()
+    {
+        RecordingSink sink = new();
+        using QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState());
+        runtime.ConfigureAdaptiveRuntimePolicy(
+            new QuicServerConnectionOptions
+            {
+                BufferCopyObservationMode =
+                    QuicBufferCopyObservationMode.ObserveOnly,
+                BufferCopyEvidenceSink = sink,
+            });
+        QuicConnectionRuntime.StreamActionRequestCompletionSource
+            completion = new(runtime);
+        completion.Prepare();
+        byte[] first = Enumerable.Repeat((byte)0x31, 64).ToArray();
+        Assert.False(completion.EnsureOwnedStreamData(
+            first,
+            ReadOnlySpan<byte>.Empty));
+        TrackApplicationWriteRequestLifetime(
+            runtime,
+            completion,
+            copiedBytes: first.Length,
+            sourceSegmentCount: 1,
+            reusedCapacity: false,
+            joinOperationSequence: 3);
+
+        byte[] second = Enumerable.Repeat((byte)0x32, 32).ToArray();
+        Assert.True(completion.EnsureOwnedStreamData(
+            second,
+            ReadOnlySpan<byte>.Empty));
+        TrackApplicationWriteRequestLifetime(
+            runtime,
+            completion,
+            copiedBytes: second.Length,
+            sourceSegmentCount: 1,
+            reusedCapacity: true,
+            joinOperationSequence: 3);
+        completion.ReleaseOwnedStreamData(
+            QuicBufferReleaseReason.CopiedToNextOwner);
+
+        Assert.Equal(2, sink.Observations.Count);
+        Assert.True(sink.Observations[1].Validity.HasFlag(
+            QuicBufferCopyValidity.MissingTerminalReleaseCorrelation));
+        QuicBufferReleaseObservation release =
+            Assert.Single(sink.Releases);
+        Assert.Equal(
+            sink.Observations[0].OperationSequence,
+            release.OperationSequence);
+        Assert.Equal(
+            QuicBufferReleaseReason.CopiedToNextOwner,
+            release.Reason);
+        Assert.Equal(
+            QuicBufferReleaseValidity.None,
+            release.Validity);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void BufferReleaseReportsContradictoryAndOutOfDomainState()
+    {
+        RecordingSink sink = new();
+        using QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState());
+        runtime.ConfigureAdaptiveRuntimePolicy(
+            new QuicServerConnectionOptions
+            {
+                BufferCopyObservationMode =
+                    QuicBufferCopyObservationMode.ObserveOnly,
+                BufferCopyEvidenceSink = sink,
+            });
+        QuicBufferCopyLifetimeToken tracked =
+            runtime.TryPublishBufferCopyObservation(
+                QuicBufferCopyPath.ReceiveSegment,
+                QuicBufferCopyOperation.Copy,
+                QuicBufferCopyDecisionBoundary.ReceiveSegmentInsertion,
+                joinOperationSequence: null,
+                logicalBytes: 32,
+                copiedBytes: 32,
+                sourceSegmentCount: 1,
+                requestedCapacityBytes: 32,
+                retainedCapacityBytes: 64,
+                trackTerminalRelease: true);
+        ((IQuicBufferCopyOperationObserver)runtime)
+            .ObserveBufferRelease(
+                in tracked,
+                QuicBufferReleaseReason.Completed,
+                releasedCapacityBytes: -1);
+        QuicBufferCopyLifetimeToken outOfDomain = new(
+            OperationSequence: 999,
+            (QuicBufferCopyPath)byte.MaxValue,
+            ConstructionTicks: 1,
+            RetainedCapacityBytes: 1);
+        ((IQuicBufferCopyOperationObserver)runtime)
+            .ObserveBufferRelease(
+                in outOfDomain,
+                (QuicBufferReleaseReason)byte.MaxValue,
+                releasedCapacityBytes: 1);
+
+        Assert.Equal(2, sink.Releases.Count);
+        Assert.True(sink.Releases[0].Validity.HasFlag(
+            QuicBufferReleaseValidity.Contradictory));
+        Assert.True(sink.Releases[0].Validity.HasFlag(
+            QuicBufferReleaseValidity.CapacityMismatch));
+        Assert.True(sink.Releases[0].Validity.HasFlag(
+            QuicBufferReleaseValidity.ArithmeticSaturated));
+        Assert.True(sink.Releases[1].Validity.HasFlag(
+            QuicBufferReleaseValidity.OutOfDomain));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void PathMigrationCloneProducerReportsOwnedPlaintextCopy()
     {
         QuicConnectionSendRuntime sendRuntime = new();
@@ -916,7 +1165,7 @@ public sealed class REQ_QUIC_CRT_0182
                 JsonSerializer.Serialize(
                     new
                     {
-                        schemaVersion = "quic-buffer-release-raw-v1",
+                        schemaVersion = "quic-buffer-release-raw-v2",
                         connectionKey = "connection-0001",
                         observation = release,
                     },
@@ -1132,6 +1381,36 @@ public sealed class REQ_QUIC_CRT_0182
         int SourceSegmentCount,
         int RequestedCapacityBytes,
         int RetainedCapacityBytes);
+
+    private static void TrackApplicationWriteRequestLifetime(
+        QuicConnectionRuntime runtime,
+        QuicConnectionRuntime.StreamActionRequestCompletionSource
+            completion,
+        int copiedBytes,
+        int sourceSegmentCount,
+        bool reusedCapacity,
+        long joinOperationSequence)
+    {
+        QuicBufferCopyLifetimeToken token =
+            runtime.TryPublishBufferCopyObservation(
+                QuicBufferCopyPath.ApplicationWriteRequest,
+                reusedCapacity
+                    ? QuicBufferCopyOperation.ReuseAndCopy
+                    : QuicBufferCopyOperation.Copy,
+                QuicBufferCopyDecisionBoundary.StreamWriteRetry,
+                joinOperationSequence,
+                copiedBytes,
+                copiedBytes,
+                sourceSegmentCount,
+                copiedBytes,
+                completion.OwnedStreamDataCapacity,
+                trackTerminalRelease: !reusedCapacity);
+        if (!reusedCapacity)
+        {
+            completion.SetOwnedStreamDataLifetimeToken(
+                in token);
+        }
+    }
 
     private static QuicStreamFrame ParseStreamFrame(
         ulong streamId,

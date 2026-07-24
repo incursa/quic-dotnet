@@ -70,6 +70,14 @@ internal enum QuicBufferReleaseReason : byte
 {
     Delivered = 0,
     Reset = 1,
+    CopiedToNextOwner = 2,
+    Completed = 3,
+    Failed = 4,
+    Canceled = 5,
+    Terminal = 6,
+    Disposed = 7,
+    Replaced = 8,
+    Recycled = 9,
 }
 
 [Flags]
@@ -80,6 +88,8 @@ internal enum QuicBufferReleaseValidity : byte
     ArithmeticSaturated = 1 << 1,
     Contradictory = 1 << 2,
     OutOfDomain = 1 << 3,
+    MissingToken = 1 << 4,
+    Duplicate = 1 << 5,
 }
 
 [Flags]
@@ -172,11 +182,11 @@ internal readonly record struct QuicBufferReleaseObservation(
     QuicBufferReleaseValidity Validity)
 {
     internal const string CurrentObservationContractVersion =
-        "quic-buffer-release-observation-v1";
+        "quic-buffer-release-observation-v2";
     internal const string CurrentReasonVersion =
-        "quic-buffer-release-reason-v1";
+        "quic-buffer-release-reason-v2";
     internal const string CurrentProvenanceVersion =
-        "quic-buffer-release-provenance-v1";
+        "quic-buffer-release-provenance-v2";
 
     public string ObservationContractVersion =>
         CurrentObservationContractVersion;

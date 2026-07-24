@@ -21,9 +21,9 @@ $copyRawSchemaPath = Join-Path $RepositoryRoot `
 $copyObservationSchemaPath = Join-Path $RepositoryRoot `
     'schemas\adaptive-runtime-buffer-copy-observation-v2.schema.json'
 $releaseRawSchemaPath = Join-Path $RepositoryRoot `
-    'schemas\adaptive-runtime-buffer-release-raw-v1.schema.json'
+    'schemas\adaptive-runtime-buffer-release-raw-v2.schema.json'
 $releaseObservationSchemaPath = Join-Path $RepositoryRoot `
-    'schemas\adaptive-runtime-buffer-release-observation-v1.schema.json'
+    'schemas\adaptive-runtime-buffer-release-observation-v2.schema.json'
 $failures = [System.Collections.Generic.List[string]]::new()
 $copiesByKey = @{}
 $trackedCopyKeys = [System.Collections.Generic.HashSet[string]]::new(

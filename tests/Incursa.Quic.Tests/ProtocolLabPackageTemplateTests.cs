@@ -302,7 +302,7 @@ public sealed class ProtocolLabPackageTemplateTests
             "QUIC_BUFFER_COPY_OPERATION_EVIDENCE_JSON=",
             rawQuicServer);
         Assert.Contains(
-            "QUIC_BUFFER_RELEASE_EVIDENCE_CONTRACT=quic-buffer-release-raw-v1",
+            "QUIC_BUFFER_RELEASE_EVIDENCE_CONTRACT=quic-buffer-release-raw-v2",
             rawQuicServer);
         Assert.Contains(
             "QUIC_BUFFER_RELEASE_EVIDENCE_JSON=",

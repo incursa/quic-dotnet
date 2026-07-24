@@ -103,9 +103,11 @@ summary with explicit missing correlation. The validator applies the wrapper
 and observation schemas independently, requires monotonic connection-local
 construction and release sequences, joins only by exact
 `connectionKey + operationSequence`, rejects duplicate or orphan releases, and
-verifies that path and retained capacity survive the lifetime. The first
-implemented terminal-release path is receive-segment delivery or reset. Other
-buffer-copy paths continue to report
+verifies that path and retained capacity survive the lifetime. Implemented
+terminal-release paths are receive-segment delivery/reset and flow-control
+retry request replacement, downstream copy, completion, cancellation,
+terminal, disposal, or defensive recycle. Other buffer-copy paths continue to
+report
 `MissingTerminalReleaseCorrelation` and remain non-forceable.
 
 The standalone validator remains strict about epoch-local exclusion flags.

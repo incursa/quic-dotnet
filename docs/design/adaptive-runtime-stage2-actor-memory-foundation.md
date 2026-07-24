@@ -255,11 +255,13 @@ defines the bounded observation and maintained-retention work required before
 a conservative value can be implemented honestly. The observation-only slice
 records five existing send-side copy and retention paths, owned path-migration
 retransmission clones, and receive-segment construction or capacity reuse
-under `REQ-QUIC-CRT-0182`. The first `REQ-QUIC-CRT-0185` checkpoint now carries
-a compact lifetime token through receive-segment partial reads and records an
-exact delivery or reset release after the authoritative pool return.
-Terminal-release correlation for every other observed owner, copy-scope
-retained age, and pool outstanding remain explicit gaps.
+under `REQ-QUIC-CRT-0182`. The first `REQ-QUIC-CRT-0185` checkpoints now carry
+compact lifetime tokens through receive-segment partial reads and
+flow-control retry request ownership. They record exact delivery/reset and
+replacement/downstream-copy/completion/cancellation/terminal releases after
+the authoritative pool return. Terminal-release correlation for every other
+observed owner, copy-scope retained age, and pool outstanding remain explicit
+gaps.
 
 `adaptive_backpressure` remains conservative-only and separately reviewable.
 It may eventually lower an admission cap below an authoritative hard bound.
@@ -293,8 +295,8 @@ Requirement homes `REQ-QUIC-CRT-0181`, `REQ-QUIC-CRT-0183`, and
 - explicit export-failure retention and invalid-contract classification;
 - separate schema-valid buffer construction and terminal-release raw records
   with exact `connectionKey + operationSequence` joins; and
-- receive-segment delivery/reset release plus throwing/rejecting sink
-  neutrality.
+- receive-segment delivery/reset and application-write-request lifecycle
+  release plus throwing/rejecting sink neutrality.
 
 Existing shard, deadline, receive-buffer ownership, work-item layout, metrics,
 and stream-capacity homes remain authoritative. Performance measurements stay
@@ -302,9 +304,9 @@ outside correctness CI.
 
 ## Remaining Stage 2 Order
 
-1. Extend the proven receive-segment copy-lifetime token and exact terminal
-   release to every remaining observed owner without object identity or an
-   outstanding-operation dictionary.
+1. Extend the proven receive-segment and application-write-request
+   copy-lifetime token and exact terminal release to every remaining observed
+   owner without object identity or an outstanding-operation dictionary.
 2. Complete actor service, wake, follow-on, timer-lateness, runnable-state, and
    fairness observations.
 3. Review useful-work units and exactly-once repost ownership.

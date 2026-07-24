@@ -305,6 +305,8 @@ internal sealed partial class QuicConnectionRuntime :
         private ManualResetValueTaskSourceCore<bool> source;
         private CancellationTokenRegistration cancellationRegistration;
         private byte[]? ownedStreamData;
+        private QuicBufferCopyLifetimeToken ownedStreamDataLifetimeToken;
+        private QuicBufferReleaseReason ownedStreamDataReleaseReason;
         private ReadOnlyMemory<byte> oversizedStreamData;
         private int oversizedStreamDataOffset;
         private Action? completionAction;
@@ -336,7 +338,7 @@ internal sealed partial class QuicConnectionRuntime :
         {
             cancellationRegistration.Dispose();
             cancellationRegistration = default;
-            ReleaseOwnedStreamData();
+            ReleaseOwnedStreamData(QuicBufferReleaseReason.Recycled);
             oversizedStreamData = ReadOnlyMemory<byte>.Empty;
             oversizedStreamDataOffset = 0;
             ActionKind = default;
@@ -354,6 +356,8 @@ internal sealed partial class QuicConnectionRuntime :
             queuedForWriteRetry = false;
             hasOversizedWriteAdmissionResolution = false;
             oversizedWrite = false;
+            ownedStreamDataReleaseReason =
+                QuicBufferReleaseReason.Completed;
             source.Reset();
         }
 
@@ -513,7 +517,8 @@ internal sealed partial class QuicConnectionRuntime :
                 && ownedStreamData.Length >= streamDataLength;
             if (ownedStreamData is null || ownedStreamData.Length < streamDataLength)
             {
-                ReleaseOwnedStreamData();
+                ReleaseOwnedStreamData(
+                    QuicBufferReleaseReason.Replaced);
                 ownedStreamData = QuicBufferPool.RentBytes(
                     streamDataLength,
                     QuicBufferPoolOwner.StreamWriteRequest);
@@ -528,12 +533,34 @@ internal sealed partial class QuicConnectionRuntime :
         internal int OwnedStreamDataCapacity =>
             ownedStreamData?.Length ?? 0;
 
+        internal void SetOwnedStreamDataLifetimeToken(
+            in QuicBufferCopyLifetimeToken token)
+        {
+            if (ownedStreamData is not null
+                && ownedStreamDataLifetimeToken.IsEmpty)
+            {
+                ownedStreamDataLifetimeToken = token;
+            }
+        }
+
         internal void ReleaseOwnedStreamData()
+            => ReleaseOwnedStreamData(
+                ownedStreamDataReleaseReason);
+
+        internal void ReleaseOwnedStreamData(
+            QuicBufferReleaseReason reason)
         {
             byte[]? ownedData = Interlocked.Exchange(ref ownedStreamData, null);
             if (ownedData is not null)
             {
                 QuicBufferPool.ReturnBytes(ownedData);
+                QuicBufferCopyLifetimeToken token =
+                    ownedStreamDataLifetimeToken;
+                ownedStreamDataLifetimeToken = default;
+                owner.TryPublishBufferReleaseObservation(
+                    in token,
+                    reason,
+                    ownedData.Length);
             }
         }
 
@@ -568,12 +595,16 @@ internal sealed partial class QuicConnectionRuntime :
 
             if (TryInvokeCompletionActions(succeeded: true, out Exception? completionException))
             {
+                ownedStreamDataReleaseReason =
+                    QuicBufferReleaseReason.Failed;
                 RecordWriteCompletion("failed");
                 PublishOversizedWriteEvidence(QuicOversizedWriteOutcome.Failed);
                 source.SetException(completionException!);
                 return;
             }
 
+            ownedStreamDataReleaseReason =
+                QuicBufferReleaseReason.Completed;
             RecordWriteCompletion("succeeded");
             PublishOversizedWriteEvidence(QuicOversizedWriteOutcome.Completed);
             source.SetResult(true);
@@ -591,12 +622,16 @@ internal sealed partial class QuicConnectionRuntime :
 
             if (TryInvokeCompletionActions(succeeded: false, out Exception? completionException))
             {
+                ownedStreamDataReleaseReason =
+                    QuicBufferReleaseReason.Failed;
                 RecordWriteCompletion("failed");
                 PublishOversizedWriteEvidence(QuicOversizedWriteOutcome.Failed);
                 source.SetException(completionException!);
                 return;
             }
 
+            ownedStreamDataReleaseReason =
+                QuicBufferReleaseReason.Failed;
             RecordWriteCompletion("failed");
             PublishOversizedWriteEvidence(oversizedWriteOutcome);
             source.SetException(exception);
@@ -611,12 +646,18 @@ internal sealed partial class QuicConnectionRuntime :
 
             if (TryInvokeCompletionActions(succeeded: false, out Exception? completionException))
             {
+                ownedStreamDataReleaseReason =
+                    QuicBufferReleaseReason.Failed;
                 RecordWriteCompletion("failed");
                 PublishOversizedWriteEvidence(QuicOversizedWriteOutcome.Failed);
                 source.SetException(completionException!);
                 return;
             }
 
+            ownedStreamDataReleaseReason =
+                owner.IsDisposed
+                    ? QuicBufferReleaseReason.Disposed
+                    : QuicBufferReleaseReason.Terminal;
             RecordWriteCompletion("terminal");
             PublishOversizedWriteEvidence(
                 owner.IsDisposed
@@ -640,12 +681,16 @@ internal sealed partial class QuicConnectionRuntime :
 
             if (TryInvokeCompletionActions(succeeded: false, out Exception? completionException))
             {
+                ownedStreamDataReleaseReason =
+                    QuicBufferReleaseReason.Failed;
                 RecordWriteCompletion("failed");
                 PublishOversizedWriteEvidence(QuicOversizedWriteOutcome.Failed);
                 source.SetException(completionException!);
                 return;
             }
 
+            ownedStreamDataReleaseReason =
+                QuicBufferReleaseReason.Canceled;
             RecordWriteCompletion("canceled");
             PublishOversizedWriteEvidence(QuicOversizedWriteOutcome.Canceled);
             source.SetException(new OperationCanceledException(cancellationToken));
@@ -2916,6 +2961,24 @@ internal sealed partial class QuicConnectionRuntime :
 
         QuicBufferReleaseValidity validity =
             QuicBufferReleaseValidity.None;
+        if (!Enum.IsDefined(token.Path)
+            || !Enum.IsDefined(reason))
+        {
+            validity |= QuicBufferReleaseValidity.OutOfDomain;
+        }
+        else if (token.Path switch
+        {
+            QuicBufferCopyPath.ReceiveSegment =>
+                reason is not QuicBufferReleaseReason.Delivered
+                    and not QuicBufferReleaseReason.Reset,
+            QuicBufferCopyPath.ApplicationWriteRequest =>
+                reason is QuicBufferReleaseReason.Delivered
+                    or QuicBufferReleaseReason.Reset,
+            _ => false,
+        })
+        {
+            validity |= QuicBufferReleaseValidity.Contradictory;
+        }
         ulong releasedCapacity = releasedCapacityBytes < 0
             ? 0
             : (ulong)releasedCapacityBytes;

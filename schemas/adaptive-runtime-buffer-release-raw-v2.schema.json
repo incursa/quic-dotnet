@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-buffer-release-raw-v2.schema.json",
+  "title": "Adaptive Runtime Buffer Release Raw Record v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "connectionKey",
+    "observation"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "quic-buffer-release-raw-v2"
+    },
+    "connectionKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "releaseSequence",
+        "operationSequence",
+        "path",
+        "reason",
+        "releasedCapacityBytes",
+        "lifetimeMicros",
+        "phaseAfter",
+        "disposalStarted",
+        "validity",
+        "observationContractVersion",
+        "tokenContractVersion",
+        "reasonVersion",
+        "provenanceVersion"
+      ],
+      "properties": {
+        "releaseSequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "operationSequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "path": {
+          "enum": ["ApplicationWriteRequest", "ReceiveSegment"]
+        },
+        "reason": {
+          "enum": [
+            "Delivered",
+            "Reset",
+            "CopiedToNextOwner",
+            "Completed",
+            "Failed",
+            "Canceled",
+            "Terminal",
+            "Disposed",
+            "Replaced",
+            "Recycled"
+          ]
+        },
+        "releasedCapacityBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "lifetimeMicros": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "phaseAfter": {
+          "enum": [
+            "Establishing",
+            "Active",
+            "Closing",
+            "Draining",
+            "Discarded"
+          ]
+        },
+        "disposalStarted": { "type": "boolean" },
+        "validity": { "type": ["string", "integer"] },
+        "observationContractVersion": {
+          "const": "quic-buffer-release-observation-v2"
+        },
+        "tokenContractVersion": {
+          "const": "quic-buffer-copy-lifetime-token-v1"
+        },
+        "reasonVersion": {
+          "const": "quic-buffer-release-reason-v2"
+        },
+        "provenanceVersion": {
+          "const": "quic-buffer-release-provenance-v2"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "path": { "const": "ReceiveSegment" }
+            }
+          },
+          "then": {
+            "properties": {
+              "reason": {
+                "enum": ["Delivered", "Reset"]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "path": { "const": "ApplicationWriteRequest" }
+            }
+          },
+          "then": {
+            "properties": {
+              "reason": {
+                "enum": [
+                  "CopiedToNextOwner",
+                  "Completed",
+                  "Failed",
+                  "Canceled",
+                  "Terminal",
+                  "Disposed",
+                  "Replaced",
+                  "Recycled"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

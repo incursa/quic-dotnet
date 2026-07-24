@@ -689,7 +689,8 @@ internal sealed partial class QuicConnectionRuntime
                         int copiedBytes = checked(
                             streamData.Length
                             + streamDataSuffix.Length);
-                        TryPublishBufferCopyObservation(
+                        QuicBufferCopyLifetimeToken lifetimeToken =
+                            TryPublishBufferCopyObservation(
                             QuicBufferCopyPath.ApplicationWriteRequest,
                             reusedCapacity
                                 ? QuicBufferCopyOperation.ReuseAndCopy
@@ -701,7 +702,13 @@ internal sealed partial class QuicConnectionRuntime
                             (streamData.IsEmpty ? 0 : 1)
                                 + (streamDataSuffix.IsEmpty ? 0 : 1),
                             copiedBytes,
-                            completion.OwnedStreamDataCapacity);
+                            completion.OwnedStreamDataCapacity,
+                            trackTerminalRelease: !reusedCapacity);
+                        if (!reusedCapacity)
+                        {
+                            completion.SetOwnedStreamDataLifetimeToken(
+                                in lifetimeToken);
+                        }
                     }
                     QueuePendingStreamWriteRetry(requestId, completion);
                     _ = TryEmitFlowControlBlockedSignal(dataBlockedFrame, streamDataBlockedFrame, ref effects);
@@ -871,7 +878,8 @@ internal sealed partial class QuicConnectionRuntime
                     + (committedStreamDataSuffix.IsEmpty ? 0 : 1),
                 committedStreamDataLength,
                 queuedStreamData.Length);
-            completion.ReleaseOwnedStreamData();
+            completion.ReleaseOwnedStreamData(
+                QuicBufferReleaseReason.CopiedToNextOwner);
 
             if (!streamRegistry.Bookkeeping.TryGetStreamPriority(streamId, out int oversizedStreamPriority))
             {
@@ -926,7 +934,8 @@ internal sealed partial class QuicConnectionRuntime
                 new InvalidOperationException("The connection runtime could not build the stream write payload."));
         }
 
-        completion.ReleaseOwnedStreamData();
+        completion.ReleaseOwnedStreamData(
+            QuicBufferReleaseReason.CopiedToNextOwner);
 
         if (!streamRegistry.Bookkeeping.TryGetStreamPriority(streamId, out int streamPriority))
         {

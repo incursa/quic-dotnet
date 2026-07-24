@@ -23,8 +23,10 @@ repository-config tooling.
 - [`adaptive-runtime-stage1-unified-epoch-v1.schema.json`](adaptive-runtime-stage1-unified-epoch-v1.schema.json)
 - [`adaptive-runtime-stage1-axis-decision-v1.schema.json`](adaptive-runtime-stage1-axis-decision-v1.schema.json)
 - [`adaptive-runtime-buffer-release-observation-v1.schema.json`](adaptive-runtime-buffer-release-observation-v1.schema.json)
+- [`adaptive-runtime-buffer-release-observation-v2.schema.json`](adaptive-runtime-buffer-release-observation-v2.schema.json)
 - [`adaptive-runtime-buffer-copy-raw-v2.schema.json`](adaptive-runtime-buffer-copy-raw-v2.schema.json)
 - [`adaptive-runtime-buffer-release-raw-v1.schema.json`](adaptive-runtime-buffer-release-raw-v1.schema.json)
+- [`adaptive-runtime-buffer-release-raw-v2.schema.json`](adaptive-runtime-buffer-release-raw-v2.schema.json)
 - [`adaptive-runtime-buffer-evidence-export-failure-v1.schema.json`](adaptive-runtime-buffer-evidence-export-failure-v1.schema.json)
 
 ## Notes

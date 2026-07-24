@@ -4,8 +4,8 @@ title: "Adaptive Runtime Stage 2 Buffer Ownership And Copy Inventory"
 
 # Adaptive Runtime Stage 2 Buffer Ownership And Copy Inventory
 
-Status: reviewed implementation inventory; first send-side observation
-contract implemented;
+Status: reviewed implementation inventory; receive-segment and
+application-write retry lifetimes correlated;
 `buffer_copy_coalescing` remains `legacy_current` and non-forceable
 
 This inventory maps the current data lifetime before a buffer policy is
@@ -20,7 +20,7 @@ existing platform batching mechanism as a connection policy.
 
 | Stable path ID | Admission or construction point | Current copy or retention | Owner and terminal release | Policy disposition |
 | --- | --- | --- | --- | --- |
-| `application_write_request` | `StreamActionRequestCompletion.EnsureOwnedStreamData` after a flow-control-blocked write must be retried | Copies the application span and optional suffix into one pooled `StreamWriteRequest` array. A sufficiently large existing request buffer may be reused. | The completion owns the array until success, failure, cancellation, retry handoff, or disposal calls `ReleaseOwnedStreamData`. | First connection-local copy observation boundary. The ordinary synchronous path does not take this retry copy, and the caller's memory is never retained past its completion contract. |
+| `application_write_request` | `StreamActionRequestCompletion.EnsureOwnedStreamData` after a flow-control-blocked write must be retried | Copies the application span and optional suffix into one pooled `StreamWriteRequest` array. A sufficiently large existing request buffer may be reused. | The completion carries the compact lifetime token with the array until replacement, downstream copy, success, failure, cancellation, terminal completion, disposal, or pool recycle calls `ReleaseOwnedStreamData` after authoritative return. | Correlated observe-only lifetime under `REQ-QUIC-CRT-0185`. The ordinary synchronous path does not take this retry copy, and the caller's memory is never retained past its completion contract. |
 | `oversized_raw_queue` | Oversized STREAM-frame admission in `QuicConnectionRuntime.Streams` | Copies the committed logical data into a `QueuedRawStreamData` array before queueing. | `QuicApplicationSendQueue` owns the array until replacement, selected completion, stream removal, cancellation, terminal clear, or disposal returns it. | Candidate admission boundary. Existing maximum payload, flow-control, queue, and continuation guards remain authoritative. |
 | `formatted_stream_payload` | `TryBuildOutboundStreamPayload` | Formats STREAM metadata and copies one logical data span plus suffix into a padded pooled `FormattedStreamPayload` array. | Ownership transfers from `QuicBufferLease` to the send/queue path, then to packet protection or queue cleanup. | Candidate construction boundary only after exact downstream ownership is retained. |
 | `combined_application_send` | Multi-write queued-send plan | Copies the already legal selected payload prefix into one pooled `CombinedApplicationSend` array. | The protected-packet path consumes or returns the array; the queue continues to own original payload arrays until commit/removal. | Primary bounded coalescing seam. It may combine only the existing legal selection and cannot widen a Stage 1 plan. |
@@ -227,16 +227,25 @@ carry the token through every success, failure, cancellation, reset, loss,
 shutdown, and disposal path, `buffer_copy_coalescing` remains
 `legacy_current` and non-forceable.
 
-The receive-segment checkpoint now implements the first item in that order.
+The receive-segment checkpoint implements the first item in that order.
 New pooled receive owners carry one compact token through partial reads and
 emit exactly one `Delivered` release after the authoritative return; reset or
 stream reset emits exactly one `Reset` release. Capacity reuse does not create
 a second token. Construction and release are retained as separate raw records
-joined by `connectionKey + operationSequence`; their schemas are
+joined by `connectionKey + operationSequence`; current schemas are
 `adaptive-runtime-buffer-copy-raw-v2` and
-`adaptive-runtime-buffer-release-raw-v1`. A bounded writer rejection emits
+`adaptive-runtime-buffer-release-raw-v2`, while the receive-only release v1
+schemas remain immutable. A bounded writer rejection emits
 `quic-buffer-evidence-export-failure-v1` and invalidates the evidence rather
 than changing ownership or runtime progress. The raw construction stream is
 limited to lifetimes that promise terminal-release correlation; all other
 copy operations remain in the bounded epoch summary with explicit missing
 correlation.
+
+The flow-control retry request checkpoint implements the second item. A newly
+rented `StreamWriteRequest` owner receives one token after its construction
+record is accepted. Capacity reuse keeps the original token. Replacement
+releases the old token before installing the new owner. Downstream copy,
+success, failure, cancellation, terminal completion, disposal, and defensive
+pool recycle use closed v2 release reasons, return the array first, clear the
+token exactly once, and keep a rejecting or throwing sink behavior-neutral.
