@@ -1096,5 +1096,66 @@ their SHA-256 inventory is:
 
 The active adaptive-runtime axis remains
 `application_send_turn_planning=legacy_current`; all adjacent axes remain
-`legacy_current`. The next authorization gate is a green correctness-only CI
-result for this focused checkpoint. No adaptive policy behavior is active.
+`legacy_current`. CI remains correctness-only and is not monitored by this
+slice. The next in-scope gate is permanent-runner send-turn evidence
+integration. No adaptive policy behavior is active.
+
+## Application-Send Turn Raw-To-Epoch Export Checkpoint
+
+Checkpoint commit `4242d98f` implements the standalone
+`application_send_turn_planning` raw-to-epoch evidence boundary. It adds the
+closed `adaptive-runtime-application-send-turn-raw-v1` schema, deterministic
+integer timestamp and Q16 conversion, observe-only and shadow mapping,
+snapshot/turn ordering checks, write-once pending output, schema-valid epoch
+rows, and a checksum manifest. It also permits `legacy_current` as an explicit
+controller state and permits null `hasIssuedApplicationData` where this
+axis-specific observation does not capture that receive-credit signal.
+
+The active axis remained `application_send_turn_planning`; receive-credit and
+all adjacent axes remained `legacy_current`. No runtime policy consumer,
+production default, threshold, BenchmarkDotNet job, CI performance job, local
+campaign, ProtocolLab submission, dataset pipeline, offline model, or
+active-internal behavior changed.
+
+The exact local correctness commands were:
+
+```powershell
+dotnet build tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-restore --nologo -m:1 -nodeReuse:false -p:UseSharedCompilation=false
+dotnet test tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-build --nologo --filter "FullyQualifiedName~REQ_QUIC_CRT_0169|FullyQualifiedName~REQ_QUIC_CRT_0176" --logger "console;verbosity=minimal"
+```
+
+The Release build passed with zero warnings and zero errors. The focused
+schema plus active-axis run passed 33 of 33 tests with zero failures and zero
+skips. Both canonical raw JSONL fixtures passed the new raw schema; the
+converter passed PowerShell parsing; and `ARC-QUIC-CRT-0065`,
+`WI-QUIC-CRT-0066`, and `VER-QUIC-CRT-0067` each passed the published
+SpecTrace core schema independently.
+
+Fixture conversion produced three schema-valid interval rows: one shadow row
+with `analysisExclusionFlags = ["none"]` and two final rows retained with
+`terminal_partial_epoch`. These are verification fixtures, not campaign rows,
+so campaign inclusion/exclusion counts remain zero and no policy claim is
+derived from them.
+
+Three development failures remain classified `diagnostic_only`:
+
+- the initial exporter draft failed PowerShell parsing at `return switch`;
+- the first schema run correctly rejected a scalar
+  `analysisExclusionFlags = "none"`; and
+- the first two-row run exposed a valid first row before a later converter
+  failure.
+
+The last two diagnostic rows remain retained at
+`.artifacts/adaptive-runtime/debug-send-turn-export-current/` and
+`.artifacts/adaptive-runtime/debug-send-turn-export-current2/` with SHA-256
+`4072c77f10f12af83935d05a08ef861637522f29097e7260e814f46216a5b701`
+and
+`9a781345716301cf02c4e97a5c88bd09a63b5cbd143d154a34575d784baedbda`,
+respectively. They have no completion manifest and are not valid campaign
+evidence. The corrected exporter keeps later input-validation partials under a
+retained `.pending` directory and does not expose them as completed root rows.
+
+The first incomplete gate is permanent-runner capture and result/checksum join
+for the new send-turn raw stream. Local forced/shadow campaigns, multi-host
+ProtocolLab work, offline analysis, and review remain downstream and
+unauthorized until that join is implemented and the correctness gates pass.
