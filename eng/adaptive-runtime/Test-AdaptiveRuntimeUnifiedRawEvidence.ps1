@@ -6,7 +6,12 @@ param(
     [Parameter(Mandatory = $true)]
     [string] $RawEpochPath,
 
+    [Parameter(Mandatory = $true)]
+    [string] $ActorObservationPath,
+
     [int[]] $SourceRowCount,
+
+    [int[]] $SourceActorObservationRowCount,
 
     [string] $RepositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 )
@@ -15,19 +20,53 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v3.schema.json'
+$actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v1.schema.json'
 $resolvedRawEpochPath = (Resolve-Path -LiteralPath $RawEpochPath).Path
+$resolvedActorObservationPath = (Resolve-Path -LiteralPath $ActorObservationPath).Path
 $seenKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+$expectedActorKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+$seenActorKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $lastSequenceByConnection = @{}
+$lastActorSequenceByConnection = @{}
 $joinFailures = [System.Collections.Generic.List[string]]::new()
 $duplicateKeys = [System.Collections.Generic.List[string]]::new()
 $outOfOrderKeys = [System.Collections.Generic.List[string]]::new()
+$duplicateActorKeys = [System.Collections.Generic.List[string]]::new()
+$outOfOrderActorKeys = [System.Collections.Generic.List[string]]::new()
+$orphanActorKeys = [System.Collections.Generic.List[string]]::new()
 $multiAxisRows = [System.Collections.Generic.List[string]]::new()
 $rowCount = 0
 $axisRecordCount = 0
+$actorEpochRowCount = 0
 $actorObservationRowCount = 0
 $bufferObservationRowCount = 0
 $sourceIndex = 0
 $sourceRowOffset = 0
+
+function Resolve-SourceKey {
+    param(
+        [int[]] $Counts,
+        [ref] $Index,
+        [ref] $Offset
+    )
+
+    while ($null -ne $Counts -and
+        $Index.Value -lt $Counts.Count -and
+        $Offset.Value -ge $Counts[$Index.Value]) {
+        $Index.Value++
+        $Offset.Value = 0
+    }
+
+    if ($null -ne $Counts -and $Index.Value -ge $Counts.Count) {
+        throw 'Retained rows exceed the supplied per-source row counts.'
+    }
+
+    if ($null -eq $Counts) {
+        return 'source-0'
+    }
+
+    return "source-$($Index.Value)"
+}
 
 foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
     if ([string]::IsNullOrWhiteSpace($line)) {
@@ -42,18 +81,10 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
     $epoch = $record.epoch
     $connectionKey = [string] $record.connectionKey
     $sequence = [uint64] $epoch.connectionEpochSequence
-    while ($null -ne $SourceRowCount -and
-        $sourceIndex -lt $SourceRowCount.Count -and
-        $sourceRowOffset -ge $SourceRowCount[$sourceIndex]) {
-        $sourceIndex++
-        $sourceRowOffset = 0
-    }
-    $sourceKey = if ($null -eq $SourceRowCount) {
-        'source-0'
-    }
-    else {
-        "source-$sourceIndex"
-    }
+    $sourceKey = Resolve-SourceKey `
+        -Counts $SourceRowCount `
+        -Index ([ref] $sourceIndex) `
+        -Offset ([ref] $sourceRowOffset)
     $scopedConnectionKey = "$sourceKey|$connectionKey"
     $rowKey = "$scopedConnectionKey|$sequence"
     $rowCount++
@@ -64,8 +95,7 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
     }
 
     if ($lastSequenceByConnection.ContainsKey($scopedConnectionKey) -and
-        $sequence -le
-            [uint64] $lastSequenceByConnection[$scopedConnectionKey]) {
+        $sequence -le [uint64] $lastSequenceByConnection[$scopedConnectionKey]) {
         [void] $outOfOrderKeys.Add($rowKey)
     }
     $lastSequenceByConnection[$scopedConnectionKey] = $sequence
@@ -102,15 +132,40 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
         [void] $multiAxisRows.Add($rowKey)
     }
 
-    if ([bool] $epoch.actorService.hasObservation) {
-        $actorObservationRowCount++
+    $actorSummary = $epoch.actorService
+    if ([bool] $actorSummary.hasObservation) {
+        $actorEpochRowCount++
+        $first = [uint64] $actorSummary.firstServiceSequence
+        $last = [uint64] $actorSummary.lastServiceSequence
+        $turnCount = [uint64] $actorSummary.actorTurnCount
+        if ($first -eq 0 -or $last -lt $first -or
+            $turnCount -ne (($last - $first) + 1)) {
+            [void] $joinFailures.Add("$rowKey|actor-range")
+        }
+        else {
+            for ($actorSequence = $first;
+                $actorSequence -le $last;
+                $actorSequence++) {
+                [void] $expectedActorKeys.Add(
+                    "$scopedConnectionKey|$actorSequence")
+                if ($actorSequence -eq [uint64]::MaxValue) {
+                    break
+                }
+            }
+        }
     }
-    if ([uint64] $epoch.actorService.interServiceGapObservationCount -gt
-        [uint64] $epoch.actorService.actorTurnCount) {
+    elseif ([uint64] $actorSummary.firstServiceSequence -ne 0 -or
+        [uint64] $actorSummary.lastServiceSequence -ne 0 -or
+        [uint64] $actorSummary.actorTurnCount -ne 0) {
+        [void] $joinFailures.Add("$rowKey|actor-empty")
+    }
+
+    if ([uint64] $actorSummary.interServiceGapObservationCount -gt
+        [uint64] $actorSummary.actorTurnCount) {
         [void] $joinFailures.Add("$rowKey|actor-inter-service-gap")
     }
-    if ([uint64] $epoch.actorService.deadlineLatenessObservationCount -gt
-        [uint64] $epoch.actorService.timerCount) {
+    if ([uint64] $actorSummary.deadlineLatenessObservationCount -gt
+        [uint64] $actorSummary.timerCount) {
         [void] $joinFailures.Add("$rowKey|actor-deadline-lateness")
     }
     if ([bool] $epoch.bufferCopy.hasObservation) {
@@ -118,7 +173,7 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
     }
 
     if ([bool] $epoch.postServiceBoundary.actorObservationPublished -and
-        -not [bool] $epoch.actorService.hasObservation) {
+        -not [bool] $actorSummary.hasObservation) {
         [void] $joinFailures.Add("$rowKey|actor")
     }
 }
@@ -133,9 +188,59 @@ if ($null -ne $SourceRowCount -and
         "sources=$(($SourceRowCount | Measure-Object -Sum).Sum), rows=$rowCount.")
 }
 
+$actorSourceIndex = 0
+$actorSourceRowOffset = 0
+foreach ($line in [System.IO.File]::ReadLines($resolvedActorObservationPath)) {
+    if ([string]::IsNullOrWhiteSpace($line)) {
+        continue
+    }
+
+    if (-not ($line | Test-Json -SchemaFile $actorSchemaPath -ErrorAction Stop)) {
+        throw "Actor-service raw observation failed schema validation at row $($actorObservationRowCount + 1)."
+    }
+
+    $record = $line | ConvertFrom-Json -Depth 100
+    $sourceKey = Resolve-SourceKey `
+        -Counts $SourceActorObservationRowCount `
+        -Index ([ref] $actorSourceIndex) `
+        -Offset ([ref] $actorSourceRowOffset)
+    $scopedConnectionKey = "$sourceKey|$([string] $record.connectionKey)"
+    $sequence = [uint64] $record.observation.serviceSequence
+    $rowKey = "$scopedConnectionKey|$sequence"
+    $actorObservationRowCount++
+    $actorSourceRowOffset++
+
+    if (-not $seenActorKeys.Add($rowKey)) {
+        [void] $duplicateActorKeys.Add($rowKey)
+    }
+    if ($lastActorSequenceByConnection.ContainsKey($scopedConnectionKey) -and
+        $sequence -le
+            [uint64] $lastActorSequenceByConnection[$scopedConnectionKey]) {
+        [void] $outOfOrderActorKeys.Add($rowKey)
+    }
+    $lastActorSequenceByConnection[$scopedConnectionKey] = $sequence
+
+    if (-not $expectedActorKeys.Remove($rowKey)) {
+        [void] $orphanActorKeys.Add($rowKey)
+    }
+}
+
+if ($null -ne $SourceActorObservationRowCount -and
+    ($SourceActorObservationRowCount | Measure-Object -Sum).Sum -ne
+        $actorObservationRowCount) {
+    throw (
+        "Actor-service source row counts do not match retained rows: " +
+        "sources=$(($SourceActorObservationRowCount | Measure-Object -Sum).Sum), " +
+        "rows=$actorObservationRowCount.")
+}
+
 $valid =
     $duplicateKeys.Count -eq 0 -and
     $outOfOrderKeys.Count -eq 0 -and
+    $duplicateActorKeys.Count -eq 0 -and
+    $outOfOrderActorKeys.Count -eq 0 -and
+    $orphanActorKeys.Count -eq 0 -and
+    $expectedActorKeys.Count -eq 0 -and
     $joinFailures.Count -eq 0 -and
     $multiAxisRows.Count -eq 0 -and
     $axisRecordCount -eq ($rowCount * 4)
@@ -143,20 +248,29 @@ if (-not $valid) {
     throw (
         "Unified adaptive-runtime raw evidence failed semantic validation: " +
         "duplicates=$($duplicateKeys.Count), outOfOrder=$($outOfOrderKeys.Count), " +
+        "actorDuplicates=$($duplicateActorKeys.Count), " +
+        "actorOutOfOrder=$($outOfOrderActorKeys.Count), " +
+        "actorOrphans=$($orphanActorKeys.Count), " +
+        "actorMissing=$($expectedActorKeys.Count), " +
         "joinFailures=$($joinFailures.Count), multiAxis=$($multiAxisRows.Count), " +
         "axisRecords=$axisRecordCount, expectedAxisRecords=$($rowCount * 4).")
 }
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-validation-v3'
+    schemaVersion = 'adaptive-runtime-unified-raw-validation-v4'
     valid = $true
     rawEpochRowCount = $rowCount
     axisRecordCount = $axisRecordCount
     connectionCount = $lastSequenceByConnection.Count
+    actorEpochRowCount = $actorEpochRowCount
     actorObservationRowCount = $actorObservationRowCount
     bufferObservationRowCount = $bufferObservationRowCount
     duplicateKeyCount = $duplicateKeys.Count
     outOfOrderKeyCount = $outOfOrderKeys.Count
+    duplicateActorKeyCount = $duplicateActorKeys.Count
+    outOfOrderActorKeyCount = $outOfOrderActorKeys.Count
+    orphanActorKeyCount = $orphanActorKeys.Count
+    missingActorKeyCount = $expectedActorKeys.Count
     joinFailureCount = $joinFailures.Count
     multiAxisVariationCount = $multiAxisRows.Count
 } | ConvertTo-Json -Depth 20

@@ -364,10 +364,14 @@ Requirement homes `REQ-QUIC-CRT-0181`, `REQ-QUIC-CRT-0183`, and
 - schema-valid boundary and unified evidence records;
 - one permanent raw row containing receive credit, all four Stage 1 axes,
   actor service, and buffer-copy summaries;
+- one separate sample-scoped raw record for every observed actor dispatch,
+  joined by exact source-scoped `connectionKey + serviceSequence` membership
+  in the epoch summary range;
 - exact connection-local join, ordering, duplicate, and one-varied-axis
   validation;
 - append-only raw, validation, manifest, source hash, and count retention; and
-- explicit export-failure retention and invalid-contract classification;
+- explicit missing, duplicate, orphan, out-of-order, and export-failure
+  retention or rejection with invalid-contract classification;
 - separate schema-valid buffer construction and terminal-release raw records
   with exact `connectionKey + operationSequence` joins; and
 - receive-segment delivery/reset and application-write-request lifecycle

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-actor-service-export-failure-v1.schema.json",
+  "title": "Adaptive Runtime Actor Service Export Failure v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "connectionKey", "serviceSequence"],
+  "properties": {
+    "schemaVersion": {
+      "const": "adaptive-runtime-actor-service-export-failure-v1"
+    },
+    "connectionKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "serviceSequence": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

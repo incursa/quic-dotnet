@@ -69,6 +69,14 @@ existing correctness-critical runtime, never a second scheduler.
 | Backpressure and retained-buffer bounds | Application-send queue, receive state, buffer pool, endpoint/socket send | Existing queues and owners have independent bounds and terminal cleanup. | Multiple producer and actor paths. | Ownership is latched until commit, cancellation, or disposal. | Individual bounds are testable; there is no unified policy seam. | Bounds remain hard limits. Adaptation may become more conservative before a bound but cannot raise it. |
 | Runtime pressure advice | Existing `QuicMetrics` pressure snapshots are diagnostic; no advisor interface exists | Samples retained buffers, retransmissions, receive retention, and queue state when instruments are enabled. | Coarse metrics snapshot, not per packet. | Immutable sample only. | Metrics listeners can enable sampling; no deterministic advisor fixture exists. | Define an immutable optional snapshot interface later. Absence, staleness, and disablement must map to conservative behavior. |
 
+The actor seam's permanent evidence refinement retains every observation-v2
+dispatch as an actor raw-v1 sample-scoped record in addition to the unified
+epoch summary. Export validation joins only by source-scoped
+`connectionKey + serviceSequence` membership in the inclusive summary range;
+missing, duplicate, orphan, out-of-order, and bounded-channel-failed records
+are invalid contract evidence. This does not add a policy value, controller
+input, runnable-state claim, or scheduling behavior.
+
 ## Required Seam Contract Before Activation
 
 Every controller-managed axis must eventually expose the same internal

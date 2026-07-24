@@ -116,7 +116,7 @@
     {
       "id": "REQ-QUIC-CRT-0184",
       "title": "Export append-only unified Stage 1 and Stage 2 raw evidence",
-      "statement": "The permanent raw QUIC evidence host MUST configure one connection-local accumulator as the receive-credit, all four Stage 1, actor-service, and buffer-copy evidence sink for every adaptive execution; emit one versioned raw record under one connection key only after an exact post-service join; preserve retained receive-credit and Stage 1 compatibility records without relabeling; validate unique monotonic connection epoch keys, exact observation, snapshot, boundary, Stage 1, actor, and buffer joins, exactly four Stage 1 axis records, and no more than one non-legacy applied axis per row; retain append-only source hashes, raw rows, validation counts, manifests, and export-failure records; classify any export failure as invalid_contract; and preserve legacy_current adjacent policy application and behavior-neutral evidence failure handling.",
+      "statement": "The permanent raw QUIC evidence host MUST configure one connection-local accumulator as the receive-credit, all four Stage 1, actor-service, and buffer-copy evidence sink for every adaptive execution; emit one versioned unified epoch under one connection key only after an exact post-service join; emit every actor dispatch as a separate versioned sample-scoped raw record; preserve retained receive-credit and Stage 1 compatibility records without relabeling; validate unique monotonic connection epoch keys, exact observation, snapshot, boundary, Stage 1, actor-summary, and buffer joins, exact source-scoped connection-key and service-sequence coverage between actor raw records and each summarized actor range, exactly four Stage 1 axis records, and no more than one non-legacy applied axis per row; retain append-only source hashes, raw rows, validation counts, manifests, and export-failure records; classify any missing, duplicate, orphan, out-of-order, or failed actor export and any unified export failure as invalid_contract; and preserve legacy_current adjacent policy application and behavior-neutral evidence failure handling.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-CRT-0067"
@@ -136,7 +136,10 @@
           "schemas/adaptive-runtime-unified-epoch-raw-v2.schema.json",
           "schemas/adaptive-runtime-unified-raw-export-manifest-v2.schema.json",
           "schemas/adaptive-runtime-unified-epoch-raw-v3.schema.json",
-          "schemas/adaptive-runtime-unified-raw-export-manifest-v3.schema.json"
+          "schemas/adaptive-runtime-unified-raw-export-manifest-v3.schema.json",
+          "schemas/adaptive-runtime-actor-service-raw-v1.schema.json",
+          "schemas/adaptive-runtime-actor-service-export-failure-v1.schema.json",
+          "schemas/adaptive-runtime-unified-raw-export-manifest-v4.schema.json"
         ]
       },
       "notes": [

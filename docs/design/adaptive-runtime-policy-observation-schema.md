@@ -153,10 +153,16 @@ exporter validates
 exact monotonic join keys, exactly four Stage 1 records per row, and at most
 one non-legacy applied axis. Connection keys are scoped to their hashed source
 log during multi-process export because each process restarts its local
-counter. The exporter retains source hashes, row counts, actor and buffer
-observation counts, validation output, and any bounded-channel export failure
-records. An export failure produces `invalid_contract`; it is never silently
-treated as a complete dataset.
+counter. The same host also emits every actor dispatch as
+[`../../schemas/adaptive-runtime-actor-service-raw-v1.schema.json`](../../schemas/adaptive-runtime-actor-service-raw-v1.schema.json).
+Those records are sample-scoped rather than epoch-independent. The validator
+requires exact `source + connectionKey + serviceSequence` coverage for every
+inclusive actor range summarized in a unified epoch; missing, duplicate,
+orphan, and out-of-order dispatches fail validation. Manifest v4 retains the
+separate actor stream, source hashes, epoch and dispatch counts, validation
+output, and any bounded-channel export failure records. An actor or unified
+export failure produces `invalid_contract`; it is never silently treated as a
+complete dataset.
 
 ## Stage 2 Buffer Copy Observation V3
 

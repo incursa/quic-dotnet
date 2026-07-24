@@ -75,19 +75,22 @@ buffer raw rows:
   -OutputDirectory ./.artifacts/adaptive-runtime/unified-raw-export
 ```
 
-The exporter reads only
-`QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON=` records, validates
-`adaptive-runtime-unified-epoch-raw-v3`, and writes append-only raw JSONL,
-semantic validation, and a checksum manifest. Semantic validation requires
-matching connection-observation, receive-credit, post-service boundary, and
-Stage 1 epoch keys; monotonic unique connection epochs; exactly four Stage 1
-axis records per row; and no more than one non-legacy applied axis. Connection
-keys are scoped to their hashed source log because separate host processes
-restart their connection counters. Supply
+The exporter reads `QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON=` and
+`QUIC_ACTOR_SERVICE_OBSERVATION_JSON=` records, validates unified raw v3 and
+actor raw v1, and writes two append-only raw JSONL streams, semantic
+validation, and a checksum manifest v4. Semantic validation requires matching
+connection-observation, receive-credit, post-service boundary, and Stage 1
+epoch keys; monotonic unique connection epochs; exactly four Stage 1 axis
+records per row; no more than one non-legacy applied axis; and exact
+source-scoped `connectionKey + serviceSequence` coverage for every inclusive
+actor summary range. Actor dispatch rows are sample-scoped rather than
+epoch-independent. Missing, duplicate, orphan, and out-of-order actor records
+are rejected. Connection keys are scoped to their hashed source log because
+separate host processes restart their connection counters. Supply
 retained stderr logs as additional `-HostLogPath` values to preserve
-`QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_FAILURE_JSON=` records. Any such record
-classifies the export `invalid_contract` and causes a nonzero exit after the
-failure file and manifest are retained.
+unified and actor export-failure records. Any such record classifies the
+export `invalid_contract` and causes a nonzero exit after the failure file and
+manifest are retained.
 
 Validate the separate buffer construction and terminal-release raw streams:
 

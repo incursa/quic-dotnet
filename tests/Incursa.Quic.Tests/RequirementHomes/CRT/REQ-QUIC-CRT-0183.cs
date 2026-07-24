@@ -365,6 +365,15 @@ public sealed class REQ_QUIC_CRT_0183
                     epoch = evidence,
                 },
                 jsonOptions);
+            string actorRawJson = JsonSerializer.Serialize(
+                new
+                {
+                    schemaVersion =
+                        "adaptive-runtime-actor-service-raw-v1",
+                    connectionKey = "connection-0001",
+                    observation = actor,
+                },
+                jsonOptions);
             string hostLogPath = Path.Combine(
                 temporaryDirectory,
                 "host.stdout.log");
@@ -374,6 +383,8 @@ public sealed class REQ_QUIC_CRT_0183
                     "QUIC_ENDPOINT=127.0.0.1:4433",
                     "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON="
                         + rawJson,
+                    "QUIC_ACTOR_SERVICE_OBSERVATION_JSON="
+                        + actorRawJson,
                 ]);
             string outputDirectory = Path.Combine(
                 temporaryDirectory,
@@ -398,6 +409,11 @@ public sealed class REQ_QUIC_CRT_0183
             Assert.Equal(
                 1,
                 summary.RootElement
+                    .GetProperty("actorEpochRowCount")
+                    .GetInt32());
+            Assert.Equal(
+                1,
+                summary.RootElement
                     .GetProperty("actorObservationRowCount")
                     .GetInt32());
             Assert.Equal(
@@ -408,6 +424,9 @@ public sealed class REQ_QUIC_CRT_0183
             Assert.True(File.Exists(Path.Combine(
                 outputDirectory,
                 "adaptive-runtime-unified-raw-epochs.jsonl")));
+            Assert.True(File.Exists(Path.Combine(
+                outputDirectory,
+                "adaptive-runtime-actor-service-observations.jsonl")));
             Assert.True(File.Exists(Path.Combine(
                 outputDirectory,
                 "raw-validation-summary.json")));
@@ -423,6 +442,8 @@ public sealed class REQ_QUIC_CRT_0183
                 [
                     "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON="
                         + rawJson,
+                    "QUIC_ACTOR_SERVICE_OBSERVATION_JSON="
+                        + actorRawJson,
                     "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_FAILURE_JSON="
                         + JsonSerializer.Serialize(
                             new
@@ -465,6 +486,75 @@ public sealed class REQ_QUIC_CRT_0183
                 failedManifest.RootElement
                     .GetProperty("exportFailureCount")
                     .GetInt32());
+
+            string actorFailedHostLogPath = Path.Combine(
+                temporaryDirectory,
+                "actor-failed-host.log");
+            File.WriteAllLines(
+                actorFailedHostLogPath,
+                [
+                    "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON="
+                        + rawJson,
+                    "QUIC_ACTOR_SERVICE_OBSERVATION_JSON="
+                        + actorRawJson,
+                    "QUIC_ACTOR_SERVICE_OBSERVATION_FAILURE_JSON="
+                        + JsonSerializer.Serialize(
+                            new
+                            {
+                                schemaVersion =
+                                    "adaptive-runtime-actor-service-export-failure-v1",
+                                connectionKey = "connection-0001",
+                                serviceSequence = 2,
+                            },
+                            jsonOptions),
+                ]);
+            string actorFailedOutputDirectory = Path.Combine(
+                temporaryDirectory,
+                "actor-failed-export");
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult actorFailed =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+                    "-HostLogPath",
+                    actorFailedHostLogPath,
+                    "-OutputDirectory",
+                    actorFailedOutputDirectory);
+            Assert.NotEqual(0, actorFailed.ExitCode);
+            using JsonDocument actorFailedManifest = JsonDocument.Parse(
+                File.ReadAllText(Path.Combine(
+                    actorFailedOutputDirectory,
+                    "raw-export-manifest.json")));
+            Assert.Equal(
+                "invalid_contract",
+                actorFailedManifest.RootElement
+                    .GetProperty("classification")
+                    .GetString());
+            Assert.Equal(
+                1,
+                actorFailedManifest.RootElement
+                    .GetProperty("actorExportFailureCount")
+                    .GetInt32());
+
+            string missingActorHostLogPath = Path.Combine(
+                temporaryDirectory,
+                "missing-actor-host.log");
+            File.WriteAllLines(
+                missingActorHostLogPath,
+                [
+                    "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON="
+                        + rawJson,
+                ]);
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult missingActor =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+                    "-HostLogPath",
+                    missingActorHostLogPath,
+                    "-OutputDirectory",
+                    Path.Combine(temporaryDirectory, "missing-actor-export"));
+            Assert.NotEqual(0, missingActor.ExitCode);
+            Assert.Contains(
+                "actorMissing=1",
+                missingActor.Output,
+                StringComparison.Ordinal);
 
             AdaptiveRuntimePolicyScriptTestSupport.ProcessResult second =
                 AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
