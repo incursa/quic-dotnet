@@ -3535,3 +3535,69 @@ deleted, overwritten, or relabeled. The next actor checkpoint remains exact
 remaining-work signals and reviewed cooperative yield boundaries. Complete
 runnable intervals and fairness outcomes still do not exist. Active behavior
 remains unauthorized.
+
+## Stage 2 Exact Accepted-Dispatch Backlog Evidence
+
+Local commit `11bb8496` implements the behavior-neutral
+`REQ-QUIC-CRT-0188` observation checkpoint without changing shard scheduling,
+the actor service lifecycle, or any applied policy. Actor observation and
+provenance advance to v4, actor epoch aggregation advances to v4, the
+sample-scoped actor raw wrapper advances to v3, unified internal evidence and
+raw wrappers advance to v5, and the append-only export manifest advances to
+v6. All earlier versioned schemas remain retained.
+
+Immediately before the current accepted dispatch completes its accounting
+lifetime, the runtime now reports the exact number of already accepted
+connection work items that remain after the current item. The value is an
+O(1) connection-local accounting observation. It is not a runnable-work
+count, an internal continuation-ready signal, a starvation or fairness
+outcome, or a controller input. Missing, invalid, or saturated accounting
+reports a null value plus explicit validity rather than substituting zero.
+
+The v4 epoch summary records valid observation coverage, the saturating total,
+the maximum, and the number of observed turns with accepted work remaining.
+The unified raw validator joins every actor dispatch by
+`source + connectionKey + serviceSequence` to exactly one inclusive epoch and
+recomputes all four aggregates. Contradictory value and validity state,
+accepted-work exposure under invalid contender accounting, aggregate
+mismatch, missing, duplicate, orphan, or out-of-order records fail the
+contract.
+
+The only reviewed cooperative boundary remains after a complete work-item
+lifecycle: transition, effect execution, follow-on measurement, actor
+evidence publication, resource release, post-service epoch publication, and
+contender completion. Transition and effect interiors remain non-preemptible.
+This observation does not satisfy the still-open exact continuation-ready or
+runnable-state safety gates and does not connect the repost gate.
+
+The exact verification sequence is:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| Initial solution Release build before schema and test integration | Zero warnings and zero errors in 65.39 seconds | `accepted`; the core v4 observation and epoch types compiled before focused testing. |
+| Interim complete solution Release build after schema, host, validator, and test integration | Zero warnings and zero errors in 47.69 seconds | `accepted`; the versioned evidence spine and permanent raw host compile. |
+| Interim actor, unified-export, and package band | 44 passed, zero failed, zero skipped in 19 seconds | `accepted`; positive exact accepted-work values, export versions, and joins were covered before the final negative cases. |
+| Final complete solution Release build | Zero warnings and zero errors in 49.56 seconds | `accepted`; final build-before-test gate. |
+| Final actor, unified-export, and package band | 45 passed, zero failed, zero skipped in 20 seconds | `accepted`; includes exact values `1, 0, 0`, missing-value semantics, value/validity rejection, exact raw-to-epoch aggregates, aggregate-mismatch rejection, append-only export, and retained failure classifications. |
+| Final Stage 2 requirement-home and compact-layout band | 71 passed, zero failed, zero skipped in 11 seconds | `accepted`; `REQ-QUIC-CRT-0181` through `0186`, the new `REQ-QUIC-CRT-0188` coverage, and retained work-item layout behavior remain correct. |
+| PowerShell AST and JSON syntax validation | Four edited PowerShell scripts parsed with zero AST errors; six new schemas and four edited SpecTrace artifacts parsed as JSON | `accepted`; contract syntax evidence. |
+| Focused SpecTrace model validation | `SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY`, `ARC-QUIC-CRT-0067`, `WI-QUIC-CRT-0068`, and `VER-QUIC-CRT-0069` each returned `True` | `accepted`; reciprocal `REQ-QUIC-CRT-0188` schema, implementation, test, and evidence references are present. |
+
+No campaign axis varied. Receive credit and all four implemented Stage 1 axes
+remain applied as `legacy_current` outside earlier explicitly retained Stage
+1 smoke treatments. `actor_work_quantum`, `ready_stream_fairness`,
+`buffer_copy_coalescing`, and `adaptive_backpressure` are not forceable
+policy axes yet and remain behaviorally legacy. No BenchmarkDotNet run,
+performance claim, ProtocolLab deployment, raw campaign, normalized
+transform, curated or split dataset, ML analysis, CI run, push, or active
+behavior occurred. Dataset inclusion and exclusion counts are unchanged:
+zero rows added and zero rows excluded by this slice.
+
+The stopped
+`application-send-turn-neutrality-download-20260724-r002` normalization
+remains preserved as `diagnostic_incomplete`; its 55,658 raw epochs, five
+cell results, hashes, classifications, and partial output were not restarted,
+deleted, overwritten, or relabeled. The next actor checkpoint is a distinct
+exact continuation-ready signal and reviewed cooperative-yield ownership.
+Complete runnable intervals and fairness outcomes remain open. Active behavior
+remains unauthorized.
