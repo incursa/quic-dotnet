@@ -29,6 +29,8 @@ $releaseRawSchemaPaths = @{
         'schemas\adaptive-runtime-buffer-release-raw-v3.schema.json'
     'quic-buffer-release-raw-v4' = Join-Path $RepositoryRoot `
         'schemas\adaptive-runtime-buffer-release-raw-v4.schema.json'
+    'quic-buffer-release-raw-v5' = Join-Path $RepositoryRoot `
+        'schemas\adaptive-runtime-buffer-release-raw-v5.schema.json'
 }
 $releaseObservationSchemaPaths = @{
     'quic-buffer-release-observation-v1' = Join-Path $RepositoryRoot `
@@ -39,6 +41,8 @@ $releaseObservationSchemaPaths = @{
         'schemas\adaptive-runtime-buffer-release-observation-v3.schema.json'
     'quic-buffer-release-observation-v4' = Join-Path $RepositoryRoot `
         'schemas\adaptive-runtime-buffer-release-observation-v4.schema.json'
+    'quic-buffer-release-observation-v5' = Join-Path $RepositoryRoot `
+        'schemas\adaptive-runtime-buffer-release-observation-v5.schema.json'
 }
 $failures = [System.Collections.Generic.List[string]]::new()
 $copiesByKey = @{}

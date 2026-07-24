@@ -236,7 +236,7 @@ if (adaptiveInstrumentationEnabled)
     Console.WriteLine("QUIC_ACTOR_SERVICE_EVIDENCE_CONTRACT=quic-actor-service-epoch-v1");
     Console.WriteLine("QUIC_BUFFER_COPY_EVIDENCE_CONTRACT=quic-buffer-copy-epoch-v2");
     Console.WriteLine("QUIC_BUFFER_COPY_OPERATION_EVIDENCE_CONTRACT=quic-buffer-copy-raw-v2");
-    Console.WriteLine("QUIC_BUFFER_RELEASE_EVIDENCE_CONTRACT=quic-buffer-release-raw-v4");
+    Console.WriteLine("QUIC_BUFFER_RELEASE_EVIDENCE_CONTRACT=quic-buffer-release-raw-v5");
 }
 if (applicationSendTurnPolicy.ForcedMode is not null)
 {
@@ -1226,7 +1226,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         {
             bool published = owner.bufferReleases.Writer.TryWrite(
                 new BufferReleaseEvidenceRecord(
-                    "quic-buffer-release-raw-v4",
+                    "quic-buffer-release-raw-v5",
                     connectionKey,
                     observation));
             if (!published)

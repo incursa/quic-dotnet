@@ -6228,13 +6228,16 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlyMemory<byte> plaintextPayload)
     {
         byte[]? plaintextPayloadOwner = null;
+        QuicBufferCopyLifetimeToken
+            plaintextPayloadLifetimeToken = default;
         if (!plaintextPayload.IsEmpty)
         {
             plaintextPayloadOwner = QuicBufferPool.RentBytes(
                 plaintextPayload.Length,
                 QuicBufferPoolOwner.SentPacketRetention);
             plaintextPayload.Span.CopyTo(plaintextPayloadOwner.AsSpan(0, plaintextPayload.Length));
-            TryPublishBufferCopyObservation(
+            plaintextPayloadLifetimeToken =
+                TryPublishBufferCopyObservation(
                 QuicBufferCopyPath.SentPacketPlaintextRetention,
                 QuicBufferCopyOperation.Retain,
                 QuicBufferCopyDecisionBoundary.SentPacketRetention,
@@ -6245,7 +6248,8 @@ internal sealed partial class QuicConnectionRuntime
                 plaintextPayload.Length,
                 sourceSegmentCount: 1,
                 requestedCapacityBytes: plaintextPayload.Length,
-                retainedCapacityBytes: plaintextPayloadOwner.Length);
+                retainedCapacityBytes: plaintextPayloadOwner.Length,
+                trackTerminalRelease: true);
             plaintextPayload = plaintextPayloadOwner.AsMemory(0, plaintextPayload.Length);
         }
 
@@ -6266,14 +6270,20 @@ internal sealed partial class QuicConnectionRuntime
                 StreamIds: streamIds,
                 PlaintextPayload: plaintextPayload,
                 OneRttKeyPhase: tlsState.CurrentOneRttKeyPhase,
-                PlaintextPayloadOwner: plaintextPayloadOwner));
+                PlaintextPayloadOwner: plaintextPayloadOwner,
+                PlaintextPayloadLifetimeToken:
+                    plaintextPayloadLifetimeToken));
             plaintextPayloadOwner = null;
+            plaintextPayloadLifetimeToken = default;
         }
         finally
         {
             if (plaintextPayloadOwner is not null)
             {
-                QuicBufferPool.ReturnBytes(plaintextPayloadOwner);
+                ReleaseTrackedBufferOwner(
+                    plaintextPayloadOwner,
+                    in plaintextPayloadLifetimeToken,
+                    QuicBufferReleaseReason.Failed);
             }
         }
 

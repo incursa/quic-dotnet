@@ -2980,7 +2980,8 @@ internal sealed partial class QuicConnectionRuntime :
                     or QuicBufferReleaseReason.Reset
                     or QuicBufferReleaseReason.Recycled,
             QuicBufferCopyPath.FormattedStreamPayload
-                or QuicBufferCopyPath.RetransmissionClone =>
+                or QuicBufferCopyPath.RetransmissionClone
+                or QuicBufferCopyPath.SentPacketPlaintextRetention =>
                 reason is QuicBufferReleaseReason.Delivered
                     or QuicBufferReleaseReason.Recycled,
             _ => false,
