@@ -166,4 +166,8 @@ public abstract class QuicConnectionOptions
     internal IQuicAdaptiveRuntimeShadowEpochSink? AdaptiveRuntimeShadowEpochSink { get; set; }
 
     internal IQuicApplicationSendTurnPolicyProvenanceSink? ApplicationSendTurnPolicyProvenanceSink { get; set; }
+
+    internal QuicApplicationSendTurnObservationMode ApplicationSendTurnObservationMode { get; set; }
+
+    internal IQuicApplicationSendTurnEvidenceSink? ApplicationSendTurnEvidenceSink { get; set; }
 }

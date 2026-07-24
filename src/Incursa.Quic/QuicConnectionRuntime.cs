@@ -64,6 +64,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const int InitialHostedSendDatagramUpdateCapacity = 16;
     private const int UnconfiguredReceiveCreditPolicyMode = -1;
     private const int UnconfiguredApplicationSendTurnPolicyMode = -1;
+    private const int UnconfiguredApplicationSendTurnObservationMode = -1;
+    private const int MaximumObservedApplicationSendTurnWrites = 64;
     private const int AdaptiveRuntimeObservationDisabled = 0;
     private const int AdaptiveRuntimeObservationConfiguring = 1;
     private const int AdaptiveRuntimeObservationEnabled = 2;
@@ -95,6 +97,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private int hasIssuedApplicationDataWrite;
     private int receiveCreditPolicyMode = UnconfiguredReceiveCreditPolicyMode;
     private int applicationSendTurnPolicyMode = UnconfiguredApplicationSendTurnPolicyMode;
+    private int applicationSendTurnObservationMode = UnconfiguredApplicationSendTurnObservationMode;
+    private ulong applicationSendTurnSequence;
+    private uint applicationSendTurnBurstLimitHits;
+    private uint applicationSendTurnActorServiceTimeEwmaMicros;
+    private int hasApplicationSendTurnActorServiceTime;
     private int adaptiveRuntimeObservationConfigurationState;
     private long adaptiveRuntimeObservationEpochStartTicks;
     private ulong adaptiveRuntimeObservationEpochSequence;
@@ -103,6 +110,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private long adaptiveRuntimeShadowNextEpochTicks;
     private IQuicAdaptiveRuntimeShadowEpochSink? adaptiveRuntimeShadowEpochSink;
     private QuicReceiveCreditShadowController receiveCreditShadowController = default;
+    private IQuicApplicationSendTurnEvidenceSink? applicationSendTurnEvidenceSink;
+    private QuicApplicationSendTurnShadowController applicationSendTurnShadowController = default;
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
     private readonly object scheduledFlowControlCreditGate = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
@@ -1041,6 +1050,64 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         QuicReceiveCreditPolicyMode? forcedMode = options.ForcedReceiveCreditPolicyMode;
         QuicApplicationSendTurnPolicyMode? forcedApplicationSendTurnMode = options.ForcedApplicationSendTurnPolicyMode;
+        QuicApplicationSendTurnObservationMode requestedApplicationSendTurnObservationMode =
+            options.ApplicationSendTurnObservationMode;
+        if (requestedApplicationSendTurnObservationMode is < QuicApplicationSendTurnObservationMode.Disabled
+            or > QuicApplicationSendTurnObservationMode.Shadow)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(options),
+                "The application-send turn observation mode is invalid.");
+        }
+
+        bool applicationSendTurnObservationEnabled =
+            requestedApplicationSendTurnObservationMode != QuicApplicationSendTurnObservationMode.Disabled;
+        if (!applicationSendTurnObservationEnabled && options.ApplicationSendTurnEvidenceSink is not null)
+        {
+            throw new InvalidOperationException(
+                "Application-send turn evidence export requires observe-only or shadow mode.");
+        }
+
+        if (applicationSendTurnObservationEnabled)
+        {
+            if (options.ApplicationSendTurnEvidenceSink is null)
+            {
+                throw new InvalidOperationException(
+                    "Application-send turn observe-only and shadow modes require an evidence sink.");
+            }
+
+            if (applicationSendTurnPlanner is not null)
+            {
+                throw new InvalidOperationException(
+                    "Application-send turn observation requires the null-planner legacy_current path.");
+            }
+
+            if (options.AdaptiveRuntimeShadowEnabled)
+            {
+                throw new InvalidOperationException(
+                    "Only one adaptive-runtime shadow axis can be enabled on a connection.");
+            }
+
+            if (forcedMode is not null and not QuicReceiveCreditPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Application-send turn observation requires the legacy_current receive-credit policy.");
+            }
+
+            if (forcedApplicationSendTurnMode is not null
+                and not QuicApplicationSendTurnPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Application-send turn observation requires the legacy_current application-send turn policy.");
+            }
+
+            if (options.ApplicationSendTurnPolicyProvenanceSink is not null)
+            {
+                throw new InvalidOperationException(
+                    "Application-send turn construction provenance is reserved for forced-policy campaigns.");
+            }
+        }
+
         if (options.AdaptiveRuntimeShadowEnabled)
         {
             if (options.ApplicationSendTurnPolicyProvenanceSink is not null)
@@ -1097,6 +1164,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 "Application-send turn provenance requires a forced application-send turn policy.");
         }
 
+        if (applicationSendTurnObservationEnabled)
+        {
+            ConfigureApplicationSendTurnObservation(
+                requestedApplicationSendTurnObservationMode,
+                options.ApplicationSendTurnEvidenceSink!);
+        }
+
         if (options.AdaptiveRuntimeShadowEpochSink is not null
             || options.AdaptiveRuntimeShadowEpochInterval != TimeSpan.Zero)
         {
@@ -1136,6 +1210,29 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         applicationSendTurnPlanner = mode == QuicApplicationSendTurnPolicyMode.Conservative
             ? QuicCurrentApplicationSendTurnPlanner.Instance
             : null;
+    }
+
+    private void ConfigureApplicationSendTurnObservation(
+        QuicApplicationSendTurnObservationMode mode,
+        IQuicApplicationSendTurnEvidenceSink sink)
+    {
+        if (applicationSendTurnPlanner is not null)
+        {
+            throw new InvalidOperationException(
+                "Application-send turn observation requires the null-planner legacy_current path.");
+        }
+
+        if (Interlocked.CompareExchange(
+                ref applicationSendTurnObservationMode,
+                (int)mode,
+                UnconfiguredApplicationSendTurnObservationMode)
+            != UnconfiguredApplicationSendTurnObservationMode)
+        {
+            throw new InvalidOperationException(
+                "The application-send turn observation mode has already been configured.");
+        }
+
+        applicationSendTurnEvidenceSink = sink;
     }
 
     private void ConfigureAdaptiveRuntimeEpochSink(
@@ -1662,6 +1759,16 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         => Volatile.Read(ref applicationSendTurnPolicyMode) == (int)QuicApplicationSendTurnPolicyMode.Conservative
             ? QuicApplicationSendTurnPolicyMode.Conservative
             : QuicApplicationSendTurnPolicyMode.LegacyCurrent;
+
+    internal QuicApplicationSendTurnObservationMode ApplicationSendTurnObservationMode
+        => Volatile.Read(ref applicationSendTurnObservationMode) switch
+        {
+            (int)QuicApplicationSendTurnObservationMode.ObserveOnly =>
+                QuicApplicationSendTurnObservationMode.ObserveOnly,
+            (int)QuicApplicationSendTurnObservationMode.Shadow =>
+                QuicApplicationSendTurnObservationMode.Shadow,
+            _ => QuicApplicationSendTurnObservationMode.Disabled,
+        };
 
     internal bool TryBeginRuntimePressureSnapshot(
         long timestamp,
@@ -3343,6 +3450,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     {
         ArgumentNullException.ThrowIfNull(connectionEvent);
 
+        long actorServiceStartedTicks = BeginApplicationSendTurnActorServiceObservation();
         QuicConnectionPhase previousPhase = phase;
         lastTransitionTicks = nowTicks;
         transitionSequence++;
@@ -3400,7 +3508,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             _ => false,
         };
 
-        return new QuicConnectionTransitionResult(
+        QuicConnectionTransitionResult result = new(
             transitionSequence,
             nowTicks,
             connectionEvent.Kind,
@@ -3408,6 +3516,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             phase,
             stateChanged,
             effects);
+        CompleteApplicationSendTurnActorServiceObservation(actorServiceStartedTicks);
+        return result;
     }
 
     internal QuicConnectionTransitionResult TransitionPacketReceived(
@@ -3415,6 +3525,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         long nowTicks,
         bool deferApplicationAckFinalization = false)
     {
+        long actorServiceStartedTicks = BeginApplicationSendTurnActorServiceObservation();
         QuicConnectionPhase previousPhase = phase;
         lastTransitionTicks = nowTicks;
         transitionSequence++;
@@ -3426,7 +3537,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             deferApplicationAckFinalization,
             ref effects);
 
-        return new QuicConnectionTransitionResult(
+        QuicConnectionTransitionResult result = new(
             transitionSequence,
             nowTicks,
             QuicConnectionEventKind.PacketReceived,
@@ -3434,10 +3545,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             phase,
             stateChanged,
             effects);
+        CompleteApplicationSendTurnActorServiceObservation(actorServiceStartedTicks);
+        return result;
     }
 
     internal QuicConnectionTransitionResult TransitionStreamCapacityRelease(long nowTicks)
     {
+        long actorServiceStartedTicks = BeginApplicationSendTurnActorServiceObservation();
         QuicConnectionPhase previousPhase = phase;
         lastTransitionTicks = nowTicks;
         transitionSequence++;
@@ -3445,7 +3559,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         QuicConnectionEffectAccumulator effects = default;
         bool stateChanged = HandleReleaseCapacityStreamAction(ref effects);
 
-        return new QuicConnectionTransitionResult(
+        QuicConnectionTransitionResult result = new(
             transitionSequence,
             nowTicks,
             QuicConnectionEventKind.StreamAction,
@@ -3453,10 +3567,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             phase,
             stateChanged,
             effects);
+        CompleteApplicationSendTurnActorServiceObservation(actorServiceStartedTicks);
+        return result;
     }
 
     internal QuicConnectionTransitionResult TransitionFlowControlCreditUpdate(long nowTicks)
     {
+        long actorServiceStartedTicks = BeginApplicationSendTurnActorServiceObservation();
         QuicConnectionPhase previousPhase = phase;
         lastTransitionTicks = nowTicks;
         transitionSequence++;
@@ -3464,7 +3581,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         QuicConnectionEffectAccumulator effects = default;
         bool stateChanged = HandleScheduledFlowControlCreditUpdated(ref effects);
 
-        return new QuicConnectionTransitionResult(
+        QuicConnectionTransitionResult result = new(
             transitionSequence,
             nowTicks,
             QuicConnectionEventKind.FlowControlCreditUpdated,
@@ -3472,6 +3589,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             phase,
             stateChanged,
             effects);
+        CompleteApplicationSendTurnActorServiceObservation(actorServiceStartedTicks);
+        return result;
     }
 
     internal QuicConnectionTransitionResult TransitionStreamOpen(
@@ -3479,6 +3598,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         QuicStreamType streamType,
         long nowTicks)
     {
+        long actorServiceStartedTicks = BeginApplicationSendTurnActorServiceObservation();
         QuicConnectionPhase previousPhase = phase;
         lastTransitionTicks = nowTicks;
         transitionSequence++;
@@ -3486,7 +3606,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         QuicConnectionEffectAccumulator effects = default;
         bool stateChanged = HandleOpenStreamAction(requestId, streamType, ref effects);
 
-        return new QuicConnectionTransitionResult(
+        QuicConnectionTransitionResult result = new(
             transitionSequence,
             nowTicks,
             QuicConnectionEventKind.StreamAction,
@@ -3494,6 +3614,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             phase,
             stateChanged,
             effects);
+        CompleteApplicationSendTurnActorServiceObservation(actorServiceStartedTicks);
+        return result;
     }
 
     internal QuicConnectionTransitionResult TransitionStreamWrite(
@@ -3505,6 +3627,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         long nowTicks,
         bool finalizePendingApplicationAck = false)
     {
+        long actorServiceStartedTicks = BeginApplicationSendTurnActorServiceObservation();
         QuicConnectionPhase previousPhase = phase;
         lastTransitionTicks = nowTicks;
         transitionSequence++;
@@ -3526,7 +3649,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 recordReceivePhaseMetrics: false);
         }
 
-        return new QuicConnectionTransitionResult(
+        QuicConnectionTransitionResult result = new(
             transitionSequence,
             nowTicks,
             QuicConnectionEventKind.StreamAction,
@@ -3534,6 +3657,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             phase,
             stateChanged,
             effects);
+        CompleteApplicationSendTurnActorServiceObservation(actorServiceStartedTicks);
+        return result;
     }
 
     public async ValueTask DisposeAsync()

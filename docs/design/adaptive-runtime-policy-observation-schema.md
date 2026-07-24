@@ -4,8 +4,8 @@ title: "Adaptive Runtime Connection Observation Schema"
 
 # Adaptive Runtime Connection Observation Schema
 
-Status: receive-credit v1 implemented; application-send turn shadow subset
-proposed
+Status: receive-credit v1 and application-send turn runtime subset
+implemented; permanent send-turn export and dataset integration pending
 
 The controller consumes one immutable, connection-local observation per
 bounded epoch. Actor work updates primitive counters; snapshot construction
@@ -38,9 +38,9 @@ contract.
 
 ## Application-Send Turn Shadow V1 Subset
 
-The proposed `application_send_turn_planning` shadow contract uses the same
-epoch envelope but remains an axis-specific record. Its required bounded
-signals are `queued_application_writes`, `outbound_backlog_bytes`,
+The implemented `application_send_turn_planning` runtime contract remains an
+axis-specific record rather than reusing a receive-credit epoch. Its required
+bounded signals are `queued_application_writes`, `outbound_backlog_bytes`,
 `distinct_queued_send_streams`, `oldest_application_send_age_us`,
 `queue_delay_ewma_us`, `actor_service_time_ewma_us`,
 `burst_limit_hits_epoch`, `congestion_window_bytes`, `bytes_in_flight`,
@@ -52,7 +52,12 @@ The first shadow rule may use only a reviewed subset of those fields, but every
 required field's absence remains explicit and deterministically recommends
 `conservative`. Optional values are never rewritten as zero. Snapshot
 construction occurs at the existing application-send actor-turn planning
-boundary, performs no unbounded stream scan, and expires after one actor turn.
+boundary, inspects at most 64 queued writes and 12 distinct stream identities,
+and expires after one actor turn. A partial bounded scan is marked saturated
+and falls back conservatively. Logical backlog bytes are derived from parsed
+STREAM data length, while retained bytes record backing-buffer capacity; the
+two values are not silently combined. Recovery probe sends bypass this
+observation boundary and remain attributable only to recovery.
 Receive-credit epochs remain attributable only to
 `receive_credit_publication`.
 

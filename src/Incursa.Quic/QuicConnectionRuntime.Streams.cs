@@ -1382,6 +1382,7 @@ internal sealed partial class QuicConnectionRuntime
             nowTicks,
             probePacket,
             QuicQueuedApplicationSendBudget.AllowSingleDatagram(GetMaximumQueuedApplicationPayloadBytes()),
+            publishTurnEvidence: !probePacket,
             ref effects,
             out exception);
 
@@ -1389,6 +1390,7 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         bool probePacket,
         QuicQueuedApplicationSendBudget schedulerBudget,
+        bool publishTurnEvidence,
         ref QuicConnectionEffectAccumulator effects,
         out Exception? exception)
     {
@@ -1399,6 +1401,25 @@ internal sealed partial class QuicConnectionRuntime
             pendingApplicationSendDelayDueTicks = null;
             exception = null;
             return false;
+        }
+
+        bool observeApplicationSendTurn =
+            publishTurnEvidence && HasApplicationSendTurnObservation();
+        if (observeApplicationSendTurn)
+        {
+            QuicApplicationSendTurnQueueSnapshot queueSnapshot =
+                applicationSendQueue.CaptureBoundedTurnSnapshot(
+                    GetElapsedMicros(nowTicks),
+                    MaximumObservedApplicationSendTurnWrites,
+                    QuicApplicationSendPressureClassifier.MaximumObservedDistinctStreamCount);
+            QuicSendPolicySnapshot policySnapshot = CaptureQueuedApplicationSendPolicySnapshot();
+            QuicQueuedApplicationSendBudget observedBudget =
+                QuicSendPolicy.ComputeQueuedApplicationSendBudget(policySnapshot);
+            TryPublishApplicationSendTurnEvidenceAtPlanningBoundary(
+                nowTicks,
+                in queueSnapshot,
+                in policySnapshot,
+                in observedBudget);
         }
 
         LogApplicationSend(
@@ -1798,12 +1819,27 @@ internal sealed partial class QuicConnectionRuntime
         exception = null;
         bool stateChanged = false;
         int queuedWritesBefore = applicationSendQueue.Count;
-        bool observePressure = QuicMetrics.ApplicationSendPressureShadowEnabled;
+        bool observeApplicationSendTurn = HasApplicationSendTurnObservation();
+        bool observePressure = QuicMetrics.ApplicationSendPressureShadowEnabled
+            || observeApplicationSendTurn;
         int distinctQueuedStreamCount = 0;
+        QuicApplicationSendTurnQueueSnapshot applicationSendTurnQueueSnapshot = default;
         if (observePressure && queuedWritesBefore > 0)
         {
-            Span<ulong> distinctStreamIds = stackalloc ulong[QuicApplicationSendPressureClassifier.MaximumObservedDistinctStreamCount];
-            distinctQueuedStreamCount = applicationSendQueue.CountDistinctStreamIdsUpTo(distinctStreamIds);
+            if (observeApplicationSendTurn)
+            {
+                applicationSendTurnQueueSnapshot = applicationSendQueue.CaptureBoundedTurnSnapshot(
+                    GetElapsedMicros(nowTicks),
+                    MaximumObservedApplicationSendTurnWrites,
+                    QuicApplicationSendPressureClassifier.MaximumObservedDistinctStreamCount);
+                distinctQueuedStreamCount = applicationSendTurnQueueSnapshot.DistinctQueuedStreams;
+            }
+            else
+            {
+                Span<ulong> distinctStreamIds =
+                    stackalloc ulong[QuicApplicationSendPressureClassifier.MaximumObservedDistinctStreamCount];
+                distinctQueuedStreamCount = applicationSendQueue.CountDistinctStreamIdsUpTo(distinctStreamIds);
+            }
         }
 
         if (queuedWritesBefore > 0)
@@ -1818,6 +1854,15 @@ internal sealed partial class QuicConnectionRuntime
                 QuicSendPolicySnapshot policySnapshot = CaptureQueuedApplicationSendPolicySnapshot();
                 QuicQueuedApplicationSendBudget sendBudget =
                     QuicSendPolicy.ComputeQueuedApplicationSendBudget(policySnapshot);
+                if (observeApplicationSendTurn)
+                {
+                    TryPublishApplicationSendTurnEvidenceAtPlanningBoundary(
+                        nowTicks,
+                        in applicationSendTurnQueueSnapshot,
+                        in policySnapshot,
+                        in sendBudget);
+                }
+
                 QuicApplicationSendRecoveryFlushOutcome outcome =
                     QuicApplicationSendRecoveryFlushOutcome.BudgetBlocked;
                 QuicSendPolicyBlockedReason blockedReason = sendBudget.BlockedReason;
@@ -1856,6 +1901,7 @@ internal sealed partial class QuicConnectionRuntime
                             nowTicks,
                             probePacket: false,
                             sendBudget,
+                            publishTurnEvidence: false,
                             ref effects,
                             out Exception? flushException))
                     {
@@ -1895,11 +1941,20 @@ internal sealed partial class QuicConnectionRuntime
 
                 if (observePressure)
                 {
+                    bool burstLimitReached =
+                        outcome == QuicApplicationSendRecoveryFlushOutcome.BurstLimitReached;
                     QuicApplicationSendPressureObservation observation =
                         applicationSendPressureClassifier.ObserveTurn(
                             distinctQueuedStreamCount,
-                            outcome == QuicApplicationSendRecoveryFlushOutcome.BurstLimitReached);
+                            burstLimitReached);
                     QuicMetrics.RecordApplicationSendPressureShadow(tlsState.Role, in observation);
+                    if (observeApplicationSendTurn && burstLimitReached)
+                    {
+                        applicationSendTurnBurstLimitHits =
+                            applicationSendTurnBurstLimitHits == uint.MaxValue
+                                ? uint.MaxValue
+                                : applicationSendTurnBurstLimitHits + 1;
+                    }
                 }
             }
         }
@@ -1912,6 +1967,160 @@ internal sealed partial class QuicConnectionRuntime
         stateChanged |= TryFlushPendingPeerStreamCapacityReplays(ref effects);
         stateChanged |= TryFlushPendingPeerStreamCapacityReleases(ref effects);
         return stateChanged;
+    }
+
+    private bool HasApplicationSendTurnObservation()
+    {
+        int mode = Volatile.Read(ref applicationSendTurnObservationMode);
+        return mode is (int)QuicApplicationSendTurnObservationMode.ObserveOnly
+            or (int)QuicApplicationSendTurnObservationMode.Shadow;
+    }
+
+    private void TryPublishApplicationSendTurnEvidenceAtPlanningBoundary(
+        long nowTicks,
+        in QuicApplicationSendTurnQueueSnapshot queueSnapshot,
+        in QuicSendPolicySnapshot policySnapshot,
+        in QuicQueuedApplicationSendBudget sendBudget)
+    {
+        int modeValue = Volatile.Read(ref applicationSendTurnObservationMode);
+        if ((modeValue != (int)QuicApplicationSendTurnObservationMode.ObserveOnly
+                && modeValue != (int)QuicApplicationSendTurnObservationMode.Shadow)
+            || applicationSendTurnEvidenceSink is not { } sink
+            || applicationSendTurnSequence == ulong.MaxValue)
+        {
+            return;
+        }
+
+        QuicApplicationSendTurnSignalMask missingSignalMask =
+            QuicApplicationSendTurnSignalMask.None;
+        uint queueDelayEwmaMicros = 0;
+        if (applicationSendPressureClassifier.HasQueueDelay)
+        {
+            queueDelayEwmaMicros = (uint)applicationSendPressureClassifier.QueueDelayEwmaMicros;
+        }
+        else
+        {
+            missingSignalMask |= QuicApplicationSendTurnSignalMask.QueueDelayEwma;
+        }
+
+        uint actorServiceTimeEwmaMicros = 0;
+        if (hasApplicationSendTurnActorServiceTime != 0)
+        {
+            actorServiceTimeEwmaMicros = applicationSendTurnActorServiceTimeEwmaMicros;
+        }
+        else
+        {
+            missingSignalMask |= QuicApplicationSendTurnSignalMask.ActorServiceTimeEwma;
+        }
+
+        QuicApplicationSendTurnObservationCondition conditions =
+            QuicApplicationSendTurnObservationCondition.None;
+        if (!queueSnapshot.Complete
+            || applicationSendTurnBurstLimitHits == uint.MaxValue
+            || queueDelayEwmaMicros == int.MaxValue
+            || actorServiceTimeEwmaMicros == uint.MaxValue)
+        {
+            conditions |= QuicApplicationSendTurnObservationCondition.ArithmeticSaturated;
+        }
+
+        if (policySnapshot.HasApplicationDataRetransmission
+            || policySnapshot.PendingRetransmissionCount > 0
+            || sendBudget.ShouldPrioritizeRetransmission)
+        {
+            conditions |= QuicApplicationSendTurnObservationCondition.RecoveryUnstable;
+        }
+
+        if (sendBudget.BlockedReason is QuicSendPolicyBlockedReason.NoActivePath
+            or QuicSendPolicyBlockedReason.OrdinaryPacketsUnavailable
+            or QuicSendPolicyBlockedReason.OneRttProtectionUnavailable
+            or QuicSendPolicyBlockedReason.InvalidPayloadBudget
+            or QuicSendPolicyBlockedReason.CongestionLimited
+            or QuicSendPolicyBlockedReason.AntiAmplificationLimited)
+        {
+            conditions |= QuicApplicationSendTurnObservationCondition.ResourceConstrained;
+        }
+
+        ulong turnSequence = applicationSendTurnSequence + 1;
+        uint burstLimitHits = applicationSendTurnBurstLimitHits;
+        QuicApplicationSendTurnObservation observation = new(
+            turnSequence,
+            nowTicks,
+            QuicApplicationSendTurnObservation.CurrentObservationContractVersion,
+            QuicApplicationSendTurnObservation.CurrentPolicyRuleVersion,
+            missingSignalMask,
+            StaleSignalMask: QuicApplicationSendTurnSignalMask.None,
+            conditions,
+            CaptureAdaptiveRuntimeLifecycleFlags(),
+            queueSnapshot.QueuedApplicationWrites,
+            queueSnapshot.OutboundBacklogBytes,
+            queueSnapshot.DistinctQueuedStreams,
+            queueSnapshot.OldestQueuedSendAgeMicros,
+            queueDelayEwmaMicros,
+            actorServiceTimeEwmaMicros,
+            burstLimitHits,
+            policySnapshot.BytesInFlightBytes,
+            policySnapshot.CongestionWindowBytes,
+            queueSnapshot.RetainedSendBuffers,
+            queueSnapshot.RetainedSendBytes);
+
+        QuicApplicationSendTurnObservationMode mode =
+            (QuicApplicationSendTurnObservationMode)modeValue;
+        QuicApplicationSendTurnPolicySnapshot snapshot = default;
+        bool hasRecommendation = mode == QuicApplicationSendTurnObservationMode.Shadow
+            && applicationSendTurnShadowController.TryEvaluate(in observation, out snapshot);
+        if (mode == QuicApplicationSendTurnObservationMode.Shadow && !hasRecommendation)
+        {
+            return;
+        }
+
+        applicationSendTurnSequence = turnSequence;
+        applicationSendTurnBurstLimitHits = 0;
+        QuicApplicationSendTurnEvidence evidence = new(
+            mode,
+            observation,
+            hasRecommendation,
+            snapshot);
+        try
+        {
+            _ = sink.TryPublish(in evidence);
+        }
+        catch (Exception)
+        {
+            // Evidence export is diagnostic-only. A failed sink must never affect transport behavior.
+        }
+    }
+
+    private void ObserveApplicationSendTurnActorServiceTime(long serviceStartedTicks)
+    {
+        long serviceCompletedTicks = clock.Ticks;
+        long elapsedTicks = serviceCompletedTicks > serviceStartedTicks
+            ? serviceCompletedTicks - serviceStartedTicks
+            : 0;
+        ulong elapsedMicros = ConvertTicksToMicros(elapsedTicks);
+        uint observedMicros = elapsedMicros >= uint.MaxValue
+            ? uint.MaxValue
+            : (uint)elapsedMicros;
+        if (hasApplicationSendTurnActorServiceTime == 0)
+        {
+            applicationSendTurnActorServiceTimeEwmaMicros = observedMicros;
+            hasApplicationSendTurnActorServiceTime = 1;
+            return;
+        }
+
+        long delta = (long)observedMicros - applicationSendTurnActorServiceTimeEwmaMicros;
+        long next = applicationSendTurnActorServiceTimeEwmaMicros + (delta >> 2);
+        applicationSendTurnActorServiceTimeEwmaMicros = (uint)Math.Clamp(next, 0, uint.MaxValue);
+    }
+
+    private long BeginApplicationSendTurnActorServiceObservation()
+        => HasApplicationSendTurnObservation() ? clock.Ticks : long.MinValue;
+
+    private void CompleteApplicationSendTurnActorServiceObservation(long serviceStartedTicks)
+    {
+        if (serviceStartedTicks != long.MinValue)
+        {
+            ObserveApplicationSendTurnActorServiceTime(serviceStartedTicks);
+        }
     }
 
     internal void ObserveApplicationSendWorkItemQueueDelay(double queueDelayMilliseconds)

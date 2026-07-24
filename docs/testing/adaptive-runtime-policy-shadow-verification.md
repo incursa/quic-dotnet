@@ -5,7 +5,8 @@ title: "Adaptive Runtime Shadow-Mode Verification"
 # Adaptive Runtime Shadow-Mode Verification
 
 Status: receive-credit shadow foundation implemented and verified;
-application-send turn shadow contract proposed; active policy blocked
+application-send turn runtime foundation implemented and focused-test
+verified; permanent campaign verification pending; active policy blocked
 
 Shadow mode computes and records a proposed controller snapshot while the
 existing runtime behavior remains authoritative. It is the only permitted
@@ -44,20 +45,24 @@ that limitation must be explicit and hashes must be retained.
 
 ### Application-Send Turn Extension
 
-The proposed send-turn shadow slice uses the same `disabled`,
+The implemented send-turn runtime slice uses the same `disabled`,
 `observe_only`, and `shadow` meanings. Its forced controls are
 `forced_legacy_current` and `forced_conservative`. Both currently preserve the
 same legal planner behavior, so they prove force identity, provenance, guards,
 replay, and rollback only; they are not a policy winner or performance
 counterfactual.
 
-Send-turn shadow must record an axis-specific observation, recommendation,
+Send-turn shadow records an axis-specific observation, recommendation,
 applied `legacy_current` identity, bounded reason, and version set without
 creating a scheduler consumer. Missing, stale, saturated, contradictory,
 recovery-unstable, resource-constrained, terminal, and out-of-domain inputs
 recommend `conservative`. The snapshot and recommendation expire after one
 actor turn, while already selected logical writes retain their independent
-operation latches.
+operation latches. The runtime swallows diagnostic sink failures, rejects
+simultaneous shadow ownership and non-legacy adjacent-axis forcing, and leaves
+the null-planner path authoritative. Raw-host export, schema-valid permanent
+rows, and campaign evidence remain required before this section is verified
+end to end. Recovery probes do not create application-send turn records.
 
 ## Deterministic Tests
 

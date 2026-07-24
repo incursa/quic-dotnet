@@ -231,6 +231,88 @@ internal sealed class QuicApplicationSendQueue
         return distinctStreamCount;
     }
 
+    internal QuicApplicationSendTurnQueueSnapshot CaptureBoundedTurnSnapshot(
+        ulong nowMicros,
+        int maximumObservedWrites,
+        int maximumObservedDistinctStreams)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maximumObservedWrites);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maximumObservedDistinctStreams);
+
+        int queuedWriteCount = pendingRequests.Count;
+        int observedWriteCount = Math.Min(queuedWriteCount, maximumObservedWrites);
+        Span<ulong> distinctStreamIds = maximumObservedDistinctStreams <= 64
+            ? stackalloc ulong[maximumObservedDistinctStreams]
+            : throw new ArgumentOutOfRangeException(nameof(maximumObservedDistinctStreams));
+        int distinctStreamCount = 0;
+        ulong logicalBacklogBytes = 0;
+        ulong retainedBytes = 0;
+        ulong oldestEnqueuedAtMicros = 0;
+        bool hasOldestEnqueuedAtMicros = false;
+        bool complete = queuedWriteCount <= maximumObservedWrites;
+
+        for (int index = 0; index < observedWriteCount; index++)
+        {
+            PendingApplicationSendRequest pendingWrite = pendingRequests[index];
+            if (!pendingWrite.TryGetStreamFrame(out QuicStreamFrame streamFrame))
+            {
+                complete = false;
+            }
+            else if (ulong.MaxValue - logicalBacklogBytes < (ulong)streamFrame.StreamDataLength)
+            {
+                logicalBacklogBytes = ulong.MaxValue;
+                complete = false;
+            }
+            else
+            {
+                logicalBacklogBytes += (ulong)streamFrame.StreamDataLength;
+            }
+
+            uint retainedBufferLength = (uint)pendingWrite.StreamPayload.Length;
+            if (ulong.MaxValue - retainedBytes < retainedBufferLength)
+            {
+                retainedBytes = ulong.MaxValue;
+                complete = false;
+            }
+            else
+            {
+                retainedBytes += retainedBufferLength;
+            }
+
+            if (!hasOldestEnqueuedAtMicros
+                || pendingWrite.FirstEnqueuedAtMicros < oldestEnqueuedAtMicros)
+            {
+                oldestEnqueuedAtMicros = pendingWrite.FirstEnqueuedAtMicros;
+                hasOldestEnqueuedAtMicros = true;
+            }
+
+            if (distinctStreamIds[..distinctStreamCount].Contains(pendingWrite.StreamId))
+            {
+                continue;
+            }
+
+            if (distinctStreamCount == distinctStreamIds.Length)
+            {
+                complete = false;
+                continue;
+            }
+
+            distinctStreamIds[distinctStreamCount++] = pendingWrite.StreamId;
+        }
+
+        ulong oldestAgeMicros = hasOldestEnqueuedAtMicros && nowMicros >= oldestEnqueuedAtMicros
+            ? nowMicros - oldestEnqueuedAtMicros
+            : 0;
+        return new QuicApplicationSendTurnQueueSnapshot(
+            (uint)queuedWriteCount,
+            logicalBacklogBytes,
+            (ushort)distinctStreamCount,
+            oldestAgeMicros,
+            (uint)queuedWriteCount,
+            retainedBytes,
+            complete);
+    }
+
     public void Enqueue(
         ulong streamId,
         int priority,

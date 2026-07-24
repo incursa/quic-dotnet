@@ -54,6 +54,22 @@ internal enum QuicApplicationSendTurnShadowReason : byte
     CancellationOrDisposal = 10,
 }
 
+internal enum QuicApplicationSendTurnObservationMode : byte
+{
+    Disabled = 0,
+    ObserveOnly = 1,
+    Shadow = 2,
+}
+
+internal readonly record struct QuicApplicationSendTurnQueueSnapshot(
+    uint QueuedApplicationWrites,
+    ulong OutboundBacklogBytes,
+    ushort DistinctQueuedStreams,
+    ulong OldestQueuedSendAgeMicros,
+    uint RetainedSendBuffers,
+    ulong RetainedSendBytes,
+    bool Complete);
+
 internal readonly record struct QuicApplicationSendTurnObservation(
     ulong TurnSequence,
     long CapturedAtTicks,
@@ -104,6 +120,17 @@ internal readonly record struct QuicApplicationSendTurnPolicySnapshot(
     internal const string CurrentProvenanceVersion =
         "adaptive-runtime-application-send-turn-shadow-provenance-v1";
     internal const string CurrentAxisId = "application_send_turn_planning";
+}
+
+internal readonly record struct QuicApplicationSendTurnEvidence(
+    QuicApplicationSendTurnObservationMode Mode,
+    QuicApplicationSendTurnObservation Observation,
+    bool HasRecommendation,
+    QuicApplicationSendTurnPolicySnapshot Snapshot);
+
+internal interface IQuicApplicationSendTurnEvidenceSink
+{
+    bool TryPublish(in QuicApplicationSendTurnEvidence evidence);
 }
 
 internal struct QuicApplicationSendTurnShadowController

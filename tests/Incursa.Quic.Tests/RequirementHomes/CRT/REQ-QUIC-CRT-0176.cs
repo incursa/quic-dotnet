@@ -209,6 +209,127 @@ public sealed class REQ_QUIC_CRT_0176
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
+    public void QueueObservationStopsAtTheReviewedBoundAndMarksPartialEvidence()
+    {
+        QuicApplicationSendQueue queue = new();
+        for (int index = 0; index < 65; index++)
+        {
+            queue.EnqueueRawStreamData(
+                streamId: (ulong)index,
+                priority: 0,
+                streamData: new byte[8],
+                streamDataLength: 4,
+                streamOffset: 0,
+                isFinal: false,
+                firstEnqueuedAtMicros: (ulong)(100 + index));
+        }
+
+        QuicApplicationSendTurnQueueSnapshot snapshot = queue.CaptureBoundedTurnSnapshot(
+            nowMicros: 1_000,
+            maximumObservedWrites: 64,
+            maximumObservedDistinctStreams: 12);
+
+        Assert.False(snapshot.Complete);
+        Assert.Equal(65U, snapshot.QueuedApplicationWrites);
+        Assert.Equal(65U, snapshot.RetainedSendBuffers);
+        Assert.Equal(256UL, snapshot.OutboundBacklogBytes);
+        Assert.Equal(512UL, snapshot.RetainedSendBytes);
+        Assert.Equal(12, snapshot.DistinctQueuedStreams);
+        Assert.Equal(900UL, snapshot.OldestQueuedSendAgeMicros);
+    }
+
+    [Theory]
+    [InlineData((int)QuicApplicationSendTurnObservationMode.Disabled, true)]
+    [InlineData((int)QuicApplicationSendTurnObservationMode.Shadow, false)]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void EvidenceSinkConfigurationMustMatchTheObservationMode(
+        int modeValue,
+        bool includeSink)
+    {
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicClientConnectionOptions options = new()
+        {
+            ApplicationSendTurnObservationMode =
+                (QuicApplicationSendTurnObservationMode)modeValue,
+            ApplicationSendTurnEvidenceSink = includeSink
+                ? new RecordingEvidenceSink()
+                : null,
+        };
+
+        Assert.Throws<InvalidOperationException>(
+            () => runtime.ConfigureAdaptiveRuntimePolicy(options));
+        Assert.Equal(
+            QuicApplicationSendTurnObservationMode.Disabled,
+            runtime.ApplicationSendTurnObservationMode);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void UndefinedObservationModeIsRejectedWithoutPartialConfiguration()
+    {
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicClientConnectionOptions options = new()
+        {
+            ApplicationSendTurnObservationMode = (QuicApplicationSendTurnObservationMode)byte.MaxValue,
+            ApplicationSendTurnEvidenceSink = new RecordingEvidenceSink(),
+        };
+
+        Assert.Throws<ArgumentOutOfRangeException>(
+            () => runtime.ConfigureAdaptiveRuntimePolicy(options));
+        Assert.Equal(
+            QuicApplicationSendTurnObservationMode.Disabled,
+            runtime.ApplicationSendTurnObservationMode);
+        Assert.Null(runtime.ApplicationSendTurnPlanner);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ListenerOptionCopyPreservesAxisSpecificModeAndSink()
+    {
+        RecordingEvidenceSink sink = new();
+        QuicServerConnectionOptions selectedOptions = new();
+        QuicServerConnectionOptions returnedOptions = new()
+        {
+            ApplicationSendTurnObservationMode =
+                QuicApplicationSendTurnObservationMode.ObserveOnly,
+            ApplicationSendTurnEvidenceSink = sink,
+        };
+
+        QuicListenerHost.ApplyReturnedOptions(selectedOptions, returnedOptions);
+
+        Assert.Equal(
+            QuicApplicationSendTurnObservationMode.ObserveOnly,
+            selectedOptions.ApplicationSendTurnObservationMode);
+        Assert.Same(sink, selectedOptions.ApplicationSendTurnEvidenceSink);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ForceLegacyRollbackRestoresTheDisabledNullPlannerBaseline()
+    {
+        using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+        runtime.ConfigureAdaptiveRuntimePolicy(new QuicClientConnectionOptions
+        {
+            ForcedReceiveCreditPolicyMode = QuicReceiveCreditPolicyMode.LegacyCurrent,
+            ForcedApplicationSendTurnPolicyMode = QuicApplicationSendTurnPolicyMode.LegacyCurrent,
+        });
+
+        Assert.Equal(
+            QuicApplicationSendTurnObservationMode.Disabled,
+            runtime.ApplicationSendTurnObservationMode);
+        Assert.Equal(
+            QuicApplicationSendTurnPolicyMode.LegacyCurrent,
+            runtime.ApplicationSendTurnPolicyMode);
+        Assert.Null(runtime.ApplicationSendTurnPlanner);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void SteadyStateEvaluationDoesNotAllocate()
     {
         QuicApplicationSendTurnShadowController controller = default;
@@ -238,6 +359,11 @@ public sealed class REQ_QUIC_CRT_0176
         Assert.Equal(QuicApplicationSendTurnPolicyMode.LegacyCurrent, snapshot.AppliedPolicy);
         Assert.Equal(QuicApplicationSendTurnPolicyMode.Conservative, snapshot.RecommendedPolicy);
         Assert.Equal(expectedReason, snapshot.Reason);
+    }
+
+    private sealed class RecordingEvidenceSink : IQuicApplicationSendTurnEvidenceSink
+    {
+        public bool TryPublish(in QuicApplicationSendTurnEvidence evidence) => true;
     }
 }
 
