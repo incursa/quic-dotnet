@@ -174,5 +174,14 @@ will relate to, not be replaced by, the unified Stage 1 set.
    joins, behavior-neutral shadow, and append-only exclusions before any large
    campaign.
 
+After that smoke, proceed to the roadmap's Stage 2 actor and memory
+foundations before running another large matrix, normalized dataset transform,
+or offline ML analysis. Stage 2 retains `actor_work_quantum`,
+`buffer_copy_coalescing`, and explicitly reviewed conservative
+`adaptive_backpressure`. Stages 3-5 remain queued in roadmap order:
+`packet_flush_cadence` and `receive_delivery_quantum`; placement, platform,
+datagram transport, and cross-architecture buffer/batching work; then the
+separately governed congestion/pacing, ACK, crypto, and HTTP/3 QPACK profiles.
+
 No item in this map authorizes `active_internal`, a production threshold,
 online learning, or a large campaign.
