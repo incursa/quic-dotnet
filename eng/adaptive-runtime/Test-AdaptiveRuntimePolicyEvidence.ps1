@@ -29,6 +29,8 @@ $validatedEpochRows = [System.Collections.Generic.List[object]]::new()
 $validatedConstructionRows = [System.Collections.Generic.List[object]]::new()
 $verifiedArtifactSha256ByPath = [System.Collections.Generic.Dictionary[string,string]]::new(
     [StringComparer]::OrdinalIgnoreCase)
+$sendTurnRawRecordLookupsByPath = [System.Collections.Generic.Dictionary[string,object]]::new(
+    [StringComparer]::OrdinalIgnoreCase)
 $legacyResultLevelEnvironmentExclusionRows = [System.Collections.Generic.HashSet[string]]::new(
     [StringComparer]::Ordinal)
 
@@ -351,6 +353,75 @@ function Add-ExpectedExclusionFlags {
     if ([string] $Result.environment.generatorHealth -eq 'invalid') {
         [void] $Flags.Add('generator_health_invalid')
     }
+}
+
+function ConvertTo-SendTurnConditionMask {
+    param([object] $Value)
+
+    if ($Value -is [byte] -or
+        $Value -is [int16] -or
+        $Value -is [int32] -or
+        $Value -is [int64] -or
+        $Value -is [uint16] -or
+        $Value -is [uint32] -or
+        $Value -is [uint64]) {
+        return [long] $Value
+    }
+
+    $map = @{
+        None = 0L
+        ArithmeticSaturated = 1L
+        Contradictory = 2L
+        OutOfDomain = 4L
+        RecoveryUnstable = 8L
+        ResourceConstrained = 16L
+    }
+    $mask = 0L
+    foreach ($name in @(([string] $Value) -split '[,\|]')) {
+        $trimmed = $name.Trim()
+        if (-not $map.ContainsKey($trimmed)) {
+            throw "Unknown application-send turn observation condition '$trimmed'."
+        }
+        $mask = $mask -bor [long] $map[$trimmed]
+    }
+    return $mask
+}
+
+function Get-SendTurnRawRecordLookup {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $Path
+    )
+
+    if ($sendTurnRawRecordLookupsByPath.ContainsKey($Path)) {
+        return $sendTurnRawRecordLookupsByPath[$Path]
+    }
+
+    $recordsByConnection = @{}
+    foreach ($line in [System.IO.File]::ReadLines($Path)) {
+        if ([string]::IsNullOrWhiteSpace($line)) {
+            continue
+        }
+        $record = $line | ConvertFrom-Json -Depth 30
+        $connectionKey = [string] $record.connectionKey
+        if (-not $recordsByConnection.ContainsKey($connectionKey)) {
+            $recordsByConnection[$connectionKey] = [System.Collections.Generic.List[object]]::new()
+        }
+        $recordsByConnection[$connectionKey].Add($record)
+    }
+
+    $lookup = @{}
+    foreach ($connectionKey in $recordsByConnection.Keys) {
+        $orderedRecords = @(
+            $recordsByConnection[$connectionKey] |
+                Sort-Object { [uint64] $_.observation.turnSequence }
+        )
+        for ($index = 0; $index -lt $orderedRecords.Count; $index++) {
+            $lookup["$connectionKey|$index"] = $orderedRecords[$index]
+        }
+    }
+    $sendTurnRawRecordLookupsByPath[$Path] = $lookup
+    return $lookup
 }
 
 function Add-ExpectedConstructionExclusionFlags {
@@ -818,6 +889,45 @@ foreach ($item in $validatedEpochRows) {
         -Row $row `
         -Result $result `
         -IsSendTurnTerminalPartialEpoch $isSendTurnTerminalPartialEpoch
+    if ($result.mode -eq 'observe_only' -and
+        [string] $row.provenance.transformation.name -eq 'adaptive-runtime-send-turn-epoch-export' -and
+        [string] $row.provenance.transformation.version -eq '1.0.0' -and
+        [string] $row.provenance.observationContractVersion -eq
+            'adaptive-runtime-application-send-turn-observation-v1' -and
+        $null -ne $normalizedSourceArtifactPath) {
+        try {
+            $rawLookup = Get-SendTurnRawRecordLookup -Path $normalizedSourceArtifactPath
+            $rawKey = "$($row.connectionKey)|$([long] $row.epochIndex)"
+            if (-not $rawLookup.ContainsKey($rawKey)) {
+                $failures.Add(
+                    "Epoch row '$($row.rowId)' does not resolve to its observe-only raw record '$rawKey'.")
+            }
+            else {
+                $rawRecord = $rawLookup[$rawKey]
+                if ([string] $rawRecord.mode -ne 'ObserveOnly' -or
+                    [bool] $rawRecord.hasRecommendation -or
+                    $null -ne $rawRecord.snapshot) {
+                    $failures.Add(
+                        "Epoch row '$($row.rowId)' source record is not recommendation-free observe-only evidence.")
+                }
+                $conditionMask = ConvertTo-SendTurnConditionMask -Value $rawRecord.observation.conditions
+                if (($conditionMask -band 1) -ne 0) {
+                    [void] $expectedExclusionFlags.Add('observation_saturated')
+                }
+                if (($conditionMask -band 4) -ne 0) {
+                    [void] $expectedExclusionFlags.Add('out_of_domain')
+                }
+                if ([bool] $row.preDecisionObservations.outOfDomain -ne (($conditionMask -band 4) -ne 0)) {
+                    $failures.Add(
+                        "Epoch row '$($row.rowId)' out-of-domain state does not match its observe-only raw record.")
+                }
+            }
+        }
+        catch {
+            $failures.Add(
+                "Epoch row '$($row.rowId)' observe-only raw source could not be replayed: $($_.Exception.Message)")
+        }
+    }
     $actualFlags = @($row.analysisExclusionFlags | ForEach-Object { [string] $_ })
     $actualFlagsSet = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
     foreach ($flag in $actualFlags) {
