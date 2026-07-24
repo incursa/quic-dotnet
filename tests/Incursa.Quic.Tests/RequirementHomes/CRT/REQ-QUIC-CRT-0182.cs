@@ -306,6 +306,119 @@ public sealed class REQ_QUIC_CRT_0182
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void MaintainedSentPacketRetentionTracksOwnershipTransitions()
+    {
+        QuicConnectionSendRuntime runtime = new();
+        byte[] replaced = QuicBufferPool.RentBytes(
+            20,
+            QuicBufferPoolOwner.SentPacketRetention);
+        byte[] replacement = QuicBufferPool.RentBytes(
+            40,
+            QuicBufferPoolOwner.SentPacketRetention);
+        byte[] secondPlaintext = QuicBufferPool.RentBytes(
+            80,
+            QuicBufferPoolOwner.SentPacketRetention);
+        byte[] secondPacket = QuicBufferPool.RentBytes(
+            160,
+            QuicBufferPoolOwner.SentPacketRetention);
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 1,
+            PayloadBytes: 20,
+            SentAtMicros: 1_000,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PlaintextPayload: replaced.AsMemory(0, 20),
+            PlaintextPayloadOwner: replaced));
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 1,
+            PayloadBytes: 40,
+            SentAtMicros: 1_500,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PlaintextPayload: replacement.AsMemory(0, 40),
+            PlaintextPayloadOwner: replacement));
+        ReadOnlyMemory<byte> protectedPacket =
+            secondPacket.AsMemory(0, 160);
+        runtime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 2,
+            PayloadBytes: 160,
+            SentAtMicros: 2_000,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PacketBytes: protectedPacket,
+            PlaintextPayload: secondPlaintext.AsMemory(0, 80),
+            PlaintextPayloadOwner: secondPlaintext,
+            PacketBytesOwner: secondPacket));
+
+        QuicRetentionSnapshot initial =
+            runtime.CaptureSentPacketRetentionSnapshot(
+                nowMicros: 5_000,
+                out _);
+        Assert.Equal(3, initial.RetainedBufferCount);
+        Assert.Equal(
+            replacement.Length
+                + secondPlaintext.Length
+                + secondPacket.Length,
+            initial.RetainedByteCount);
+        Assert.Equal(3.5, initial.OldestAgeMilliseconds);
+        Assert.Equal(
+            initial,
+            runtime.CaptureSentPacketRetentionSnapshot(
+                nowMicros: 5_000));
+
+        Assert.True(runtime.TryDetachLatestRebuildablePacketBytes(
+            protectedPacket,
+            out byte[]? detachedPacket));
+        Assert.Same(secondPacket, detachedPacket);
+        QuicRetentionSnapshot detached =
+            runtime.CaptureSentPacketRetentionSnapshot(
+                nowMicros: 5_000);
+        Assert.Equal(2, detached.RetainedBufferCount);
+        Assert.Equal(
+            replacement.Length + secondPlaintext.Length,
+            detached.RetainedByteCount);
+        QuicBufferPool.ReturnBytes(detachedPacket);
+
+        Assert.True(runtime.TryAcknowledgePacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 1,
+            handshakeConfirmed: true));
+        QuicRetentionSnapshot remaining =
+            runtime.CaptureSentPacketRetentionSnapshot(
+                nowMicros: 5_000);
+        Assert.Equal(1, remaining.RetainedBufferCount);
+        Assert.Equal(
+            secondPlaintext.Length,
+            remaining.RetainedByteCount);
+        Assert.Equal(3, remaining.OldestAgeMilliseconds);
+
+        Assert.True(runtime.TryRegisterLoss(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 2,
+            handshakeConfirmed: true));
+        QuicRetentionSnapshot empty =
+            runtime.CaptureSentPacketRetentionSnapshot(
+                nowMicros: 5_000);
+        Assert.Equal(0, empty.RetainedBufferCount);
+        Assert.Equal(0, empty.RetainedByteCount);
+        Assert.Null(empty.OldestAgeMilliseconds);
+
+        QuicRetentionSnapshot transferred =
+            runtime.CaptureRetransmissionRetentionSnapshot(
+                nowMicros: 5_000);
+        Assert.Equal(1, transferred.RetainedBufferCount);
+        Assert.Equal(
+            secondPlaintext.Length,
+            transferred.RetainedByteCount);
+        Assert.True(runtime.TryDequeueRetransmission(
+            out QuicConnectionRetransmissionPlan retransmission));
+        QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+            retransmission);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void ObservationAndEpochSummaryPassSchemaAndSemanticValidation()
     {
         string repoRoot =

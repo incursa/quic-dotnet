@@ -283,6 +283,9 @@ internal sealed class QuicConnectionSendRuntime
     private readonly QuicRttEstimator rttEstimator;
     private QuicOutstandingSentStreamPacketIndex outstandingSentStreamPacketIndex = new();
     private QuicEcnValidationState ecnValidationState;
+    private long retainedSentPacketBufferCount;
+    private long retainedSentPacketByteCount;
+    private ulong? oldestSentPacketAtMicros;
     private QuicConnectionSentPacketKey? latestTrackedPacketKey;
     private QuicConnectionSentPacket pendingSendPacket;
     private ulong pendingSendReservationSequence;
@@ -323,53 +326,24 @@ internal sealed class QuicConnectionSendRuntime
 
     internal QuicRetentionSnapshot CaptureSentPacketRetentionSnapshot(ulong nowMicros)
     {
-        long retainedBufferCount = 0;
-        long retainedByteCount = 0;
-        ulong? oldestSentAtMicros = null;
-
-        foreach (QuicConnectionSentPacket packet in sentPackets.Values)
-        {
-            QuicRetentionSnapshot.AddOwners(
-                packet.PlaintextPayloadOwner,
-                packet.PacketBytesOwner,
-                ref retainedBufferCount,
-                ref retainedByteCount);
-            oldestSentAtMicros = !oldestSentAtMicros.HasValue
-                || packet.SentAtMicros < oldestSentAtMicros.Value
-                ? packet.SentAtMicros
-                : oldestSentAtMicros;
-        }
-
         return new QuicRetentionSnapshot(
-            retainedBufferCount,
-            retainedByteCount,
-            QuicRetentionSnapshot.GetOldestAgeMilliseconds(nowMicros, oldestSentAtMicros));
+            retainedSentPacketBufferCount,
+            retainedSentPacketByteCount,
+            QuicRetentionSnapshot.GetOldestAgeMilliseconds(
+                nowMicros,
+                oldestSentPacketAtMicros));
     }
 
     internal QuicRetentionSnapshot CaptureSentPacketRetentionSnapshot(
         ulong nowMicros,
         out QuicSentPacketStorageSnapshot storageSnapshot)
     {
-        long retainedBufferCount = 0;
-        long retainedByteCount = 0;
-        ulong? oldestSentAtMicros = null;
         Span<int> retainedPacketCounts = stackalloc int[3];
         Span<ulong> minimumPacketNumbers = stackalloc ulong[3];
         Span<ulong> maximumPacketNumbers = stackalloc ulong[3];
 
         foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sentPackets)
         {
-            QuicConnectionSentPacket packet = entry.Value;
-            QuicRetentionSnapshot.AddOwners(
-                packet.PlaintextPayloadOwner,
-                packet.PacketBytesOwner,
-                ref retainedBufferCount,
-                ref retainedByteCount);
-            oldestSentAtMicros = !oldestSentAtMicros.HasValue
-                || packet.SentAtMicros < oldestSentAtMicros.Value
-                ? packet.SentAtMicros
-                : oldestSentAtMicros;
-
             AddPacketNumberToStorageSnapshot(
                 entry.Key,
                 retainedPacketCounts,
@@ -383,9 +357,11 @@ internal sealed class QuicConnectionSendRuntime
             maximumPacketNumbers);
 
         return new QuicRetentionSnapshot(
-            retainedBufferCount,
-            retainedByteCount,
-            QuicRetentionSnapshot.GetOldestAgeMilliseconds(nowMicros, oldestSentAtMicros));
+            retainedSentPacketBufferCount,
+            retainedSentPacketByteCount,
+            QuicRetentionSnapshot.GetOldestAgeMilliseconds(
+                nowMicros,
+                oldestSentPacketAtMicros));
     }
 
     internal QuicSentPacketStorageSnapshot CaptureSentPacketStorageSnapshot()
@@ -692,6 +668,7 @@ internal sealed class QuicConnectionSendRuntime
         if (!packet.AckOnlyPacket)
         {
             sentPackets[key] = packet;
+            RecordSentPacketAddition(packet);
             outstandingSentStreamPacketIndex.Add(packet);
             latestTrackedPacketKey = key;
         }
@@ -750,6 +727,9 @@ internal sealed class QuicConnectionSendRuntime
             PacketBytes = default,
             PacketBytesOwner = null,
         };
+        RecordSentPacketOwnerRemoval(
+            plaintextPayloadOwner: null,
+            packet.PacketBytesOwner);
         return true;
     }
 
@@ -1186,8 +1166,68 @@ internal sealed class QuicConnectionSendRuntime
             return false;
         }
 
+        bool removedOldest = RecordSentPacketRemoval(packet);
         outstandingSentStreamPacketIndex.Remove(packet);
+        RefreshOldestSentPacketAtMicros(removedOldest);
         return true;
+    }
+
+    private void RecordSentPacketAddition(QuicConnectionSentPacket packet)
+    {
+        QuicRetentionSnapshot.AddOwners(
+            packet.PlaintextPayloadOwner,
+            packet.PacketBytesOwner,
+            ref retainedSentPacketBufferCount,
+            ref retainedSentPacketByteCount);
+        if (!oldestSentPacketAtMicros.HasValue
+            || packet.SentAtMicros < oldestSentPacketAtMicros.Value)
+        {
+            oldestSentPacketAtMicros = packet.SentAtMicros;
+        }
+    }
+
+    private bool RecordSentPacketRemoval(QuicConnectionSentPacket packet)
+    {
+        RecordSentPacketOwnerRemoval(
+            packet.PlaintextPayloadOwner,
+            packet.PacketBytesOwner);
+        return oldestSentPacketAtMicros == packet.SentAtMicros;
+    }
+
+    private void RecordSentPacketOwnerRemoval(
+        byte[]? plaintextPayloadOwner,
+        byte[]? packetBytesOwner)
+    {
+        if (plaintextPayloadOwner is not null)
+        {
+            retainedSentPacketBufferCount--;
+            retainedSentPacketByteCount -= plaintextPayloadOwner.Length;
+        }
+
+        if (packetBytesOwner is not null
+            && !ReferenceEquals(plaintextPayloadOwner, packetBytesOwner))
+        {
+            retainedSentPacketBufferCount--;
+            retainedSentPacketByteCount -= packetBytesOwner.Length;
+        }
+    }
+
+    private void RefreshOldestSentPacketAtMicros(bool removedOldest)
+    {
+        if (!removedOldest)
+        {
+            return;
+        }
+
+        oldestSentPacketAtMicros = null;
+        foreach (QuicConnectionSentPacket retained in sentPackets.Values)
+        {
+            if (!oldestSentPacketAtMicros.HasValue
+                || retained.SentAtMicros < oldestSentPacketAtMicros.Value)
+            {
+                oldestSentPacketAtMicros = retained.SentAtMicros;
+            }
+        }
     }
 
     private bool TrySuppressResetStreamRetransmissionForStream(ulong streamId)
