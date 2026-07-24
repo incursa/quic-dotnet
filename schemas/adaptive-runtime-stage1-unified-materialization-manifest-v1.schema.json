@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-stage1-unified-materialization-manifest-v1.schema.json",
+  "title": "Adaptive Runtime Stage 1 Unified Materialization Manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "createdUtc",
+    "classification",
+    "rawEpochPath",
+    "rawEpochSha256",
+    "rawExportManifestPath",
+    "rawExportManifestSha256",
+    "localResultPath",
+    "localResultSha256",
+    "unifiedEpochPath",
+    "unifiedEpochSha256",
+    "axisDecisionPath",
+    "axisDecisionSha256",
+    "validationPath",
+    "validationSha256",
+    "unifiedEpochRowCount",
+    "axisDecisionRowCount",
+    "excludedFromPolicyAcceptance"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "adaptive-runtime-stage1-unified-materialization-manifest-v1"
+    },
+    "createdUtc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "classification": { "$ref": "#/$defs/nonEmptyString" },
+    "rawEpochPath": { "$ref": "#/$defs/nonEmptyString" },
+    "rawEpochSha256": { "$ref": "#/$defs/sha256" },
+    "rawExportManifestPath": { "$ref": "#/$defs/nonEmptyString" },
+    "rawExportManifestSha256": { "$ref": "#/$defs/sha256" },
+    "localResultPath": { "$ref": "#/$defs/nonEmptyString" },
+    "localResultSha256": { "$ref": "#/$defs/sha256" },
+    "unifiedEpochPath": { "$ref": "#/$defs/nonEmptyString" },
+    "unifiedEpochSha256": { "$ref": "#/$defs/sha256" },
+    "axisDecisionPath": { "$ref": "#/$defs/nonEmptyString" },
+    "axisDecisionSha256": { "$ref": "#/$defs/sha256" },
+    "validationPath": { "$ref": "#/$defs/nonEmptyString" },
+    "validationSha256": { "$ref": "#/$defs/sha256" },
+    "unifiedEpochRowCount": { "$ref": "#/$defs/unsignedInteger" },
+    "axisDecisionRowCount": { "$ref": "#/$defs/unsignedInteger" },
+    "excludedFromPolicyAcceptance": { "type": "boolean" }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "unsignedInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

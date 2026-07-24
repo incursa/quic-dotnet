@@ -358,32 +358,7 @@ public sealed partial class REQ_QUIC_CRT_0177
 
         try
         {
-            QuicAdaptiveRuntimeStage1PolicySnapshot configured =
-                QuicAdaptiveRuntimeStage1ConfiguredPolicy.Create(
-                    sendTurnForced: null,
-                    QuicApplicationSendTurnObservationMode.Shadow,
-                    QuicApplicationSendBatchPolicyMode.SingleEligible,
-                    QuicApplicationSendBatchObservationMode.Shadow,
-                    burstForced: null,
-                    QuicQueuedSendBurstObservationMode.Shadow,
-                    oversizedForced: null,
-                    QuicOversizedWriteAdmissionObservationMode.Shadow);
-            QuicAdaptiveRuntimeStage1EvidenceAccumulator accumulator =
-                new(in configured);
-            QuicAdaptiveRuntimeStage1EpochEvidence epoch =
-                accumulator.CaptureEpoch(1, 0, 250_000);
-            JsonSerializerOptions options =
-                new(JsonSerializerDefaults.Web);
-            options.Converters.Add(new JsonStringEnumConverter());
-            string json = JsonSerializer.Serialize(
-                new
-                {
-                    schemaVersion =
-                        "adaptive-runtime-stage1-unified-epoch-raw-v1",
-                    connectionKey = "connection-0001",
-                    epoch,
-                },
-                options);
+            string json = CreateSerializedRawEpoch();
             string rawPath = Path.Combine(temporaryDirectory, "raw-epoch.json");
             File.WriteAllText(rawPath, json);
 
@@ -412,6 +387,263 @@ public sealed partial class REQ_QUIC_CRT_0177
         }
     }
 
+    [Fact]
+    public void PermanentRawExporterPreservesHostLogsAndCreatesValidatedManifest()
+    {
+        string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        string temporaryDirectory = Path.Combine(
+            repoRoot,
+            ".artifacts",
+            "adaptive-runtime",
+            $"stage1-raw-exporter-test-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(temporaryDirectory);
+
+        try
+        {
+            string hostLogPath = Path.Combine(temporaryDirectory, "host.stdout.log");
+            File.WriteAllLines(
+                hostLogPath,
+                [
+                    "QUIC_ENDPOINT=127.0.0.1:4433",
+                    "QUIC_ADAPTIVE_RUNTIME_STAGE1_UNIFIED_EPOCH_JSON="
+                        + CreateSerializedRawEpoch(),
+                ]);
+            string outputDirectory = Path.Combine(temporaryDirectory, "export");
+
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult result =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Export-AdaptiveRuntimeStage1RawEpochs.ps1",
+                    "-HostLogPath",
+                    hostLogPath,
+                    "-OutputDirectory",
+                    outputDirectory);
+
+            Assert.True(result.ExitCode == 0, result.Output);
+            using JsonDocument summary = JsonDocument.Parse(result.Output);
+            Assert.Equal(
+                1,
+                summary.RootElement.GetProperty("rowCount").GetInt32());
+            Assert.Equal(
+                4,
+                summary.RootElement.GetProperty("axisRecordCount").GetInt32());
+            Assert.True(File.Exists(Path.Combine(
+                outputDirectory,
+                "stage1-unified-raw-epochs.jsonl")));
+            Assert.True(File.Exists(Path.Combine(
+                outputDirectory,
+                "raw-validation-summary.json")));
+            Assert.True(File.Exists(Path.Combine(
+                outputDirectory,
+                "raw-export-manifest.json")));
+
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult second =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Export-AdaptiveRuntimeStage1RawEpochs.ps1",
+                    "-HostLogPath",
+                    hostLogPath,
+                    "-OutputDirectory",
+                    outputDirectory);
+            Assert.NotEqual(0, second.ExitCode);
+            Assert.Contains(
+                "Append-only output path already exists",
+                second.Output,
+                StringComparison.Ordinal);
+        }
+        finally
+        {
+            Directory.Delete(temporaryDirectory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void PermanentUnifiedMaterializerJoinsRawEpochsToSampleProvenance()
+    {
+        string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        string temporaryDirectory = Path.Combine(
+            repoRoot,
+            ".artifacts",
+            "adaptive-runtime",
+            $"stage1-unified-materializer-test-{Guid.NewGuid():N}");
+        string sampleId = "sample-001";
+        string sampleDirectory = Path.Combine(temporaryDirectory, sampleId);
+        Directory.CreateDirectory(sampleDirectory);
+
+        try
+        {
+            string hostLogPath = Path.Combine(
+                sampleDirectory,
+                "host.stdout.log");
+            File.WriteAllLines(
+                hostLogPath,
+                [
+                    "QUIC_ADAPTIVE_RUNTIME_STAGE1_UNIFIED_EPOCH_JSON="
+                        + CreateSerializedRawEpoch(),
+                ]);
+            string exportDirectory = Path.Combine(
+                temporaryDirectory,
+                "raw-export");
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult export =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Export-AdaptiveRuntimeStage1RawEpochs.ps1",
+                    "-HostLogPath",
+                    hostLogPath,
+                    "-OutputDirectory",
+                    exportDirectory);
+            Assert.True(export.ExitCode == 0, export.Output);
+
+            string localResultPath = Path.Combine(
+                temporaryDirectory,
+                "local-result.json");
+            File.WriteAllText(
+                localResultPath,
+                JsonSerializer.Serialize(
+                    new
+                    {
+                        schemaVersion =
+                            "adaptive-runtime-policy-local-result-v1",
+                        campaignId = "stage1-unified-materializer-test",
+                        runId = "stage1-unified-materializer-test-run",
+                        cellId = "correctness-smoke",
+                        classification = "diagnostic",
+                        repositoryIdentities = new[]
+                        {
+                            new
+                            {
+                                name = "quic-dotnet",
+                                commit = new string('a', 40),
+                            },
+                        },
+                        binaryProvenance = new
+                        {
+                            assemblies = new[]
+                            {
+                                new
+                                {
+                                    role = "candidate_benchmark",
+                                    sha256 = new string('b', 64),
+                                },
+                                new
+                                {
+                                    role = "candidate_runtime",
+                                    sha256 = new string('c', 64),
+                                },
+                            },
+                        },
+                        environment = new
+                        {
+                            hostFingerprint = "test-host-fingerprint",
+                        },
+                        workload = new
+                        {
+                            scenarioId = "analysis-only-test-scenario",
+                            trafficShape = "duplex",
+                            payloadBytes = 65_536,
+                            concurrency = 1,
+                            effectiveConcurrency = 1,
+                        },
+                        samples = new[]
+                        {
+                            new
+                            {
+                                sampleId,
+                                correctness = new
+                                {
+                                    payloadValidated = true,
+                                    protocolErrors = 0,
+                                    timedOutOperations = 0,
+                                    failedOperations = 0,
+                                    cancellationFailures = 0,
+                                    disposalFailures = 0,
+                                    invariantViolations =
+                                        Array.Empty<string>(),
+                                },
+                            },
+                        },
+                    }));
+
+            string materializedDirectory = Path.Combine(
+                temporaryDirectory,
+                "materialized");
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult materialized =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Convert-AdaptiveRuntimeStage1UnifiedEpochs.ps1",
+                    "-RawEpochPath",
+                    Path.Combine(
+                        exportDirectory,
+                        "stage1-unified-raw-epochs.jsonl"),
+                    "-RawExportManifestPath",
+                    Path.Combine(
+                        exportDirectory,
+                        "raw-export-manifest.json"),
+                    "-LocalResultPath",
+                    localResultPath,
+                    "-OutputDirectory",
+                    materializedDirectory);
+
+            Assert.True(materialized.ExitCode == 0, materialized.Output);
+            using JsonDocument summary = JsonDocument.Parse(
+                materialized.Output);
+            Assert.Equal(
+                1,
+                summary.RootElement
+                    .GetProperty("unifiedEpochRowCount")
+                    .GetInt32());
+            Assert.Equal(
+                4,
+                summary.RootElement
+                    .GetProperty("axisDecisionRowCount")
+                    .GetInt32());
+            Assert.True(
+                summary.RootElement
+                    .GetProperty("excludedFromPolicyAcceptance")
+                    .GetBoolean());
+
+            string unifiedPath = Path.Combine(
+                materializedDirectory,
+                "stage1-unified-epochs.jsonl");
+            using JsonDocument unified = JsonDocument.Parse(
+                File.ReadAllText(unifiedPath));
+            Assert.Equal(
+                sampleId,
+                unified.RootElement.GetProperty("sampleId").GetString());
+            Assert.Equal(
+                4,
+                unified.RootElement
+                    .GetProperty("axisRecords")
+                    .GetArrayLength());
+            Assert.True(
+                unified.RootElement
+                    .GetProperty("workloadAnalysisOnly")
+                    .GetProperty("excludedFromProductionFeatures")
+                    .GetBoolean());
+
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult second =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Convert-AdaptiveRuntimeStage1UnifiedEpochs.ps1",
+                    "-RawEpochPath",
+                    Path.Combine(
+                        exportDirectory,
+                        "stage1-unified-raw-epochs.jsonl"),
+                    "-RawExportManifestPath",
+                    Path.Combine(
+                        exportDirectory,
+                        "raw-export-manifest.json"),
+                    "-LocalResultPath",
+                    localResultPath,
+                    "-OutputDirectory",
+                    materializedDirectory);
+            Assert.NotEqual(0, second.ExitCode);
+            Assert.Contains(
+                "Append-only output path already exists",
+                second.Output,
+                StringComparison.Ordinal);
+        }
+        finally
+        {
+            Directory.Delete(temporaryDirectory, recursive: true);
+        }
+    }
+
     private static void AssertMissing(
         QuicAdaptiveRuntimeStage1EpochAxisRecord record)
     {
@@ -425,6 +657,36 @@ public sealed partial class REQ_QUIC_CRT_0177
             QuicAdaptiveRuntimeStage1LatchState.Unlatched,
             record.Decision.LatchState);
         Assert.Equal(0UL, record.Decision.LatchSequence);
+    }
+
+    private static string CreateSerializedRawEpoch()
+    {
+        QuicAdaptiveRuntimeStage1PolicySnapshot configured =
+            QuicAdaptiveRuntimeStage1ConfiguredPolicy.Create(
+                sendTurnForced: null,
+                QuicApplicationSendTurnObservationMode.Shadow,
+                QuicApplicationSendBatchPolicyMode.SingleEligible,
+                QuicApplicationSendBatchObservationMode.Shadow,
+                burstForced: null,
+                QuicQueuedSendBurstObservationMode.Shadow,
+                oversizedForced: null,
+                QuicOversizedWriteAdmissionObservationMode.Shadow);
+        QuicAdaptiveRuntimeStage1EvidenceAccumulator accumulator =
+            new(in configured);
+        QuicAdaptiveRuntimeStage1EpochEvidence epoch =
+            accumulator.CaptureEpoch(1, 0, 250_000);
+        JsonSerializerOptions options =
+            new(JsonSerializerDefaults.Web);
+        options.Converters.Add(new JsonStringEnumConverter());
+        return JsonSerializer.Serialize(
+            new
+            {
+                schemaVersion =
+                    "adaptive-runtime-stage1-unified-epoch-raw-v1",
+                connectionKey = "connection-0001",
+                epoch,
+            },
+            options);
     }
 
     private sealed class RecordingEpochSink : IQuicAdaptiveRuntimeShadowEpochSink

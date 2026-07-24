@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-stage1-raw-export-manifest-v1.schema.json",
+  "title": "Adaptive Runtime Stage 1 Raw Export Manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "createdUtc",
+    "rawEpochSchemaVersion",
+    "rowCount",
+    "axisRecordCount",
+    "missingEventAxisCount",
+    "sources",
+    "artifacts"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "adaptive-runtime-stage1-raw-export-manifest-v1"
+    },
+    "createdUtc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rawEpochSchemaVersion": {
+      "const": "adaptive-runtime-stage1-unified-epoch-raw-v1"
+    },
+    "rowCount": { "$ref": "#/$defs/unsignedInteger" },
+    "axisRecordCount": { "$ref": "#/$defs/unsignedInteger" },
+    "missingEventAxisCount": { "$ref": "#/$defs/unsignedInteger" },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "rowCount"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": { "$ref": "#/$defs/sha256" },
+          "rowCount": { "$ref": "#/$defs/unsignedInteger" }
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "path", "sha256", "bytes"],
+        "properties": {
+          "role": { "enum": ["raw_epochs", "validation_summary"] },
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": { "$ref": "#/$defs/sha256" },
+          "bytes": { "$ref": "#/$defs/unsignedInteger" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "unsignedInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

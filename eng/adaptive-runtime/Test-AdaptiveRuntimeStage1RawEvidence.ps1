@@ -85,12 +85,16 @@ foreach ($path in $RawEpochPath) {
 
 $axisRecordCount = 0
 $missingEventAxisCount = 0
+$connectionKeyResetCount = 0
 foreach ($row in $rows) {
     $connectionKey = [string] $row.connectionKey
     $epochIndex = [ulong] $row.epoch.epochIndex
     if ($lastEpochByConnection.ContainsKey($connectionKey)) {
         $previousEpoch = $lastEpochByConnection[$connectionKey]
-        if ($epochIndex -le $previousEpoch) {
+        if ($epochIndex -eq 1) {
+            $connectionKeyResetCount++
+        }
+        elseif ($epochIndex -le $previousEpoch) {
             $failures.Add(
                 "Connection '$connectionKey' has non-increasing epoch index '$epochIndex' after '$previousEpoch'.")
         }
@@ -163,6 +167,7 @@ $summary = [ordered]@{
     rawEpochRowCount = $rows.Count
     axisRecordCount = $axisRecordCount
     missingEventAxisCount = $missingEventAxisCount
+    connectionKeyResetCount = $connectionKeyResetCount
     failures = @($failures)
 }
 
