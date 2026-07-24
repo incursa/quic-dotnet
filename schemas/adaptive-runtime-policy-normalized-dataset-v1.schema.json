@@ -368,7 +368,10 @@
         },
         "policyAxis": {
           "type": "string",
-          "const": "receive_credit_publication"
+          "enum": [
+            "receive_credit_publication",
+            "application_send_turn_planning"
+          ]
         },
         "classification": {
           "$ref": "#/$defs/classification"

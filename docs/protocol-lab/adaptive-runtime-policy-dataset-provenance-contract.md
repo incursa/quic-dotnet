@@ -61,6 +61,13 @@ dry runs, and focused tests remain verification artifacts rather than campaign
 evidence or analysis inputs; only executed, classified, schema-valid cells may
 enter the append-only campaign layers.
 
+The normalized v1 dataset keeps `receive_credit_publication` and
+`application_send_turn_planning` as separate closed `policyAxis` values. The
+pipeline may materialize either axis through the same join contract, but it
+must not pool their observations, rule identities, counterfactual groups, or
+curation claims. Construction-only send-turn provenance remains outside the
+epoch pipeline.
+
 ## Row Semantics
 
 An epoch row contains pre-decision observations, the policy applied during the

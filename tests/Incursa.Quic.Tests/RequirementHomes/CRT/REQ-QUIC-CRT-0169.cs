@@ -135,6 +135,29 @@ public sealed class REQ_QUIC_CRT_0169
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void NormalizedDatasetSchemaKeepsReceiveCreditAndSendTurnAxesDistinct()
+    {
+        using JsonDocument schema = ReadRepositoryJson(
+            "schemas/adaptive-runtime-policy-normalized-dataset-v1.schema.json");
+
+        string[] axisIds = schema.RootElement
+            .GetProperty("$defs")
+            .GetProperty("normalizedRow")
+            .GetProperty("properties")
+            .GetProperty("policyAxis")
+            .GetProperty("enum")
+            .EnumerateArray()
+            .Select(static item => item.GetString()!)
+            .ToArray();
+
+        Assert.Equal(
+            ["application_send_turn_planning", "receive_credit_publication"],
+            axisIds.Order(StringComparer.Ordinal).ToArray());
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RuntimeObservationProhibitsTransportAndApplicationIdentity()
