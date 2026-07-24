@@ -824,3 +824,32 @@ independent-host c128 handshake row, contribute adaptive-policy epochs, or
 authorize a Stage 1 axis. The active measurement-only axis remains
 `application_send_turn_planning=legacy_current`, and all adjacent axes remain
 `legacy_current`.
+
+### Package Provenance Resolution Gate
+
+Read-only review of the ProtocolLab internal build contract establishes that
+ordinary adapter conformance intentionally validates the released
+`Incursa.Quic` package: `Directory.Build.props` pins
+`IncursaQuicVersion` to `1.0.6`, and
+`IncursaRawQuicServer.csproj` selects that package unless the explicit
+`IncursaQuicSourceRoot` property is supplied. The source-root environment
+variable is therefore a useful current-source diagnostic mode, not a valid way
+to make the released-package correctness check disappear.
+
+ProtocolLab's source/package parity machinery likewise requires one
+source-backed and one package-backed cell and treats missing or failed parity
+as a conservative blocker. Accordingly, the retained `1.0.6` failure and the
+current-source 5/5 pass are separate evidence records. They establish a
+released-artifact correctness discrepancy; they do not establish package
+parity, a performance result, or an adaptive-runtime policy result.
+
+The safe resolution is deliberately narrow: retain the package failure,
+identify the approved released-package update or remediation path, and rerun
+the unchanged package-backed conformance check against the resulting exact
+package identity. Do not suppress the Raw QUIC conformance tests, set
+`IncursaQuicSourceRoot` in ordinary CI as a bypass, merge unrelated
+instrumentation based on the source-only pass, publish a package without the
+normal release decision, or deploy a new ProtocolLab campaign from this
+diagnostic alone. This is a package correctness and provenance gate; the
+available multi-host ProtocolLab capacity remains suitable for the later,
+reviewed campaign once that gate is resolved.
