@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-post-service-boundary-v1.schema.json",
+  "title": "Adaptive Runtime Post-Service Boundary v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "connectionEpochSequence",
+    "epochEndTicks",
+    "source",
+    "disposition",
+    "actorServiceSequence",
+    "actorObservationPublished",
+    "resourceReleaseCompleted",
+    "validity",
+    "boundaryContractVersion"
+  ],
+  "properties": {
+    "connectionEpochSequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "epochEndTicks": { "type": "integer" },
+    "source": {
+      "enum": [
+        "HostedShard",
+        "IndependentConsumer",
+        0,
+        1
+      ]
+    },
+    "disposition": {
+      "enum": [
+        "Completed",
+        "SkippedDisposed",
+        "SkippedIndependentConsumer",
+        "Faulted",
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "actorServiceSequence": {
+      "type": ["integer", "null"],
+      "minimum": 1
+    },
+    "actorObservationPublished": { "type": "boolean" },
+    "resourceReleaseCompleted": { "type": "boolean" },
+    "validity": { "type": ["string", "integer"] },
+    "boundaryContractVersion": {
+      "const": "adaptive-runtime-post-service-boundary-v1"
+    }
+  }
+}

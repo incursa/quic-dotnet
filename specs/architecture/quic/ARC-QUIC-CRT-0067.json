@@ -6,7 +6,7 @@
   "title": "Stage 2 actor service observation architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Add bounded connection-local actor service evidence without installing a work-quantum policy or changing shard scheduling.",
+  "purpose": "Add bounded connection-local actor service evidence and a versioned post-service Stage 1 and Stage 2 join without installing a work-quantum policy or changing shard scheduling.",
   "related_artifacts": [
     "SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY",
     "ARC-QUIC-CRT-0066",
@@ -15,13 +15,15 @@
   ],
   "satisfies": [
     "REQ-QUIC-CRT-0181",
-    "REQ-QUIC-CRT-0182"
+    "REQ-QUIC-CRT-0182",
+    "REQ-QUIC-CRT-0183"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicActorServiceObservation.cs",
     "src/Incursa.Quic/QuicActorServiceEpochAccumulator.cs",
     "src/Incursa.Quic/QuicBufferCopyObservation.cs",
     "src/Incursa.Quic/QuicBufferCopyEpochAccumulator.cs",
+    "src/Incursa.Quic/QuicAdaptiveRuntimeUnifiedEpochEvidence.cs",
     "src/Incursa.Quic/QuicConnectionOptions.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
     "src/Incursa.Quic/QuicConnectionRuntimeShard.cs",
@@ -34,16 +36,19 @@
     "schemas/adaptive-runtime-actor-service-epoch-v1.schema.json",
     "schemas/adaptive-runtime-buffer-copy-observation-v2.schema.json",
     "schemas/adaptive-runtime-buffer-copy-epoch-v2.schema.json",
+    "schemas/adaptive-runtime-epoch-raw-v2.schema.json",
+    "schemas/adaptive-runtime-post-service-boundary-v1.schema.json",
+    "schemas/adaptive-runtime-unified-epoch-evidence-v1.schema.json",
     "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md",
     "docs/design/adaptive-runtime-stage2-buffer-ownership-copy-inventory.md"
   ],
-  "design_summary": "A connection can independently opt into actor-service and buffer-copy ObserveOnly sinks. The existing shard records a compact immutable actor value after each complete transition and effect dispatch. Existing ownership boundaries record legacy_current retry copies, oversized raw queue copies, formatted payloads, combined payloads, sent-plaintext retention, owned path-migration retransmission clones, and receive-segment insertion or capacity reuse with logical and copied bytes, segment and capacity counts, join scope, versions, reason, latch, lifecycle, and explicit missing state. A configure-once connection-local operation observer links the retransmission queue and stream bookkeeping to the runtime evidence sink; both producer and sink failures are guarded so they cannot affect progress or ownership. Fixed-field v2 accumulators build bounded summaries while retained v1 schemas remain immutable. The legacy shard drain and copy/ownership paths remain the only applied behavior.",
+  "design_summary": "A connection can independently opt into actor-service and buffer-copy ObserveOnly sinks. The existing shard records a compact immutable actor value after each complete transition and effect dispatch. Existing ownership boundaries record legacy_current retry copies, oversized raw queue copies, formatted payloads, combined payloads, sent-plaintext retention, owned path-migration retransmission clones, and receive-segment insertion or capacity reuse with logical and copied bytes, segment and capacity counts, join scope, versions, reason, latch, lifecycle, and explicit missing state. A configure-once connection-local operation observer links the retransmission queue and stream bookkeeping to the runtime evidence sink; both producer and sink failures are guarded so they cannot affect progress or ownership. Fixed-field v2 accumulators build bounded summaries while retained v1 schemas remain immutable. An eligible epoch callback now occurs only after effect dispatch, follow-on measurement, actor publication, and work-item or connection-event resource release. A versioned boundary repeats the connection epoch sequence and end tick and records source, disposition, actor publication, release completion, and explicit missing or fault state. One guarded accumulator seals the four Stage 1 axis records, actor summary, and buffer summary only when connection observation, receive-credit snapshot, and boundary keys match monotonically. The legacy shard drain and copy or ownership paths remain the only applied behavior.",
   "data_and_state_considerations": "The observations and accumulators use enums, immutable record structs, fixed scalar fields, and connection-local accumulator locks. They introduce no per-packet dependency injection, dictionary, model, global lock, or unbounded state. The application-send queue, sent-packet store, and retransmission queue maintain total retained count, capacity, and oldest time at existing ownership transitions so their total retention snapshots no longer scan; application-send queue-cause and sent-packet storage or packet-number-span detail remain diagnostic scans. Missing runnable-connection count, oldest shard item age, deadline lateness, reviewed useful-work units, exact buffer release, retained age, and pool outstanding state remain explicit. Wake grouping is complete only when the run manifest proves full-shard observation coverage.",
   "edge_cases_and_constraints": [
     "Observation may measure existing follow-on counts but cannot limit or defer them.",
     "A throwing or rejecting sink cannot interrupt transition, effect, ownership release, cancellation, disposal, recovery, timer, or terminal work.",
     "Queue delay is not oldest-shard-item age, pending work-item count is not runnable-connection count, and timer service is not deadline lateness.",
-    "The Stage 1 epoch callback precedes complete actor service and cannot silently own the Stage 2 summary boundary.",
+    "The post-service callback may seal Stage 2 summaries only after actor publication and resource release; invalid joins are rejected before reset.",
     "Actor_work_quantum remains legacy_current and non-forceable until cooperative checkpoints and exactly-once repost are separately designed and verified.",
     "Buffer_copy_coalescing remains legacy_current and non-forceable until a distinct conservative implementation and exact terminal-release correlation are separately designed and verified.",
     "Active_internal and production activation remain unauthorized."
@@ -52,7 +57,7 @@
     "Use existing aggregate metrics as the dataset contract. Rejected because they are not connection-attributable, versioned, or deterministically joinable.",
     "Treat each dequeued event as one equal work unit. Rejected because packet, API, timer, effect, and follow-on costs differ materially.",
     "Add a quantum while instrumenting the loop. Rejected because no exactly-once repost or reviewed preemption seam exists.",
-    "Insert the actor summary into the current Stage 1 epoch callback. Rejected because that callback occurs before complete actor service and would shift or truncate attribution."
+    "Insert the actor summary into the former Stage 1 pre-service epoch callback. Rejected because that callback occurred before complete actor service and would shift or truncate attribution."
   ],
   "risks": [
     "Observation overhead can perturb hot shard paths; disabled-path and later manual or nightly allocation checks remain required.",
@@ -61,7 +66,7 @@
     "Primitive counts can be mistaken for a reviewed scalar quantum; UsefulWorkUnitsUndefined prevents that claim."
   ],
   "open_questions": [
-    "Which post-service boundary will publish actor epoch summaries and join them to Stage 1 epochs without shifting attribution?",
+    "Which permanent raw exporter will retain joined records, sequence gaps, sink failures, commands, hashes, and run provenance without adding unbounded connection state?",
     "Which bounded shard-pressure snapshot can expose runnable connection count and oldest item age without a global lock?"
   ]
 }

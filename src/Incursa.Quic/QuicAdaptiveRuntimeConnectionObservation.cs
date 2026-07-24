@@ -47,9 +47,42 @@ internal readonly record struct QuicAdaptiveRuntimeConnectionObservation(
     internal const string CurrentPolicyRuleVersion = "receive-credit-legacy-v1";
 }
 
+internal enum QuicAdaptiveRuntimePostServiceBoundarySource : byte
+{
+    HostedShard = 0,
+    IndependentConsumer = 1,
+}
+
+[Flags]
+internal enum QuicAdaptiveRuntimePostServiceBoundaryValidity : byte
+{
+    None = 0,
+    ActorObservationUnavailable = 1 << 0,
+    ResourceReleaseIncomplete = 1 << 1,
+    FaultedService = 1 << 2,
+}
+
+internal readonly record struct QuicAdaptiveRuntimePostServiceBoundary(
+    ulong ConnectionEpochSequence,
+    long EpochEndTicks,
+    QuicAdaptiveRuntimePostServiceBoundarySource Source,
+    QuicActorServiceDisposition Disposition,
+    ulong? ActorServiceSequence,
+    bool ActorObservationPublished,
+    bool ResourceReleaseCompleted,
+    QuicAdaptiveRuntimePostServiceBoundaryValidity Validity)
+{
+    internal const string CurrentBoundaryContractVersion =
+        "adaptive-runtime-post-service-boundary-v1";
+
+    public string BoundaryContractVersion =>
+        CurrentBoundaryContractVersion;
+}
+
 internal interface IQuicAdaptiveRuntimeShadowEpochSink
 {
     bool TryPublish(
         in QuicAdaptiveRuntimeConnectionObservation observation,
-        in QuicReceiveCreditPolicySnapshot snapshot);
+        in QuicReceiveCreditPolicySnapshot snapshot,
+        in QuicAdaptiveRuntimePostServiceBoundary boundary);
 }

@@ -155,11 +155,30 @@ All additions saturate, and saturation remains visible. The accumulator uses
 no dictionary, stream scan, global lock, policy lookup, model, or unbounded
 collection.
 
-The current Stage 1 epoch callback occurs before the complete actor service
-duration and effect work are known. Stage 2 actor summaries therefore must not
-be silently inserted into that earlier boundary. A later evidence slice must
-define an exact post-service epoch boundary and deterministic Stage 1/Stage 2
-join before permanent raw export is enabled.
+The former Stage 1 epoch callback occurred before complete actor service,
+effect work, follow-on measurement, actor observation, and work-item resource
+release. `adaptive-runtime-post-service-boundary-v1` now defines the exact
+replacement export boundary. Hosted-shard publication occurs after actor
+observation and resource release. Independent-consumer publication occurs
+after connection-event resource release. Each boundary repeats the connection
+epoch sequence and end tick, names its execution source, records disposition,
+actor-observation publication, resource-release completion, and explicit
+fault or missing validity.
+
+`QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator` accepts all four Stage 1
+axis evidence streams plus actor-service and buffer-copy observations. It
+seals fixed Stage 1, actor, and buffer summaries only when the versioned
+post-service callback supplies an exactly matching connection observation,
+receive-credit snapshot, and boundary. The deterministic join requires equal
+connection epoch sequence and epoch end tick. A mismatched, duplicate,
+out-of-order, or nonpositive epoch is rejected before any accumulator resets.
+The joined record is
+`adaptive-runtime-unified-epoch-evidence-v1`.
+
+This boundary does not itself enable permanent raw-file export. A later
+harness slice must configure the same unified accumulator as every relevant
+connection-local evidence sink and retain sink failures, sequence gaps, raw
+records, commands, hashes, and run provenance.
 
 ## Explicitly Missing V1 Inputs
 
@@ -239,7 +258,7 @@ cancellation, disposal, or terminal work.
 
 ## Verification
 
-Requirement home `REQ-QUIC-CRT-0181` verifies:
+Requirement homes `REQ-QUIC-CRT-0181` and `REQ-QUIC-CRT-0183` verify:
 
 - exact observe-only mode and sink pairing;
 - one versioned record per observed shard dispatch;
@@ -249,7 +268,12 @@ Requirement home `REQ-QUIC-CRT-0181` verifies:
 - semantic count and sequence validation;
 - bounded epoch accumulation and reset;
 - follow-on attribution; and
-- sink-failure neutrality.
+- sink-failure neutrality;
+- hosted post-service ordering after actor observation and resource release;
+- versioned source, disposition, actor-publication, release, and fault state;
+- exact connection-observation, receive-credit, and boundary join keys;
+- rejection before reset for an invalid join; and
+- schema-valid boundary and unified evidence records.
 
 Existing shard, deadline, receive-buffer ownership, work-item layout, metrics,
 and stream-capacity homes remain authoritative. Performance measurements stay

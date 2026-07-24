@@ -693,7 +693,8 @@ public sealed partial class REQ_QUIC_CRT_0177
     {
         public bool TryPublish(
             in QuicAdaptiveRuntimeConnectionObservation observation,
-            in QuicReceiveCreditPolicySnapshot snapshot)
+            in QuicReceiveCreditPolicySnapshot snapshot,
+            in QuicAdaptiveRuntimePostServiceBoundary boundary)
             => true;
     }
 

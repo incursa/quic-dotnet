@@ -660,6 +660,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         var applicationSendFollowOnCount = 0;
         var flowControlFollowOnCount = 0;
         var streamCapacityFollowOnCount = 0;
+        bool transitionCompleted = false;
+        ulong? actorServiceSequence = null;
+        bool actorObservationPublished = false;
         QuicActorServiceDisposition actorDisposition =
             QuicActorServiceDisposition.Completed;
         try
@@ -727,8 +730,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                         finalizePendingApplicationAck),
                 _ => runtime.Transition(workItem.ConnectionEvent!, clock.Ticks),
             };
+            transitionCompleted = true;
             effectCount = result.EffectCount;
-            runtime.TryPublishReceiveCreditShadowAtActorBoundary(result.ObservedAtTicks);
             transitionObserver?.Invoke(workItem.Handle, result);
             runtime.ApplyPendingHostedTimerUpdates(workItem.Handle, deadlineScheduler);
             QuicMetrics.RecordRuntimeShardPhaseTime(
@@ -848,7 +851,11 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         }
         catch
         {
+            // The assignment is consumed by the post-service work in finally
+            // while this exception unwinds.
+#pragma warning disable S1854
             actorDisposition = QuicActorServiceDisposition.Faulted;
+#pragma warning restore S1854
             throw;
         }
         finally
@@ -890,8 +897,10 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                         serviceStartedTimestamp);
                 }
 
+                actorServiceSequence =
+                    runtime.GetNextActorServiceObservationSequence();
                 QuicActorServiceObservation observation = new(
-                    runtime.GetNextActorServiceObservationSequence(),
+                    actorServiceSequence.Value,
                     shardIndex,
                     actorWakeSequence,
                     actorWakePosition,
@@ -917,10 +926,29 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     runtime.Phase,
                     runtime.IsDisposed,
                     validity);
-                runtime.TryPublishActorServiceObservation(in observation);
+                actorObservationPublished =
+                    runtime.TryPublishActorServiceObservation(in observation);
             }
 
-            ReleaseWorkItemResources(workItem);
+            bool resourceReleaseCompleted = false;
+            try
+            {
+                ReleaseWorkItemResources(workItem);
+                resourceReleaseCompleted = true;
+            }
+            finally
+            {
+                if (transitionCompleted && runtime is not null)
+                {
+                    runtime.TryPublishReceiveCreditShadowAtPostServiceBoundary(
+                        clock.Ticks,
+                        QuicAdaptiveRuntimePostServiceBoundarySource.HostedShard,
+                        actorDisposition,
+                        actorServiceSequence,
+                        actorObservationPublished,
+                        resourceReleaseCompleted);
+                }
+            }
         }
     }
 

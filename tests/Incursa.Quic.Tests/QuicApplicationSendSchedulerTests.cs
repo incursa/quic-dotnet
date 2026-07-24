@@ -444,7 +444,7 @@ public sealed class QuicApplicationSendSchedulerTests
     }
 
     [Fact]
-    public void AdaptiveRuntimeShadowRejectsANonlegacyForcedTurnPolicy()
+    public void AdaptiveRuntimeShadowKeepsTheForcedTurnTreatmentDistinctFromTheShadowRecommendation()
     {
         using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
         QuicClientConnectionOptions options = new()
@@ -453,9 +453,14 @@ public sealed class QuicApplicationSendSchedulerTests
             ForcedApplicationSendTurnPolicyMode = QuicApplicationSendTurnPolicyMode.Conservative,
         };
 
-        Assert.Throws<InvalidOperationException>(() => runtime.ConfigureAdaptiveRuntimePolicy(options));
-        Assert.Equal(QuicApplicationSendTurnPolicyMode.LegacyCurrent, runtime.ApplicationSendTurnPolicyMode);
-        Assert.Null(runtime.ApplicationSendTurnPlanner);
+        runtime.ConfigureAdaptiveRuntimePolicy(options);
+
+        Assert.Equal(
+            QuicApplicationSendTurnPolicyMode.Conservative,
+            runtime.ApplicationSendTurnPolicyMode);
+        Assert.Same(
+            QuicCurrentApplicationSendTurnPlanner.Instance,
+            runtime.ApplicationSendTurnPlanner);
     }
 
     [Fact]

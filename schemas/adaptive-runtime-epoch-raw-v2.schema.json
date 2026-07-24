@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-epoch-raw-v2.schema.json",
+  "title": "Adaptive Runtime Raw Connection Epoch v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "connectionKey",
+    "observation",
+    "snapshot",
+    "postServiceBoundary"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "adaptive-runtime-epoch-raw-v2" },
+    "connectionKey": { "type": "string", "minLength": 1 },
+    "observation": {
+      "type": "object",
+      "required": [
+        "connectionEpochSequence",
+        "epochStartTicks",
+        "epochEndTicks",
+        "activeDurationMicros",
+        "observationContractVersion",
+        "policyRuleVersion"
+      ],
+      "properties": {
+        "connectionEpochSequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "epochStartTicks": { "type": "integer" },
+        "epochEndTicks": { "type": "integer" },
+        "activeDurationMicros": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "observationContractVersion": {
+          "const": "adaptive-runtime-connection-observation-v1"
+        },
+        "policyRuleVersion": {
+          "const": "receive-credit-legacy-v1"
+        }
+      }
+    },
+    "snapshot": {
+      "type": "object",
+      "required": [
+        "snapshotVersion",
+        "ruleVersion",
+        "epochSequence",
+        "appliedPolicy",
+        "proposedPolicy",
+        "reason"
+      ],
+      "properties": {
+        "snapshotVersion": { "type": "integer", "minimum": 1 },
+        "ruleVersion": { "type": "string", "minLength": 1 },
+        "epochSequence": { "type": "integer", "minimum": 1 },
+        "appliedPolicy": { "type": ["string", "integer"] },
+        "proposedPolicy": { "type": ["string", "integer"] },
+        "reason": { "type": ["string", "integer"] }
+      }
+    },
+    "postServiceBoundary": {
+      "type": "object",
+      "required": [
+        "connectionEpochSequence",
+        "epochEndTicks",
+        "source",
+        "disposition",
+        "actorServiceSequence",
+        "actorObservationPublished",
+        "resourceReleaseCompleted",
+        "validity",
+        "boundaryContractVersion"
+      ],
+      "properties": {
+        "connectionEpochSequence": { "type": "integer", "minimum": 1 },
+        "epochEndTicks": { "type": "integer" },
+        "source": { "type": ["string", "integer"] },
+        "disposition": { "type": ["string", "integer"] },
+        "actorServiceSequence": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        },
+        "actorObservationPublished": { "type": "boolean" },
+        "resourceReleaseCompleted": { "type": "boolean" },
+        "validity": { "type": ["string", "integer"] },
+        "boundaryContractVersion": {
+          "const": "adaptive-runtime-post-service-boundary-v1"
+        }
+      }
+    }
+  }
+}

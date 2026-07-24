@@ -1035,7 +1035,9 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
             $shadowContract = [regex]::Match(
                 $campaignHostStdout,
                 'QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=([^\r\n]+)').Groups[1].Value
-            if ($shadowContract -ne 'adaptive-runtime-epoch-raw-v1') {
+            if ($shadowContract -notin @(
+                    'adaptive-runtime-epoch-raw-v1',
+                    'adaptive-runtime-epoch-raw-v2')) {
                 $contractFailures.Add("$sampleId`: adaptive-runtime epoch raw contract was not reported.")
             }
 

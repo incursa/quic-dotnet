@@ -6,8 +6,9 @@ title: "Adaptive Runtime Connection Observation Schema"
 
 Status: unified Stage 1 four-axis runtime emission, materialization, semantic
 validation, and the first correctness smoke are checkpointed; the Stage 2
-actor-service observation and bounded epoch contracts are implemented without
-a forceable actor policy or permanent Stage 1 join; broader correctness,
+actor-service observation, bounded epoch, versioned post-service boundary, and
+internal Stage 1/Stage 2 join contracts are implemented without a forceable
+actor policy or permanent raw-file exporter; broader correctness,
 independent-host, and active-policy review remain open
 
 The controller consumes one immutable, connection-local observation per
@@ -96,10 +97,32 @@ This v1 contract intentionally marks runnable-connection count, oldest shard
 item age, deadline lateness, and useful work units unavailable. It does not
 define policy values, forcing, shadow selection, or a latch for
 `actor_work_quantum`; the applied shard behavior remains `legacy_current`.
-The current Stage 1 epoch callback occurs before complete actor service, so
-actor summaries are not silently inserted into that row. A later exact
-post-service export boundary must define deterministic join keys and preserve
-sample scope before permanent unified campaign emission.
+
+The versioned
+[`../../schemas/adaptive-runtime-post-service-boundary-v1.schema.json`](../../schemas/adaptive-runtime-post-service-boundary-v1.schema.json)
+record replaces the earlier pre-service callback location. A hosted-shard
+boundary is eligible only after effect dispatch, follow-on measurement, actor
+observation, and work-item resource release. An independent-consumer boundary
+is eligible only after connection-event resource release. The boundary repeats
+the connection epoch sequence and end tick and records execution source,
+disposition, actor publication, resource release, and explicit fault or
+missing state.
+
+The permanent raw host emits the compatible
+[`../../schemas/adaptive-runtime-epoch-raw-v2.schema.json`](../../schemas/adaptive-runtime-epoch-raw-v2.schema.json)
+wrapper for receive-credit observation and snapshot evidence. Version 2 adds
+the post-service boundary without relabeling retained version 1 rows. The
+local runner accepts both versions so existing append-only evidence remains
+readable.
+
+[`../../schemas/adaptive-runtime-unified-epoch-evidence-v1.schema.json`](../../schemas/adaptive-runtime-unified-epoch-evidence-v1.schema.json)
+defines the internal joined record. The accumulator rejects a mismatched,
+duplicate, out-of-order, or nonpositive connection-observation,
+receive-credit, and boundary join before resetting Stage 1, actor, or buffer
+state. Successful capture seals all three summaries under the same connection
+epoch key. Permanent run, host, binary, workload, checksum, classification,
+and raw-file provenance remains a harness/export responsibility and is not
+invented by this connection-local record.
 
 ## Stage 2 Buffer Copy Observation V2
 

@@ -6,7 +6,7 @@
   "title": "Implement Stage 2 actor service observations",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "summary": "Add behavior-neutral versioned actor service records and bounded epoch aggregation while preserving the legacy shard drain and deferring every forceable Stage 2 policy.",
+  "summary": "Add behavior-neutral versioned actor service records, bounded aggregation, and a post-service Stage 1 and Stage 2 join while preserving the legacy shard drain and deferring every forceable Stage 2 policy.",
   "related_artifacts": [
     "SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY",
     "ARC-QUIC-CRT-0067",
@@ -21,10 +21,11 @@
   ],
   "addresses": [
     "REQ-QUIC-CRT-0181",
-    "REQ-QUIC-CRT-0182"
+    "REQ-QUIC-CRT-0182",
+    "REQ-QUIC-CRT-0183"
   ],
-  "planned_changes": "Define independent disabled and observe-only actor-service and buffer-copy connection configuration; add versioned immutable observations and fixed-field epoch accumulators; capture existing actor queue, service, wake, work-kind, effect, follow-on, lifecycle, skip, and fault primitives; capture current send-side retry, raw queue, formatting, combination, sent-retention, path-migration retransmission-clone, and receive-segment insertion or reuse copy primitives; keep missing runnable, oldest-item, deadline-lateness, work-unit, terminal-release, retained-age, and pool-outstanding state explicit; add machine-readable schemas and semantic validation; test producer and sink neutrality, sequence, aggregation, reset, ownership, and existing shard correctness; then design exact terminal-release correlation and a post-service export boundary before permanent campaign emission.",
-  "verification_plan": "Build in Release before testing. Run REQ-QUIC-CRT-0181, REQ-QUIC-CRT-0182, existing shard, deadline, work-item layout, application-send queue, receive-buffer ownership, stream-capacity, flow-control, metrics, cancellation, disposal, retransmission, and terminal tests. Validate actor and buffer observation and epoch schemas plus semantic count, sequence, legacy-identity, capacity, and join rules. Run manual or nightly cost and allocation checks outside correctness CI before enabling permanent high-volume export. Do not force actor_work_quantum or buffer_copy_coalescing or claim fairness or performance improvement.",
+  "planned_changes": "Define independent disabled and observe-only actor-service and buffer-copy connection configuration; add versioned immutable observations and fixed-field epoch accumulators; capture existing actor queue, service, wake, work-kind, effect, follow-on, lifecycle, skip, and fault primitives; capture current send-side retry, raw queue, formatting, combination, sent-retention, path-migration retransmission-clone, and receive-segment insertion or reuse copy primitives; keep missing runnable, oldest-item, deadline-lateness, work-unit, terminal-release, retained-age, and pool-outstanding state explicit; move eligible epoch publication to a versioned post-service boundary after actor publication and resource release; seal Stage 1, actor, and buffer summaries only under exact monotonic join keys; add machine-readable schemas and semantic validation; test producer and sink neutrality, sequence, aggregation, reset, join rejection, ownership, and existing shard correctness; then design exact terminal-release correlation and permanent raw export before campaign emission.",
+  "verification_plan": "Build in Release before testing. Run REQ-QUIC-CRT-0181, REQ-QUIC-CRT-0182, REQ-QUIC-CRT-0183, existing shard, deadline, work-item layout, application-send queue, receive-buffer ownership, stream-capacity, flow-control, metrics, cancellation, disposal, retransmission, and terminal tests. Validate actor, buffer, post-service boundary, and unified epoch schemas plus semantic count, sequence, legacy-identity, capacity, and join rules. Run manual or nightly cost and allocation checks outside correctness CI before enabling permanent high-volume export. Do not force actor_work_quantum or buffer_copy_coalescing or claim fairness or performance improvement.",
   "out_of_scope": [
     "Forceable actor_work_quantum values",
     "Ready-stream fairness selection",

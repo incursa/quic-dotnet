@@ -104,7 +104,7 @@ public sealed class REQ_QUIC_CRT_0166
         });
 
         clock.Advance(Stopwatch.Frequency / 4);
-        runtime.TryPublishReceiveCreditShadowAtActorBoundary(clock.Ticks);
+        PublishAtPostServiceBoundary(runtime, clock.Ticks);
 
         Assert.Single(sink.Epochs);
         QuicReceiveCreditPolicySnapshot snapshot = sink.Epochs[0].Snapshot;
@@ -185,21 +185,21 @@ public sealed class REQ_QUIC_CRT_0166
         });
 
         clock.Advance(Stopwatch.Frequency / 8);
-        runtime.TryPublishReceiveCreditShadowAtActorBoundary(clock.Ticks);
+        PublishAtPostServiceBoundary(runtime, clock.Ticks);
         Assert.Empty(sink.Epochs);
 
         clock.Advance(Stopwatch.Frequency / 8);
-        runtime.TryPublishReceiveCreditShadowAtActorBoundary(clock.Ticks);
+        PublishAtPostServiceBoundary(runtime, clock.Ticks);
         QuicReceiveCreditPolicySnapshot first = Assert.Single(sink.Epochs).Snapshot;
         Assert.Equal(1UL, first.EpochSequence);
         Assert.Equal(QuicReceiveCreditPolicyMode.LegacyCurrent, first.AppliedPolicy);
         Assert.Equal(QuicReceiveCreditPolicyMode.ReadDominantBatch, first.ProposedPolicy);
 
-        runtime.TryPublishReceiveCreditShadowAtActorBoundary(clock.Ticks);
+        PublishAtPostServiceBoundary(runtime, clock.Ticks);
         Assert.Single(sink.Epochs);
 
         clock.Advance(Stopwatch.Frequency / 4);
-        runtime.TryPublishReceiveCreditShadowAtActorBoundary(clock.Ticks);
+        PublishAtPostServiceBoundary(runtime, clock.Ticks);
         Assert.Equal(2, sink.Epochs.Count);
         Assert.Equal(2UL, sink.Epochs[1].Snapshot.EpochSequence);
     }
@@ -219,7 +219,7 @@ public sealed class REQ_QUIC_CRT_0166
         });
 
         clock.Advance(Stopwatch.Frequency / 4);
-        runtime.TryPublishReceiveCreditShadowAtActorBoundary(clock.Ticks);
+        PublishAtPostServiceBoundary(runtime, clock.Ticks);
 
         Assert.False(runtime.ShouldUseBatchedReceiveCreditPath());
     }
@@ -240,6 +240,19 @@ public sealed class REQ_QUIC_CRT_0166
             () => runtime.ConfigureAdaptiveRuntimePolicy(options));
 
         Assert.Equal("Adaptive runtime epoch export requires shadow or forced mode.", exception.Message);
+    }
+
+    private static void PublishAtPostServiceBoundary(
+        QuicConnectionRuntime runtime,
+        long boundaryTicks)
+    {
+        runtime.TryPublishReceiveCreditShadowAtPostServiceBoundary(
+            boundaryTicks,
+            QuicAdaptiveRuntimePostServiceBoundarySource.HostedShard,
+            QuicActorServiceDisposition.Completed,
+            actorServiceSequence: 1,
+            actorObservationPublished: true,
+            resourceReleaseCompleted: true);
     }
 
     private static void RegisterDistinctStreamObservers(QuicConnectionRuntime runtime, int count)
@@ -269,13 +282,20 @@ public sealed class REQ_QUIC_CRT_0166
 
     private sealed class RecordingShadowEpochSink : IQuicAdaptiveRuntimeShadowEpochSink
     {
-        internal List<(QuicAdaptiveRuntimeConnectionObservation Observation, QuicReceiveCreditPolicySnapshot Snapshot)> Epochs { get; } = [];
+        internal List<(
+            QuicAdaptiveRuntimeConnectionObservation Observation,
+            QuicReceiveCreditPolicySnapshot Snapshot,
+            QuicAdaptiveRuntimePostServiceBoundary Boundary)> Epochs
+        {
+            get;
+        } = [];
 
         public bool TryPublish(
             in QuicAdaptiveRuntimeConnectionObservation observation,
-            in QuicReceiveCreditPolicySnapshot snapshot)
+            in QuicReceiveCreditPolicySnapshot snapshot,
+            in QuicAdaptiveRuntimePostServiceBoundary boundary)
         {
-            Epochs.Add((observation, snapshot));
+            Epochs.Add((observation, snapshot, boundary));
             return true;
         }
     }
@@ -284,7 +304,8 @@ public sealed class REQ_QUIC_CRT_0166
     {
         public bool TryPublish(
             in QuicAdaptiveRuntimeConnectionObservation observation,
-            in QuicReceiveCreditPolicySnapshot snapshot)
+            in QuicReceiveCreditPolicySnapshot snapshot,
+            in QuicAdaptiveRuntimePostServiceBoundary boundary)
             => throw new InvalidOperationException("diagnostic sink failure");
     }
 }

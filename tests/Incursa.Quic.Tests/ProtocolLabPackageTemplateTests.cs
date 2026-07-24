@@ -284,8 +284,12 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("\"observe_only\"", rawQuicServer);
         Assert.Contains("\"shadow\"", rawQuicServer);
         Assert.Contains(
-            "Only one adaptive-runtime policy axis can be forced or observed",
+            "Only one Stage 1 adaptive-runtime policy axis can be forced by a raw QUIC host process.",
             rawQuicServer);
+        Assert.Contains(
+            "QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=adaptive-runtime-epoch-raw-v2",
+            rawQuicServer);
+        Assert.Contains("PostServiceBoundary", rawQuicServer);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY", builderScript);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG: 1", builderScript);
         Assert.Contains("Raw QUIC package implementation manifest must contain exactly one ASPNETCORE_URLS environment anchor.", builderScript);

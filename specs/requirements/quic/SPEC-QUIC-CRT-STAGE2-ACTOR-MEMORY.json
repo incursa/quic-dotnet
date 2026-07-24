@@ -20,7 +20,7 @@
     "VER-QUIC-CRT-0069"
   ],
   "purpose": "Define bounded versioned actor service and buffer-copy observations before any actor-work, fairness, buffer, or backpressure policy becomes forceable.",
-  "scope": "This specification covers behavior-neutral per-connection actor service and selected send-side and receive-side buffer-copy observations, bounded epoch aggregation, explicit missing-state handling, schema and semantic validation, and the safety gates required before actor_work_quantum or buffer_copy_coalescing. It does not define a forceable actor policy, scalar work-unit threshold, distinct conservative buffer implementation, backpressure policy, active_internal behavior, or production activation.",
+  "scope": "This specification covers behavior-neutral per-connection actor service and selected send-side and receive-side buffer-copy observations, bounded epoch aggregation, a versioned post-service Stage 1 and Stage 2 join boundary, explicit missing-state handling, schema and semantic validation, and the safety gates required before actor_work_quantum or buffer_copy_coalescing. It does not define a permanent raw-file exporter, forceable actor policy, scalar work-unit threshold, distinct conservative buffer implementation, backpressure policy, active_internal behavior, or production activation.",
   "context": "The shard already exposes aggregate queue-delay, service-time, wake, packet-run, and follow-on metrics, but it does not expose a versioned connection-attributable evidence contract or an exactly-once repost seam. Stage 2 must preserve the current drain loop and record honest primitives before proposing a quantum.",
   "open_questions": [
     "Which cooperative transition and effect boundaries can yield while preserving exactly-once repost, timer priority, recovery, terminal drain, and buffer ownership?",
@@ -79,6 +79,34 @@
       "notes": [
         "Only legacy_current is a real buffer-copy policy value in this slice.",
         "The observation seam cannot be used as fabricated counterfactual policy coverage."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0183",
+      "title": "Seal unified evidence at a versioned post-service boundary",
+      "statement": "The runtime MUST publish an eligible adaptive-runtime epoch only after the serviced transition, effects, follow-on measurement, actor observation, and owned work-item or connection-event resource release; record a versioned bounded boundary containing the connection epoch key, exact end tick, execution source, disposition, actor-publication state, release completion, and explicit fault or missing validity; require exact monotonic connection-observation, receive-credit, boundary, Stage 1, actor, and buffer join keys before resetting any accumulator; keep mismatched, duplicate, out-of-order, failed-sink, and partial evidence explicit and behavior-neutral; and preserve legacy_current policy application, protocol progress, recovery, cancellation, disposal, terminal work, and ownership.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0067"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0068"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0069"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-observation-schema.md",
+          "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md",
+          "src/Incursa.Quic/QuicAdaptiveRuntimeUnifiedEpochEvidence.cs",
+          "schemas/adaptive-runtime-epoch-raw-v2.schema.json",
+          "schemas/adaptive-runtime-post-service-boundary-v1.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-evidence-v1.schema.json"
+        ]
+      },
+      "notes": [
+        "The connection-local joined record does not invent run, host, binary, workload, checksum, or classification provenance.",
+        "Permanent raw-file export and campaign emission remain a later harness slice."
       ]
     }
   ]

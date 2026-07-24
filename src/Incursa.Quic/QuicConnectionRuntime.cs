@@ -2206,7 +2206,13 @@ internal sealed partial class QuicConnectionRuntime :
                 out snapshot);
     }
 
-    internal void TryPublishReceiveCreditShadowAtActorBoundary(long actorBoundaryTicks)
+    internal void TryPublishReceiveCreditShadowAtPostServiceBoundary(
+        long postServiceBoundaryTicks,
+        QuicAdaptiveRuntimePostServiceBoundarySource source,
+        QuicActorServiceDisposition disposition,
+        ulong? actorServiceSequence,
+        bool actorObservationPublished,
+        bool resourceReleaseCompleted)
     {
         IQuicAdaptiveRuntimeShadowEpochSink? epochSink = adaptiveRuntimeShadowEpochSink;
         long epochIntervalTicks = adaptiveRuntimeShadowEpochIntervalTicks;
@@ -2218,23 +2224,60 @@ internal sealed partial class QuicConnectionRuntime :
         }
 
         long nextEpochTicks = adaptiveRuntimeShadowNextEpochTicks;
-        if (actorBoundaryTicks < nextEpochTicks)
+        if (postServiceBoundaryTicks < nextEpochTicks)
         {
             return;
         }
 
-        adaptiveRuntimeShadowNextEpochTicks = SaturatingAdd(actorBoundaryTicks, epochIntervalTicks);
+        adaptiveRuntimeShadowNextEpochTicks = SaturatingAdd(
+            postServiceBoundaryTicks,
+            epochIntervalTicks);
         if (!TryCaptureReceiveCreditShadowAtActorBoundary(
-                actorBoundaryTicks,
+                postServiceBoundaryTicks,
                 out QuicAdaptiveRuntimeConnectionObservation observation,
                 out QuicReceiveCreditPolicySnapshot snapshot))
         {
             return;
         }
 
+        QuicAdaptiveRuntimePostServiceBoundaryValidity validity =
+            QuicAdaptiveRuntimePostServiceBoundaryValidity.None;
+        if (!actorObservationPublished)
+        {
+            validity |=
+                QuicAdaptiveRuntimePostServiceBoundaryValidity
+                    .ActorObservationUnavailable;
+        }
+
+        if (!resourceReleaseCompleted)
+        {
+            validity |=
+                QuicAdaptiveRuntimePostServiceBoundaryValidity
+                    .ResourceReleaseIncomplete;
+        }
+
+        if (disposition == QuicActorServiceDisposition.Faulted)
+        {
+            validity |=
+                QuicAdaptiveRuntimePostServiceBoundaryValidity
+                    .FaultedService;
+        }
+
+        QuicAdaptiveRuntimePostServiceBoundary boundary = new(
+            observation.ConnectionEpochSequence,
+            postServiceBoundaryTicks,
+            source,
+            disposition,
+            actorServiceSequence,
+            actorObservationPublished,
+            resourceReleaseCompleted,
+            validity);
         try
         {
-            _ = epochSink.TryPublish(in observation, in snapshot);
+            _ = epochSink.TryPublish(
+                in observation,
+                in snapshot,
+                in boundary);
         }
         catch (Exception)
         {
@@ -2727,23 +2770,24 @@ internal sealed partial class QuicConnectionRuntime :
         => unchecked((ulong)Interlocked.Increment(
             ref actorServiceObservationSequence));
 
-    internal void TryPublishActorServiceObservation(
+    internal bool TryPublishActorServiceObservation(
         in QuicActorServiceObservation observation)
     {
         IQuicActorServiceEvidenceSink? sink = actorServiceEvidenceSink;
         if (sink is null || !ActorServiceObservationEnabled)
         {
-            return;
+            return false;
         }
 
         try
         {
-            _ = sink.TryPublish(in observation);
+            return sink.TryPublish(in observation);
         }
         catch (Exception)
         {
             // Actor evidence is diagnostic-only. A failed sink must never
             // affect runtime progress or resource ownership.
+            return false;
         }
     }
 
@@ -4814,10 +4858,14 @@ internal sealed partial class QuicConnectionRuntime :
             {
                 while (reader.TryRead(out QuicConnectionEvent? connectionEvent))
                 {
+                    bool transitionCompleted = false;
+                    bool resourceReleaseCompleted = false;
+                    QuicActorServiceDisposition disposition =
+                        QuicActorServiceDisposition.Completed;
                     try
                     {
                         QuicConnectionTransitionResult result = Transition(connectionEvent);
-                        TryPublishReceiveCreditShadowAtActorBoundary(result.ObservedAtTicks);
+                        transitionCompleted = true;
                         transitionObserver?.Invoke(result);
 
                         if (effectObserver is not null)
@@ -4828,9 +4876,36 @@ internal sealed partial class QuicConnectionRuntime :
                             }
                         }
                     }
+                    catch
+                    {
+                        // The assignment is consumed by the post-service work
+                        // in finally while this exception unwinds.
+#pragma warning disable S1854
+                        disposition = QuicActorServiceDisposition.Faulted;
+#pragma warning restore S1854
+                        throw;
+                    }
                     finally
                     {
-                        ReleaseConnectionEventResources(connectionEvent);
+                        try
+                        {
+                            ReleaseConnectionEventResources(connectionEvent);
+                            resourceReleaseCompleted = true;
+                        }
+                        finally
+                        {
+                            if (transitionCompleted)
+                            {
+                                TryPublishReceiveCreditShadowAtPostServiceBoundary(
+                                    clock.Ticks,
+                                    QuicAdaptiveRuntimePostServiceBoundarySource
+                                        .IndependentConsumer,
+                                    disposition,
+                                    actorServiceSequence: null,
+                                    actorObservationPublished: false,
+                                    resourceReleaseCompleted);
+                            }
+                        }
                     }
                 }
             }

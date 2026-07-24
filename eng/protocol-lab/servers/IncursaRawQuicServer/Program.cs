@@ -222,7 +222,7 @@ Console.WriteLine($"QUIC_QUEUED_SEND_BURST_POLICY={queuedSendBurstPolicy.Name}")
 Console.WriteLine($"QUIC_OVERSIZED_WRITE_ADMISSION_POLICY={oversizedWriteAdmissionPolicy.Name}");
 if (adaptiveRuntimePolicy.ForcedMode is not null || adaptiveRuntimePolicy.ShadowEnabled)
 {
-    Console.WriteLine("QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=adaptive-runtime-epoch-raw-v1");
+    Console.WriteLine("QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=adaptive-runtime-epoch-raw-v2");
 }
 if (applicationSendTurnPolicy.ForcedMode is not null)
 {
@@ -1005,13 +1005,15 @@ internal sealed class AdaptiveRuntimeEpochPublisher
 
         public bool TryPublish(
             in QuicAdaptiveRuntimeConnectionObservation observation,
-            in QuicReceiveCreditPolicySnapshot snapshot)
+            in QuicReceiveCreditPolicySnapshot snapshot,
+            in QuicAdaptiveRuntimePostServiceBoundary boundary)
         {
             bool published = owner.epochs.Writer.TryWrite(new AdaptiveRuntimeEpochRecord(
-                "adaptive-runtime-epoch-raw-v1",
+                "adaptive-runtime-epoch-raw-v2",
                 connectionKey,
                 observation,
-                snapshot));
+                snapshot,
+                boundary));
             if (stage1Accumulator is null)
             {
                 return published;
@@ -1112,7 +1114,8 @@ internal readonly record struct AdaptiveRuntimeEpochRecord(
     string SchemaVersion,
     string ConnectionKey,
     QuicAdaptiveRuntimeConnectionObservation Observation,
-    QuicReceiveCreditPolicySnapshot Snapshot);
+    QuicReceiveCreditPolicySnapshot Snapshot,
+    QuicAdaptiveRuntimePostServiceBoundary PostServiceBoundary);
 
 internal readonly record struct ApplicationSendTurnPolicyProvenanceRecord(
     string SchemaVersion,
