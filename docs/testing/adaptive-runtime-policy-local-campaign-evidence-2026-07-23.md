@@ -3377,3 +3377,53 @@ cross-connection fairness outcomes, exact remaining work, and reviewed
 cooperative yield sites remain the next actor gates. Inter-service gap cannot
 be used as a runnable or starvation label. Active behavior remains
 unauthorized.
+
+## Stage 2 Permanent Actor Dispatch Stream And Exact Epoch Join
+
+Local commit `020a2382ff7efda58ca7325dd5586f62a3d84c99` adds one
+append-only sample-scoped actor dispatch stream without changing the retained
+actor observation-v2, actor epoch-v2, unified evidence-v3, or unified raw-v3
+contracts. The raw host emits
+`adaptive-runtime-actor-service-raw-v1` for every observed actor dispatch.
+Bounded writer failure emits
+`adaptive-runtime-actor-service-export-failure-v1` and remains
+behavior-neutral.
+
+The unified exporter manifest advances to v4. It writes actor dispatches to
+`adaptive-runtime-actor-service-observations.jsonl` separately from unified
+connection epochs and validates deterministic membership by exact
+`source + connectionKey + serviceSequence`. Every inclusive actor sequence
+range summarized by a unified epoch must have exactly one raw dispatch.
+Missing, duplicate, out-of-order, or orphan dispatches fail semantic
+validation. Actor and unified writer failures remain in the append-only
+failure stream and classify the export `invalid_contract`.
+
+The focused verification sequence is:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| Raw QUIC host Release build | Zero warnings and zero errors in 13.93 seconds | `accepted`; the separate actor writer, source-generated records, and guarded failure path compile. |
+| First `REQ-QUIC-CRT-0183` run | Six passed and one failed because `Measure-Object -Property` cannot read a field from the ordered-dictionary source records | `diagnostic_only`; manifest aggregation was corrected to project integer values before summation. No runtime behavior or accepted dataset row was inferred. |
+| Immediate corrected `REQ-QUIC-CRT-0183` rerun | Seven passed, zero failed, zero skipped in 8.06 seconds | `accepted` before the explicit missing-actor and actor-writer-failure cases were added. |
+| Final test-project Release build | Zero warnings and zero errors in 50.26 seconds | `accepted` focused build evidence. |
+| Final `REQ-QUIC-CRT-0183` run | Seven passed, zero failed, zero skipped in 9.63 seconds | `accepted`; includes exact actor range membership, retained actor writer failure with `invalid_contract`, missing actor rejection with `actorMissing=1`, append-only output rejection, and the existing post-service boundary tests. |
+| PowerShell and schema syntax | Two evidence scripts parsed with zero AST errors; actor raw v1, actor export-failure v1, and manifest v4 JSON parsed successfully | `accepted` focused syntax evidence. |
+| Focused SpecTrace model validation | `SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY`, `ARC-QUIC-CRT-0067`, `WI-QUIC-CRT-0068`, and `VER-QUIC-CRT-0069` each returned `True` | `accepted` focused contract and trace evidence for the refined `REQ-QUIC-CRT-0184`. |
+
+No campaign axis varied and no raw campaign, unified campaign, normalized,
+curated, split, or analysis rows were generated. Dataset inclusion and
+exclusion counts are unchanged: this slice adds zero rows and excludes zero
+additional rows. Receive credit, all four Stage 1 axes,
+`actor_work_quantum`, `ready_stream_fairness`,
+`buffer_copy_coalescing`, and `adaptive_backpressure` remain applied as
+`legacy_current` outside earlier explicitly retained Stage 1 smoke
+treatments. No BenchmarkDotNet run, performance claim, large campaign,
+ProtocolLab deployment, dataset transform, ML analysis, CI run, push, or
+active behavior occurred.
+
+Per-dispatch order, wake membership, and actor-to-epoch membership are now
+permanently recoverable without silently treating the dispatch as an
+epoch-independent row. Honest shard-wide service-contender coverage,
+runnable-state intervals, exact remaining work, complete fairness outcomes,
+and reviewed cooperative yield sites remain open. Active behavior remains
+unauthorized.
