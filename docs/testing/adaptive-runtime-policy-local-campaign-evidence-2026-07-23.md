@@ -2619,3 +2619,84 @@ append-only, and untouched. The next bounded buffer slice is exact
 terminal-release correlation; the post-service epoch export remains the next
 shared evidence-boundary design. Active behavior and production activation
 remain unauthorized.
+
+## Stage 2 Post-Service Boundary And Internal Unified Join
+
+Local commit
+`357d1d3b3874813be26dcac30c0ccbfd7f044a1f` moves eligible
+receive-credit epoch publication to an exact versioned post-service boundary
+and adds the first internal Stage 1 plus Stage 2 joined record. Hosted-shard
+publication occurs only after effect dispatch, follow-on measurement,
+actor-observation publication, and work-item resource release.
+Independent-consumer publication occurs only after connection-event resource
+release and explicitly marks actor observation unavailable.
+
+`adaptive-runtime-post-service-boundary-v1` repeats the connection epoch
+sequence and exact end tick and records execution source, actor disposition,
+actor-service sequence, actor publication, resource-release completion, and
+explicit missing, incomplete-release, or fault validity.
+`adaptive-runtime-unified-epoch-evidence-v1` seals receive-credit, all four
+Stage 1 axes, actor-service, and buffer-copy summaries only after the
+connection observation, receive-credit snapshot, and boundary share an exact,
+positive, monotonic join key. Invalid joins are rejected before any
+accumulator resets.
+
+The raw QUIC host advances its receive-credit wrapper to
+`adaptive-runtime-epoch-raw-v2`, adding the post-service boundary without
+relabeling retained v1 evidence. The local runner accepts both retained v1 and
+new v2 records. This checkpoint does not yet configure or export the complete
+internal Stage 1 plus Stage 2 accumulator through the permanent raw-file
+writer. Exact run, binary, host, workload, checksum, classification, and
+raw-file provenance remain harness responsibilities.
+
+Local commit
+`aed0fcf5dc886d75a1ab1cb99724070c4a9c0bcb` updates the
+completion-source pooling test reflection helper to supply
+`Type.Missing` for optional method parameters. The production optional outcome
+parameter predated this adaptive slice; this test-only compatibility fix
+preserves the full-suite race coverage without changing runtime behavior.
+
+The worktree was clean and `main` was 54 commits ahead of `origin/main` at
+slice start. No relevant adaptive-runtime process was active. The stopped
+single-axis transform remains preserved at:
+
+- raw:
+  `.artifacts/adaptive-runtime/adaptive-send-turn-neutrality-download-local-20260724-r002`;
+- partial dataset:
+  `.artifacts/adaptive-runtime/dataset/application-send-turn-neutrality-download-20260724-r002`;
+- disposition: `diagnostic_incomplete`;
+- preserved scope: 55,658 raw epochs and five cells, classified as three
+  `invalid_environment`, one `negative_retained`, and one `neutral_local`.
+
+The retained diagnostic and verification sequence is:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| `dotnet build quic-dotnet.slnx -c Release` | MSB1009 because that solution filename does not exist | `diagnostic_only`; command-selection error. The correct repository solution is `Incursa.Quic.slnx`. |
+| First boundary Release build | Two S1854 findings on disposition assignments consumed from `finally` during exception unwind | `diagnostic_only`; scoped suppressions and explanatory comments retain the fault disposition without weakening other analyzer coverage. |
+| First schema validation with external local references | PowerShell `Test-Json` could not resolve the local schema references | `diagnostic_only`; the versioned schema now carries bounded local definitions and passed the same validation path. |
+| `dotnet build Incursa.Quic.slnx -c Release --nologo --no-restore` | Zero warnings and zero errors in 46.59 seconds | `accepted` complete Release build evidence. |
+| Adaptive requirement and mechanism band | 63 passed, zero failed, zero skipped | `accepted`; covers receive credit, Stage 1, actor, buffer, boundary, joining, fallback, and schema behavior. |
+| Shard, ownership, queue, and metrics band | 108 passed, zero failed, zero skipped | `accepted`; covers post-service ordering, disposal, resource release, ownership, recovery, and adjacent correctness mechanisms. |
+| Raw QUIC server Release build | Zero warnings and zero errors in 1.57 seconds | `accepted`; proves the raw-v2 boundary wrapper compiles against the committed runtime contract. |
+| First complete Release test suite | 9,986 passed, three failed, four skipped in 7 minutes 34 seconds | `diagnostic_only` for three stale test contracts: the ProtocolLab template still expected the obsolete one-observed-axis wording; the send-turn scheduler still rejected forced identity plus same-axis shadow observation; and a reflection helper omitted a newly optional outcome argument. Each test was corrected to the already approved contracts. The four skips are explicit ProtocolLab or environment homes. |
+| Exact three corrected tests plus `REQ-QUIC-CRT-0183` | Nine passed, zero failed, zero skipped | `accepted`; exact correction and boundary regression evidence. |
+| Second complete Release test suite | 9,988 passed, one failed, four skipped in 7 minutes 38 seconds | `diagnostic_only` retained intermittent candidate: `Http3MinimalServerTests.PostDataRequest_WithIncompleteContentLength_ClosesConnectionWithMessageError` timed out after 10 seconds waiting for the peer H3 close. The same test passed in the first complete suite. Both outcomes are preserved; no isolated rerun is used to erase the timeout. |
+
+The revised specification, architecture, work item, and verification artifact
+each pass direct validation against `model/model.schema.json`. The
+repository-wide core profile retains its previously recorded 2,692 unrelated
+baseline errors and was not rerun or used to hide focused validation.
+
+Stage 2 permanent unified-schema row count remains zero, with zero new dataset
+inclusions or exclusions. No campaign axis varied. Receive credit, all four
+Stage 1 axes, `actor_work_quantum`, and `buffer_copy_coalescing` remain applied
+as `legacy_current`. No BenchmarkDotNet run, performance test, local campaign,
+ProtocolLab deployment, large dataset transform, split construction, ML
+analysis, CI run, or push occurred.
+
+The next architecture slice is the permanent raw-file Stage 1 plus Stage 2
+exporter using this exact boundary and accumulator, followed by terminal
+release correlation, reviewed actor work units and fairness outcomes, and
+force-readiness design. Active behavior and production activation remain
+unauthorized.
