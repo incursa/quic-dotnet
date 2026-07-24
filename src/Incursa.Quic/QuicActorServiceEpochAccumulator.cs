@@ -40,10 +40,13 @@ internal readonly record struct QuicActorServiceEpochSummary(
     ulong DeadlineLatenessObservationCount,
     ulong TotalDeadlineLatenessMicros,
     ulong MaximumDeadlineLatenessMicros,
-    ulong DeadlineLatenessEwmaMicros)
+    ulong DeadlineLatenessEwmaMicros,
+    ulong ServiceContenderObservationCount = 0,
+    ulong MaximumServiceContenderCount = 0,
+    ulong ContendedTurnCount = 0)
 {
     internal const string CurrentEpochContractVersion =
-        "quic-actor-service-epoch-v2";
+        "quic-actor-service-epoch-v3";
 
     public string EpochContractVersion => CurrentEpochContractVersion;
 }
@@ -92,6 +95,9 @@ internal sealed class QuicActorServiceEpochAccumulator :
     private ulong totalDeadlineLatenessMicros;
     private ulong maximumDeadlineLatenessMicros;
     private ulong deadlineLatenessEwmaMicros;
+    private ulong serviceContenderObservationCount;
+    private ulong maximumServiceContenderCount;
+    private ulong contendedTurnCount;
 
     public bool TryPublish(in QuicActorServiceObservation observation)
     {
@@ -197,6 +203,19 @@ internal sealed class QuicActorServiceEpochAccumulator :
                     deadlineLatenessObservationCount == 1);
             }
 
+            if (observation.ServiceContenderCountAtStart
+                is { } serviceContenderCount)
+            {
+                AddSaturating(ref serviceContenderObservationCount, 1);
+                maximumServiceContenderCount = Math.Max(
+                    maximumServiceContenderCount,
+                    serviceContenderCount);
+                if (serviceContenderCount > 1)
+                {
+                    AddSaturating(ref contendedTurnCount, 1);
+                }
+            }
+
             validity |= observation.Validity;
         }
 
@@ -244,7 +263,10 @@ internal sealed class QuicActorServiceEpochAccumulator :
                 deadlineLatenessObservationCount,
                 totalDeadlineLatenessMicros,
                 maximumDeadlineLatenessMicros,
-                deadlineLatenessEwmaMicros);
+                deadlineLatenessEwmaMicros,
+                serviceContenderObservationCount,
+                maximumServiceContenderCount,
+                contendedTurnCount);
             Reset();
             return summary;
         }
@@ -347,5 +369,8 @@ internal sealed class QuicActorServiceEpochAccumulator :
         totalDeadlineLatenessMicros = 0;
         maximumDeadlineLatenessMicros = 0;
         deadlineLatenessEwmaMicros = 0;
+        serviceContenderObservationCount = 0;
+        maximumServiceContenderCount = 0;
+        contendedTurnCount = 0;
     }
 }

@@ -19,8 +19,8 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v3.schema.json'
-$actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v1.schema.json'
+$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v4.schema.json'
+$actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v2.schema.json'
 $resolvedRawEpochPath = (Resolve-Path -LiteralPath $RawEpochPath).Path
 $resolvedActorObservationPath = (Resolve-Path -LiteralPath $ActorObservationPath).Path
 $seenKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
@@ -28,6 +28,11 @@ $expectedActorKeys = [System.Collections.Generic.HashSet[string]]::new([StringCo
 $seenActorKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $lastSequenceByConnection = @{}
 $lastActorSequenceByConnection = @{}
+$actorEpochSummaryByRowKey = @{}
+$actorEpochRowByActorKey = @{}
+$actorContenderCountByEpoch = @{}
+$actorContenderMaximumByEpoch = @{}
+$actorContendedTurnCountByEpoch = @{}
 $joinFailures = [System.Collections.Generic.List[string]]::new()
 $duplicateKeys = [System.Collections.Generic.List[string]]::new()
 $outOfOrderKeys = [System.Collections.Generic.List[string]]::new()
@@ -66,6 +71,26 @@ function Resolve-SourceKey {
     }
 
     return "source-$($Index.Value)"
+}
+
+function Test-ActorValidityFlag {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object] $Value,
+
+        [Parameter(Mandatory = $true)]
+        [string] $Name,
+
+        [Parameter(Mandatory = $true)]
+        [uint64] $Mask
+    )
+
+    if ($Value -is [string]) {
+        return ([string] $Value) -match `
+            "(^|, )$([regex]::Escape($Name))($|, )"
+    }
+
+    return (([uint64] $Value -band $Mask) -ne 0)
 }
 
 foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
@@ -143,11 +168,26 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
             [void] $joinFailures.Add("$rowKey|actor-range")
         }
         else {
+            $actorEpochSummaryByRowKey[$rowKey] = [ordered]@{
+                observationCount =
+                    [uint64] $actorSummary.serviceContenderObservationCount
+                maximum =
+                    [uint64] $actorSummary.maximumServiceContenderCount
+                contendedTurnCount =
+                    [uint64] $actorSummary.contendedTurnCount
+            }
             for ($actorSequence = $first;
                 $actorSequence -le $last;
                 $actorSequence++) {
-                [void] $expectedActorKeys.Add(
-                    "$scopedConnectionKey|$actorSequence")
+                $actorKey = "$scopedConnectionKey|$actorSequence"
+                [void] $expectedActorKeys.Add($actorKey)
+                if ($actorEpochRowByActorKey.ContainsKey($actorKey)) {
+                    [void] $joinFailures.Add(
+                        "$rowKey|actor-range-overlap")
+                }
+                else {
+                    $actorEpochRowByActorKey[$actorKey] = $rowKey
+                }
                 if ($actorSequence -eq [uint64]::MaxValue) {
                     break
                 }
@@ -167,6 +207,12 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
     if ([uint64] $actorSummary.deadlineLatenessObservationCount -gt
         [uint64] $actorSummary.timerCount) {
         [void] $joinFailures.Add("$rowKey|actor-deadline-lateness")
+    }
+    if ([uint64] $actorSummary.serviceContenderObservationCount -gt
+        [uint64] $actorSummary.actorTurnCount -or
+        [uint64] $actorSummary.contendedTurnCount -gt
+        [uint64] $actorSummary.serviceContenderObservationCount) {
+        [void] $joinFailures.Add("$rowKey|actor-service-contender-count")
     }
     if ([bool] $epoch.bufferCopy.hasObservation) {
         $bufferObservationRowCount++
@@ -223,6 +269,49 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedActorObservationPath)) {
     if (-not $expectedActorKeys.Remove($rowKey)) {
         [void] $orphanActorKeys.Add($rowKey)
     }
+
+    $contenderMissing = Test-ActorValidityFlag `
+        -Value $record.observation.validity `
+        -Name 'MissingServiceContenderCount' `
+        -Mask (1L -shl 8)
+    $contenderInvalid = Test-ActorValidityFlag `
+        -Value $record.observation.validity `
+        -Name 'ServiceContenderStateInvalid' `
+        -Mask (1L -shl 9)
+    $hasContenderCount =
+        $null -ne $record.observation.serviceContenderCountAtStart
+    if ($hasContenderCount -eq $contenderMissing -or
+        ($hasContenderCount -and $contenderInvalid) -or
+        ($contenderInvalid -and -not $contenderMissing)) {
+        [void] $joinFailures.Add(
+            "$rowKey|actor-service-contender-validity")
+    }
+
+    if ($actorEpochRowByActorKey.ContainsKey($rowKey) -and
+        $hasContenderCount) {
+        $actorEpochRowKey = [string] $actorEpochRowByActorKey[$rowKey]
+        $contenderCount =
+            [uint64] $record.observation.serviceContenderCountAtStart
+        if (-not $actorContenderCountByEpoch.ContainsKey(
+                $actorEpochRowKey)) {
+            $actorContenderCountByEpoch[$actorEpochRowKey] = [uint64]0
+            $actorContenderMaximumByEpoch[$actorEpochRowKey] = [uint64]0
+            $actorContendedTurnCountByEpoch[$actorEpochRowKey] = [uint64]0
+        }
+
+        $actorContenderCountByEpoch[$actorEpochRowKey] =
+            [uint64] $actorContenderCountByEpoch[$actorEpochRowKey] + 1
+        if ($contenderCount -gt
+            [uint64] $actorContenderMaximumByEpoch[$actorEpochRowKey]) {
+            $actorContenderMaximumByEpoch[$actorEpochRowKey] =
+                $contenderCount
+        }
+        if ($contenderCount -gt 1) {
+            $actorContendedTurnCountByEpoch[$actorEpochRowKey] =
+                [uint64] $actorContendedTurnCountByEpoch[
+                    $actorEpochRowKey] + 1
+        }
+    }
 }
 
 if ($null -ne $SourceActorObservationRowCount -and
@@ -232,6 +321,39 @@ if ($null -ne $SourceActorObservationRowCount -and
         "Actor-service source row counts do not match retained rows: " +
         "sources=$(($SourceActorObservationRowCount | Measure-Object -Sum).Sum), " +
         "rows=$actorObservationRowCount.")
+}
+
+foreach ($actorEpochRowKey in $actorEpochSummaryByRowKey.Keys) {
+    $summary = $actorEpochSummaryByRowKey[$actorEpochRowKey]
+    $actualObservationCount = if (
+        $actorContenderCountByEpoch.ContainsKey($actorEpochRowKey)) {
+        [uint64] $actorContenderCountByEpoch[$actorEpochRowKey]
+    }
+    else {
+        [uint64]0
+    }
+    $actualMaximum = if (
+        $actorContenderMaximumByEpoch.ContainsKey($actorEpochRowKey)) {
+        [uint64] $actorContenderMaximumByEpoch[$actorEpochRowKey]
+    }
+    else {
+        [uint64]0
+    }
+    $actualContendedTurnCount = if (
+        $actorContendedTurnCountByEpoch.ContainsKey($actorEpochRowKey)) {
+        [uint64] $actorContendedTurnCountByEpoch[$actorEpochRowKey]
+    }
+    else {
+        [uint64]0
+    }
+    if ([uint64] $summary.observationCount -ne
+            $actualObservationCount -or
+        [uint64] $summary.maximum -ne $actualMaximum -or
+        [uint64] $summary.contendedTurnCount -ne
+            $actualContendedTurnCount) {
+        [void] $joinFailures.Add(
+            "$actorEpochRowKey|actor-service-contender-aggregate")
+    }
 }
 
 $valid =
@@ -257,7 +379,7 @@ if (-not $valid) {
 }
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-validation-v4'
+    schemaVersion = 'adaptive-runtime-unified-raw-validation-v5'
     valid = $true
     rawEpochRowCount = $rowCount
     axisRecordCount = $axisRecordCount

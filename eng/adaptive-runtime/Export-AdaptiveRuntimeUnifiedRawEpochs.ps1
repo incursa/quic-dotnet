@@ -21,10 +21,10 @@ $prefix = 'QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON='
 $failurePrefix = 'QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_FAILURE_JSON='
 $actorPrefix = 'QUIC_ACTOR_SERVICE_OBSERVATION_JSON='
 $actorFailurePrefix = 'QUIC_ACTOR_SERVICE_OBSERVATION_FAILURE_JSON='
-$rawSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v3.schema.json'
-$actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v1.schema.json'
+$rawSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v4.schema.json'
+$actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v2.schema.json'
 $actorFailureSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-export-failure-v1.schema.json'
-$manifestSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-raw-export-manifest-v4.schema.json'
+$manifestSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-raw-export-manifest-v5.schema.json'
 $validatorPath = Join-Path $RepositoryRoot 'eng\adaptive-runtime\Test-AdaptiveRuntimeUnifiedRawEvidence.ps1'
 $resolvedOutputDirectory = Resolve-AdaptiveRuntimePath -Path $OutputDirectory
 $rawEpochPath = Join-Path $resolvedOutputDirectory 'adaptive-runtime-unified-raw-epochs.jsonl'
@@ -165,11 +165,11 @@ if ($failures.Count -ne 0) {
 }
 
 $manifest = [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-export-manifest-v4'
+    schemaVersion = 'adaptive-runtime-unified-raw-export-manifest-v5'
     createdUtc = (Get-Date).ToUniversalTime().ToString('o')
-    rawEpochSchemaVersion = 'adaptive-runtime-unified-epoch-raw-v3'
+    rawEpochSchemaVersion = 'adaptive-runtime-unified-epoch-raw-v4'
     actorRawObservationSchemaVersion =
-        'adaptive-runtime-actor-service-raw-v1'
+        'adaptive-runtime-actor-service-raw-v2'
     classification = if ($failures.Count -eq 0) {
         'accepted'
     }
@@ -202,7 +202,7 @@ $manifest = [ordered]@{
     -OutputPath $manifestPath)
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-export-result-v4'
+    schemaVersion = 'adaptive-runtime-unified-raw-export-result-v5'
     rowCount = $manifest.rowCount
     axisRecordCount = $manifest.axisRecordCount
     connectionCount = $manifest.connectionCount

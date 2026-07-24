@@ -17,9 +17,9 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $observationSchemaPath = Join-Path $RepositoryRoot `
-    'schemas\adaptive-runtime-actor-service-observation-v2.schema.json'
+    'schemas\adaptive-runtime-actor-service-observation-v3.schema.json'
 $epochSchemaPath = Join-Path $RepositoryRoot `
-    'schemas\adaptive-runtime-actor-service-epoch-v2.schema.json'
+    'schemas\adaptive-runtime-actor-service-epoch-v3.schema.json'
 $failures = [System.Collections.Generic.List[string]]::new()
 $observations = [System.Collections.Generic.List[object]]::new()
 
@@ -64,6 +64,9 @@ if ($observations.Count -eq 0) {
 $lastServiceSequence = [ulong]0
 $lastWakeSequence = [ulong]0
 $lastWakePosition = [ulong]0
+$observedServiceContenderCount = [ulong]0
+$maximumObservedServiceContenderCount = [ulong]0
+$observedContendedTurnCount = [ulong]0
 foreach ($observation in $observations) {
     $serviceSequence = [ulong] $observation.serviceSequence
     $wakeSequence = [ulong] $observation.wakeSequence
@@ -117,6 +120,40 @@ foreach ($observation in $observations) {
         $failures.Add(
             "Actor observation '$serviceSequence' has contradictory inter-service-gap validity.")
     }
+
+    $contenderMissing = Test-ActorValidityFlag `
+        -Value $observation.validity `
+        -Name 'MissingServiceContenderCount' `
+        -Mask (1L -shl 8)
+    $contenderInvalid = Test-ActorValidityFlag `
+        -Value $observation.validity `
+        -Name 'ServiceContenderStateInvalid' `
+        -Mask (1L -shl 9)
+    $hasServiceContenderCount =
+        $null -ne $observation.serviceContenderCountAtStart
+    if ($hasServiceContenderCount -eq $contenderMissing) {
+        $failures.Add(
+            "Actor observation '$serviceSequence' has contradictory service-contender validity.")
+    }
+    if ($hasServiceContenderCount -and $contenderInvalid) {
+        $failures.Add(
+            "Actor observation '$serviceSequence' exposes an invalid service-contender count.")
+    }
+    if ($contenderInvalid -and -not $contenderMissing) {
+        $failures.Add(
+            "Actor observation '$serviceSequence' marks invalid service-contender state without marking the count missing.")
+    }
+    if ($hasServiceContenderCount) {
+        $serviceContenderCount =
+            [ulong] $observation.serviceContenderCountAtStart
+        $observedServiceContenderCount++
+        $maximumObservedServiceContenderCount = [Math]::Max(
+            $maximumObservedServiceContenderCount,
+            $serviceContenderCount)
+        if ($serviceContenderCount -gt 1) {
+            $observedContendedTurnCount++
+        }
+    }
 }
 
 $epochJson = Get-Content -LiteralPath $EpochSummaryPath -Raw
@@ -147,6 +184,12 @@ $totalDeadlineLatenessMicros =
     [ulong] $epoch.totalDeadlineLatenessMicros
 $maximumDeadlineLatenessMicros =
     [ulong] $epoch.maximumDeadlineLatenessMicros
+$serviceContenderObservationCount =
+    [ulong] $epoch.serviceContenderObservationCount
+$maximumServiceContenderCount =
+    [ulong] $epoch.maximumServiceContenderCount
+$contendedTurnCount =
+    [ulong] $epoch.contendedTurnCount
 $dispositionCount =
     [ulong] $epoch.completedTurnCount +
     [ulong] $epoch.skippedTurnCount +
@@ -209,10 +252,32 @@ if ($maximumDeadlineLatenessMicros -gt $totalDeadlineLatenessMicros) {
     $failures.Add(
         'Maximum deadline lateness exceeds total deadline lateness.')
 }
+if ($serviceContenderObservationCount -gt $turnCount) {
+    $failures.Add(
+        'Service-contender observation count exceeds actor turn count.')
+}
+if ($contendedTurnCount -gt $serviceContenderObservationCount) {
+    $failures.Add(
+        'Contended turn count exceeds service-contender observation count.')
+}
+if ($serviceContenderObservationCount -ne
+    $observedServiceContenderCount) {
+    $failures.Add(
+        'Service-contender observation count does not match raw observations.')
+}
+if ($maximumServiceContenderCount -ne
+    $maximumObservedServiceContenderCount) {
+    $failures.Add(
+        'Maximum service-contender count does not match raw observations.')
+}
+if ($contendedTurnCount -ne $observedContendedTurnCount) {
+    $failures.Add(
+        'Contended turn count does not match raw observations.')
+}
 
 $result = [ordered]@{
     schemaVersion =
-        'adaptive-runtime-actor-service-evidence-validation-v2'
+        'adaptive-runtime-actor-service-evidence-validation-v3'
     valid = $failures.Count -eq 0
     observationRowCount = $observations.Count
     actorTurnCount = $turnCount

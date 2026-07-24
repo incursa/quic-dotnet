@@ -1077,8 +1077,9 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
         )
         if ($expectsUnifiedEpochs) {
             if (-not $unifiedContract.Success -or
-                $unifiedContract.Groups[1].Value -ne
-                    'adaptive-runtime-unified-epoch-raw-v3') {
+                $unifiedContract.Groups[1].Value -notin @(
+                    'adaptive-runtime-unified-epoch-raw-v3',
+                    'adaptive-runtime-unified-epoch-raw-v4')) {
                 $contractFailures.Add(
                     "$sampleId`: unified adaptive-runtime epoch contract was not reported.")
             }

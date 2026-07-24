@@ -73,31 +73,34 @@ a behavior-distinct forced treatment; every adjacent applied value remains
 `legacy_current`. Observe-only and shadow modes therefore do not compete for a
 single global ownership slot.
 
-## Stage 2 Actor Service Observation V2
+## Stage 2 Actor Service Observation V3
 
 The behavior-neutral Stage 2 foundation uses
-[`../../schemas/adaptive-runtime-actor-service-observation-v2.schema.json`](../../schemas/adaptive-runtime-actor-service-observation-v2.schema.json)
+[`../../schemas/adaptive-runtime-actor-service-observation-v3.schema.json`](../../schemas/adaptive-runtime-actor-service-observation-v3.schema.json)
 for one complete observed shard dispatch and
-[`../../schemas/adaptive-runtime-actor-service-epoch-v2.schema.json`](../../schemas/adaptive-runtime-actor-service-epoch-v2.schema.json)
+[`../../schemas/adaptive-runtime-actor-service-epoch-v3.schema.json`](../../schemas/adaptive-runtime-actor-service-epoch-v3.schema.json)
 for its bounded connection-local aggregation. Each service record contains a
 monotonic connection sequence; shard, wake, and wake-position identity; closed
 work kind; enqueue delay; full transition-and-effect service duration; pending
 work count; emitted-effect and existing follow-on counts; lifecycle phase;
 completion disposition; connection-local inter-service gap after the first
 observation; scheduled deadline lateness for deadline-scheduler timer work;
+exact posted-or-servicing service-contender count at service start when valid;
 and explicit validity flags. A guarded sink is diagnostic-only and cannot
-affect progress or ownership. Retained v1 schemas remain immutable.
+affect progress or ownership. Retained v1 and v2 schemas remain immutable.
 
 The fixed-field accumulator retains closed work-kind, disposition, wake,
-duration, effect, follow-on, inter-service-gap, and deadline-lateness counters
-plus totals, maxima, integer EWMAs, and the union of validity flags. It has no
+duration, effect, follow-on, inter-service-gap, deadline-lateness, and
+service-contender counters plus totals, maxima, integer EWMAs where defined,
+and the union of validity flags. It has no
 dictionaries, stream scans, global lock, or unbounded state. Queue delay is
 not relabeled as oldest shard-item age, pending work count is not relabeled as
 runnable-connection count, inter-service gap is not relabeled as continuous
-runnable time, and a dequeued event is not relabeled as a reviewed useful work
+runnable time, the service-contender count is not relabeled as runnable state
+or fairness, and a dequeued event is not relabeled as a reviewed useful work
 unit.
 
-This v2 contract intentionally marks runnable-connection count, oldest shard
+This v3 contract intentionally marks runnable-connection count, oldest shard
 item age, and scalar useful work units unavailable. A timer from the shard
 deadline scheduler carries its exact scheduled due tick; a timer without that
 provenance marks deadline lateness missing, and a non-timer treats it as not
@@ -130,7 +133,7 @@ the post-service boundary without relabeling retained version 1 rows. The
 local runner accepts both versions so existing append-only evidence remains
 readable.
 
-[`../../schemas/adaptive-runtime-unified-epoch-evidence-v3.schema.json`](../../schemas/adaptive-runtime-unified-epoch-evidence-v3.schema.json)
+[`../../schemas/adaptive-runtime-unified-epoch-evidence-v4.schema.json`](../../schemas/adaptive-runtime-unified-epoch-evidence-v4.schema.json)
 defines the internal joined record. The accumulator rejects a mismatched,
 duplicate, out-of-order, or nonpositive connection-observation,
 receive-credit, and boundary join before resetting Stage 1, actor, or buffer
@@ -138,31 +141,34 @@ state. Successful capture seals all three summaries under the same connection
 epoch key. Permanent run, host, binary, workload, checksum, classification,
 and raw-file provenance remains a harness/export responsibility and is not
 invented by this connection-local record.
-The retained v1 and v2 joined schemas remain immutable; v3 changes the nested
-actor summary from v1 to v2 while retaining the buffer v3 contract.
+The retained v1 through v3 joined schemas remain immutable; v4 changes the
+nested actor summary from v2 to v3 while retaining the buffer v3 contract.
 
 The raw QUIC host configures that same accumulator as the receive-credit,
 four Stage 1, actor-service, and buffer-copy evidence sink whenever an
 adaptive execution is requested. It emits
-`adaptive-runtime-unified-epoch-raw-v3` under one connection key while
+`adaptive-runtime-unified-epoch-raw-v4` under one connection key while
 retaining the prior receive-credit and Stage 1 compatibility records. The
 append-only
 [`../../eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1`](../../eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1)
 exporter validates
-[`../../schemas/adaptive-runtime-unified-epoch-raw-v3.schema.json`](../../schemas/adaptive-runtime-unified-epoch-raw-v3.schema.json),
+[`../../schemas/adaptive-runtime-unified-epoch-raw-v4.schema.json`](../../schemas/adaptive-runtime-unified-epoch-raw-v4.schema.json),
 exact monotonic join keys, exactly four Stage 1 records per row, and at most
 one non-legacy applied axis. Connection keys are scoped to their hashed source
 log during multi-process export because each process restarts its local
 counter. The same host also emits every actor dispatch as
-[`../../schemas/adaptive-runtime-actor-service-raw-v1.schema.json`](../../schemas/adaptive-runtime-actor-service-raw-v1.schema.json).
+[`../../schemas/adaptive-runtime-actor-service-raw-v2.schema.json`](../../schemas/adaptive-runtime-actor-service-raw-v2.schema.json).
 Those records are sample-scoped rather than epoch-independent. The validator
 requires exact `source + connectionKey + serviceSequence` coverage for every
 inclusive actor range summarized in a unified epoch; missing, duplicate,
-orphan, and out-of-order dispatches fail validation. Manifest v4 retains the
-separate actor stream, source hashes, epoch and dispatch counts, validation
-output, and any bounded-channel export failure records. An actor or unified
-export failure produces `invalid_contract`; it is never silently treated as a
-complete dataset.
+orphan, and out-of-order dispatches fail validation. The validator also
+requires each raw contender value and validity state to agree and requires
+each epoch's contender observation count, maximum, and count-above-one turns
+to equal its raw member records. Manifest v5 retains the separate actor
+stream, source hashes, epoch and dispatch counts, validation output, and any
+bounded-channel export failure records. An actor or unified export failure
+produces `invalid_contract`; it is never silently treated as a complete
+dataset.
 
 ## Stage 2 Buffer Copy Observation V3
 

@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-actor-service-raw-v2.schema.json",
+  "title": "Adaptive Runtime Actor Service Raw Record v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "connectionKey", "observation"],
+  "properties": {
+    "schemaVersion": {
+      "const": "adaptive-runtime-actor-service-raw-v2"
+    },
+    "connectionKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "serviceSequence",
+        "shardIndex",
+        "wakeSequence",
+        "wakePosition",
+        "wakeCompletion",
+        "wakeSource",
+        "workKind",
+        "disposition",
+        "queueDelayMicros",
+        "serviceTimeMicros",
+        "pendingWorkItemsAfterDequeue",
+        "effectCount",
+        "applicationSendFollowOnCount",
+        "flowControlFollowOnCount",
+        "streamCapacityFollowOnCount",
+        "phaseAfter",
+        "disposalStarted",
+        "validity",
+        "interServiceGapMicros",
+        "deadlineLatenessMicros",
+        "serviceContenderCountAtStart",
+        "observationContractVersion",
+        "provenanceVersion"
+      ],
+      "properties": {
+        "serviceSequence": { "type": "integer", "minimum": 1 },
+        "shardIndex": { "type": "integer", "minimum": 0 },
+        "wakeSequence": { "type": "integer", "minimum": 1 },
+        "wakePosition": { "type": "integer", "minimum": 1 },
+        "wakeCompletion": {
+          "enum": ["ConsumerStart", "Synchronous", "Asynchronous"]
+        },
+        "wakeSource": {
+          "enum": ["ConsumerStart", "Inbox", "Deadline"]
+        },
+        "workKind": {
+          "enum": [
+            "ConnectionEvent",
+            "Timer",
+            "PacketReceived",
+            "StreamCapacityRelease",
+            "FlowControlCreditUpdate",
+            "StreamOpen",
+            "StreamWrite"
+          ]
+        },
+        "disposition": {
+          "enum": [
+            "Completed",
+            "SkippedDisposed",
+            "SkippedIndependentConsumer",
+            "Faulted"
+          ]
+        },
+        "queueDelayMicros": { "type": ["integer", "null"], "minimum": 0 },
+        "serviceTimeMicros": { "type": "integer", "minimum": 0 },
+        "pendingWorkItemsAfterDequeue": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "effectCount": { "type": "integer", "minimum": 0 },
+        "applicationSendFollowOnCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "flowControlFollowOnCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "streamCapacityFollowOnCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "phaseAfter": {
+          "enum": [
+            "Establishing",
+            "Active",
+            "Closing",
+            "Draining",
+            "Discarded"
+          ]
+        },
+        "disposalStarted": { "type": "boolean" },
+        "validity": { "type": ["string", "integer"] },
+        "interServiceGapMicros": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "deadlineLatenessMicros": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "serviceContenderCountAtStart": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        },
+        "observationContractVersion": {
+          "const": "quic-actor-service-observation-v3"
+        },
+        "provenanceVersion": {
+          "const": "quic-actor-service-provenance-v3"
+        }
+      }
+    }
+  }
+}

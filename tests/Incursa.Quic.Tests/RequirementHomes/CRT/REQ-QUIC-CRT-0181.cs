@@ -50,6 +50,9 @@ public sealed class REQ_QUIC_CRT_0181
         Assert.Equal(1UL, summary.ObservedWakeCount);
         Assert.Equal(1U, summary.MaximumWakePosition);
         Assert.Equal(1UL, summary.QueueDelayObservationCount);
+        Assert.Equal(1UL, summary.ServiceContenderObservationCount);
+        Assert.Equal(1UL, summary.MaximumServiceContenderCount);
+        Assert.Equal(0UL, summary.ContendedTurnCount);
         Assert.True(
             (summary.Validity
                 & QuicActorServiceValidity.UsefulWorkUnitsUndefined) != 0);
@@ -111,6 +114,11 @@ public sealed class REQ_QUIC_CRT_0181
 
         QuicActorServiceObservation[] observations = sink.Observations;
         Assert.Equal(3, observations.Length);
+        Assert.Equal(
+            [2UL, 2UL, 1UL],
+            observations.Select(
+                static observation =>
+                    observation.ServiceContenderCountAtStart));
         Assert.Equal(0, shard.ServiceContenderCount);
         Assert.True(shard.ServiceContenderStateValid);
         Assert.All(
@@ -121,6 +129,10 @@ public sealed class REQ_QUIC_CRT_0181
                     (observation.Validity
                         & QuicActorServiceValidity
                             .MissingRunnableConnectionCount) != 0);
+                Assert.True(
+                    (observation.Validity
+                        & QuicActorServiceValidity
+                            .MissingServiceContenderCount) == 0);
             });
     }
 
@@ -348,7 +360,8 @@ public sealed class REQ_QUIC_CRT_0181
             serviceTimeMicros: 20,
             effectCount: 2,
             applicationSendFollowOnCount: 3,
-            interServiceGapMicros: 10);
+            interServiceGapMicros: 10,
+            serviceContenderCountAtStart: 2);
         QuicActorServiceObservation second = CreateObservation(
             serviceSequence: 6,
             wakeSequence: 3,
@@ -358,7 +371,8 @@ public sealed class REQ_QUIC_CRT_0181
             effectCount: 1,
             applicationSendFollowOnCount: 0,
             interServiceGapMicros: 20,
-            deadlineLatenessMicros: 5);
+            deadlineLatenessMicros: 5,
+            serviceContenderCountAtStart: 1);
 
         Assert.True(accumulator.TryPublish(in first));
         Assert.True(accumulator.TryPublish(in second));
@@ -380,6 +394,9 @@ public sealed class REQ_QUIC_CRT_0181
         Assert.Equal(1UL, summary.DeadlineLatenessObservationCount);
         Assert.Equal(5UL, summary.TotalDeadlineLatenessMicros);
         Assert.Equal(5UL, summary.MaximumDeadlineLatenessMicros);
+        Assert.Equal(2UL, summary.ServiceContenderObservationCount);
+        Assert.Equal(2UL, summary.MaximumServiceContenderCount);
+        Assert.Equal(1UL, summary.ContendedTurnCount);
         Assert.True(
             (summary.Validity
                 & QuicActorServiceValidity.MissingQueueDelay) != 0);
@@ -467,7 +484,8 @@ public sealed class REQ_QUIC_CRT_0181
         uint effectCount,
         uint applicationSendFollowOnCount,
         ulong? interServiceGapMicros = null,
-        ulong? deadlineLatenessMicros = null)
+        ulong? deadlineLatenessMicros = null,
+        ulong? serviceContenderCountAtStart = 1)
     {
         QuicActorServiceValidity validity =
             QuicActorServiceValidity.MissingRunnableConnectionCount
@@ -507,7 +525,8 @@ public sealed class REQ_QUIC_CRT_0181
             DisposalStarted: false,
             validity,
             interServiceGapMicros,
-            deadlineLatenessMicros);
+            deadlineLatenessMicros,
+            serviceContenderCountAtStart);
     }
 
     private sealed class ThrowingSink : IQuicActorServiceEvidenceSink

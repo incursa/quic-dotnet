@@ -61,6 +61,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
     private int consumerStarted;
     private int disposed;
     private int serviceContenderStateInvalid;
+    private int serviceContenderArithmeticSaturated;
     private long serviceContenderCount;
     private Task? processingTask;
 
@@ -662,6 +663,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 Volatile.Write(
                     ref serviceContenderStateInvalid,
                     1);
+                Volatile.Write(
+                    ref serviceContenderArithmeticSaturated,
+                    1);
             }
         }
 
@@ -1032,6 +1036,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     }
                 }
 
+                ulong? serviceContenderCountAtStart =
+                    CaptureServiceContenderCount(ref validity);
                 actorServiceSequence =
                     runtime.GetNextActorServiceObservationSequence();
                 QuicActorServiceObservation observation = new(
@@ -1062,7 +1068,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     runtime.IsDisposed,
                     validity,
                     interServiceGapMicros,
-                    deadlineLatenessMicros);
+                    deadlineLatenessMicros,
+                    serviceContenderCountAtStart);
                 actorObservationPublished =
                     runtime.TryPublishActorServiceObservation(in observation);
             }
@@ -1104,6 +1111,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             if (current == long.MaxValue)
             {
                 Volatile.Write(ref serviceContenderStateInvalid, 1);
+                Volatile.Write(
+                    ref serviceContenderArithmeticSaturated,
+                    1);
                 return false;
             }
 
@@ -1146,6 +1156,35 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             Interlocked.Exchange(ref serviceContenderCount, 0);
             Volatile.Write(ref serviceContenderStateInvalid, 1);
         }
+    }
+
+    private ulong? CaptureServiceContenderCount(
+        ref QuicActorServiceValidity validity)
+    {
+        long count = Volatile.Read(ref serviceContenderCount);
+        bool stateInvalid =
+            Volatile.Read(ref serviceContenderStateInvalid) != 0;
+        if (count <= 0 || stateInvalid)
+        {
+            validity |=
+                QuicActorServiceValidity.MissingServiceContenderCount;
+            if (stateInvalid)
+            {
+                validity |=
+                    QuicActorServiceValidity.ServiceContenderStateInvalid;
+            }
+
+            if (Volatile.Read(
+                    ref serviceContenderArithmeticSaturated) != 0)
+            {
+                validity |=
+                    QuicActorServiceValidity.ArithmeticSaturated;
+            }
+
+            return null;
+        }
+
+        return (ulong)count;
     }
 
 
