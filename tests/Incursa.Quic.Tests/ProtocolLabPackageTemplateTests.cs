@@ -638,6 +638,26 @@ public sealed class ProtocolLabPackageTemplateTests
             StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void Adaptive_runtime_counterfactual_analysis_is_versioned_and_never_authorizes_activation()
+    {
+        var repoRoot = FindRepoRoot();
+        var script = File.ReadAllText(Path.Combine(
+            repoRoot,
+            "eng",
+            "adaptive-runtime",
+            "Measure-AdaptiveRuntimeApplicationSendTurnCounterfactuals.ps1"));
+        var schema = File.ReadAllText(Path.Combine(
+            repoRoot,
+            "schemas",
+            "adaptive-runtime-application-send-turn-counterfactual-analysis-v1.schema.json"));
+
+        Assert.Contains("cell_median_not_epoch_independent", script, StringComparison.Ordinal);
+        Assert.Contains("server_application_send_not_exercised", script, StringComparison.Ordinal);
+        Assert.Contains("activeInternalAuthorized = $false", script, StringComparison.Ordinal);
+        Assert.Contains("\"const\": false", schema, StringComparison.Ordinal);
+    }
+
     [Theory]
     [InlineData("h3", "quic.transport.multiplex.100x64kb", "only supports protocol 'quic'")]
     [InlineData("quic", "http1.core.plaintext", "scenario(s) are not declared by the package template")]

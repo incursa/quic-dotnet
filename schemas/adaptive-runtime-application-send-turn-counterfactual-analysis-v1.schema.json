@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.incursa.dev/quic/adaptive-runtime-application-send-turn-counterfactual-analysis-v1.schema.json",
+  "title": "Adaptive Runtime Application Send Turn Counterfactual Analysis v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "analysisId",
+    "createdUtc",
+    "codeCommit",
+    "axisId",
+    "comparison",
+    "cells",
+    "summary",
+    "recommendation"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "adaptive-runtime-application-send-turn-counterfactual-analysis-v1"
+    },
+    "analysisId": { "type": "string", "minLength": 1 },
+    "createdUtc": { "type": "string", "format": "date-time" },
+    "codeCommit": { "type": "string", "pattern": "^[0-9a-fA-F]{7,40}$" },
+    "axisId": { "const": "application_send_turn_planning" },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baselinePolicy", "candidatePolicy", "outcomeScope"],
+      "properties": {
+        "baselinePolicy": { "const": "legacy_current" },
+        "candidatePolicy": { "const": "conservative" },
+        "outcomeScope": { "const": "cell_median_not_epoch_independent" }
+      }
+    },
+    "cells": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "campaignId",
+          "runId",
+          "cellId",
+          "sourceResultPath",
+          "sourceResultSha256",
+          "evidenceValidationPath",
+          "evidenceValid",
+          "classification",
+          "correctnessValid",
+          "analysisEligible",
+          "mechanismExposure",
+          "sequenceProtocol",
+          "workloadAnalysisOnly",
+          "binaryCohort",
+          "treatments",
+          "outcomes",
+          "constructionRowCount"
+        ],
+        "properties": {
+          "campaignId": { "type": "string", "minLength": 1 },
+          "runId": { "type": "string", "minLength": 1 },
+          "cellId": { "type": "string", "minLength": 1 },
+          "sourceResultPath": { "type": "string", "minLength": 1 },
+          "sourceResultSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "evidenceValidationPath": { "type": ["string", "null"] },
+          "evidenceValid": { "type": "boolean" },
+          "classification": { "type": "string", "minLength": 1 },
+          "correctnessValid": { "type": "boolean" },
+          "analysisEligible": { "type": "boolean" },
+          "mechanismExposure": {
+            "enum": [
+              "server_application_send_exercised",
+              "server_application_send_not_exercised"
+            ]
+          },
+          "sequenceProtocol": { "type": "string", "minLength": 1 },
+          "workloadAnalysisOnly": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "scenarioId",
+              "trafficShape",
+              "payloadBytes",
+              "effectiveConcurrency",
+              "warmupSeconds",
+              "durationSeconds"
+            ],
+            "properties": {
+              "scenarioId": { "type": "string", "minLength": 1 },
+              "trafficShape": { "type": "string", "minLength": 1 },
+              "payloadBytes": { "type": "integer", "minimum": 0 },
+              "effectiveConcurrency": { "type": "integer", "minimum": 1 },
+              "warmupSeconds": { "type": "integer", "minimum": 0 },
+              "durationSeconds": { "type": "integer", "minimum": 1 }
+            }
+          },
+          "binaryCohort": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["benchmarkSha256", "runtimeSha256"],
+            "properties": {
+              "benchmarkSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "runtimeSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+            }
+          },
+          "treatments": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["baselinePolicy", "candidatePolicy"],
+            "properties": {
+              "baselinePolicy": { "const": "legacy_current" },
+              "candidatePolicy": { "const": "conservative" }
+            }
+          },
+          "outcomes": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "baselineThroughputBytesPerSecond",
+              "candidateThroughputBytesPerSecond",
+              "throughputDeltaPercent",
+              "baselineLatencyP95Ms",
+              "candidateLatencyP95Ms",
+              "latencyP95DeltaPercent",
+              "maximumWithinTreatmentRelativeRange"
+            ],
+            "properties": {
+              "baselineThroughputBytesPerSecond": { "type": "number", "minimum": 0 },
+              "candidateThroughputBytesPerSecond": { "type": "number", "minimum": 0 },
+              "throughputDeltaPercent": { "type": ["number", "null"] },
+              "baselineLatencyP95Ms": { "type": "number", "minimum": 0 },
+              "candidateLatencyP95Ms": { "type": "number", "minimum": 0 },
+              "latencyP95DeltaPercent": { "type": ["number", "null"] },
+              "maximumWithinTreatmentRelativeRange": { "type": "number", "minimum": 0 }
+            }
+          },
+          "constructionRowCount": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cellCount",
+        "analysisEligibleCellCount",
+        "excludedCellCount",
+        "constructionRowCount",
+        "classificationCounts"
+      ],
+      "properties": {
+        "cellCount": { "type": "integer", "minimum": 1 },
+        "analysisEligibleCellCount": { "type": "integer", "minimum": 0 },
+        "excludedCellCount": { "type": "integer", "minimum": 0 },
+        "constructionRowCount": { "type": "integer", "minimum": 0 },
+        "classificationCounts": {
+          "type": "object",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "recommendation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "activeInternalAuthorized", "reason"],
+      "properties": {
+        "status": { "const": "continue_evidence_generation" },
+        "activeInternalAuthorized": { "const": false },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

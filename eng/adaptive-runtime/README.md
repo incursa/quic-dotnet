@@ -129,6 +129,27 @@ treated as thousands of independent epoch outcomes. Insufficient host or
 workload diversity emits `ruleProposal.status = holdout_blocked`, a null
 candidate rule, and `activeInternalAuthorized = false`.
 
+Summarize forced `legacy_current` versus `conservative` cell medians without
+relabelling them as epoch-independent observations:
+
+```powershell
+./eng/adaptive-runtime/Measure-AdaptiveRuntimeApplicationSendTurnCounterfactuals.ps1 `
+  -LocalResultPath ./path/to/c1/local-result.json,./path/to/c24/local-result.json `
+  -OutputPath ./.artifacts/adaptive-runtime/analysis/send-turn-counterfactuals.json `
+  -AnalysisId application-send-turn-counterfactuals-v1
+```
+
+The versioned report retains every input result and classification, the exact
+result and binary hashes, sequence protocol, workload identity as
+analysis-only metadata, construction-row counts, median throughput and p95
+deltas, and the maximum within-treatment relative range. Upload-only server
+cells remain present but are marked as not exercising server application
+sends. `invalid_contract`, `invalid_environment`, `failed_correctness`, and
+`stress_only` cells remain excluded with their original classification.
+The report labels cell outcomes `cell_median_not_epoch_independent`, recommends
+continued evidence generation, and always leaves
+`activeInternalAuthorized = false`.
+
 Create a permanent controller-owned, independent-host ProtocolLab campaign
 plan for the current send-turn axis without contacting the controller:
 
