@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0065",
+  "artifact_type": "architecture",
+  "status": "proposed",
+  "title": "Application-send turn shadow policy architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define a connection-local, shadow-only observation and recommendation path for application_send_turn_planning while the existing scheduler remains authoritative.",
+  "related_artifacts": [
+    "ARC-QUIC-CRT-0064",
+    "ARC-QUIC-CRT-0059",
+    "WI-QUIC-CRT-0066",
+    "VER-QUIC-CRT-0067"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0175",
+    "REQ-QUIC-CRT-0176"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicApplicationSendTurnPlanner.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicApplicationSendPressureClassifier.cs",
+    "docs/design/adaptive-runtime-policy-observation-schema.md",
+    "schemas/adaptive-runtime-policy-construction-dataset-v1.schema.json"
+  ],
+  "design_summary": "At the existing application-send actor-turn planning boundary, diagnostics-enabled code captures one bounded immutable observation from connection-local counters and the already-bounded planning snapshot. A connection-local deterministic shadow evaluator returns a versioned recommendation, state, and bounded reason without receiving a planner interface or mutating the queue. The evaluator initially uses the closed legacy_current and conservative evidence identities; legacy_current remains the only applied policy. A bounded sink records observation, recommendation, applied identity, versions, and provenance separately from receive-credit epochs. The snapshot and recommendation expire after one actor turn. Missing, stale, saturated, contradictory, recovery-unstable, resource-constrained, lifecycle-terminal, or otherwise out-of-domain inputs deterministically recommend conservative. Disabled mode preserves the null-planner fast path and creates no shadow record.",
+  "data_and_state_considerations": "The first observation contract uses saturating integer or fixed-point fields maintained with O(1) transition updates or bounded planning-snapshot work: queued write count, logical backlog bytes, distinct queued streams, oldest queue age, queue-delay EWMA, actor-service EWMA, burst-limit hits, bytes in flight, congestion window, retained send buffers and bytes, and bounded lifecycle, recovery, resource, and domain flags. Optional fields remain explicitly missing rather than zero. The evaluator keeps only bounded connection-local state needed for version sequencing and deterministic fallback. It stores no workload, peer, URL, application, or scenario identity and performs no unbounded stream scan.",
+  "edge_cases_and_constraints": [
+    "The decision boundary is one connection-actor application-send turn; an already selected logical write retains its independent operation latch.",
+    "A later snapshot cannot reorder or invalidate an already committed plan.",
+    "Shadow recommendations have no scheduler consumer and cannot change continuation, first-write selection, congestion, pacing, recovery, flow control, or buffer limits.",
+    "Missing, stale, saturated, contradictory, recovery-unstable, terminal, and out-of-domain inputs recommend conservative with deterministic reason precedence.",
+    "Forced values bypass selection only and continue through all runtime validation and safety guards.",
+    "Disabled and observe-only paths must preserve the null-planner fast path and steady-state allocation expectations.",
+    "Receive-credit observations and epochs remain attributable only to receive_credit_publication.",
+    "Adjacent axes remain legacy_current unless a separately reviewed factorial campaign explicitly changes them."
+  ],
+  "alternatives_considered": [
+    "Promote a retained rotation, transition-batching, or fixed-quantum experiment. Rejected because those candidates are preserved negative evidence and the roadmap forbids speculative threshold tuning.",
+    "Reuse receive-credit shadow epochs. Rejected because their observation and rule versions are axis-specific and cannot prove send-turn decisions.",
+    "Inject the shadow evaluator as IQuicApplicationSendTurnPlanner. Rejected because that would create a behavior consumer and blur the evidence and policy planes.",
+    "Evaluate per packet or through a global service locator. Rejected because the safe boundary is one actor turn and the hot path must remain connection-local and bounded."
+  ],
+  "risks": [
+    "A behavior-neutral conservative identity can be mistaken for a policy winner; records and review material must state that it proves plumbing only.",
+    "Observation capture can perturb the null-planner fast path; disabled and observe-only neutrality require focused allocation and local campaign evidence.",
+    "Repeated sample-level outcomes can be misread as independent epoch outcomes; dataset joins must preserve their source scope.",
+    "A future planner proposal may need observations not present in v1; adding fields requires a new observation version and replay boundary."
+  ],
+  "open_questions": [
+    "Whether actor-service EWMA should be supplied directly by the connection actor or through an immutable coarse advisor.",
+    "Which bounded fairness outcome can be attributed at connection-epoch granularity without an unbounded stream scan."
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0066",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "Implement application-send turn shadow policy evidence",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add a bounded application-send turn observation, deterministic shadow recommendation, axis-specific provenance export, replay, and force-legacy rollback without changing applied scheduler behavior.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-SEND-TURN-SHADOW",
+    "ARC-QUIC-CRT-0065",
+    "VER-QUIC-CRT-0067"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0065"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0067"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0175",
+    "REQ-QUIC-CRT-0176"
+  ],
+  "planned_changes": "Introduce compact immutable send-turn observation, recommendation, state, reason, and provenance types; add bounded connection-local counters only where the observation schema requires them; evaluate and publish only at the existing actor-turn planning boundary; keep the scheduler on legacy_current; extend permanent construction/result export and deterministic replay without relabeling receive-credit epochs; and add an independent force-legacy rollback path.",
+  "verification_plan": "Build before testing. Add requirement-home tests for disabled, observe-only, shadow, every forced value, force-legacy rollback, safe-boundary latching, reason precedence, missing, stale, saturated, contradictory, and out-of-domain inputs, cancellation, disposal, FIN, reset, shutdown, recovery, congestion, pacing, flow-control, queue, and buffer guards. Add bounded property sequences and focused mechanism benchmarks outside correctness CI. Run the complete correctness-only Release suite, then local permanent neutrality and shadow campaigns before any reviewed multi-host campaign.",
+  "out_of_scope": [
+    "Active or active_internal policy selection",
+    "A behavior-distinct production planner",
+    "Threshold tuning from BenchmarkDotNet",
+    "Online learning, exploration, bandits, or runtime model training",
+    "Application-send batch formation, queued-send burst budget, oversized-write admission, actor quantum, packet cadence, placement, or protocol-sensitive axes",
+    "Reclassification, deletion, or relabeling of retained negative or excluded evidence"
+  ]
+}

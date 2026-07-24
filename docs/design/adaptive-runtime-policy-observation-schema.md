@@ -4,7 +4,8 @@ title: "Adaptive Runtime Connection Observation Schema"
 
 # Adaptive Runtime Connection Observation Schema
 
-Status: proposed for joint planning review
+Status: receive-credit v1 implemented; application-send turn shadow subset
+proposed
 
 The controller consumes one immutable, connection-local observation per
 bounded epoch. Actor work updates primitive counters; snapshot construction
@@ -34,6 +35,26 @@ Wall-clock timestamps, peer addresses, connection IDs, stream IDs, URLs, and
 benchmark labels do not enter the runtime observation. The offline row joins a
 pseudonymous connection key and workload identity through the campaign
 contract.
+
+## Application-Send Turn Shadow V1 Subset
+
+The proposed `application_send_turn_planning` shadow contract uses the same
+epoch envelope but remains an axis-specific record. Its required bounded
+signals are `queued_application_writes`, `outbound_backlog_bytes`,
+`distinct_queued_send_streams`, `oldest_application_send_age_us`,
+`queue_delay_ewma_us`, `actor_service_time_ewma_us`,
+`burst_limit_hits_epoch`, `congestion_window_bytes`, `bytes_in_flight`,
+`retained_send_buffers`, `retained_send_bytes`, and bounded lifecycle,
+recovery, resource, missing, stale, saturation, contradiction, and
+out-of-domain flags.
+
+The first shadow rule may use only a reviewed subset of those fields, but every
+required field's absence remains explicit and deterministically recommends
+`conservative`. Optional values are never rewritten as zero. Snapshot
+construction occurs at the existing application-send actor-turn planning
+boundary, performs no unbounded stream scan, and expires after one actor turn.
+Receive-credit epochs remain attributable only to
+`receive_credit_publication`.
 
 ## Signal Inventory
 

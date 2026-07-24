@@ -1,0 +1,83 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-CRT-SEND-TURN-SHADOW",
+  "artifact_type": "specification",
+  "title": "Application-send turn shadow policy contract",
+  "domain": "quic",
+  "capability": "adaptive-runtime-application-send-turn-shadow",
+  "status": "proposed",
+  "owner": "quic-maintainers",
+  "tags": [
+    "adaptive-runtime",
+    "application-send",
+    "shadow",
+    "measurement-only"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0065",
+    "WI-QUIC-CRT-0066",
+    "VER-QUIC-CRT-0067"
+  ],
+  "purpose": "Define the first shadow-only contract for application_send_turn_planning without authorizing an alternate production planner, active selection, or reuse of receive-credit epochs.",
+  "scope": "This specification covers bounded connection-local observations at the existing application-send actor-turn planning boundary, deterministic legacy_current or conservative shadow recommendations, immutable one-turn snapshots, bounded fallback reasons, axis-specific provenance, replay, and force-legacy rollback. It does not define a policy winner or an active planner algorithm.",
+  "context": "The existing force seam and construction provenance deliberately distinguish legacy_current and conservative campaign identities while both retain the current legal scheduler. Retained rotation, adjacent-write accumulation, transition grouping, sender-queue, continuation-cursor, and fixed-quantum experiments remain negative. Shadow work therefore proves the observation, recommendation, provenance, and rollback architecture before any later evidence-backed planner proposal is reviewed.",
+  "open_questions": [
+    "Which bounded observation subset is sufficiently complete for the first offline-reviewed non-neutral planner proposal?",
+    "What independent-host and workload coverage will be required before conservative can denote behavior distinct from the current legal planner?"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-QUIC-CRT-0175",
+      "title": "Evaluate application-send turn shadow recommendations without changing applied behavior",
+      "statement": "When application_send_turn_planning shadow mode is enabled, the runtime MUST capture a bounded immutable observation at the existing connection-actor send-turn planning boundary, deterministically recommend one value from the closed legacy_current and conservative set for exactly one actor turn, keep legacy_current as the applied policy, expose no recommendation consumer in the scheduler or protocol data plane, and preserve priority, same-stream ordering, congestion, pacing, anti-amplification, flow-control, packet, ownership, cancellation, disposal, recovery, lifecycle, queue, buffer, and terminal-state authority.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0065"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0066"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0067"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-axis-roadmap.md",
+          "docs/design/adaptive-runtime-policy-seam-inventory.md",
+          "docs/design/adaptive-runtime-policy-observation-schema.md",
+          "docs/design/adaptive-runtime-policy-controller-state-machine.md"
+        ]
+      },
+      "notes": [
+        "The first rule may be semantic-neutral and may recommend conservative only as a distinct evidence identity; this requirement does not authorize a new planner implementation.",
+        "A later active or behavior-distinct policy requires a separate reviewed requirement and evidence package."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0176",
+      "title": "Retain versioned send-turn shadow fallback and provenance evidence",
+      "statement": "The application_send_turn_planning shadow contract MUST version its observation, rule, snapshot, reason, and provenance records; handle missing, stale, saturated, contradictory, and out-of-domain observations with a deterministic conservative recommendation and bounded reason code; retain requested, recommended, applied, and forced identities without relabeling receive-credit evidence; support deterministic replay and an independently tested force-legacy rollback; and exclude scenario names, workload labels, payload constants, requested concurrency, peer identity, URLs, and application identity from runtime controller inputs.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0065"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0066"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0067"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-observation-schema.md",
+          "docs/protocol-lab/adaptive-runtime-policy-dataset-provenance-contract.md",
+          "docs/testing/adaptive-runtime-policy-shadow-verification.md",
+          "docs/testing/adaptive-runtime-policy-acceptance-rollback.md"
+        ]
+      },
+      "notes": [
+        "Excluded, invalid, negative, and unmatched rows remain append-only evidence with reason codes.",
+        "Machine learning remains offline-only; no runtime model file or self-updating threshold is authorized."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0067",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Application-send turn shadow policy verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-SEND-TURN-SHADOW",
+    "ARC-QUIC-CRT-0065",
+    "WI-QUIC-CRT-0066"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0175",
+    "REQ-QUIC-CRT-0176"
+  ],
+  "scope": "Verify shadow-only observation, deterministic recommendation, provenance, replay, and force-legacy rollback for application_send_turn_planning. Do not claim a policy winner, active behavior, fairness improvement, latency improvement, or production readiness.",
+  "verification_method": "Deterministic requirement-home and property tests, focused scheduler and lifecycle correctness tests, allocation and mechanism-cost benchmarks outside correctness CI, permanent local disabled-versus-observe-only and shadow campaigns, schema/checksum validation, and deterministic offline replay.",
+  "preconditions": [
+    "The receive-credit and stream-capacity correctness checkpoint remains preserved.",
+    "The application-send force and construction-provenance contract remains green.",
+    "All adjacent policy axes are fixed at legacy_current.",
+    "The runtime default and applied shadow behavior are legacy_current."
+  ],
+  "procedure": [
+    "Validate the new requirement, architecture, work-item, and verification artifacts independently.",
+    "Build the relevant projects in Release before testing.",
+    "Run deterministic requirement-home tests for disabled, observe-only, shadow, forced, rollback, safe-boundary latch, transition, fallback, and reason precedence.",
+    "Run bounded property sequences covering duplicate, delayed, missing, stale, saturated, contradictory, out-of-order, cancellation, disposal, FIN, reset, shutdown, loss, and recovery events.",
+    "Run focused scheduler, queue, congestion, pacing, flow-control, ownership, and buffer-limit tests.",
+    "Run BenchmarkDotNet mechanism checks only through the nightly or manual performance workflow and retain allocation results.",
+    "Run the complete Release correctness suite with Category!=Performance.",
+    "Run permanent local disabled-versus-observe-only and shadow replay cells with exact payload and provenance validation.",
+    "Validate raw, construction, normalized, curated, and split joins, checksums, exclusions, and axis attribution.",
+    "Run deterministic offline replay and prove force-legacy rollback before requesting multi-host shadow review."
+  ],
+  "expected_result": "Every shadow observation produces a versioned deterministic recommendation or conservative fallback with a bounded reason; legacy_current remains applied; no recommendation reaches the scheduler; every forced value retains safety guards; replay is exact; axis provenance and exclusions are append-only; disabled and observe-only paths meet neutrality expectations; and force-legacy rollback restores the null-planner baseline.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0175.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0176.cs",
+    "tests/Incursa.Quic.Tests/QuicApplicationSendSchedulerTests.cs",
+    "benchmarks/QuicApplicationSendTurnPlannerBenchmarks.cs",
+    "docs/testing/adaptive-runtime-policy-shadow-verification.md",
+    "docs/testing/adaptive-runtime-policy-acceptance-rollback.md",
+    "docs/testing/adaptive-runtime-policy-local-campaign-evidence-2026-07-23.md"
+  ],
+  "status_summary": "Planned. The existing force/provenance seam and retained negative inventory are prerequisites only. No send-turn shadow implementation, behavior-distinct planner, shadow campaign result, offline rule proposal, or active behavior is claimed by this artifact."
+}

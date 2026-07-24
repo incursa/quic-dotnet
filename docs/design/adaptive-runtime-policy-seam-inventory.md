@@ -4,8 +4,8 @@ title: "Adaptive Runtime Policy Seam Inventory"
 
 # Adaptive Runtime Policy Seam Inventory
 
-Status: implementation inventory reconciled; send-turn campaign-force planning
-authorized; active policy blocked
+Status: implementation inventory reconciled; send-turn shadow contract
+proposed; shadow implementation and active policy blocked
 
 This inventory describes controls that already exist in the runtime and the
 minimum seam work that would be required before a controller could observe or
@@ -25,12 +25,16 @@ The receive-credit publication axis completed its evidence review on
 2026-07-23 with a non-promoting `remain_legacy_current` decision. Its shadow
 and forced-policy seams remain permanent rollback and counterfactual tools;
 the accepted selector remains authoritative. The next permitted axis is
-`application_send_turn_planning`, but only at measurement-only campaign-force
-and provenance-contract scope. Its current planner seam is internally forceable
-as `legacy_current` or `conservative` at connection construction and remains
-independently injectable for tests and benchmarks. It must not gain adaptive selection, new runtime
-input signals, or active behavior until its own trace, forced-campaign,
-observation, and review gates are complete.
+`application_send_turn_planning`. Its current planner seam is internally
+forceable as `legacy_current` or `conservative` at connection construction and
+remains independently injectable for tests and benchmarks. The proposed
+`REQ-QUIC-CRT-0175` and `REQ-QUIC-CRT-0176` slice authorizes planning for
+bounded observation, behavior-neutral shadow recommendation, axis-specific
+provenance, replay, and force-legacy rollback. The current runtime remains
+force/provenance-only until that slice is implemented and verified. It must
+not gain active selection or behavior-distinct policy output until its own
+forced-campaign, observation, offline-analysis, shadow, and review gates are
+complete.
 
 ## Non-Negotiable Authority
 
@@ -46,7 +50,7 @@ existing correctness-critical runtime, never a second scheduler.
 | --- | --- | --- | --- | --- | --- | --- |
 | Receive-credit publication | `QuicConnectionRuntime.ShouldUseBatchedReceiveCreditPath`; `QuicStream.ReadAsync`; `QuicConnectionStreamState.TryReadStreamData` | Immediate credit is the conservative path. The retained rule uses half-window batching only with at least 16 live observers and no application-data write in the connection lifetime. | One volatile distinct-stream count and one sticky-write read before locked stream-state bookkeeping on each productive application read. No allocation is intended. | The application-write fallback is connection-lifetime sticky; publication state is retained until threshold or forced flush. | Unit and benchmark callers can pass `useBatchedReceiveCredit`; ordinary end-to-end campaigns cannot yet force `legacy_current`, `immediate`, or `read_dominant_batch` independently. | Frozen retained behavior. Add a test-only forced-policy input before controller migration. First shadow target; no widening. |
 | Oversized-write admission quantum | `QuicConnectionRuntime.ShouldUseMultiplexedOversizedWritePath`; `QuicConnectionRuntime.Streams` | Two existing 32 KiB chunks may be admitted per actor turn only when 16-24 distinct stream observers exist at logical-write admission. | One distinct-stream count at admission; the selected path is carried by the request completion. | Yes, for the logical write, including fragmentation and completion ownership. | Focused tests can construct the path, but there is no explicit forced-policy campaign control. | Frozen accepted axis. Inventory only; not the first controller migration. |
-| Application-send first-write selection and continuation | `IQuicApplicationSendTurnPlanner`; listener factory; runtime constructor | Null or `QuicCurrentApplicationSendTurnPlanner` preserves the static priority/sequence scheduler. The internal `legacy_current` and `conservative` forced modes retain that behavior as distinct campaign identities. Injected planners may select a legal first queued write and decide whether another turn is scheduled. | Connection actor at an existing queued-send planning boundary. Interface dispatch only when a planner exists. | A plan applies to one actor turn; stream ordering checks remain authoritative. | Yes: an internal construction-time forced mode is propagated by the raw-QUIC package; a connection-local provenance record is emitted, exported, checksum-validated, and joined by the permanent local runner without relabeling receive-credit epochs. | Stable measurement seam. Any future policy must keep the current planner as baseline and must not repeat the rejected fixed quantum. No active selection. |
+| Application-send first-write selection and continuation | `IQuicApplicationSendTurnPlanner`; listener factory; runtime constructor | Null or `QuicCurrentApplicationSendTurnPlanner` preserves the static priority/sequence scheduler. The internal `legacy_current` and `conservative` forced modes retain that behavior as distinct campaign identities. Injected planners may select a legal first queued write and decide whether another turn is scheduled. | Connection actor at an existing queued-send planning boundary. Interface dispatch only when a planner exists. | A plan applies to one actor turn; stream ordering checks remain authoritative. | Yes: an internal construction-time forced mode is propagated by the raw-QUIC package; a connection-local provenance record is emitted, exported, checksum-validated, and joined by the permanent local runner without relabeling receive-credit epochs. | Stable measurement seam with proposed shadow trace in `SPEC-QUIC-CRT-SEND-TURN-SHADOW`. The runtime still has no send-turn shadow implementation. Any future behavior-distinct policy must keep the current planner as baseline and must not repeat the retained negative experiments. No active selection. |
 | Application-send batch formation | `QuicApplicationSendScheduler`; `QuicApplicationSendQueue.SelectQueuedApplicationSendBatchCount` | Packs eligible queued writes within the runtime-computed payload budget; raw stream data remains single selection. | Existing connection-actor planning loop over a bounded queue snapshot. | Per packet/plan only. | Unit-forceable through a synthetic queue and budget; no end-to-end named forced mode. | Candidate seam only after a stable forced-mode contract exists. |
 | Queued-send burst budget | `QuicSendPolicy`; `QuicConnectionRuntime.GetMaximumQueuedApplicationSendBurstDatagrams` | Four datagrams before handshake confirmation and twelve after, further bounded by congestion and anti-amplification. | O(1) budget computation at queued-send service. | Per actor turn. | `QuicSendPolicySnapshot` can force the cap in unit tests; runtime campaigns cannot force it independently. | Keep safety budgets authoritative. A policy may lower an allowed quantum but cannot exceed computed budgets. |
 | Contiguous application-datagram batching | `IQuicApplicationDatagramBatchPolicy`; `QuicAdaptiveApplicationDatagramBatchPolicy`; endpoint host | Starts on the contiguous/segmented path, then one-way promotes to ordinary datagrams after repeated distinct-stream pressure. | One bounded distinct-stream count at batch construction; connection-lifetime policy object. | Promotion is one-way for the connection. | Yes through injected policy and constructor thresholds. | Existing adaptive precedent. Do not merge its state machine with the proposed controller without a separate compatibility decision. |

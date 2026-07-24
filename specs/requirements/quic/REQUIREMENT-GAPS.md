@@ -28,10 +28,17 @@ This ledger tracks open questions, ambiguities, and follow-up decisions for QUIC
   with `ARC-QUIC-CRT-0062`, `WI-QUIC-CRT-0063`, and `VER-QUIC-CRT-0064`
   covering the safe-seam policy catalog, deterministic phase-transition
   schedules, and append-only `raw->normalized->curated->split` provenance
-  pipeline. The matching design, delivery, and proof homes for the shadow
-  foundation remain `ARC-QUIC-CRT-0059`, `WI-QUIC-CRT-0060`, and
-  `VER-QUIC-CRT-0061`. This gap still owns only the later active controller
-  and any wider policy beyond that shadow foundation.
+  pipeline. The application-send turn force and provenance seam is retained
+  by `REQ-QUIC-CRT-0173` and `REQ-QUIC-CRT-0174`. Its first shadow-only
+  extension is proposed by `REQ-QUIC-CRT-0175` and `REQ-QUIC-CRT-0176` in
+  `SPEC-QUIC-CRT-SEND-TURN-SHADOW`, with `ARC-QUIC-CRT-0065`,
+  `WI-QUIC-CRT-0066`, and `VER-QUIC-CRT-0067` defining a behavior-neutral
+  recommendation, axis-specific evidence, deterministic fallback, replay, and
+  force-legacy rollback. The matching design, delivery, and proof homes for
+  the shadow foundation remain `ARC-QUIC-CRT-0059`, `WI-QUIC-CRT-0060`, and
+  `VER-QUIC-CRT-0061`. This gap still owns only the later active controller and
+  any behavior-distinct application-send planner or wider policy beyond those
+  shadow foundations.
   Universal or duplex-reactivating receive-credit batching, online learning,
   production exploration, benchmark-label selection, per-packet evaluation, and
   silent migration of the retained selectors remain out of scope. The seven

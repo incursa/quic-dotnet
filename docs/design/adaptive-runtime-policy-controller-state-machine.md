@@ -4,7 +4,8 @@ title: "Adaptive Runtime Controller State Machine"
 
 # Adaptive Runtime Controller State Machine
 
-Status: proposed for joint planning review
+Status: receive-credit shadow implemented; application-send turn shadow
+extension proposed; active policy blocked
 
 The controller is a deterministic connection-local selector evaluated only at
 actor-safe boundaries. It publishes a compact immutable policy snapshot. It
@@ -27,6 +28,15 @@ No production implementation or activation is authorized by this document.
 The first proposed migration is receive-credit publication. Its shadow phase
 must reproduce the frozen legacy selector before any active behavior is
 considered.
+
+The next proposed extension is `application_send_turn_planning` shadow
+evaluation. It reuses the state and fallback vocabulary but emits an
+axis-specific recommendation at the existing application-send actor-turn
+planning boundary. `legacy_current` remains applied, the recommendation has no
+planner consumer, and the snapshot expires after one actor turn. The initial
+closed recommendation set is `legacy_current` and `conservative`; both retain
+the current legal planner behavior until a later behavior-distinct proposal
+has its own reviewed requirement and evidence package.
 
 ## States
 
