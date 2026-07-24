@@ -69,6 +69,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const int UnconfiguredApplicationSendBatchObservationMode = -1;
     private const int UnconfiguredQueuedSendBurstPolicyMode = -1;
     private const int UnconfiguredQueuedSendBurstObservationMode = -1;
+    private const int UnconfiguredOversizedWriteAdmissionPolicyMode = -1;
+    private const int UnconfiguredOversizedWriteAdmissionObservationMode = -1;
     private const int MaximumObservedApplicationSendTurnWrites = 64;
     private const int AdaptiveRuntimeObservationDisabled = 0;
     private const int AdaptiveRuntimeObservationConfiguring = 1;
@@ -106,8 +108,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private int applicationSendBatchObservationMode = UnconfiguredApplicationSendBatchObservationMode;
     private int queuedSendBurstPolicyMode = UnconfiguredQueuedSendBurstPolicyMode;
     private int queuedSendBurstObservationMode = UnconfiguredQueuedSendBurstObservationMode;
+    private int oversizedWriteAdmissionPolicyMode =
+        UnconfiguredOversizedWriteAdmissionPolicyMode;
+    private int oversizedWriteAdmissionObservationMode =
+        UnconfiguredOversizedWriteAdmissionObservationMode;
     private ulong applicationSendBatchPlanSequence;
     private ulong queuedSendBurstTurnSequence;
+    private long oversizedWriteAdmissionSequence;
     private uint queuedSendBurstLimitHits;
     private ulong applicationSendTurnSequence;
     private uint applicationSendTurnBurstLimitHits;
@@ -125,6 +132,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private QuicApplicationSendTurnShadowController applicationSendTurnShadowController = default;
     private IQuicApplicationSendBatchEvidenceSink? applicationSendBatchEvidenceSink;
     private IQuicQueuedSendBurstEvidenceSink? queuedSendBurstEvidenceSink;
+    private IQuicOversizedWriteAdmissionEvidenceSink? oversizedWriteAdmissionEvidenceSink;
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
     private readonly object scheduledFlowControlCreditGate = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
@@ -288,9 +296,14 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         private int oversizedStreamDataOffset;
         private Action? completionAction;
         private Action<bool>? resultCompletionAction;
+        private QuicOversizedWriteAdmissionResolution oversizedWriteAdmissionResolution;
         private long writeStartedTimestamp;
+        private ulong oversizedWriteCommittedBytes;
+        private int oversizedWriteCommittedFragments;
+        private int oversizedWriteContinuationPosts;
         private int completed;
         private bool queuedForWriteRetry;
+        private bool hasOversizedWriteAdmissionResolution;
         private bool oversizedWrite;
 
         internal StreamActionRequestCompletionSource(QuicConnectionRuntime owner)
@@ -319,9 +332,14 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             SuppressTerminalException = false;
             completionAction = null;
             resultCompletionAction = null;
+            oversizedWriteAdmissionResolution = default;
             writeStartedTimestamp = 0;
+            oversizedWriteCommittedBytes = 0;
+            oversizedWriteCommittedFragments = 0;
+            oversizedWriteContinuationPosts = 0;
             completed = 0;
             queuedForWriteRetry = false;
+            hasOversizedWriteAdmissionResolution = false;
             oversizedWrite = false;
             source.Reset();
         }
@@ -388,11 +406,43 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         internal bool IsOversizedWrite => oversizedWrite;
 
-        internal void ConfigureOversizedStreamData(ReadOnlyMemory<byte> streamData)
+        internal int OversizedWriteChunkQuantum =>
+            hasOversizedWriteAdmissionResolution
+                ? oversizedWriteAdmissionResolution.AppliedChunkQuantum
+                : QuicOversizedWriteAdmissionPolicy.SingleFragmentChunkQuantum;
+
+        internal void ConfigureOversizedStreamData(
+            ReadOnlyMemory<byte> streamData,
+            in QuicOversizedWriteAdmissionResolution resolution)
         {
             oversizedWrite = true;
             oversizedStreamData = streamData;
             oversizedStreamDataOffset = 0;
+            oversizedWriteAdmissionResolution = resolution;
+            hasOversizedWriteAdmissionResolution = true;
+        }
+
+        internal void RecordOversizedWriteCommittedFragment(int committedBytes)
+        {
+            if (!hasOversizedWriteAdmissionResolution || committedBytes <= 0)
+            {
+                return;
+            }
+
+            oversizedWriteCommittedFragments++;
+            oversizedWriteCommittedBytes =
+                ulong.MaxValue - oversizedWriteCommittedBytes < (ulong)committedBytes
+                    ? ulong.MaxValue
+                    : oversizedWriteCommittedBytes + (ulong)committedBytes;
+        }
+
+        internal void RecordOversizedWriteContinuationPost()
+        {
+            if (hasOversizedWriteAdmissionResolution
+                && oversizedWriteContinuationPosts < int.MaxValue)
+            {
+                oversizedWriteContinuationPosts++;
+            }
         }
 
         internal ReadOnlyMemory<byte> GetPendingOversizedStreamData(int maximumLength)
@@ -497,15 +547,20 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             if (TryInvokeCompletionActions(succeeded: true, out Exception? completionException))
             {
                 RecordWriteCompletion("failed");
+                PublishOversizedWriteEvidence(QuicOversizedWriteOutcome.Failed);
                 source.SetException(completionException!);
                 return;
             }
 
             RecordWriteCompletion("succeeded");
+            PublishOversizedWriteEvidence(QuicOversizedWriteOutcome.Completed);
             source.SetResult(true);
         }
 
-        internal void TrySetException(Exception exception)
+        internal void TrySetException(
+            Exception exception,
+            QuicOversizedWriteOutcome oversizedWriteOutcome =
+                QuicOversizedWriteOutcome.Failed)
         {
             if (Interlocked.Exchange(ref completed, 1) != 0)
             {
@@ -515,11 +570,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             if (TryInvokeCompletionActions(succeeded: false, out Exception? completionException))
             {
                 RecordWriteCompletion("failed");
+                PublishOversizedWriteEvidence(QuicOversizedWriteOutcome.Failed);
                 source.SetException(completionException!);
                 return;
             }
 
             RecordWriteCompletion("failed");
+            PublishOversizedWriteEvidence(oversizedWriteOutcome);
             source.SetException(exception);
         }
 
@@ -533,11 +590,16 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             if (TryInvokeCompletionActions(succeeded: false, out Exception? completionException))
             {
                 RecordWriteCompletion("failed");
+                PublishOversizedWriteEvidence(QuicOversizedWriteOutcome.Failed);
                 source.SetException(completionException!);
                 return;
             }
 
             RecordWriteCompletion("terminal");
+            PublishOversizedWriteEvidence(
+                owner.IsDisposed
+                    ? QuicOversizedWriteOutcome.Disposed
+                    : QuicOversizedWriteOutcome.Terminal);
             if (SuppressTerminalException)
             {
                 source.SetResult(false);
@@ -557,12 +619,29 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             if (TryInvokeCompletionActions(succeeded: false, out Exception? completionException))
             {
                 RecordWriteCompletion("failed");
+                PublishOversizedWriteEvidence(QuicOversizedWriteOutcome.Failed);
                 source.SetException(completionException!);
                 return;
             }
 
             RecordWriteCompletion("canceled");
+            PublishOversizedWriteEvidence(QuicOversizedWriteOutcome.Canceled);
             source.SetException(new OperationCanceledException(cancellationToken));
+        }
+
+        private void PublishOversizedWriteEvidence(QuicOversizedWriteOutcome outcome)
+        {
+            if (!hasOversizedWriteAdmissionResolution)
+            {
+                return;
+            }
+
+            owner.PublishOversizedWriteAdmissionEvidence(
+                in oversizedWriteAdmissionResolution,
+                oversizedWriteCommittedFragments,
+                oversizedWriteContinuationPosts,
+                oversizedWriteCommittedBytes,
+                outcome);
         }
 
         private bool TryInvokeCompletionActions(bool succeeded, out Exception? exception)
@@ -1014,12 +1093,214 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
     }
 
-    private bool ShouldUseMultiplexedOversizedWritePath()
+    private QuicOversizedWriteAdmissionResolution ResolveOversizedWriteAdmission(
+        int logicalWriteBytes)
+    {
+        if (logicalWriteBytes <= MaximumStreamWriteChunkBytes)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(logicalWriteBytes),
+                "Only oversized logical writes have an admission quantum.");
+        }
+
+        int configuredMode = Volatile.Read(ref oversizedWriteAdmissionPolicyMode);
+        QuicOversizedWriteAdmissionObservationMode observationMode =
+            OversizedWriteAdmissionObservationMode;
+        if (observationMode == QuicOversizedWriteAdmissionObservationMode.Disabled)
+        {
+            int appliedChunkQuantum = configuredMode switch
+            {
+                (int)QuicOversizedWriteAdmissionPolicyMode.SingleFragment =>
+                    QuicOversizedWriteAdmissionPolicy.SingleFragmentChunkQuantum,
+                (int)QuicOversizedWriteAdmissionPolicyMode.BoundedMultiFragment =>
+                    streamWriteDispatcher is null
+                        ? QuicOversizedWriteAdmissionPolicy.SingleFragmentChunkQuantum
+                        : MultiplexedOversizedWriteChunkQuantum,
+                _ => GetLegacyOversizedWriteChunkQuantum(),
+            };
+            return new QuicOversizedWriteAdmissionResolution(
+                observationMode,
+                Observation: default,
+                Decision: default,
+                AppliedChunkQuantum: appliedChunkQuantum);
+        }
+
+        long nextSequence = Interlocked.Increment(
+            ref oversizedWriteAdmissionSequence);
+        if (nextSequence <= 0)
+        {
+            throw new InvalidOperationException(
+                "The oversized-write admission sequence is exhausted.");
+        }
+
+        ulong sequence = (ulong)nextSequence;
+        long capturedAtTicks = clock.Ticks;
+        QuicSendPolicySnapshot sendPolicySnapshot =
+            CaptureQueuedApplicationSendPolicySnapshot();
+        QuicRetentionSnapshot retentionSnapshot =
+            CaptureApplicationSendRetentionSnapshot();
+        QuicOversizedWriteAdmissionSignalMask missingSignalMask =
+            QuicOversizedWriteAdmissionSignalMask.None;
+        uint queueDelayEwmaMicros = 0;
+        if (applicationSendPressureClassifier.HasQueueDelay)
+        {
+            queueDelayEwmaMicros =
+                (uint)applicationSendPressureClassifier.QueueDelayEwmaMicros;
+        }
+        else
+        {
+            missingSignalMask |=
+                QuicOversizedWriteAdmissionSignalMask.QueueDelayEwma;
+        }
+
+        uint actorServiceTimeEwmaMicros = 0;
+        if (hasApplicationSendTurnActorServiceTime != 0)
+        {
+            actorServiceTimeEwmaMicros =
+                applicationSendTurnActorServiceTimeEwmaMicros;
+        }
+        else
+        {
+            missingSignalMask |=
+                QuicOversizedWriteAdmissionSignalMask.ActorServiceTimeEwma;
+        }
+
+        if (sendPolicySnapshot.MaximumApplicationPayloadBytes <= 0)
+        {
+            missingSignalMask |=
+                QuicOversizedWriteAdmissionSignalMask.MaximumPayload;
+        }
+
+        int distinctObservedStreamCount = streamObservers.DistinctStreamCount;
+        bool continuationDispatcherAvailable = streamWriteDispatcher is not null;
+        bool legacyUsesMultiplexedPath =
+            continuationDispatcherAvailable
+            && distinctObservedStreamCount
+                >= MultiplexedOversizedWriteMinimumStreamCount
+            && distinctObservedStreamCount
+                <= MultiplexedOversizedWriteMaximumStreamCount;
+        int legacySelectedChunkQuantum = legacyUsesMultiplexedPath
+            ? MultiplexedOversizedWriteChunkQuantum
+            : QuicOversizedWriteAdmissionPolicy.SingleFragmentChunkQuantum;
+        int legalMaximumChunkQuantum = continuationDispatcherAvailable
+            ? MultiplexedOversizedWriteChunkQuantum
+            : QuicOversizedWriteAdmissionPolicy.SingleFragmentChunkQuantum;
+
+        QuicOversizedWriteAdmissionCondition conditions =
+            QuicOversizedWriteAdmissionCondition.None;
+        if (distinctObservedStreamCount > ushort.MaxValue
+            || retentionSnapshot.RetainedBufferCount > uint.MaxValue
+            || retentionSnapshot.RetainedByteCount < 0)
+        {
+            conditions |=
+                QuicOversizedWriteAdmissionCondition.ArithmeticSaturated;
+        }
+
+        if (sendPolicySnapshot.HasApplicationDataRetransmission)
+        {
+            conditions |= QuicOversizedWriteAdmissionCondition.RecoveryUnstable;
+        }
+
+        if (!continuationDispatcherAvailable)
+        {
+            conditions |=
+                QuicOversizedWriteAdmissionCondition.ResourceConstrained;
+        }
+
+        QuicOversizedWriteAdmissionObservation observation = new(
+            sequence,
+            capturedAtTicks,
+            QuicOversizedWriteAdmissionObservation.CurrentObservationContractVersion,
+            QuicOversizedWriteAdmissionObservation.CurrentRuleVersion,
+            missingSignalMask,
+            StaleSignalMask: QuicOversizedWriteAdmissionSignalMask.None,
+            conditions,
+            CaptureAdaptiveRuntimeLifecycleFlags(),
+            logicalWriteBytes,
+            LogicalRemainingBytes: logicalWriteBytes,
+            sendPolicySnapshot.MaximumApplicationPayloadBytes,
+            MaximumStreamWriteChunkBytes,
+            SaturateToUInt16(distinctObservedStreamCount),
+            (uint)applicationSendQueue.Count,
+            queueDelayEwmaMicros,
+            actorServiceTimeEwmaMicros,
+            sendPolicySnapshot.BytesInFlightBytes,
+            sendPolicySnapshot.CongestionWindowBytes,
+            retentionSnapshot.RetainedBufferCount >= uint.MaxValue
+                ? uint.MaxValue
+                : (uint)Math.Max(0, retentionSnapshot.RetainedBufferCount),
+            retentionSnapshot.RetainedByteCount < 0
+                ? 0
+                : (ulong)retentionSnapshot.RetainedByteCount,
+            continuationDispatcherAvailable,
+            legacySelectedChunkQuantum,
+            legalMaximumChunkQuantum);
+
+        bool hasForcedValue =
+            configuredMode != UnconfiguredOversizedWriteAdmissionPolicyMode;
+        QuicOversizedWriteAdmissionResolution resolution =
+            QuicOversizedWriteAdmissionPolicy.Resolve(
+                in observation,
+                observationMode,
+                hasForcedValue,
+                OversizedWriteAdmissionPolicyMode);
+        return resolution;
+    }
+
+    private int GetLegacyOversizedWriteChunkQuantum()
     {
         int activeStreamCount = streamObservers.DistinctStreamCount;
         return streamWriteDispatcher is not null
             && activeStreamCount >= MultiplexedOversizedWriteMinimumStreamCount
-            && activeStreamCount <= MultiplexedOversizedWriteMaximumStreamCount;
+            && activeStreamCount <= MultiplexedOversizedWriteMaximumStreamCount
+                ? MultiplexedOversizedWriteChunkQuantum
+                : QuicOversizedWriteAdmissionPolicy.SingleFragmentChunkQuantum;
+    }
+
+    private void PublishOversizedWriteAdmissionEvidence(
+        in QuicOversizedWriteAdmissionResolution resolution,
+        int committedFragments,
+        int continuationPosts,
+        ulong committedBytes,
+        QuicOversizedWriteOutcome outcome)
+    {
+        IQuicOversizedWriteAdmissionEvidenceSink? sink =
+            oversizedWriteAdmissionEvidenceSink;
+        if (sink is null
+            || resolution.Mode == QuicOversizedWriteAdmissionObservationMode.Disabled)
+        {
+            return;
+        }
+
+        long completedAtTicks = clock.Ticks;
+        long elapsedTicks =
+            completedAtTicks > resolution.Observation.CapturedAtTicks
+                ? completedAtTicks - resolution.Observation.CapturedAtTicks
+                : 0;
+        QuicAdaptiveRuntimeStage1AxisDecision latchedDecision =
+            resolution.Decision;
+        QuicAdaptiveRuntimeStage1AxisDecision completedDecision =
+            QuicOversizedWriteAdmissionPolicy.Complete(
+                in latchedDecision,
+                outcome);
+        QuicOversizedWriteAdmissionEvidence evidence = new(
+            resolution.Mode,
+            resolution.Observation,
+            completedDecision,
+            resolution.AppliedChunkQuantum,
+            committedFragments,
+            continuationPosts,
+            committedBytes,
+            ConvertTicksToMicros(elapsedTicks),
+            outcome);
+        try
+        {
+            _ = sink.TryPublish(in evidence);
+        }
+        catch (Exception)
+        {
+            // Evidence export is diagnostic-only. A failed sink must never affect transport behavior.
+        }
     }
 
     internal bool ShouldUseBatchedReceiveCreditPath()
@@ -1073,6 +1354,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             options.ForcedQueuedSendBurstPolicyMode;
         QuicQueuedSendBurstObservationMode requestedQueuedSendBurstObservationMode =
             options.QueuedSendBurstObservationMode;
+        QuicOversizedWriteAdmissionPolicyMode? forcedOversizedWriteAdmissionMode =
+            options.ForcedOversizedWriteAdmissionPolicyMode;
+        QuicOversizedWriteAdmissionObservationMode
+            requestedOversizedWriteAdmissionObservationMode =
+                options.OversizedWriteAdmissionObservationMode;
         if (requestedApplicationSendTurnObservationMode is < QuicApplicationSendTurnObservationMode.Disabled
             or > QuicApplicationSendTurnObservationMode.Shadow)
         {
@@ -1125,6 +1411,27 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         bool queuedSendBurstObservationEnabled =
             requestedQueuedSendBurstObservationMode
                 != QuicQueuedSendBurstObservationMode.Disabled;
+        if (requestedOversizedWriteAdmissionObservationMode
+                is < QuicOversizedWriteAdmissionObservationMode.Disabled
+                or > QuicOversizedWriteAdmissionObservationMode.Shadow)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(options),
+                "The oversized-write admission observation mode is invalid.");
+        }
+
+        if (forcedOversizedWriteAdmissionMode
+                is < QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent
+                or > QuicOversizedWriteAdmissionPolicyMode.BoundedMultiFragment)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(options),
+                "The forced oversized-write admission policy mode is invalid.");
+        }
+
+        bool oversizedWriteAdmissionObservationEnabled =
+            requestedOversizedWriteAdmissionObservationMode
+                != QuicOversizedWriteAdmissionObservationMode.Disabled;
         if (!applicationSendTurnObservationEnabled && options.ApplicationSendTurnEvidenceSink is not null)
         {
             throw new InvalidOperationException(
@@ -1159,6 +1466,31 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 "Queued-send burst observe-only and shadow modes require an evidence sink.");
         }
 
+        if (!oversizedWriteAdmissionObservationEnabled
+            && options.OversizedWriteAdmissionEvidenceSink is not null)
+        {
+            throw new InvalidOperationException(
+                "Oversized-write admission evidence export requires observe-only or shadow mode.");
+        }
+
+        if (oversizedWriteAdmissionObservationEnabled
+            && options.OversizedWriteAdmissionEvidenceSink is null)
+        {
+            throw new InvalidOperationException(
+                "Oversized-write admission observe-only and shadow modes require an evidence sink.");
+        }
+
+        bool applicationSendTurnTreatmentSelected =
+            forcedApplicationSendTurnMode
+                is QuicApplicationSendTurnPolicyMode.Conservative;
+        if (applicationSendTurnTreatmentSelected
+            && forcedMode is not null
+                and not QuicReceiveCreditPolicyMode.LegacyCurrent)
+        {
+            throw new InvalidOperationException(
+                "Application-send turn policy requires the legacy_current receive-credit policy.");
+        }
+
         bool applicationSendBatchTreatmentSelected =
             forcedApplicationSendBatchMode
                 is QuicApplicationSendBatchPolicyMode.SingleEligible;
@@ -1182,6 +1514,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             {
                 throw new InvalidOperationException(
                     "Application-send batch policy requires the legacy_current queued-send burst policy.");
+            }
+
+            if (forcedOversizedWriteAdmissionMode is not null
+                and not QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Application-send batch policy requires the legacy_current oversized-write admission policy.");
             }
         }
 
@@ -1208,6 +1547,47 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             {
                 throw new InvalidOperationException(
                     "Queued-send burst policy requires the legacy_current application-send batch policy.");
+            }
+
+            if (forcedOversizedWriteAdmissionMode is not null
+                and not QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Queued-send burst policy requires the legacy_current oversized-write admission policy.");
+            }
+        }
+
+        bool oversizedWriteAdmissionTreatmentSelected =
+            forcedOversizedWriteAdmissionMode
+                is QuicOversizedWriteAdmissionPolicyMode.SingleFragment
+                or QuicOversizedWriteAdmissionPolicyMode.BoundedMultiFragment;
+        if (oversizedWriteAdmissionTreatmentSelected)
+        {
+            if (forcedMode is not null and not QuicReceiveCreditPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Oversized-write admission policy requires the legacy_current receive-credit policy.");
+            }
+
+            if (forcedApplicationSendTurnMode is not null
+                and not QuicApplicationSendTurnPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Oversized-write admission policy requires the legacy_current application-send turn policy.");
+            }
+
+            if (forcedApplicationSendBatchMode is not null
+                and not QuicApplicationSendBatchPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Oversized-write admission policy requires the legacy_current application-send batch policy.");
+            }
+
+            if (forcedQueuedSendBurstMode is not null
+                and not QuicQueuedSendBurstPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Oversized-write admission policy requires the legacy_current queued-send burst policy.");
             }
         }
 
@@ -1285,6 +1665,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 ConfigureQueuedSendBurstPolicyMode(queuedSendBurstMode);
             }
 
+            if (forcedOversizedWriteAdmissionMode is { } oversizedWriteAdmissionMode)
+            {
+                ConfigureOversizedWriteAdmissionPolicyMode(oversizedWriteAdmissionMode);
+            }
+
             if (applicationSendTurnObservationEnabled)
             {
                 ConfigureApplicationSendTurnObservation(
@@ -1304,6 +1689,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 ConfigureQueuedSendBurstObservation(
                     requestedQueuedSendBurstObservationMode,
                     options.QueuedSendBurstEvidenceSink!);
+            }
+
+            if (oversizedWriteAdmissionObservationEnabled)
+            {
+                ConfigureOversizedWriteAdmissionObservation(
+                    requestedOversizedWriteAdmissionObservationMode,
+                    options.OversizedWriteAdmissionEvidenceSink!);
             }
 
             ConfigureAdaptiveRuntimeEpochSink(
@@ -1342,6 +1734,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             ConfigureQueuedSendBurstPolicyMode(forcedQueuedSendBurstMode.Value);
         }
 
+        if (forcedOversizedWriteAdmissionMode is not null)
+        {
+            ConfigureOversizedWriteAdmissionPolicyMode(
+                forcedOversizedWriteAdmissionMode.Value);
+        }
+
         if (applicationSendTurnObservationEnabled)
         {
             ConfigureApplicationSendTurnObservation(
@@ -1361,6 +1759,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             ConfigureQueuedSendBurstObservation(
                 requestedQueuedSendBurstObservationMode,
                 options.QueuedSendBurstEvidenceSink!);
+        }
+
+        if (oversizedWriteAdmissionObservationEnabled)
+        {
+            ConfigureOversizedWriteAdmissionObservation(
+                requestedOversizedWriteAdmissionObservationMode,
+                options.OversizedWriteAdmissionEvidenceSink!);
         }
 
         if (options.AdaptiveRuntimeShadowEpochSink is not null
@@ -1494,6 +1899,38 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         queuedSendBurstEvidenceSink = sink;
+    }
+
+    internal void ConfigureOversizedWriteAdmissionPolicyMode(
+        QuicOversizedWriteAdmissionPolicyMode mode)
+    {
+        QuicOversizedWriteAdmissionPolicy.ValidateMode(mode);
+        if (Interlocked.CompareExchange(
+                ref oversizedWriteAdmissionPolicyMode,
+                (int)mode,
+                UnconfiguredOversizedWriteAdmissionPolicyMode)
+            != UnconfiguredOversizedWriteAdmissionPolicyMode)
+        {
+            throw new InvalidOperationException(
+                "The oversized-write admission policy mode has already been configured.");
+        }
+    }
+
+    private void ConfigureOversizedWriteAdmissionObservation(
+        QuicOversizedWriteAdmissionObservationMode mode,
+        IQuicOversizedWriteAdmissionEvidenceSink sink)
+    {
+        if (Interlocked.CompareExchange(
+                ref oversizedWriteAdmissionObservationMode,
+                (int)mode,
+                UnconfiguredOversizedWriteAdmissionObservationMode)
+            != UnconfiguredOversizedWriteAdmissionObservationMode)
+        {
+            throw new InvalidOperationException(
+                "The oversized-write admission observation mode has already been configured.");
+        }
+
+        oversizedWriteAdmissionEvidenceSink = sink;
     }
 
     private void ConfigureAdaptiveRuntimeEpochSink(
@@ -2061,6 +2498,26 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             (int)QuicQueuedSendBurstObservationMode.Shadow =>
                 QuicQueuedSendBurstObservationMode.Shadow,
             _ => QuicQueuedSendBurstObservationMode.Disabled,
+        };
+
+    internal QuicOversizedWriteAdmissionPolicyMode OversizedWriteAdmissionPolicyMode
+        => Volatile.Read(ref oversizedWriteAdmissionPolicyMode) switch
+        {
+            (int)QuicOversizedWriteAdmissionPolicyMode.SingleFragment =>
+                QuicOversizedWriteAdmissionPolicyMode.SingleFragment,
+            (int)QuicOversizedWriteAdmissionPolicyMode.BoundedMultiFragment =>
+                QuicOversizedWriteAdmissionPolicyMode.BoundedMultiFragment,
+            _ => QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent,
+        };
+
+    internal QuicOversizedWriteAdmissionObservationMode OversizedWriteAdmissionObservationMode
+        => Volatile.Read(ref oversizedWriteAdmissionObservationMode) switch
+        {
+            (int)QuicOversizedWriteAdmissionObservationMode.ObserveOnly =>
+                QuicOversizedWriteAdmissionObservationMode.ObserveOnly,
+            (int)QuicOversizedWriteAdmissionObservationMode.Shadow =>
+                QuicOversizedWriteAdmissionObservationMode.Shadow,
+            _ => QuicOversizedWriteAdmissionObservationMode.Disabled,
         };
 
     internal bool TryBeginRuntimePressureSnapshot(
@@ -3099,9 +3556,18 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             return ValueTask.CompletedTask;
         }
 
-        bool useMultiplexedOversizedWritePath = buffer.Length > MaximumStreamWriteChunkBytes
-            && ShouldUseMultiplexedOversizedWritePath();
-        if (buffer.Length > MaximumStreamWriteChunkBytes
+        bool isOversizedWrite = buffer.Length > MaximumStreamWriteChunkBytes;
+        QuicOversizedWriteAdmissionResolution oversizedWriteAdmission = default;
+        bool useMultiplexedOversizedWritePath = false;
+        if (isOversizedWrite)
+        {
+            oversizedWriteAdmission =
+                ResolveOversizedWriteAdmission(buffer.Length);
+            useMultiplexedOversizedWritePath =
+                oversizedWriteAdmission.UseMultiplexedPath;
+        }
+
+        if (isOversizedWrite
             && !useMultiplexedOversizedWritePath)
         {
             ValueTask<bool> chunkWriteTask = WriteStreamChunksAsync(
@@ -3109,7 +3575,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 buffer,
                 finishWrites,
                 suppressTerminalException: false,
-                cancellationToken);
+                cancellationToken,
+                oversizedWriteAdmission);
             return completionAction is null
                 ? AwaitWriteStreamResultAsync(chunkWriteTask)
                 : AwaitWriteStreamResultAndCompleteAsync(chunkWriteTask, completionAction);
@@ -3126,7 +3593,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             buffer.Length);
         if (useMultiplexedOversizedWritePath)
         {
-            completion.ConfigureOversizedStreamData(buffer);
+            completion.ConfigureOversizedStreamData(
+                buffer,
+                in oversizedWriteAdmission);
         }
         if (completionAction is not null)
         {
@@ -3242,6 +3711,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         int totalLength = checked(buffer.Length + bufferSuffix.Length);
+        QuicOversizedWriteAdmissionResolution oversizedWriteAdmission = default;
         bool useMultiplexedOversizedWritePath = false;
         if (totalLength > MaximumStreamWriteChunkBytes)
         {
@@ -3252,7 +3722,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                     $"A segmented stream write cannot exceed {MaximumStreamWriteChunkBytes} bytes.");
             }
 
-            useMultiplexedOversizedWritePath = ShouldUseMultiplexedOversizedWritePath();
+            oversizedWriteAdmission =
+                ResolveOversizedWriteAdmission(totalLength);
+            useMultiplexedOversizedWritePath =
+                oversizedWriteAdmission.UseMultiplexedPath;
             if (!useMultiplexedOversizedWritePath)
             {
                 ValueTask<bool> chunkWriteTask = WriteStreamChunksAsync(
@@ -3260,7 +3733,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                     buffer,
                     finishWrites,
                     suppressTerminalException,
-                    cancellationToken);
+                    cancellationToken,
+                    oversizedWriteAdmission);
                 return completionAction is null
                     ? chunkWriteTask
                     : AwaitTryWriteStreamResultAndCompleteAsync(chunkWriteTask, completionAction);
@@ -3278,7 +3752,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             totalLength);
         if (useMultiplexedOversizedWritePath)
         {
-            completion.ConfigureOversizedStreamData(buffer);
+            completion.ConfigureOversizedStreamData(
+                buffer,
+                in oversizedWriteAdmission);
         }
         if (completionAction is not null)
         {
@@ -3335,27 +3811,72 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         ReadOnlyMemory<byte> buffer,
         bool finishWrites,
         bool suppressTerminalException,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        QuicOversizedWriteAdmissionResolution oversizedWriteAdmission)
     {
-        while (!buffer.IsEmpty)
+        int committedFragments = 0;
+        ulong committedBytes = 0;
+        QuicOversizedWriteOutcome outcome = QuicOversizedWriteOutcome.Failed;
+        try
         {
-            int chunkLength = Math.Min(buffer.Length, MaximumStreamWriteChunkBytes);
-            bool finishChunk = finishWrites && chunkLength == buffer.Length;
-            if (!await WriteStreamAsyncCore(
-                    streamId,
-                    buffer[..chunkLength],
-                    finishChunk,
-                    suppressTerminalException,
-                    completionAction: null,
-                    cancellationToken).ConfigureAwait(false))
+            while (!buffer.IsEmpty)
             {
-                return false;
+                int chunkLength = Math.Min(
+                    buffer.Length,
+                    MaximumStreamWriteChunkBytes);
+                bool finishChunk = finishWrites && chunkLength == buffer.Length;
+                if (!await WriteStreamAsyncCore(
+                        streamId,
+                        buffer[..chunkLength],
+                        finishChunk,
+                        suppressTerminalException,
+                        completionAction: null,
+                        cancellationToken).ConfigureAwait(false))
+                {
+                    outcome = IsDisposed
+                        ? QuicOversizedWriteOutcome.Disposed
+                        : QuicOversizedWriteOutcome.Terminal;
+                    return false;
+                }
+
+                committedFragments++;
+                committedBytes += (ulong)chunkLength;
+                buffer = buffer[chunkLength..];
             }
 
-            buffer = buffer[chunkLength..];
+            outcome = QuicOversizedWriteOutcome.Completed;
+            return true;
         }
+        catch (OperationCanceledException)
+        {
+            outcome = QuicOversizedWriteOutcome.Canceled;
+            throw;
+        }
+        catch (ObjectDisposedException)
+        {
+            outcome = QuicOversizedWriteOutcome.Disposed;
+            throw;
+        }
+        catch (Exception)
+        {
+            if (HasTerminalStreamOperation)
+            {
+                outcome = IsDisposed
+                    ? QuicOversizedWriteOutcome.Disposed
+                    : QuicOversizedWriteOutcome.Terminal;
+            }
 
-        return true;
+            throw;
+        }
+        finally
+        {
+            PublishOversizedWriteAdmissionEvidence(
+                in oversizedWriteAdmission,
+                committedFragments,
+                continuationPosts: 0,
+                committedBytes,
+                outcome);
+        }
     }
 
     internal async ValueTask SendDatagramAsync(

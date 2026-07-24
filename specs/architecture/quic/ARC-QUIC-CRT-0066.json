@@ -25,6 +25,7 @@
     "src/Incursa.Quic/QuicApplicationSendScheduler.cs",
     "src/Incursa.Quic/QuicApplicationSendQueue.cs",
     "src/Incursa.Quic/QuicQueuedSendBurstPolicy.cs",
+    "src/Incursa.Quic/QuicOversizedWriteAdmissionPolicy.cs",
     "src/Incursa.Quic/QuicSendPolicy.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
@@ -61,7 +62,7 @@
     "A behavior-neutral or conservative result can be mistaken for a production winner; no active behavior is authorized by this architecture."
   ],
   "open_questions": [
-    "Which bounded batch and burst outcome counters can be emitted without adding a new hot-path allocation?",
-    "Whether one common epoch cadence is sufficient for all four axes or later observation versions need axis-local capture cadence with deterministic aggregation."
+    "Whether one common epoch cadence is sufficient for all four axes or later observation versions need axis-local capture cadence with deterministic aggregation.",
+    "How the unified exporter should represent an epoch with no oversized logical-write admission while preserving a canonical axis record and keeping operation-scoped outcomes separate."
   ]
 }

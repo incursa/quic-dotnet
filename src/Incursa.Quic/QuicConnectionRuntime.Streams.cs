@@ -532,7 +532,9 @@ internal sealed partial class QuicConnectionRuntime
 
     private static int GetOversizedWriteChunkQuantum(
         QuicConnectionRuntime.StreamActionRequestCompletionSource completion)
-        => completion.IsOversizedWrite ? MultiplexedOversizedWriteChunkQuantum : 1;
+        => completion.IsOversizedWrite
+            ? completion.OversizedWriteChunkQuantum
+            : QuicOversizedWriteAdmissionPolicy.SingleFragmentChunkQuantum;
 
     private int GetOversizedWriteChunkQuantum(long requestId)
         => pendingStreamActionRequests.TryGetValue(
@@ -552,14 +554,17 @@ internal sealed partial class QuicConnectionRuntime
         {
             // Cancellation can remove the request after the actor releases its gate but before this post.
             // Stream-action transitions are request-ID gated, so that unavoidable stale event is a no-op.
-            posted = dispatcher is not null
-                && completion.HasPendingOversizedStreamData
-                && dispatcher(
+            if (dispatcher is not null
+                && completion.HasPendingOversizedStreamData)
+            {
+                completion.RecordOversizedWriteContinuationPost();
+                posted = dispatcher(
                     continuation.RequestId,
                     completion.ActionKind,
                     completion.StreamId,
                     completion.GetPendingOversizedStreamData(MaximumStreamWriteChunkBytes),
                     ReadOnlyMemory<byte>.Empty);
+            }
         }
         catch (Exception caughtException)
         {
@@ -575,8 +580,10 @@ internal sealed partial class QuicConnectionRuntime
             return;
         }
 
-        completion.TrySetException(exception ?? new InvalidOperationException(
-            "The connection runtime could not queue the oversized stream write continuation."));
+        completion.TrySetException(
+            exception ?? new InvalidOperationException(
+                "The connection runtime could not queue the oversized stream write continuation."),
+            QuicOversizedWriteOutcome.ContinuationPostFailed);
     }
 
     private bool HandleWriteStreamActionLocked(
@@ -1174,6 +1181,8 @@ internal sealed partial class QuicConnectionRuntime
         int committedStreamDataLength,
         ref bool continueOversizedWrite)
     {
+        completion.RecordOversizedWriteCommittedFragment(
+            committedStreamDataLength);
         if (completion.IsOversizedWrite
             && committedStreamDataLength > 0
             && completion.AdvanceOversizedStreamData(committedStreamDataLength))

@@ -2428,6 +2428,12 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         selectedOptions.ForcedQueuedSendBurstPolicyMode = returnedOptions.ForcedQueuedSendBurstPolicyMode;
         selectedOptions.QueuedSendBurstObservationMode = returnedOptions.QueuedSendBurstObservationMode;
         selectedOptions.QueuedSendBurstEvidenceSink = returnedOptions.QueuedSendBurstEvidenceSink;
+        selectedOptions.ForcedOversizedWriteAdmissionPolicyMode =
+            returnedOptions.ForcedOversizedWriteAdmissionPolicyMode;
+        selectedOptions.OversizedWriteAdmissionObservationMode =
+            returnedOptions.OversizedWriteAdmissionObservationMode;
+        selectedOptions.OversizedWriteAdmissionEvidenceSink =
+            returnedOptions.OversizedWriteAdmissionEvidenceSink;
 
         QuicReceiveWindowSizes returnedWindowSizes = returnedOptions.InitialReceiveWindowSizes;
         selectedOptions.InitialReceiveWindowSizes = new QuicReceiveWindowSizes

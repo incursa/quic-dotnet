@@ -186,4 +186,12 @@ public abstract class QuicConnectionOptions
     internal QuicQueuedSendBurstObservationMode QueuedSendBurstObservationMode { get; set; }
 
     internal IQuicQueuedSendBurstEvidenceSink? QueuedSendBurstEvidenceSink { get; set; }
+
+    // CONTEXT: Internal-only Stage 1 logical-write admission control. The
+    // selected quantum is latched through fragmentation and completion.
+    internal QuicOversizedWriteAdmissionPolicyMode? ForcedOversizedWriteAdmissionPolicyMode { get; set; }
+
+    internal QuicOversizedWriteAdmissionObservationMode OversizedWriteAdmissionObservationMode { get; set; }
+
+    internal IQuicOversizedWriteAdmissionEvidenceSink? OversizedWriteAdmissionEvidenceSink { get; set; }
 }

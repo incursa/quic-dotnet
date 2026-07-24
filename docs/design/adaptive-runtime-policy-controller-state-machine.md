@@ -4,11 +4,12 @@ title: "Adaptive Runtime Controller State Machine"
 
 # Adaptive Runtime Controller State Machine
 
-Status: receive-credit, application-send turn, application-send batch, and
-queued-send burst shadow runtimes implemented; send-turn raw-host export and
-permanent-runner epoch joins implemented; one local send-turn shadow cell and
-one retained-negative observation-neutrality cell executed; unified export and
-broader campaign verification remain open; active policy blocked
+Status: receive-credit, application-send turn, application-send batch,
+queued-send burst, and oversized-write admission force/observe/shadow runtimes
+implemented; send-turn raw-host export and permanent-runner epoch joins
+implemented; one local send-turn shadow cell and one retained-negative
+observation-neutrality cell executed; unified four-axis export and broader
+campaign verification remain open; active policy blocked
 
 The controller is a deterministic connection-local selector evaluated only at
 actor-safe boundaries. It publishes a compact immutable policy snapshot. It
@@ -64,6 +65,16 @@ lower cap. Observe-only and shadow keep `legacy_current` applied. A forced
 single-datagram treatment requires receive credit, send-turn planning, and
 batch formation to remain `legacy_current`, and it cannot convert a blocked
 budget into progress.
+
+The implemented `oversized_write_admission_quantum` selector resolves
+`legacy_current`, `single_fragment`, or `bounded_multi_fragment` once at
+logical-write admission. `legacy_current` retains the exact dispatcher and
+16-through-24-observer selector. The explicit values select the existing
+single-fragment or accepted two-fragment mechanisms, while the continuation
+dispatcher and all lifecycle, recovery, ownership, completion, congestion,
+pacing, flow-control, packet, queue, and buffer guards remain authoritative.
+The decision is carried unchanged until the logical write completes, is
+canceled, is disposed, reaches terminal state, or fails.
 
 ## States
 

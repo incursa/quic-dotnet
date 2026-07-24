@@ -175,6 +175,48 @@ rule is neutral and recommends `legacy_current`; invalid shadow inputs retain
 their explicit validity and conservative recommendation while applying
 `legacy_current`. Forced values still pass every safety guard.
 
+## Oversized-Write Admission Quantum V1 Subset
+
+The implemented `oversized_write_admission_quantum` record is captured once at
+logical-write admission for writes larger than the retained 32 KiB fragment
+limit. Its closed values are `legacy_current`, `single_fragment`, and
+`bounded_multi_fragment`. `legacy_current` preserves the exact retained
+dispatcher-plus-16-through-24-observer selector. `single_fragment` uses the
+retained conventional one-fragment request path. `bounded_multi_fragment`
+selects the retained two-fragment actor-turn path, but a missing continuation
+dispatcher or authoritative lifecycle, resource, contradiction, or
+out-of-domain guard falls back to `single_fragment`. Recovery state remains
+explicit evidence while the existing recovery path continues to govern work.
+
+The admission observation retains a nonzero connection-local logical-write
+sequence, monotonic capture ticks, logical and remaining bytes, current
+application-payload and fragment limits, bounded observed-stream and queued
+write counts, queue-delay and actor-service EWMAs, congestion state, retained
+send state, dispatcher availability, the exact legacy-selected quantum, the
+legal maximum quantum, lifecycle flags, missing and stale masks, and bounded
+saturated, contradictory, out-of-domain, recovery, and resource conditions.
+Logical-write length is a protocol-operation signal; scenario names, benchmark
+payload labels or constants, requested concurrency, peers, URLs, and
+application identity never enter the selector.
+
+The resolved quantum is immutable for the operation and is stored with the
+existing completion source for the multiplexed path or carried by the existing
+async logical-write loop for the conventional path. Terminal evidence records
+the applied quantum, committed fragments and bytes, continuation-post attempts,
+completion latency, and one of `completed`, `canceled`, `terminal`, `disposed`,
+`failed`, or `continuation_post_failed`. The evidence latch completes exactly
+once. A sink failure is swallowed and cannot change transport completion.
+Disabled and forced-without-observation execution skips observation capture
+and preserves the retained selector cost shape.
+
+The initial complete-input shadow rule is neutral and recommends
+`legacy_current`; invalid shadow inputs recommend `single_fragment` while
+still applying `legacy_current`. Missing or stale diagnostic signals remain
+explicit but do not make a separately legal forced mechanism unforceable.
+Forced modes never bypass the continuation-dispatcher, ownership, completion,
+cancellation, disposal, terminal, recovery, congestion, pacing,
+anti-amplification, flow-control, packet, queue, or buffer guards.
+
 ## Signal Inventory
 
 Availability values are `existing`, `derivable`, or `new-counter`. A
