@@ -2700,3 +2700,142 @@ exporter using this exact boundary and accumulator, followed by terminal
 release correlation, reviewed actor work units and fairness outcomes, and
 force-readiness design. Active behavior and production activation remain
 unauthorized.
+
+## Stage 2 Permanent Unified Raw Export And Correctness Smoke
+
+Local commit
+`47d8e504f6dd509d75fc814843b065e59bc65737` configures one
+connection-local unified accumulator as the receive-credit, all four Stage 1,
+actor-service, and buffer-copy sink for every requested adaptive raw-host
+execution. The host retains the earlier receive-credit and Stage 1
+compatibility streams and adds:
+
+- `adaptive-runtime-unified-epoch-raw-v1`;
+- `QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON=`;
+- bounded-channel export-failure records;
+- an append-only raw exporter;
+- raw and manifest schemas;
+- semantic duplicate, ordering, join, four-axis, and one-varied-axis
+  validation; and
+- explicit `invalid_contract` classification when an export failure record is
+  retained.
+
+Local commit
+`f399a5a67e9fa4e89f4c8947da086fb07fe0b494` scopes raw
+connection identities to their hashed source-log cohort. Separate raw-host
+processes restart their local `connection-0001` counters, so a multi-process
+export must not silently claim that those keys are globally unique.
+
+The retained diagnostic and verification sequence is:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| First final raw-host Release build | Zero warnings and zero errors in 19.48 seconds | `accepted`; the permanent raw host compiled with the unified accumulator and joined writer. |
+| First test-project Release build | Zero warnings and zero errors in 54.25 seconds | `accepted` build evidence. |
+| First `REQ-QUIC-CRT-0183` exporter band | Seven passed, zero failed, zero skipped | `accepted` before explicit export-failure retention was added. |
+| Raw package template check | One passed, zero failed, zero skipped | `accepted`; exact unified contract, actor, buffer, and boundary wiring are present. |
+| Final raw-host Release build | Zero warnings and zero errors in 4.38 seconds | `accepted`; includes explicit bounded-channel failure reporting. |
+| Final test-project Release build | Zero warnings and zero errors in 46.80 seconds | `accepted` focused build evidence. |
+| First exporter failure-retention test | Eight passed and one failed because two native command-line values did not bind to the PowerShell array parameter as the fixture expected | `diagnostic_only`; the exporter was not reached for the second log. The fixture was corrected to one retained host log containing both the raw and failure prefixes. No runtime or schema claim was inferred from the failed invocation. |
+| Final boundary, exporter, local-runner, and raw-package band | Nine passed, zero failed, zero skipped in three seconds | `accepted`; includes append-only rejection and retained failure artifact plus `invalid_contract` manifest behavior. |
+| Direct SpecTrace model validation | `SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY`, `ARC-QUIC-CRT-0067`, `WI-QUIC-CRT-0068`, and `VER-QUIC-CRT-0069` each returned `True` | `accepted` focused trace evidence for `REQ-QUIC-CRT-0184`. |
+
+The first exact-source smoke used commit
+`f399a5a67e9fa4e89f4c8947da086fb07fe0b494`:
+
+```powershell
+pwsh -NoProfile -File .\eng\adaptive-runtime\Invoke-AdaptiveRuntimePolicyLocalCell.ps1 `
+  -CampaignId adaptive-stage2-unified-smoke-local-20260724-r001 `
+  -CellId duplex-64kb-x1-s16 `
+  -PolicyAxis application_send_turn_planning `
+  -SequenceProtocol ABBA `
+  -PolicyA legacy_current `
+  -PolicyB conservative `
+  -WarmupSeconds 0 `
+  -DurationSeconds 1 `
+  -OutputRoot .\.artifacts\adaptive-runtime\adaptive-stage2-unified-smoke-local-20260724-r001 `
+  -NoRestore
+```
+
+The smoke build passed with zero warnings and zero errors in 12.31 seconds.
+All four samples exited zero, validated the exact payload, reported zero
+failed operations, timeouts, protocol errors, cancellation failures,
+disposal failures, or invariant violations, and matched requested to effective
+workload shape. The local result is retained as `invalid_environment`, not as
+policy evidence. The source identities are:
+
+- quic-dotnet:
+  `f399a5a67e9fa4e89f4c8947da086fb07fe0b494`, clean;
+- protocol-lab:
+  `dd518aee19d73fb1477320644785fa070b1b62f1`, clean; and
+- protocol-lab-internal:
+  `a61027b522a569a5e56bf07800fe4ca714e2b353`, dirty and
+  therefore unsuitable for an independent-host policy claim.
+
+The runner retained 53 checksum-inventoried files. Frozen binary SHA-256
+values are:
+
+- raw host:
+  `83c801d006f17b85177c59d56bb3e5ee8b06d1f83914e8ba26e1ccff65052c5e`;
+  and
+- runtime:
+  `dd852dc046f6cb50fce2ac2bc98edee4b43bccce0d9cd4c0bf9e113412f7b126`.
+
+The append-only unified export
+`.artifacts/adaptive-runtime/adaptive-stage2-unified-smoke-local-20260724-r001/unified-raw-export-v1`
+is schema-valid and semantically valid:
+
+- 187 raw joined epochs;
+- 748 Stage 1 axis records;
+- eight source-scoped connections;
+- zero duplicate keys;
+- zero out-of-order keys;
+- zero join failures;
+- zero multi-axis variation rows;
+- zero export failures;
+- 187 actor-observed rows;
+- 183 buffer-observed rows and four explicitly empty buffer summaries;
+- 187 completed resource-release boundaries; and
+- 187 published actor-observation boundaries.
+
+All 187 receive-credit snapshots applied `legacy_current`.
+`application_send_turn_planning` was the only varied axis: 94 epochs applied
+`conservative`, 93 applied `legacy_current`, every epoch retained forced
+identity and a shadow recommendation, and 183 epochs contained send-turn
+events while four were explicitly missing. Both
+`application_send_batch_formation` and `queued_send_burst_budget` applied
+`legacy_current` in all 187 epochs, retained 183 event-bearing plus four
+missing records, and retained 187 shadow recommendations.
+`oversized_write_admission_quantum` applied `legacy_current` in all 187
+epochs, retained 187 shadow recommendations, and remained explicitly
+event-missing in this workload. `actor_work_quantum` and
+`buffer_copy_coalescing` remain observation-only candidates with applied
+legacy behavior; neither is forceable.
+
+The raw JSONL SHA-256 is
+`f1cf8c3348b9ba58950b1c0c9de43244d20534302ef38ee592e5f00b49c3990e`;
+the validation SHA-256 is
+`a05376f27d9cf5d5b7130b4ae02644ece1d4953e9e86fe43dff1c1e68dfd97a6`;
+and the raw-export manifest SHA-256 is
+`9a17cdae376a27ca137f8750ac3477e23fc16612be6450b7eab4646218b3fe80`.
+The local result, cell manifest, and checksum inventory SHA-256 values are
+`15ba72105a57005c9dbe30f9af330a54238fe497a386b465f46d224d749af3e3`,
+`f0b4870e99e682fbe71810bc605bfd55e927eaeaf59c1fa08c608b6ce15281a1`,
+and
+`55a271610ba44034f3429c20876052b14c3582d4f24989c231704f16ded63272`.
+
+The raw exporter classification is `accepted` for structural completeness;
+the enclosing campaign remains `invalid_environment`. Therefore 187 raw rows
+are retained, zero rows are eligible for policy acceptance, and all 187 would
+carry the environment exclusion into any later normalized or curated layer.
+No normalized, curated, split, or analysis dataset was created.
+
+No BenchmarkDotNet run, performance claim, large campaign, ProtocolLab
+deployment, dataset transform, ML analysis, CI run, or push occurred. The
+stopped 55,658-row single-axis transform remains `diagnostic_incomplete`,
+append-only, and untouched. The next Stage 2 architecture slice is exact
+terminal-release correlation, followed by reviewed useful actor work units,
+runnable/fairness observations, exactly-once repost design, and only then
+force-readiness for `actor_work_quantum` and
+`buffer_copy_coalescing`. Active behavior and production activation remain
+unauthorized.
