@@ -1890,3 +1890,65 @@ The corrected architecture direction is recorded in
 `docs/design/adaptive-runtime-stage1-unified-execution-map.md`. No additional
 single-axis transform, threshold analysis, CI work, push, or active behavior
 followed this stop.
+
+## Stage 1 Batch-Formation Runtime Checkpoint
+
+Local commit `1713b6a8` implements the
+`application_send_batch_formation` runtime seam. The closed policy set is
+`legacy_current` and `single_eligible`; the default and force-legacy rollback
+retain the existing scheduler. `single_eligible` can only shorten the
+already-legal queued-write prefix to one. Payload, priority, same-stream
+ordering, raw-write fragmentation, FIN, ownership, recovery, congestion,
+pacing, anti-amplification, flow-control, packet, queue, buffer, cancellation,
+disposal, and terminal guards remain runtime-authoritative.
+
+The packet-plan record now includes versioned observation, rule, snapshot,
+reason, and provenance identities; bounded missing, stale, saturated,
+contradictory, and out-of-domain state; forced and shadow identities; selected
+and applied values; bounded reasons and safety overrides; one-plan latch state;
+legal payload and eligible-prefix observations; bounded queue, backlog,
+stream-diversity, age, congestion, and retained-buffer observations; and
+attributable plan outcomes. Receive-credit, send-turn, and batch observations
+can run in the same connection while exactly one behavior-distinct treatment
+is forced. The focused runtime test varied only batch formation and confirmed
+that receive-credit and send-turn remained applied as `legacy_current`.
+
+The verification commands were:
+
+```powershell
+dotnet build src/Incursa.Quic/Incursa.Quic.csproj -c Release --no-restore
+dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build `
+  --filter "FullyQualifiedName~REQ_QUIC_CRT_0175|FullyQualifiedName~REQ_QUIC_CRT_0176|FullyQualifiedName~REQ_QUIC_CRT_0177|FullyQualifiedName~REQ_QUIC_CRT_0178|FullyQualifiedName~QuicApplicationSendSchedulerTests|FullyQualifiedName~QuicApplicationSendQueueTests" `
+  --logger "console;verbosity=minimal"
+```
+
+Both final Release builds completed with zero warnings and zero errors. The
+final focused band passed 144 of 144 tests with zero skips and zero failures in
+17 seconds. `VER-QUIC-CRT-0068` also validated against
+`model/model.schema.json`.
+
+Two pre-fix focused runs remain part of the diagnostic ledger:
+
+| Run | Result | Classification | Disposition |
+| --- | --- | --- | --- |
+| First 30-test `REQ-QUIC-CRT-0178` run | 28 passed, 2 failed | One `failed_correctness`; one `diagnostic_only` | The real defect allowed an undefined batch enum to reach the empty-queue plan. Validation now occurs before the empty-queue return. The second failure assumed actor-service EWMA must be missing even though handshake work may already establish a valid zero-microsecond sample. |
+| Second 30-test `REQ-QUIC-CRT-0178` run | 29 passed, 1 failed | `diagnostic_only` | The follow-up assertion incorrectly required a present actor-service EWMA to be positive; a valid sub-microsecond EWMA can round to zero. The test now accepts either explicit missing state or a present unsigned value. |
+
+No failed run was relabeled as a passing measurement. No BenchmarkDotNet,
+local campaign, ProtocolLab campaign, dataset transform, or unified epoch
+materialization was run at this checkpoint. Unified-schema row counts,
+classifications, and exclusions are therefore all zero for this slice. The
+existing stopped 55,658-row single-axis source remains
+`diagnostic_incomplete` and untouched.
+
+The checkpoint was committed locally from a clean staged slice. Nothing was
+pushed and no CI workflow or CI performance lane was used. The next
+implementation axis is `queued_send_burst_budget`; receive-credit remains
+`legacy_current`, send-turn remains `legacy_current`, batch formation returns
+to `legacy_current` when another treatment is varied, and oversized-write
+admission remains at its retained legacy selector. Unified raw export,
+publisher-loss provenance, the batch BenchmarkDotNet cost slice, permanent
+campaign inputs, the remaining two Stage 1 axes, full Release correctness, and
+the small four-axis smoke remain open. `active_internal` and production
+activation remain unauthorized.
