@@ -60,9 +60,10 @@ recommend `conservative`. The snapshot and recommendation expire after one
 actor turn, while already selected logical writes retain their independent
 operation latches. The runtime swallows diagnostic sink failures, rejects
 simultaneous shadow ownership and non-legacy adjacent-axis forcing, and leaves
-the null-planner path authoritative. Raw-host export, schema-valid permanent
-rows, and campaign evidence remain required before this section is verified
-end to end. Recovery probes do not create application-send turn records.
+the null-planner path authoritative. Versioned raw-host records are
+implemented, while schema-valid dataset rows and campaign evidence remain
+required before this section is verified end to end. Recovery probes do not
+create application-send turn records.
 
 ## Deterministic Tests
 

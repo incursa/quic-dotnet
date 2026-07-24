@@ -207,6 +207,48 @@ public sealed class REQ_QUIC_CRT_0176
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void RawHostKeepsShadowEvidenceSeparateFromForcedConstructionProvenance()
+    {
+        string source = File.ReadAllText(AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+            "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs"));
+
+        Assert.Contains(
+            "adaptive-runtime-application-send-turn-provenance-v1",
+            source,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "adaptive-runtime-application-send-turn-raw-v1",
+            source,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "QUIC_APPLICATION_SEND_TURN_POLICY_JSON=",
+            source,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "QUIC_APPLICATION_SEND_TURN_EVIDENCE_JSON=",
+            source,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "IQuicApplicationSendTurnEvidenceSink",
+            source,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "evidence.HasRecommendation ? evidence.Snapshot : null",
+            source,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "Only one adaptive-runtime policy axis can be forced or observed",
+            source,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "? QuicReceiveCreditPolicyMode.LegacyCurrent",
+            source,
+            StringComparison.Ordinal);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void QueueObservationStopsAtTheReviewedBoundAndMarksPartialEvidence()

@@ -158,8 +158,10 @@ That path sets only the internal application-send-turn force environment
 variable, requires the host-reported forced identity, retains the raw
 `application-send-turn-policy.raw.jsonl` record stream for each sample, and
 exports checksum-joined construction rows. It never relabels receive-credit
-epochs, has no send-turn shadow mode yet, and does not authorize active policy
-selection or a ProtocolLab submission.
+epochs and does not authorize active policy selection or a ProtocolLab
+submission. The raw host now exposes separate `observe_only` and `shadow`
+record streams, but this runner does not yet ingest or convert those records
+into schema-valid send-turn epoch rows.
 
 The local classifier is conjunctive. Known throughput, p95, or peak outstanding
 buffer-pool regressions beyond five percent retain a negative result. It cannot

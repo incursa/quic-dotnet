@@ -52,6 +52,15 @@ Forced modes bypass selection only. They cannot bypass flow-control progress,
 numeric limits, cancellation, disposal, FIN/reset, recovery, congestion,
 ownership, or buffer bounds.
 
+The `application_send_turn_planning` raw host accepts independently selected
+`legacy_current`, `conservative`, `observe_only`, and `shadow` values.
+Forced construction provenance and observe-only/shadow turn records use
+separate versioned output streams. The host rejects simultaneous receive-credit
+and send-turn selection and explicitly configures adjacent receive-credit
+behavior as `legacy_current`. The permanent local runner must not claim
+send-turn shadow completion until it converts, validates, and checksum-joins
+the raw turn records.
+
 ## Permanent Workload Matrix
 
 The minimum local campaign crosses the dimensions below. Cells may be split

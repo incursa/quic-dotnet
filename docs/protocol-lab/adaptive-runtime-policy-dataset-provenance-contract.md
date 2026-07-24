@@ -12,8 +12,8 @@ compare policies without asking production traffic to explore.
 
 The general epoch row schema is
 [`../../schemas/adaptive-runtime-policy-epoch-dataset-v1.schema.json`](../../schemas/adaptive-runtime-policy-epoch-dataset-v1.schema.json).
-An axis that has only connection-construction provenance and no controller epoch
-snapshot, currently `application_send_turn_planning`, instead uses the distinct
+Forced `application_send_turn_planning` evidence that has only
+connection-construction provenance instead uses the distinct
 [`../../schemas/adaptive-runtime-policy-construction-dataset-v1.schema.json`](../../schemas/adaptive-runtime-policy-construction-dataset-v1.schema.json).
 It is a provenance join record, not an epoch row, and must never be substituted
 for one in epoch-based analysis.
@@ -29,6 +29,14 @@ validates these construction rows separately from epochs: each must join a
 forced send-turn result, its source sample, and the retained raw artifact in
 that result's checksum inventory. A join failure remains invalid or excluded;
 it is never repaired by relabeling a receive-credit epoch.
+
+The raw QUIC host also emits the separate
+`adaptive-runtime-application-send-turn-raw-v1` trace for observe-only and
+shadow turns. That trace contains only a run-local connection pseudonym, the
+versioned observation, and the optional versioned recommendation snapshot.
+Until the permanent runner converts and validates that trace into joined epoch
+rows, it remains raw retained evidence and cannot be substituted for either a
+construction row or a schema-valid epoch row.
 
 ## Row Semantics
 

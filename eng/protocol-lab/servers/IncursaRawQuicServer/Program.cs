@@ -36,7 +36,18 @@ var adaptiveRuntimePolicy = ResolveAdaptiveRuntimePolicy(
     Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY"));
 var applicationSendTurnPolicy = ResolveApplicationSendTurnPolicy(
     Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY"));
-var epochPublisher = adaptiveRuntimePolicy.ForcedMode is not null || adaptiveRuntimePolicy.ShadowEnabled || applicationSendTurnPolicy.ForcedMode is not null
+var applicationSendTurnAxisSelected = applicationSendTurnPolicy.ForcedMode is not null
+    || applicationSendTurnPolicy.ObservationMode != QuicApplicationSendTurnObservationMode.Disabled;
+if (applicationSendTurnAxisSelected
+    && (adaptiveRuntimePolicy.ForcedMode is not null || adaptiveRuntimePolicy.ShadowEnabled))
+{
+    throw new InvalidOperationException(
+        "Only one adaptive-runtime policy axis can be forced or observed by a raw QUIC host process.");
+}
+
+var epochPublisher = adaptiveRuntimePolicy.ForcedMode is not null
+    || adaptiveRuntimePolicy.ShadowEnabled
+    || applicationSendTurnAxisSelected
     ? new AdaptiveRuntimeEpochPublisher()
     : null;
 var echoResponses = string.Equals(payloadDirection, "bidirectional", StringComparison.OrdinalIgnoreCase);
@@ -93,7 +104,9 @@ var listenerOptions = new QuicListenerOptions
                 RemotelyInitiatedBidirectionalStream = RawQuicReceiveWindowBytes,
                 UnidirectionalStream = RawQuicReceiveWindowBytes,
             },
-            ForcedReceiveCreditPolicyMode = adaptiveRuntimePolicy.ForcedMode,
+            ForcedReceiveCreditPolicyMode = applicationSendTurnAxisSelected
+                ? QuicReceiveCreditPolicyMode.LegacyCurrent
+                : adaptiveRuntimePolicy.ForcedMode,
             ForcedApplicationSendTurnPolicyMode = applicationSendTurnPolicy.ForcedMode,
             AdaptiveRuntimeShadowEnabled = adaptiveRuntimePolicy.ShadowEnabled,
             AdaptiveRuntimeShadowEpochInterval = adaptiveRuntimePolicy.ForcedMode is null && !adaptiveRuntimePolicy.ShadowEnabled
@@ -105,6 +118,11 @@ var listenerOptions = new QuicListenerOptions
             ApplicationSendTurnPolicyProvenanceSink = applicationSendTurnPolicy.ForcedMode is null
                 ? null
                 : connectionSinks?.ApplicationSendTurnPolicySink,
+            ApplicationSendTurnObservationMode = applicationSendTurnPolicy.ObservationMode,
+            ApplicationSendTurnEvidenceSink =
+                applicationSendTurnPolicy.ObservationMode == QuicApplicationSendTurnObservationMode.Disabled
+                    ? null
+                    : connectionSinks?.ApplicationSendTurnEvidenceSink,
             ServerAuthenticationOptions = new SslServerAuthenticationOptions
             {
                 ServerCertificate = certificate,
@@ -123,7 +141,8 @@ Console.WriteLine($"QUIC_ENDPOINT={advertisedHost}:{listenPort}");
 Console.WriteLine($"QUIC_PORT={listenPort}");
 Console.WriteLine($"QUIC_ALPN={alpn}");
 Console.WriteLine($"QUIC_IMPLEMENTATION=incursa-raw-quic");
-Console.WriteLine($"QUIC_RECEIVE_CREDIT_POLICY={adaptiveRuntimePolicy.Name}");
+Console.WriteLine(
+    $"QUIC_RECEIVE_CREDIT_POLICY={(applicationSendTurnAxisSelected ? "legacy_current" : adaptiveRuntimePolicy.Name)}");
 Console.WriteLine($"QUIC_APPLICATION_SEND_TURN_POLICY={applicationSendTurnPolicy.Name}");
 if (adaptiveRuntimePolicy.ForcedMode is not null || adaptiveRuntimePolicy.ShadowEnabled)
 {
@@ -132,6 +151,10 @@ if (adaptiveRuntimePolicy.ForcedMode is not null || adaptiveRuntimePolicy.Shadow
 if (applicationSendTurnPolicy.ForcedMode is not null)
 {
     Console.WriteLine("QUIC_APPLICATION_SEND_TURN_POLICY_CONTRACT=adaptive-runtime-application-send-turn-provenance-v1");
+}
+if (applicationSendTurnPolicy.ObservationMode != QuicApplicationSendTurnObservationMode.Disabled)
+{
+    Console.WriteLine("QUIC_APPLICATION_SEND_TURN_EVIDENCE_CONTRACT=adaptive-runtime-application-send-turn-raw-v1");
 }
 
 try
@@ -194,15 +217,32 @@ static (string Name, QuicReceiveCreditPolicyMode? ForcedMode, bool ShadowEnabled
     };
 }
 
-static (string Name, QuicApplicationSendTurnPolicyMode? ForcedMode) ResolveApplicationSendTurnPolicy(string? value)
+static (
+    string Name,
+    QuicApplicationSendTurnPolicyMode? ForcedMode,
+    QuicApplicationSendTurnObservationMode ObservationMode) ResolveApplicationSendTurnPolicy(string? value)
 {
     return value?.Trim().ToLowerInvariant() switch
     {
-        null or "" => ("unset", null),
-        "legacy_current" => ("legacy_current", QuicApplicationSendTurnPolicyMode.LegacyCurrent),
-        "conservative" => ("conservative", QuicApplicationSendTurnPolicyMode.Conservative),
+        null or "" => ("unset", null, QuicApplicationSendTurnObservationMode.Disabled),
+        "legacy_current" => (
+            "legacy_current",
+            QuicApplicationSendTurnPolicyMode.LegacyCurrent,
+            QuicApplicationSendTurnObservationMode.Disabled),
+        "conservative" => (
+            "conservative",
+            QuicApplicationSendTurnPolicyMode.Conservative,
+            QuicApplicationSendTurnObservationMode.Disabled),
+        "observe_only" => (
+            "observe_only",
+            null,
+            QuicApplicationSendTurnObservationMode.ObserveOnly),
+        "shadow" => (
+            "shadow",
+            null,
+            QuicApplicationSendTurnObservationMode.Shadow),
         _ => throw new InvalidOperationException(
-            "PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY must be unset, legacy_current, or conservative."),
+            "PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY must be unset, legacy_current, conservative, observe_only, or shadow."),
     };
 }
 
@@ -548,6 +588,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
 {
     private const string OutputPrefix = "QUIC_ADAPTIVE_RUNTIME_EPOCH_JSON=";
     private const string ApplicationSendTurnProvenanceOutputPrefix = "QUIC_APPLICATION_SEND_TURN_POLICY_JSON=";
+    private const string ApplicationSendTurnEvidenceOutputPrefix = "QUIC_APPLICATION_SEND_TURN_EVIDENCE_JSON=";
     private readonly Channel<AdaptiveRuntimeEpochRecord> epochs = Channel.CreateBounded<AdaptiveRuntimeEpochRecord>(
         new BoundedChannelOptions(4096)
         {
@@ -564,18 +605,28 @@ internal sealed class AdaptiveRuntimeEpochPublisher
             FullMode = BoundedChannelFullMode.Wait,
             AllowSynchronousContinuations = false,
         });
+    private readonly Channel<ApplicationSendTurnEvidenceRecord> applicationSendTurnEvidence =
+        Channel.CreateBounded<ApplicationSendTurnEvidenceRecord>(
+            new BoundedChannelOptions(4096)
+            {
+                SingleReader = true,
+                SingleWriter = false,
+                FullMode = BoundedChannelFullMode.Wait,
+                AllowSynchronousContinuations = false,
+            });
     private long nextConnectionKey;
 
     internal AdaptiveRuntimeEpochPublisher()
     {
         _ = WriteEpochsAsync();
         _ = WriteApplicationSendTurnProvenanceAsync();
+        _ = WriteApplicationSendTurnEvidenceAsync();
     }
 
     internal ConnectionSinks CreateConnectionSinks()
     {
         ConnectionSink sink = new(this, $"connection-{Interlocked.Increment(ref nextConnectionKey):D4}");
-        return new ConnectionSinks(sink, sink);
+        return new ConnectionSinks(sink, sink, sink);
     }
 
     private async Task WriteEpochsAsync()
@@ -610,9 +661,29 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         }
     }
 
+    private async Task WriteApplicationSendTurnEvidenceAsync()
+    {
+        try
+        {
+            await foreach (ApplicationSendTurnEvidenceRecord evidence in applicationSendTurnEvidence.Reader.ReadAllAsync())
+            {
+                Console.WriteLine(ApplicationSendTurnEvidenceOutputPrefix + JsonSerializer.Serialize(
+                    evidence,
+                    AdaptiveRuntimeEpochJsonContext.Default.ApplicationSendTurnEvidenceRecord));
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"IncursaRawQuicServer application-send turn evidence writer stopped: {ex.Message}");
+        }
+    }
+
     private sealed class ConnectionSink(
         AdaptiveRuntimeEpochPublisher owner,
-        string connectionKey) : IQuicAdaptiveRuntimeShadowEpochSink, IQuicApplicationSendTurnPolicyProvenanceSink
+        string connectionKey) :
+        IQuicAdaptiveRuntimeShadowEpochSink,
+        IQuicApplicationSendTurnPolicyProvenanceSink,
+        IQuicApplicationSendTurnEvidenceSink
     {
         public bool TryPublish(
             in QuicAdaptiveRuntimeConnectionObservation observation,
@@ -630,11 +701,21 @@ internal sealed class AdaptiveRuntimeEpochPublisher
                 provenance.AxisId,
                 provenance.RuleVersion,
                 provenance.AppliedPolicy));
+
+        public bool TryPublish(in QuicApplicationSendTurnEvidence evidence)
+            => owner.applicationSendTurnEvidence.Writer.TryWrite(new ApplicationSendTurnEvidenceRecord(
+                "adaptive-runtime-application-send-turn-raw-v1",
+                connectionKey,
+                evidence.Mode,
+                evidence.Observation,
+                evidence.HasRecommendation,
+                evidence.HasRecommendation ? evidence.Snapshot : null));
     }
 
     internal readonly record struct ConnectionSinks(
         IQuicAdaptiveRuntimeShadowEpochSink EpochSink,
-        IQuicApplicationSendTurnPolicyProvenanceSink ApplicationSendTurnPolicySink);
+        IQuicApplicationSendTurnPolicyProvenanceSink ApplicationSendTurnPolicySink,
+        IQuicApplicationSendTurnEvidenceSink ApplicationSendTurnEvidenceSink);
 }
 
 internal readonly record struct AdaptiveRuntimeEpochRecord(
@@ -650,8 +731,17 @@ internal readonly record struct ApplicationSendTurnPolicyProvenanceRecord(
     string RuleVersion,
     QuicApplicationSendTurnPolicyMode AppliedPolicy);
 
+internal readonly record struct ApplicationSendTurnEvidenceRecord(
+    string SchemaVersion,
+    string ConnectionKey,
+    QuicApplicationSendTurnObservationMode Mode,
+    QuicApplicationSendTurnObservation Observation,
+    bool HasRecommendation,
+    QuicApplicationSendTurnPolicySnapshot? Snapshot);
+
 [System.Text.Json.Serialization.JsonSerializable(typeof(AdaptiveRuntimeEpochRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(ApplicationSendTurnPolicyProvenanceRecord))]
+[System.Text.Json.Serialization.JsonSerializable(typeof(ApplicationSendTurnEvidenceRecord))]
 [System.Text.Json.Serialization.JsonSourceGenerationOptions(
     PropertyNamingPolicy = System.Text.Json.Serialization.JsonKnownNamingPolicy.CamelCase,
     UseStringEnumConverter = true)]

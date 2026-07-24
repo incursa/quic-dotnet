@@ -277,6 +277,13 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("connection = await listener.AcceptConnectionAsync(default);", rawQuicServer);
         Assert.Contains("QUIC_APPLICATION_SEND_TURN_POLICY_JSON=", rawQuicServer);
         Assert.Contains("QUIC_APPLICATION_SEND_TURN_POLICY_CONTRACT=", rawQuicServer);
+        Assert.Contains("QUIC_APPLICATION_SEND_TURN_EVIDENCE_JSON=", rawQuicServer);
+        Assert.Contains("QUIC_APPLICATION_SEND_TURN_EVIDENCE_CONTRACT=", rawQuicServer);
+        Assert.Contains("\"observe_only\"", rawQuicServer);
+        Assert.Contains("\"shadow\"", rawQuicServer);
+        Assert.Contains(
+            "Only one adaptive-runtime policy axis can be forced or observed",
+            rawQuicServer);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY", builderScript);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG: 1", builderScript);
         Assert.Contains("Raw QUIC package implementation manifest must contain exactly one ASPNETCORE_URLS environment anchor.", builderScript);

@@ -5,7 +5,8 @@ title: "Adaptive Runtime Connection Observation Schema"
 # Adaptive Runtime Connection Observation Schema
 
 Status: receive-credit v1 and application-send turn runtime subset
-implemented; permanent send-turn export and dataset integration pending
+implemented; send-turn raw-host export implemented; dataset integration
+pending
 
 The controller consumes one immutable, connection-local observation per
 bounded epoch. Actor work updates primitive counters; snapshot construction
