@@ -2193,7 +2193,8 @@ public sealed class Http3MinimalServerTests
             return;
         }
 
-        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler());
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler(), diagnostics);
         await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
         await OpenClientUnidirectionalStreamsAsync(connection);
 
@@ -2202,7 +2203,18 @@ public sealed class Http3MinimalServerTests
         await requestStream.WriteAsync(cancelPushFrame, 0, cancelPushFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
         await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
 
-        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
+        QuicConnectionTerminalState terminalState;
+        try
+        {
+            terminalState = await WaitForConnectionCloseAsync(connection);
+        }
+        catch (TimeoutException exception)
+        {
+            string diagnosticSummary = string.Join(
+                " | ",
+                diagnostics.Events.Select(static diagnostic => $"{diagnostic.Kind}:{diagnostic.StreamId}:{diagnostic.FrameType}:{diagnostic.ErrorCode}:{diagnostic.Message}"));
+            throw new Xunit.Sdk.XunitException($"{exception.Message} Server diagnostics: {diagnosticSummary}");
+        }
 
         Assert.Equal((ulong)Http3ErrorCode.FrameUnexpected, terminalState.Close.ApplicationErrorCode);
         await AssertPeerConnectionClosedAsync(connection, Http3ErrorCode.FrameUnexpected);
