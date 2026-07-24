@@ -3162,3 +3162,48 @@ packet owners, and endpoint handoff remain explicitly uncorrelated and
 non-forceable. Those paths remain ahead of Stage 2 actor work-unit, fairness,
 exactly-once repost, force-readiness, and rollback gates. Production activation
 remains unauthorized.
+
+## Stage 2 Combined Application-Send Buffer Release
+
+Local commit
+`1747b67e3808b8fb0415f3b85294ecfd636749c0` extends
+`REQ-QUIC-CRT-0185` to `combined_application_send` without changing batch
+selection, queue ordering, protection, congestion, pacing, recovery,
+flow-control, or buffer limits.
+
+After the already-legal selected queue entries are copied into a distinct
+`CombinedApplicationSend` owner, that owner now requests terminal correlation.
+Its token moves into sent-packet state, survives loss and direct
+retransmission with the same array, and closes exactly once on acknowledgment,
+reset suppression, replacement, terminal discard, final disposal, or failed
+protection/accounting. Each selected source queue owner closes separately with
+`CopiedToNextOwner`; source and combined lifetimes are never silently merged.
+Release observation and raw wrapper v6 add only this closed path while
+retaining v1 through v5 as immutable compatibility contracts.
+
+The focused verification sequence is:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| Test-project Release build | Zero warnings and zero errors in 63.98 seconds | `accepted` focused build evidence. |
+| Stage 2 requirement, sent-packet ownership, and raw-package band | 74 passed, zero failed, zero skipped in 13 seconds | `accepted`; includes combined-owner loss/retransmission/ACK, contradictory reason handling, v6 schema validation, exact joins, and permanent package identity. |
+| Application-send queue, repeated queued-final-write, batch-policy mechanism, and batch-runtime band | 103 passed, zero failed, zero skipped in three seconds | `accepted`; batching, queue ownership, final-write delivery, and adjacent Stage 1 policy behavior remain correct. |
+| Raw-host Release build | Zero warnings and zero errors in 4.03 seconds | `accepted`; v6 release records compile in the permanent host. |
+| PowerShell, JSON, and focused trace-home parse validation | Both edited scripts, both v6 schemas, and the Stage 2 specification, architecture, work item, and verification JSON parsed successfully | `accepted` focused contract syntax and trace-location evidence. |
+
+No campaign axis varied and no new raw, unified, normalized, curated, split,
+or analysis rows were generated. Receive credit, all four Stage 1 axes,
+`actor_work_quantum`, and `buffer_copy_coalescing` remain applied as
+`legacy_current` outside earlier explicitly retained Stage 1 smoke treatments.
+Dataset inclusion and exclusion counts are unchanged. No BenchmarkDotNet run,
+performance claim, large campaign, ProtocolLab deployment, dataset transform,
+ML analysis, CI run, push, or active behavior occurred.
+
+Seven owner paths are now terminally correlated: `receive_segment`,
+`application_write_request`, `oversized_raw_queue`,
+`formatted_stream_payload`, `combined_application_send`,
+`retransmission_clone`, and `sent_packet_plaintext_retention`. Protected packet
+owners and endpoint handoff remain explicitly uncorrelated and non-forceable.
+Those paths remain ahead of Stage 2 actor work-unit, fairness, exactly-once
+repost, force-readiness, and rollback gates. Production activation remains
+unauthorized.
