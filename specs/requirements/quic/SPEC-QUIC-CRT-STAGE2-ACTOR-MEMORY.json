@@ -155,7 +155,11 @@
           "src/Incursa.Quic/QuicBufferCopyObservation.cs",
           "src/Incursa.Quic/QuicConnectionStreamState.cs",
           "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
-          "src/Incursa.Quic/QuicRetransmissionQueue.cs"
+          "src/Incursa.Quic/QuicRetransmissionQueue.cs",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeBufferLifetimeEvidence.ps1",
+          "schemas/adaptive-runtime-buffer-copy-raw-v2.schema.json",
+          "schemas/adaptive-runtime-buffer-release-observation-v1.schema.json",
+          "schemas/adaptive-runtime-buffer-release-raw-v1.schema.json"
         ]
       },
       "notes": [

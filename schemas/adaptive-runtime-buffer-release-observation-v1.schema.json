@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-buffer-release-observation-v1.schema.json",
+  "title": "Adaptive Runtime Buffer Release Observation v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "releaseSequence",
+    "operationSequence",
+    "path",
+    "reason",
+    "releasedCapacityBytes",
+    "lifetimeMicros",
+    "phaseAfter",
+    "disposalStarted",
+    "validity",
+    "observationContractVersion",
+    "tokenContractVersion",
+    "reasonVersion",
+    "provenanceVersion"
+  ],
+  "properties": {
+    "releaseSequence": { "$ref": "#/$defs/positiveInteger" },
+    "operationSequence": { "$ref": "#/$defs/positiveInteger" },
+    "path": { "const": "ReceiveSegment" },
+    "reason": {
+      "enum": ["Delivered", "Reset"]
+    },
+    "releasedCapacityBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "lifetimeMicros": { "$ref": "#/$defs/unsignedInteger" },
+    "phaseAfter": {
+      "enum": ["Establishing", "Active", "Closing", "Draining", "Discarded"]
+    },
+    "disposalStarted": { "type": "boolean" },
+    "validity": { "type": ["string", "integer"] },
+    "observationContractVersion": {
+      "const": "quic-buffer-release-observation-v1"
+    },
+    "tokenContractVersion": {
+      "const": "quic-buffer-copy-lifetime-token-v1"
+    },
+    "reasonVersion": {
+      "const": "quic-buffer-release-reason-v1"
+    },
+    "provenanceVersion": {
+      "const": "quic-buffer-release-provenance-v1"
+    }
+  },
+  "$defs": {
+    "unsignedInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

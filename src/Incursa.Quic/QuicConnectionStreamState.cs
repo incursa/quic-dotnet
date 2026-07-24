@@ -2079,11 +2079,12 @@ internal sealed class QuicConnectionStreamState
 
         data.CopyTo(segment.Data.AsSpan(appendOffset));
         SetBufferedSegment(state, index, segment with { Length = segment.Length + data.Length });
-        TryObserveReceiveSegment(
+        _ = TryObserveReceiveSegment(
             QuicBufferCopyOperation.ReuseAndCopy,
             data.Length,
             requestedCapacityBytes: data.Length,
-            retainedCapacityBytes: segment.Data.Length);
+            retainedCapacityBytes: segment.Data.Length,
+            trackTerminalRelease: false);
         return true;
     }
 
@@ -2180,30 +2181,39 @@ internal sealed class QuicConnectionStreamState
         data.Slice(dataIndex, length).CopyTo(segmentData);
         retainedReceiveBufferCount++;
         retainedReceiveBufferBytes += segmentData.Length;
-        TryObserveReceiveSegment(
+        QuicBufferCopyLifetimeToken lifetimeToken =
+            TryObserveReceiveSegment(
             QuicBufferCopyOperation.Copy,
             length,
             minimumCapacity,
-            segmentData.Length);
-        return new BufferedSegment(offset, segmentData, DataOffset: 0, Length: length, OwnsData: true);
+            segmentData.Length,
+            trackTerminalRelease: true);
+        return new BufferedSegment(
+            offset,
+            segmentData,
+            DataOffset: 0,
+            Length: length,
+            OwnsData: true,
+            lifetimeToken);
     }
 
-    private void TryObserveReceiveSegment(
+    private QuicBufferCopyLifetimeToken TryObserveReceiveSegment(
         QuicBufferCopyOperation operation,
         int copiedBytes,
         int requestedCapacityBytes,
-        int retainedCapacityBytes)
+        int retainedCapacityBytes,
+        bool trackTerminalRelease)
     {
         IQuicBufferCopyOperationObserver? observer =
             bufferCopyOperationObserver;
         if (observer is null)
         {
-            return;
+            return default;
         }
 
         try
         {
-            observer.ObserveBufferCopy(
+            return observer.ObserveBufferCopy(
                 QuicBufferCopyPath.ReceiveSegment,
                 operation,
                 QuicBufferCopyDecisionBoundary.ReceiveSegmentInsertion,
@@ -2212,12 +2222,14 @@ internal sealed class QuicConnectionStreamState
                 copiedBytes,
                 sourceSegmentCount: copiedBytes == 0 ? 0 : 1,
                 requestedCapacityBytes,
-                retainedCapacityBytes);
+                retainedCapacityBytes,
+                trackTerminalRelease);
         }
         catch (Exception)
         {
             // Copy evidence is diagnostic-only. A failed observer cannot
             // interrupt receive insertion or change segment ownership.
+            return default;
         }
     }
 
@@ -2225,7 +2237,9 @@ internal sealed class QuicConnectionStreamState
     {
         BufferedSegment segment = GetBufferedSegment(state, index);
         DecreaseRetainedReceiveBuffers(segment);
-        segment.Release();
+        segment.Release(
+            bufferCopyOperationObserver,
+            QuicBufferReleaseReason.Delivered);
         if (state.BufferedSegmentList is { } segments)
         {
             segments.RemoveAt(index);
@@ -2378,7 +2392,9 @@ internal sealed class QuicConnectionStreamState
         {
             BufferedSegment segment = GetBufferedSegment(state, index);
             DecreaseRetainedReceiveBuffers(segment);
-            segment.Release();
+            segment.Release(
+                bufferCopyOperationObserver,
+                QuicBufferReleaseReason.Reset);
         }
 
         ClearBufferedSegmentStorage(state);
@@ -2479,10 +2495,22 @@ internal sealed class QuicConnectionStreamState
         public bool ReceivedOneRttData { get; set; }
     }
 
-    private readonly record struct BufferedSegment(ulong Offset, byte[] Data, int DataOffset, int Length, bool OwnsData)
+    private readonly record struct BufferedSegment(
+        ulong Offset,
+        byte[] Data,
+        int DataOffset,
+        int Length,
+        bool OwnsData,
+        QuicBufferCopyLifetimeToken LifetimeToken)
     {
         public BufferedSegment(ulong offset, byte[] data)
-            : this(offset, data, 0, data.Length, OwnsData: false)
+            : this(
+                offset,
+                data,
+                0,
+                data.Length,
+                OwnsData: false,
+                LifetimeToken: default)
         {
         }
 
@@ -2497,14 +2525,34 @@ internal sealed class QuicConnectionStreamState
                 Data,
                 DataOffset + bytesConsumed,
                 Length - bytesConsumed,
-                OwnsData);
+                OwnsData,
+                LifetimeToken);
         }
 
-        public void Release()
+        public void Release(
+            IQuicBufferCopyOperationObserver? observer,
+            QuicBufferReleaseReason reason)
         {
             if (OwnsData)
             {
                 QuicBufferPool.ReturnBytes(Data);
+                if (observer is not null && !LifetimeToken.IsEmpty)
+                {
+                    try
+                    {
+                        QuicBufferCopyLifetimeToken token =
+                            LifetimeToken;
+                        observer.ObserveBufferRelease(
+                            in token,
+                            reason,
+                            Data.Length);
+                    }
+                    catch (Exception)
+                    {
+                        // Release evidence follows the authoritative return
+                        // and cannot change receive ownership or progress.
+                    }
+                }
             }
         }
     }

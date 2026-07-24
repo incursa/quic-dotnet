@@ -177,6 +177,36 @@ public sealed class REQ_QUIC_CRT_0182
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void RejectedConstructionCannotCreateOrphanReleaseToken()
+    {
+        using QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState());
+        runtime.ConfigureAdaptiveRuntimePolicy(new QuicServerConnectionOptions
+        {
+            BufferCopyObservationMode =
+                QuicBufferCopyObservationMode.ObserveOnly,
+            BufferCopyEvidenceSink = new RejectingSink(),
+        });
+
+        QuicBufferCopyLifetimeToken token =
+            runtime.TryPublishBufferCopyObservation(
+                QuicBufferCopyPath.ReceiveSegment,
+                QuicBufferCopyOperation.Copy,
+                QuicBufferCopyDecisionBoundary.ReceiveSegmentInsertion,
+                joinOperationSequence: null,
+                logicalBytes: 64,
+                copiedBytes: 64,
+                sourceSegmentCount: 1,
+                requestedCapacityBytes: 64,
+                retainedCapacityBytes: 64,
+                trackTerminalRelease: true);
+
+        Assert.True(token.IsEmpty);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void MaintainedQueueRetentionTracksOwnershipTransitions()
@@ -499,6 +529,10 @@ public sealed class REQ_QUIC_CRT_0182
         Assert.Equal(
             observations[0].RetainedCapacityBytes,
             observations[1].RetainedCapacityBytes);
+        Assert.False(observations[0].Validity.HasFlag(
+            QuicBufferCopyValidity.MissingTerminalReleaseCorrelation));
+        Assert.True(observations[1].Validity.HasFlag(
+            QuicBufferCopyValidity.MissingTerminalReleaseCorrelation));
 
         byte[] destination = new byte[first.Length + second.Length];
         Assert.True(state.TryReadStreamData(
@@ -512,6 +546,126 @@ public sealed class REQ_QUIC_CRT_0182
         Assert.Equal(default, errorCode);
         Assert.Equal(destination.Length, bytesWritten);
         Assert.True(completed);
+        Assert.Equal(default, state.CaptureReceiveRetentionSnapshot());
+
+        QuicBufferReleaseObservation release =
+            Assert.Single(sink.Releases);
+        Assert.Equal(
+            QuicBufferCopyLifetimeToken.CurrentTokenContractVersion,
+            release.TokenContractVersion);
+        Assert.Equal(
+            observations[0].OperationSequence,
+            release.OperationSequence);
+        Assert.Equal(
+            QuicBufferCopyPath.ReceiveSegment,
+            release.Path);
+        Assert.Equal(
+            QuicBufferReleaseReason.Delivered,
+            release.Reason);
+        Assert.Equal(
+            observations[0].RetainedCapacityBytes,
+            release.ReleasedCapacityBytes);
+        Assert.Equal(
+            QuicBufferReleaseValidity.None,
+            release.Validity);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ReceiveSegmentResetReportsAuthoritativeRelease()
+    {
+        QuicConnectionStreamState state =
+            QuicConnectionStreamStateTestHelpers.CreateState(
+                isServer: true,
+                connectionReceiveLimit: 8 * 1024,
+                peerBidirectionalReceiveLimit: 8 * 1024);
+        RecordingSink sink = new();
+        using QuicConnectionRuntime runtime = new(state);
+        runtime.ConfigureAdaptiveRuntimePolicy(
+            new QuicServerConnectionOptions
+            {
+                BufferCopyObservationMode =
+                    QuicBufferCopyObservationMode.ObserveOnly,
+                BufferCopyEvidenceSink = sink,
+            });
+
+        byte[] payload = Enumerable.Repeat((byte)0x41, 512).ToArray();
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(
+                streamId: 0,
+                offset: 0,
+                payload,
+                fin: false),
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryReceiveResetStreamFrame(
+            new QuicResetStreamFrame(
+                streamId: 0,
+                applicationProtocolErrorCode: 42,
+                finalSize: (ulong)payload.Length),
+            out _,
+            out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(default, state.CaptureReceiveRetentionSnapshot());
+
+        QuicBufferCopyObservation construction =
+            Assert.Single(
+                sink.Observations,
+                static observation =>
+                    observation.Path
+                        == QuicBufferCopyPath.ReceiveSegment);
+        QuicBufferReleaseObservation release =
+            Assert.Single(sink.Releases);
+        Assert.Equal(
+            construction.OperationSequence,
+            release.OperationSequence);
+        Assert.Equal(
+            QuicBufferReleaseReason.Reset,
+            release.Reason);
+        Assert.Equal(
+            construction.RetainedCapacityBytes,
+            release.ReleasedCapacityBytes);
+        Assert.Equal(
+            QuicBufferReleaseValidity.None,
+            release.Validity);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ThrowingReleaseObserverCannotInterruptReceiveReturn()
+    {
+        QuicConnectionStreamState state =
+            QuicConnectionStreamStateTestHelpers.CreateState(
+                isServer: true,
+                connectionReceiveLimit: 8 * 1024,
+                peerBidirectionalReceiveLimit: 8 * 1024);
+        state.ConfigureBufferCopyOperationObserver(
+            new ReleaseThrowingOperationObserver());
+
+        byte[] payload = Enumerable.Repeat((byte)0x51, 256).ToArray();
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(
+                streamId: 0,
+                offset: 0,
+                payload,
+                fin: true),
+            out QuicTransportErrorCode errorCode));
+        byte[] destination = new byte[payload.Length];
+        Assert.True(state.TryReadStreamData(
+            streamIdValue: 0,
+            destination,
+            out int bytesWritten,
+            out bool completed,
+            out _,
+            out _,
+            out errorCode));
+
+        Assert.Equal(payload.Length, bytesWritten);
+        Assert.True(completed);
+        Assert.Equal(payload, destination);
         Assert.Equal(default, state.CaptureReceiveRetentionSnapshot());
     }
 
@@ -690,9 +844,130 @@ public sealed class REQ_QUIC_CRT_0182
         }
     }
 
-    private sealed class RecordingSink : IQuicBufferCopyEvidenceSink
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void BufferLifetimeRawRecordsPassSchemaAndExactJoinValidation()
+    {
+        string repoRoot =
+            AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        string temporaryDirectory = Path.Combine(
+            repoRoot,
+            ".artifacts",
+            "adaptive-runtime",
+            $"buffer-lifetime-validator-test-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(temporaryDirectory);
+
+        try
+        {
+            RecordingSink sink = new();
+            using QuicConnectionRuntime runtime = new(
+                QuicConnectionStreamStateTestHelpers.CreateState());
+            runtime.ConfigureAdaptiveRuntimePolicy(
+                new QuicServerConnectionOptions
+                {
+                    BufferCopyObservationMode =
+                        QuicBufferCopyObservationMode.ObserveOnly,
+                    BufferCopyEvidenceSink = sink,
+                });
+            QuicBufferCopyLifetimeToken token =
+                runtime.TryPublishBufferCopyObservation(
+                    QuicBufferCopyPath.ReceiveSegment,
+                    QuicBufferCopyOperation.Copy,
+                    QuicBufferCopyDecisionBoundary.ReceiveSegmentInsertion,
+                    joinOperationSequence: null,
+                    logicalBytes: 80,
+                    copiedBytes: 80,
+                    sourceSegmentCount: 1,
+                    requestedCapacityBytes: 80,
+                    retainedCapacityBytes: 128,
+                    trackTerminalRelease: true);
+            ((IQuicBufferCopyOperationObserver)runtime)
+                .ObserveBufferRelease(
+                    in token,
+                    QuicBufferReleaseReason.Delivered,
+                    releasedCapacityBytes: 128);
+
+            QuicBufferCopyObservation copy =
+                Assert.Single(sink.Observations);
+            QuicBufferReleaseObservation release =
+                Assert.Single(sink.Releases);
+            JsonSerializerOptions options =
+                new(JsonSerializerDefaults.Web);
+            options.Converters.Add(new JsonStringEnumConverter());
+            string copyPath = Path.Combine(
+                temporaryDirectory,
+                "buffer-copy.raw.jsonl");
+            string releasePath = Path.Combine(
+                temporaryDirectory,
+                "buffer-release.raw.jsonl");
+            File.WriteAllText(
+                copyPath,
+                JsonSerializer.Serialize(
+                    new
+                    {
+                        schemaVersion = "quic-buffer-copy-raw-v2",
+                        connectionKey = "connection-0001",
+                        observation = copy,
+                    },
+                    options));
+            File.WriteAllText(
+                releasePath,
+                JsonSerializer.Serialize(
+                    new
+                    {
+                        schemaVersion = "quic-buffer-release-raw-v1",
+                        connectionKey = "connection-0001",
+                        observation = release,
+                    },
+                    options));
+
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult result =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Test-AdaptiveRuntimeBufferLifetimeEvidence.ps1",
+                    "-CopyPath",
+                    copyPath,
+                    "-ReleasePath",
+                    releasePath);
+
+            Assert.True(result.ExitCode == 0, result.Output);
+            using JsonDocument validation =
+                JsonDocument.Parse(result.Output);
+            Assert.True(
+                validation.RootElement.GetProperty("valid").GetBoolean());
+            Assert.Equal(
+                1,
+                validation.RootElement
+                    .GetProperty("copyRowCount")
+                    .GetInt32());
+            Assert.Equal(
+                1,
+                validation.RootElement
+                    .GetProperty("trackedCopyRowCount")
+                    .GetInt32());
+            Assert.Equal(
+                1,
+                validation.RootElement
+                    .GetProperty("releaseRowCount")
+                    .GetInt32());
+            Assert.Equal(
+                1,
+                validation.RootElement
+                    .GetProperty("exactJoinCount")
+                    .GetInt32());
+        }
+        finally
+        {
+            Directory.Delete(temporaryDirectory, recursive: true);
+        }
+    }
+
+    private sealed class RecordingSink :
+        IQuicBufferCopyEvidenceSink,
+        IQuicBufferReleaseEvidenceSink
     {
         internal List<QuicBufferCopyObservation> Observations { get; } = [];
+        internal List<QuicBufferReleaseObservation> Releases { get; } = [];
 
         public bool TryPublish(
             in QuicBufferCopyObservation observation)
@@ -700,21 +975,49 @@ public sealed class REQ_QUIC_CRT_0182
             Observations.Add(observation);
             return true;
         }
+
+        public bool TryPublish(
+            in QuicBufferReleaseObservation observation)
+        {
+            Releases.Add(observation);
+            return true;
+        }
     }
 
-    private sealed class ThrowingSink : IQuicBufferCopyEvidenceSink
+    private sealed class ThrowingSink :
+        IQuicBufferCopyEvidenceSink,
+        IQuicBufferReleaseEvidenceSink
     {
         public bool TryPublish(
             in QuicBufferCopyObservation observation)
             => throw new InvalidOperationException("diagnostic sink failure");
+
+        public bool TryPublish(
+            in QuicBufferReleaseObservation observation)
+            => throw new InvalidOperationException("diagnostic sink failure");
+    }
+
+    private sealed class RejectingSink :
+        IQuicBufferCopyEvidenceSink,
+        IQuicBufferReleaseEvidenceSink
+    {
+        public bool TryPublish(
+            in QuicBufferCopyObservation observation)
+            => false;
+
+        public bool TryPublish(
+            in QuicBufferReleaseObservation observation)
+            => false;
     }
 
     private sealed class RecordingOperationObserver :
         IQuicBufferCopyOperationObserver
     {
         internal List<ObservedOperation> Operations { get; } = [];
+        internal List<QuicBufferReleaseObservation> Releases { get; } = [];
+        private ulong nextOperationSequence;
 
-        public void ObserveBufferCopy(
+        public QuicBufferCopyLifetimeToken ObserveBufferCopy(
             QuicBufferCopyPath path,
             QuicBufferCopyOperation operation,
             QuicBufferCopyDecisionBoundary decisionBoundary,
@@ -723,7 +1026,8 @@ public sealed class REQ_QUIC_CRT_0182
             int copiedBytes,
             int sourceSegmentCount,
             int requestedCapacityBytes,
-            int retainedCapacityBytes)
+            int retainedCapacityBytes,
+            bool trackTerminalRelease)
         {
             Operations.Add(new ObservedOperation(
                 path,
@@ -735,13 +1039,36 @@ public sealed class REQ_QUIC_CRT_0182
                 sourceSegmentCount,
                 requestedCapacityBytes,
                 retainedCapacityBytes));
+            ulong sequence = ++nextOperationSequence;
+            return trackTerminalRelease
+                ? new QuicBufferCopyLifetimeToken(
+                    sequence,
+                    path,
+                    ConstructionTicks: 1,
+                    (ulong)retainedCapacityBytes)
+                : default;
         }
+
+        public void ObserveBufferRelease(
+            in QuicBufferCopyLifetimeToken token,
+            QuicBufferReleaseReason reason,
+            int releasedCapacityBytes)
+            => Releases.Add(new QuicBufferReleaseObservation(
+                ReleaseSequence: (ulong)Releases.Count + 1,
+                token.OperationSequence,
+                token.Path,
+                reason,
+                (ulong)releasedCapacityBytes,
+                LifetimeMicros: 1,
+                QuicConnectionPhase.Active,
+                DisposalStarted: false,
+                QuicBufferReleaseValidity.None));
     }
 
     private sealed class ThrowingOperationObserver :
         IQuicBufferCopyOperationObserver
     {
-        public void ObserveBufferCopy(
+        public QuicBufferCopyLifetimeToken ObserveBufferCopy(
             QuicBufferCopyPath path,
             QuicBufferCopyOperation operation,
             QuicBufferCopyDecisionBoundary decisionBoundary,
@@ -750,9 +1077,49 @@ public sealed class REQ_QUIC_CRT_0182
             int copiedBytes,
             int sourceSegmentCount,
             int requestedCapacityBytes,
-            int retainedCapacityBytes)
+            int retainedCapacityBytes,
+            bool trackTerminalRelease)
             => throw new InvalidOperationException(
                 "diagnostic operation observer failure");
+
+        public void ObserveBufferRelease(
+            in QuicBufferCopyLifetimeToken token,
+            QuicBufferReleaseReason reason,
+            int releasedCapacityBytes)
+            => throw new InvalidOperationException(
+                "diagnostic operation observer failure");
+    }
+
+    private sealed class ReleaseThrowingOperationObserver :
+        IQuicBufferCopyOperationObserver
+    {
+        private ulong nextOperationSequence;
+
+        public QuicBufferCopyLifetimeToken ObserveBufferCopy(
+            QuicBufferCopyPath path,
+            QuicBufferCopyOperation operation,
+            QuicBufferCopyDecisionBoundary decisionBoundary,
+            long? joinOperationSequence,
+            int logicalBytes,
+            int copiedBytes,
+            int sourceSegmentCount,
+            int requestedCapacityBytes,
+            int retainedCapacityBytes,
+            bool trackTerminalRelease)
+            => trackTerminalRelease
+                ? new QuicBufferCopyLifetimeToken(
+                    ++nextOperationSequence,
+                    path,
+                    ConstructionTicks: 1,
+                    (ulong)retainedCapacityBytes)
+                : default;
+
+        public void ObserveBufferRelease(
+            in QuicBufferCopyLifetimeToken token,
+            QuicBufferReleaseReason reason,
+            int releasedCapacityBytes)
+            => throw new InvalidOperationException(
+                "diagnostic release observer failure");
     }
 
     private readonly record struct ObservedOperation(

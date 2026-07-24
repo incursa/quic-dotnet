@@ -66,6 +66,22 @@ internal enum QuicBufferCopyLatchLifetime : byte
     BufferLifetime = 0,
 }
 
+internal enum QuicBufferReleaseReason : byte
+{
+    Delivered = 0,
+    Reset = 1,
+}
+
+[Flags]
+internal enum QuicBufferReleaseValidity : byte
+{
+    None = 0,
+    CapacityMismatch = 1 << 0,
+    ArithmeticSaturated = 1 << 1,
+    Contradictory = 1 << 2,
+    OutOfDomain = 1 << 3,
+}
+
 [Flags]
 internal enum QuicBufferCopyValidity : ushort
 {
@@ -129,14 +145,63 @@ internal readonly record struct QuicBufferCopyObservation(
     public string ProvenanceVersion => CurrentProvenanceVersion;
 }
 
+internal readonly record struct QuicBufferCopyLifetimeToken(
+    ulong OperationSequence,
+    QuicBufferCopyPath Path,
+    long ConstructionTicks,
+    ulong RetainedCapacityBytes)
+{
+    internal const string CurrentTokenContractVersion =
+        "quic-buffer-copy-lifetime-token-v1";
+
+    public string TokenContractVersion =>
+        CurrentTokenContractVersion;
+
+    public bool IsEmpty => OperationSequence == 0;
+}
+
+internal readonly record struct QuicBufferReleaseObservation(
+    ulong ReleaseSequence,
+    ulong OperationSequence,
+    QuicBufferCopyPath Path,
+    QuicBufferReleaseReason Reason,
+    ulong ReleasedCapacityBytes,
+    ulong LifetimeMicros,
+    QuicConnectionPhase PhaseAfter,
+    bool DisposalStarted,
+    QuicBufferReleaseValidity Validity)
+{
+    internal const string CurrentObservationContractVersion =
+        "quic-buffer-release-observation-v1";
+    internal const string CurrentReasonVersion =
+        "quic-buffer-release-reason-v1";
+    internal const string CurrentProvenanceVersion =
+        "quic-buffer-release-provenance-v1";
+
+    public string ObservationContractVersion =>
+        CurrentObservationContractVersion;
+
+    public string TokenContractVersion =>
+        QuicBufferCopyLifetimeToken.CurrentTokenContractVersion;
+
+    public string ReasonVersion => CurrentReasonVersion;
+
+    public string ProvenanceVersion => CurrentProvenanceVersion;
+}
+
 internal interface IQuicBufferCopyEvidenceSink
 {
     bool TryPublish(in QuicBufferCopyObservation observation);
 }
 
+internal interface IQuicBufferReleaseEvidenceSink
+{
+    bool TryPublish(in QuicBufferReleaseObservation observation);
+}
+
 internal interface IQuicBufferCopyOperationObserver
 {
-    void ObserveBufferCopy(
+    QuicBufferCopyLifetimeToken ObserveBufferCopy(
         QuicBufferCopyPath path,
         QuicBufferCopyOperation operation,
         QuicBufferCopyDecisionBoundary decisionBoundary,
@@ -145,5 +210,11 @@ internal interface IQuicBufferCopyOperationObserver
         int copiedBytes,
         int sourceSegmentCount,
         int requestedCapacityBytes,
-        int retainedCapacityBytes);
+        int retainedCapacityBytes,
+        bool trackTerminalRelease);
+
+    void ObserveBufferRelease(
+        in QuicBufferCopyLifetimeToken token,
+        QuicBufferReleaseReason reason,
+        int releasedCapacityBytes);
 }

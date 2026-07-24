@@ -89,6 +89,22 @@ retained stderr logs as additional `-HostLogPath` values to preserve
 classifies the export `invalid_contract` and causes a nonzero exit after the
 failure file and manifest are retained.
 
+Validate the separate buffer construction and terminal-release raw streams:
+
+```powershell
+./eng/adaptive-runtime/Test-AdaptiveRuntimeBufferLifetimeEvidence.ps1 `
+  -CopyPath ./path/to/buffer-copy-operations.raw.jsonl `
+  -ReleasePath ./path/to/buffer-release-evidence.raw.jsonl
+```
+
+The validator applies the wrapper and observation schemas independently,
+requires monotonic connection-local construction and release sequences, joins
+only by exact `connectionKey + operationSequence`, rejects duplicate or orphan
+releases, and verifies that path and retained capacity survive the lifetime.
+The first implemented terminal-release path is receive-segment delivery or
+reset. Other buffer-copy paths continue to report
+`MissingTerminalReleaseCorrelation` and remain non-forceable.
+
 The standalone validator remains strict about epoch-local exclusion flags.
 The dataset pipeline uses the explicit
 `-AllowLegacyResultLevelEnvironmentExclusions` compatibility gate for retained

@@ -1,0 +1,179 @@
+# Copyright (c) 2026 Incursa LLC.
+# Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory = $true)]
+    [string] $CopyPath,
+
+    [Parameter(Mandatory = $true)]
+    [string] $ReleasePath,
+
+    [string] $RepositoryRoot =
+        (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+)
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+
+$copyRawSchemaPath = Join-Path $RepositoryRoot `
+    'schemas\adaptive-runtime-buffer-copy-raw-v2.schema.json'
+$copyObservationSchemaPath = Join-Path $RepositoryRoot `
+    'schemas\adaptive-runtime-buffer-copy-observation-v2.schema.json'
+$releaseRawSchemaPath = Join-Path $RepositoryRoot `
+    'schemas\adaptive-runtime-buffer-release-raw-v1.schema.json'
+$releaseObservationSchemaPath = Join-Path $RepositoryRoot `
+    'schemas\adaptive-runtime-buffer-release-observation-v1.schema.json'
+$failures = [System.Collections.Generic.List[string]]::new()
+$copiesByKey = @{}
+$trackedCopyKeys = [System.Collections.Generic.HashSet[string]]::new(
+    [StringComparer]::Ordinal)
+$releasesByKey = @{}
+$lastCopySequenceByConnection = @{}
+$lastReleaseSequenceByConnection = @{}
+$copyCount = 0
+$trackedCopyCount = 0
+$releaseCount = 0
+
+foreach ($line in Get-Content -LiteralPath $CopyPath) {
+    if ([string]::IsNullOrWhiteSpace($line)) {
+        continue
+    }
+
+    if (-not ($line |
+            Test-Json -SchemaFile $copyRawSchemaPath -ErrorAction Stop)) {
+        $failures.Add('A buffer-copy raw record failed schema validation.')
+        continue
+    }
+
+    $record = $line | ConvertFrom-Json -Depth 100
+    $observationJson = $record.observation |
+        ConvertTo-Json -Depth 100 -Compress
+    if (-not ($observationJson |
+            Test-Json -SchemaFile $copyObservationSchemaPath `
+                -ErrorAction Stop)) {
+        $failures.Add(
+            'A buffer-copy raw observation failed schema validation.')
+        continue
+    }
+
+    $connectionKey = [string] $record.connectionKey
+    $operationSequence = [ulong] $record.observation.operationSequence
+    $key = "$connectionKey|$operationSequence"
+    if ($copiesByKey.ContainsKey($key)) {
+        $failures.Add(
+            "Duplicate buffer-copy join key '$key'.")
+        continue
+    }
+
+    if ($lastCopySequenceByConnection.ContainsKey($connectionKey) -and
+        $operationSequence -le
+            [ulong] $lastCopySequenceByConnection[$connectionKey]) {
+        $failures.Add(
+            "Buffer-copy sequence '$operationSequence' is not increasing for '$connectionKey'.")
+    }
+    $lastCopySequenceByConnection[$connectionKey] = $operationSequence
+    $copiesByKey[$key] = $record
+    $copyCount++
+
+    $validityText = [string] $record.observation.validity
+    if (-not $validityText.Contains(
+            'MissingTerminalReleaseCorrelation',
+            [StringComparison]::Ordinal)) {
+        [void] $trackedCopyKeys.Add($key)
+        $trackedCopyCount++
+    }
+}
+
+foreach ($line in Get-Content -LiteralPath $ReleasePath) {
+    if ([string]::IsNullOrWhiteSpace($line)) {
+        continue
+    }
+
+    if (-not ($line |
+            Test-Json -SchemaFile $releaseRawSchemaPath -ErrorAction Stop)) {
+        $failures.Add('A buffer-release raw record failed schema validation.')
+        continue
+    }
+
+    $record = $line | ConvertFrom-Json -Depth 100
+    $observationJson = $record.observation |
+        ConvertTo-Json -Depth 100 -Compress
+    if (-not ($observationJson |
+            Test-Json -SchemaFile $releaseObservationSchemaPath `
+                -ErrorAction Stop)) {
+        $failures.Add(
+            'A buffer-release raw observation failed schema validation.')
+        continue
+    }
+
+    $connectionKey = [string] $record.connectionKey
+    $releaseSequence = [ulong] $record.observation.releaseSequence
+    $operationSequence = [ulong] $record.observation.operationSequence
+    $key = "$connectionKey|$operationSequence"
+    if ($releasesByKey.ContainsKey($key)) {
+        $failures.Add(
+            "Duplicate terminal release for buffer-copy join key '$key'.")
+        continue
+    }
+
+    if ($lastReleaseSequenceByConnection.ContainsKey($connectionKey) -and
+        $releaseSequence -le
+            [ulong] $lastReleaseSequenceByConnection[$connectionKey]) {
+        $failures.Add(
+            "Buffer-release sequence '$releaseSequence' is not increasing for '$connectionKey'.")
+    }
+    $lastReleaseSequenceByConnection[$connectionKey] = $releaseSequence
+    $releasesByKey[$key] = $record
+    $releaseCount++
+
+    if (-not $copiesByKey.ContainsKey($key)) {
+        $failures.Add(
+            "Buffer release '$key' has no exact construction record.")
+        continue
+    }
+
+    $copy = $copiesByKey[$key]
+    if ([string] $copy.observation.path -ne
+        [string] $record.observation.path) {
+        $failures.Add(
+            "Buffer release '$key' changed the construction path.")
+    }
+    if ([ulong] $copy.observation.retainedCapacityBytes -ne
+        [ulong] $record.observation.releasedCapacityBytes) {
+        $failures.Add(
+            "Buffer release '$key' changed retained capacity.")
+    }
+    $releaseValidity = [string] $record.observation.validity
+    if ($releaseValidity -ne 'None' -and
+        $releaseValidity -ne '0') {
+        $failures.Add(
+            "Buffer release '$key' retained invalid validity state.")
+    }
+}
+
+foreach ($key in $trackedCopyKeys) {
+    if (-not $releasesByKey.ContainsKey($key)) {
+        $failures.Add(
+            "Tracked buffer construction '$key' has no terminal release.")
+    }
+}
+
+$result = [ordered]@{
+    schemaVersion =
+        'adaptive-runtime-buffer-lifetime-evidence-validation-v1'
+    valid = $failures.Count -eq 0
+    copyRowCount = $copyCount
+    trackedCopyRowCount = $trackedCopyCount
+    releaseRowCount = $releaseCount
+    exactJoinCount = @(
+        $releasesByKey.Keys |
+            Where-Object { $copiesByKey.ContainsKey($_) }
+    ).Count
+    failures = @($failures)
+}
+
+$result | ConvertTo-Json -Depth 100
+if ($failures.Count -ne 0) {
+    exit 1
+}

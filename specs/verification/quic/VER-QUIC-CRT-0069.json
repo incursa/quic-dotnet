@@ -74,6 +74,7 @@
     "src/Incursa.Quic/QuicConnectionStreamState.cs",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeActorServiceEvidence.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeBufferCopyEvidence.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeBufferLifetimeEvidence.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeUnifiedRawEvidence.ps1",
     "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
     "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
@@ -81,6 +82,10 @@
     "schemas/adaptive-runtime-actor-service-epoch-v1.schema.json",
     "schemas/adaptive-runtime-buffer-copy-observation-v2.schema.json",
     "schemas/adaptive-runtime-buffer-copy-epoch-v2.schema.json",
+    "schemas/adaptive-runtime-buffer-copy-raw-v2.schema.json",
+    "schemas/adaptive-runtime-buffer-release-observation-v1.schema.json",
+    "schemas/adaptive-runtime-buffer-release-raw-v1.schema.json",
+    "schemas/adaptive-runtime-buffer-evidence-export-failure-v1.schema.json",
     "schemas/adaptive-runtime-epoch-raw-v2.schema.json",
     "schemas/adaptive-runtime-post-service-boundary-v1.schema.json",
     "schemas/adaptive-runtime-unified-epoch-evidence-v1.schema.json",
@@ -89,5 +94,5 @@
     "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md",
     "docs/design/adaptive-runtime-stage2-buffer-ownership-copy-inventory.md"
   ],
-  "status_summary": "In progress. Independent observe-only actor-service and buffer-copy connection contracts, versioned records, bounded epoch accumulators, schemas, semantic validators, listener propagation, and deterministic tests are implemented. Buffer v2 preserves retained v1 schemas and adds verified owned path-migration retransmission-clone plus new and capacity-reusing receive-segment producers through a guarded connection-local observer. Eligible epoch publication now occurs at a versioned post-service boundary after actor publication and resource release; one guarded accumulator validates exact monotonic connection-observation, receive-credit, boundary, Stage 1, actor, and buffer joins before reset. The permanent raw host configures that accumulator for every adaptive execution and the append-only exporter retains joined rows, compatibility streams, exact keys, source hashes, counts, manifests, and explicit invalid-contract export failures. The application-send queue, sent-packet store, and retransmission queue maintain total retained count, capacity, and oldest time across existing ownership transitions, removing their total retention snapshot scans. Runnable connection count, oldest shard item age, deadline lateness, reviewed useful work units, terminal-release correlation, copy-scope retained age, pool outstanding state, complete fairness outcomes, a distinct conservative buffer value, and every forceable Stage 2 policy remain open. No active behavior is authorized."
+  "status_summary": "In progress. Independent observe-only actor-service and buffer-copy connection contracts, versioned records, bounded epoch accumulators, schemas, semantic validators, listener propagation, and deterministic tests are implemented. Buffer v2 preserves retained v1 schemas and adds verified owned path-migration retransmission-clone plus new and capacity-reusing receive-segment producers through a guarded connection-local observer. Receive-segment owners now carry compact lifetime tokens through partial reads and emit exactly one delivery or reset record after authoritative return; construction and release raw records join exactly by connection key and operation sequence, while bounded writer failures remain explicit. Eligible epoch publication now occurs at a versioned post-service boundary after actor publication and resource release; one guarded accumulator validates exact monotonic connection-observation, receive-credit, boundary, Stage 1, actor, and buffer joins before reset. The permanent raw host configures that accumulator for every adaptive execution and the append-only exporter retains joined rows, compatibility streams, exact keys, source hashes, counts, manifests, and explicit invalid-contract export failures. The application-send queue, sent-packet store, and retransmission queue maintain total retained count, capacity, and oldest time across existing ownership transitions, removing their total retention snapshot scans. Runnable connection count, oldest shard item age, deadline lateness, reviewed useful work units, terminal-release correlation for remaining owners, copy-scope retained age, pool outstanding state, complete fairness outcomes, a distinct conservative buffer value, and every forceable Stage 2 policy remain open. No active behavior is authorized."
 }

@@ -152,8 +152,9 @@ Before a forceable value is implemented:
 
 1. keep sent-packet storage and packet-number-span scans diagnostic-only unless
    a separately reviewed controller input justifies maintained bounded state;
-2. define exact transfer and terminal-release correlation without retaining
-   object identity in the dataset;
+2. extend the implemented receive-segment terminal-release correlation to
+   each remaining observed owner without retaining object identity in the
+   dataset;
 3. add ownership tests for admission failure, partial construction, blocked
    send, cancellation, disposal, reset, FIN, loss, retransmission, shutdown,
    and sink failure;
@@ -225,3 +226,14 @@ Each path is checkpointed independently. Until all currently observed owners
 carry the token through every success, failure, cancellation, reset, loss,
 shutdown, and disposal path, `buffer_copy_coalescing` remains
 `legacy_current` and non-forceable.
+
+The receive-segment checkpoint now implements the first item in that order.
+New pooled receive owners carry one compact token through partial reads and
+emit exactly one `Delivered` release after the authoritative return; reset or
+stream reset emits exactly one `Reset` release. Capacity reuse does not create
+a second token. Construction and release are retained as separate raw records
+joined by `connectionKey + operationSequence`; their schemas are
+`adaptive-runtime-buffer-copy-raw-v2` and
+`adaptive-runtime-buffer-release-raw-v1`. A bounded writer rejection emits
+`quic-buffer-evidence-export-failure-v1` and invalidates the evidence rather
+than changing ownership or runtime progress.

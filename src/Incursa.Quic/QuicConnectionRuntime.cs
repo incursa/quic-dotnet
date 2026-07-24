@@ -141,7 +141,9 @@ internal sealed partial class QuicConnectionRuntime :
     private IQuicActorServiceEvidenceSink? actorServiceEvidenceSink;
     private long actorServiceObservationSequence;
     private IQuicBufferCopyEvidenceSink? bufferCopyEvidenceSink;
+    private IQuicBufferReleaseEvidenceSink? bufferReleaseEvidenceSink;
     private long bufferCopyObservationSequence;
+    private long bufferReleaseObservationSequence;
     private IQuicQueuedSendBurstEvidenceSink? queuedSendBurstEvidenceSink;
     private IQuicOversizedWriteAdmissionEvidenceSink? oversizedWriteAdmissionEvidenceSink;
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
@@ -1995,6 +1997,8 @@ internal sealed partial class QuicConnectionRuntime :
         }
 
         bufferCopyEvidenceSink = sink;
+        bufferReleaseEvidenceSink =
+            sink as IQuicBufferReleaseEvidenceSink;
         sendRuntime.ConfigureBufferCopyOperationObserver(this);
         streamRegistry.Bookkeeping.ConfigureBufferCopyOperationObserver(this);
     }
@@ -2796,7 +2800,7 @@ internal sealed partial class QuicConnectionRuntime :
             == (int)QuicBufferCopyObservationMode.ObserveOnly
         && bufferCopyEvidenceSink is not null;
 
-    internal void TryPublishBufferCopyObservation(
+    internal QuicBufferCopyLifetimeToken TryPublishBufferCopyObservation(
         QuicBufferCopyPath path,
         QuicBufferCopyOperation operation,
         QuicBufferCopyDecisionBoundary decisionBoundary,
@@ -2805,18 +2809,26 @@ internal sealed partial class QuicConnectionRuntime :
         int copiedBytes,
         int sourceSegmentCount,
         int requestedCapacityBytes,
-        int retainedCapacityBytes)
+        int retainedCapacityBytes,
+        bool trackTerminalRelease = false)
     {
         IQuicBufferCopyEvidenceSink? sink = bufferCopyEvidenceSink;
         if (sink is null || !BufferCopyObservationEnabled)
         {
-            return;
+            return default;
         }
 
         QuicBufferCopyValidity validity =
-            QuicBufferCopyValidity.MissingTerminalReleaseCorrelation
-            | QuicBufferCopyValidity.MissingRetainedAge
+            QuicBufferCopyValidity.MissingRetainedAge
             | QuicBufferCopyValidity.MissingPoolOutstanding;
+        bool terminalReleaseTrackable =
+            trackTerminalRelease
+            && bufferReleaseEvidenceSink is not null;
+        if (!terminalReleaseTrackable)
+        {
+            validity |=
+                QuicBufferCopyValidity.MissingTerminalReleaseCorrelation;
+        }
         ulong logicalBytesValue = ToUInt64Saturating(
             logicalBytes,
             ref validity);
@@ -2839,9 +2851,12 @@ internal sealed partial class QuicConnectionRuntime :
             validity |= QuicBufferCopyValidity.Contradictory;
         }
 
-        QuicBufferCopyObservation observation = new(
+        ulong operationSequence =
             unchecked((ulong)Interlocked.Increment(
-                ref bufferCopyObservationSequence)),
+                ref bufferCopyObservationSequence));
+        long constructionTicks = clock.Ticks;
+        QuicBufferCopyObservation observation = new(
+            operationSequence,
             path,
             operation,
             decisionBoundary,
@@ -2866,18 +2881,86 @@ internal sealed partial class QuicConnectionRuntime :
             Phase,
             IsDisposed,
             validity);
+        bool published = false;
         try
         {
-            _ = sink.TryPublish(in observation);
+            published = sink.TryPublish(in observation);
         }
         catch (Exception)
         {
             // Copy evidence is diagnostic-only. Ownership and runtime
             // progress cannot depend on a sink.
         }
+
+        return terminalReleaseTrackable
+            && published
+            ? new QuicBufferCopyLifetimeToken(
+                operationSequence,
+                path,
+                constructionTicks,
+                retainedCapacityBytesValue)
+            : default;
     }
 
-    void IQuicBufferCopyOperationObserver.ObserveBufferCopy(
+    private void TryPublishBufferReleaseObservation(
+        in QuicBufferCopyLifetimeToken token,
+        QuicBufferReleaseReason reason,
+        int releasedCapacityBytes)
+    {
+        IQuicBufferReleaseEvidenceSink? sink =
+            bufferReleaseEvidenceSink;
+        if (token.IsEmpty || sink is null || !BufferCopyObservationEnabled)
+        {
+            return;
+        }
+
+        QuicBufferReleaseValidity validity =
+            QuicBufferReleaseValidity.None;
+        ulong releasedCapacity = releasedCapacityBytes < 0
+            ? 0
+            : (ulong)releasedCapacityBytes;
+        if (releasedCapacityBytes < 0)
+        {
+            validity |=
+                QuicBufferReleaseValidity.ArithmeticSaturated;
+        }
+        if (releasedCapacity != token.RetainedCapacityBytes)
+        {
+            validity |= QuicBufferReleaseValidity.CapacityMismatch;
+        }
+
+        long releaseTicks = clock.Ticks;
+        long elapsedTicks = releaseTicks - token.ConstructionTicks;
+        if (elapsedTicks < 0)
+        {
+            elapsedTicks = 0;
+            validity |= QuicBufferReleaseValidity.Contradictory;
+        }
+
+        QuicBufferReleaseObservation observation = new(
+            unchecked((ulong)Interlocked.Increment(
+                ref bufferReleaseObservationSequence)),
+            token.OperationSequence,
+            token.Path,
+            reason,
+            releasedCapacity,
+            ConvertTicksToMicros(elapsedTicks),
+            Phase,
+            IsDisposed,
+            validity);
+        try
+        {
+            _ = sink.TryPublish(in observation);
+        }
+        catch (Exception)
+        {
+            // Release evidence is diagnostic-only. The authoritative return
+            // path cannot depend on a sink.
+        }
+    }
+
+    QuicBufferCopyLifetimeToken
+        IQuicBufferCopyOperationObserver.ObserveBufferCopy(
         QuicBufferCopyPath path,
         QuicBufferCopyOperation operation,
         QuicBufferCopyDecisionBoundary decisionBoundary,
@@ -2886,9 +2969,10 @@ internal sealed partial class QuicConnectionRuntime :
         int copiedBytes,
         int sourceSegmentCount,
         int requestedCapacityBytes,
-        int retainedCapacityBytes)
+        int retainedCapacityBytes,
+        bool trackTerminalRelease)
     {
-        TryPublishBufferCopyObservation(
+        return TryPublishBufferCopyObservation(
             path,
             operation,
             decisionBoundary,
@@ -2897,8 +2981,18 @@ internal sealed partial class QuicConnectionRuntime :
             copiedBytes,
             sourceSegmentCount,
             requestedCapacityBytes,
-            retainedCapacityBytes);
+            retainedCapacityBytes,
+            trackTerminalRelease);
     }
+
+    void IQuicBufferCopyOperationObserver.ObserveBufferRelease(
+        in QuicBufferCopyLifetimeToken token,
+        QuicBufferReleaseReason reason,
+        int releasedCapacityBytes)
+        => TryPublishBufferReleaseObservation(
+            in token,
+            reason,
+            releasedCapacityBytes);
 
     private static ulong ToUInt64Saturating(
         int value,

@@ -291,6 +291,9 @@ function Get-ArtifactKind {
     if ($name -eq 'checksum-inventory.json') { return 'checksum_inventory' }
     if ($name -eq 'aggregate-results.json') { return 'metrics' }
     if ($name -eq 'adaptive-runtime-epochs.raw.jsonl' -or
+        $name -eq 'buffer-copy-operations.raw.jsonl' -or
+        $name -eq 'buffer-release-evidence.raw.jsonl' -or
+        $name -eq 'buffer-evidence-export-failures.raw.jsonl' -or
         $name -eq 'application-send-turn-policy.raw.jsonl' -or
         $name -eq 'application-send-turn-evidence.raw.jsonl' -or
         $name -eq 'send-turn-epoch-export-manifest.json' -or
@@ -1001,6 +1004,9 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
     $shadowRawPath = $null
     $unifiedRawPath = $null
     $unifiedFailureRawPath = $null
+    $bufferCopyRawPath = $null
+    $bufferReleaseRawPath = $null
+    $bufferEvidenceFailureRawPath = $null
     $applicationSendTurnRawPath = $null
     $applicationSendTurnEvidenceRawPath = $null
     $campaignHostSourceStdout = $null
@@ -1106,6 +1112,116 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
             $unifiedFailureLines.Count -ne 0) {
             $contractFailures.Add(
                 "$sampleId`: disabled observation emitted unified adaptive-runtime evidence.")
+        }
+
+        $bufferCopyContract = [regex]::Match(
+            $campaignHostStdout,
+            'QUIC_BUFFER_COPY_OPERATION_EVIDENCE_CONTRACT=([^\r\n]+)')
+        $bufferReleaseContract = [regex]::Match(
+            $campaignHostStdout,
+            'QUIC_BUFFER_RELEASE_EVIDENCE_CONTRACT=([^\r\n]+)')
+        $bufferCopyPrefix =
+            'QUIC_BUFFER_COPY_OPERATION_EVIDENCE_JSON='
+        $bufferReleasePrefix =
+            'QUIC_BUFFER_RELEASE_EVIDENCE_JSON='
+        $bufferFailurePrefix =
+            'QUIC_BUFFER_EVIDENCE_FAILURE_JSON='
+        $bufferCopyLines = @(
+            Get-Content -LiteralPath $campaignHostStdoutPath |
+                Where-Object {
+                    $_.StartsWith(
+                        $bufferCopyPrefix,
+                        [StringComparison]::Ordinal)
+                } |
+                ForEach-Object {
+                    $_.Substring($bufferCopyPrefix.Length)
+                }
+        )
+        $bufferReleaseLines = @(
+            Get-Content -LiteralPath $campaignHostStdoutPath |
+                Where-Object {
+                    $_.StartsWith(
+                        $bufferReleasePrefix,
+                        [StringComparison]::Ordinal)
+                } |
+                ForEach-Object {
+                    $_.Substring($bufferReleasePrefix.Length)
+                }
+        )
+        $bufferFailureLines = @(
+            Get-Content -LiteralPath $campaignHostStdoutPath |
+                Where-Object {
+                    $_.StartsWith(
+                        $bufferFailurePrefix,
+                        [StringComparison]::Ordinal)
+                } |
+                ForEach-Object {
+                    $_.Substring($bufferFailurePrefix.Length)
+                }
+            if (-not [string]::IsNullOrWhiteSpace(
+                    $campaignHostSourceStderr) -and
+                (Test-Path -LiteralPath $campaignHostSourceStderr -PathType Leaf)) {
+                Get-Content -LiteralPath $campaignHostSourceStderr |
+                    Where-Object {
+                        $_.StartsWith(
+                            $bufferFailurePrefix,
+                            [StringComparison]::Ordinal)
+                    } |
+                    ForEach-Object {
+                        $_.Substring($bufferFailurePrefix.Length)
+                    }
+            }
+        )
+        if ($expectsUnifiedEpochs) {
+            if (-not $bufferCopyContract.Success -or
+                $bufferCopyContract.Groups[1].Value -ne
+                    'quic-buffer-copy-raw-v2') {
+                $contractFailures.Add(
+                    "$sampleId`: buffer-copy operation contract was not reported.")
+            }
+            if (-not $bufferReleaseContract.Success -or
+                $bufferReleaseContract.Groups[1].Value -ne
+                    'quic-buffer-release-raw-v1') {
+                $contractFailures.Add(
+                    "$sampleId`: buffer-release contract was not reported.")
+            }
+
+            if ($bufferCopyLines.Count -ne 0) {
+                $bufferCopyRawPath = Join-Path $sampleRoot `
+                    'buffer-copy-operations.raw.jsonl'
+                [System.IO.File]::WriteAllLines(
+                    $bufferCopyRawPath,
+                    $bufferCopyLines,
+                    [System.Text.UTF8Encoding]::new($false))
+                [void] $artifactPaths.Add($bufferCopyRawPath)
+            }
+            if ($bufferReleaseLines.Count -ne 0) {
+                $bufferReleaseRawPath = Join-Path $sampleRoot `
+                    'buffer-release-evidence.raw.jsonl'
+                [System.IO.File]::WriteAllLines(
+                    $bufferReleaseRawPath,
+                    $bufferReleaseLines,
+                    [System.Text.UTF8Encoding]::new($false))
+                [void] $artifactPaths.Add($bufferReleaseRawPath)
+            }
+            if ($bufferFailureLines.Count -ne 0) {
+                $bufferEvidenceFailureRawPath = Join-Path $sampleRoot `
+                    'buffer-evidence-export-failures.raw.jsonl'
+                [System.IO.File]::WriteAllLines(
+                    $bufferEvidenceFailureRawPath,
+                    $bufferFailureLines,
+                    [System.Text.UTF8Encoding]::new($false))
+                [void] $artifactPaths.Add(
+                    $bufferEvidenceFailureRawPath)
+                $contractFailures.Add(
+                    "$sampleId`: $($bufferFailureLines.Count) buffer evidence export failure record(s) were retained.")
+            }
+        }
+        elseif ($bufferCopyLines.Count -ne 0 -or
+            $bufferReleaseLines.Count -ne 0 -or
+            $bufferFailureLines.Count -ne 0) {
+            $contractFailures.Add(
+                "$sampleId`: disabled observation emitted buffer evidence.")
         }
 
         if ($isReceiveCreditAxis) {
@@ -1296,6 +1412,9 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
             $shadowRawPath,
             $unifiedRawPath,
             $unifiedFailureRawPath,
+            $bufferCopyRawPath,
+            $bufferReleaseRawPath,
+            $bufferEvidenceFailureRawPath,
             $applicationSendTurnRawPath,
             $applicationSendTurnEvidenceRawPath,
             $pressureArtifactPath,

@@ -295,6 +295,21 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains(
             "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON=",
             rawQuicServer);
+        Assert.Contains(
+            "QUIC_BUFFER_COPY_OPERATION_EVIDENCE_CONTRACT=quic-buffer-copy-raw-v2",
+            rawQuicServer);
+        Assert.Contains(
+            "QUIC_BUFFER_COPY_OPERATION_EVIDENCE_JSON=",
+            rawQuicServer);
+        Assert.Contains(
+            "QUIC_BUFFER_RELEASE_EVIDENCE_CONTRACT=quic-buffer-release-raw-v1",
+            rawQuicServer);
+        Assert.Contains(
+            "QUIC_BUFFER_RELEASE_EVIDENCE_JSON=",
+            rawQuicServer);
+        Assert.Contains(
+            "QUIC_BUFFER_EVIDENCE_FAILURE_JSON=",
+            rawQuicServer);
         Assert.Contains("ActorServiceObservationMode", rawQuicServer);
         Assert.Contains("BufferCopyObservationMode", rawQuicServer);
         Assert.Contains("PostServiceBoundary", rawQuicServer);

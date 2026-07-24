@@ -235,6 +235,8 @@ if (adaptiveInstrumentationEnabled)
     Console.WriteLine("QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_CONTRACT=adaptive-runtime-unified-epoch-raw-v1");
     Console.WriteLine("QUIC_ACTOR_SERVICE_EVIDENCE_CONTRACT=quic-actor-service-epoch-v1");
     Console.WriteLine("QUIC_BUFFER_COPY_EVIDENCE_CONTRACT=quic-buffer-copy-epoch-v2");
+    Console.WriteLine("QUIC_BUFFER_COPY_OPERATION_EVIDENCE_CONTRACT=quic-buffer-copy-raw-v2");
+    Console.WriteLine("QUIC_BUFFER_RELEASE_EVIDENCE_CONTRACT=quic-buffer-release-raw-v1");
 }
 if (applicationSendTurnPolicy.ForcedMode is not null)
 {
@@ -817,6 +819,9 @@ internal sealed class AdaptiveRuntimeEpochPublisher
     private const string Stage1UnifiedEpochOutputPrefix = "QUIC_ADAPTIVE_RUNTIME_STAGE1_UNIFIED_EPOCH_JSON=";
     private const string UnifiedEpochOutputPrefix = "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON=";
     private const string UnifiedEpochFailureOutputPrefix = "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_FAILURE_JSON=";
+    private const string BufferCopyOutputPrefix = "QUIC_BUFFER_COPY_OPERATION_EVIDENCE_JSON=";
+    private const string BufferReleaseOutputPrefix = "QUIC_BUFFER_RELEASE_EVIDENCE_JSON=";
+    private const string BufferEvidenceFailureOutputPrefix = "QUIC_BUFFER_EVIDENCE_FAILURE_JSON=";
     private readonly QuicAdaptiveRuntimeStage1PolicySnapshot? configuredStage1Policy;
     private readonly Channel<AdaptiveRuntimeEpochRecord> epochs = Channel.CreateBounded<AdaptiveRuntimeEpochRecord>(
         new BoundedChannelOptions(4096)
@@ -853,6 +858,10 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         CreateEvidenceChannel<Stage1UnifiedEpochRecord>();
     private readonly Channel<UnifiedAdaptiveRuntimeEpochRecord> unifiedEpochs =
         CreateEvidenceChannel<UnifiedAdaptiveRuntimeEpochRecord>();
+    private readonly Channel<BufferCopyEvidenceRecord> bufferCopies =
+        CreateEvidenceChannel<BufferCopyEvidenceRecord>();
+    private readonly Channel<BufferReleaseEvidenceRecord> bufferReleases =
+        CreateEvidenceChannel<BufferReleaseEvidenceRecord>();
     private long nextConnectionKey;
 
     internal AdaptiveRuntimeEpochPublisher(
@@ -867,6 +876,8 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         _ = WriteOversizedWriteAdmissionEvidenceAsync();
         _ = WriteStage1UnifiedEpochsAsync();
         _ = WriteUnifiedEpochsAsync();
+        _ = WriteBufferCopiesAsync();
+        _ = WriteBufferReleasesAsync();
     }
 
     internal ConnectionSinks CreateConnectionSinks()
@@ -1024,6 +1035,40 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         }
     }
 
+    private async Task WriteBufferReleasesAsync()
+    {
+        try
+        {
+            await foreach (BufferReleaseEvidenceRecord release in bufferReleases.Reader.ReadAllAsync())
+            {
+                Console.WriteLine(BufferReleaseOutputPrefix + JsonSerializer.Serialize(
+                    release,
+                    AdaptiveRuntimeEpochJsonContext.Default.BufferReleaseEvidenceRecord));
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"IncursaRawQuicServer buffer-release evidence writer stopped: {ex.Message}");
+        }
+    }
+
+    private async Task WriteBufferCopiesAsync()
+    {
+        try
+        {
+            await foreach (BufferCopyEvidenceRecord copy in bufferCopies.Reader.ReadAllAsync())
+            {
+                Console.WriteLine(BufferCopyOutputPrefix + JsonSerializer.Serialize(
+                    copy,
+                    AdaptiveRuntimeEpochJsonContext.Default.BufferCopyEvidenceRecord));
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"IncursaRawQuicServer buffer-copy evidence writer stopped: {ex.Message}");
+        }
+    }
+
     private sealed class ConnectionSink :
         IQuicApplicationSendTurnPolicyProvenanceSink,
         IQuicApplicationSendTurnEvidenceSink,
@@ -1032,6 +1077,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         IQuicOversizedWriteAdmissionEvidenceSink,
         IQuicActorServiceEvidenceSink,
         IQuicBufferCopyEvidenceSink,
+        IQuicBufferReleaseEvidenceSink,
         IQuicAdaptiveRuntimeUnifiedEpochEvidenceSink
     {
         private readonly AdaptiveRuntimeEpochPublisher owner;
@@ -1149,7 +1195,44 @@ internal sealed class AdaptiveRuntimeEpochPublisher
             => unifiedAccumulator.TryPublish(in observation);
 
         public bool TryPublish(in QuicBufferCopyObservation observation)
-            => unifiedAccumulator.TryPublish(in observation);
+        {
+            bool accumulated =
+                unifiedAccumulator.TryPublish(in observation);
+            bool rawPublished = owner.bufferCopies.Writer.TryWrite(
+                new BufferCopyEvidenceRecord(
+                    "quic-buffer-copy-raw-v2",
+                    connectionKey,
+                    observation));
+            if (!rawPublished)
+            {
+                owner.TryReportBufferEvidenceExportFailure(
+                    connectionKey,
+                    "copy",
+                    observation.OperationSequence,
+                    releaseSequence: null);
+            }
+
+            return accumulated && rawPublished;
+        }
+
+        public bool TryPublish(in QuicBufferReleaseObservation observation)
+        {
+            bool published = owner.bufferReleases.Writer.TryWrite(
+                new BufferReleaseEvidenceRecord(
+                    "quic-buffer-release-raw-v1",
+                    connectionKey,
+                    observation));
+            if (!published)
+            {
+                owner.TryReportBufferEvidenceExportFailure(
+                    connectionKey,
+                    "release",
+                    observation.OperationSequence,
+                    observation.ReleaseSequence);
+            }
+
+            return published;
+        }
     }
 
     private void TryReportUnifiedEpochExportFailure(
@@ -1174,6 +1257,34 @@ internal sealed class AdaptiveRuntimeEpochPublisher
                     failure,
                     AdaptiveRuntimeEpochJsonContext.Default
                         .UnifiedAdaptiveRuntimeEpochExportFailureRecord));
+        }
+        catch (Exception)
+        {
+            // Evidence reporting remains behavior-neutral even when the
+            // fallback diagnostic stream is unavailable.
+        }
+    }
+
+    private void TryReportBufferEvidenceExportFailure(
+        string connectionKey,
+        string evidenceKind,
+        ulong operationSequence,
+        ulong? releaseSequence)
+    {
+        try
+        {
+            BufferEvidenceExportFailureRecord failure = new(
+                "quic-buffer-evidence-export-failure-v1",
+                connectionKey,
+                evidenceKind,
+                operationSequence,
+                releaseSequence);
+            Console.Error.WriteLine(
+                BufferEvidenceFailureOutputPrefix
+                + JsonSerializer.Serialize(
+                    failure,
+                    AdaptiveRuntimeEpochJsonContext.Default
+                        .BufferEvidenceExportFailureRecord));
         }
         catch (Exception)
         {
@@ -1248,6 +1359,23 @@ internal readonly record struct UnifiedAdaptiveRuntimeEpochExportFailureRecord(
     bool Stage1EpochPublished,
     bool UnifiedEpochPublished);
 
+internal readonly record struct BufferReleaseEvidenceRecord(
+    string SchemaVersion,
+    string ConnectionKey,
+    QuicBufferReleaseObservation Observation);
+
+internal readonly record struct BufferCopyEvidenceRecord(
+    string SchemaVersion,
+    string ConnectionKey,
+    QuicBufferCopyObservation Observation);
+
+internal readonly record struct BufferEvidenceExportFailureRecord(
+    string SchemaVersion,
+    string ConnectionKey,
+    string EvidenceKind,
+    ulong OperationSequence,
+    ulong? ReleaseSequence);
+
 [System.Text.Json.Serialization.JsonSerializable(typeof(AdaptiveRuntimeEpochRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(ApplicationSendTurnPolicyProvenanceRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(ApplicationSendTurnEvidenceRecord))]
@@ -1257,6 +1385,9 @@ internal readonly record struct UnifiedAdaptiveRuntimeEpochExportFailureRecord(
 [System.Text.Json.Serialization.JsonSerializable(typeof(Stage1UnifiedEpochRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(UnifiedAdaptiveRuntimeEpochRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(UnifiedAdaptiveRuntimeEpochExportFailureRecord))]
+[System.Text.Json.Serialization.JsonSerializable(typeof(BufferCopyEvidenceRecord))]
+[System.Text.Json.Serialization.JsonSerializable(typeof(BufferReleaseEvidenceRecord))]
+[System.Text.Json.Serialization.JsonSerializable(typeof(BufferEvidenceExportFailureRecord))]
 [System.Text.Json.Serialization.JsonSourceGenerationOptions(
     PropertyNamingPolicy = System.Text.Json.Serialization.JsonKnownNamingPolicy.CamelCase,
     UseStringEnumConverter = true)]

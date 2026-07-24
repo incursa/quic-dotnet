@@ -458,7 +458,7 @@ internal sealed class QuicRetransmissionQueue
 
         try
         {
-            observer.ObserveBufferCopy(
+            _ = observer.ObserveBufferCopy(
                 QuicBufferCopyPath.RetransmissionClone,
                 QuicBufferCopyOperation.Clone,
                 QuicBufferCopyDecisionBoundary.RetransmissionClone,
@@ -470,7 +470,8 @@ internal sealed class QuicRetransmissionQueue
                 sourceSegmentCount: 1,
                 requestedCapacityBytes: source.PlaintextPayload.Length,
                 retainedCapacityBytes:
-                    retained.PlaintextPayloadOwner.Length);
+                    retained.PlaintextPayloadOwner.Length,
+                trackTerminalRelease: false);
         }
         catch (Exception)
         {

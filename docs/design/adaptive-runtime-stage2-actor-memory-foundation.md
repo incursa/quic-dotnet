@@ -252,10 +252,14 @@ That implementation inventory is now recorded in
 [`adaptive-runtime-stage2-buffer-ownership-copy-inventory.md`](adaptive-runtime-stage2-buffer-ownership-copy-inventory.md).
 It confirms that only `legacy_current` is presently a real policy value and
 defines the bounded observation and maintained-retention work required before
-a conservative value can be implemented honestly. The first observation-only
-slice now records five existing send-side copy and retention paths under
-`REQ-QUIC-CRT-0182`; terminal release, retained age, pool outstanding,
-retransmission clones, and receive segments remain explicit gaps.
+a conservative value can be implemented honestly. The observation-only slice
+records five existing send-side copy and retention paths, owned path-migration
+retransmission clones, and receive-segment construction or capacity reuse
+under `REQ-QUIC-CRT-0182`. The first `REQ-QUIC-CRT-0185` checkpoint now carries
+a compact lifetime token through receive-segment partial reads and records an
+exact delivery or reset release after the authoritative pool return.
+Terminal-release correlation for every other observed owner, copy-scope
+retained age, and pool outstanding remain explicit gaps.
 
 `adaptive_backpressure` remains conservative-only and separately reviewable.
 It may eventually lower an admission cap below an authoritative hard bound.
@@ -286,7 +290,11 @@ Requirement homes `REQ-QUIC-CRT-0181`, `REQ-QUIC-CRT-0183`, and
 - exact connection-local join, ordering, duplicate, and one-varied-axis
   validation;
 - append-only raw, validation, manifest, source hash, and count retention; and
-- explicit export-failure retention and invalid-contract classification.
+- explicit export-failure retention and invalid-contract classification;
+- separate schema-valid buffer construction and terminal-release raw records
+  with exact `connectionKey + operationSequence` joins; and
+- receive-segment delivery/reset release plus throwing/rejecting sink
+  neutrality.
 
 Existing shard, deadline, receive-buffer ownership, work-item layout, metrics,
 and stream-capacity homes remain authoritative. Performance measurements stay
@@ -294,9 +302,9 @@ outside correctness CI.
 
 ## Remaining Stage 2 Order
 
-1. Carry compact copy-lifetime tokens through every observed owner and record
-   exact terminal release without object identity or an outstanding-operation
-   dictionary.
+1. Extend the proven receive-segment copy-lifetime token and exact terminal
+   release to every remaining observed owner without object identity or an
+   outstanding-operation dictionary.
 2. Complete actor service, wake, follow-on, timer-lateness, runnable-state, and
    fairness observations.
 3. Review useful-work units and exactly-once repost ownership.
