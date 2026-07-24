@@ -888,3 +888,28 @@ with the retained full Release suite and prior multi-host evidence, they
 confirm the prerequisite correctness checkpoint remains preserved. The
 separately recorded package `1.0.6` failure remains unresolved and does not
 authorize a package-backed campaign, policy transition, or active behavior.
+
+### c128 Instrumentation Review Status Correction
+
+Read-only PR review at `2026-07-23T18:44:00-06:00` updates the earlier
+in-progress CI snapshot for ProtocolLab internal PR
+[#10](https://github.com/incursa/protocol-lab-internal/pull/10). It remains
+`OPEN`, `REVIEW_REQUIRED`, and `mergeStateStatus=BLOCKED`. The Contributor
+Agreement check is successful; the `build-test` check is complete with
+`FAILURE`.
+
+The failing check is a correctness conformance result, not a performance job:
+its Raw QUIC adapter test path resolves the released `Incursa.Quic` `1.0.6`
+package unless the explicit source-root diagnostic override is supplied. The
+separate package-backed failure and source-backed 5/5 pass recorded above
+explain the provenance distinction but do not make the package failure
+acceptable. The source-root override must not be added to ordinary CI as a
+workaround, and the conformance test must not be excluded under the new
+correctness-only CI policy.
+
+Consequently, PR #10 is not a merge, deployment, or fresh-c128-campaign
+authorization. Its bounded-finalization and batch-ordinal instrumentation
+remain a clean implementation-ready diagnostic slice, pending normal review
+and a package-correctness resolution that preserves the unchanged
+package-backed conformance gate. This preserves the c128 row, the package
+failure, and the source-current result as distinct append-only evidence.
