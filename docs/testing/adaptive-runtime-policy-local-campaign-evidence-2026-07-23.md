@@ -1828,3 +1828,65 @@ Independent-host execution and honest host holdouts therefore remain required.
 The current workstation still lacks a route to the controller subnet; this is
 a workstation-routing diagnostic, not a claim that the multi-machine
 ProtocolLab or its three physical hosts are unavailable.
+
+## Stopped Single-Axis Neutrality Transform
+
+At the user's direction, the long-running
+`Invoke-AdaptiveRuntimeDatasetPipeline.ps1` process for
+`application-send-turn-neutrality-download-20260724-r002` was stopped before
+normalization completed. The transform is classified
+`diagnostic_incomplete`; it must not be restarted, promoted, or used to derive
+a rule.
+
+The pre-stop process snapshot was:
+
+```text
+captured UTC       2026-07-24T13:50:03.6355993Z
+PID                12824
+parent PID         19228
+started UTC        2026-07-24T11:23:12.5301936Z
+elapsed            8,811.114 seconds
+CPU                8,411.703 seconds
+working set        4,293,812,224 bytes
+private memory     4,220,809,216 bytes
+responding         true
+stop UTC           2026-07-24T13:50:18.2621649Z
+stop disposition   scoped PowerShell Stop-Process; PID confirmed absent
+```
+
+The process backend could not deliver Ctrl+C to the non-interactive child.
+The exact PID was therefore stopped with PowerShell `Stop-Process`; no file
+was deleted or moved. The command was:
+
+```powershell
+$campaignRoot = '.artifacts\adaptive-runtime\adaptive-send-turn-neutrality-download-local-20260724-r002'
+$results = @(Get-ChildItem -LiteralPath $campaignRoot -Recurse -Filter 'local-result.json' -File | Select-Object -ExpandProperty FullName)
+$rows = @(Get-ChildItem -LiteralPath $campaignRoot -Recurse -Filter 'send-turn-row-*.json' -File | Select-Object -ExpandProperty FullName)
+& '.\eng\adaptive-runtime\Invoke-AdaptiveRuntimeDatasetPipeline.ps1' `
+  -LocalResultPath $results `
+  -EpochDatasetPath $rows `
+  -OutputRoot '.artifacts\adaptive-runtime\dataset\application-send-turn-neutrality-download-20260724-r002' `
+  -DatasetId 'application-send-turn-neutrality-download-20260724-r002' `
+  -DatasetVersion '2026-07-24-v1' `
+  -SplitSeed 23
+```
+
+The five source cells remain complete and immutable: three
+`invalid_environment`, one `negative_retained`, and one `neutral_local`. All
+20 samples passed exact payload and protocol correctness. Their 55,658 raw
+epochs, local results, cell manifests, checksum inventories, commands,
+counters, and host output remain under
+`.artifacts/adaptive-runtime/adaptive-send-turn-neutrality-download-local-20260724-r002`.
+
+The partial dataset root remains at
+`.artifacts/adaptive-runtime/dataset/application-send-turn-neutrality-download-20260724-r002`.
+Its only completed layer is
+`catalog/policy-catalog.json`, 11,673 bytes, SHA-256
+`a26559bc196ad45b09176d1b966fb506c9b518998c7b01ae6b785d6325c3913c`.
+No normalized, curated, or split file completed. The partial root and source
+campaign were preserved in place and were not overwritten.
+
+The corrected architecture direction is recorded in
+`docs/design/adaptive-runtime-stage1-unified-execution-map.md`. No additional
+single-axis transform, threshold analysis, CI work, push, or active behavior
+followed this stop.
