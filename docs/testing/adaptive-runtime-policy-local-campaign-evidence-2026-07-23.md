@@ -2159,3 +2159,70 @@ The final focused band passed 58 of 58 tests with zero failures and zero
 skips in 17 seconds. No BenchmarkDotNet, campaign, dataset transform,
 ProtocolLab run, or unified-row export was performed in this slice. Nothing
 was pushed, CI was not used, and active behavior remains unauthorized.
+
+## Unified Stage 1 Raw-Epoch Runtime Checkpoint
+
+Local commit `d076e807` adds the connection-local four-axis evidence
+accumulator, configured-policy factory, permanent raw-host wiring, raw epoch
+schema, raw semantic validator, and honest `epoch_summary` decision kind.
+Whenever the permanent raw QUIC host selects any Stage 1 axis, it enables
+bounded observation for all four axes on the same connection, permits at most
+one forced axis, and holds receive-credit publication at `legacy_current`.
+The four seam-specific sinks continue to publish their detailed evidence while
+the accumulator closes one raw unified summary at the existing connection
+epoch boundary.
+
+An axis without a boundary event in an epoch remains present. Its validity is
+`missing`, latch state is `unlatched`, event and completed-operation counts are
+zero, and its configured forced and shadow identities remain attributable. No
+prior event is carried forward as fresh and no operation or packet-plan key is
+invented. The separate decision schema now accepts `epoch_summary` with null
+operation and plan keys without relabeling the retained construction,
+packet-plan, actor-turn, or logical-write record.
+
+The exact verification commands were:
+
+```powershell
+dotnet build eng/protocol-lab/servers/IncursaRawQuicServer/IncursaRawQuicServer.csproj `
+  -c Release --no-restore --nologo -m:1 -nodeReuse:false `
+  -p:UseSharedCompilation=false -v:minimal
+
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release `
+  --no-restore `
+  --filter "FullyQualifiedName~REQ_QUIC_CRT_0175|FullyQualifiedName~REQ_QUIC_CRT_0176|FullyQualifiedName~REQ_QUIC_CRT_0177|FullyQualifiedName~REQ_QUIC_CRT_0178|FullyQualifiedName~REQ_QUIC_CRT_0179|FullyQualifiedName~REQ_QUIC_CRT_0180" `
+  --logger "console;verbosity=minimal"
+```
+
+The final raw-host Release build passed with zero warnings and zero errors in
+7.03 seconds. The final focused six-requirement band passed 161 of 161 tests
+with zero failures and zero skips in 19 seconds. The `REQ-QUIC-CRT-0177`
+subset passed 25 of 25 during the slice, including one-connection
+configuration, four-sink aggregation, empty-axis handling, epoch reset,
+monotonic boundary, raw JSON serialization, schema validation, semantic
+validation, and `epoch_summary` join coverage. The Stage 1 specification,
+architecture, work item, and verification artifacts each passed the canonical
+SpecTrace model.
+
+The following incomplete iterations remain `diagnostic_only`:
+
+| Invocation | Result | Preserved disposition |
+| --- | --- | --- |
+| First accumulator project build | Eleven compile/analyzer errors | Materialized record properties before `in` calls, removed nested ternaries, and named the missing-reason constant. |
+| First accumulator-test build | Three targetless `default with` compile errors | Added explicit record-struct types; no test executed. |
+| First `epoch_summary` validator test | One expected-key mismatch | The test initially changed the decision kind without also making the unified latch keys null; corrected to the honest no-operation projection. |
+| First raw-host build | Nine top-level local-function overload errors | Top-level local functions cannot overload; each observation-mode helper received an axis-specific name. |
+| First raw serialization test | Empty serialized policy snapshot | The internal snapshot's four properties were not serializer-visible; they are now public on an internal type and the strict raw schema passes. |
+| First combined six-requirement band | 160 passed, 1 failed | A source-inspection test retained the obsolete one-observed-axis restriction; it now asserts one forced axis plus all-four observation. |
+
+No permanent smoke campaign, canonical raw-to-curated materialization,
+BenchmarkDotNet run, ProtocolLab deployment, dataset transform, or model
+analysis was performed in this checkpoint. Unified runtime row count is zero;
+classifications and exclusions are zero. The stopped 55,658-row send-turn-only
+source remains `diagnostic_incomplete`, append-only, and untouched.
+
+Nothing was pushed and CI was not used. The next slice is canonical
+raw-to-unified materialization and permanent campaign extraction, followed by
+the small four-axis correctness-only smoke. All adjacent axes remain applied
+as `legacy_current`; active behavior and production activation remain
+unauthorized. After the smoke, the roadmap proceeds to Stage 2 before any
+large transform or offline ML analysis.
