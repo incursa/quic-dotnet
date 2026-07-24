@@ -376,7 +376,10 @@ $manifest = [ordered]@{
         repository = $sourceRepository
         commitSha = $sourceCommit
         clean = $sourceClean
-        dirtyEntries = if ($sourceClean) { @() } else { @($sourceStatus -split "`r?`n") }
+        dirtyEntries = @(
+            $sourceStatus -split "`r?`n" |
+                Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+        )
     }
     policy = [ordered]@{
         appliedPolicy = "legacy_current"
