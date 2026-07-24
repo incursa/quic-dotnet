@@ -2041,3 +2041,84 @@ nightly BenchmarkDotNet cost evidence, permanent campaign inputs, full Release
 correctness, and the small unified four-axis smoke remain open. After that
 smoke, the roadmap proceeds to Stage 2 before any large transform or offline
 ML analysis. `active_internal` and production activation remain unauthorized.
+
+## Stage 1 Oversized-Write Admission Runtime Checkpoint
+
+Local commit `7d41e382` implements
+`oversized_write_admission_quantum` as the fourth Stage 1 force/observe/shadow
+runtime seam. The closed values are `legacy_current`, `single_fragment`, and
+`bounded_multi_fragment`. `legacy_current` preserves the exact retained
+dispatcher-plus-16-through-24-observer selector. `single_fragment` uses the
+existing conventional asynchronous fragment path. `bounded_multi_fragment`
+uses the accepted two-fragment actor-turn path when the existing continuation
+dispatcher is available. Explicit forcing does not use benchmark scenario,
+payload label, requested concurrency, peer, URL, or application identity.
+
+Selection occurs once at logical-write admission. The multiplexed completion
+source or conventional logical-write loop retains the resolved quantum until
+completion, cancellation, disposal, terminal state, or failure. Transport
+ownership, FIN, retry, recovery, congestion, pacing, anti-amplification,
+flow-control, packet, queue, buffer, lifecycle, and exactly-once completion
+remain authoritative. A missing dispatcher overrides forced
+`bounded_multi_fragment` to `single_fragment`. Missing or stale diagnostic
+signals remain explicit but do not change an otherwise legal forced
+mechanism, so enabling observation cannot change the counterfactual treatment.
+
+The operation record contains versioned observation, rule, snapshot, reason,
+and provenance identities; bounded missing, stale, saturated, contradictory,
+out-of-domain, recovery, resource, and lifecycle state; forced and shadow
+identities; selected and applied values; reason and safety override; logical
+write and latch sequences; current payload and fragment limits; observed
+stream and queued-write counts; queue-delay and actor-service EWMAs;
+congestion and retained-send state; dispatcher and legacy-selector identity;
+and terminal applied-quantum, committed-fragment, committed-byte,
+continuation-post-attempt, completion-latency, and outcome fields. Evidence
+sink failures are diagnostic-only and cannot affect transport completion.
+
+The final verification commands were:
+
+```powershell
+dotnet build Incursa.Quic.slnx -c Release --no-restore
+
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release `
+  --no-build --no-restore `
+  --filter "FullyQualifiedName~REQ_QUIC_CRT_0175|FullyQualifiedName~REQ_QUIC_CRT_0176|FullyQualifiedName~REQ_QUIC_CRT_0177|FullyQualifiedName~REQ_QUIC_CRT_0178|FullyQualifiedName~REQ_QUIC_CRT_0179|FullyQualifiedName~REQ_QUIC_CRT_0180|FullyQualifiedName~QuicApplicationSendSchedulerTests|FullyQualifiedName~QuicApplicationSendQueueTests|FullyQualifiedName~QuicConnectionRuntimeWriteRequestCancellationTests|FullyQualifiedName~MetricsTests" `
+  --logger "console;verbosity=minimal"
+
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release `
+  --no-restore `
+  --filter "FullyQualifiedName~REQ_QUIC_CRT_0180" `
+  --logger "console;verbosity=minimal"
+```
+
+The exact committed source built in Release with zero warnings and zero errors
+in 59.31 seconds. The final focused band passed 285 of 285 tests with zero
+failures and zero skips in 19 seconds. The final `REQ-QUIC-CRT-0180` home
+passed 28 of 28 tests with zero failures and zero skips in 662 milliseconds.
+The retained oversized-write and write-request cancellation class passed 36
+of 36 independently before the combined band. The Stage 1 specification,
+architecture, work item, and verification JSON artifacts each passed the
+canonical `model/model.schema.json`.
+
+Three incomplete integration attempts remain classified and preserved:
+
+| Run | Result | Classification | Disposition |
+| --- | --- | --- | --- |
+| Initial solution command | `dotnet build quic.slnx` failed because that filename does not exist | `diagnostic_only` | Corrected to the repository's `Incursa.Quic.slnx`; no source or evidence was changed by the failed command. |
+| First correct solution build | Four compile/analyzer errors in the in-progress observation fast path | `diagnostic_only` | Removed impossible integer comparisons, materialized a decision before an `in` call, and removed the obsolete selector helper. The subsequent build was green. |
+| First `REQ-QUIC-CRT-0180` invocation | Test project compile failed with one invalid `in` property expression | `diagnostic_only` | Materialized the latched decision in the test. No test case executed in the failed invocation; the final home is green. |
+
+No BenchmarkDotNet run, permanent local campaign, ProtocolLab campaign,
+dataset transform, or unified epoch materialization was performed for this
+checkpoint. Unified-schema row counts, classifications, and exclusions are
+zero for this slice. The stopped 55,658-row send-turn-only source remains
+`diagnostic_incomplete`, append-only, and untouched.
+
+Nothing was pushed, no CI workflow was used, and no performance work was added
+to correctness CI. All four Stage 1 axes are now implemented, observable, and
+forceable. A counterfactual still varies only one of them while receive credit
+and all adjacent Stage 1 applied values remain `legacy_current`. The next
+slice is unified runtime export plus the small correctness-only four-axis
+smoke. After that smoke, the roadmap proceeds to Stage 2 before any large
+transform or offline ML analysis. `active_internal` and production activation
+remain unauthorized.
