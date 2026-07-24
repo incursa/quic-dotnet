@@ -2434,6 +2434,10 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             returnedOptions.OversizedWriteAdmissionObservationMode;
         selectedOptions.OversizedWriteAdmissionEvidenceSink =
             returnedOptions.OversizedWriteAdmissionEvidenceSink;
+        selectedOptions.ActorServiceObservationMode =
+            returnedOptions.ActorServiceObservationMode;
+        selectedOptions.ActorServiceEvidenceSink =
+            returnedOptions.ActorServiceEvidenceSink;
 
         QuicReceiveWindowSizes returnedWindowSizes = returnedOptions.InitialReceiveWindowSizes;
         selectedOptions.InitialReceiveWindowSizes = new QuicReceiveWindowSizes

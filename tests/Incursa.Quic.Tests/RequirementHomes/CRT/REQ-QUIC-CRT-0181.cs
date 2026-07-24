@@ -100,6 +100,30 @@ public sealed class REQ_QUIC_CRT_0181
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ListenerOptionCopyPreservesActorObservationModeAndSink()
+    {
+        QuicActorServiceEpochAccumulator sink = new();
+        QuicServerConnectionOptions selectedOptions = new();
+        QuicServerConnectionOptions returnedOptions = new()
+        {
+            ActorServiceObservationMode =
+                QuicActorServiceObservationMode.ObserveOnly,
+            ActorServiceEvidenceSink = sink,
+        };
+
+        QuicListenerHost.ApplyReturnedOptions(
+            selectedOptions,
+            returnedOptions);
+
+        Assert.Equal(
+            QuicActorServiceObservationMode.ObserveOnly,
+            selectedOptions.ActorServiceObservationMode);
+        Assert.Same(sink, selectedOptions.ActorServiceEvidenceSink);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task ThrowingEvidenceSinkCannotInterruptActorProgress()
