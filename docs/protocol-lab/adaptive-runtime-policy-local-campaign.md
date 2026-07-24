@@ -63,6 +63,15 @@ rows and export manifest to the checksum inventory, and verifies their result,
 sample, and raw-source joins. This implements the evidence path; it does not
 classify an unexecuted campaign or authorize active behavior.
 
+For `-ObservationNeutrality`, the same permanent runner executes ABBA or BAAB
+with treatment A `disabled` and treatment B `observe_only` against one frozen
+binary cohort. Disabled leaves the application-send environment variable
+unset and must emit neither evidence nor construction provenance. Observe-only
+must emit recommendation-free raw records and checksum-backed epoch rows.
+Both treatments apply `legacy_current`; the result retains separate sample
+outcomes and pressure artifacts and remains diagnostic until the broader
+neutrality matrix is complete.
+
 ## Permanent Workload Matrix
 
 The minimum local campaign crosses the dimensions below. Cells may be split

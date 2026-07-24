@@ -287,7 +287,13 @@ public sealed class REQ_QUIC_CRT_0174
         Assert.Contains("application-send-turn-shadow-neutral-v1", runner, StringComparison.Ordinal);
         Assert.Contains("adaptive-runtime-application-send-turn-observation-v1", runner, StringComparison.Ordinal);
         Assert.Contains("[string[]] $shadowPolicies =", runner, StringComparison.Ordinal);
-        Assert.Contains("if ($isApplicationSendTurnAxis -and -not $ShadowOnly)", runner, StringComparison.Ordinal);
+        Assert.Contains("[switch] $ObservationNeutrality", runner, StringComparison.Ordinal);
+        Assert.Contains("A = 'disabled'; B = 'observe_only'", runner, StringComparison.Ordinal);
+        Assert.Contains("if ($hostPolicy -eq 'unset') { $null } else { $hostPolicy }", runner, StringComparison.Ordinal);
+        Assert.Contains("$isApplicationSendTurnEvidenceCampaign", runner, StringComparison.Ordinal);
+        Assert.Contains("observe_only evidence contained a recommendation", runner, StringComparison.Ordinal);
+        Assert.Contains("disabled observation emitted application-send-turn evidence", runner, StringComparison.Ordinal);
+        Assert.Contains("if ($isApplicationSendTurnAxis -and -not $ShadowOnly -and -not $ObservationNeutrality)", runner, StringComparison.Ordinal);
         Assert.Contains("$validationArguments = [ordered]@{ LocalResultPath = $resultPath }", runner, StringComparison.Ordinal);
         Assert.DoesNotContain("application_send_turn_planning does not have shadow behavior yet", runner, StringComparison.Ordinal);
         Assert.Contains("policy_mismatch", runner, StringComparison.Ordinal);

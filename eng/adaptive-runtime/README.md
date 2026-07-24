@@ -231,6 +231,35 @@ buffer-pool regressions beyond five percent retain a negative result. It cannot
 emit `accepted_local` until managed-allocation and true stream-fairness evidence
 are also populated, so a throughput-only win remains neutral.
 
+Run a same-binary disabled-versus-observe-only A/B/B/A neutrality cell for the
+send-turn axis with:
+
+```powershell
+./eng/adaptive-runtime/Invoke-AdaptiveRuntimePolicyLocalCell.ps1 `
+  -CampaignId adaptive-send-turn-observation-neutrality-20260724 `
+  -CellId duplex-64kb-x1-s16-neutrality `
+  -PolicyAxis application_send_turn_planning `
+  -ObservationNeutrality `
+  -SequenceProtocol ABBA `
+  -ScenarioId quic.transport.duplex-streams-peer-matrix `
+  -TrafficShape duplex `
+  -AccountingMode fixed_per_stream `
+  -PayloadBytes 65536 `
+  -Connections 1 `
+  -StreamsPerConnection 16
+```
+
+Treatment A leaves the application-send observation environment variable
+unset and verifies that the host emits neither observation evidence nor forced
+construction provenance. Treatment B selects `observe_only`, requires
+schema-valid recommendation-free records, and exports only those records to
+epoch rows. Both treatments apply `legacy_current`; receive credit and every
+other axis remain `legacy_current`. The local result records mode
+`observe_only`, retains the ABBA sample outcomes and counters, and can classify
+a known throughput, p95, or peak outstanding buffer-pool regression as
+`negative_retained`. It remains same-host diagnostic evidence and cannot
+authorize activation.
+
 Run a deterministic higher-count measurement schedule with the same permanent
 cell runner:
 

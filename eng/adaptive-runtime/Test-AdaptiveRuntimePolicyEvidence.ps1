@@ -478,6 +478,16 @@ foreach ($item in $validatedLocalResults) {
 
 foreach ($resultContext in $localResultContextsByRunId.Values) {
     $result = $resultContext.Document
+    if ($result.mode -eq 'observe_only') {
+        if ($result.policyAxis -ne 'application_send_turn_planning' -or
+            $result.policyConfiguration.appliedPolicy -ne 'legacy_current' -or
+            $null -ne $result.policyConfiguration.forcedPolicy -or
+            [bool] $result.policyConfiguration.shadowEnabled) {
+            $failures.Add(
+                "Observe-only result '$($resultContext.Item.Path)' must keep application_send_turn_planning on unforced legacy_current with shadow disabled.")
+        }
+    }
+
     $unsupportedFairnessClaim = [bool] $result.fairnessOutcomes.assessed -or
         $null -ne $result.fairnessOutcomes.streamCompletionP95Ms -or
         $null -ne $result.fairnessOutcomes.streamCompletionP99Ms -or
@@ -866,6 +876,14 @@ foreach ($item in $validatedEpochRows) {
     }
     elseif ($result.mode -eq 'shadow' -and $row.candidatePolicySelection.selectionSource -ne 'shadow_rule') {
         $failures.Add("Epoch row '$($row.rowId)' from a shadow result did not record selectionSource='shadow_rule'.")
+    }
+    elseif ($result.mode -eq 'observe_only') {
+        if ($row.candidatePolicySelection.selectionSource -ne 'legacy' -or
+            $null -ne $row.candidatePolicySelection.shadowRecommendation -or
+            $row.currentPolicyState.appliedPolicy -ne 'legacy_current') {
+            $failures.Add(
+                "Epoch row '$($row.rowId)' from an observe-only result must record legacy selection, no recommendation, and legacy_current applied.")
+        }
     }
 }
 

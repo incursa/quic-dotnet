@@ -23,6 +23,8 @@ param(
 
     [switch] $ShadowOnly,
 
+    [switch] $ObservationNeutrality,
+
     [switch] $StressOnly,
 
     [string] $ScenarioId = 'quic.transport.duplex-streams-peer-matrix',
@@ -750,11 +752,19 @@ function Get-ScenarioShape {
 
 $isReceiveCreditAxis = $PolicyAxis -eq 'receive_credit_publication'
 $isApplicationSendTurnAxis = $PolicyAxis -eq 'application_send_turn_planning'
+if ($ShadowOnly -and $ObservationNeutrality) {
+    throw 'ShadowOnly and ObservationNeutrality are mutually exclusive.'
+}
+if ($ObservationNeutrality -and -not $isApplicationSendTurnAxis) {
+    throw 'ObservationNeutrality is currently defined only for application_send_turn_planning.'
+}
+$isApplicationSendTurnEvidenceCampaign =
+    $isApplicationSendTurnAxis -and ($ShadowOnly -or $ObservationNeutrality)
 $requiredInputs = @($localBenchmarkScript, $resultSchemaPath, $evidenceValidationScript, $serverProjectPath)
 if ($isReceiveCreditAxis) {
     $requiredInputs += $epochSchemaPath
 }
-elseif ($ShadowOnly) {
+elseif ($isApplicationSendTurnEvidenceCampaign) {
     $requiredInputs += @(
         $epochSchemaPath,
         $applicationSendTurnRawSchemaPath,
@@ -781,7 +791,7 @@ foreach ($policyValue in @($PolicyA, $PolicyB)) {
     }
 }
 
-if (-not $ShadowOnly) {
+if (-not $ShadowOnly -and -not $ObservationNeutrality) {
     if ($PolicyA -eq $PolicyB) {
         throw 'PolicyA and PolicyB must name different forced treatments.'
     }
@@ -827,6 +837,9 @@ if ($DryRun) {
     if ($ShadowOnly) {
         Write-Host 'Dry run: would execute one custom shadow-only sample with legacy_current applied.'
     }
+    elseif ($ObservationNeutrality) {
+        Write-Host "Dry run: would execute $SequenceProtocol for A=disabled and B=observe_only with legacy_current applied."
+    }
     else {
         Write-Host "Dry run: would execute $SequenceProtocol for A=$PolicyA and B=$PolicyB."
     }
@@ -856,7 +869,21 @@ else {
     @('B', 'A', 'A', 'B')
 }
 $sequence = @($sequence)
-$policyByTreatment = if ($ShadowOnly) { @{ A = 'legacy_current' } } else { @{ A = $PolicyA; B = $PolicyB } }
+$policyByTreatment = if ($ShadowOnly) {
+    @{ A = 'legacy_current' }
+}
+elseif ($ObservationNeutrality) {
+    @{ A = 'legacy_current'; B = 'legacy_current' }
+}
+else {
+    @{ A = $PolicyA; B = $PolicyB }
+}
+$observationModeByTreatment = if ($ObservationNeutrality) {
+    @{ A = 'disabled'; B = 'observe_only' }
+}
+else {
+    @{}
+}
 $samples = [System.Collections.Generic.List[object]]::new()
 $shadowEpochsBySample = @{}
 $applicationSendTurnRecordsBySample = @{}
@@ -872,7 +899,15 @@ $startedUtc = (Get-Date).ToUniversalTime()
 for ($index = 0; $index -lt $sequence.Count; $index++) {
     $treatment = $sequence[$index]
     $policy = $policyByTreatment[$treatment]
-    $hostPolicy = if ($ShadowOnly) { 'shadow' } else { $policy }
+    $hostPolicy = if ($ShadowOnly) {
+        'shadow'
+    }
+    elseif ($ObservationNeutrality) {
+        if ($treatment -eq 'A') { 'unset' } else { 'observe_only' }
+    }
+    else {
+        $policy
+    }
     $sampleId = "sample-$($index + 1)-$treatment-$policy"
     $sampleRoot = Join-Path $samplesRoot $sampleId
     New-Item -ItemType Directory -Path $sampleRoot -Force | Out-Null
@@ -924,7 +959,9 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
     }
     $previousPolicy = [Environment]::GetEnvironmentVariable($policyEnvironmentVariable)
     try {
-        [Environment]::SetEnvironmentVariable($policyEnvironmentVariable, $hostPolicy)
+        [Environment]::SetEnvironmentVariable(
+            $policyEnvironmentVariable,
+            $(if ($hostPolicy -eq 'unset') { $null } else { $hostPolicy }))
         & pwsh @arguments 1> $stdoutPath 2> $stderrPath
         $exitCode = $LASTEXITCODE
     }
@@ -1019,7 +1056,9 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
             }
         }
         else {
-            if ($ShadowOnly) {
+            $capturesApplicationSendTurnEvidence =
+                $ShadowOnly -or ($ObservationNeutrality -and $hostPolicy -eq 'observe_only')
+            if ($capturesApplicationSendTurnEvidence) {
                 $evidenceContract = [regex]::Match(
                     $campaignHostStdout,
                     'QUIC_APPLICATION_SEND_TURN_EVIDENCE_CONTRACT=([^\r\n]+)').Groups[1].Value
@@ -1046,6 +1085,42 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
                     $applicationSendTurnEvidenceBySample[$sampleId] = @($evidenceLines | ForEach-Object {
                         $_ | ConvertFrom-Json -Depth 30
                     })
+                    if ($ObservationNeutrality -and
+                        @($applicationSendTurnEvidenceBySample[$sampleId] | Where-Object {
+                            [string] $_.mode -ne 'ObserveOnly' -or [bool] $_.hasRecommendation
+                        }).Count -ne 0) {
+                        $contractFailures.Add(
+                            "$sampleId`: observe_only evidence contained a recommendation or a non-observe-only mode.")
+                    }
+                }
+            }
+            elseif ($ObservationNeutrality) {
+                $unexpectedEvidenceContract = [regex]::Match(
+                    $campaignHostStdout,
+                    'QUIC_APPLICATION_SEND_TURN_EVIDENCE_CONTRACT=([^\r\n]+)')
+                $unexpectedEvidenceRecords = @(
+                    Get-Content -LiteralPath $campaignHostStdoutPath |
+                        Where-Object {
+                            $_.StartsWith(
+                                'QUIC_APPLICATION_SEND_TURN_EVIDENCE_JSON=',
+                                [StringComparison]::Ordinal)
+                        })
+                $unexpectedConstructionContract = [regex]::Match(
+                    $campaignHostStdout,
+                    'QUIC_APPLICATION_SEND_TURN_POLICY_CONTRACT=([^\r\n]+)')
+                $unexpectedConstructionRecords = @(
+                    Get-Content -LiteralPath $campaignHostStdoutPath |
+                        Where-Object {
+                            $_.StartsWith(
+                                'QUIC_APPLICATION_SEND_TURN_POLICY_JSON=',
+                                [StringComparison]::Ordinal)
+                        })
+                if ($unexpectedEvidenceContract.Success -or
+                    $unexpectedEvidenceRecords.Count -ne 0 -or
+                    $unexpectedConstructionContract.Success -or
+                    $unexpectedConstructionRecords.Count -ne 0) {
+                    $contractFailures.Add(
+                        "$sampleId`: disabled observation emitted application-send-turn evidence or construction provenance.")
                 }
             }
             else {
@@ -1192,7 +1267,15 @@ $hasCorrectnessFailure = @($samples | Where-Object {
     $_.correctness.protocolErrors -ne 0 -or
     $_.correctness.invariantViolations.Count -ne 0
 }).Count -ne 0
-$baselineTreatment = if ($PolicyA -eq 'legacy_current') { 'A' } else { 'B' }
+$baselineTreatment = if ($ObservationNeutrality) {
+    'A'
+}
+elseif ($PolicyA -eq 'legacy_current') {
+    'A'
+}
+else {
+    'B'
+}
 $candidateTreatment = if ($baselineTreatment -eq 'A') { 'B' } else { 'A' }
 $baselineSamples = @($samples | Where-Object { $_.treatment -eq $baselineTreatment })
 $candidateSamples = @($samples | Where-Object { $_.treatment -eq $candidateTreatment })
@@ -1258,6 +1341,9 @@ else {
 $resultRunId = if ($ShadowOnly) {
     "$CampaignId-$CellId-shadow"
 }
+elseif ($ObservationNeutrality) {
+    "$CampaignId-$CellId-observation-neutrality-$($SequenceProtocol.ToLowerInvariant())"
+}
 else {
     "$CampaignId-$CellId-$($SequenceProtocol.ToLowerInvariant())"
 }
@@ -1265,7 +1351,7 @@ $epochRowPaths = [System.Collections.Generic.List[string]]::new()
 $allShadowEpochs = if ($isReceiveCreditAxis) {
     @($shadowEpochsBySample.Values | ForEach-Object { @($_) })
 }
-elseif ($ShadowOnly) {
+elseif ($isApplicationSendTurnEvidenceCampaign) {
     @($applicationSendTurnEvidenceBySample.Values | ForEach-Object { @($_) })
 }
 else {
@@ -1508,7 +1594,7 @@ if ($isReceiveCreditAxis -and $contractFailures.Count -eq 0) {
     }
 }
 
-if ($isApplicationSendTurnAxis -and $ShadowOnly) {
+if ($isApplicationSendTurnEvidenceCampaign) {
     $quicRepository = @($repositoryIdentities | Where-Object name -eq 'quic-dotnet') | Select-Object -First 1
     $benchmarkHash = [string] $binaryIdentities[0].sha256
     $runtimeHash = [string] $binaryIdentities[1].sha256
@@ -1518,6 +1604,9 @@ if ($isApplicationSendTurnAxis -and $ShadowOnly) {
             [System.IO.Path]::GetFileName($_) -eq 'application-send-turn-evidence.raw.jsonl'
         }) | Select-Object -First 1
         if ([string]::IsNullOrWhiteSpace([string] $rawPath)) {
+            if ($ObservationNeutrality -and [string] $sample.treatment -eq 'A') {
+                continue
+            }
             $contractFailures.Add("$($sample.sampleId): retained application-send-turn evidence has no raw source artifact.")
             continue
         }
@@ -1546,7 +1635,7 @@ if ($isApplicationSendTurnAxis -and $ShadowOnly) {
         $exportArguments = [ordered]@{
             RawEvidencePath = $rawPath
             OutputDirectory = $epochExportRoot
-            DatasetId = "$CampaignId-$CellId-shadow-dataset"
+            DatasetId = "$CampaignId-$CellId-$(if ($ShadowOnly) { 'shadow' } else { 'observe-only-neutrality' })-dataset"
             CampaignId = $CampaignId
             RunId = $resultRunId
             CellId = $CellId
@@ -1606,7 +1695,15 @@ $manifest = [ordered]@{
     policyAxis = $PolicyAxis
     sequenceProtocol = $effectiveSequenceProtocol
     sequence = $sequence
-    treatments = if ($ShadowOnly) { [ordered]@{ A = 'legacy_current' } } else { [ordered]@{ A = $PolicyA; B = $PolicyB } }
+    treatments = if ($ShadowOnly) {
+        [ordered]@{ A = 'legacy_current' }
+    }
+    elseif ($ObservationNeutrality) {
+        [ordered]@{ A = 'disabled'; B = 'observe_only' }
+    }
+    else {
+        [ordered]@{ A = $PolicyA; B = $PolicyB }
+    }
     workload = [ordered]@{
         scenarioId = $ScenarioId
         trafficShape = $TrafficShape
@@ -1665,13 +1762,21 @@ $resultNotes.Add('The host and generator share a machine, so target and generato
 $resultNotes.Add('Sample and aggregate buffer-pool rent and peak-outstanding measurements come only from retained quic-buffer-pool-summary.json metrics; generic managed-allocation and peak-retained-memory fields remain null.')
 $resultNotes.Add('Fairness remains unassessed because retained request latency/completion metrics are not proof of stream-level fairness. Per-epoch completion and memory outcomes also remain null.')
 $resultNotes.Add('accepted_local remains unavailable until managed-allocation and true stream-fairness gates are populated; known throughput, p95, or peak outstanding buffer-pool regressions can still retain a negative result.')
+if ($ObservationNeutrality) {
+    $resultNotes.Add('Treatment A leaves application-send observation disabled and the environment variable unset; treatment B enables observe_only. Both apply legacy_current, and observe-only rows contain no recommendation.')
+}
 foreach ($failure in $contractFailures) {
     $resultNotes.Add("contract: $failure")
 }
 $hostFingerprint = "$env:COMPUTERNAME|$([System.Runtime.InteropServices.RuntimeInformation]::OSDescription)|$([Environment]::ProcessorCount)"
 $reasonCounts = [ordered]@{}
 foreach ($epoch in $allShadowEpochs) {
-    $reason = ConvertTo-ReasonCode -Value ([string] $epoch.snapshot.reason)
+    $reason = if ($ObservationNeutrality) {
+        'none'
+    }
+    else {
+        ConvertTo-ReasonCode -Value ([string] $epoch.snapshot.reason)
+    }
     if (-not $reasonCounts.Contains($reason)) {
         $reasonCounts[$reason] = 0
     }
@@ -1686,7 +1791,7 @@ $shadowSummaryArtifactPath = @($artifactPaths | Where-Object {
     }
     [System.IO.Path]::GetFileName($_) -eq $expectedName
 }) | Select-Object -First 1
-$cellAppliedPolicy = if ($ShadowOnly) {
+$cellAppliedPolicy = if ($ShadowOnly -or $ObservationNeutrality) {
     'legacy_current'
 }
 elseif ($forcedPolicyValues.Count -eq 1) {
@@ -1695,7 +1800,7 @@ elseif ($forcedPolicyValues.Count -eq 1) {
 else {
     'not_applicable'
 }
-$cellForcedPolicy = if (-not $ShadowOnly -and $forcedPolicyValues.Count -eq 1) {
+$cellForcedPolicy = if (-not $ShadowOnly -and -not $ObservationNeutrality -and $forcedPolicyValues.Count -eq 1) {
     $forcedPolicyValues | Select-Object -First 1
 }
 else {
@@ -1704,7 +1809,7 @@ else {
 $axisRuleVersion = if ($isReceiveCreditAxis) {
     'receive-credit-legacy-v1'
 }
-elseif ($ShadowOnly) {
+elseif ($isApplicationSendTurnEvidenceCampaign) {
     'application-send-turn-shadow-neutral-v1'
 }
 else {
@@ -1713,7 +1818,7 @@ else {
 $axisObservationContractVersion = if ($isReceiveCreditAxis) {
     'adaptive-runtime-connection-observation-v1'
 }
-elseif ($ShadowOnly) {
+elseif ($isApplicationSendTurnEvidenceCampaign) {
     'adaptive-runtime-application-send-turn-observation-v1'
 }
 else {
@@ -1732,7 +1837,15 @@ $result = [ordered]@{
     repositoryIdentities = $repositoryIdentities
     binaryProvenance = [ordered]@{ frozen = $true; assemblies = $binaryIdentities }
     policyAxis = $PolicyAxis
-    mode = if ($ShadowOnly) { 'shadow' } else { 'forced' }
+    mode = if ($ShadowOnly) {
+        'shadow'
+    }
+    elseif ($ObservationNeutrality) {
+        'observe_only'
+    }
+    else {
+        'forced'
+    }
     policyConfiguration = [ordered]@{
         appliedPolicy = $cellAppliedPolicy
         forcedPolicy = $cellForcedPolicy
@@ -1764,8 +1877,8 @@ $result = [ordered]@{
         legacySelectorCommit = if ($isReceiveCreditAxis) { '1b2611e1' } else { $null }
         stickyWriteEligibilityBypassed = $isReceiveCreditAxis -and -not $ShadowOnly -and ($PolicyA -eq 'read_dominant_batch' -or $PolicyB -eq 'read_dominant_batch')
         axisSettings = [ordered]@{
-            treatmentA = $PolicyA
-            treatmentB = $PolicyB
+            treatmentA = if ($ObservationNeutrality) { 'disabled' } else { $PolicyA }
+            treatmentB = if ($ObservationNeutrality) { 'observe_only' } else { $PolicyB }
             baselineTreatment = $baselineTreatment
             candidateTreatment = $candidateTreatment
             baselineThroughputBytesPerSecond = $baselineThroughput
@@ -1819,6 +1932,12 @@ $result = [ordered]@{
             A = [ordered]@{ policy = 'legacy_current'; benchmarkBinaryRole = 'candidate_benchmark'; runtimeBinaryRole = 'candidate_runtime' }
         }
     }
+    elseif ($ObservationNeutrality) {
+        [ordered]@{
+            A = [ordered]@{ policy = 'legacy_current'; benchmarkBinaryRole = 'candidate_benchmark'; runtimeBinaryRole = 'candidate_runtime' }
+            B = [ordered]@{ policy = 'legacy_current'; benchmarkBinaryRole = 'candidate_benchmark'; runtimeBinaryRole = 'candidate_runtime' }
+        }
+    }
     else {
         [ordered]@{
             A = [ordered]@{ policy = $PolicyA; benchmarkBinaryRole = 'candidate_benchmark'; runtimeBinaryRole = 'candidate_runtime' }
@@ -1861,9 +1980,28 @@ $result = [ordered]@{
     diagnosticSignals = [ordered]@{
         observationEnabled = $allShadowEpochs.Count -gt 0
         shadowEpochCount = $allShadowEpochs.Count
-        transitionCount = @($allShadowEpochs | Where-Object { $_.snapshot.transitioned }).Count
-        outOfDomainEpochCount = @($allShadowEpochs | Where-Object { $_.snapshot.reason -eq 'OutOfDomain' }).Count
-        contradictoryEpochCount = @($allShadowEpochs | Where-Object { $_.snapshot.reason -eq 'ContradictorySignals' }).Count
+        transitionCount = if ($ObservationNeutrality) {
+            0
+        }
+        else {
+            @($allShadowEpochs | Where-Object { $_.snapshot.transitioned }).Count
+        }
+        outOfDomainEpochCount = if ($ObservationNeutrality) {
+            @($allShadowEpochs | Where-Object {
+                [string] $_.observation.conditions -match 'OutOfDomain'
+            }).Count
+        }
+        else {
+            @($allShadowEpochs | Where-Object { $_.snapshot.reason -eq 'OutOfDomain' }).Count
+        }
+        contradictoryEpochCount = if ($ObservationNeutrality) {
+            @($allShadowEpochs | Where-Object {
+                [string] $_.observation.conditions -match 'Contradictory'
+            }).Count
+        }
+        else {
+            @($allShadowEpochs | Where-Object { $_.snapshot.reason -eq 'ContradictorySignals' }).Count
+        }
         missingEpochCount = @($allShadowEpochs | Where-Object {
             if ($isReceiveCreditAxis) {
                 (ConvertTo-SignalMask -Value $_.observation.missingSignalMask) -ne 0
@@ -1904,7 +2042,7 @@ $constructionRowPaths = [System.Collections.Generic.List[string]]::new()
 # Construction provenance is retained even when a run has already accumulated
 # a contract failure. The later validator records the failed join or exclusion;
 # suppressing the rows would silently discard the counterfactual evidence.
-if ($isApplicationSendTurnAxis -and -not $ShadowOnly) {
+if ($isApplicationSendTurnAxis -and -not $ShadowOnly -and -not $ObservationNeutrality) {
     $quicRepository = @($repositoryIdentities | Where-Object name -eq 'quic-dotnet') | Select-Object -First 1
     $benchmarkHash = [string] $binaryIdentities[0].sha256
     $runtimeHash = [string] $binaryIdentities[1].sha256

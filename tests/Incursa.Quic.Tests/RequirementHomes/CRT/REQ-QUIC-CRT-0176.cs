@@ -721,6 +721,22 @@ public sealed class REQ_QUIC_CRT_0176
             Assert.True(summary.RootElement.GetProperty("valid").GetBoolean());
             Assert.Equal(2, summary.RootElement.GetProperty("epochRowCount").GetInt32());
             Assert.Empty(summary.RootElement.GetProperty("failures").EnumerateArray());
+
+            localResult["mode"] = "observe_only";
+            configuration["shadowEnabled"] = false;
+            configuration["shadowPolicy"] = null;
+            File.WriteAllText(localResultPath, localResult.ToJsonString());
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult invalidObserveOnly =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellCommand(validationCommand);
+            Assert.NotEqual(0, invalidObserveOnly.ExitCode);
+            using JsonDocument invalidSummary = JsonDocument.Parse(invalidObserveOnly.Output);
+            Assert.Contains(
+                invalidSummary.RootElement.GetProperty("failures")
+                    .EnumerateArray()
+                    .Select(static failure => failure.GetString()!),
+                failure => failure.Contains(
+                    "from an observe-only result must record legacy selection, no recommendation",
+                    StringComparison.Ordinal));
         }
         finally
         {
