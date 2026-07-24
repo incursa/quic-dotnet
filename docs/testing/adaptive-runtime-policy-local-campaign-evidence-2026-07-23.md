@@ -913,3 +913,26 @@ remain a clean implementation-ready diagnostic slice, pending normal review
 and a package-correctness resolution that preserves the unchanged
 package-backed conformance gate. This preserves the c128 row, the package
 failure, and the source-current result as distinct append-only evidence.
+
+### Released-Package Provenance and Remediation Boundary
+
+Read-only package provenance establishes the exact release relationship. The
+locally restored `Incursa.Quic` `1.0.6` package declares repository commit
+`d604e1f1b30291589a0cbae00e9fbe73786ba0bb`, which is the signed `v1.0.6`
+release tag from 2026-05-30. The current-source blocked-write retry commit is
+`79e995c3ee6a373964028809cfd2c1fed0ff1401` (`Retry blocked peer stream
+capacity replays`, 2026-07-23); it is an ancestor of the current checkout and
+is not contained by any release tag. The source-backed conformance pass is
+therefore consistent with source history, while the `1.0.6` failure is a real
+released-artifact defect.
+
+The repository release policy classifies a compatible behavioral correction as
+a patch release and requires a maintainer-controlled version tag before the
+NuGet publish workflow runs. No tag, package version change, publish workflow,
+or NuGet upload has been created in this diagnostic slice. The next release
+decision must select an exact reviewed commit and patch version, then rerun the
+unchanged package-backed Raw QUIC conformance tests against the published
+package identity. Until that explicit release work is approved and complete,
+ProtocolLab internal's `1.0.6` correctness failure, PR #10's red check, and
+the package-parity gate remain open; no test exclusion, source-root override,
+or policy experiment may substitute for them.
