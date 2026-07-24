@@ -19,6 +19,7 @@
   ],
   "key_components": [
     "src/Incursa.Quic/QuicApplicationSendTurnPlanner.cs",
+    "src/Incursa.Quic/QuicApplicationSendTurnShadowController.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
     "src/Incursa.Quic/QuicApplicationSendPressureClassifier.cs",
