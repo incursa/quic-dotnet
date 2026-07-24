@@ -2971,3 +2971,44 @@ reviewed useful actor work units, runnable/fairness observations, exactly-once
 repost design, and only then force-readiness for `actor_work_quantum` and
 `buffer_copy_coalescing`. Active behavior and production activation remain
 unauthorized.
+
+## Stage 2 Flow-Control Retry Buffer Release
+
+Local commit
+`19be4042` extends `REQ-QUIC-CRT-0185` to the
+`application_write_request` owner without changing write, flow-control,
+completion, cancellation, or pool behavior.
+
+The compact token is installed only for a newly rented retry owner after its
+construction record is accepted. Capacity reuse keeps the original token and
+continues to mark the reuse operation as lacking its own terminal lifetime.
+Replacement returns and releases the old owner before installing a new token.
+Downstream copy, success, failure, cancellation, terminal completion,
+disposal, and defensive completion-source recycle use a closed release reason,
+clear the token exactly once, and publish only after authoritative pool
+return. Release observation and raw wrapper v2 add this path and reason set;
+the receive-only v1 schemas remain immutable.
+
+The focused verification sequence is:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| `dotnet build .\tests\Incursa.Quic.Tests\Incursa.Quic.Tests.csproj -c Release --no-restore` | Zero warnings and zero errors in 46.21 seconds | `accepted` focused Release build. |
+| `REQ-QUIC-CRT-0182` requirement home | 19 passed, zero failed, zero skipped | `accepted`; includes replacement/completion, cancellation, capacity reuse, downstream-copy reason, contradictory capacity/reason, out-of-domain validity, schema v2, and exact joins. |
+| Completion-pool, write-cancellation, receive-buffer, and raw-package band | 85 passed, zero failed, zero skipped in 13 seconds | `accepted`; existing completion reuse, delayed task consumption, cancellation, receive ownership, and package contracts remain correct. |
+| Raw-host Release build | Zero warnings and zero errors in 3.91 seconds | `accepted`; v2 release records compile in the permanent host. |
+| Direct SpecTrace model validation | The Stage 2 specification, architecture, work item, and verification artifact each returned `True` | `accepted` focused trace evidence. |
+
+No campaign axis varied and no new unified rows were generated. Receive credit,
+all four Stage 1 adjacent axes, `actor_work_quantum`, and
+`buffer_copy_coalescing` remain applied as `legacy_current` outside explicit
+earlier Stage 1 smoke treatments. Dataset inclusion/exclusion counts are
+unchanged. No BenchmarkDotNet run, performance claim, large campaign,
+ProtocolLab deployment, dataset transform, ML analysis, CI run, push, or
+active behavior occurred.
+
+The next buffer-owner slice is `oversized_raw_queue`; original retry-owner
+release and queued-owner construction must remain distinct records and must
+not be relabeled as one lifetime. The remaining Stage 2 actor work-unit,
+fairness, force-readiness, and rollback gates remain ahead of any large
+dataset or ML analysis. Production activation remains unauthorized.
