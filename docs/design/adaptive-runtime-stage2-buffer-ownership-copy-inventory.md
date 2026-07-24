@@ -48,21 +48,21 @@ The runtime already owns several trustworthy primitives:
   time as maintained O(1) total state, plus queue-cause detail through the
   existing diagnostic scan;
 - receive retained segment count and rented capacity;
-- retransmission retained-owner count, capacity, and oldest sent time as
-  maintained O(1) total state, plus sent-packet retained owners and ages
-  through the existing diagnostic dictionary scan;
+- sent-packet and retransmission retained-owner count, capacity, and oldest
+  sent time as maintained O(1) total state, plus sent-packet storage and
+  packet-number-span detail through the existing diagnostic dictionary scan;
 - request, packet-plan, actor-turn, and logical-write identities;
 - packet protection, congestion, pacing, recovery, flow-control, endpoint,
   lifecycle, cancellation, and disposal outcomes; and
 - exactly-once packet-event and datagram-owner release helpers.
 
-The current sent-packet retention snapshot still enumerates a dictionary. It
-is acceptable for diagnostics already guarded by metrics, but it is not a new
-per-dispatch policy input. The application-send and retransmission queues now
-maintain bounded total counters at their existing ownership transitions.
-Remaining Stage 2 observation work must use maintained state or another
-already bounded snapshot. It must not add an unbounded scan to the actor or
-packet hot path.
+The current sent-packet storage and packet-number-span snapshot still
+enumerates a dictionary. It is acceptable for diagnostics already guarded by
+metrics, but it is not a new per-dispatch policy input. Application-send,
+sent-packet, and retransmission total retention state is now maintained at
+existing ownership transitions. Remaining Stage 2 observation work must use
+maintained state or another already bounded snapshot. It must not add an
+unbounded scan to the actor or packet hot path.
 
 ## Proposed Observation Contract
 
@@ -145,9 +145,8 @@ Before a forceable value is implemented:
 1. extend the implemented connection-local copy-operation counters from the
    write-request, oversized raw queue, formatted payload, combined-send, and
    sent-retention points to retransmission clones and receive segments;
-2. extend the implemented maintained application-send and retransmission queue
-   count, capacity, and oldest-time state to sent-packet retention, where the
-   current diagnostic dictionary snapshot still scans;
+2. keep sent-packet storage and packet-number-span scans diagnostic-only unless
+   a separately reviewed controller input justifies maintained bounded state;
 3. define exact transfer and terminal-release correlation without retaining
    object identity in the dataset;
 4. add ownership tests for admission failure, partial construction, blocked

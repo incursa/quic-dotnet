@@ -2491,8 +2491,8 @@ weaken focused trace validation.
 
 Terminal-release correlation, retained age, pool outstanding state,
 retransmission-clone observation, receive-segment observation, platform
-staging, maintained sent-packet retention, permanent post-service export,
-and a distinct conservative value remain open. Stage 2 unified row count is
+staging, permanent post-service export, and a distinct conservative value
+remain open. Stage 2 unified row count is
 zero, with zero new dataset inclusions or exclusions. No campaign axis varied;
 receive credit and every Stage 1 axis remain applied as `legacy_current`, and
 buffer-copy behavior remains the existing `legacy_current` implementation.
@@ -2525,6 +2525,16 @@ snapshot reads no longer enumerate the retransmission queue. The same
 checkpoint makes shared plaintext and packet-byte ownership return exactly
 once.
 
+Local commit
+`6b60ea435a7823612181a38f179d082d26fcd59b` maintains total
+sent-packet retained-owner count, retained capacity, and oldest sent time
+across insert, packet-number replacement, protected-packet owner detachment,
+acknowledgment, packet-space or protection discard, loss, and retransmission
+ownership transfer. Its total snapshot is O(1). The combined storage-detail
+snapshot still enumerates packet keys only to compute diagnostic per-space
+occupancy and packet-number spans; it no longer recomputes owner totals or
+oldest time.
+
 The retained diagnostic and verification results are:
 
 | Invocation | Result | Classification and disposition |
@@ -2536,6 +2546,10 @@ The retained diagnostic and verification results are:
 | `REQ-QUIC-CRT-0182` plus retransmission-queue tests | 16 passed, zero failed, zero skipped in one second | `accepted` narrow mechanism and ownership evidence. |
 | Stage 1 requirement homes, `REQ-QUIC-CRT-0182`, and both queue suites | 174 passed, zero failed, zero skipped in 14 seconds | `accepted` adjacent-axis and maintained-retention correctness evidence. |
 | Send-runtime ownership, retransmission queue, and `REQ-QUIC-CRT-0182` | 31 passed, zero failed, zero skipped in one second | `accepted` release, discard, suppression, dequeue, and runtime ownership evidence. |
+| Sent-packet focused test-project Release build | Zero warnings and zero errors in 56.67 seconds | `accepted` focused build evidence. |
+| Send-runtime ownership, retransmission queue, and `REQ-QUIC-CRT-0182` after sent-packet accounting | 32 passed, zero failed, zero skipped in one second | `accepted` replacement, detachment, acknowledgment, loss-transfer, discard, and release evidence. |
+| Stage 1 requirement homes, `REQ-QUIC-CRT-0182`, send runtime, and both queue suites | 190 passed, zero failed, zero skipped in 14 seconds | `accepted` adjacent-axis and complete maintained-retention correctness evidence. |
+| `dotnet build Incursa.Quic.slnx -c Release --nologo --no-restore` | Zero warnings and zero errors in 57.63 seconds | `accepted` complete Release build evidence for the checkpoint. |
 
 This follow-up adds no policy value, force seam, shadow recommendation,
 selector, threshold, or active behavior. No campaign axis varied. Receive
@@ -2546,8 +2560,8 @@ campaign, ProtocolLab deployment, dataset transform, ML analysis, CI run, or
 push occurred. The stopped 55,658-row send-turn-only transform remains
 `diagnostic_incomplete`, append-only, and untouched.
 
-The next bounded ownership slice is maintained sent-packet retention and
-terminal-release correlation. Retransmission-clone and receive-segment copy
-observation, the post-service export boundary, a distinct
-`memory_conservative` value, forcing, and shadow selection remain open.
-Active behavior and production activation remain unauthorized.
+The next bounded ownership slice is terminal-release correlation together
+with retransmission-clone and receive-segment copy observation. The
+post-service export boundary, a distinct `memory_conservative` value, forcing,
+and shadow selection remain open. Active behavior and production activation
+remain unauthorized.
