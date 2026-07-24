@@ -2491,12 +2491,11 @@ weaken focused trace validation.
 
 Terminal-release correlation, retained age, pool outstanding state,
 retransmission-clone observation, receive-segment observation, platform
-staging, bounded maintained retention counters, permanent post-service
-export, and a distinct conservative value remain open. Stage 2 unified row
-count is zero, with zero new dataset inclusions or exclusions. No campaign
-axis varied; receive credit and every Stage 1 axis remain applied as
-`legacy_current`, and buffer-copy behavior remains the existing
-`legacy_current` implementation.
+staging, maintained sent-packet retention, permanent post-service export,
+and a distinct conservative value remain open. Stage 2 unified row count is
+zero, with zero new dataset inclusions or exclusions. No campaign axis varied;
+receive credit and every Stage 1 axis remain applied as `legacy_current`, and
+buffer-copy behavior remains the existing `legacy_current` implementation.
 
 No BenchmarkDotNet run, local performance campaign, ProtocolLab deployment,
 large dataset transform, split construction, ML analysis, CI run, or push
@@ -2505,3 +2504,50 @@ occurred. The stopped 55,658-row send-turn-only transform remains
 bounded maintained retention and remaining ownership correlation before a
 distinct `memory_conservative` value is designed. Active behavior and
 production activation remain unauthorized.
+
+## Stage 2 Maintained Send-Retention Follow-up
+
+Local commit
+`753cfb0688af16a1989762c79ec99df3ae9f8c4a` maintains total
+application-send queue retained-owner count, retained capacity, and oldest
+enqueue time across enqueue, replacement, removal with and without return,
+ownership transfer, and clear. Its total snapshot is now O(1); the bounded
+queue-cause diagnostic still scans only when explicitly requested.
+
+Local commit
+`4791605daf60173bf791e6d83006487d9f1579ce` maintains the same
+total state for pending retransmissions across enqueue, packet-key removal,
+packet-number-space discard, protection-level discard, 1-RTT key-phase
+discard, age discard, all three stream suppression paths, and dequeue
+ownership transfer. Recomputing the oldest time occurs only at a mutation
+boundary when the removed plan held the current minimum. Total retention
+snapshot reads no longer enumerate the retransmission queue. The same
+checkpoint makes shared plaintext and packet-byte ownership return exactly
+once.
+
+The retained diagnostic and verification results are:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| First application-send maintained-retention build | Two S1117 analyzer errors from local names shadowing fields | `diagnostic_only`; the obsolete scan totals were removed, bounded locals were renamed, and the next build passed. |
+| `dotnet build quic-dotnet.sln -c Release --nologo` | MSB1009 because that solution filename does not exist | `diagnostic_only`; command-selection error only. No build or test evidence was produced by it. |
+| `dotnet build Incursa.Quic.slnx -c Release --nologo` | Zero warnings and zero errors in 63.96 seconds | `accepted` correctness build evidence. |
+| `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --nologo --no-restore` | Zero warnings and zero errors in 12.91 seconds | `accepted` focused build evidence after the shared-owner release guard. |
+| `REQ-QUIC-CRT-0182` plus retransmission-queue tests | 16 passed, zero failed, zero skipped in one second | `accepted` narrow mechanism and ownership evidence. |
+| Stage 1 requirement homes, `REQ-QUIC-CRT-0182`, and both queue suites | 174 passed, zero failed, zero skipped in 14 seconds | `accepted` adjacent-axis and maintained-retention correctness evidence. |
+| Send-runtime ownership, retransmission queue, and `REQ-QUIC-CRT-0182` | 31 passed, zero failed, zero skipped in one second | `accepted` release, discard, suppression, dequeue, and runtime ownership evidence. |
+
+This follow-up adds no policy value, force seam, shadow recommendation,
+selector, threshold, or active behavior. No campaign axis varied. Receive
+credit, all four Stage 1 axes, and both Stage 2 candidates remain applied as
+`legacy_current`. Stage 2 unified-schema row count remains zero, with zero new
+dataset inclusions or exclusions. No BenchmarkDotNet run, local performance
+campaign, ProtocolLab deployment, dataset transform, ML analysis, CI run, or
+push occurred. The stopped 55,658-row send-turn-only transform remains
+`diagnostic_incomplete`, append-only, and untouched.
+
+The next bounded ownership slice is maintained sent-packet retention and
+terminal-release correlation. Retransmission-clone and receive-segment copy
+observation, the post-service export boundary, a distinct
+`memory_conservative` value, forcing, and shadow selection remain open.
+Active behavior and production activation remain unauthorized.
