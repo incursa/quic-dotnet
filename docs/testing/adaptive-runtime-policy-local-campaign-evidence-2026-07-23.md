@@ -3427,3 +3427,49 @@ epoch-independent row. Honest shard-wide service-contender coverage,
 runnable-state intervals, exact remaining work, complete fairness outcomes,
 and reviewed cooperative yield sites remain open. Active behavior remains
 unauthorized.
+
+## Stage 2 Exact Service-Contender Accounting Foundation
+
+Local commit `4746ab0e` implements `REQ-QUIC-CRT-0187` without changing actor
+observation v2, actor epoch v2, unified evidence v3, any applied policy, or
+shard scheduling. Each runtime maintains an atomic outstanding shard-work
+count. A shard increments its contender count only on a connection's
+zero-to-one transition and decrements only on its one-to-zero transition.
+Accepted tracking uses one previously unused compact work-item flag, retaining
+the 144-byte layout and existing scheduled-deadline storage.
+
+Enqueue rejection rolls back accepted tracking. Normal service closes tracking
+after actor evidence, resource release, and post-service epoch publication.
+Cancellation and shutdown drain close it after resource release. Disposing a
+shard before its consumer starts now explicitly drains and releases its
+already-accepted work rather than leaving ownership and accounting stranded.
+Saturation or underflow makes the accounting invalid and fails closed.
+
+The focused verification sequence is:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| Initial exact two-test band | Two passed, zero failed, zero skipped in 4.60 seconds | `accepted`; two posted connections counted as two and the tracking bit preserved scheduled timer provenance and the 144-byte layout. |
+| First focused SpecTrace validation after adding `REQ-QUIC-CRT-0187` | The new specification failed its model check because its first draft contained three normative modal verbs; the architecture, work item, and verification artifacts returned `True` | `diagnostic_only`; the requirement was rewritten as one atomic `MUST` clause without weakening any accounting or non-relabeling constraint. |
+| Final test-project Release build | Zero warnings and zero errors in 62.38 seconds | `accepted` focused build evidence. |
+| Final actor, work-item-layout, and shard band | 21 passed, zero failed, zero skipped in one second | `accepted`; covers same-connection coalescing, two-connection counting, ordinary post-service closure, pre-consumer shutdown drain, existing actor validity, compact layout, and existing shard behavior. |
+| Final focused SpecTrace model validation | `SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY`, `ARC-QUIC-CRT-0067`, `WI-QUIC-CRT-0068`, and `VER-QUIC-CRT-0069` each returned `True` | `accepted`; reciprocal `REQ-QUIC-CRT-0187` trace homes are present. |
+
+No campaign axis varied and no raw campaign, unified campaign, normalized,
+curated, split, or analysis rows were generated. Dataset inclusion and
+exclusion counts are unchanged: this slice adds zero rows and excludes zero
+additional rows. Receive credit, all four Stage 1 axes,
+`actor_work_quantum`, `ready_stream_fairness`,
+`buffer_copy_coalescing`, and `adaptive_backpressure` remain applied as
+`legacy_current` outside earlier explicitly retained Stage 1 smoke
+treatments. No BenchmarkDotNet run, performance claim, ProtocolLab
+deployment, dataset transform, ML analysis, CI run, push, or active behavior
+occurred.
+
+The exact posted-or-servicing connection count is an accounting precursor
+only. It is not yet emitted by actor observation v2 and cannot be called a
+runnable-connection count, continuous runnable time, starvation, fairness, or
+a controller input. The next checkpoint must version the actor and unified
+evidence contracts before exposing it and must keep
+`MissingRunnableConnectionCount` authoritative. Active behavior remains
+unauthorized.
