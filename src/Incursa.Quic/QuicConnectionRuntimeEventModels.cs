@@ -264,13 +264,45 @@ internal readonly record struct QuicConnectionSendDatagramUpdate(
     QuicConnectionPathIdentity PathIdentity,
     ReadOnlyMemory<byte> Datagram,
     QuicEcnMarking EcnMarking,
-    byte[]? DatagramOwner = null)
+    byte[]? DatagramOwner = null,
+    QuicBufferCopyLifetimeToken DatagramOwnerLifetimeToken = default,
+    IQuicBufferCopyOperationObserver? BufferCopyOperationObserver = null)
 {
     internal QuicConnectionSendDatagramEffect ToEffect()
         => new(PathIdentity, Datagram, EcnMarking);
 
-    internal void ReleaseDatagramOwner()
-        => QuicBufferPool.ReturnBytes(DatagramOwner);
+    internal void ReleaseDatagramOwner(
+        QuicBufferReleaseReason reason =
+            QuicBufferReleaseReason.Completed)
+    {
+        byte[]? owner = DatagramOwner;
+        if (owner is null)
+        {
+            return;
+        }
+
+        QuicBufferPool.ReturnBytes(owner);
+        if (BufferCopyOperationObserver is null
+            || DatagramOwnerLifetimeToken.IsEmpty)
+        {
+            return;
+        }
+
+        try
+        {
+            QuicBufferCopyLifetimeToken lifetimeToken =
+                DatagramOwnerLifetimeToken;
+            BufferCopyOperationObserver.ObserveBufferRelease(
+                in lifetimeToken,
+                reason,
+                owner.Length);
+        }
+        catch (Exception)
+        {
+            // Endpoint evidence follows the authoritative pool return and
+            // cannot change send progress or ownership.
+        }
+    }
 }
 
 internal delegate void QuicConnectionSendDatagramBatchObserver(

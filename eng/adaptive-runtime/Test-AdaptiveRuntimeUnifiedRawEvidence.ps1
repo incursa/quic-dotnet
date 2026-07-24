@@ -14,7 +14,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v1.schema.json'
+$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v2.schema.json'
 $resolvedRawEpochPath = (Resolve-Path -LiteralPath $RawEpochPath).Path
 $seenKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $lastSequenceByConnection = @{}
@@ -140,7 +140,7 @@ if (-not $valid) {
 }
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-validation-v1'
+    schemaVersion = 'adaptive-runtime-unified-raw-validation-v2'
     valid = $true
     rawEpochRowCount = $rowCount
     axisRecordCount = $axisRecordCount

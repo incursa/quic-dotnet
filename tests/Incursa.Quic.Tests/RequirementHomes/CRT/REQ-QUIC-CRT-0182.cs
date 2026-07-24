@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace Incursa.Quic.Tests.RequirementHomes.CRT;
@@ -64,24 +65,36 @@ public sealed class REQ_QUIC_CRT_0182
             sourceSegmentCount: 1,
             requestedCapacityBytes: 25,
             retainedCapacityBytes: 32);
+        runtime.TryPublishBufferCopyObservation(
+            QuicBufferCopyPath.OutboundPacketProtection,
+            QuicBufferCopyOperation.Protect,
+            QuicBufferCopyDecisionBoundary.PacketProtection,
+            joinOperationSequence: 8,
+            logicalBytes: 90,
+            copiedBytes: 110,
+            sourceSegmentCount: 1,
+            requestedCapacityBytes: 110,
+            retainedCapacityBytes: 128);
 
         QuicBufferCopyEpochSummary summary =
             accumulator.CaptureAndReset();
         Assert.True(summary.HasObservation);
         Assert.Equal(1UL, summary.FirstOperationSequence);
-        Assert.Equal(4UL, summary.LastOperationSequence);
-        Assert.Equal(4UL, summary.OperationCount);
+        Assert.Equal(5UL, summary.LastOperationSequence);
+        Assert.Equal(5UL, summary.OperationCount);
         Assert.Equal(1UL, summary.FormattedStreamPayloadCount);
         Assert.Equal(1UL, summary.CombinedApplicationSendCount);
         Assert.Equal(1UL, summary.RetransmissionCloneCount);
         Assert.Equal(1UL, summary.ReceiveSegmentCount);
+        Assert.Equal(1UL, summary.OutboundPacketProtectionCount);
         Assert.Equal(1UL, summary.CopyCount);
         Assert.Equal(1UL, summary.FormatCount);
         Assert.Equal(1UL, summary.CombineCount);
         Assert.Equal(1UL, summary.CloneCount);
-        Assert.Equal(375UL, summary.TotalLogicalBytes);
-        Assert.Equal(375UL, summary.TotalCopiedBytes);
-        Assert.Equal(480UL, summary.TotalRetainedCapacityBytes);
+        Assert.Equal(1UL, summary.ProtectCount);
+        Assert.Equal(465UL, summary.TotalLogicalBytes);
+        Assert.Equal(485UL, summary.TotalCopiedBytes);
+        Assert.Equal(608UL, summary.TotalRetainedCapacityBytes);
         Assert.True(
             (summary.Validity
                 & QuicBufferCopyValidity.MissingTerminalReleaseCorrelation)
@@ -1393,6 +1406,123 @@ public sealed class REQ_QUIC_CRT_0182
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ProtectedPacketTokenSurvivesLossAndReleasesOnAck()
+    {
+        RecordingOperationObserver observer = new();
+        QuicConnectionSendRuntime sendRuntime = new();
+        sendRuntime.ConfigureBufferCopyOperationObserver(observer);
+        byte[] packetOwner = QuicBufferPool.RentBytes(
+            128,
+            QuicBufferPoolOwner.OutboundPacketProtection);
+        byte[] plaintext = new byte[32];
+        QuicBufferCopyLifetimeToken token = new(
+            OperationSequence: 89,
+            QuicBufferCopyPath.OutboundPacketProtection,
+            ConstructionTicks: 1,
+            RetainedCapacityBytes: (ulong)packetOwner.Length);
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 32,
+            PayloadBytes: 80,
+            SentAtMicros: 100,
+            PacketBytes: packetOwner.AsMemory(0, 80),
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PlaintextPayload: plaintext,
+            PacketBytesOwner: packetOwner,
+            PacketBytesLifetimeToken: token));
+
+        Assert.True(sendRuntime.TryRegisterLoss(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 32));
+        Assert.Empty(observer.Releases);
+        Assert.True(sendRuntime.TryDequeueRetransmission(
+            out QuicConnectionRetransmissionPlan retransmission));
+        Assert.Equal(token, retransmission.PacketBytesLifetimeToken);
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 33,
+            PayloadBytes: retransmission.PayloadBytes,
+            SentAtMicros: 200,
+            PacketBytes: retransmission.PacketBytes,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PlaintextPayload: retransmission.PlaintextPayload,
+            PacketBytesOwner: retransmission.PacketBytesOwner,
+            PacketBytesLifetimeToken:
+                retransmission.PacketBytesLifetimeToken));
+
+        Assert.True(sendRuntime.TryAcknowledgePacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 33));
+        QuicBufferReleaseObservation release =
+            Assert.Single(observer.Releases);
+        Assert.Equal(
+            QuicBufferCopyPath.OutboundPacketProtection,
+            release.Path);
+        Assert.Equal(QuicBufferReleaseReason.Completed, release.Reason);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void HostedEndpointHandoffDetachesAndReleasesProtectedOwner()
+    {
+        RecordingOperationObserver observer = new();
+        QuicConnectionSendRuntime sendRuntime = new();
+        sendRuntime.ConfigureBufferCopyOperationObserver(observer);
+        byte[] packetOwner = QuicBufferPool.RentBytes(
+            128,
+            QuicBufferPoolOwner.OutboundPacketProtection);
+        ReadOnlyMemory<byte> packetBytes =
+            packetOwner.AsMemory(0, 80);
+        QuicBufferCopyLifetimeToken token = new(
+            OperationSequence: 90,
+            QuicBufferCopyPath.OutboundPacketProtection,
+            ConstructionTicks: 1,
+            RetainedCapacityBytes: (ulong)packetOwner.Length);
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 34,
+            PayloadBytes: 80,
+            SentAtMicros: 100,
+            PacketBytes: packetBytes,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PlaintextPayload: new byte[32],
+            PacketBytesOwner: packetOwner,
+            PacketBytesLifetimeToken: token));
+
+        Assert.True(sendRuntime.TryDetachLatestRebuildablePacketBytes(
+            packetBytes,
+            out byte[]? detachedOwner,
+            out QuicBufferCopyLifetimeToken detachedToken));
+        Assert.Same(packetOwner, detachedOwner);
+        Assert.Equal(token, detachedToken);
+        QuicConnectionSendDatagramUpdate update = new(
+            new QuicConnectionPathIdentity(
+                "127.0.0.1",
+                RemotePort: 4433),
+            packetBytes,
+            QuicEcnMarking.NotEct,
+            detachedOwner,
+            detachedToken,
+            observer);
+        update.ReleaseDatagramOwner(
+            QuicBufferReleaseReason.Completed);
+
+        QuicBufferReleaseObservation release =
+            Assert.Single(observer.Releases);
+        Assert.Equal(
+            QuicBufferCopyPath.OutboundPacketProtection,
+            release.Path);
+        Assert.Equal(QuicBufferReleaseReason.Completed, release.Reason);
+        Assert.True(sendRuntime.TryAcknowledgePacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 34));
+        Assert.Single(observer.Releases);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void BufferReleaseReportsContradictoryAndOutOfDomainState()
@@ -1766,26 +1896,68 @@ public sealed class REQ_QUIC_CRT_0182
             string releasePath = Path.Combine(
                 temporaryDirectory,
                 "buffer-release.raw.jsonl");
-            File.WriteAllText(
+            JsonObject retainedCopy =
+                Assert.IsType<JsonObject>(
+                    JsonSerializer.SerializeToNode(copy, options));
+            retainedCopy["observationContractVersion"] =
+                "quic-buffer-copy-observation-v2";
+            retainedCopy["snapshotVersion"] =
+                "quic-buffer-copy-snapshot-v2";
+            retainedCopy["provenanceVersion"] =
+                "quic-buffer-copy-provenance-v2";
+            JsonObject retainedRelease =
+                Assert.IsType<JsonObject>(
+                    JsonSerializer.SerializeToNode(release, options));
+            retainedRelease["observationContractVersion"] =
+                "quic-buffer-release-observation-v6";
+            retainedRelease["reasonVersion"] =
+                "quic-buffer-release-reason-v6";
+            retainedRelease["provenanceVersion"] =
+                "quic-buffer-release-provenance-v6";
+            File.WriteAllLines(
                 copyPath,
-                JsonSerializer.Serialize(
-                    new
-                    {
-                        schemaVersion = "quic-buffer-copy-raw-v2",
-                        connectionKey = "connection-0001",
-                        observation = copy,
-                    },
-                    options));
-            File.WriteAllText(
+                [
+                    JsonSerializer.Serialize(
+                        new
+                        {
+                            schemaVersion =
+                                "quic-buffer-copy-raw-v3",
+                            connectionKey = "connection-0001",
+                            observation = copy,
+                        },
+                        options),
+                    JsonSerializer.Serialize(
+                        new
+                        {
+                            schemaVersion =
+                                "quic-buffer-copy-raw-v2",
+                            connectionKey = "connection-0002",
+                            observation = retainedCopy,
+                        },
+                        options),
+                ]);
+            File.WriteAllLines(
                 releasePath,
-                JsonSerializer.Serialize(
-                    new
-                    {
-                        schemaVersion = "quic-buffer-release-raw-v6",
-                        connectionKey = "connection-0001",
-                        observation = release,
-                    },
-                    options));
+                [
+                    JsonSerializer.Serialize(
+                        new
+                        {
+                            schemaVersion =
+                                "quic-buffer-release-raw-v7",
+                            connectionKey = "connection-0001",
+                            observation = release,
+                        },
+                        options),
+                    JsonSerializer.Serialize(
+                        new
+                        {
+                            schemaVersion =
+                                "quic-buffer-release-raw-v6",
+                            connectionKey = "connection-0002",
+                            observation = retainedRelease,
+                        },
+                        options),
+                ]);
 
             AdaptiveRuntimePolicyScriptTestSupport.ProcessResult result =
                 AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
@@ -1801,22 +1973,22 @@ public sealed class REQ_QUIC_CRT_0182
             Assert.True(
                 validation.RootElement.GetProperty("valid").GetBoolean());
             Assert.Equal(
-                1,
+                2,
                 validation.RootElement
                     .GetProperty("copyRowCount")
                     .GetInt32());
             Assert.Equal(
-                1,
+                2,
                 validation.RootElement
                     .GetProperty("trackedCopyRowCount")
                     .GetInt32());
             Assert.Equal(
-                1,
+                2,
                 validation.RootElement
                     .GetProperty("releaseRowCount")
                     .GetInt32());
             Assert.Equal(
-                1,
+                2,
                 validation.RootElement
                     .GetProperty("exactJoinCount")
                     .GetInt32());

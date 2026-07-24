@@ -4029,12 +4029,27 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         byte[]? protectedPacketOwner = null;
+        QuicBufferCopyLifetimeToken
+            protectedPacketLifetimeToken = default;
         try
         {
             try
             {
                 protectedPacketOwner = protectedPacketLease.TransferOwnership(out int protectedPacketLength);
                 protectedPacket = protectedPacketOwner.AsMemory(0, protectedPacketLength);
+                protectedPacketLifetimeToken =
+                    TryPublishBufferCopyObservation(
+                        QuicBufferCopyPath.OutboundPacketProtection,
+                        QuicBufferCopyOperation.Protect,
+                        QuicBufferCopyDecisionBoundary.PacketProtection,
+                        joinOperationSequence: null,
+                        logicalBytes: packetPayloadLength,
+                        copiedBytes: protectedPacketLength,
+                        sourceSegmentCount: 1,
+                        requestedCapacityBytes: protectedPacketLength,
+                        retainedCapacityBytes:
+                            protectedPacketOwner.Length,
+                        trackTerminalRelease: true);
             }
             finally
             {
@@ -4043,7 +4058,11 @@ internal sealed partial class QuicConnectionRuntime
 
             if (!tlsState.TryRecordCurrentOneRttProtectionUse())
             {
-                QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                ReleaseTrackedBufferOwner(
+                    protectedPacketOwner,
+                    in protectedPacketLifetimeToken,
+                    QuicBufferReleaseReason.Failed);
+                protectedPacketOwner = null;
                 exception = new InvalidOperationException(protectFailureMessage);
                 return false;
             }
@@ -4054,14 +4073,22 @@ internal sealed partial class QuicConnectionRuntime
                 isAckOnlyPacket: ackOnlyPacket,
                 isProbePacket: probePacket))
             {
-                QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                ReleaseTrackedBufferOwner(
+                    protectedPacketOwner,
+                    in protectedPacketLifetimeToken,
+                    QuicBufferReleaseReason.Failed);
+                protectedPacketOwner = null;
                 exception = CongestionControllerExhaustedException;
                 return false;
             }
 
             if (!currentPath.MaximumDatagramSizeState.CanSend((ulong)protectedPacket.Length))
             {
-                QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                ReleaseTrackedBufferOwner(
+                    protectedPacketOwner,
+                    in protectedPacketLifetimeToken,
+                    QuicBufferReleaseReason.Failed);
+                protectedPacketOwner = null;
                 exception = new InvalidOperationException("The active path cannot send an ordinary packet.");
                 return false;
             }
@@ -4070,7 +4097,11 @@ internal sealed partial class QuicConnectionRuntime
                 protectedPacket.Length,
                 out updatedAmplificationState))
             {
-                QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                ReleaseTrackedBufferOwner(
+                    protectedPacketOwner,
+                    in protectedPacketLifetimeToken,
+                    QuicBufferReleaseReason.Failed);
+                protectedPacketOwner = null;
                 exception = new InvalidOperationException(amplificationFailureMessage);
                 return false;
             }
@@ -4078,8 +4109,12 @@ internal sealed partial class QuicConnectionRuntime
             if (ackOnlyPacket)
             {
                 byte[] ackOnlyPacketBytes = protectedPacket.ToArray();
-                QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                ReleaseTrackedBufferOwner(
+                    protectedPacketOwner,
+                    in protectedPacketLifetimeToken,
+                    QuicBufferReleaseReason.CopiedToNextOwner);
                 protectedPacketOwner = null;
+                protectedPacketLifetimeToken = default;
                 protectedPacket = ackOnlyPacketBytes;
             }
 
@@ -4094,8 +4129,11 @@ internal sealed partial class QuicConnectionRuntime
                 streamIds: streamIds,
                 plaintextPayload: retainPlaintextPayload ? payload : default,
                 plaintextPayloadOwner: plaintextPayloadOwner,
-                packetBytesOwner: protectedPacketOwner);
+                packetBytesOwner: protectedPacketOwner,
+                packetBytesLifetimeToken:
+                    protectedPacketLifetimeToken);
             protectedPacketOwner = null;
+            protectedPacketLifetimeToken = default;
             if (piggybackedAckFrame is not null)
             {
                 MarkApplicationAckFrameSent(
@@ -4112,7 +4150,10 @@ internal sealed partial class QuicConnectionRuntime
         {
             if (protectedPacketOwner is not null)
             {
-                QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                ReleaseTrackedBufferOwner(
+                    protectedPacketOwner,
+                    in protectedPacketLifetimeToken,
+                    QuicBufferReleaseReason.Failed);
             }
 
             throw;
@@ -4281,6 +4322,8 @@ internal sealed partial class QuicConnectionRuntime
             protectionStartedTimestamp);
 
         byte[]? protectedPacketOwner = null;
+        QuicBufferCopyLifetimeToken
+            protectedPacketLifetimeToken = default;
         long accountingStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
         try
         {
@@ -4290,6 +4333,25 @@ internal sealed partial class QuicConnectionRuntime
                 {
                     protectedPacketOwner = protectedPacketLease.TransferOwnership(out int protectedPacketLength);
                     protectedPacket = protectedPacketOwner.AsMemory(0, protectedPacketLength);
+                    protectedPacketLifetimeToken =
+                        TryPublishBufferCopyObservation(
+                            QuicBufferCopyPath.OutboundPacketProtection,
+                            QuicBufferCopyOperation.Protect,
+                            QuicBufferCopyDecisionBoundary.PacketProtection,
+                            !plaintextPayloadLifetimeToken.IsEmpty
+                                && plaintextPayloadLifetimeToken
+                                    .OperationSequence <= long.MaxValue
+                                ? (long)plaintextPayloadLifetimeToken
+                                    .OperationSequence
+                                : null,
+                            packetPayloadLength,
+                            protectedPacketLength,
+                            sourceSegmentCount: 1,
+                            requestedCapacityBytes:
+                                protectedPacketLength,
+                            retainedCapacityBytes:
+                                protectedPacketOwner.Length,
+                            trackTerminalRelease: true);
                 }
                 finally
                 {
@@ -4299,7 +4361,14 @@ internal sealed partial class QuicConnectionRuntime
 
             if (!tlsState.TryRecordCurrentOneRttProtectionUse())
             {
-                QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                if (protectedPacketOwner is not null)
+                {
+                    ReleaseTrackedBufferOwner(
+                        protectedPacketOwner,
+                        in protectedPacketLifetimeToken,
+                        QuicBufferReleaseReason.Failed);
+                    protectedPacketOwner = null;
+                }
                 exception = new InvalidOperationException(protectFailureMessage);
                 LogApplicationSend($"app-tx protect-blocked role={tlsState.Role} reason={exception.Message}.");
                 return false;
@@ -4310,7 +4379,14 @@ internal sealed partial class QuicConnectionRuntime
                     (ulong)protectedPacket.Length,
                     isProbePacket: probePacket))
             {
-                QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                if (protectedPacketOwner is not null)
+                {
+                    ReleaseTrackedBufferOwner(
+                        protectedPacketOwner,
+                        in protectedPacketLifetimeToken,
+                        QuicBufferReleaseReason.Failed);
+                    protectedPacketOwner = null;
+                }
                 exception = CongestionControllerExhaustedException;
                 LogApplicationSend($"app-tx protect-blocked role={tlsState.Role} reason={exception.Message} packet={protectedPacket.Length}.");
                 return false;
@@ -4319,7 +4395,14 @@ internal sealed partial class QuicConnectionRuntime
             if (enforcePathMaximumDatagramSize
                 && !maximumDatagramSizeState.CanSend((ulong)protectedPacket.Length))
             {
-                QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                if (protectedPacketOwner is not null)
+                {
+                    ReleaseTrackedBufferOwner(
+                        protectedPacketOwner,
+                        in protectedPacketLifetimeToken,
+                        QuicBufferReleaseReason.Failed);
+                    protectedPacketOwner = null;
+                }
                 exception = new InvalidOperationException("The requested path cannot send an ordinary packet.");
                 LogApplicationSend($"app-tx protect-blocked role={tlsState.Role} reason={exception.Message} packet={protectedPacket.Length}.");
                 return false;
@@ -4333,7 +4416,14 @@ internal sealed partial class QuicConnectionRuntime
                     protectedPacket.Length,
                     out QuicConnectionPathAmplificationState updatedAmplificationState))
                 {
-                    QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                    if (protectedPacketOwner is not null)
+                    {
+                        ReleaseTrackedBufferOwner(
+                            protectedPacketOwner,
+                            in protectedPacketLifetimeToken,
+                            QuicBufferReleaseReason.Failed);
+                        protectedPacketOwner = null;
+                    }
                     exception = new InvalidOperationException(amplificationFailureMessage);
                     LogApplicationSend($"app-tx protect-blocked role={tlsState.Role} reason={exception.Message} packet={protectedPacket.Length}.");
                     return false;
@@ -4350,7 +4440,14 @@ internal sealed partial class QuicConnectionRuntime
                     protectedPacket.Length,
                     out QuicConnectionPathAmplificationState updatedAmplificationState))
                 {
-                    QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                    if (protectedPacketOwner is not null)
+                    {
+                        ReleaseTrackedBufferOwner(
+                            protectedPacketOwner,
+                            in protectedPacketLifetimeToken,
+                            QuicBufferReleaseReason.Failed);
+                        protectedPacketOwner = null;
+                    }
                     exception = new InvalidOperationException(amplificationFailureMessage);
                     LogApplicationSend($"app-tx protect-blocked role={tlsState.Role} reason={exception.Message} packet={protectedPacket.Length}.");
                     return false;
@@ -4364,7 +4461,14 @@ internal sealed partial class QuicConnectionRuntime
             }
             else
             {
-                QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                if (protectedPacketOwner is not null)
+                {
+                    ReleaseTrackedBufferOwner(
+                        protectedPacketOwner,
+                        in protectedPacketLifetimeToken,
+                        QuicBufferReleaseReason.Failed);
+                    protectedPacketOwner = null;
+                }
                 exception = new InvalidOperationException(amplificationFailureMessage);
                 LogApplicationSend($"app-tx protect-blocked role={tlsState.Role} reason={exception.Message} packet={protectedPacket.Length}.");
                 return false;
@@ -4387,12 +4491,15 @@ internal sealed partial class QuicConnectionRuntime
                 plaintextPayloadOwner: plaintextPayloadOwner,
                 packetBytesOwner: protectedPacketOwner,
                 plaintextPayloadLifetimeToken:
-                    plaintextPayloadLifetimeToken);
+                    plaintextPayloadLifetimeToken,
+                packetBytesLifetimeToken:
+                    protectedPacketLifetimeToken);
             QuicMetrics.RecordApplicationSendPhaseTime(
                 tlsState.Role,
                 "packet_tracking",
                 packetTrackingStartedTimestamp);
             protectedPacketOwner = null;
+            protectedPacketLifetimeToken = default;
             long ackCommitStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
             if (piggybackedAckFrame is not null)
             {
@@ -4417,7 +4524,10 @@ internal sealed partial class QuicConnectionRuntime
         {
             if (protectedPacketOwner is not null)
             {
-                QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                ReleaseTrackedBufferOwner(
+                    protectedPacketOwner,
+                    in protectedPacketLifetimeToken,
+                    QuicBufferReleaseReason.Failed);
             }
 
             throw;
@@ -6335,6 +6445,8 @@ internal sealed partial class QuicConnectionRuntime
             PacketBytesOwner: retransmission.PacketBytesOwner,
             PlaintextPayloadLifetimeToken:
                 retransmission.PlaintextPayloadLifetimeToken,
+            PacketBytesLifetimeToken:
+                retransmission.PacketBytesLifetimeToken,
             OneRttKeyPhase: retransmission.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
                 && packetProtectionLevel == QuicTlsEncryptionLevel.OneRtt
                 ? tlsState.CurrentOneRttKeyPhase
@@ -6482,7 +6594,9 @@ internal sealed partial class QuicConnectionRuntime
         byte[]? plaintextPayloadOwner = null,
         byte[]? packetBytesOwner = null,
         QuicBufferCopyLifetimeToken
-            plaintextPayloadLifetimeToken = default)
+            plaintextPayloadLifetimeToken = default,
+        QuicBufferCopyLifetimeToken
+            packetBytesLifetimeToken = default)
     {
         long sentStateStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
         sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
@@ -6503,6 +6617,8 @@ internal sealed partial class QuicConnectionRuntime
             PacketBytesOwner: packetBytesOwner,
             PlaintextPayloadLifetimeToken:
                 plaintextPayloadLifetimeToken,
+            PacketBytesLifetimeToken:
+                packetBytesLifetimeToken,
             OneRttKeyPhase: packetProtectionLevel == QuicTlsEncryptionLevel.OneRtt
                 ? tlsState.CurrentOneRttKeyPhase
                 : null));

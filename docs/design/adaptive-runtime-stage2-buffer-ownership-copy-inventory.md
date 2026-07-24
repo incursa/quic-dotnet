@@ -4,8 +4,8 @@ title: "Adaptive Runtime Stage 2 Buffer Ownership And Copy Inventory"
 
 # Adaptive Runtime Stage 2 Buffer Ownership And Copy Inventory
 
-Status: reviewed implementation inventory; receive-segment and
-application-write retry lifetimes correlated;
+Status: reviewed implementation inventory; eight closed managed construction
+paths, including protected-packet endpoint handoff, are correlated;
 `buffer_copy_coalescing` remains `legacy_current` and non-forceable
 
 This inventory maps the current data lifetime before a buffer policy is
@@ -24,10 +24,10 @@ existing platform batching mechanism as a connection policy.
 | `oversized_raw_queue` | Oversized STREAM-frame admission in `QuicConnectionRuntime.Streams` | Copies the committed logical data into a `QueuedRawStreamData` array before queueing. | `QuicApplicationSendQueue` owns the array until replacement, selected completion, stream removal, cancellation, terminal clear, or disposal returns it. | Candidate admission boundary. Existing maximum payload, flow-control, queue, and continuation guards remain authoritative. |
 | `formatted_stream_payload` | `TryBuildOutboundStreamPayload` | Formats STREAM metadata and copies one logical data span plus suffix into a padded pooled `FormattedStreamPayload` array. | Ownership transfers from `QuicBufferLease` to the send/queue path, then to packet protection or queue cleanup. | Candidate construction boundary only after exact downstream ownership is retained. |
 | `combined_application_send` | Multi-write queued-send plan | Copies the already legal selected payload prefix into one pooled `CombinedApplicationSend` array. | The protected-packet path consumes or returns the array; the queue continues to own original payload arrays until commit/removal. | Primary bounded coalescing seam. It may combine only the existing legal selection and cannot widen a Stage 1 plan. |
-| `outbound_packet_protection` | Packet protection after a legal packet plan | Produces a separate protected packet array. | Send tracking and endpoint handoff retain the owner until socket completion, rejection cleanup, ACK/loss retirement, retransmission transfer, or terminal cleanup. | Correctness-critical implementation detail. A policy cannot bypass packet-number, crypto, recovery, congestion, pacing, or amplification accounting. |
+| `outbound_packet_protection` | Packet protection after a legal packet plan | Produces a separate protected packet array; a hosted segmented batch may construct multiple protected slices in one shared array. | Send tracking retains the owner and compact token through ACK, loss, retransmission, replacement, terminal cleanup, or disposal. Hosted handoff moves both to the last update that owns a single protected array; endpoint processing returns the array before publishing `Completed`, `Failed`, or `Canceled`. | Correlated observe-only construction and lifetime. The endpoint reason describes completion of the synchronous host observer, not independently verified kernel transmission. Packet-number, crypto, recovery, congestion, pacing, and amplification accounting stay authoritative. |
 | `sent_packet_plaintext_retention` | `TrackApplicationRetransmissionSent` | Copies retransmittable plaintext into a pooled `SentPacketRetention` array even when packet bytes have another owner. | `QuicConnectionSendRuntime` owns it until ACK, loss transfer, send rollback, close, or disposal. | Observation required before any retention change. Recovery authority is not a copy-policy output. |
 | `retransmission_plaintext_clone` | `QuicRetransmissionQueue.CloneOwnedPlaintext` | Copies retained plaintext into a pooled `Retransmission` array when ownership cannot be moved safely. | The retransmission queue owns it until resend transfer, ACK/abandonment, close, or disposal. | Observation required. Loss/recovery correctness can require the copy. |
-| `endpoint_datagram_handoff` | Hosted `QuicConnectionSendDatagramUpdate` | Usually passes an owned protected-memory slice to the endpoint. Windows UDP segmentation can send a contiguous same-array run without another managed copy. | `ReleaseDatagramOwner` returns the protected array after observer/socket processing, including exceptional paths. | Capability and completion timing are outcomes, not production controller inputs. |
+| `endpoint_datagram_handoff` | Hosted `QuicConnectionSendDatagramUpdate` | Usually passes an owned protected-memory slice to the endpoint. Windows UDP segmentation can send a contiguous same-array run without another managed copy. | `ReleaseDatagramOwner` returns the protected array after observer processing, including exceptional paths, then publishes the same `outbound_packet_protection` lifetime token. One shared batch owner produces one construction/release pair. | Capability, observer completion, and socket metrics are outcomes, not production controller inputs. This handoff is an ownership continuation, not a second fabricated copy operation. |
 | `linux_sendmmsg_staging` | `QuicSocketSendBatch.SendWithNativeSendMmsg` | Allocates unmanaged storage and copies every payload and destination before `sendmmsg`; repeated `SendTo` fallback uses the managed span directly. | The batch method frees every allocated unmanaged block in `finally`. | Platform-specific transport mechanism; keep independent from connection selection until copy cost and partial-send semantics are attributable. |
 | `inbound_datagram_lease` | `QuicConnectionEndpointHost` receive loop | Receives directly into a bounded ring buffer or an `ArrayPool` fallback and transfers that owner into the packet event. Borrowed packet slices do not own or return storage. | `QuicConnectionPacketReceivedEvent.ReleaseOwnedDatagramBuffer` returns exactly once after shard processing; shutdown drain also releases the event. | Receive storage remains outside the first send-path policy. Pool provenance is observable, but policy cannot reuse a returned slice. |
 | `receive_segment` | `QuicConnectionStreamState.CreateBufferedSegment` | Copies out-of-order or retained STREAM bytes into a pooled segment, sometimes renting a larger continuation block for expected coalescing. | Stream state owns the segment until delivery/removal, reset, terminal clear, or disposal calls `BufferedSegment.Release`. | Separate receive-side candidate. `receive_delivery_quantum` and receive-credit policy remain frozen while this path is characterized. |
@@ -66,11 +66,11 @@ unbounded scan to the actor or packet hot path.
 
 ## Proposed Observation Contract
 
-The current behavior-neutral v2 contract extends the retained v1 send-side
-contract with closed retransmission-clone and receive-segment values. It emits
+The current behavior-neutral v3 contract extends retained v1 and v2 contracts
+with closed protected-packet construction and endpoint-handoff values. It emits
 and accumulates a compact copy operation with:
 
-- `quic-buffer-copy-observation-v2`;
+- `quic-buffer-copy-observation-v3`;
 - monotonic connection-local operation sequence;
 - one closed path ID from the inventory above;
 - one closed operation and decision-boundary value;
@@ -78,8 +78,8 @@ and accumulates a compact copy operation with:
 - source segment count and destination segment count;
 - requested capacity and actual retained capacity;
 - a path-derived current ownership class without object identity;
-- whether the path reused, copied, formatted, combined, retained, or cloned
-  storage;
+- whether the path reused, copied, formatted, combined, retained, cloned, or
+  protected storage;
 - construction, packet-plan, actor-turn, logical-write, or receive-operation
   join key when one honestly exists;
 - safety-authoritative blocked or fallback reason;
@@ -99,11 +99,11 @@ The disabled path must not construct a record, allocate, scan, or take a
 global lock. Observe-only publication must be guarded so sink failure cannot
 change ownership or progress.
 
-The v1 observation and epoch schemas remain immutable for retained evidence.
-The v2 epoch adds fixed `retransmissionCloneCount`, `receiveSegmentCount`, and
-`cloneCount` fields. Defining those values does not claim their runtime
-producers are complete; producer coverage requires separate mechanism and
-ownership verification.
+The v1 and v2 observation, epoch, and raw schemas remain immutable for retained
+evidence. The v3 epoch adds fixed `outboundPacketProtectionCount` and
+`protectCount` fields. Release v7 adds only that closed managed-owner path.
+Defining those values does not claim kernel acceptance, platform staging-copy
+coverage, or a forceable policy.
 
 ## Future Axis Contract
 
@@ -233,8 +233,9 @@ emit exactly one `Delivered` release after the authoritative return; reset or
 stream reset emits exactly one `Reset` release. Capacity reuse does not create
 a second token. Construction and release are retained as separate raw records
 joined by `connectionKey + operationSequence`; current schemas are
-`adaptive-runtime-buffer-copy-raw-v2` and
-`adaptive-runtime-buffer-release-raw-v6`. Release v1 through v5 remain
+`adaptive-runtime-buffer-copy-raw-v3` and
+`adaptive-runtime-buffer-release-raw-v7`. Earlier copy and release contracts
+remain
 immutable compatibility contracts for their earlier closed path sets. A bounded
 writer rejection emits
 `quic-buffer-evidence-export-failure-v1` and invalidates the evidence rather
@@ -277,5 +278,20 @@ array. Release observation/raw v4 added formatted and retransmission-clone
 paths; v5 added sent-plaintext retention. A combined application-send owner
 now receives its own token after copying the selected queue entries and keeps
 it through packet tracking, loss, retransmission, ACK, or exact terminal
-cleanup. Release observation/raw v6 adds that closed path. Protected packet
-owners and endpoint handoff remain explicitly uncorrelated and non-forceable.
+cleanup. Release observation/raw v6 adds that closed path.
+
+The protected-packet checkpoint completes the seventh delivery item for the
+managed owner chain. Each non-batched pooled protection output receives one
+`outbound_packet_protection` token after successful construction. Admission
+failure closes it as `Failed`; ACK-only copying closes it as
+`CopiedToNextOwner`; sent-packet and retransmission state move the same token
+through ACK, loss, replacement, terminal cleanup, and disposal. Hosted
+rebuildable sends detach both array and token into the datagram update. A
+shared hosted batch emits one construction for its one shared array and
+attaches that token only to the final owning update. The shard returns the
+array after synchronous observer processing and then emits `Completed` or
+`Failed`; pending suppression cleanup emits `Canceled`. Release
+observation/raw v7 and construction/epoch/raw v3 add this closed path, while
+unified epoch evidence/raw v2 carry the v3 epoch summary. Socket-send metrics
+remain separate outcomes, Linux unmanaged `sendmmsg` staging remains explicit,
+and `buffer_copy_coalescing` remains non-forceable.

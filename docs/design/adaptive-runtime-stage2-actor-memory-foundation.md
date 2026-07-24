@@ -173,12 +173,13 @@ receive-credit snapshot, and boundary. The deterministic join requires equal
 connection epoch sequence and epoch end tick. A mismatched, duplicate,
 out-of-order, or nonpositive epoch is rejected before any accumulator resets.
 The joined record is
-`adaptive-runtime-unified-epoch-evidence-v1`.
+`adaptive-runtime-unified-epoch-evidence-v2`; retained v1 rows remain
+immutable.
 
 The raw QUIC harness now configures the same unified accumulator as every
 relevant connection-local evidence sink whenever an adaptive execution is
 requested. It writes one
-`adaptive-runtime-unified-epoch-raw-v1` wrapper per sealed epoch while
+`adaptive-runtime-unified-epoch-raw-v2` wrapper per sealed epoch while
 retaining the earlier receive-credit and Stage 1 compatibility streams.
 The append-only exporter retains source hashes, raw rows, validation summary,
 and manifest; checks exact monotonic joins and one varied axis; and preserves

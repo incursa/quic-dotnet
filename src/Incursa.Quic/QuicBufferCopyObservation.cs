@@ -18,6 +18,7 @@ internal enum QuicBufferCopyPath : byte
     SentPacketPlaintextRetention = 4,
     RetransmissionClone = 5,
     ReceiveSegment = 6,
+    OutboundPacketProtection = 7,
 }
 
 internal enum QuicBufferCopyOperation : byte
@@ -28,6 +29,7 @@ internal enum QuicBufferCopyOperation : byte
     Combine = 3,
     Retain = 4,
     Clone = 5,
+    Protect = 6,
 }
 
 internal enum QuicBufferCopyDecisionBoundary : byte
@@ -38,6 +40,7 @@ internal enum QuicBufferCopyDecisionBoundary : byte
     SentPacketRetention = 3,
     RetransmissionClone = 4,
     ReceiveSegmentInsertion = 5,
+    PacketProtection = 6,
 }
 
 internal enum QuicBufferCopyPolicyValue : byte
@@ -131,15 +134,15 @@ internal readonly record struct QuicBufferCopyObservation(
 {
     internal const string AxisId = "buffer_copy_coalescing";
     internal const string CurrentObservationContractVersion =
-        "quic-buffer-copy-observation-v2";
+        "quic-buffer-copy-observation-v3";
     internal const string CurrentRuleVersion =
         "quic-buffer-copy-observe-only-rule-v1";
     internal const string CurrentSnapshotVersion =
-        "quic-buffer-copy-snapshot-v2";
+        "quic-buffer-copy-snapshot-v3";
     internal const string CurrentReasonVersion =
         "quic-buffer-copy-reason-v1";
     internal const string CurrentProvenanceVersion =
-        "quic-buffer-copy-provenance-v2";
+        "quic-buffer-copy-provenance-v3";
 
     public string PolicyAxisId => AxisId;
 
@@ -182,11 +185,11 @@ internal readonly record struct QuicBufferReleaseObservation(
     QuicBufferReleaseValidity Validity)
 {
     internal const string CurrentObservationContractVersion =
-        "quic-buffer-release-observation-v6";
+        "quic-buffer-release-observation-v7";
     internal const string CurrentReasonVersion =
-        "quic-buffer-release-reason-v6";
+        "quic-buffer-release-reason-v7";
     internal const string CurrentProvenanceVersion =
-        "quic-buffer-release-provenance-v6";
+        "quic-buffer-release-provenance-v7";
 
     public string ObservationContractVersion =>
         CurrentObservationContractVersion;

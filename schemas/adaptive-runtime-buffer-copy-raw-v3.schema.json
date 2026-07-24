@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-buffer-copy-raw-v3.schema.json",
+  "title": "Adaptive Runtime Buffer Copy Raw Record v3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "connectionKey",
+    "observation"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "quic-buffer-copy-raw-v3"
+    },
+    "connectionKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operationSequence",
+        "path",
+        "operation",
+        "decisionBoundary",
+        "joinOperationSequence",
+        "logicalBytes",
+        "copiedBytes",
+        "sourceSegmentCount",
+        "destinationSegmentCount",
+        "requestedCapacityBytes",
+        "retainedCapacityBytes",
+        "forcedValue",
+        "shadowRecommendation",
+        "selectedValue",
+        "appliedValue",
+        "selectionSource",
+        "reasonCode",
+        "safetyOverride",
+        "latchLifetime",
+        "fallbackApplied",
+        "phaseAfter",
+        "disposalStarted",
+        "validity",
+        "policyAxisId",
+        "observationContractVersion",
+        "ruleVersion",
+        "snapshotVersion",
+        "reasonVersion",
+        "provenanceVersion"
+      ],
+      "properties": {
+        "operationSequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "path": {
+          "enum": [
+            "ApplicationWriteRequest",
+            "OversizedRawQueue",
+            "FormattedStreamPayload",
+            "CombinedApplicationSend",
+            "SentPacketPlaintextRetention",
+            "RetransmissionClone",
+            "ReceiveSegment",
+            "OutboundPacketProtection"
+          ]
+        },
+        "operation": {
+          "enum": [
+            "Copy",
+            "ReuseAndCopy",
+            "Format",
+            "Combine",
+            "Retain",
+            "Clone",
+            "Protect"
+          ]
+        },
+        "decisionBoundary": {
+          "enum": [
+            "StreamWriteRetry",
+            "LogicalWriteAdmission",
+            "PacketPlan",
+            "SentPacketRetention",
+            "RetransmissionClone",
+            "ReceiveSegmentInsertion",
+            "PacketProtection"
+          ]
+        },
+        "joinOperationSequence": {
+          "type": ["integer", "null"]
+        },
+        "logicalBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "copiedBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sourceSegmentCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "destinationSegmentCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requestedCapacityBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retainedCapacityBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "forcedValue": {
+          "type": ["string", "null"],
+          "enum": ["LegacyCurrent", null]
+        },
+        "shadowRecommendation": {
+          "type": ["string", "null"],
+          "enum": ["LegacyCurrent", null]
+        },
+        "selectedValue": { "const": "LegacyCurrent" },
+        "appliedValue": { "const": "LegacyCurrent" },
+        "selectionSource": { "const": "LegacyCurrent" },
+        "reasonCode": {
+          "enum": ["LegacyCopy", "ExistingCapacityReused"]
+        },
+        "safetyOverride": { "const": "None" },
+        "latchLifetime": { "const": "BufferLifetime" },
+        "fallbackApplied": { "const": false },
+        "phaseAfter": {
+          "enum": [
+            "Establishing",
+            "Active",
+            "Closing",
+            "Draining",
+            "Discarded"
+          ]
+        },
+        "disposalStarted": { "type": "boolean" },
+        "validity": { "type": ["string", "integer"] },
+        "policyAxisId": { "const": "buffer_copy_coalescing" },
+        "observationContractVersion": {
+          "const": "quic-buffer-copy-observation-v3"
+        },
+        "ruleVersion": {
+          "const": "quic-buffer-copy-observe-only-rule-v1"
+        },
+        "snapshotVersion": {
+          "const": "quic-buffer-copy-snapshot-v3"
+        },
+        "reasonVersion": {
+          "const": "quic-buffer-copy-reason-v1"
+        },
+        "provenanceVersion": {
+          "const": "quic-buffer-copy-provenance-v3"
+        }
+      }
+    }
+  }
+}

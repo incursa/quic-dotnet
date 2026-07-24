@@ -57,7 +57,7 @@
     {
       "id": "REQ-QUIC-CRT-0182",
       "title": "Record bounded behavior-neutral buffer-copy evidence",
-      "statement": "The runtime MUST support disabled and observe-only connection-local buffer-copy instrumentation that records versioned legacy_current copy, reuse, formatting, combination, sent-plaintext-retention, owned path-migration retransmission-clone, and receive-segment insertion or capacity-reuse operations at existing ownership boundaries; reports logical bytes, copied bytes, source segments, requested and retained capacity, deterministic join scope, selected and applied identity, reason, latch, lifecycle, and explicit missing or invalid state; aggregates only fixed closed counters; keeps producer and sink failures diagnostic-only; preserves byte identity, ordering, packet protection, recovery, congestion, pacing, flow control, hard bounds, ownership, and exactly-once release; and does not claim a distinct conservative implementation, terminal-release correlation, retained age, pool outstanding state, forcing, shadow selection, or active behavior until each is implemented and reviewed.",
+      "statement": "The runtime MUST support disabled and observe-only connection-local buffer-copy instrumentation that records versioned legacy_current copy, reuse, formatting, combination, sent-plaintext-retention, owned path-migration retransmission-clone, receive-segment insertion or capacity-reuse, and pooled protected-packet construction operations at existing ownership boundaries; carries a compact protected-owner token through recovery and hosted endpoint handoff; reports logical bytes, copied bytes, source segments, requested and retained capacity, deterministic join scope, selected and applied identity, reason, latch, lifecycle, and explicit missing or invalid state; aggregates only fixed closed counters; keeps producer and sink failures diagnostic-only; preserves byte identity, ordering, packet protection, recovery, congestion, pacing, flow control, hard bounds, ownership, and exactly-once release; and does not claim a distinct conservative implementation, terminal-release correlation for unimplemented paths, retained age, pool outstanding state, kernel-send acceptance, forcing, shadow selection, or active behavior until each is implemented and reviewed.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-CRT-0067"
@@ -72,8 +72,8 @@
           "docs/design/adaptive-runtime-policy-axis-roadmap.md",
           "docs/design/adaptive-runtime-policy-seam-inventory.md",
           "docs/design/adaptive-runtime-stage2-buffer-ownership-copy-inventory.md",
-          "schemas/adaptive-runtime-buffer-copy-observation-v2.schema.json",
-          "schemas/adaptive-runtime-buffer-copy-epoch-v2.schema.json"
+          "schemas/adaptive-runtime-buffer-copy-observation-v3.schema.json",
+          "schemas/adaptive-runtime-buffer-copy-epoch-v3.schema.json"
         ]
       },
       "notes": [
@@ -101,7 +101,8 @@
           "src/Incursa.Quic/QuicAdaptiveRuntimeUnifiedEpochEvidence.cs",
           "schemas/adaptive-runtime-epoch-raw-v2.schema.json",
           "schemas/adaptive-runtime-post-service-boundary-v1.schema.json",
-          "schemas/adaptive-runtime-unified-epoch-evidence-v1.schema.json"
+          "schemas/adaptive-runtime-unified-epoch-evidence-v1.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-evidence-v2.schema.json"
         ]
       },
       "notes": [
@@ -128,7 +129,9 @@
           "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
           "eng/adaptive-runtime/Test-AdaptiveRuntimeUnifiedRawEvidence.ps1",
           "schemas/adaptive-runtime-unified-epoch-raw-v1.schema.json",
-          "schemas/adaptive-runtime-unified-raw-export-manifest-v1.schema.json"
+          "schemas/adaptive-runtime-unified-raw-export-manifest-v1.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-raw-v2.schema.json",
+          "schemas/adaptive-runtime-unified-raw-export-manifest-v2.schema.json"
         ]
       },
       "notes": [
@@ -158,22 +161,25 @@
           "src/Incursa.Quic/QuicRetransmissionQueue.cs",
           "eng/adaptive-runtime/Test-AdaptiveRuntimeBufferLifetimeEvidence.ps1",
           "schemas/adaptive-runtime-buffer-copy-raw-v2.schema.json",
+          "schemas/adaptive-runtime-buffer-copy-raw-v3.schema.json",
           "schemas/adaptive-runtime-buffer-release-observation-v1.schema.json",
           "schemas/adaptive-runtime-buffer-release-observation-v2.schema.json",
           "schemas/adaptive-runtime-buffer-release-observation-v3.schema.json",
           "schemas/adaptive-runtime-buffer-release-observation-v4.schema.json",
           "schemas/adaptive-runtime-buffer-release-observation-v5.schema.json",
           "schemas/adaptive-runtime-buffer-release-observation-v6.schema.json",
+          "schemas/adaptive-runtime-buffer-release-observation-v7.schema.json",
           "schemas/adaptive-runtime-buffer-release-raw-v1.schema.json",
           "schemas/adaptive-runtime-buffer-release-raw-v2.schema.json",
           "schemas/adaptive-runtime-buffer-release-raw-v3.schema.json",
           "schemas/adaptive-runtime-buffer-release-raw-v4.schema.json",
           "schemas/adaptive-runtime-buffer-release-raw-v5.schema.json",
-          "schemas/adaptive-runtime-buffer-release-raw-v6.schema.json"
+          "schemas/adaptive-runtime-buffer-release-raw-v6.schema.json",
+          "schemas/adaptive-runtime-buffer-release-raw-v7.schema.json"
         ]
       },
       "notes": [
-        "Receive-segment, flow-control retry request, oversized raw queue, formatted and combined application-send payload, sent-packet plaintext retention, and path-migration retransmission-clone ownership are checkpointed; remaining owner paths stay explicit and non-forceable until separately checkpointed.",
+        "Receive-segment, flow-control retry request, oversized raw queue, formatted and combined application-send payload, sent-packet plaintext retention, path-migration retransmission-clone, and pooled protected-packet ownership through hosted endpoint handoff are checkpointed; platform staging and unimplemented owner paths stay explicit and non-forceable until separately checkpointed.",
         "Ownership transfer is not terminal release and cannot create a duplicate completion outcome."
       ]
     }

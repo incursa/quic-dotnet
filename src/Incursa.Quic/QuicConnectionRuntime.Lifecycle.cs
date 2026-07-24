@@ -737,9 +737,20 @@ internal sealed partial class QuicConnectionRuntime
 
                 hostedApplicationDatagramBatchLastUpdateIndex = updates.Count - 1;
             }
-            else if (sendRuntime.TryDetachLatestRebuildablePacketBytes(datagram, out byte[]? datagramOwner))
+            else if (sendRuntime.TryDetachLatestRebuildablePacketBytes(
+                datagram,
+                out byte[]? datagramOwner,
+                out QuicBufferCopyLifetimeToken
+                    datagramOwnerLifetimeToken))
             {
-                updates[^1] = update with { DatagramOwner = datagramOwner };
+                updates[^1] = update with
+                {
+                    DatagramOwner = datagramOwner,
+                    DatagramOwnerLifetimeToken =
+                        datagramOwnerLifetimeToken,
+                    BufferCopyOperationObserver =
+                        (IQuicBufferCopyOperationObserver)this,
+                };
             }
 
             return;
@@ -806,7 +817,8 @@ internal sealed partial class QuicConnectionRuntime
 
         for (int index = pendingHostedSendDatagramUpdateIndex; index < updates.Count; index++)
         {
-            updates[index].ReleaseDatagramOwner();
+            updates[index].ReleaseDatagramOwner(
+                QuicBufferReleaseReason.Canceled);
         }
     }
 
@@ -866,6 +878,7 @@ internal sealed partial class QuicConnectionRuntime
             HostedApplicationDatagramBatchSegmentSize * HostedApplicationDatagramBatchCapacity,
             QuicBufferPoolOwner.OutboundPacketProtection);
         hostedApplicationDatagramBatchPacketCount = 0;
+        hostedApplicationDatagramBatchLogicalBytes = 0;
         hostedApplicationDatagramBatchLastUpdateIndex = -1;
     }
 
@@ -904,6 +917,9 @@ internal sealed partial class QuicConnectionRuntime
 
         protectedPacket = owner.AsMemory(offset, protectedPacketLength);
         hostedApplicationDatagramBatchPacketCount++;
+        hostedApplicationDatagramBatchLogicalBytes = checked(
+            hostedApplicationDatagramBatchLogicalBytes
+                + payload.Length);
         return true;
     }
 
@@ -918,7 +934,12 @@ internal sealed partial class QuicConnectionRuntime
     {
         byte[]? owner = hostedApplicationDatagramBatchOwner;
         hostedApplicationDatagramBatchOwner = null;
+        int packetCount =
+            hostedApplicationDatagramBatchPacketCount;
+        int logicalBytes =
+            hostedApplicationDatagramBatchLogicalBytes;
         hostedApplicationDatagramBatchPacketCount = 0;
+        hostedApplicationDatagramBatchLogicalBytes = 0;
 
         if (owner is null)
         {
@@ -926,6 +947,24 @@ internal sealed partial class QuicConnectionRuntime
             return;
         }
 
+        QuicBufferCopyLifetimeToken lifetimeToken =
+            packetCount == 0
+                ? default
+                : TryPublishBufferCopyObservation(
+                    QuicBufferCopyPath.OutboundPacketProtection,
+                    QuicBufferCopyOperation.Protect,
+                    QuicBufferCopyDecisionBoundary.PacketProtection,
+                    joinOperationSequence: null,
+                    logicalBytes,
+                    copiedBytes: checked(
+                        packetCount
+                            * HostedApplicationDatagramBatchSegmentSize),
+                    sourceSegmentCount: packetCount,
+                    requestedCapacityBytes: checked(
+                        packetCount
+                            * HostedApplicationDatagramBatchSegmentSize),
+                    retainedCapacityBytes: owner.Length,
+                    trackTerminalRelease: true);
         int updateIndex = hostedApplicationDatagramBatchLastUpdateIndex;
         hostedApplicationDatagramBatchLastUpdateIndex = -1;
         if (updateIndex >= 0
@@ -933,11 +972,20 @@ internal sealed partial class QuicConnectionRuntime
             && updateIndex < updates.Count
             && updates[updateIndex].DatagramOwner is null)
         {
-            updates[updateIndex] = updates[updateIndex] with { DatagramOwner = owner };
+            updates[updateIndex] = updates[updateIndex] with
+            {
+                DatagramOwner = owner,
+                DatagramOwnerLifetimeToken = lifetimeToken,
+                BufferCopyOperationObserver =
+                    (IQuicBufferCopyOperationObserver)this,
+            };
             return;
         }
 
-        QuicBufferPool.ReturnBytes(owner);
+        ReleaseTrackedBufferOwner(
+            owner,
+            in lifetimeToken,
+            QuicBufferReleaseReason.Canceled);
     }
 
     internal void ApplyPendingHostedTimerUpdates(

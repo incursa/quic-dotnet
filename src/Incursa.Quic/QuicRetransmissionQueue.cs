@@ -456,7 +456,9 @@ internal sealed class QuicRetransmissionQueue
                 PlaintextPayloadOwner: packet.PlaintextPayloadOwner,
                 PacketBytesOwner: packet.PacketBytesOwner,
                 PlaintextPayloadLifetimeToken:
-                    packet.PlaintextPayloadLifetimeToken);
+                    packet.PlaintextPayloadLifetimeToken,
+                PacketBytesLifetimeToken:
+                    packet.PacketBytesLifetimeToken);
             AddClonedRetainedPlan(retained, ref retainedRetransmissions);
         }
 
@@ -564,6 +566,7 @@ internal sealed class QuicRetransmissionQueue
             PlaintextPayloadOwner = payloadOwner,
             PacketBytesOwner = null,
             PlaintextPayloadLifetimeToken = default,
+            PacketBytesLifetimeToken = default,
         };
     }
 

@@ -96,7 +96,8 @@ internal record struct QuicConnectionSentPacket
         ulong? OneRttKeyPhase = null,
         byte[]? PlaintextPayloadOwner = null,
         byte[]? PacketBytesOwner = null,
-        QuicBufferCopyLifetimeToken PlaintextPayloadLifetimeToken = default)
+        QuicBufferCopyLifetimeToken PlaintextPayloadLifetimeToken = default,
+        QuicBufferCopyLifetimeToken PacketBytesLifetimeToken = default)
     {
         this.PacketNumberSpace = PacketNumberSpace;
         this.PacketNumber = PacketNumber;
@@ -122,6 +123,8 @@ internal record struct QuicConnectionSentPacket
         this.PacketBytesOwner = PacketBytesOwner;
         this.PlaintextPayloadLifetimeToken =
             PlaintextPayloadLifetimeToken;
+        this.PacketBytesLifetimeToken =
+            PacketBytesLifetimeToken;
     }
 
     public QuicPacketNumberSpace PacketNumberSpace { readonly get; init; }
@@ -214,6 +217,12 @@ internal record struct QuicConnectionSentPacket
         init;
     }
 
+    public QuicBufferCopyLifetimeToken PacketBytesLifetimeToken
+    {
+        readonly get;
+        init;
+    }
+
     public readonly void Deconstruct(
         out QuicPacketNumberSpace PacketNumberSpace,
         out ulong PacketNumber,
@@ -275,7 +284,8 @@ internal readonly record struct QuicConnectionRetransmissionPlan(
     ulong? OneRttKeyPhase = null,
     byte[]? PlaintextPayloadOwner = null,
     byte[]? PacketBytesOwner = null,
-    QuicBufferCopyLifetimeToken PlaintextPayloadLifetimeToken = default);
+    QuicBufferCopyLifetimeToken PlaintextPayloadLifetimeToken = default,
+    QuicBufferCopyLifetimeToken PacketBytesLifetimeToken = default);
 
 internal readonly record struct QuicConnectionPendingSendReservation(ulong Sequence);
 
@@ -746,8 +756,18 @@ internal sealed class QuicConnectionSendRuntime
     internal bool TryDetachLatestRebuildablePacketBytes(
         ReadOnlyMemory<byte> packetBytes,
         out byte[]? packetBytesOwner)
+        => TryDetachLatestRebuildablePacketBytes(
+            packetBytes,
+            out packetBytesOwner,
+            out _);
+
+    internal bool TryDetachLatestRebuildablePacketBytes(
+        ReadOnlyMemory<byte> packetBytes,
+        out byte[]? packetBytesOwner,
+        out QuicBufferCopyLifetimeToken packetBytesLifetimeToken)
     {
         packetBytesOwner = null;
+        packetBytesLifetimeToken = default;
         if (!latestTrackedPacketKey.HasValue
             || !sentPackets.TryGetValue(latestTrackedPacketKey.Value, out QuicConnectionSentPacket packet)
             || packet.PacketNumberSpace != QuicPacketNumberSpace.ApplicationData
@@ -761,10 +781,12 @@ internal sealed class QuicConnectionSendRuntime
         }
 
         packetBytesOwner = packet.PacketBytesOwner;
+        packetBytesLifetimeToken = packet.PacketBytesLifetimeToken;
         sentPackets[latestTrackedPacketKey.Value] = packet with
         {
             PacketBytes = default,
             PacketBytesOwner = null,
+            PacketBytesLifetimeToken = default,
         };
         RecordSentPacketOwnerRemoval(
             plaintextPayloadOwner: null,
@@ -910,6 +932,7 @@ internal sealed class QuicConnectionSendRuntime
                     PlaintextPayloadOwner = null,
                     PacketBytesOwner = null,
                     PlaintextPayloadLifetimeToken = default,
+                    PacketBytesLifetimeToken = default,
                 };
             }
 
@@ -1073,7 +1096,8 @@ internal sealed class QuicConnectionSendRuntime
                 packet.OneRttKeyPhase,
                 packet.PlaintextPayloadOwner,
                 packet.PacketBytesOwner,
-                packet.PlaintextPayloadLifetimeToken));
+                packet.PlaintextPayloadLifetimeToken,
+                packet.PacketBytesLifetimeToken));
         }
         else
         {
@@ -1436,6 +1460,7 @@ internal sealed class QuicConnectionSendRuntime
             retransmission.PlaintextPayloadOwner,
             retransmission.PacketBytesOwner,
             retransmission.PlaintextPayloadLifetimeToken,
+            retransmission.PacketBytesLifetimeToken,
             observer,
             reason);
     }
@@ -1510,6 +1535,7 @@ internal sealed class QuicConnectionSendRuntime
             packet.PlaintextPayloadOwner,
             packet.PacketBytesOwner,
             packet.PlaintextPayloadLifetimeToken,
+            packet.PacketBytesLifetimeToken,
             bufferCopyOperationObserver,
             reason);
     }
@@ -1517,19 +1543,21 @@ internal sealed class QuicConnectionSendRuntime
     private static void ReleasePacketOwners(
         byte[]? plaintextPayloadOwner,
         byte[]? packetBytesOwner,
-        QuicBufferCopyLifetimeToken lifetimeToken,
+        QuicBufferCopyLifetimeToken plaintextPayloadLifetimeToken,
+        QuicBufferCopyLifetimeToken packetBytesLifetimeToken,
         IQuicBufferCopyOperationObserver? observer,
         QuicBufferReleaseReason reason)
     {
         if (plaintextPayloadOwner is not null)
         {
             QuicBufferPool.ReturnBytes(plaintextPayloadOwner);
-            if (observer is not null && !lifetimeToken.IsEmpty)
+            if (observer is not null
+                && !plaintextPayloadLifetimeToken.IsEmpty)
             {
                 try
                 {
                     observer.ObserveBufferRelease(
-                        in lifetimeToken,
+                        in plaintextPayloadLifetimeToken,
                         reason,
                         plaintextPayloadOwner.Length);
                 }
@@ -1545,6 +1573,22 @@ internal sealed class QuicConnectionSendRuntime
             && !ReferenceEquals(plaintextPayloadOwner, packetBytesOwner))
         {
             QuicBufferPool.ReturnBytes(packetBytesOwner);
+            if (observer is not null
+                && !packetBytesLifetimeToken.IsEmpty)
+            {
+                try
+                {
+                    observer.ObserveBufferRelease(
+                        in packetBytesLifetimeToken,
+                        reason,
+                        packetBytesOwner.Length);
+                }
+                catch (Exception)
+                {
+                    // Release evidence follows the authoritative pool return
+                    // and cannot change recovery ownership or progress.
+                }
+            }
         }
     }
 

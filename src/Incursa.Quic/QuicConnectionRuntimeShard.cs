@@ -767,9 +767,11 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                             }
 
                             long sendBatchStartedTimestamp = QuicMetrics.GetRuntimeShardPhaseStartTimestamp();
+                            bool batchHandoffCompleted = false;
                             try
                             {
                                 sendDatagramBatchObserver(workItem.Handle, updates);
+                                batchHandoffCompleted = true;
                             }
                             finally
                             {
@@ -780,7 +782,10 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                                     sendBatchStartedTimestamp);
                                 foreach (QuicConnectionSendDatagramUpdate batchUpdate in updates)
                                 {
-                                    batchUpdate.ReleaseDatagramOwner();
+                                    batchUpdate.ReleaseDatagramOwner(
+                                        batchHandoffCompleted
+                                            ? QuicBufferReleaseReason.Completed
+                                            : QuicBufferReleaseReason.Failed);
                                 }
                             }
 
@@ -795,15 +800,20 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                         }
 
                         long sendDatagramStartedTimestamp = QuicMetrics.GetRuntimeShardPhaseStartTimestamp();
+                        bool sendDatagramHandoffCompleted = false;
                         try
                         {
                             if (sendDatagramObserver is not null)
                             {
                                 sendDatagramObserver(workItem.Handle, update);
+                                sendDatagramHandoffCompleted = true;
                             }
-                            else
+                            else if (effectObserver is not null)
                             {
-                                effectObserver?.Invoke(workItem.Handle, update.ToEffect());
+                                effectObserver.Invoke(
+                                    workItem.Handle,
+                                    update.ToEffect());
+                                sendDatagramHandoffCompleted = true;
                             }
                         }
                         finally
@@ -813,7 +823,10 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                                 in workItem,
                                 "send_datagram_effect",
                                 sendDatagramStartedTimestamp);
-                            update.ReleaseDatagramOwner();
+                            update.ReleaseDatagramOwner(
+                                sendDatagramHandoffCompleted
+                                    ? QuicBufferReleaseReason.Completed
+                                    : QuicBufferReleaseReason.Failed);
                         }
 
                         index++;

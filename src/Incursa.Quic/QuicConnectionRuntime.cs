@@ -217,6 +217,7 @@ internal sealed partial class QuicConnectionRuntime :
     private int pendingHostedSendDatagramUpdateIndex;
     private byte[]? hostedApplicationDatagramBatchOwner;
     private int hostedApplicationDatagramBatchPacketCount;
+    private int hostedApplicationDatagramBatchLogicalBytes;
     private int hostedApplicationDatagramBatchLastUpdateIndex = -1;
     private bool suppressHostedTimerEffectObjects;
     private bool suppressHostedSendDatagramEffectObjects;
@@ -2982,7 +2983,8 @@ internal sealed partial class QuicConnectionRuntime :
             QuicBufferCopyPath.FormattedStreamPayload
                 or QuicBufferCopyPath.RetransmissionClone
                 or QuicBufferCopyPath.SentPacketPlaintextRetention
-                or QuicBufferCopyPath.CombinedApplicationSend =>
+                or QuicBufferCopyPath.CombinedApplicationSend
+                or QuicBufferCopyPath.OutboundPacketProtection =>
                 reason is QuicBufferReleaseReason.Delivered
                     or QuicBufferReleaseReason.Recycled,
             _ => false,

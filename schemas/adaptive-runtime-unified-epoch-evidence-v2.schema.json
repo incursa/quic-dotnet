@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-unified-epoch-evidence-v2.schema.json",
+  "title": "Adaptive Runtime Unified Epoch Evidence v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "connectionObservation",
+    "receiveCreditSnapshot",
+    "postServiceBoundary",
+    "stage1",
+    "actorService",
+    "bufferCopy",
+    "evidenceContractVersion",
+    "connectionEpochSequence"
+  ],
+  "properties": {
+    "connectionObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "connectionEpochSequence",
+        "epochStartTicks",
+        "epochEndTicks",
+        "activeDurationMicros",
+        "observationContractVersion",
+        "policyRuleVersion",
+        "advisorAgeMicros",
+        "missingSignalMask",
+        "staleSignalMask",
+        "lifecycleFlags",
+        "hasIssuedApplicationData",
+        "openStreams",
+        "liveObserverStreams",
+        "queuedApplicationWrites",
+        "queueDelayEwmaMicros"
+      ],
+      "properties": {
+        "connectionEpochSequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "epochStartTicks": { "type": "integer" },
+        "epochEndTicks": { "type": "integer" },
+        "activeDurationMicros": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "observationContractVersion": {
+          "const": "adaptive-runtime-connection-observation-v1"
+        },
+        "policyRuleVersion": {
+          "const": "receive-credit-legacy-v1"
+        },
+        "advisorAgeMicros": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "missingSignalMask": { "type": ["string", "integer"] },
+        "staleSignalMask": { "type": ["string", "integer"] },
+        "lifecycleFlags": { "type": ["string", "integer"] },
+        "hasIssuedApplicationData": { "type": "boolean" },
+        "openStreams": { "type": "integer", "minimum": 0 },
+        "liveObserverStreams": { "type": "integer", "minimum": 0 },
+        "queuedApplicationWrites": { "type": "integer", "minimum": 0 },
+        "queueDelayEwmaMicros": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "receiveCreditSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "snapshotVersion",
+        "ruleVersion",
+        "previousState",
+        "state",
+        "transitioned",
+        "stateEpochCount",
+        "stateDurationMicros",
+        "candidateEvidenceCount",
+        "reliefEvidenceCount",
+        "epochSequence",
+        "appliedPolicy",
+        "proposedPolicy",
+        "reason",
+        "hasIssuedApplicationData"
+      ],
+      "properties": {
+        "snapshotVersion": { "type": "integer", "minimum": 1 },
+        "ruleVersion": { "type": "string", "minLength": 1 },
+        "previousState": { "type": ["string", "integer"] },
+        "state": { "type": ["string", "integer"] },
+        "transitioned": { "type": "boolean" },
+        "stateEpochCount": { "type": "integer", "minimum": 0 },
+        "stateDurationMicros": { "type": "integer", "minimum": 0 },
+        "candidateEvidenceCount": { "type": "integer", "minimum": 0 },
+        "reliefEvidenceCount": { "type": "integer", "minimum": 0 },
+        "epochSequence": { "type": "integer", "minimum": 1 },
+        "appliedPolicy": { "type": ["string", "integer"] },
+        "proposedPolicy": { "type": ["string", "integer"] },
+        "reason": { "type": ["string", "integer"] },
+        "hasIssuedApplicationData": { "type": "boolean" }
+      }
+    },
+    "postServiceBoundary": {
+      "type": "object",
+      "required": [
+        "connectionEpochSequence",
+        "epochEndTicks",
+        "source",
+        "disposition",
+        "actorServiceSequence",
+        "actorObservationPublished",
+        "resourceReleaseCompleted",
+        "validity",
+        "boundaryContractVersion"
+      ],
+      "properties": {
+        "connectionEpochSequence": { "type": "integer", "minimum": 1 },
+        "epochEndTicks": { "type": "integer" },
+        "source": { "type": ["string", "integer"] },
+        "disposition": { "type": ["string", "integer"] },
+        "actorServiceSequence": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        },
+        "actorObservationPublished": { "type": "boolean" },
+        "resourceReleaseCompleted": { "type": "boolean" },
+        "validity": { "type": ["string", "integer"] },
+        "boundaryContractVersion": {
+          "const": "adaptive-runtime-post-service-boundary-v1"
+        }
+      }
+    },
+    "stage1": {
+      "type": "object",
+      "required": [
+        "epochIndex",
+        "epochStartOffsetMicros",
+        "epochDurationMicros",
+        "policySnapshot",
+        "applicationSendTurnPlanning",
+        "applicationSendBatchFormation",
+        "queuedSendBurstBudget",
+        "oversizedWriteAdmissionQuantum"
+      ],
+      "properties": {
+        "epochIndex": { "type": "integer", "minimum": 1 },
+        "epochStartOffsetMicros": { "type": "integer", "minimum": 0 },
+        "epochDurationMicros": { "type": "integer", "minimum": 1 },
+        "policySnapshot": { "type": "object" },
+        "applicationSendTurnPlanning": { "type": "object" },
+        "applicationSendBatchFormation": { "type": "object" },
+        "queuedSendBurstBudget": { "type": "object" },
+        "oversizedWriteAdmissionQuantum": { "type": "object" }
+      }
+    },
+    "actorService": {
+      "type": "object",
+      "required": [
+        "hasObservation",
+        "firstServiceSequence",
+        "lastServiceSequence",
+        "actorTurnCount",
+        "validity",
+        "epochContractVersion"
+      ],
+      "properties": {
+        "hasObservation": { "type": "boolean" },
+        "firstServiceSequence": { "type": "integer", "minimum": 0 },
+        "lastServiceSequence": { "type": "integer", "minimum": 0 },
+        "actorTurnCount": { "type": "integer", "minimum": 0 },
+        "validity": { "type": ["string", "integer"] },
+        "epochContractVersion": {
+          "const": "quic-actor-service-epoch-v1"
+        }
+      }
+    },
+    "bufferCopy": {
+      "type": "object",
+      "required": [
+        "hasObservation",
+        "firstOperationSequence",
+        "lastOperationSequence",
+        "operationCount",
+        "validity",
+        "epochContractVersion"
+      ],
+      "properties": {
+        "hasObservation": { "type": "boolean" },
+        "firstOperationSequence": { "type": "integer", "minimum": 0 },
+        "lastOperationSequence": { "type": "integer", "minimum": 0 },
+        "operationCount": { "type": "integer", "minimum": 0 },
+        "validity": { "type": ["string", "integer"] },
+        "epochContractVersion": {
+          "const": "quic-buffer-copy-epoch-v3"
+        }
+      }
+    },
+    "evidenceContractVersion": {
+      "const": "adaptive-runtime-unified-epoch-evidence-v2"
+    },
+    "connectionEpochSequence": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

@@ -15,12 +15,14 @@ internal readonly record struct QuicBufferCopyEpochSummary(
     ulong SentPacketPlaintextRetentionCount,
     ulong RetransmissionCloneCount,
     ulong ReceiveSegmentCount,
+    ulong OutboundPacketProtectionCount,
     ulong CopyCount,
     ulong ReuseAndCopyCount,
     ulong FormatCount,
     ulong CombineCount,
     ulong RetainCount,
     ulong CloneCount,
+    ulong ProtectCount,
     ulong TotalLogicalBytes,
     ulong TotalCopiedBytes,
     ulong MaximumCopiedBytes,
@@ -30,7 +32,7 @@ internal readonly record struct QuicBufferCopyEpochSummary(
     QuicBufferCopyValidity Validity)
 {
     internal const string CurrentEpochContractVersion =
-        "quic-buffer-copy-epoch-v2";
+        "quic-buffer-copy-epoch-v3";
 
     public string EpochContractVersion => CurrentEpochContractVersion;
 }
@@ -50,12 +52,14 @@ internal sealed class QuicBufferCopyEpochAccumulator :
     private ulong sentPacketPlaintextRetentionCount;
     private ulong retransmissionCloneCount;
     private ulong receiveSegmentCount;
+    private ulong outboundPacketProtectionCount;
     private ulong copyCount;
     private ulong reuseAndCopyCount;
     private ulong formatCount;
     private ulong combineCount;
     private ulong retainCount;
     private ulong cloneCount;
+    private ulong protectCount;
     private ulong totalLogicalBytes;
     private ulong totalCopiedBytes;
     private ulong maximumCopiedBytes;
@@ -114,12 +118,14 @@ internal sealed class QuicBufferCopyEpochAccumulator :
                 sentPacketPlaintextRetentionCount,
                 retransmissionCloneCount,
                 receiveSegmentCount,
+                outboundPacketProtectionCount,
                 copyCount,
                 reuseAndCopyCount,
                 formatCount,
                 combineCount,
                 retainCount,
                 cloneCount,
+                protectCount,
                 totalLogicalBytes,
                 totalCopiedBytes,
                 maximumCopiedBytes,
@@ -159,6 +165,9 @@ internal sealed class QuicBufferCopyEpochAccumulator :
             case QuicBufferCopyPath.ReceiveSegment:
                 AddSaturating(ref receiveSegmentCount, 1);
                 break;
+            case QuicBufferCopyPath.OutboundPacketProtection:
+                AddSaturating(ref outboundPacketProtectionCount, 1);
+                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(path));
         }
@@ -185,6 +194,9 @@ internal sealed class QuicBufferCopyEpochAccumulator :
                 break;
             case QuicBufferCopyOperation.Clone:
                 AddSaturating(ref cloneCount, 1);
+                break;
+            case QuicBufferCopyOperation.Protect:
+                AddSaturating(ref protectCount, 1);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(operation));
@@ -216,12 +228,14 @@ internal sealed class QuicBufferCopyEpochAccumulator :
         sentPacketPlaintextRetentionCount = 0;
         retransmissionCloneCount = 0;
         receiveSegmentCount = 0;
+        outboundPacketProtectionCount = 0;
         copyCount = 0;
         reuseAndCopyCount = 0;
         formatCount = 0;
         combineCount = 0;
         retainCount = 0;
         cloneCount = 0;
+        protectCount = 0;
         totalLogicalBytes = 0;
         totalCopiedBytes = 0;
         maximumCopiedBytes = 0;

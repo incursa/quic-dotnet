@@ -115,7 +115,7 @@ the post-service boundary without relabeling retained version 1 rows. The
 local runner accepts both versions so existing append-only evidence remains
 readable.
 
-[`../../schemas/adaptive-runtime-unified-epoch-evidence-v1.schema.json`](../../schemas/adaptive-runtime-unified-epoch-evidence-v1.schema.json)
+[`../../schemas/adaptive-runtime-unified-epoch-evidence-v2.schema.json`](../../schemas/adaptive-runtime-unified-epoch-evidence-v2.schema.json)
 defines the internal joined record. The accumulator rejects a mismatched,
 duplicate, out-of-order, or nonpositive connection-observation,
 receive-credit, and boundary join before resetting Stage 1, actor, or buffer
@@ -123,16 +123,18 @@ state. Successful capture seals all three summaries under the same connection
 epoch key. Permanent run, host, binary, workload, checksum, classification,
 and raw-file provenance remains a harness/export responsibility and is not
 invented by this connection-local record.
+The retained v1 joined schema remains immutable; v2 changes only the nested
+buffer summary reference from its retained v2 contract to v3.
 
 The raw QUIC host configures that same accumulator as the receive-credit,
 four Stage 1, actor-service, and buffer-copy evidence sink whenever an
 adaptive execution is requested. It emits
-`adaptive-runtime-unified-epoch-raw-v1` under one connection key while
+`adaptive-runtime-unified-epoch-raw-v2` under one connection key while
 retaining the prior receive-credit and Stage 1 compatibility records. The
 append-only
 [`../../eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1`](../../eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1)
 exporter validates
-[`../../schemas/adaptive-runtime-unified-epoch-raw-v1.schema.json`](../../schemas/adaptive-runtime-unified-epoch-raw-v1.schema.json),
+[`../../schemas/adaptive-runtime-unified-epoch-raw-v2.schema.json`](../../schemas/adaptive-runtime-unified-epoch-raw-v2.schema.json),
 exact monotonic join keys, exactly four Stage 1 records per row, and at most
 one non-legacy applied axis. Connection keys are scoped to their hashed source
 log during multi-process export because each process restarts its local
@@ -141,17 +143,18 @@ observation counts, validation output, and any bounded-channel export failure
 records. An export failure produces `invalid_contract`; it is never silently
 treated as a complete dataset.
 
-## Stage 2 Buffer Copy Observation V2
+## Stage 2 Buffer Copy Observation V3
 
 The current behavior-neutral buffer foundation uses
-[`../../schemas/adaptive-runtime-buffer-copy-observation-v2.schema.json`](../../schemas/adaptive-runtime-buffer-copy-observation-v2.schema.json)
+[`../../schemas/adaptive-runtime-buffer-copy-observation-v3.schema.json`](../../schemas/adaptive-runtime-buffer-copy-observation-v3.schema.json)
 and
-[`../../schemas/adaptive-runtime-buffer-copy-epoch-v2.schema.json`](../../schemas/adaptive-runtime-buffer-copy-epoch-v2.schema.json).
-The retained v1 schemas remain immutable for already-recorded evidence. The v2
+[`../../schemas/adaptive-runtime-buffer-copy-epoch-v3.schema.json`](../../schemas/adaptive-runtime-buffer-copy-epoch-v3.schema.json).
+The retained v1 and v2 schemas remain immutable for already-recorded evidence. The v3
 closed path set covers flow-control retry ownership,
 oversized-raw-queue admission, STREAM payload formatting, multi-write
 combination, sent-packet plaintext retention, retransmission cloning, and
-receive-segment insertion or capacity reuse. The record carries logical and
+receive-segment insertion or capacity reuse, and protected-packet construction
+through managed endpoint handoff. The record carries logical and
 copied bytes, source and destination segment counts, requested and retained
 capacity, boundary and optional join sequence, versions, legacy identity,
 reason, buffer-lifetime latch, lifecycle, and explicit validity.
@@ -159,10 +162,12 @@ reason, buffer-lifetime latch, lifecycle, and explicit validity.
 This is not yet a selectable axis. `forcedValue` and
 `shadowRecommendation` are null; `selectedValue` and `appliedValue` are both
 `legacy_current`; `selectionSource` is `legacy_current`; and fallback is
-false. Terminal-release correlation, retained age, and pool outstanding state
-remain explicit missing flags. The v2 runtime producers record owned
+false. Terminal-release correlation for an untracked construction, retained
+age, and pool outstanding state remain explicit missing flags. The v3 runtime
+producers record owned
 path-migration retransmission clones and both new and capacity-reusing receive
-segment copies through a connection-local observer. Producer or sink failures
+segment copies plus pooled protected-packet owners through a connection-local
+observer. Producer or sink failures
 remain diagnostic-only and cannot change ownership or progress.
 
 The fixed-field accumulator retains closed path and operation counts plus

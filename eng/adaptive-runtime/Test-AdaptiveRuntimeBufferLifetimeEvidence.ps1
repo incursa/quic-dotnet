@@ -16,10 +16,18 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$copyRawSchemaPath = Join-Path $RepositoryRoot `
-    'schemas\adaptive-runtime-buffer-copy-raw-v2.schema.json'
-$copyObservationSchemaPath = Join-Path $RepositoryRoot `
-    'schemas\adaptive-runtime-buffer-copy-observation-v2.schema.json'
+$copyRawSchemaPaths = @{
+    'quic-buffer-copy-raw-v2' = Join-Path $RepositoryRoot `
+        'schemas\adaptive-runtime-buffer-copy-raw-v2.schema.json'
+    'quic-buffer-copy-raw-v3' = Join-Path $RepositoryRoot `
+        'schemas\adaptive-runtime-buffer-copy-raw-v3.schema.json'
+}
+$copyObservationSchemaPaths = @{
+    'quic-buffer-copy-observation-v2' = Join-Path $RepositoryRoot `
+        'schemas\adaptive-runtime-buffer-copy-observation-v2.schema.json'
+    'quic-buffer-copy-observation-v3' = Join-Path $RepositoryRoot `
+        'schemas\adaptive-runtime-buffer-copy-observation-v3.schema.json'
+}
 $releaseRawSchemaPaths = @{
     'quic-buffer-release-raw-v1' = Join-Path $RepositoryRoot `
         'schemas\adaptive-runtime-buffer-release-raw-v1.schema.json'
@@ -33,6 +41,8 @@ $releaseRawSchemaPaths = @{
         'schemas\adaptive-runtime-buffer-release-raw-v5.schema.json'
     'quic-buffer-release-raw-v6' = Join-Path $RepositoryRoot `
         'schemas\adaptive-runtime-buffer-release-raw-v6.schema.json'
+    'quic-buffer-release-raw-v7' = Join-Path $RepositoryRoot `
+        'schemas\adaptive-runtime-buffer-release-raw-v7.schema.json'
 }
 $releaseObservationSchemaPaths = @{
     'quic-buffer-release-observation-v1' = Join-Path $RepositoryRoot `
@@ -47,6 +57,8 @@ $releaseObservationSchemaPaths = @{
         'schemas\adaptive-runtime-buffer-release-observation-v5.schema.json'
     'quic-buffer-release-observation-v6' = Join-Path $RepositoryRoot `
         'schemas\adaptive-runtime-buffer-release-observation-v6.schema.json'
+    'quic-buffer-release-observation-v7' = Join-Path $RepositoryRoot `
+        'schemas\adaptive-runtime-buffer-release-observation-v7.schema.json'
 }
 $failures = [System.Collections.Generic.List[string]]::new()
 $copiesByKey = @{}
@@ -64,17 +76,41 @@ foreach ($line in Get-Content -LiteralPath $CopyPath) {
         continue
     }
 
+    try {
+        $record = $line | ConvertFrom-Json -Depth 100
+    }
+    catch {
+        $failures.Add('A buffer-copy raw record was not valid JSON.')
+        continue
+    }
+
+    $rawSchemaVersion = [string] $record.schemaVersion
+    if (-not $copyRawSchemaPaths.ContainsKey($rawSchemaVersion)) {
+        $failures.Add(
+            "Unsupported buffer-copy raw schema '$rawSchemaVersion'.")
+        continue
+    }
     if (-not ($line |
-            Test-Json -SchemaFile $copyRawSchemaPath -ErrorAction Stop)) {
+            Test-Json -SchemaFile `
+                $copyRawSchemaPaths[$rawSchemaVersion] `
+                -ErrorAction Stop)) {
         $failures.Add('A buffer-copy raw record failed schema validation.')
         continue
     }
 
-    $record = $line | ConvertFrom-Json -Depth 100
+    $observationSchemaVersion =
+        [string] $record.observation.observationContractVersion
+    if (-not $copyObservationSchemaPaths.ContainsKey(
+            $observationSchemaVersion)) {
+        $failures.Add(
+            "Unsupported buffer-copy observation schema '$observationSchemaVersion'.")
+        continue
+    }
     $observationJson = $record.observation |
         ConvertTo-Json -Depth 100 -Compress
     if (-not ($observationJson |
-            Test-Json -SchemaFile $copyObservationSchemaPath `
+            Test-Json -SchemaFile `
+                $copyObservationSchemaPaths[$observationSchemaVersion] `
                 -ErrorAction Stop)) {
         $failures.Add(
             'A buffer-copy raw observation failed schema validation.')

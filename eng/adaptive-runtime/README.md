@@ -77,7 +77,7 @@ buffer raw rows:
 
 The exporter reads only
 `QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON=` records, validates
-`adaptive-runtime-unified-epoch-raw-v1`, and writes append-only raw JSONL,
+`adaptive-runtime-unified-epoch-raw-v2`, and writes append-only raw JSONL,
 semantic validation, and a checksum manifest. Semantic validation requires
 matching connection-observation, receive-credit, post-service boundary, and
 Stage 1 epoch keys; monotonic unique connection epochs; exactly four Stage 1

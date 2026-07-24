@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-buffer-copy-epoch-v3.schema.json",
+  "title": "Adaptive Runtime Buffer Copy Epoch Summary v3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "hasObservation",
+    "firstOperationSequence",
+    "lastOperationSequence",
+    "operationCount",
+    "applicationWriteRequestCount",
+    "oversizedRawQueueCount",
+    "formattedStreamPayloadCount",
+    "combinedApplicationSendCount",
+    "sentPacketPlaintextRetentionCount",
+    "retransmissionCloneCount",
+    "receiveSegmentCount",
+    "outboundPacketProtectionCount",
+    "copyCount",
+    "reuseAndCopyCount",
+    "formatCount",
+    "combineCount",
+    "retainCount",
+    "cloneCount",
+    "protectCount",
+    "totalLogicalBytes",
+    "totalCopiedBytes",
+    "maximumCopiedBytes",
+    "totalRequestedCapacityBytes",
+    "totalRetainedCapacityBytes",
+    "maximumRetainedCapacityBytes",
+    "validity",
+    "epochContractVersion"
+  ],
+  "properties": {
+    "hasObservation": { "type": "boolean" },
+    "firstOperationSequence": { "$ref": "#/$defs/unsignedInteger" },
+    "lastOperationSequence": { "$ref": "#/$defs/unsignedInteger" },
+    "operationCount": { "$ref": "#/$defs/unsignedInteger" },
+    "applicationWriteRequestCount": { "$ref": "#/$defs/unsignedInteger" },
+    "oversizedRawQueueCount": { "$ref": "#/$defs/unsignedInteger" },
+    "formattedStreamPayloadCount": { "$ref": "#/$defs/unsignedInteger" },
+    "combinedApplicationSendCount": { "$ref": "#/$defs/unsignedInteger" },
+    "sentPacketPlaintextRetentionCount": {
+      "$ref": "#/$defs/unsignedInteger"
+    },
+    "retransmissionCloneCount": { "$ref": "#/$defs/unsignedInteger" },
+    "receiveSegmentCount": { "$ref": "#/$defs/unsignedInteger" },
+    "outboundPacketProtectionCount": { "$ref": "#/$defs/unsignedInteger" },
+    "copyCount": { "$ref": "#/$defs/unsignedInteger" },
+    "reuseAndCopyCount": { "$ref": "#/$defs/unsignedInteger" },
+    "formatCount": { "$ref": "#/$defs/unsignedInteger" },
+    "combineCount": { "$ref": "#/$defs/unsignedInteger" },
+    "retainCount": { "$ref": "#/$defs/unsignedInteger" },
+    "cloneCount": { "$ref": "#/$defs/unsignedInteger" },
+    "protectCount": { "$ref": "#/$defs/unsignedInteger" },
+    "totalLogicalBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "totalCopiedBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "maximumCopiedBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "totalRequestedCapacityBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "totalRetainedCapacityBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "maximumRetainedCapacityBytes": {
+      "$ref": "#/$defs/unsignedInteger"
+    },
+    "validity": { "type": ["string", "integer"] },
+    "epochContractVersion": { "const": "quic-buffer-copy-epoch-v3" }
+  },
+  "$defs": {
+    "unsignedInteger": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}
