@@ -83,6 +83,7 @@ if ($failures.Count -ne 0) {
 
 $validationJson = & $validatorPath `
     -RawEpochPath $rawEpochPath `
+    -SourceRowCount @($sources | ForEach-Object { [int] $_.rowCount }) `
     -RepositoryRoot $RepositoryRoot
 if (-not $?) {
     throw "Unified adaptive-runtime raw evidence validation failed.`n$validationJson"

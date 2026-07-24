@@ -6,6 +6,8 @@ param(
     [Parameter(Mandatory = $true)]
     [string] $RawEpochPath,
 
+    [int[]] $SourceRowCount,
+
     [string] $RepositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 )
 
@@ -24,6 +26,8 @@ $rowCount = 0
 $axisRecordCount = 0
 $actorObservationRowCount = 0
 $bufferObservationRowCount = 0
+$sourceIndex = 0
+$sourceRowOffset = 0
 
 foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
     if ([string]::IsNullOrWhiteSpace($line)) {
@@ -38,18 +42,33 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
     $epoch = $record.epoch
     $connectionKey = [string] $record.connectionKey
     $sequence = [uint64] $epoch.connectionEpochSequence
-    $rowKey = "$connectionKey|$sequence"
+    while ($null -ne $SourceRowCount -and
+        $sourceIndex -lt $SourceRowCount.Count -and
+        $sourceRowOffset -ge $SourceRowCount[$sourceIndex]) {
+        $sourceIndex++
+        $sourceRowOffset = 0
+    }
+    $sourceKey = if ($null -eq $SourceRowCount) {
+        'source-0'
+    }
+    else {
+        "source-$sourceIndex"
+    }
+    $scopedConnectionKey = "$sourceKey|$connectionKey"
+    $rowKey = "$scopedConnectionKey|$sequence"
     $rowCount++
+    $sourceRowOffset++
 
     if (-not $seenKeys.Add($rowKey)) {
         [void] $duplicateKeys.Add($rowKey)
     }
 
-    if ($lastSequenceByConnection.ContainsKey($connectionKey) -and
-        $sequence -le [uint64] $lastSequenceByConnection[$connectionKey]) {
+    if ($lastSequenceByConnection.ContainsKey($scopedConnectionKey) -and
+        $sequence -le
+            [uint64] $lastSequenceByConnection[$scopedConnectionKey]) {
         [void] $outOfOrderKeys.Add($rowKey)
     }
-    $lastSequenceByConnection[$connectionKey] = $sequence
+    $lastSequenceByConnection[$scopedConnectionKey] = $sequence
 
     $observationSequence = [uint64] $epoch.connectionObservation.connectionEpochSequence
     $snapshotSequence = [uint64] $epoch.receiveCreditSnapshot.epochSequence
@@ -98,6 +117,12 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
 
 if ($rowCount -eq 0) {
     throw 'No unified adaptive-runtime raw epoch rows were found.'
+}
+if ($null -ne $SourceRowCount -and
+    ($SourceRowCount | Measure-Object -Sum).Sum -ne $rowCount) {
+    throw (
+        "Unified adaptive-runtime source row counts do not match retained rows: " +
+        "sources=$(($SourceRowCount | Measure-Object -Sum).Sum), rows=$rowCount.")
 }
 
 $valid =

@@ -81,7 +81,9 @@ The exporter reads only
 semantic validation, and a checksum manifest. Semantic validation requires
 matching connection-observation, receive-credit, post-service boundary, and
 Stage 1 epoch keys; monotonic unique connection epochs; exactly four Stage 1
-axis records per row; and no more than one non-legacy applied axis. Supply
+axis records per row; and no more than one non-legacy applied axis. Connection
+keys are scoped to their hashed source log because separate host processes
+restart their connection counters. Supply
 retained stderr logs as additional `-HostLogPath` values to preserve
 `QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_FAILURE_JSON=` records. Any such record
 classifies the export `invalid_contract` and causes a nonzero exit after the

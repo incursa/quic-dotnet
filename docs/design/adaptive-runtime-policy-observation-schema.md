@@ -134,10 +134,12 @@ append-only
 exporter validates
 [`../../schemas/adaptive-runtime-unified-epoch-raw-v1.schema.json`](../../schemas/adaptive-runtime-unified-epoch-raw-v1.schema.json),
 exact monotonic join keys, exactly four Stage 1 records per row, and at most
-one non-legacy applied axis. It retains source hashes, row counts, actor and
-buffer observation counts, validation output, and any bounded-channel export
-failure records. An export failure produces `invalid_contract`; it is never
-silently treated as a complete dataset.
+one non-legacy applied axis. Connection keys are scoped to their hashed source
+log during multi-process export because each process restarts its local
+counter. The exporter retains source hashes, row counts, actor and buffer
+observation counts, validation output, and any bounded-channel export failure
+records. An export failure produces `invalid_contract`; it is never silently
+treated as a complete dataset.
 
 ## Stage 2 Buffer Copy Observation V2
 
