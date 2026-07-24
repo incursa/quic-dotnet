@@ -415,6 +415,53 @@ repeat the baseline preflight under the existing evidence contract before
 scheduling any policy counterfactual cells. Adjacent axes remain frozen at
 `legacy_current`.
 
+### Release-Suite Verification and Preserved Invalid-Environment Run
+
+The initial interactive Release-suite attempt was retained as an
+`environment_invalid` verification record rather than discarded. Its command
+overlapped three accidentally retained duplicate `testhost.exe` processes from
+earlier interactive invocations. The resulting suite failed
+`REQ_QUIC_INT_0015.ServerRoleEmptyRequestsAcceptsNextConnectionWhilePreviousResponseLingers`
+because the interop harness could not bind its default listener:
+`SocketException (10048): Only one usage of each socket address
+(protocol/network address/port) is normally permitted.` Its complete stdout
+and stderr remain at
+`C:\Users\Samuel\AppData\Local\Temp\quic-dotnet-release-suite-20260723.stdout.log`
+and
+`C:\Users\Samuel\AppData\Local\Temp\quic-dotnet-release-suite-20260723.stderr.log`.
+This is not a policy result and does not alter any retained c128
+classification.
+
+After stopping only the verified duplicate test-process trees, confirming zero
+remaining `testhost.exe` processes and no TCP 4433 listener, one clean rerun
+of
+
+```powershell
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release `
+  --no-build --no-restore --disable-build-servers --nologo `
+  --logger "console;verbosity=minimal"
+```
+
+passed with 9,795 passed, 4 expected skips, and zero failures in 10 minutes
+25 seconds. Its separately retained stdout/stderr are
+`C:\Users\Samuel\AppData\Local\Temp\quic-dotnet-release-suite-20260723-clean-rerun.stdout.log`
+and
+`C:\Users\Samuel\AppData\Local\Temp\quic-dotnet-release-suite-20260723-clean-rerun.stderr.log`.
+This confirms the current quic-dotnet Release correctness gate; it is not a
+performance, fairness, policy-selection, shadow, or production-activation
+claim.
+
+ProtocolLab internal PR #10 remains independently blocked. Its CI
+`build-test` run `30054822177` failed 4 Raw QUIC adapter conformance tests
+with `System.Net.Quic.QuicException: The connection timed out from
+inactivity` while transferring 1 MiB and 16 MiB download/slow-reader shapes
+(1,374 passed, 4 failed, 1,378 total, 7 minutes 2 seconds). Those tests do
+not exercise either PR #10 change, but the failed check is preserved as a
+correctness blocker: no merge, deployment, package rebuild, or follow-up
+ProtocolLab campaign is authorized from that branch until it is resolved or
+reviewed with its own evidence. Adjacent policy axes remain
+`legacy_current`.
+
 ### Retained c128 Instrumentation Attempt and Worker-Identity Exclusion
 
 The c128 investigation produced a new clean diagnostic package from commit
