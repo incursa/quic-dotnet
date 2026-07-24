@@ -1348,15 +1348,12 @@ else {
     "$CampaignId-$CellId-$($SequenceProtocol.ToLowerInvariant())"
 }
 $epochRowPaths = [System.Collections.Generic.List[string]]::new()
-$allShadowEpochs = if ($isReceiveCreditAxis) {
-    @($shadowEpochsBySample.Values | ForEach-Object { @($_) })
+$allShadowEpochs = @(if ($isReceiveCreditAxis) {
+    $shadowEpochsBySample.Values | ForEach-Object { @($_) }
 }
 elseif ($isApplicationSendTurnEvidenceCampaign) {
-    @($applicationSendTurnEvidenceBySample.Values | ForEach-Object { @($_) })
-}
-else {
-    @()
-}
+    $applicationSendTurnEvidenceBySample.Values | ForEach-Object { @($_) }
+})
 if ($isReceiveCreditAxis -and $contractFailures.Count -eq 0) {
     $quicRepository = @($repositoryIdentities | Where-Object name -eq 'quic-dotnet') | Select-Object -First 1
     $benchmarkHash = [string] $binaryIdentities[0].sha256

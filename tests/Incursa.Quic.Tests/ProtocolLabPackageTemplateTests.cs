@@ -620,6 +620,20 @@ public sealed class ProtocolLabPackageTemplateTests
         }
     }
 
+    [Fact]
+    public void Adaptive_runtime_local_runner_keeps_forced_send_turn_shadow_evidence_as_an_empty_array()
+    {
+        var repoRoot = FindRepoRoot();
+        var script = File.ReadAllText(Path.Combine(
+            repoRoot,
+            "eng",
+            "adaptive-runtime",
+            "Invoke-AdaptiveRuntimePolicyLocalCell.ps1"));
+
+        Assert.Contains("$allShadowEpochs = @(if ($isReceiveCreditAxis)", script, StringComparison.Ordinal);
+        Assert.DoesNotContain("$allShadowEpochs = if ($isReceiveCreditAxis)", script, StringComparison.Ordinal);
+    }
+
     [Theory]
     [InlineData("h3", "quic.transport.multiplex.100x64kb", "only supports protocol 'quic'")]
     [InlineData("quic", "http1.core.plaintext", "scenario(s) are not declared by the package template")]
