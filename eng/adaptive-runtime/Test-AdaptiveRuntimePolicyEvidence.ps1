@@ -889,6 +889,30 @@ foreach ($item in $validatedEpochRows) {
         -Row $row `
         -Result $result `
         -IsSendTurnTerminalPartialEpoch $isSendTurnTerminalPartialEpoch
+    if ([string] $row.provenance.transformation.name -eq 'adaptive-runtime-send-turn-epoch-export' -and
+        [string] $row.provenance.transformation.version -eq '1.0.0' -and
+        [string] $row.provenance.observationContractVersion -eq
+            'adaptive-runtime-application-send-turn-observation-v1' -and
+        $null -ne $normalizedSourceArtifactPath) {
+        try {
+            $rawLookup = Get-SendTurnRawRecordLookup -Path $normalizedSourceArtifactPath
+            $rawKey = "$($row.connectionKey)|$([long] $row.epochIndex)"
+            $nextRawKey = "$($row.connectionKey)|$([long] $row.epochIndex + 1)"
+            if (-not $rawLookup.ContainsKey($rawKey)) {
+                $failures.Add(
+                    "Epoch row '$($row.rowId)' does not resolve to its send-turn raw record '$rawKey'.")
+            }
+            elseif ($rawLookup.ContainsKey($nextRawKey) -and
+                [long] $rawLookup[$nextRawKey].observation.capturedAtTicks -le
+                    [long] $rawLookup[$rawKey].observation.capturedAtTicks) {
+                [void] $expectedExclusionFlags.Add('instrumentation_mismatch')
+            }
+        }
+        catch {
+            $failures.Add(
+                "Epoch row '$($row.rowId)' send-turn raw source could not be replayed: $($_.Exception.Message)")
+        }
+    }
     if ($result.mode -eq 'observe_only' -and
         [string] $row.provenance.transformation.name -eq 'adaptive-runtime-send-turn-epoch-export' -and
         [string] $row.provenance.transformation.version -eq '1.0.0' -and

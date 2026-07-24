@@ -609,7 +609,7 @@ public sealed class REQ_QUIC_CRT_0176
                 System.Text.Json.Nodes.JsonNode.Parse(rawLines[1])!.AsObject();
             long firstCapturedAtTicks =
                 firstRaw["observation"]!["capturedAtTicks"]!.GetValue<long>();
-            secondRaw["observation"]!["capturedAtTicks"] = firstCapturedAtTicks + 1;
+            secondRaw["observation"]!["capturedAtTicks"] = firstCapturedAtTicks;
             File.WriteAllLines(rawPath, [firstRaw.ToJsonString(), secondRaw.ToJsonString()]);
             string rawSha256 = Convert.ToHexString(
                 System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(rawPath)))
@@ -698,6 +698,10 @@ public sealed class REQ_QUIC_CRT_0176
             Assert.Equal(1, exportedRows[0]["epochDurationMicros"]!.GetValue<long>());
             Assert.DoesNotContain(
                 "terminal_partial_epoch",
+                exportedRows[0]["analysisExclusionFlags"]!.AsArray()
+                    .Select(static value => value!.GetValue<string>()));
+            Assert.Contains(
+                "instrumentation_mismatch",
                 exportedRows[0]["analysisExclusionFlags"]!.AsArray()
                     .Select(static value => value!.GetValue<string>()));
             Assert.Contains(
