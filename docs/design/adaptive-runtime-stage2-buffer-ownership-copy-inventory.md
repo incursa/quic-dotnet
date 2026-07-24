@@ -4,7 +4,8 @@ title: "Adaptive Runtime Stage 2 Buffer Ownership And Copy Inventory"
 
 # Adaptive Runtime Stage 2 Buffer Ownership And Copy Inventory
 
-Status: reviewed implementation inventory; observation contract proposed;
+Status: reviewed implementation inventory; first send-side observation
+contract implemented;
 `buffer_copy_coalescing` remains `legacy_current` and non-forceable
 
 This inventory maps the current data lifetime before a buffer policy is
@@ -60,7 +61,7 @@ snapshot. It must not add an unbounded scan to the actor or packet hot path.
 
 ## Proposed Observation Contract
 
-The first behavior-neutral contract should emit or accumulate a compact copy
+The first behavior-neutral contract emits and accumulates a compact copy
 operation with:
 
 - `quic-buffer-copy-observation-v1`;
@@ -136,9 +137,9 @@ and release chain.
 
 Before a forceable value is implemented:
 
-1. add connection-local copy-operation counters at the write-request,
-   oversized raw queue, formatted payload, combined-send, sent-retention, and
-   retransmission-clone points;
+1. extend the implemented connection-local copy-operation counters from the
+   write-request, oversized raw queue, formatted payload, combined-send, and
+   sent-retention points to retransmission clones and receive segments;
 2. add bounded maintained retained-count/byte state where the current
    diagnostic snapshot would otherwise scan;
 3. define exact transfer and terminal-release correlation without retaining

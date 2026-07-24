@@ -13,10 +13,11 @@
     "VER-QUIC-CRT-0068"
   ],
   "verifies": [
-    "REQ-QUIC-CRT-0181"
+    "REQ-QUIC-CRT-0181",
+    "REQ-QUIC-CRT-0182"
   ],
-  "scope": "Verify behavior-neutral actor service observation, bounded epoch aggregation, explicit missing state, sink isolation, and preservation of legacy shard scheduling. Do not verify or authorize a forceable quantum, fairness rule, buffer strategy, backpressure rule, performance claim, or active behavior.",
-  "verification_method": "Canonical SpecTrace validation, deterministic requirement-home tests, schema and semantic validation, and focused existing shard, deadline, ownership, stream-capacity, flow-control, metrics, cancellation, disposal, and terminal correctness tests.",
+  "scope": "Verify behavior-neutral actor-service and selected send-side buffer-copy observation, bounded epoch aggregation, explicit missing state, sink isolation, legacy identity, and preservation of shard scheduling and ownership. Do not verify or authorize a forceable quantum, distinct buffer strategy, fairness rule, backpressure rule, performance claim, or active behavior.",
+  "verification_method": "Canonical SpecTrace validation, deterministic requirement-home tests, schema and semantic validation, and focused existing shard, deadline, application-send queue, ownership, stream-capacity, flow-control, metrics, cancellation, disposal, retransmission, and terminal correctness tests.",
   "preconditions": [
     "The unified four-axis Stage 1 smoke and append-only materialization checkpoint remain preserved.",
     "Receive-credit publication and every applied adaptive policy remain legacy_current.",
@@ -32,22 +33,32 @@
     "Verify queue, service, pending-work, effect, and follow-on attribution plus saturating bounded epoch accumulation and reset.",
     "Verify observation and epoch JSON against their schemas and semantic count and sequence rules.",
     "Verify a throwing sink cannot interrupt actor progress or ownership release.",
+    "Verify buffer-copy records remain selected and applied legacy_current with null force and shadow identity, one buffer-lifetime latch, and explicit missing terminal-release, retained-age, and pool-outstanding state.",
+    "Verify fixed-field buffer-copy aggregation across retry, oversized raw queue, formatted payload, combined send, and sent-plaintext retention paths.",
+    "Verify buffer-copy schema capacity, segment, count, sequence, identity, and semantic invariants and listener option propagation.",
     "Run the existing shard, deadline, work-item layout, receive-buffer ownership, stream-capacity, flow-control, and metrics correctness band.",
     "Keep runnable connection count, oldest shard item age, deadline lateness, and useful work units explicitly missing until their reviewed seams exist."
   ],
-  "expected_result": "Actor service evidence is versioned, bounded, connection-attributable, schema-valid, semantically validated, and behavior-neutral; missing inputs remain explicit; legacy shard drain, timer, recovery, terminal, progress, and ownership behavior remains authoritative; and no forceable or active Stage 2 policy is introduced.",
+  "expected_result": "Actor-service and selected send-side buffer-copy evidence is versioned, bounded, connection-attributable, schema-valid, semantically validated, and behavior-neutral; missing inputs remain explicit; legacy shard drain, copy, timer, recovery, terminal, progress, and ownership behavior remains authoritative; and no forceable or active Stage 2 policy is introduced.",
   "evidence": [
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0181.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0182.cs",
     "tests/Incursa.Quic.Tests/MetricsTests.cs",
     "tests/Incursa.Quic.Tests/QuicConnectionRuntimeShardWorkItemLayoutTests.cs",
     "tests/Incursa.Quic.Tests/QuicConnectionRuntimeShardReceiveBufferOwnershipTests.cs",
     "src/Incursa.Quic/QuicActorServiceObservation.cs",
     "src/Incursa.Quic/QuicActorServiceEpochAccumulator.cs",
+    "src/Incursa.Quic/QuicBufferCopyObservation.cs",
+    "src/Incursa.Quic/QuicBufferCopyEpochAccumulator.cs",
     "src/Incursa.Quic/QuicConnectionRuntimeShard.cs",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeActorServiceEvidence.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeBufferCopyEvidence.ps1",
     "schemas/adaptive-runtime-actor-service-observation-v1.schema.json",
     "schemas/adaptive-runtime-actor-service-epoch-v1.schema.json",
-    "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md"
+    "schemas/adaptive-runtime-buffer-copy-observation-v1.schema.json",
+    "schemas/adaptive-runtime-buffer-copy-epoch-v1.schema.json",
+    "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md",
+    "docs/design/adaptive-runtime-stage2-buffer-ownership-copy-inventory.md"
   ],
-  "status_summary": "In progress. The observe-only connection contract, versioned service record, bounded epoch accumulator, schemas, semantic validator, and initial deterministic tests are implemented. Runnable connection count, oldest shard item age, deadline lateness, reviewed useful work units, exact post-service permanent export, complete fairness outcomes, and every forceable Stage 2 policy remain open. No active behavior is authorized."
+  "status_summary": "In progress. Independent observe-only actor-service and buffer-copy connection contracts, versioned records, bounded epoch accumulators, schemas, semantic validators, listener propagation, and deterministic tests are implemented. The buffer slice covers current retry, oversized raw queue, formatted payload, combined payload, and sent-plaintext retention operations while applying only legacy_current. Runnable connection count, oldest shard item age, deadline lateness, reviewed useful work units, exact post-service permanent export, terminal-release correlation, retained age, pool outstanding state, retransmission-clone and receive-segment observation, complete fairness outcomes, a distinct conservative buffer value, and every forceable Stage 2 policy remain open. No active behavior is authorized."
 }

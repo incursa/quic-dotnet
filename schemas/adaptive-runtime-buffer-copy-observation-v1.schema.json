@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-buffer-copy-observation-v1.schema.json",
+  "title": "Adaptive Runtime Buffer Copy Observation v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "operationSequence",
+    "path",
+    "operation",
+    "decisionBoundary",
+    "joinOperationSequence",
+    "logicalBytes",
+    "copiedBytes",
+    "sourceSegmentCount",
+    "destinationSegmentCount",
+    "requestedCapacityBytes",
+    "retainedCapacityBytes",
+    "forcedValue",
+    "shadowRecommendation",
+    "selectedValue",
+    "appliedValue",
+    "selectionSource",
+    "reasonCode",
+    "safetyOverride",
+    "latchLifetime",
+    "fallbackApplied",
+    "phaseAfter",
+    "disposalStarted",
+    "validity",
+    "policyAxisId",
+    "observationContractVersion",
+    "ruleVersion",
+    "snapshotVersion",
+    "reasonVersion",
+    "provenanceVersion"
+  ],
+  "properties": {
+    "operationSequence": { "$ref": "#/$defs/positiveInteger" },
+    "path": {
+      "enum": [
+        "ApplicationWriteRequest",
+        "OversizedRawQueue",
+        "FormattedStreamPayload",
+        "CombinedApplicationSend",
+        "SentPacketPlaintextRetention"
+      ]
+    },
+    "operation": {
+      "enum": ["Copy", "ReuseAndCopy", "Format", "Combine", "Retain"]
+    },
+    "decisionBoundary": {
+      "enum": [
+        "StreamWriteRetry",
+        "LogicalWriteAdmission",
+        "PacketPlan",
+        "SentPacketRetention"
+      ]
+    },
+    "joinOperationSequence": {
+      "type": ["integer", "null"]
+    },
+    "logicalBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "copiedBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "sourceSegmentCount": { "$ref": "#/$defs/unsignedInteger" },
+    "destinationSegmentCount": { "$ref": "#/$defs/unsignedInteger" },
+    "requestedCapacityBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "retainedCapacityBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "forcedValue": {
+      "type": ["string", "null"],
+      "enum": ["LegacyCurrent", null]
+    },
+    "shadowRecommendation": {
+      "type": ["string", "null"],
+      "enum": ["LegacyCurrent", null]
+    },
+    "selectedValue": { "const": "LegacyCurrent" },
+    "appliedValue": { "const": "LegacyCurrent" },
+    "selectionSource": { "const": "LegacyCurrent" },
+    "reasonCode": {
+      "enum": ["LegacyCopy", "ExistingCapacityReused"]
+    },
+    "safetyOverride": { "const": "None" },
+    "latchLifetime": { "const": "BufferLifetime" },
+    "fallbackApplied": { "const": false },
+    "phaseAfter": {
+      "enum": ["Establishing", "Active", "Closing", "Draining", "Discarded"]
+    },
+    "disposalStarted": { "type": "boolean" },
+    "validity": { "type": ["string", "integer"] },
+    "policyAxisId": { "const": "buffer_copy_coalescing" },
+    "observationContractVersion": {
+      "const": "quic-buffer-copy-observation-v1"
+    },
+    "ruleVersion": {
+      "const": "quic-buffer-copy-observe-only-rule-v1"
+    },
+    "snapshotVersion": { "const": "quic-buffer-copy-snapshot-v1" },
+    "reasonVersion": { "const": "quic-buffer-copy-reason-v1" },
+    "provenanceVersion": { "const": "quic-buffer-copy-provenance-v1" }
+  },
+  "$defs": {
+    "unsignedInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

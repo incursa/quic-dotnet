@@ -200,4 +200,10 @@ public abstract class QuicConnectionOptions
     internal QuicActorServiceObservationMode ActorServiceObservationMode { get; set; }
 
     internal IQuicActorServiceEvidenceSink? ActorServiceEvidenceSink { get; set; }
+
+    // CONTEXT: Buffer-copy evidence is observe-only until the ownership
+    // inventory yields a distinct conservative implementation.
+    internal QuicBufferCopyObservationMode BufferCopyObservationMode { get; set; }
+
+    internal IQuicBufferCopyEvidenceSink? BufferCopyEvidenceSink { get; set; }
 }

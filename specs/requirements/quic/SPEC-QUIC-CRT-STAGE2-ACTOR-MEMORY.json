@@ -19,8 +19,8 @@
     "WI-QUIC-CRT-0068",
     "VER-QUIC-CRT-0069"
   ],
-  "purpose": "Define bounded versioned actor service, wake, follow-on, queue, and lifecycle observations before any actor-work, fairness, buffer, or backpressure policy becomes forceable.",
-  "scope": "This specification covers behavior-neutral per-connection actor service observations, bounded epoch aggregation, explicit missing-state handling, schema and semantic validation, and the safety gates required before actor_work_quantum. It does not define a forceable actor policy, scalar work-unit threshold, buffer policy, backpressure policy, active_internal behavior, or production activation.",
+  "purpose": "Define bounded versioned actor service and buffer-copy observations before any actor-work, fairness, buffer, or backpressure policy becomes forceable.",
+  "scope": "This specification covers behavior-neutral per-connection actor service and selected send-side buffer-copy observations, bounded epoch aggregation, explicit missing-state handling, schema and semantic validation, and the safety gates required before actor_work_quantum or buffer_copy_coalescing. It does not define a forceable actor policy, scalar work-unit threshold, distinct conservative buffer implementation, backpressure policy, active_internal behavior, or production activation.",
   "context": "The shard already exposes aggregate queue-delay, service-time, wake, packet-run, and follow-on metrics, but it does not expose a versioned connection-attributable evidence contract or an exactly-once repost seam. Stage 2 must preserve the current drain loop and record honest primitives before proposing a quantum.",
   "open_questions": [
     "Which cooperative transition and effect boundaries can yield while preserving exactly-once repost, timer priority, recovery, terminal drain, and buffer ownership?",
@@ -52,6 +52,33 @@
       "notes": [
         "UsefulWorkUnitsUndefined remains explicit until a reviewed work-unit vector and cooperative safe checkpoints exist.",
         "No actor_work_quantum value is forceable or active under this requirement."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0182",
+      "title": "Record bounded behavior-neutral buffer-copy evidence",
+      "statement": "The runtime MUST support disabled and observe-only connection-local buffer-copy instrumentation that records versioned legacy_current copy, reuse, formatting, combination, and sent-plaintext-retention operations at existing ownership boundaries; reports logical bytes, copied bytes, source segments, requested and retained capacity, deterministic join scope, selected and applied identity, reason, latch, lifecycle, and explicit missing or invalid state; aggregates only fixed closed counters; keeps sink failures diagnostic-only; preserves byte identity, ordering, packet protection, recovery, congestion, pacing, flow control, hard bounds, ownership, and exactly-once release; and does not claim a distinct conservative implementation, terminal-release correlation, retained age, pool outstanding state, retransmission-clone coverage, receive-segment coverage, forcing, shadow selection, or active behavior until each is implemented and reviewed.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0067"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0068"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0069"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-axis-roadmap.md",
+          "docs/design/adaptive-runtime-policy-seam-inventory.md",
+          "docs/design/adaptive-runtime-stage2-buffer-ownership-copy-inventory.md",
+          "schemas/adaptive-runtime-buffer-copy-observation-v1.schema.json",
+          "schemas/adaptive-runtime-buffer-copy-epoch-v1.schema.json"
+        ]
+      },
+      "notes": [
+        "Only legacy_current is a real buffer-copy policy value in this slice.",
+        "The observation seam cannot be used as fabricated counterfactual policy coverage."
       ]
     }
   ]

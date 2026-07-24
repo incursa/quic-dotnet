@@ -46,10 +46,16 @@ This ledger tracks open questions, ambiguities, and follow-up decisions for QUIC
   `SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY`, with `ARC-QUIC-CRT-0067`,
   `WI-QUIC-CRT-0068`, and `VER-QUIC-CRT-0069` covering bounded
   connection-attributable actor service, wake, queue-delay, effect, follow-on,
-  lifecycle, and epoch evidence. Runnable-connection count, oldest shard item
-  age, deadline lateness, useful actor work units, an exactly-once cooperative
-  repost seam, buffer-copy/coalescing selection, and adaptive backpressure
-  remain explicit open Stage 2 gaps; no actor policy is forceable. The matching
+  lifecycle, and epoch evidence. `REQ-QUIC-CRT-0182` in the same trace set
+  adds observe-only connection-local evidence for the existing send-side
+  retry, oversized raw queue, formatted payload, combined payload, and
+  sent-plaintext retention copy paths while applying only `legacy_current`.
+  Runnable-connection count, oldest shard item age, deadline lateness, useful
+  actor work units, an exactly-once cooperative repost seam, exact buffer
+  release/age/pool correlation, retransmission-clone and receive-segment
+  coverage, a distinct conservative copy implementation, forceable
+  buffer-copy/coalescing selection, and adaptive backpressure remain explicit
+  open Stage 2 gaps; no actor or buffer policy is forceable. The matching
   design, delivery, and proof homes for
   the shadow foundation remain `ARC-QUIC-CRT-0059`, `WI-QUIC-CRT-0060`, and
   `VER-QUIC-CRT-0061`. This gap still owns only the later active controller and

@@ -101,6 +101,32 @@ actor summaries are not silently inserted into that row. A later exact
 post-service export boundary must define deterministic join keys and preserve
 sample scope before permanent unified campaign emission.
 
+## Stage 2 Buffer Copy Observation V1
+
+The behavior-neutral buffer foundation uses
+[`../../schemas/adaptive-runtime-buffer-copy-observation-v1.schema.json`](../../schemas/adaptive-runtime-buffer-copy-observation-v1.schema.json)
+and
+[`../../schemas/adaptive-runtime-buffer-copy-epoch-v1.schema.json`](../../schemas/adaptive-runtime-buffer-copy-epoch-v1.schema.json).
+The first closed path set covers flow-control retry ownership,
+oversized-raw-queue admission, STREAM payload formatting, multi-write
+combination, and sent-packet plaintext retention. The runtime records logical
+and copied bytes, source and destination segment counts, requested and
+retained capacity, boundary and optional join sequence, versions, legacy
+identity, reason, buffer-lifetime latch, lifecycle, and explicit validity.
+
+This is not yet a selectable axis. `forcedValue` and
+`shadowRecommendation` are null; `selectedValue` and `appliedValue` are both
+`legacy_current`; `selectionSource` is `legacy_current`; and fallback is
+false. Terminal-release correlation, retained age, and pool outstanding state
+remain explicit missing flags. Retransmission-clone and receive-segment paths
+remain outside v1 coverage rather than being fabricated as zero.
+
+The fixed-field accumulator retains closed path and operation counts plus
+logical, copied, requested-capacity, and retained-capacity totals and maxima.
+It performs no queue, dictionary, or stream scan. The disabled runtime path
+does not construct a record, and a rejecting or throwing sink cannot change
+copy, ownership, release, or progress behavior.
+
 ## Epoch Envelope
 
 | Field | Type and unit | Owner and update point | Cost and availability |

@@ -227,7 +227,10 @@ That implementation inventory is now recorded in
 [`adaptive-runtime-stage2-buffer-ownership-copy-inventory.md`](adaptive-runtime-stage2-buffer-ownership-copy-inventory.md).
 It confirms that only `legacy_current` is presently a real policy value and
 defines the bounded observation and maintained-retention work required before
-a conservative value can be implemented honestly.
+a conservative value can be implemented honestly. The first observation-only
+slice now records five existing send-side copy and retention paths under
+`REQ-QUIC-CRT-0182`; terminal release, retained age, pool outstanding,
+retransmission clones, and receive segments remain explicit gaps.
 
 `adaptive_backpressure` remains conservative-only and separately reviewable.
 It may eventually lower an admission cap below an authoritative hard bound.

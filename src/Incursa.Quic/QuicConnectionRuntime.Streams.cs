@@ -682,7 +682,26 @@ internal sealed partial class QuicConnectionRuntime
                 {
                     if (!completion.IsOversizedWrite)
                     {
-                        completion.EnsureOwnedStreamData(streamData.Span, streamDataSuffix.Span);
+                        bool reusedCapacity =
+                            completion.EnsureOwnedStreamData(
+                                streamData.Span,
+                                streamDataSuffix.Span);
+                        int copiedBytes = checked(
+                            streamData.Length
+                            + streamDataSuffix.Length);
+                        TryPublishBufferCopyObservation(
+                            QuicBufferCopyPath.ApplicationWriteRequest,
+                            reusedCapacity
+                                ? QuicBufferCopyOperation.ReuseAndCopy
+                                : QuicBufferCopyOperation.Copy,
+                            QuicBufferCopyDecisionBoundary.StreamWriteRetry,
+                            requestId,
+                            copiedBytes,
+                            copiedBytes,
+                            (streamData.IsEmpty ? 0 : 1)
+                                + (streamDataSuffix.IsEmpty ? 0 : 1),
+                            copiedBytes,
+                            completion.OwnedStreamDataCapacity);
                     }
                     QueuePendingStreamWriteRetry(requestId, completion);
                     _ = TryEmitFlowControlBlockedSignal(dataBlockedFrame, streamDataBlockedFrame, ref effects);
@@ -841,6 +860,17 @@ internal sealed partial class QuicConnectionRuntime
                 QuicBufferPoolOwner.QueuedRawStreamData);
             committedStreamData.CopyTo(queuedStreamData);
             committedStreamDataSuffix.CopyTo(queuedStreamData.AsSpan(committedStreamData.Length));
+            TryPublishBufferCopyObservation(
+                QuicBufferCopyPath.OversizedRawQueue,
+                QuicBufferCopyOperation.Copy,
+                QuicBufferCopyDecisionBoundary.LogicalWriteAdmission,
+                requestId,
+                committedStreamDataLength,
+                committedStreamDataLength,
+                (committedStreamData.IsEmpty ? 0 : 1)
+                    + (committedStreamDataSuffix.IsEmpty ? 0 : 1),
+                committedStreamDataLength,
+                queuedStreamData.Length);
             completion.ReleaseOwnedStreamData();
 
             if (!streamRegistry.Bookkeeping.TryGetStreamPriority(streamId, out int oversizedStreamPriority))
@@ -1690,6 +1720,17 @@ internal sealed partial class QuicConnectionRuntime
                             .CopyTo(combinedPayloadOwner.AsSpan(copyOffset));
                         copyOffset += queuedWrite.StreamPayloadLength;
                     }
+
+                    TryPublishBufferCopyObservation(
+                        QuicBufferCopyPath.CombinedApplicationSend,
+                        QuicBufferCopyOperation.Combine,
+                        QuicBufferCopyDecisionBoundary.PacketPlan,
+                        joinOperationSequence: null,
+                        logicalBytes: combinedPayloadLength,
+                        copiedBytes: combinedPayloadLength,
+                        sourceSegmentCount: selectedWrites.Length,
+                        requestedCapacityBytes: combinedPayloadLength,
+                        retainedCapacityBytes: combinedPayloadOwner.Length);
 
                     combinedPayload = combinedPayloadOwner.AsMemory(0, combinedPayloadLength);
                     if (QuicApplicationSendQueue.TryGetOnlyDistinctStreamId(selectedWrites, out ulong onlyStreamId))
@@ -6087,6 +6128,18 @@ internal sealed partial class QuicConnectionRuntime
                 plaintextPayload.Length,
                 QuicBufferPoolOwner.SentPacketRetention);
             plaintextPayload.Span.CopyTo(plaintextPayloadOwner.AsSpan(0, plaintextPayload.Length));
+            TryPublishBufferCopyObservation(
+                QuicBufferCopyPath.SentPacketPlaintextRetention,
+                QuicBufferCopyOperation.Retain,
+                QuicBufferCopyDecisionBoundary.SentPacketRetention,
+                packetNumber <= long.MaxValue
+                    ? (long)packetNumber
+                    : null,
+                plaintextPayload.Length,
+                plaintextPayload.Length,
+                sourceSegmentCount: 1,
+                requestedCapacityBytes: plaintextPayload.Length,
+                retainedCapacityBytes: plaintextPayloadOwner.Length);
             plaintextPayload = plaintextPayloadOwner.AsMemory(0, plaintextPayload.Length);
         }
 
@@ -6484,6 +6537,18 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             payload = bufferLease.TransferOwnership(out payloadLength);
+            TryPublishBufferCopyObservation(
+                QuicBufferCopyPath.FormattedStreamPayload,
+                QuicBufferCopyOperation.Format,
+                QuicBufferCopyDecisionBoundary.PacketPlan,
+                joinOperationSequence: null,
+                logicalBytes: streamDataLength,
+                copiedBytes: streamDataLength,
+                sourceSegmentCount:
+                    (streamData.IsEmpty ? 0 : 1)
+                    + (streamDataSuffix.IsEmpty ? 0 : 1),
+                requestedCapacityBytes: bufferLength,
+                retainedCapacityBytes: payload.Length);
             return true;
         }
         finally
