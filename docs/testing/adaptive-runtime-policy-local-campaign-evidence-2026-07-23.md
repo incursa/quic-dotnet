@@ -2430,3 +2430,78 @@ push occurred. The stopped 55,658-row send-turn-only transform remains
 The next authorized slice is the Stage 2 buffer ownership/copy inventory and
 the exact post-service evidence boundary needed before designing a forceable
 actor quantum. Active behavior and production activation remain unauthorized.
+
+## Stage 2 Buffer Ownership And Copy Observation
+
+Local inventory commit `4aa4367f` maps the current request, queue, formatting,
+combination, packet-protection, sent-retention, retransmission, endpoint,
+receive-pool, receive-segment, and protocol-critical ownership chains.
+Follow-up commit `4bd4cd19` fixes server listener option propagation for the
+actor-service mode and sink and adds its focused requirement-home proof.
+Local implementation commit `086ab431` adds the first behavior-neutral
+connection-local buffer-copy evidence contract. Nothing was pushed.
+
+`REQ-QUIC-CRT-0182` covers five current send-side paths:
+
+- flow-control retry request copies and capacity reuse;
+- oversized raw queued data;
+- formatted STREAM payloads;
+- combined legal Stage 1 payload prefixes; and
+- sent-packet plaintext retention.
+
+Every record reports the stable `buffer_copy_coalescing` axis ID, five
+contract/rule/snapshot/reason/provenance versions, a monotonic connection
+operation sequence, closed path and operation values, decision boundary and
+optional join sequence, logical and copied bytes, source/destination segments,
+requested and retained capacity, lifecycle, validity, and a buffer-lifetime
+latch. Force and shadow values are null. Selected and applied values are
+`legacy_current`, selection source is `legacy_current`, safety override is
+none, and fallback is false. There is no distinct conservative
+implementation, selection, forcing, shadow recommendation, or active
+behavior.
+
+The fixed-field epoch accumulator retains closed path and operation counts,
+logical/copied/capacity totals and maxima, monotonic first/last sequence, and
+validity union. It uses no queue, dictionary, or stream scan. Disabled paths
+return before record construction, and a rejecting or throwing evidence sink
+cannot change copy, ownership, terminal release, or runtime progress.
+
+The exact focused verification commands were:
+
+```powershell
+dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj `
+  -c Release --no-restore
+
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj `
+  -c Release --no-build `
+  --filter "FullyQualifiedName~REQ_QUIC_CRT_0182|FullyQualifiedName~REQ_QUIC_CRT_0181|FullyQualifiedName~QuicApplicationSendQueue|FullyQualifiedName~QuicConnectionRuntimeShardReceiveBufferOwnership|FullyQualifiedName~QuicRetransmissionQueue|FullyQualifiedName~QuicConnectionSendRuntime"
+```
+
+The final Release build passed with zero warnings and zero errors in 60.31
+seconds. The final actor, buffer-copy, application-send queue,
+receive-ownership, retransmission, and send-runtime band passed 71 of 71 tests
+with zero failures and zero skips in two seconds. `REQ-QUIC-CRT-0182`
+contributes five tests for exact configuration, server option propagation,
+legacy-only identity and aggregation, throwing-sink neutrality, and schema
+plus semantic validation. The revised specification, architecture, work item,
+and verification artifacts each pass direct validation against
+`model/model.schema.json`. The repository-wide core profile retains its
+previously recorded 2,692-error dirty baseline and was not used to hide or
+weaken focused trace validation.
+
+Terminal-release correlation, retained age, pool outstanding state,
+retransmission-clone observation, receive-segment observation, platform
+staging, bounded maintained retention counters, permanent post-service
+export, and a distinct conservative value remain open. Stage 2 unified row
+count is zero, with zero new dataset inclusions or exclusions. No campaign
+axis varied; receive credit and every Stage 1 axis remain applied as
+`legacy_current`, and buffer-copy behavior remains the existing
+`legacy_current` implementation.
+
+No BenchmarkDotNet run, local performance campaign, ProtocolLab deployment,
+large dataset transform, split construction, ML analysis, CI run, or push
+occurred. The stopped 55,658-row send-turn-only transform remains
+`diagnostic_incomplete`, append-only, and untouched. The next safe slice is
+bounded maintained retention and remaining ownership correlation before a
+distinct `memory_conservative` value is designed. Active behavior and
+production activation remain unauthorized.
