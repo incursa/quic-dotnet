@@ -3012,3 +3012,52 @@ release and queued-owner construction must remain distinct records and must
 not be relabeled as one lifetime. The remaining Stage 2 actor work-unit,
 fairness, force-readiness, and rollback gates remain ahead of any large
 dataset or ML analysis. Production activation remains unauthorized.
+
+## Stage 2 Oversized Raw Queue Buffer Release
+
+Local commit
+`63e457855410f3c4d3fa0f76283da1cfe918ba25` extends
+`REQ-QUIC-CRT-0185` to the `oversized_raw_queue` owner without changing
+application-send selection, queue order, partial advancement, packet
+construction, congestion, pacing, recovery, flow-control, or buffer limits.
+
+The oversized-write construction record now requests terminal correlation and
+stores the compact lifetime token beside the existing
+`QueuedRawStreamData` owner in `PendingApplicationSendRequest`. Partial
+advancement retains the original token and owner capacity. Successful
+formatting or combination releases with `CopiedToNextOwner`; stream removal
+uses `Canceled`; replacement uses `Replaced`; and connection terminal or
+disposal clear uses the exact lifecycle reason. Every observation follows the
+authoritative pool return, and a rejecting or throwing sink cannot block queue
+mutation or send progress. Release observation and raw wrapper v3 add this
+closed path while retaining v1 and v2 schemas and validator routing unchanged
+for prior evidence.
+
+The focused verification sequence is:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| Initial `REQ-QUIC-CRT-0182` plus application-send queue band | 58 passed, zero failed, zero skipped in two seconds | `accepted`; established successful handoff after partial advancement, replacement, cancellation, terminal, disposal, and throwing-sink behavior. |
+| First rebuild after adding the parameterized non-success test | Compile failed because a public xUnit theory exposed the internal `QuicBufferReleaseReason` parameter type | `diagnostic_only`; the test boundary was corrected to accept a byte and cast internally. No runtime or evidence record was produced by the failed build. |
+| Final Stage 2 requirement, queue, and raw-package band | 85 passed, zero failed, zero skipped in 13 seconds | `accepted`; includes v3 schema and exact-join validation plus contradictory oversized-path reason handling. |
+| Write-cancellation and CRT 0176, 0177, and 0180 band | 121 passed, zero failed, zero skipped in 25 seconds | `accepted`; cancellation, oversized-write continuation, rollback, and terminal behavior remain correct. |
+| Raw-host Release build | Zero warnings and zero errors in 3.97 seconds | `accepted`; v3 release records compile in the permanent host. |
+| PowerShell and JSON parse validation | Both edited scripts, both v3 schemas, and all four edited SpecTrace JSON artifacts parsed successfully | `accepted` contract syntax evidence. |
+| First direct SpecTrace one-liner | PowerShell parser rejected an empty pipe element after the `foreach` statement | `diagnostic_only`; command construction only. The corrected invocation wrapped the loop result before piping. |
+| Corrected direct SpecTrace model validation | The Stage 2 specification, architecture, work item, and verification artifact each returned `True` | `accepted` focused trace evidence. |
+
+No campaign axis varied and no new raw, unified, normalized, curated, split,
+or analysis rows were generated. Receive credit, all four Stage 1 axes,
+`actor_work_quantum`, and `buffer_copy_coalescing` remain applied as
+`legacy_current` outside earlier explicitly retained Stage 1 smoke treatments.
+Dataset inclusion and exclusion counts are unchanged. No BenchmarkDotNet run,
+performance claim, large campaign, ProtocolLab deployment, dataset transform,
+ML analysis, CI run, push, or active behavior occurred.
+
+Three owner paths are now correlated: `receive_segment`,
+`application_write_request`, and `oversized_raw_queue`. The next owner slice
+is formatted and combined application-send payload transfer, followed by
+sent-plaintext retention, retransmission, and endpoint ownership. Stage 2
+useful actor work units, ready-stream fairness observations, exactly-once
+repost design, force-readiness, and rollback remain ahead of any large dataset
+or ML analysis. Production activation remains unauthorized.
