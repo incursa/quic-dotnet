@@ -32,6 +32,9 @@ param(
 
     [switch] $CaptureTrace,
 
+    [ValidateSet("", "legacy_current", "conservative", "observe_only", "shadow")]
+    [string] $AdaptiveRuntimeApplicationSendTurnPolicy = "",
+
     [string[]] $RequiredCapability,
 
     [string[]] $PackageReference = @(),
@@ -200,6 +203,11 @@ function Assert-RunSelection {
 }
 
 $targetConfig = Get-PackageTargetConfig -Target $PackageTarget
+$applicationSendTurnPolicySelected =
+    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy)
+if ($applicationSendTurnPolicySelected -and $PackageTarget -ne "RawQuic") {
+    throw "AdaptiveRuntimeApplicationSendTurnPolicy is supported only for the RawQuic package target."
+}
 $requiredCapabilityWasSpecified = $PSBoundParameters.ContainsKey("RequiredCapability")
 if ([string]::IsNullOrWhiteSpace($Project)) {
     $Project = $targetConfig.DefaultProject
@@ -361,6 +369,7 @@ if (-not $UsePackageReferenceOnly) {
         -Project $Project `
         -Configuration $Configuration `
         -RuntimeIdentifier $RuntimeIdentifier `
+        -AdaptiveRuntimeApplicationSendTurnPolicy $AdaptiveRuntimeApplicationSendTurnPolicy `
         -AllowDirtySource `
         -Force
 

@@ -16,7 +16,7 @@ param(
     [ValidateSet("", "legacy_current", "immediate", "read_dominant_batch", "shadow")]
     [string] $AdaptiveRuntimeReceiveCreditPolicy = "",
 
-    [ValidateSet("", "legacy_current", "conservative")]
+    [ValidateSet("", "legacy_current", "conservative", "observe_only", "shadow")]
     [string] $AdaptiveRuntimeApplicationSendTurnPolicy = "",
 
     [switch] $RawQuicDebugLogging,

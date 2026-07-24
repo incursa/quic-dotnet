@@ -44,6 +44,23 @@ pwsh ./eng/protocol-lab/New-QuicDotNetProtocolLabPackage.ps1 `
 
 The raw target builds both `linux-x64` and `win-x64` payloads by default. Pass `-RuntimeIdentifier linux-x64` or `-RuntimeIdentifier win-x64` when you need a single-platform package.
 
+For an adaptive-runtime application-send turn campaign, stamp exactly one
+internal treatment into the raw package:
+
+```powershell
+pwsh ./eng/protocol-lab/New-QuicDotNetProtocolLabPackage.ps1 `
+  -PackageTarget RawQuic `
+  -ProtocolLabRoot ../protocol-lab `
+  -AdaptiveRuntimeApplicationSendTurnPolicy shadow `
+  -Force
+```
+
+The supported package identities are `legacy_current`, `conservative`,
+`observe_only`, and `shadow`. They remain internal measurement controls.
+Forced identities bypass selection only, observe-only emits no recommendation,
+shadow still applies `legacy_current`, and all runtime safety guards remain
+authoritative.
+
 ## Submit a Lab Run
 
 ```powershell
@@ -65,6 +82,7 @@ pwsh ./eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1 `
   -ControllerUri http://10.10.99.176:5088 `
   -ScenarioId quic.transport.multiplex.100x64kb,quic.transport.duplex-streams `
   -Protocol quic `
+  -AdaptiveRuntimeApplicationSendTurnPolicy shadow `
   -LoadProfileId smoke
 ```
 
@@ -74,7 +92,9 @@ throughput, multiplex, duplex, and peer-matrix scenarios, plus the
 `quicTransport`, `quicStreams`, `quicMultiplexing`, and `quicDuplex`
 capabilities. The package requires worker-installed `dotnet` and `pwsh`, does
 not require `bash`, and still requires the worker environment primitive
-`libmsquic`.
+`libmsquic`. The submit helper accepts the same application-send turn
+measurement identities as the package builder and rejects them for the HTTP/3
+package target.
 
 For raw QUIC, the run helper also builds and uploads the public ProtocolLab raw QUIC test-executor and scenario-pack packages with the `quic-dotnet-raw-dev` implementation package. Use `-PackageReference` to append prebuilt or environment-specific component package references when the controller should resolve an additional package that has already been uploaded. Use `-UsePackageReferenceOnly` when all selected packages have already been admitted by the controller and the helper should submit pinned package references without rebuilding or uploading.
 

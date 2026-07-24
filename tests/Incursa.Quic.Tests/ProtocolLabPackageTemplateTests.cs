@@ -298,6 +298,16 @@ public sealed class ProtocolLabPackageTemplateTests
 
         var runScript = File.ReadAllText(Path.Combine(repoRoot, "eng", "protocol-lab", "Invoke-QuicDotNetProtocolLabRun.ps1"));
         Assert.Contains("-AllowDirtySource", runScript);
+        Assert.Contains("AdaptiveRuntimeApplicationSendTurnPolicy", runScript);
+        Assert.Contains(
+            "-AdaptiveRuntimeApplicationSendTurnPolicy $AdaptiveRuntimeApplicationSendTurnPolicy",
+            runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeApplicationSendTurnPolicy is supported only for the RawQuic package target.",
+            runScript);
+        Assert.Contains(
+            "\"conservative\", \"observe_only\", \"shadow\"",
+            builderScript);
 
         Assert.True(File.Exists(Path.Combine(repoRoot, "eng", "protocol-lab", "src", "Incursa.ProtocolLab.Adapters.IncursaRawQuic", "Incursa.ProtocolLab.Adapters.IncursaRawQuic.csproj")));
         Assert.True(File.Exists(Path.Combine(repoRoot, "eng", "protocol-lab", "servers", "IncursaRawQuicServer", "IncursaRawQuicServer.csproj")));
