@@ -2133,7 +2133,8 @@ public sealed class Http3MinimalServerTests
             return;
         }
 
-        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler());
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler(), diagnostics);
         await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
         await OpenClientUnidirectionalStreamsAsync(connection);
 
@@ -2142,7 +2143,7 @@ public sealed class Http3MinimalServerTests
         await requestStream.WriteAsync(dataFrame, 0, dataFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
         await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
 
-        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection, diagnostics);
 
         Assert.Equal((ulong)Http3ErrorCode.FrameUnexpected, terminalState.Close.ApplicationErrorCode);
         await AssertPeerConnectionClosedAsync(connection, Http3ErrorCode.FrameUnexpected);
@@ -2203,18 +2204,7 @@ public sealed class Http3MinimalServerTests
         await requestStream.WriteAsync(cancelPushFrame, 0, cancelPushFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
         await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
 
-        QuicConnectionTerminalState terminalState;
-        try
-        {
-            terminalState = await WaitForConnectionCloseAsync(connection);
-        }
-        catch (TimeoutException exception)
-        {
-            string diagnosticSummary = string.Join(
-                " | ",
-                diagnostics.Events.Select(static diagnostic => $"{diagnostic.Kind}:{diagnostic.StreamId}:{diagnostic.FrameType}:{diagnostic.ErrorCode}:{diagnostic.Message}"));
-            throw new Xunit.Sdk.XunitException($"{exception.Message} Server diagnostics: {diagnosticSummary}");
-        }
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection, diagnostics);
 
         Assert.Equal((ulong)Http3ErrorCode.FrameUnexpected, terminalState.Close.ApplicationErrorCode);
         await AssertPeerConnectionClosedAsync(connection, Http3ErrorCode.FrameUnexpected);
@@ -2847,7 +2837,9 @@ public sealed class Http3MinimalServerTests
         return new Http3Response(int.Parse(status.Value), headers, [.. body], streamCompleted: true);
     }
 
-    private static async Task<QuicConnectionTerminalState> WaitForConnectionCloseAsync(QuicConnection connection)
+    private static async Task<QuicConnectionTerminalState> WaitForConnectionCloseAsync(
+        QuicConnection connection,
+        RecordingHttp3DiagnosticsSink? diagnostics = null)
     {
         DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(10);
         while (DateTimeOffset.UtcNow < deadline)
@@ -2860,7 +2852,12 @@ public sealed class Http3MinimalServerTests
             await Task.Delay(TimeSpan.FromMilliseconds(25));
         }
 
-        throw new TimeoutException("Timed out waiting for the peer HTTP/3 connection close.");
+        string diagnosticSuffix = diagnostics is null
+            ? string.Empty
+            : $" Server diagnostics: {string.Join(
+                " | ",
+                diagnostics.Events.Select(static diagnostic => $"{diagnostic.Kind}:{diagnostic.StreamId}:{diagnostic.FrameType}:{diagnostic.ErrorCode}:{diagnostic.Message}"))}";
+        throw new TimeoutException($"Timed out waiting for the peer HTTP/3 connection close.{diagnosticSuffix}");
     }
 
     private static async Task AssertPeerConnectionClosedAsync(QuicConnection connection, Http3ErrorCode expectedErrorCode)

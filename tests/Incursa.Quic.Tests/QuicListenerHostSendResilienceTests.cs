@@ -95,6 +95,7 @@ public sealed class QuicListenerHostSendResilienceTests
         int droppedSends = 0;
         int droppedFin = 0;
         int retransmittedFin = 0;
+        long droppedFinPacketNumber = -1;
 
         listenerHost = new QuicListenerHost(
             new IPEndPoint(IPAddress.Loopback, 0),
@@ -111,12 +112,18 @@ public sealed class QuicListenerHostSendResilienceTests
                     && Interlocked.Exchange(ref dropNextSend, 0) != 0)
                 {
                     Interlocked.Increment(ref droppedSends);
+                    Interlocked.Exchange(
+                        ref droppedFinPacketNumber,
+                        checked((long)GetLatestApplicationPacketNumber(serverConnection.Runtime)));
                     Volatile.Write(ref droppedFin, 1);
 
                     throw new SocketException((int)SocketError.NoBufferSpaceAvailable);
                 }
 
-                if (Volatile.Read(ref droppedFin) != 0 && carriesFin)
+                if (Volatile.Read(ref droppedFin) != 0
+                    && ApplicationPacketWithFinWasSentAfter(
+                        serverConnection!.Runtime,
+                        checked((ulong)Volatile.Read(ref droppedFinPacketNumber))))
                 {
                     Volatile.Write(ref retransmittedFin, 1);
                 }
@@ -570,6 +577,25 @@ public sealed class QuicListenerHostSendResilienceTests
             .Select(static entry => entry.Value)
             .FirstOrDefault();
 
+        return PacketCarriesFin(packet);
+    }
+
+    private static ulong GetLatestApplicationPacketNumber(QuicConnectionRuntime runtime)
+        => runtime.SendRuntime.SentPackets
+            .Where(static entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData)
+            .Max(static entry => entry.Key.PacketNumber);
+
+    private static bool ApplicationPacketWithFinWasSentAfter(
+        QuicConnectionRuntime runtime,
+        ulong packetNumber)
+        => runtime.SendRuntime.SentPackets
+            .Where(entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                && entry.Key.PacketNumber > packetNumber)
+            .Select(static entry => entry.Value)
+            .Any(PacketCarriesFin);
+
+    private static bool PacketCarriesFin(QuicConnectionSentPacket packet)
+    {
         ReadOnlySpan<byte> payload = packet.PlaintextPayload.Span;
         int offset = 0;
         while (offset < payload.Length)

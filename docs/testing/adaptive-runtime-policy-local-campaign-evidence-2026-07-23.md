@@ -1035,3 +1035,66 @@ checkpoint. The retained architecture, work-item, and verification homes keep
 the implementation and verification trace; the aggregate-specification
 migration remains an explicit separate backlog item. CI validation is not
 suppressed or weakened, and no performance task was executed in this run.
+
+### Correctness-Only CI Follow-Up Diagnostics
+
+GitHub Actions run `30060518822` at commit
+`16896ae0f275f41967906617d53a0aae46d9a556` retained three correctness
+failures: MAX_STREAMS recovery-arm assertion, HTTP/3 request-DATA-before-
+HEADERS close, and dropped server FIN recovery observation. The build and both
+package-smoke jobs passed; 9,793 tests passed, 3 skipped, and 3 failed. The
+previous native System.Net HTTP/3 interop failures were absent after the
+platform-support guard. This remains a failed-correctness row; it is not
+reclassified by the focused reruns below.
+
+The follow-up changes only test-side observability. HTTP/3 close waits can now
+include bounded server diagnostic events on timeout. The FIN recovery test now
+records a later application packet containing FIN rather than requiring the
+newest application packet at every socket-send callback to contain FIN. No
+runtime behavior, policy value, controller input, BenchmarkDotNet job, or
+ProtocolLab campaign changed.
+
+At the same source checkpoint, the following correctness build and focused
+test command passed 4 of 4:
+
+```powershell
+dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --configuration Release --no-restore
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --configuration Release --filter "FullyQualifiedName~TransitionStreamCapacityRelease_ArmsRecoveryForTheMaxStreamsPacket|FullyQualifiedName~RequestDataBeforeHeaders_ClosesConnectionWithFrameUnexpected|FullyQualifiedName~RequestCancelPushFrame_ClosesConnectionWithFrameUnexpectedBeforePayloadParsing|FullyQualifiedName~DroppedServerFinIsRecoveredAndShardContinuesProcessing" --logger "console;verbosity=normal"
+```
+
+The complete correctness-only Release suite was then run with:
+
+```powershell
+dotnet test Incursa.Quic.slnx --no-build --configuration Release --filter "Category!=Performance" --logger "console;verbosity=minimal"
+```
+
+It passed 9,796 tests, skipped 3, and failed none in 10m44s. The retained
+stdout is
+`C:\\Users\\Samuel\\AppData\\Local\\Temp\\quic-dotnet-ci-correctness-20260723\\full-release-correctness-after-diagnostics.stdout.log`
+with SHA-256
+`67EC1889BEA43B487E6B028016F14D81FBA81B673C92CD1C265D1A01437A66B7`.
+
+An additional ten sequential executions of the FIN recovery test all passed.
+They are retained as `diagnostic_only` local correctness evidence, not a
+replacement for the failed CI row and not a performance campaign. Raw outputs
+are at
+`C:\\Users\\Samuel\\AppData\\Local\\Temp\\quic-dotnet-ci-correctness-20260723\\listener-fin-recovery-diagnostic-{1..10}.log`;
+their SHA-256 inventory is:
+
+```text
+1  04C71A7BFBDFAC49E93045D4D2312E7941D3D94FE1AA64AABC6E2CFBB18B7AA9
+2  FC0904CA0CC736697C1D3A99271D73D348DA9E7BCD9616C0A249C0F42F0C009B
+3  CF24520C26419555084A6BD1B436A01A9DCA786A3DE3A3508E75ED0D339801D7
+4  1AA4B05DC8D47A9127A88DEDDEB38E439D86AE3773BC49509D30109FB8104E64
+5  1A4CB4D8E814248A1A1FCDFD8CC6418FEEB038D62EA5C76A109B9E86A939876D
+6  72F6E6C47C7ABDB1828A36523C5C29F1C5274EC5507C00FD3A55A67860699133
+7  A33FABE69A007A711C1CC1625753089199E5D88077B68BFE13A2E42EEAAAC075
+8  3BCBCB059F0025360FDA2B6F8852D52776DC1B6C35A21AFEAD1CD1A4014C0156
+9  5AAFECF2E1DD0242A1A1F0C3F9D4FD435EE457E7ADFFE7EC241666CA029ACEA1
+10 FBD33ABF25EF79777B76E4AADCAEA13337B51086109861B1E6C5D1CB8D3A24E1
+```
+
+The active adaptive-runtime axis remains
+`application_send_turn_planning=legacy_current`; all adjacent axes remain
+`legacy_current`. The next authorization gate is a green correctness-only CI
+result for this focused checkpoint. No adaptive policy behavior is active.
