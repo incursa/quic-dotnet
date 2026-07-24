@@ -1198,11 +1198,18 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         {
             bool accumulated =
                 unifiedAccumulator.TryPublish(in observation);
-            bool rawPublished = owner.bufferCopies.Writer.TryWrite(
-                new BufferCopyEvidenceRecord(
-                    "quic-buffer-copy-raw-v2",
-                    connectionKey,
-                    observation));
+            bool terminalReleaseTracked =
+                (observation.Validity
+                    & QuicBufferCopyValidity
+                        .MissingTerminalReleaseCorrelation)
+                == 0;
+            bool rawPublished =
+                !terminalReleaseTracked
+                || owner.bufferCopies.Writer.TryWrite(
+                    new BufferCopyEvidenceRecord(
+                        "quic-buffer-copy-raw-v2",
+                        connectionKey,
+                        observation));
             if (!rawPublished)
             {
                 owner.TryReportBufferEvidenceExportFailure(

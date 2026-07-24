@@ -236,4 +236,7 @@ joined by `connectionKey + operationSequence`; their schemas are
 `adaptive-runtime-buffer-copy-raw-v2` and
 `adaptive-runtime-buffer-release-raw-v1`. A bounded writer rejection emits
 `quic-buffer-evidence-export-failure-v1` and invalidates the evidence rather
-than changing ownership or runtime progress.
+than changing ownership or runtime progress. The raw construction stream is
+limited to lifetimes that promise terminal-release correlation; all other
+copy operations remain in the bounded epoch summary with explicit missing
+correlation.

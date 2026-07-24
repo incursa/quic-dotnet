@@ -97,12 +97,15 @@ Validate the separate buffer construction and terminal-release raw streams:
   -ReleasePath ./path/to/buffer-release-evidence.raw.jsonl
 ```
 
-The validator applies the wrapper and observation schemas independently,
-requires monotonic connection-local construction and release sequences, joins
-only by exact `connectionKey + operationSequence`, rejects duplicate or orphan
-releases, and verifies that path and retained capacity survive the lifetime.
-The first implemented terminal-release path is receive-segment delivery or
-reset. Other buffer-copy paths continue to report
+The raw construction stream contains only lifetimes that promise terminal
+release correlation; untracked operations remain in the fixed-field epoch
+summary with explicit missing correlation. The validator applies the wrapper
+and observation schemas independently, requires monotonic connection-local
+construction and release sequences, joins only by exact
+`connectionKey + operationSequence`, rejects duplicate or orphan releases, and
+verifies that path and retained capacity survive the lifetime. The first
+implemented terminal-release path is receive-segment delivery or reset. Other
+buffer-copy paths continue to report
 `MissingTerminalReleaseCorrelation` and remain non-forceable.
 
 The standalone validator remains strict about epoch-local exclusion flags.
