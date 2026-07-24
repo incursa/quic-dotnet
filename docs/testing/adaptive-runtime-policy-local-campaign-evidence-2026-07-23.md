@@ -1021,3 +1021,17 @@ An attempted run with a populated source-root override failed before restore or
 build, as required. This proves the pre-publish gate implementation; it does
 not publish a package, clear the retained `1.0.6` failure, update an internal
 pin, clear PR #10, authorize a controller job, or enable policy behavior.
+
+### CI Checkpoint: Legacy Aggregate-Specification Backlog
+
+The `077eca83` CI run confirmed that its two ProtocolLab package-smoke jobs
+passed, but it stopped before build and correctness tests when the changed
+legacy aggregate `SPEC-QUIC-INT.json` failed the published core schema. The
+artifact is already structurally incompatible with that schema (string-valued
+`related_artifacts` plus legacy top-level fields); the repository migration
+helper only normalized ordering and did not make it valid. The release-gate
+requirement wording is therefore restored to its prior text in the corrective
+checkpoint. The retained architecture, work-item, and verification homes keep
+the implementation and verification trace; the aggregate-specification
+migration remains an explicit separate backlog item. CI validation is not
+suppressed or weakened, and no performance task was executed in this run.
