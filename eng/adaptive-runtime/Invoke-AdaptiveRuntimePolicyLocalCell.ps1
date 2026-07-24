@@ -999,6 +999,8 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
     $campaignHostStdoutPath = Join-Path $sampleRoot 'campaign-host.stdout.log'
     $campaignHostStderrPath = Join-Path $sampleRoot 'campaign-host.stderr.log'
     $shadowRawPath = $null
+    $unifiedRawPath = $null
+    $unifiedFailureRawPath = $null
     $applicationSendTurnRawPath = $null
     $applicationSendTurnEvidenceRawPath = $null
     $campaignHostSourceStdout = $null
@@ -1029,6 +1031,81 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
         $reportedPolicy = [regex]::Match($campaignHostStdout, $reportedPolicyPattern).Groups[1].Value
         if ($reportedPolicy -ne $hostPolicy) {
             $contractFailures.Add("$sampleId`: requested host mode '$hostPolicy' but host reported '$reportedPolicy'.")
+        }
+
+        $expectsUnifiedEpochs =
+            $isReceiveCreditAxis -or $hostPolicy -ne 'unset'
+        $unifiedContract = [regex]::Match(
+            $campaignHostStdout,
+            'QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_CONTRACT=([^\r\n]+)')
+        $unifiedPrefix = 'QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON='
+        $unifiedLines = @(Get-Content -LiteralPath $campaignHostStdoutPath | Where-Object {
+            $_.StartsWith($unifiedPrefix, [StringComparison]::Ordinal)
+        } | ForEach-Object {
+            $_.Substring($unifiedPrefix.Length)
+        })
+        $unifiedFailurePrefix =
+            'QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_FAILURE_JSON='
+        $unifiedFailureLines = @(
+            Get-Content -LiteralPath $campaignHostStdoutPath |
+                Where-Object {
+                    $_.StartsWith(
+                        $unifiedFailurePrefix,
+                        [StringComparison]::Ordinal)
+                } |
+                ForEach-Object {
+                    $_.Substring($unifiedFailurePrefix.Length)
+                }
+            if (-not [string]::IsNullOrWhiteSpace($campaignHostSourceStderr) -and
+                (Test-Path -LiteralPath $campaignHostSourceStderr -PathType Leaf)) {
+                Get-Content -LiteralPath $campaignHostSourceStderr |
+                    Where-Object {
+                        $_.StartsWith(
+                            $unifiedFailurePrefix,
+                            [StringComparison]::Ordinal)
+                    } |
+                    ForEach-Object {
+                        $_.Substring($unifiedFailurePrefix.Length)
+                    }
+            }
+        )
+        if ($expectsUnifiedEpochs) {
+            if (-not $unifiedContract.Success -or
+                $unifiedContract.Groups[1].Value -ne
+                    'adaptive-runtime-unified-epoch-raw-v1') {
+                $contractFailures.Add(
+                    "$sampleId`: unified adaptive-runtime epoch contract was not reported.")
+            }
+
+            if ($unifiedLines.Count -eq 0) {
+                $contractFailures.Add(
+                    "$sampleId`: no unified adaptive-runtime epochs were retained.")
+            }
+            else {
+                $unifiedRawPath = Join-Path $sampleRoot 'adaptive-runtime-unified-epochs.raw.jsonl'
+                [System.IO.File]::WriteAllLines(
+                    $unifiedRawPath,
+                    $unifiedLines,
+                    [System.Text.UTF8Encoding]::new($false))
+                [void] $artifactPaths.Add($unifiedRawPath)
+            }
+
+            if ($unifiedFailureLines.Count -ne 0) {
+                $unifiedFailureRawPath = Join-Path $sampleRoot 'adaptive-runtime-unified-epoch-export-failures.raw.jsonl'
+                [System.IO.File]::WriteAllLines(
+                    $unifiedFailureRawPath,
+                    $unifiedFailureLines,
+                    [System.Text.UTF8Encoding]::new($false))
+                [void] $artifactPaths.Add($unifiedFailureRawPath)
+                $contractFailures.Add(
+                    "$sampleId`: $($unifiedFailureLines.Count) unified adaptive-runtime epoch export failure record(s) were retained.")
+            }
+        }
+        elseif ($unifiedContract.Success -or
+            $unifiedLines.Count -ne 0 -or
+            $unifiedFailureLines.Count -ne 0) {
+            $contractFailures.Add(
+                "$sampleId`: disabled observation emitted unified adaptive-runtime evidence.")
         }
 
         if ($isReceiveCreditAxis) {
@@ -1217,6 +1294,8 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
             $campaignHostStdoutPath,
             $campaignHostStderrPath,
             $shadowRawPath,
+            $unifiedRawPath,
+            $unifiedFailureRawPath,
             $applicationSendTurnRawPath,
             $applicationSendTurnEvidenceRawPath,
             $pressureArtifactPath,

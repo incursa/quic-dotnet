@@ -289,6 +289,14 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains(
             "QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=adaptive-runtime-epoch-raw-v2",
             rawQuicServer);
+        Assert.Contains(
+            "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_CONTRACT=adaptive-runtime-unified-epoch-raw-v1",
+            rawQuicServer);
+        Assert.Contains(
+            "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON=",
+            rawQuicServer);
+        Assert.Contains("ActorServiceObservationMode", rawQuicServer);
+        Assert.Contains("BufferCopyObservationMode", rawQuicServer);
         Assert.Contains("PostServiceBoundary", rawQuicServer);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY", builderScript);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG: 1", builderScript);

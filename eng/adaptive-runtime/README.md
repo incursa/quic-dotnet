@@ -66,6 +66,27 @@ adjacent axis. An axis without an event remains present as missing and
 unlatched; the later curated `epoch_summary` join keeps operation and plan keys
 null rather than inventing an operation identity.
 
+Export and validate the permanent joined receive-credit, Stage 1, actor, and
+buffer raw rows:
+
+```powershell
+./eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1 `
+  -HostLogPath ./path/to/campaign-host.stdout.log `
+  -OutputDirectory ./.artifacts/adaptive-runtime/unified-raw-export
+```
+
+The exporter reads only
+`QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON=` records, validates
+`adaptive-runtime-unified-epoch-raw-v1`, and writes append-only raw JSONL,
+semantic validation, and a checksum manifest. Semantic validation requires
+matching connection-observation, receive-credit, post-service boundary, and
+Stage 1 epoch keys; monotonic unique connection epochs; exactly four Stage 1
+axis records per row; and no more than one non-legacy applied axis. Supply
+retained stderr logs as additional `-HostLogPath` values to preserve
+`QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_FAILURE_JSON=` records. Any such record
+classifies the export `invalid_contract` and causes a nonzero exit after the
+failure file and manifest are retained.
+
 The standalone validator remains strict about epoch-local exclusion flags.
 The dataset pipeline uses the explicit
 `-AllowLegacyResultLevelEnvironmentExclusions` compatibility gate for retained

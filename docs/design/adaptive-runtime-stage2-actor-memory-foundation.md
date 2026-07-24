@@ -175,10 +175,16 @@ out-of-order, or nonpositive epoch is rejected before any accumulator resets.
 The joined record is
 `adaptive-runtime-unified-epoch-evidence-v1`.
 
-This boundary does not itself enable permanent raw-file export. A later
-harness slice must configure the same unified accumulator as every relevant
-connection-local evidence sink and retain sink failures, sequence gaps, raw
-records, commands, hashes, and run provenance.
+The raw QUIC harness now configures the same unified accumulator as every
+relevant connection-local evidence sink whenever an adaptive execution is
+requested. It writes one
+`adaptive-runtime-unified-epoch-raw-v1` wrapper per sealed epoch while
+retaining the earlier receive-credit and Stage 1 compatibility streams.
+The append-only exporter retains source hashes, raw rows, validation summary,
+and manifest; checks exact monotonic joins and one varied axis; and preserves
+bounded-channel failures as explicit `invalid_contract` evidence. Command,
+binary, host, workload, classification, and checksum inventory remain the
+campaign runner's provenance layer and are not accepted from runtime inputs.
 
 ## Explicitly Missing V1 Inputs
 
@@ -258,7 +264,8 @@ cancellation, disposal, or terminal work.
 
 ## Verification
 
-Requirement homes `REQ-QUIC-CRT-0181` and `REQ-QUIC-CRT-0183` verify:
+Requirement homes `REQ-QUIC-CRT-0181`, `REQ-QUIC-CRT-0183`, and
+`REQ-QUIC-CRT-0184` verify:
 
 - exact observe-only mode and sink pairing;
 - one versioned record per observed shard dispatch;
@@ -273,7 +280,13 @@ Requirement homes `REQ-QUIC-CRT-0181` and `REQ-QUIC-CRT-0183` verify:
 - versioned source, disposition, actor-publication, release, and fault state;
 - exact connection-observation, receive-credit, and boundary join keys;
 - rejection before reset for an invalid join; and
-- schema-valid boundary and unified evidence records.
+- schema-valid boundary and unified evidence records;
+- one permanent raw row containing receive credit, all four Stage 1 axes,
+  actor service, and buffer-copy summaries;
+- exact connection-local join, ordering, duplicate, and one-varied-axis
+  validation;
+- append-only raw, validation, manifest, source hash, and count retention; and
+- explicit export-failure retention and invalid-contract classification.
 
 Existing shard, deadline, receive-buffer ownership, work-item layout, metrics,
 and stream-capacity homes remain authoritative. Performance measurements stay

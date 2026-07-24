@@ -315,6 +315,176 @@ public sealed class REQ_QUIC_CRT_0183
         }
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0184")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void PermanentUnifiedRawExporterPreservesJoinedRowsAndManifest()
+    {
+        RecordingUnifiedSink sink = new();
+        QuicAdaptiveRuntimeStage1PolicySnapshot configured =
+            CreateLegacyStage1Policy();
+        QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator accumulator =
+            new(in configured, sink);
+        QuicActorServiceObservation actor = CreateActorObservation();
+        QuicBufferCopyObservation buffer = CreateBufferObservation();
+        QuicAdaptiveRuntimeConnectionObservation connection =
+            CreateConnectionObservation(epochSequence: 1);
+        QuicReceiveCreditPolicySnapshot receiveCredit =
+            CreateReceiveCreditSnapshot(epochSequence: 1);
+        QuicAdaptiveRuntimePostServiceBoundary boundary =
+            CreateBoundary(epochSequence: 1);
+        Assert.True(accumulator.TryPublish(in actor));
+        Assert.True(accumulator.TryPublish(in buffer));
+        Assert.True(accumulator.TryPublish(
+            in connection,
+            in receiveCredit,
+            in boundary));
+        QuicAdaptiveRuntimeUnifiedEpochEvidence evidence =
+            Assert.Single(sink.Evidence);
+
+        string repoRoot =
+            AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        string temporaryDirectory = Path.Combine(
+            repoRoot,
+            ".artifacts",
+            "adaptive-runtime",
+            $"unified-raw-exporter-test-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(temporaryDirectory);
+        try
+        {
+            JsonSerializerOptions jsonOptions =
+                new(JsonSerializerDefaults.Web);
+            jsonOptions.Converters.Add(new JsonStringEnumConverter());
+            string rawJson = JsonSerializer.Serialize(
+                new
+                {
+                    schemaVersion =
+                        "adaptive-runtime-unified-epoch-raw-v1",
+                    connectionKey = "connection-0001",
+                    epoch = evidence,
+                },
+                jsonOptions);
+            string hostLogPath = Path.Combine(
+                temporaryDirectory,
+                "host.stdout.log");
+            File.WriteAllLines(
+                hostLogPath,
+                [
+                    "QUIC_ENDPOINT=127.0.0.1:4433",
+                    "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON="
+                        + rawJson,
+                ]);
+            string outputDirectory = Path.Combine(
+                temporaryDirectory,
+                "export");
+
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult result =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+                    "-HostLogPath",
+                    hostLogPath,
+                    "-OutputDirectory",
+                    outputDirectory);
+
+            Assert.True(result.ExitCode == 0, result.Output);
+            using JsonDocument summary = JsonDocument.Parse(result.Output);
+            Assert.Equal(
+                1,
+                summary.RootElement.GetProperty("rowCount").GetInt32());
+            Assert.Equal(
+                4,
+                summary.RootElement.GetProperty("axisRecordCount").GetInt32());
+            Assert.Equal(
+                1,
+                summary.RootElement
+                    .GetProperty("actorObservationRowCount")
+                    .GetInt32());
+            Assert.Equal(
+                1,
+                summary.RootElement
+                    .GetProperty("bufferObservationRowCount")
+                    .GetInt32());
+            Assert.True(File.Exists(Path.Combine(
+                outputDirectory,
+                "adaptive-runtime-unified-raw-epochs.jsonl")));
+            Assert.True(File.Exists(Path.Combine(
+                outputDirectory,
+                "raw-validation-summary.json")));
+            Assert.True(File.Exists(Path.Combine(
+                outputDirectory,
+                "raw-export-manifest.json")));
+
+            string failedHostLogPath = Path.Combine(
+                temporaryDirectory,
+                "failed-host.log");
+            File.WriteAllLines(
+                failedHostLogPath,
+                [
+                    "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON="
+                        + rawJson,
+                    "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_FAILURE_JSON="
+                        + JsonSerializer.Serialize(
+                            new
+                            {
+                                schemaVersion =
+                                    "adaptive-runtime-unified-epoch-export-failure-v1",
+                                connectionKey = "connection-0001",
+                                connectionEpochSequence = 2,
+                                rawEpochPublished = true,
+                                stage1EpochPublished = true,
+                                unifiedEpochPublished = false,
+                            },
+                            jsonOptions),
+                ]);
+            string failedOutputDirectory = Path.Combine(
+                temporaryDirectory,
+                "failed-export");
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult failed =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+                    "-HostLogPath",
+                    failedHostLogPath,
+                    "-OutputDirectory",
+                    failedOutputDirectory);
+            Assert.NotEqual(0, failed.ExitCode);
+            Assert.True(File.Exists(Path.Combine(
+                failedOutputDirectory,
+                "raw-export-failures.jsonl")));
+            using JsonDocument failedManifest = JsonDocument.Parse(
+                File.ReadAllText(Path.Combine(
+                    failedOutputDirectory,
+                    "raw-export-manifest.json")));
+            Assert.Equal(
+                "invalid_contract",
+                failedManifest.RootElement
+                    .GetProperty("classification")
+                    .GetString());
+            Assert.Equal(
+                1,
+                failedManifest.RootElement
+                    .GetProperty("exportFailureCount")
+                    .GetInt32());
+
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult second =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+                    "-HostLogPath",
+                    hostLogPath,
+                    "-OutputDirectory",
+                    outputDirectory);
+            Assert.NotEqual(0, second.ExitCode);
+            Assert.Contains(
+                "Append-only output path already exists",
+                second.Output,
+                StringComparison.Ordinal);
+        }
+        finally
+        {
+            Directory.Delete(temporaryDirectory, recursive: true);
+        }
+    }
+
     private static QuicAdaptiveRuntimeStage1PolicySnapshot
         CreateLegacyStage1Policy()
         => QuicAdaptiveRuntimeStage1ConfiguredPolicy.Create(

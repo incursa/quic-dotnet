@@ -16,7 +16,8 @@
   "satisfies": [
     "REQ-QUIC-CRT-0181",
     "REQ-QUIC-CRT-0182",
-    "REQ-QUIC-CRT-0183"
+    "REQ-QUIC-CRT-0183",
+    "REQ-QUIC-CRT-0184"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicActorServiceObservation.cs",
@@ -32,6 +33,9 @@
     "src/Incursa.Quic/QuicConnectionStreamState.cs",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeActorServiceEvidence.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeBufferCopyEvidence.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeUnifiedRawEvidence.ps1",
+    "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+    "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
     "schemas/adaptive-runtime-actor-service-observation-v1.schema.json",
     "schemas/adaptive-runtime-actor-service-epoch-v1.schema.json",
     "schemas/adaptive-runtime-buffer-copy-observation-v2.schema.json",
@@ -39,10 +43,12 @@
     "schemas/adaptive-runtime-epoch-raw-v2.schema.json",
     "schemas/adaptive-runtime-post-service-boundary-v1.schema.json",
     "schemas/adaptive-runtime-unified-epoch-evidence-v1.schema.json",
+    "schemas/adaptive-runtime-unified-epoch-raw-v1.schema.json",
+    "schemas/adaptive-runtime-unified-raw-export-manifest-v1.schema.json",
     "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md",
     "docs/design/adaptive-runtime-stage2-buffer-ownership-copy-inventory.md"
   ],
-  "design_summary": "A connection can independently opt into actor-service and buffer-copy ObserveOnly sinks. The existing shard records a compact immutable actor value after each complete transition and effect dispatch. Existing ownership boundaries record legacy_current retry copies, oversized raw queue copies, formatted payloads, combined payloads, sent-plaintext retention, owned path-migration retransmission clones, and receive-segment insertion or capacity reuse with logical and copied bytes, segment and capacity counts, join scope, versions, reason, latch, lifecycle, and explicit missing state. A configure-once connection-local operation observer links the retransmission queue and stream bookkeeping to the runtime evidence sink; both producer and sink failures are guarded so they cannot affect progress or ownership. Fixed-field v2 accumulators build bounded summaries while retained v1 schemas remain immutable. An eligible epoch callback now occurs only after effect dispatch, follow-on measurement, actor publication, and work-item or connection-event resource release. A versioned boundary repeats the connection epoch sequence and end tick and records source, disposition, actor publication, release completion, and explicit missing or fault state. One guarded accumulator seals the four Stage 1 axis records, actor summary, and buffer summary only when connection observation, receive-credit snapshot, and boundary keys match monotonically. The legacy shard drain and copy or ownership paths remain the only applied behavior.",
+  "design_summary": "A connection can independently opt into actor-service and buffer-copy ObserveOnly sinks. The existing shard records a compact immutable actor value after each complete transition and effect dispatch. Existing ownership boundaries record legacy_current retry copies, oversized raw queue copies, formatted payloads, combined payloads, sent-plaintext retention, owned path-migration retransmission clones, and receive-segment insertion or capacity reuse with logical and copied bytes, segment and capacity counts, join scope, versions, reason, latch, lifecycle, and explicit missing state. A configure-once connection-local operation observer links the retransmission queue and stream bookkeeping to the runtime evidence sink; both producer and sink failures are guarded so they cannot affect progress or ownership. Fixed-field v2 accumulators build bounded summaries while retained v1 schemas remain immutable. An eligible epoch callback now occurs only after effect dispatch, follow-on measurement, actor publication, and work-item or connection-event resource release. A versioned boundary repeats the connection epoch sequence and end tick and records source, disposition, actor publication, release completion, and explicit missing or fault state. One guarded accumulator seals the four Stage 1 axis records, actor summary, and buffer summary only when connection observation, receive-credit snapshot, and boundary keys match monotonically. The raw host configures that accumulator for every adaptive execution and emits a joined raw record plus retained compatibility streams. The append-only exporter validates exact joins, unique ordering, four Stage 1 records, and one varied axis; retains checksums and counts; and makes bounded-channel failure an explicit invalid_contract record. The legacy shard drain and copy or ownership paths remain the only applied behavior.",
   "data_and_state_considerations": "The observations and accumulators use enums, immutable record structs, fixed scalar fields, and connection-local accumulator locks. They introduce no per-packet dependency injection, dictionary, model, global lock, or unbounded state. The application-send queue, sent-packet store, and retransmission queue maintain total retained count, capacity, and oldest time at existing ownership transitions so their total retention snapshots no longer scan; application-send queue-cause and sent-packet storage or packet-number-span detail remain diagnostic scans. Missing runnable-connection count, oldest shard item age, deadline lateness, reviewed useful-work units, exact buffer release, retained age, and pool outstanding state remain explicit. Wake grouping is complete only when the run manifest proves full-shard observation coverage.",
   "edge_cases_and_constraints": [
     "Observation may measure existing follow-on counts but cannot limit or defer them.",
@@ -66,7 +72,6 @@
     "Primitive counts can be mistaken for a reviewed scalar quantum; UsefulWorkUnitsUndefined prevents that claim."
   ],
   "open_questions": [
-    "Which permanent raw exporter will retain joined records, sequence gaps, sink failures, commands, hashes, and run provenance without adding unbounded connection state?",
     "Which bounded shard-pressure snapshot can expose runnable connection count and oldest item age without a global lock?"
   ]
 }

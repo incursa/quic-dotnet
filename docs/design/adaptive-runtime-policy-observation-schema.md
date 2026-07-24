@@ -7,8 +7,8 @@ title: "Adaptive Runtime Connection Observation Schema"
 Status: unified Stage 1 four-axis runtime emission, materialization, semantic
 validation, and the first correctness smoke are checkpointed; the Stage 2
 actor-service observation, bounded epoch, versioned post-service boundary, and
-internal Stage 1/Stage 2 join contracts are implemented without a forceable
-actor policy or permanent raw-file exporter; broader correctness,
+permanent Stage 1/Stage 2 raw join contracts are implemented without a
+forceable actor policy; broader correctness,
 independent-host, and active-policy review remain open
 
 The controller consumes one immutable, connection-local observation per
@@ -123,6 +123,21 @@ state. Successful capture seals all three summaries under the same connection
 epoch key. Permanent run, host, binary, workload, checksum, classification,
 and raw-file provenance remains a harness/export responsibility and is not
 invented by this connection-local record.
+
+The raw QUIC host configures that same accumulator as the receive-credit,
+four Stage 1, actor-service, and buffer-copy evidence sink whenever an
+adaptive execution is requested. It emits
+`adaptive-runtime-unified-epoch-raw-v1` under one connection key while
+retaining the prior receive-credit and Stage 1 compatibility records. The
+append-only
+[`../../eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1`](../../eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1)
+exporter validates
+[`../../schemas/adaptive-runtime-unified-epoch-raw-v1.schema.json`](../../schemas/adaptive-runtime-unified-epoch-raw-v1.schema.json),
+exact monotonic join keys, exactly four Stage 1 records per row, and at most
+one non-legacy applied axis. It retains source hashes, row counts, actor and
+buffer observation counts, validation output, and any bounded-channel export
+failure records. An export failure produces `invalid_contract`; it is never
+silently treated as a complete dataset.
 
 ## Stage 2 Buffer Copy Observation V2
 

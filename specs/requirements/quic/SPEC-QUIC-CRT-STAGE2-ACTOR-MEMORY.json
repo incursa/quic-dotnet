@@ -20,7 +20,7 @@
     "VER-QUIC-CRT-0069"
   ],
   "purpose": "Define bounded versioned actor service and buffer-copy observations before any actor-work, fairness, buffer, or backpressure policy becomes forceable.",
-  "scope": "This specification covers behavior-neutral per-connection actor service and selected send-side and receive-side buffer-copy observations, bounded epoch aggregation, a versioned post-service Stage 1 and Stage 2 join boundary, explicit missing-state handling, schema and semantic validation, and the safety gates required before actor_work_quantum or buffer_copy_coalescing. It does not define a permanent raw-file exporter, forceable actor policy, scalar work-unit threshold, distinct conservative buffer implementation, backpressure policy, active_internal behavior, or production activation.",
+  "scope": "This specification covers behavior-neutral per-connection actor service and selected send-side and receive-side buffer-copy observations, bounded epoch aggregation, a versioned post-service Stage 1 and Stage 2 join boundary, append-only permanent raw export, explicit missing-state handling, schema and semantic validation, and the safety gates required before actor_work_quantum or buffer_copy_coalescing. It does not define a forceable actor policy, scalar work-unit threshold, distinct conservative buffer implementation, backpressure policy, active_internal behavior, or production activation.",
   "context": "The shard already exposes aggregate queue-delay, service-time, wake, packet-run, and follow-on metrics, but it does not expose a versioned connection-attributable evidence contract or an exactly-once repost seam. Stage 2 must preserve the current drain loop and record honest primitives before proposing a quantum.",
   "open_questions": [
     "Which cooperative transition and effect boundaries can yield while preserving exactly-once repost, timer priority, recovery, terminal drain, and buffer ownership?",
@@ -106,7 +106,34 @@
       },
       "notes": [
         "The connection-local joined record does not invent run, host, binary, workload, checksum, or classification provenance.",
-        "Permanent raw-file export and campaign emission remain a later harness slice."
+        "Permanent raw-file export is governed separately by REQ-QUIC-CRT-0184."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0184",
+      "title": "Export append-only unified Stage 1 and Stage 2 raw evidence",
+      "statement": "The permanent raw QUIC evidence host MUST configure one connection-local accumulator as the receive-credit, all four Stage 1, actor-service, and buffer-copy evidence sink for every adaptive execution; emit one versioned raw record under one connection key only after an exact post-service join; preserve retained receive-credit and Stage 1 compatibility records without relabeling; validate unique monotonic connection epoch keys, exact observation, snapshot, boundary, Stage 1, actor, and buffer joins, exactly four Stage 1 axis records, and no more than one non-legacy applied axis per row; retain append-only source hashes, raw rows, validation counts, manifests, and export-failure records; classify any export failure as invalid_contract; and preserve legacy_current adjacent policy application and behavior-neutral evidence failure handling.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0067"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0068"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0069"
+        ],
+        "upstream_refs": [
+          "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
+          "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeUnifiedRawEvidence.ps1",
+          "schemas/adaptive-runtime-unified-epoch-raw-v1.schema.json",
+          "schemas/adaptive-runtime-unified-raw-export-manifest-v1.schema.json"
+        ]
+      },
+      "notes": [
+        "Scenario, payload, requested concurrency, peer, URL, application identity, and workload provenance remain outside the production controller input contract.",
+        "The exporter is evidence infrastructure and does not authorize a Stage 2 policy value or active behavior."
       ]
     }
   ]
