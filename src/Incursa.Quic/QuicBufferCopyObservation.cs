@@ -182,11 +182,11 @@ internal readonly record struct QuicBufferReleaseObservation(
     QuicBufferReleaseValidity Validity)
 {
     internal const string CurrentObservationContractVersion =
-        "quic-buffer-release-observation-v5";
+        "quic-buffer-release-observation-v6";
     internal const string CurrentReasonVersion =
-        "quic-buffer-release-reason-v5";
+        "quic-buffer-release-reason-v6";
     internal const string CurrentProvenanceVersion =
-        "quic-buffer-release-provenance-v5";
+        "quic-buffer-release-provenance-v6";
 
     public string ObservationContractVersion =>
         CurrentObservationContractVersion;

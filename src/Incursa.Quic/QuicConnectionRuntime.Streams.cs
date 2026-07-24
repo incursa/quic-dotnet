@@ -1777,16 +1777,19 @@ internal sealed partial class QuicConnectionRuntime
                         copyOffset += queuedWrite.StreamPayloadLength;
                     }
 
-                    TryPublishBufferCopyObservation(
-                        QuicBufferCopyPath.CombinedApplicationSend,
-                        QuicBufferCopyOperation.Combine,
-                        QuicBufferCopyDecisionBoundary.PacketPlan,
-                        joinOperationSequence: null,
-                        logicalBytes: combinedPayloadLength,
-                        copiedBytes: combinedPayloadLength,
-                        sourceSegmentCount: selectedWrites.Length,
-                        requestedCapacityBytes: combinedPayloadLength,
-                        retainedCapacityBytes: combinedPayloadOwner.Length);
+                    combinedPayloadLifetimeToken =
+                        TryPublishBufferCopyObservation(
+                            QuicBufferCopyPath.CombinedApplicationSend,
+                            QuicBufferCopyOperation.Combine,
+                            QuicBufferCopyDecisionBoundary.PacketPlan,
+                            joinOperationSequence: null,
+                            logicalBytes: combinedPayloadLength,
+                            copiedBytes: combinedPayloadLength,
+                            sourceSegmentCount: selectedWrites.Length,
+                            requestedCapacityBytes: combinedPayloadLength,
+                            retainedCapacityBytes:
+                                combinedPayloadOwner.Length,
+                            trackTerminalRelease: true);
 
                     combinedPayload = combinedPayloadOwner.AsMemory(0, combinedPayloadLength);
                     if (QuicApplicationSendQueue.TryGetOnlyDistinctStreamId(selectedWrites, out ulong onlyStreamId))

@@ -234,7 +234,7 @@ stream reset emits exactly one `Reset` release. Capacity reuse does not create
 a second token. Construction and release are retained as separate raw records
 joined by `connectionKey + operationSequence`; current schemas are
 `adaptive-runtime-buffer-copy-raw-v2` and
-`adaptive-runtime-buffer-release-raw-v5`. Release v1 through v4 remain
+`adaptive-runtime-buffer-release-raw-v6`. Release v1 through v5 remain
 immutable compatibility contracts for their earlier closed path sets. A bounded
 writer rejection emits
 `quic-buffer-evidence-export-failure-v1` and invalidates the evidence rather
@@ -274,6 +274,8 @@ sent-retention owner. That new owner now receives its own terminally correlated
 token before the source owner closes with `CopiedToNextOwner`. A path-migration
 clone likewise creates a distinct `retransmission_clone` token for its distinct
 array. Release observation/raw v4 added formatted and retransmission-clone
-paths; v5 adds sent-plaintext retention. Combined payload construction,
-protected packet owners, and endpoint handoff remain explicitly uncorrelated
-and non-forceable.
+paths; v5 added sent-plaintext retention. A combined application-send owner
+now receives its own token after copying the selected queue entries and keeps
+it through packet tracking, loss, retransmission, ACK, or exact terminal
+cleanup. Release observation/raw v6 adds that closed path. Protected packet
+owners and endpoint handoff remain explicitly uncorrelated and non-forceable.
