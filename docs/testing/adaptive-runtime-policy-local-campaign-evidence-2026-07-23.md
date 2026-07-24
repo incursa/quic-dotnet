@@ -978,3 +978,20 @@ the case for a reviewed patch release but does not publish the package, alter
 the internal `1.0.6` pin, clear the released-package failure, establish
 source/package parity for a published artifact, enable an adaptive policy, or
 authorize a ProtocolLab campaign.
+
+### Published-Version Fix Containment Audit
+
+The local release-candidate result was followed by a read-only audit of every
+currently published repository tag newer than the failing `v1.0.6` package.
+`v1.0.7` resolves to `4ae0c3bf75d6f28e2c705bd12bcf593d5343f9df`, dated
+2026-05-31, and does not contain the required retry commit
+`79e995c3ee6a373964028809cfd2c1fed0ff1401`. Neither `v1.0.6` nor `v1.0.7`
+therefore contains the known stream-capacity replay correction. Updating the
+ProtocolLab internal pin to `1.0.7` would be a relabeling workaround rather
+than a correctness resolution and is not authorized.
+
+The release prerequisite remains a new maintainer-reviewed patch version from
+an exact post-`79e995c3` commit, followed by the unchanged package-backed Raw
+QUIC conformance suite against that published identity. This audit changes no
+package, tag, NuGet state, dependency pin, ProtocolLab deployment, controller
+job, or runtime policy behavior.
