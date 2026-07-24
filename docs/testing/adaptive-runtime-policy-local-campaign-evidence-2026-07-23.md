@@ -1589,6 +1589,138 @@ neutrality cell is retained negative, the broader neutrality matrix and
 independent-host campaign remain open, and the next portfolio axis remains
 unauthorized.
 
+## Stage 2 Receive-Segment Terminal-Release Correlation
+
+Local commit
+`d964eab318dcac98e7002dd597d6cd998c29f84e` implements the
+first `REQ-QUIC-CRT-0185` ownership slice:
+
+- a compact immutable receive-buffer lifetime token containing only the
+  connection-local operation sequence, closed path, construction tick,
+  retained capacity, and token contract version;
+- token preservation across partial reads and capacity reuse without a
+  second token;
+- one `Delivered` release after authoritative pool return or one `Reset`
+  release after authoritative reset return;
+- separate `quic-buffer-copy-raw-v2` construction and
+  `quic-buffer-release-raw-v1` release records joined only by
+  `connectionKey + operationSequence`;
+- explicit `quic-buffer-evidence-export-failure-v1` fallback records for a
+  bounded writer rejection;
+- schema and semantic validation for sequence, duplicate, orphan, path,
+  capacity, validity, and exact construction-to-release joins; and
+- throwing or rejecting producer/sink neutrality without changing receive
+  ownership, progress, reset, or delivery.
+
+Local commit
+`207cadad815c18745ffeabb477513a15efedb801` bounds future
+construction export to lifetimes that promise terminal-release correlation.
+Untracked operations remain in the fixed-field epoch summary with
+`MissingTerminalReleaseCorrelation`; they are not duplicated into the
+operation-level raw stream.
+
+The retained diagnostic and verification sequence is:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| First resumed test-project build | Failed because `QuicBufferCopyEpochAccumulator` did not implement the initially combined release-sink overload | `diagnostic_only`; the contract was corrected to independent copy and release sink interfaces so an epoch-only accumulator cannot silently discard release evidence. |
+| Second test-project build | Failed one xUnit analyzer rule because `Assert.Single` followed a LINQ filter | `diagnostic_only`; the test now uses the predicate overload without changing coverage. |
+| First `REQ-QUIC-CRT-0182` run | 14 passed and one failed because the new PowerShell validator had a missing line-continuation token | `diagnostic_only`; parser failure retained and corrected. |
+| Second `REQ-QUIC-CRT-0182` run | 14 passed and one failed because PowerShell `Test-Json` could not resolve external local schema references | `diagnostic_only`; the immutable raw wrapper schemas now carry their bounded observation definitions and the companion observation schemas remain independently validated. |
+| Final test-project Release build | Zero warnings and zero errors in 12.78 seconds | `accepted` focused build evidence. |
+| Final receive ownership, requirement, post-service, and package band | 71 passed, zero failed, zero skipped in 16 seconds | `accepted`; includes delivery, reset, partial read, rejecting construction, throwing release observer, exact raw joins, shard receive ownership, and package contracts. |
+| Final raw-host Release build before smoke | Zero warnings and zero errors in 1.64 seconds | `accepted`; proves the permanent construction, release, and failure streams compile. |
+| Direct SpecTrace model validation | `SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY`, `ARC-QUIC-CRT-0067`, `WI-QUIC-CRT-0068`, and `VER-QUIC-CRT-0069` each returned `True` | `accepted` focused trace evidence for `REQ-QUIC-CRT-0185`. |
+| Repository-wide core SpecTrace validation | 2,692 existing migration/schema/link errors | `diagnostic_only`; the broad baseline remains unhealthy and is not relabeled as a failure introduced by these four individually valid Stage 2 artifacts. |
+| Post-smoke bounded-export raw-host build | Zero warnings and zero errors in 20.54 seconds | `accepted`; future raw construction output contains only terminal-release-tracked lifetimes. |
+| Post-smoke raw package contract band | 27 passed, zero failed, zero skipped in 11 seconds | `accepted`; permanent raw-host contract strings and package surfaces remain present. |
+
+The exact-source local correctness smoke used the clean committed source
+`d964eab318dcac98e7002dd597d6cd998c29f84e`:
+
+```powershell
+pwsh -NoProfile -File .\eng\adaptive-runtime\Invoke-AdaptiveRuntimePolicyLocalCell.ps1 `
+  -CampaignId adaptive-stage2-receive-release-smoke-local-20260724-r001 `
+  -CellId duplex-64kb-x1-s16 `
+  -PolicyAxis application_send_turn_planning `
+  -SequenceProtocol ABBA `
+  -PolicyA legacy_current `
+  -PolicyB conservative `
+  -WarmupSeconds 0 `
+  -DurationSeconds 1 `
+  -OutputRoot .\.artifacts\adaptive-runtime\adaptive-stage2-receive-release-smoke-local-20260724-r001 `
+  -NoRestore
+```
+
+All four samples exited zero, validated the exact payload, and reported zero
+failed operations, timeouts, protocol errors, cancellation failures, disposal
+failures, or invariant violations. The result remains
+`invalid_environment`: target and generator shared this workstation and the
+protocol-lab-internal checkout was dirty. It is a correctness and evidence
+contract smoke, not a performance or independent-host claim. Source and
+binary identities are:
+
+- quic-dotnet:
+  `d964eab318dcac98e7002dd597d6cd998c29f84e`, clean;
+- protocol-lab:
+  `dd518aee19d73fb1477320644785fa070b1b62f1`, clean;
+- protocol-lab-internal:
+  `a61027b522a569a5e56bf07800fe4ca714e2b353`, dirty;
+- raw-host binary SHA-256:
+  `ed13c843345de7230f7b4e8d10d80632c9e89c1d6052a3e329d7c9a485c9906b`;
+  and
+- runtime binary SHA-256:
+  `dc0027a026912be80e06a68a7d9bc4de0a743181e11ba0a776d8de952c38d34a`.
+
+The runner retained 61 checksum-inventoried files under
+`.artifacts/adaptive-runtime/adaptive-stage2-receive-release-smoke-local-20260724-r001`.
+Its permanent records contain:
+
+- 189 unified Stage 1 plus Stage 2 epochs and 756 Stage 1 axis records;
+- zero rows with more than one non-legacy applied axis;
+- `application_send_turn_planning` applied `legacy_current` in 96 epochs and
+  `conservative` in 93 epochs;
+- `application_send_batch_formation`, `queued_send_burst_budget`, and
+  `oversized_write_admission_quantum` applied `legacy_current` in all 189
+  epochs;
+- 111,917 retained construction records in this pre-filter smoke, including
+  15,243 terminal-release-tracked receive constructions;
+- 15,243 terminal-release records and 15,243 exact joins;
+- zero missing tracked releases, duplicate constructions, duplicate releases,
+  orphan releases, path mismatches, capacity mismatches, or invalid release
+  records; and
+- 96,674 explicitly untracked construction records retained by this smoke.
+  Commit `207cadad` prevents those untracked records from being repeated in
+  future operation-level raw streams; the original smoke remains unchanged.
+
+Per-sample tracked construction/release counts were 3,868, 3,592, 3,932, and
+3,851. Construction raw files total 120,674,190 bytes and release raw files
+total 8,181,450 bytes. The larger pre-filter construction output is retained
+as `diagnostic_only`, not deleted or rewritten.
+
+The local result, cell manifest, and checksum inventory SHA-256 values are:
+
+- `b64918c56f0bfbf9da7f63f01316356fd8464cf12c7220d85d555f417d0a6e5d`;
+- `eae8cefab0efcb0f7b3079006c1380fa92356e9d85b3f2995e2318469ce3bccd`;
+  and
+- `413ff19ad9449230c82ef8506e416fcba480abca0ca1f33c9eed9768e6fb1414`.
+
+The cell contributes one retained `invalid_environment` classification, zero
+policy-eligible rows, and 189 unified epochs that would remain excluded by
+environment provenance. No normalized, curated, split, or analysis dataset
+was created. No BenchmarkDotNet run, performance claim, large campaign,
+independent-host ProtocolLab deployment, dataset transform, ML analysis, CI
+run, or push occurred.
+
+The remaining Stage 2 order is unchanged: extend exact terminal release to the
+remaining observed owners; define reviewed actor work units and real
+cross-stream/cross-connection fairness outcomes; prove cooperative
+yield/repost safety; design `actor_work_quantum`; finish the
+`buffer_copy_coalescing` conservative value and rollback contract; and review
+conservative-only `adaptive_backpressure`. Only after those Stage 2 gates are
+complete will another large dataset or ML-analysis pass begin. Active behavior
+and production activation remain unauthorized.
+
 ### Evidence and trace synchronization verification
 
 After synchronizing the observation, controller, seam, campaign, shadow,
@@ -2834,8 +2966,8 @@ No BenchmarkDotNet run, performance claim, large campaign, ProtocolLab
 deployment, dataset transform, ML analysis, CI run, or push occurred. The
 stopped 55,658-row single-axis transform remains `diagnostic_incomplete`,
 append-only, and untouched. The next Stage 2 architecture slice is exact
-terminal-release correlation, followed by reviewed useful actor work units,
-runnable/fairness observations, exactly-once repost design, and only then
-force-readiness for `actor_work_quantum` and
+terminal-release correlation for the remaining owner paths, followed by
+reviewed useful actor work units, runnable/fairness observations, exactly-once
+repost design, and only then force-readiness for `actor_work_quantum` and
 `buffer_copy_coalescing`. Active behavior and production activation remain
 unauthorized.
