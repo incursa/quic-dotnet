@@ -44,8 +44,9 @@ pool/process scoped.
 
 The runtime already owns several trustworthy primitives:
 
-- application-send queue buffer count, retained capacity, queue cause, and
-  oldest enqueue time;
+- application-send queue buffer count, retained capacity, and oldest enqueue
+  time as maintained O(1) total state, plus queue-cause detail through the
+  existing diagnostic scan;
 - receive retained segment count and rented capacity;
 - sent-packet and retransmission retained owners and ages;
 - request, packet-plan, actor-turn, and logical-write identities;
@@ -140,8 +141,9 @@ Before a forceable value is implemented:
 1. extend the implemented connection-local copy-operation counters from the
    write-request, oversized raw queue, formatted payload, combined-send, and
    sent-retention points to retransmission clones and receive segments;
-2. add bounded maintained retained-count/byte state where the current
-   diagnostic snapshot would otherwise scan;
+2. extend the implemented maintained application-send queue count, capacity,
+   and oldest-time state to sent-packet and retransmission retention where the
+   current diagnostic snapshots still scan;
 3. define exact transfer and terminal-release correlation without retaining
    object identity in the dataset;
 4. add ownership tests for admission failure, partial construction, blocked

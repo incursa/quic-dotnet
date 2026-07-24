@@ -94,6 +94,8 @@ internal sealed class QuicApplicationSendQueue
 
     private readonly List<PendingApplicationSendRequest> pendingRequests = [];
     private long nextSequence;
+    private long retainedCapacityBytes;
+    private ulong? oldestEnqueuedAtMicros;
     private bool pendingRequestsOrdered = true;
 
     internal QuicApplicationSendQueue(long initialSequence = 0)
@@ -107,29 +109,45 @@ internal sealed class QuicApplicationSendQueue
         ulong? nowMicros = null,
         QuicApplicationSendQueueCause? queueCause = null)
     {
+        if (!queueCause.HasValue)
+        {
+            return new QuicRetentionSnapshot(
+                pendingRequests.Count,
+                retainedCapacityBytes,
+                nowMicros.HasValue
+                    ? QuicRetentionSnapshot.GetOldestAgeMilliseconds(
+                        nowMicros.Value,
+                        oldestEnqueuedAtMicros)
+                    : null);
+        }
+
         long retainedBytes = 0;
         long retainedBuffers = 0;
-        ulong? oldestEnqueuedAtMicros = null;
+        ulong? causeOldestEnqueuedAtMicros = null;
         foreach (PendingApplicationSendRequest pendingRequest in pendingRequests)
         {
-            if (queueCause.HasValue && pendingRequest.QueueCause != queueCause.Value)
+            if (pendingRequest.QueueCause != queueCause.Value)
             {
                 continue;
             }
 
             retainedBuffers++;
             retainedBytes += pendingRequest.StreamPayload.Length;
-            oldestEnqueuedAtMicros = !oldestEnqueuedAtMicros.HasValue
-                || pendingRequest.FirstEnqueuedAtMicros < oldestEnqueuedAtMicros.Value
+            causeOldestEnqueuedAtMicros =
+                !causeOldestEnqueuedAtMicros.HasValue
+                || pendingRequest.FirstEnqueuedAtMicros
+                    < causeOldestEnqueuedAtMicros.Value
                 ? pendingRequest.FirstEnqueuedAtMicros
-                : oldestEnqueuedAtMicros;
+                : causeOldestEnqueuedAtMicros;
         }
 
         return new QuicRetentionSnapshot(
             retainedBuffers,
             retainedBytes,
             nowMicros.HasValue
-                ? QuicRetentionSnapshot.GetOldestAgeMilliseconds(nowMicros.Value, oldestEnqueuedAtMicros)
+                ? QuicRetentionSnapshot.GetOldestAgeMilliseconds(
+                    nowMicros.Value,
+                    causeOldestEnqueuedAtMicros)
                 : null);
     }
 
@@ -146,9 +164,6 @@ internal sealed class QuicApplicationSendQueue
         Span<long> retainedBytesByCause = stackalloc long[QueueCauseCount];
         Span<ulong> oldestEnqueuedAtMicrosByCause = stackalloc ulong[QueueCauseCount];
         Span<bool> hasOldestEnqueuedAtMicrosByCause = stackalloc bool[QueueCauseCount];
-        long retainedBuffers = 0;
-        long retainedBytes = 0;
-        ulong? oldestEnqueuedAtMicros = null;
 
         foreach (PendingApplicationSendRequest pendingRequest in pendingRequests)
         {
@@ -157,13 +172,6 @@ internal sealed class QuicApplicationSendQueue
             {
                 throw new InvalidOperationException($"Unknown application-send queue cause: {pendingRequest.QueueCause}.");
             }
-
-            retainedBuffers++;
-            retainedBytes += pendingRequest.StreamPayload.Length;
-            oldestEnqueuedAtMicros = !oldestEnqueuedAtMicros.HasValue
-                || pendingRequest.FirstEnqueuedAtMicros < oldestEnqueuedAtMicros.Value
-                ? pendingRequest.FirstEnqueuedAtMicros
-                : oldestEnqueuedAtMicros;
 
             retainedBuffersByCause[causeIndex]++;
             retainedBytesByCause[causeIndex] += pendingRequest.StreamPayload.Length;
@@ -188,9 +196,11 @@ internal sealed class QuicApplicationSendQueue
         }
 
         return new QuicRetentionSnapshot(
-            retainedBuffers,
-            retainedBytes,
-            QuicRetentionSnapshot.GetOldestAgeMilliseconds(nowMicros, oldestEnqueuedAtMicros));
+            pendingRequests.Count,
+            retainedCapacityBytes,
+            QuicRetentionSnapshot.GetOldestAgeMilliseconds(
+                nowMicros,
+                this.oldestEnqueuedAtMicros));
     }
 
     public bool HasPendingWritesForStream(ulong streamId)
@@ -247,8 +257,8 @@ internal sealed class QuicApplicationSendQueue
         int distinctStreamCount = 0;
         ulong logicalBacklogBytes = 0;
         ulong retainedBytes = 0;
-        ulong oldestEnqueuedAtMicros = 0;
-        bool hasOldestEnqueuedAtMicros = false;
+        ulong boundedOldestEnqueuedAtMicros = 0;
+        bool hasBoundedOldestEnqueuedAtMicros = false;
         bool complete = queuedWriteCount <= maximumObservedWrites;
 
         for (int index = 0; index < observedWriteCount; index++)
@@ -279,11 +289,13 @@ internal sealed class QuicApplicationSendQueue
                 retainedBytes += retainedBufferLength;
             }
 
-            if (!hasOldestEnqueuedAtMicros
-                || pendingWrite.FirstEnqueuedAtMicros < oldestEnqueuedAtMicros)
+            if (!hasBoundedOldestEnqueuedAtMicros
+                || pendingWrite.FirstEnqueuedAtMicros
+                    < boundedOldestEnqueuedAtMicros)
             {
-                oldestEnqueuedAtMicros = pendingWrite.FirstEnqueuedAtMicros;
-                hasOldestEnqueuedAtMicros = true;
+                boundedOldestEnqueuedAtMicros =
+                    pendingWrite.FirstEnqueuedAtMicros;
+                hasBoundedOldestEnqueuedAtMicros = true;
             }
 
             if (distinctStreamIds[..distinctStreamCount].Contains(pendingWrite.StreamId))
@@ -300,8 +312,10 @@ internal sealed class QuicApplicationSendQueue
             distinctStreamIds[distinctStreamCount++] = pendingWrite.StreamId;
         }
 
-        ulong oldestAgeMicros = hasOldestEnqueuedAtMicros && nowMicros >= oldestEnqueuedAtMicros
-            ? nowMicros - oldestEnqueuedAtMicros
+        ulong oldestAgeMicros =
+            hasBoundedOldestEnqueuedAtMicros
+            && nowMicros >= boundedOldestEnqueuedAtMicros
+            ? nowMicros - boundedOldestEnqueuedAtMicros
             : 0;
         return new QuicApplicationSendTurnQueueSnapshot(
             (uint)queuedWriteCount,
@@ -339,6 +353,8 @@ internal sealed class QuicApplicationSendQueue
             pendingRequests.Add(request);
             pendingRequestsOrdered = false;
         }
+
+        RecordEnqueue(request);
     }
 
     public void EnqueueRawStreamData(
@@ -373,6 +389,8 @@ internal sealed class QuicApplicationSendQueue
             pendingRequests.Add(request);
             pendingRequestsOrdered = false;
         }
+
+        RecordEnqueue(request);
     }
 
     public bool TryGetLatestQueuedWriteForStream(ulong streamId, out PendingApplicationSendRequest queuedWrite)
@@ -445,6 +463,8 @@ internal sealed class QuicApplicationSendQueue
                 StreamPayloadLength = streamPayloadLength,
                 StreamPayloadOffset = 0,
             };
+            retainedCapacityBytes +=
+                streamPayload.Length - queuedWrite.StreamPayload.Length;
             return true;
         }
 
@@ -619,6 +639,7 @@ internal sealed class QuicApplicationSendQueue
     public bool TryRemoveQueuedWritesForStream(ulong streamId, bool returnPayloads)
     {
         bool removedAny = false;
+        bool removedOldest = false;
         for (int index = pendingRequests.Count - 1; index >= 0; index--)
         {
             if (pendingRequests[index].StreamId != streamId)
@@ -631,9 +652,17 @@ internal sealed class QuicApplicationSendQueue
                 QuicBufferPool.ReturnBytes(pendingRequests[index].StreamPayload);
             }
 
+            RecordRemoval(
+                pendingRequests[index],
+                ref removedOldest);
             pendingRequests.RemoveAt(index);
             ResetOrderWhenEmpty();
             removedAny = true;
+        }
+
+        if (removedOldest)
+        {
+            RecomputeOldestEnqueuedAtMicros();
         }
 
         return removedAny;
@@ -654,8 +683,15 @@ internal sealed class QuicApplicationSendQueue
                 QuicBufferPool.ReturnBytes(pendingWrite.StreamPayload);
             }
 
+            bool removedOldest = false;
+            RecordRemoval(pendingWrite, ref removedOldest);
             pendingRequests.RemoveAt(index);
             ResetOrderWhenEmpty();
+            if (removedOldest)
+            {
+                RecomputeOldestEnqueuedAtMicros();
+            }
+
             return true;
         }
 
@@ -667,6 +703,7 @@ internal sealed class QuicApplicationSendQueue
         bool returnPayloads = false)
     {
         bool removedAny = false;
+        bool removedOldest = false;
         foreach (PendingApplicationSendRequest selectedWrite in selectedWrites)
         {
             for (int index = 0; index < pendingRequests.Count; index++)
@@ -681,11 +718,19 @@ internal sealed class QuicApplicationSendQueue
                     QuicBufferPool.ReturnBytes(pendingRequests[index].StreamPayload);
                 }
 
+                RecordRemoval(
+                    pendingRequests[index],
+                    ref removedOldest);
                 pendingRequests.RemoveAt(index);
                 ResetOrderWhenEmpty();
                 removedAny = true;
                 break;
             }
+        }
+
+        if (removedOldest)
+        {
+            RecomputeOldestEnqueuedAtMicros();
         }
 
         return removedAny;
@@ -699,7 +744,47 @@ internal sealed class QuicApplicationSendQueue
         }
 
         pendingRequests.Clear();
+        retainedCapacityBytes = 0;
+        oldestEnqueuedAtMicros = null;
         pendingRequestsOrdered = true;
+    }
+
+    private void RecordEnqueue(
+        in PendingApplicationSendRequest pendingRequest)
+    {
+        retainedCapacityBytes += pendingRequest.StreamPayload.Length;
+        if (!oldestEnqueuedAtMicros.HasValue
+            || pendingRequest.FirstEnqueuedAtMicros
+                < oldestEnqueuedAtMicros.Value)
+        {
+            oldestEnqueuedAtMicros =
+                pendingRequest.FirstEnqueuedAtMicros;
+        }
+    }
+
+    private void RecordRemoval(
+        in PendingApplicationSendRequest pendingRequest,
+        ref bool removedOldest)
+    {
+        retainedCapacityBytes -= pendingRequest.StreamPayload.Length;
+        removedOldest |= oldestEnqueuedAtMicros.HasValue
+            && pendingRequest.FirstEnqueuedAtMicros
+                == oldestEnqueuedAtMicros.Value;
+    }
+
+    private void RecomputeOldestEnqueuedAtMicros()
+    {
+        ulong? oldest = null;
+        foreach (PendingApplicationSendRequest pendingRequest in pendingRequests)
+        {
+            if (!oldest.HasValue
+                || pendingRequest.FirstEnqueuedAtMicros < oldest.Value)
+            {
+                oldest = pendingRequest.FirstEnqueuedAtMicros;
+            }
+        }
+
+        oldestEnqueuedAtMicros = oldest;
     }
 
     internal static int SelectQueuedApplicationSendBatchCount(

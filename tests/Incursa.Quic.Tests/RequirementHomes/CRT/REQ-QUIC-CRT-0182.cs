@@ -155,6 +155,72 @@ public sealed class REQ_QUIC_CRT_0182
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void MaintainedQueueRetentionTracksOwnershipTransitions()
+    {
+        QuicApplicationSendQueue queue = new();
+        byte[] first = QuicBufferPool.RentBytes(
+            20,
+            QuicBufferPoolOwner.QueuedRawStreamData);
+        byte[] second = QuicBufferPool.RentBytes(
+            40,
+            QuicBufferPoolOwner.QueuedRawStreamData);
+        byte[] replacement = QuicBufferPool.RentBytes(
+            80,
+            QuicBufferPoolOwner.QueuedRawStreamData);
+        queue.Enqueue(
+            streamId: 1,
+            priority: 0,
+            first,
+            streamPayloadLength: 20,
+            firstEnqueuedAtMicros: 1_000);
+        queue.Enqueue(
+            streamId: 2,
+            priority: 0,
+            second,
+            streamPayloadLength: 40,
+            firstEnqueuedAtMicros: 2_000);
+
+        QuicRetentionSnapshot initial =
+            queue.CaptureRetentionSnapshot(nowMicros: 5_000);
+        Assert.Equal(2, initial.RetainedBufferCount);
+        Assert.Equal(
+            first.Length + second.Length,
+            initial.RetainedByteCount);
+        Assert.Equal(4, initial.OldestAgeMilliseconds);
+
+        Assert.True(queue.TryGetLatestQueuedWriteForStream(
+            streamId: 1,
+            out PendingApplicationSendRequest firstRequest));
+        Assert.True(queue.TryReplaceQueuedWritePayload(
+            firstRequest.Sequence,
+            replacement,
+            streamPayloadLength: 80));
+        QuicRetentionSnapshot replaced =
+            queue.CaptureRetentionSnapshot(nowMicros: 5_000);
+        Assert.Equal(
+            replacement.Length + second.Length,
+            replaced.RetainedByteCount);
+
+        Assert.True(queue.TryRemoveQueuedWrite(
+            firstRequest.Sequence,
+            returnPayloads: true));
+        QuicRetentionSnapshot remaining =
+            queue.CaptureRetentionSnapshot(nowMicros: 5_000);
+        Assert.Equal(1, remaining.RetainedBufferCount);
+        Assert.Equal(second.Length, remaining.RetainedByteCount);
+        Assert.Equal(3, remaining.OldestAgeMilliseconds);
+
+        queue.Clear();
+        QuicRetentionSnapshot empty =
+            queue.CaptureRetentionSnapshot(nowMicros: 5_000);
+        Assert.Equal(0, empty.RetainedBufferCount);
+        Assert.Equal(0, empty.RetainedByteCount);
+        Assert.Null(empty.OldestAgeMilliseconds);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void ObservationAndEpochSummaryPassSchemaAndSemanticValidation()
     {
         string repoRoot =
