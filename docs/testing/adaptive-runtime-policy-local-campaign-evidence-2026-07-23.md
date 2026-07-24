@@ -3061,3 +3061,57 @@ sent-plaintext retention, retransmission, and endpoint ownership. Stage 2
 useful actor work units, ready-stream fairness observations, exactly-once
 repost design, force-readiness, and rollback remain ahead of any large dataset
 or ML analysis. Production activation remains unauthorized.
+
+## Stage 2 Formatted Send And Retransmission Buffer Release
+
+Local commit
+`9dcb2d7f220984bfd75ce1bc5440daa16e34a140` extends
+`REQ-QUIC-CRT-0185` to `formatted_stream_payload` and
+`retransmission_clone` owners without changing application-send selection,
+queue ordering, protection, congestion, pacing, recovery, flow-control, or
+buffer limits.
+
+Every successfully formatted STREAM payload now receives a compact lifetime
+token. The token follows the same array through the application-send queue,
+sent-packet retention, loss, direct retransmission, acknowledgment, reset
+suppression, replacement, terminal discard, and final runtime disposal.
+Rebuilds that copy into a distinct sent-retention owner close the original
+token with `CopiedToNextOwner`; terminal correlation for that new owner remains
+a later slice. Path migration gives each distinct retransmission clone its own
+token. Release publication follows authoritative pool return, and an observer
+exception cannot change recovery, acknowledgment, disposal, or queue progress.
+Release observation and raw wrapper v4 add these two closed paths while
+retaining v1 through v3 as immutable compatibility contracts.
+
+The focused verification sequence is:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| Interrupted recovery-focused band from the prior execution window | No final output was recoverable after application compaction, and no `dotnet` process remained | `diagnostic_only`; the identical command was rerun rather than inferring a result. |
+| Identical retransmission-queue, outstanding-stream-index, RFC 9001 4.0.7, and CRT 0156 rerun | 28 passed, zero failed, zero skipped in 138 milliseconds | `accepted` recovery and loss-bookkeeping evidence. |
+| First runtime Release build after the final-owner drain | Zero warnings and zero errors in 10.01 seconds | `accepted` focused runtime build. |
+| First test-project rebuild after adding disposal and observer-failure tests | Compile failed because the fixture supplied a nonexistent `AckEliciting` retransmission-plan parameter and a nonexistent decision-boundary enum value | `diagnostic_only`; test construction only. The fixture was corrected to the existing plan contract and `PacketPlan` boundary. No runtime or evidence record was produced. |
+| Final test-project Release build | Zero warnings and zero errors in 13.95 seconds | `accepted` focused build evidence. |
+| Final Stage 2 requirement, sent-packet ownership, application-send queue, and raw-package band | 105 passed, zero failed, zero skipped in 13 seconds | `accepted`; includes ACK, loss/retransmission transfer, terminal discard, disposal drain, replacement, contradictory reasons, schema v4, exact joins, and throwing-observer neutrality. |
+| Final retransmission-queue, outstanding-stream-index, RFC 9001 4.0.7, and CRT 0156 band | 28 passed, zero failed, zero skipped in 173 milliseconds | `accepted`; queue order, loss, retransmission, and recovery behavior remain correct after final integration. |
+| Raw-host Release build | Zero warnings and zero errors in 3.88 seconds | `accepted`; v4 release records compile in the permanent host. |
+| PowerShell, JSON, and focused trace-home parse validation | Both edited scripts, both v4 schemas, and the Stage 2 specification, architecture, work item, and verification JSON parsed successfully; all four trace homes exist | `accepted` focused contract syntax and trace-location evidence. |
+| Repository-wide `core` SpecTrace validator | Reported the existing migration baseline of 2,692 schema and unresolved-reference errors across the repository | `diagnostic_only`; the global validator is not a clean gate for this slice. No error was deleted, relabeled, or treated as evidence that the focused artifacts passed the global profile. |
+
+No campaign axis varied and no new raw, unified, normalized, curated, split,
+or analysis rows were generated. Receive credit, all four Stage 1 axes,
+`actor_work_quantum`, and `buffer_copy_coalescing` remain applied as
+`legacy_current` outside earlier explicitly retained Stage 1 smoke treatments.
+Dataset inclusion and exclusion counts are unchanged. No BenchmarkDotNet run,
+performance claim, large campaign, ProtocolLab deployment, dataset transform,
+ML analysis, CI run, push, or active behavior occurred.
+
+Five owner paths are now terminally correlated: `receive_segment`,
+`application_write_request`, `oversized_raw_queue`,
+`formatted_stream_payload`, and `retransmission_clone`. Combined application
+payloads, sent-plaintext retention copies, protected packet owners, and
+endpoint handoff remain explicitly uncorrelated and non-forceable. Those owner
+paths precede Stage 2 useful actor work units, ready-stream fairness
+observations, exactly-once repost design, force-readiness, and rollback. No
+large dataset or ML analysis is authorized before those architecture gates.
+Production activation remains unauthorized.
