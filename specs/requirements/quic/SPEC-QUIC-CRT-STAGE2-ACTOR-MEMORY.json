@@ -72,8 +72,8 @@
           "docs/design/adaptive-runtime-policy-axis-roadmap.md",
           "docs/design/adaptive-runtime-policy-seam-inventory.md",
           "docs/design/adaptive-runtime-stage2-buffer-ownership-copy-inventory.md",
-          "schemas/adaptive-runtime-buffer-copy-observation-v1.schema.json",
-          "schemas/adaptive-runtime-buffer-copy-epoch-v1.schema.json"
+          "schemas/adaptive-runtime-buffer-copy-observation-v2.schema.json",
+          "schemas/adaptive-runtime-buffer-copy-epoch-v2.schema.json"
         ]
       },
       "notes": [

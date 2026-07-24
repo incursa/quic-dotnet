@@ -101,25 +101,28 @@ actor summaries are not silently inserted into that row. A later exact
 post-service export boundary must define deterministic join keys and preserve
 sample scope before permanent unified campaign emission.
 
-## Stage 2 Buffer Copy Observation V1
+## Stage 2 Buffer Copy Observation V2
 
-The behavior-neutral buffer foundation uses
-[`../../schemas/adaptive-runtime-buffer-copy-observation-v1.schema.json`](../../schemas/adaptive-runtime-buffer-copy-observation-v1.schema.json)
+The current behavior-neutral buffer foundation uses
+[`../../schemas/adaptive-runtime-buffer-copy-observation-v2.schema.json`](../../schemas/adaptive-runtime-buffer-copy-observation-v2.schema.json)
 and
-[`../../schemas/adaptive-runtime-buffer-copy-epoch-v1.schema.json`](../../schemas/adaptive-runtime-buffer-copy-epoch-v1.schema.json).
-The first closed path set covers flow-control retry ownership,
+[`../../schemas/adaptive-runtime-buffer-copy-epoch-v2.schema.json`](../../schemas/adaptive-runtime-buffer-copy-epoch-v2.schema.json).
+The retained v1 schemas remain immutable for already-recorded evidence. The v2
+closed path set covers flow-control retry ownership,
 oversized-raw-queue admission, STREAM payload formatting, multi-write
-combination, and sent-packet plaintext retention. The runtime records logical
-and copied bytes, source and destination segment counts, requested and
-retained capacity, boundary and optional join sequence, versions, legacy
-identity, reason, buffer-lifetime latch, lifecycle, and explicit validity.
+combination, sent-packet plaintext retention, retransmission cloning, and
+receive-segment insertion or capacity reuse. The record carries logical and
+copied bytes, source and destination segment counts, requested and retained
+capacity, boundary and optional join sequence, versions, legacy identity,
+reason, buffer-lifetime latch, lifecycle, and explicit validity.
 
 This is not yet a selectable axis. `forcedValue` and
 `shadowRecommendation` are null; `selectedValue` and `appliedValue` are both
 `legacy_current`; `selectionSource` is `legacy_current`; and fallback is
 false. Terminal-release correlation, retained age, and pool outstanding state
-remain explicit missing flags. Retransmission-clone and receive-segment paths
-remain outside v1 coverage rather than being fabricated as zero.
+remain explicit missing flags. The v2 schema defines retransmission-clone and
+receive-segment values; separate mechanism tests establish actual producer
+coverage.
 
 The fixed-field accumulator retains closed path and operation counts plus
 logical, copied, requested-capacity, and retained-capacity totals and maxima.

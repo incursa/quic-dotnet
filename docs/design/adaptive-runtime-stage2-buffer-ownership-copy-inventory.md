@@ -66,18 +66,20 @@ unbounded scan to the actor or packet hot path.
 
 ## Proposed Observation Contract
 
-The first behavior-neutral contract emits and accumulates a compact copy
-operation with:
+The current behavior-neutral v2 contract extends the retained v1 send-side
+contract with closed retransmission-clone and receive-segment values. It emits
+and accumulates a compact copy operation with:
 
-- `quic-buffer-copy-observation-v1`;
+- `quic-buffer-copy-observation-v2`;
 - monotonic connection-local operation sequence;
 - one closed path ID from the inventory above;
+- one closed operation and decision-boundary value;
 - logical byte count and copied byte count;
 - source segment count and destination segment count;
 - requested capacity and actual retained capacity;
-- source ownership kind and destination ownership kind;
-- whether the path reused, copied, formatted, combined, retained, transferred,
-  or released storage;
+- a path-derived current ownership class without object identity;
+- whether the path reused, copied, formatted, combined, retained, or cloned
+  storage;
 - construction, packet-plan, actor-turn, logical-write, or receive-operation
   join key when one honestly exists;
 - safety-authoritative blocked or fallback reason;
@@ -96,6 +98,12 @@ in analysis-only run provenance and are joined through deterministic keys.
 The disabled path must not construct a record, allocate, scan, or take a
 global lock. Observe-only publication must be guarded so sink failure cannot
 change ownership or progress.
+
+The v1 observation and epoch schemas remain immutable for retained evidence.
+The v2 epoch adds fixed `retransmissionCloneCount`, `receiveSegmentCount`, and
+`cloneCount` fields. Defining those values does not claim their runtime
+producers are complete; producer coverage requires separate mechanism and
+ownership verification.
 
 ## Future Axis Contract
 

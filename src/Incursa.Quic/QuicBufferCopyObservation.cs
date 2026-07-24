@@ -16,6 +16,8 @@ internal enum QuicBufferCopyPath : byte
     FormattedStreamPayload = 2,
     CombinedApplicationSend = 3,
     SentPacketPlaintextRetention = 4,
+    RetransmissionClone = 5,
+    ReceiveSegment = 6,
 }
 
 internal enum QuicBufferCopyOperation : byte
@@ -25,6 +27,7 @@ internal enum QuicBufferCopyOperation : byte
     Format = 2,
     Combine = 3,
     Retain = 4,
+    Clone = 5,
 }
 
 internal enum QuicBufferCopyDecisionBoundary : byte
@@ -33,6 +36,8 @@ internal enum QuicBufferCopyDecisionBoundary : byte
     LogicalWriteAdmission = 1,
     PacketPlan = 2,
     SentPacketRetention = 3,
+    RetransmissionClone = 4,
+    ReceiveSegmentInsertion = 5,
 }
 
 internal enum QuicBufferCopyPolicyValue : byte
@@ -100,15 +105,15 @@ internal readonly record struct QuicBufferCopyObservation(
 {
     internal const string AxisId = "buffer_copy_coalescing";
     internal const string CurrentObservationContractVersion =
-        "quic-buffer-copy-observation-v1";
+        "quic-buffer-copy-observation-v2";
     internal const string CurrentRuleVersion =
         "quic-buffer-copy-observe-only-rule-v1";
     internal const string CurrentSnapshotVersion =
-        "quic-buffer-copy-snapshot-v1";
+        "quic-buffer-copy-snapshot-v2";
     internal const string CurrentReasonVersion =
         "quic-buffer-copy-reason-v1";
     internal const string CurrentProvenanceVersion =
-        "quic-buffer-copy-provenance-v1";
+        "quic-buffer-copy-provenance-v2";
 
     public string PolicyAxisId => AxisId;
 
@@ -127,4 +132,18 @@ internal readonly record struct QuicBufferCopyObservation(
 internal interface IQuicBufferCopyEvidenceSink
 {
     bool TryPublish(in QuicBufferCopyObservation observation);
+}
+
+internal interface IQuicBufferCopyOperationObserver
+{
+    void ObserveBufferCopy(
+        QuicBufferCopyPath path,
+        QuicBufferCopyOperation operation,
+        QuicBufferCopyDecisionBoundary decisionBoundary,
+        long? joinOperationSequence,
+        int logicalBytes,
+        int copiedBytes,
+        int sourceSegmentCount,
+        int requestedCapacityBytes,
+        int retainedCapacityBytes);
 }

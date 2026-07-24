@@ -44,20 +44,44 @@ public sealed class REQ_QUIC_CRT_0182
             sourceSegmentCount: 2,
             requestedCapacityBytes: 200,
             retainedCapacityBytes: 256);
+        runtime.TryPublishBufferCopyObservation(
+            QuicBufferCopyPath.RetransmissionClone,
+            QuicBufferCopyOperation.Clone,
+            QuicBufferCopyDecisionBoundary.RetransmissionClone,
+            joinOperationSequence: 7,
+            logicalBytes: 50,
+            copiedBytes: 50,
+            sourceSegmentCount: 1,
+            requestedCapacityBytes: 50,
+            retainedCapacityBytes: 64);
+        runtime.TryPublishBufferCopyObservation(
+            QuicBufferCopyPath.ReceiveSegment,
+            QuicBufferCopyOperation.Copy,
+            QuicBufferCopyDecisionBoundary.ReceiveSegmentInsertion,
+            joinOperationSequence: null,
+            logicalBytes: 25,
+            copiedBytes: 25,
+            sourceSegmentCount: 1,
+            requestedCapacityBytes: 25,
+            retainedCapacityBytes: 32);
 
         QuicBufferCopyEpochSummary summary =
             accumulator.CaptureAndReset();
         Assert.True(summary.HasObservation);
         Assert.Equal(1UL, summary.FirstOperationSequence);
-        Assert.Equal(2UL, summary.LastOperationSequence);
-        Assert.Equal(2UL, summary.OperationCount);
+        Assert.Equal(4UL, summary.LastOperationSequence);
+        Assert.Equal(4UL, summary.OperationCount);
         Assert.Equal(1UL, summary.FormattedStreamPayloadCount);
         Assert.Equal(1UL, summary.CombinedApplicationSendCount);
+        Assert.Equal(1UL, summary.RetransmissionCloneCount);
+        Assert.Equal(1UL, summary.ReceiveSegmentCount);
+        Assert.Equal(1UL, summary.CopyCount);
         Assert.Equal(1UL, summary.FormatCount);
         Assert.Equal(1UL, summary.CombineCount);
-        Assert.Equal(300UL, summary.TotalLogicalBytes);
-        Assert.Equal(300UL, summary.TotalCopiedBytes);
-        Assert.Equal(384UL, summary.TotalRetainedCapacityBytes);
+        Assert.Equal(1UL, summary.CloneCount);
+        Assert.Equal(375UL, summary.TotalLogicalBytes);
+        Assert.Equal(375UL, summary.TotalCopiedBytes);
+        Assert.Equal(480UL, summary.TotalRetainedCapacityBytes);
         Assert.True(
             (summary.Validity
                 & QuicBufferCopyValidity.MissingTerminalReleaseCorrelation)

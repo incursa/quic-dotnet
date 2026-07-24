@@ -17,9 +17,9 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $observationSchemaPath = Join-Path $RepositoryRoot `
-    'schemas\adaptive-runtime-buffer-copy-observation-v1.schema.json'
+    'schemas\adaptive-runtime-buffer-copy-observation-v2.schema.json'
 $epochSchemaPath = Join-Path $RepositoryRoot `
-    'schemas\adaptive-runtime-buffer-copy-epoch-v1.schema.json'
+    'schemas\adaptive-runtime-buffer-copy-epoch-v2.schema.json'
 $failures = [System.Collections.Generic.List[string]]::new()
 $observations = [System.Collections.Generic.List[object]]::new()
 
@@ -99,13 +99,16 @@ $pathCount =
     [ulong] $epoch.oversizedRawQueueCount +
     [ulong] $epoch.formattedStreamPayloadCount +
     [ulong] $epoch.combinedApplicationSendCount +
-    [ulong] $epoch.sentPacketPlaintextRetentionCount
+    [ulong] $epoch.sentPacketPlaintextRetentionCount +
+    [ulong] $epoch.retransmissionCloneCount +
+    [ulong] $epoch.receiveSegmentCount
 $operationKindCount =
     [ulong] $epoch.copyCount +
     [ulong] $epoch.reuseAndCopyCount +
     [ulong] $epoch.formatCount +
     [ulong] $epoch.combineCount +
-    [ulong] $epoch.retainCount
+    [ulong] $epoch.retainCount +
+    [ulong] $epoch.cloneCount
 
 if ($pathCount -ne $operationCount) {
     $failures.Add(
@@ -147,7 +150,7 @@ elseif ($operationCount -ne 0 -or
 
 $result = [ordered]@{
     schemaVersion =
-        'adaptive-runtime-buffer-copy-evidence-validation-v1'
+        'adaptive-runtime-buffer-copy-evidence-validation-v2'
     valid = $failures.Count -eq 0
     observationRowCount = $observations.Count
     operationCount = $operationCount
