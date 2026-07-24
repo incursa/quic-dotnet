@@ -3274,3 +3274,55 @@ and exactly-once follow-on/repost design. A distinct conservative
 `buffer_copy_coalescing` implementation, force-legacy rollback, and shadow
 readiness remain open. No large dataset or ML analysis is authorized before
 those architecture gates, and production activation remains unauthorized.
+
+## Stage 2 Actor Work Vector And Repost Ownership Foundation
+
+Local commit
+`ce7904bba2a6aa4f5533269003e8118ddbf04ecb` defines the first bounded actor
+work and repost-ownership primitives without changing the shard drain,
+transition, effect, follow-on, timer, recovery, cancellation, disposal,
+terminal, or buffer-ownership paths.
+
+`quic-actor-useful-work-vector-v1` preserves one dispatch, its closed work
+kind, effect count, three follow-on counts, complete service duration, and
+optional queue delay as separate components. It deliberately does not sum
+unlike work into a scalar, choose a threshold, or become a production
+controller input.
+
+`QuicActorContinuationRepostGate` packs one connection-local monotonic
+generation and the closed `Idle`, `Posted`, `Servicing`, `RepostRequested`,
+or `Stopped` state into one atomic value. One idle requester owns enqueue of
+the exact posted generation. Requests during service coalesce, safe-boundary
+completion creates at most one next generation, stale or duplicate tokens
+cannot act, and an abandoned post or stop fails closed. The gate has no queue,
+callback, timer, protocol state, model, threshold, or policy lookup and is not
+instantiated by the shard. Exact remaining-work signals, cooperative yield
+sites, priority and bypass rules, and ownership across yield remain required
+before integration.
+
+The focused verification sequence is:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| First test-project Release build | Failed with one `CS1503` error because a `Parallel.For` lambda parameter named `_` made `out _` bind as a `long` instead of a discard | `diagnostic_only`; test-source compile correction only. The parameter was renamed. No runtime behavior or evidence row was produced. |
+| Final test-project Release build | Zero warnings and zero errors in 54.75 seconds | `accepted` focused build evidence. |
+| Actor observation, actor work/repost requirement, and shard correctness band | 26 passed, zero failed, zero skipped in one second | `accepted`; includes vector preservation, one enqueue owner, exact generation begin and completion, concurrent request coalescing, remaining-work repost, stale and duplicate token rejection, abandoned-post and stop behavior, 16,384 deterministic reference-model transitions, existing actor observation, and existing shard correctness. |
+| Focused SpecTrace model validation | `SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY`, `ARC-QUIC-CRT-0067`, `WI-QUIC-CRT-0068`, and `VER-QUIC-CRT-0069` each returned `True`; reciprocal `REQ-QUIC-CRT-0186` links and source/test homes were present | `accepted` focused contract and trace evidence. |
+| Repository-wide `core` SpecTrace validator | Reported the existing migration baseline of 2,692 schema and unresolved-reference errors across the repository | `diagnostic_only`; the global validator remains an unsuitable clean gate for this slice. No error was deleted, relabeled, or treated as a focused failure. |
+
+No campaign axis varied and no new raw, unified, normalized, curated, split,
+or analysis rows were generated. Receive credit, all four Stage 1 axes,
+`actor_work_quantum`, `ready_stream_fairness`,
+`buffer_copy_coalescing`, and `adaptive_backpressure` remain applied as
+`legacy_current` outside earlier explicitly retained Stage 1 smoke
+treatments. Dataset inclusion and exclusion counts are unchanged. No
+BenchmarkDotNet run, performance claim, large campaign, ProtocolLab
+deployment, dataset transform, ML analysis, CI run, push, or active behavior
+occurred.
+
+The actor work vector and repost token-ownership state machine are now
+checkpointed. The next actor slice must supply honest timer-lateness and
+fairness observations, exact remaining-work signals, complete-shard coverage,
+and reviewed cooperative yield sites. The repost gate cannot be wired until
+timer, recovery, cancellation, disposal, terminal, and buffer-ownership
+priority tests exist. Active behavior remains unauthorized.
