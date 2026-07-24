@@ -294,11 +294,13 @@ outside correctness CI.
 
 ## Remaining Stage 2 Order
 
-1. Complete actor service, wake, follow-on, timer-lateness, runnable-state, and
+1. Carry compact copy-lifetime tokens through every observed owner and record
+   exact terminal release without object identity or an outstanding-operation
+   dictionary.
+2. Complete actor service, wake, follow-on, timer-lateness, runnable-state, and
    fairness observations.
-2. Review useful-work units and exactly-once repost ownership.
-3. Design and force `actor_work_quantum` only after the safety gate.
-4. Inventory buffer ownership, copy, segment, crypto, socket, and return paths.
+3. Review useful-work units and exactly-once repost ownership.
+4. Design and force `actor_work_quantum` only after the safety gate.
 5. Design and force `buffer_copy_coalescing` only after ownership tests.
 6. Review conservative-only `adaptive_backpressure` application-visible
    behavior.

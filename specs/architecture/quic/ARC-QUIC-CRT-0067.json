@@ -17,7 +17,8 @@
     "REQ-QUIC-CRT-0181",
     "REQ-QUIC-CRT-0182",
     "REQ-QUIC-CRT-0183",
-    "REQ-QUIC-CRT-0184"
+    "REQ-QUIC-CRT-0184",
+    "REQ-QUIC-CRT-0185"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicActorServiceObservation.cs",
@@ -55,6 +56,7 @@
     "A throwing or rejecting sink cannot interrupt transition, effect, ownership release, cancellation, disposal, recovery, timer, or terminal work.",
     "Queue delay is not oldest-shard-item age, pending work-item count is not runnable-connection count, and timer service is not deadline lateness.",
     "The post-service callback may seal Stage 2 summaries only after actor publication and resource release; invalid joins are rejected before reset.",
+    "Buffer terminal-release correlation carries only a compact token with the existing owner; it cannot retain object identity, add an outstanding-operation dictionary, or become release authority.",
     "Actor_work_quantum remains legacy_current and non-forceable until cooperative checkpoints and exactly-once repost are separately designed and verified.",
     "Buffer_copy_coalescing remains legacy_current and non-forceable until a distinct conservative implementation and exact terminal-release correlation are separately designed and verified.",
     "Active_internal and production activation remain unauthorized."

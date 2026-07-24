@@ -135,6 +135,33 @@
         "Scenario, payload, requested concurrency, peer, URL, application identity, and workload provenance remain outside the production controller input contract.",
         "The exporter is evidence infrastructure and does not authorize a Stage 2 policy value or active behavior."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0185",
+      "title": "Correlate buffer construction with authoritative terminal release",
+      "statement": "Every observed buffer lifetime MUST use a compact immutable connection-local token containing only the original operation sequence, closed path, monotonic construction tick, retained capacity, and contract version; move that token with the authoritative existing owner across transfers; create a distinct token for a clone; consume a nonempty token exactly once at the existing terminal return boundary; emit a bounded release record with closed reason, released capacity, lifetime, lifecycle, and explicit missing, duplicate, mismatch, saturated, or out-of-domain validity; keep return, progress, recovery, cancellation, reset, shutdown, disposal, and ownership authoritative when evidence is disabled, rejected, or throws; and never retain object identity, add an outstanding-operation dictionary or unbounded scan, or authorize a non-legacy buffer policy before every observed owner path is verified.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0067"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0068"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0069"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-stage2-buffer-ownership-copy-inventory.md",
+          "src/Incursa.Quic/QuicBufferCopyObservation.cs",
+          "src/Incursa.Quic/QuicConnectionStreamState.cs",
+          "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+          "src/Incursa.Quic/QuicRetransmissionQueue.cs"
+        ]
+      },
+      "notes": [
+        "Receive-segment ownership is the first implementation slice; remaining owner paths stay explicit and non-forceable until separately checkpointed.",
+        "Ownership transfer is not terminal release and cannot create a duplicate completion outcome."
+      ]
     }
   ]
 }

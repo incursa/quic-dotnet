@@ -16,7 +16,8 @@
     "REQ-QUIC-CRT-0181",
     "REQ-QUIC-CRT-0182",
     "REQ-QUIC-CRT-0183",
-    "REQ-QUIC-CRT-0184"
+    "REQ-QUIC-CRT-0184",
+    "REQ-QUIC-CRT-0185"
   ],
   "scope": "Verify behavior-neutral actor-service and selected send-side buffer-copy observation, bounded epoch aggregation, versioned post-service publication, Stage 1 and Stage 2 joins, append-only raw export, explicit missing state, sink isolation, legacy identity, and preservation of shard scheduling and ownership. Do not verify or authorize a forceable quantum, distinct buffer strategy, fairness rule, backpressure rule, performance claim, or active behavior.",
   "verification_method": "Canonical SpecTrace validation, deterministic requirement-home tests, schema and semantic validation, and focused existing shard, deadline, application-send queue, ownership, stream-capacity, flow-control, metrics, cancellation, disposal, retransmission, and terminal correctness tests.",
@@ -45,6 +46,8 @@
     "Verify the raw host configures one accumulator for receive-credit, all four Stage 1, actor-service, and buffer-copy evidence on every adaptive execution.",
     "Verify append-only unified raw export retains exact connection keys, four Stage 1 records, actor and buffer summaries, source hashes, validation counts, and a schema-valid manifest.",
     "Verify duplicate, out-of-order, mismatched-join, multi-axis, and bounded-channel export failures cannot be accepted as complete evidence.",
+    "Verify compact buffer lifetime tokens carry no object identity, move with the existing owner, distinguish clones, and are consumed once at authoritative terminal return boundaries.",
+    "Verify release records retain original operation sequence and path, closed reason, released capacity, bounded lifetime, lifecycle, and explicit invalid state while evidence failure cannot prevent return.",
     "Verify maintained application-send queue retained count, capacity, and oldest enqueue time across enqueue, replacement, removal with and without return, transfer, and clear.",
     "Verify maintained retransmission queue retained-owner count, capacity, and oldest sent time across enqueue, every discard or suppression path, dequeue ownership transfer, and shared-owner release.",
     "Verify maintained sent-packet retained-owner count, capacity, and oldest sent time across insert, packet-number replacement, owner detachment, acknowledgment, discard, loss, and retransmission ownership transfer.",

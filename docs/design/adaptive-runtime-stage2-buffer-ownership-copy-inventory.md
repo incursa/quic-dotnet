@@ -165,3 +165,63 @@ Before a forceable value is implemented:
 
 No large campaign, dataset transform, offline model, shadow rule, or active
 behavior is justified by this inventory alone.
+
+## Terminal-Release Correlation Contract
+
+Terminal release must be correlated without exporting or indexing a managed
+array, memory owner, stream object, packet object, or other runtime identity.
+The approved internal carrier is a compact immutable
+`QuicBufferCopyLifetimeToken` containing only:
+
+- the connection-local copy-operation sequence;
+- the closed buffer-copy path;
+- the monotonic construction tick;
+- the retained capacity; and
+- the observation-contract version that created the token.
+
+The token is created only after a new owner is successfully rented or
+transferred into the observed lifetime. Capacity reuse does not create a
+second owner token. The token moves with the existing owner field through
+queue, packet, retransmission, receive-segment, and endpoint transfers. It
+does not own the buffer or make a release decision.
+
+Exactly one guarded release observation consumes a nonempty token immediately
+before or after the authoritative existing return helper. It records:
+
+- the original operation sequence and path;
+- a closed release reason such as completed, replaced, acknowledged,
+  loss-transfer, abandoned, reset, canceled, terminal-clear, disposal, or
+  failed-construction;
+- released capacity;
+- bounded lifetime in microseconds;
+- connection phase and disposal state; and
+- explicit duplicate, missing-token, capacity-mismatch, saturated, or
+  out-of-domain validity.
+
+The return helper remains authoritative. A forced policy can never defer,
+suppress, duplicate, or redirect it. A throwing or rejecting evidence sink
+cannot prevent the return. Ownership transfer consumes the source token and
+installs it on the destination; it is not recorded as terminal release.
+Cloning creates a distinct owner and therefore a distinct operation sequence.
+
+The fixed-field epoch summary may count constructions and terminal releases
+and retain total released capacity plus maximum and EWMA lifetime. It may not
+retain a dictionary of outstanding operations. Missing or duplicate release
+is verified through deterministic mechanism tests and the permanent raw
+operation/release join, not hidden by an epoch aggregate.
+
+Delivery order is:
+
+1. receive-segment owners, because construction and both delivery and terminal
+   clear releases are centralized;
+2. flow-control retry request owners;
+3. oversized raw queue owners;
+4. formatted and combined payload ownership transfer;
+5. sent-plaintext retention through ACK, loss transfer, and discard;
+6. retransmission clones and transfers; and
+7. endpoint datagram owners and supported platform staging.
+
+Each path is checkpointed independently. Until all currently observed owners
+carry the token through every success, failure, cancellation, reset, loss,
+shutdown, and disposal path, `buffer_copy_coalescing` remains
+`legacy_current` and non-forceable.
