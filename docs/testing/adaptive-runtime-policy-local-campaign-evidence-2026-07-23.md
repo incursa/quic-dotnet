@@ -1396,3 +1396,218 @@ nightly BenchmarkDotNet mechanism checks and independently hosted
 counterfactual cells. `application_send_turn_planning` remains applied as
 `legacy_current`, every adjacent axis remains `legacy_current`, and the next
 portfolio axis remains unauthorized.
+
+## Application-Send Observation Neutrality And Retained-Negative Dataset
+
+Commit `3251c2c7` adds the permanent same-binary
+disabled-versus-observe-only cell. Commit `35da03b8` corrects its evidence
+validator by replaying the checksum-pinned raw observation conditions instead
+of inferring observe-only exclusions from absent shadow reason codes. The
+original invalid validation result remains retained and unchanged.
+
+The executed cell is:
+
+```text
+campaign  adaptive-send-turn-observation-neutrality-local-20260724-r001
+cell      duplex-64kb-x1-s16-neutrality
+sequence  ABBA
+A         disabled; application-send environment variable unset
+B         observe_only; recommendation-free evidence required
+applied   legacy_current for both treatments
+adjacent  legacy_current
+```
+
+It used one connection, sixteen streams, 64 KiB per stream, zero warmup
+seconds, and one measurement second. All four samples were exact-payload valid
+with zero failed, timed-out, protocol-error, or invariant-failure operations.
+The two disabled samples emitted no application-send construction or
+observation record. The two observe-only samples emitted 6,983 and 6,587 raw
+turns respectively, for 13,570 unique exported epochs. All 13,570 are
+recommendation-free.
+
+The append-only artifact hashes are:
+
+```text
+local result                 573aa61683c52936a15cbbe555a08e8e6c845a061c3dda1d69245048f37a3926
+cell manifest                4ea278abe3ae7b5c493fc58fed3ffd457091f9e89727f4c2e9c6486a5248dd09
+checksum inventory           6c0e9756fe3fa7e016f993f71c3ee7d16ec85e9378ae9ef9aa21aa7242f5c96d
+original invalid validation  b269eedef9d582af5d786aa9c7c9e9f9aecaeccac677b7846dbd3c46fe19e61a
+correction at 35da03b8       d98274c8289192f74dbf099154d2fc52e2d789c8b2fb488990e8ae256b83a838
+```
+
+The original validation has 8,747 failures because it expected an analysis
+clean row whenever an observe-only record had no shadow reason. The runtime
+and exporter correctly retained `observation_saturated` when the raw
+`ArithmeticSaturated` condition was present. The correction independently
+replays that raw condition stream and validates one result, 13,570 rows,
+13,570 unique rows, zero construction rows, one checksum inventory, 24 unique
+artifact hashes, and zero failures. The original result was not overwritten or
+used as a rerun-erasure mechanism.
+
+The cell is `negative_retained`, not neutral:
+
+| Outcome | Disabled median | Observe-only median | Disposition |
+| --- | ---: | ---: | --- |
+| Throughput | 1,764,812.637 B/s | 1,681,533.670 B/s | about -4.72% |
+| p95 latency | 589.771775 ms | 639.765725 ms | about +8.48%; negative gate |
+
+Maximum within-treatment relative range was `0.042894686`, below the
+five-percent environment-invalid bound. Aggregate throughput was
+1,717,915.359 B/s, aggregate operation rate was 26.2133/s, p50 was
+587.6055 ms, p95 was 609.889625 ms, p99 was 611.177755 ms, buffer-pool rented
+bytes were 189,528,736, and peak outstanding bytes were 868,352. Target and
+generator health remain `limited` because this is one same-host cell. This is a
+bounded retained-negative instrumentation-cost screen, not a general
+performance claim.
+
+The completed dataset root is
+`.artifacts/adaptive-runtime/datasets/send-turn-observation-neutrality-r001-35da03b8/`.
+The exact transformation commit is
+`35da03b8f99b37e62977ca67e2d0d69b26f42cab`. Its hashes are:
+
+```text
+catalog     b5ffaa3a2bfbf4a35f46852010845996eb0621c2ec56f6a0bf14c403acb85929
+normalized  8c666c1590751d1da70a78056e0246f25fc0c4b880a039f605a03c0bb664cb09
+curated     929e08c2815053f34afeacf7ed2fed4b60e4d099040580ac3d67661e3420a06f
+split       cac1264826fa91d719ad21444c937454b525f548bdd5485120cc2e86e2eeed13
+```
+
+All 13,570 epochs joined with zero unmatched epochs. The two disabled sample
+results are retained as unmatched source results because the disabled
+treatment is required to emit no epoch rows. Curation includes 4,819
+`retained_negative` rows and preserves 8,751 excluded rows. Source flags are
+4,819 `none`, 8,747 `observation_saturated`, 78
+`instrumentation_mismatch`, and 4 `terminal_partial_epoch`; flags can overlap.
+All 13,570 split assignments remain `holdout_blocked`, with zero train,
+validation, or test rows.
+
+The ML-facing descriptive report is
+`.artifacts/adaptive-runtime/analysis/send-turn-observation-neutrality-r001-f9ae565/application-send-turn-analysis.json`.
+Its SHA-256 is
+`26269ed93fbd70cf2b90e2bdff854cc6407565d3214a9bff54d0bf2a2ff648e9`
+and its analysis commit is
+`f9ae5653aca736ef1dddd7463970eecbefb3d950`. The leakage audit passed
+with no forbidden workload or identity input. It reports two included samples,
+one host fingerprint, one workload family, and
+`ruleProposal.status = holdout_blocked`; the candidate rule is null and
+`activeInternalAuthorized` is false.
+
+Selected distributions over the 4,819 included epochs are:
+
+| Feature | Minimum | p50 | p95 | Maximum |
+| --- | ---: | ---: | ---: | ---: |
+| queued application writes | 1 | 5 | 12 | 12 |
+| outbound backlog bytes | 21 | 32,878 | 152,394 | 180,016 |
+| distinct queued streams | 1 | 5 | 12 | 12 |
+| queue-delay EWMA microseconds | 5,224 | 67,951 | 94,231 | 107,742 |
+| actor-service EWMA microseconds | 132 | 492 | 1,106 | 5,064 |
+| queue-to-service ratio Q16 | 547,414 | 8,228,522 | 24,163,328 | 47,389,125 |
+| congestion window bytes | 6,000 | 134,516 | 178,486 | 250,580 |
+| bytes in flight | 104 | 113,312 | 171,263 | 235,636 |
+| retained send bytes | 512 | 49,152 | 196,608 | 196,608 |
+
+`oldestQueuedSendAgeMicros` is absent for all included rows and remains null.
+The two included sample-scoped throughput outcomes span 1.591706 to
+1.615565 MiB/s and p95 spans 626.04445 to 653.487 ms. Those two values are
+descriptive samples, not 4,819 independent policy outcomes.
+
+## Application-Send Mechanism Benchmarks And Lab Package Gate
+
+Commit `173f2269` adds manual/nightly BenchmarkDotNet cases for bounded queue
+snapshot construction, deterministic nominal and guarded controller
+evaluation, immutable snapshot construction, and independently forced policy
+reads. It does not add a policy value, threshold, or production consumer.
+
+The Release benchmark build passed with zero warnings and zero errors. The dry
+run completed 10 of 10 cases. The committed short run used BenchmarkDotNet
+0.15.8, .NET SDK 10.0.204, .NET runtime 10.0.10, Windows x64, and commit
+`f9ae565`. Every case reported zero managed allocation.
+
+| Mechanism | Short-run mean |
+| --- | ---: |
+| nominal controller evaluation and snapshot | 21.13 ns |
+| missing-signal fallback | 21.08 ns |
+| stale-signal fallback | 21.22 ns |
+| arithmetic-saturated fallback | 21.10 ns |
+| out-of-domain fallback | 21.87 ns |
+| bounded snapshot, 1 queued write | 48.93 ns |
+| bounded snapshot, 16 queued writes | 593.89 ns |
+| bounded snapshot, 64 queued writes | 2,378.60 ns |
+
+The forced legacy/current and conservative read cases completed without
+allocation but measured below reliable timer resolution; no timing claim is
+made from them. The three report hashes are:
+
+```text
+controller   c8c7abd9d8ff4e0038d8dd2fe593bd6713b1763ec1379714975d91b93f33ba9a
+observation  541a3383ad24b1cdf57dbc7c8cd9c71cd84412f3876a384e6e77b8400ae99700
+policy read  2ddee21f57d36e8af9be59300fa26f85bc967ae1893b6c7f57f221dd8e130884
+```
+
+The retained short-run console log SHA-256 is
+`7a241968bd775e20f480319247bf310ee09303ab4e7686b7c105f914bf4bf966`.
+These are mechanism-cost numbers only. They do not change a production rule
+and do not replace the retained end-to-end neutrality result.
+
+Commit `f9ae565` extends the existing raw QUIC package builder and submit
+helper so the independently selected application-send identities
+`legacy_current`, `conservative`, `observe_only`, and `shadow` can be stamped
+into immutable ProtocolLab packages. HTTP/3 package use is rejected. The
+focused `ProtocolLabPackageTemplateTests` home passed 23 of 23 tests after a
+zero-warning Release test-project build.
+
+A clean, non-uploaded Linux x64 shadow package was built from exact commit
+`f9ae565`:
+
+```text
+identity     quic-dotnet-raw-dev@dev-20260724-f9ae565-shadow
+package SHA  b142f951ae1295c631d2b455b2c66ec5fd4783e50062dfe1d460e51a816f626a
+attestation  2bfd386fa1b03dbe6e77502a349b49ad720a5b497bc105bb3dd661645430048e
+bytes        1,237,944
+entries      22
+parity       eligible
+```
+
+The archive's implementation manifest contains exactly
+`PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY: shadow` and no
+receive-credit override. No package was uploaded and no lab job was created.
+
+The first post-reboot read-only controller inventory probe to
+`http://10.10.99.176:5088/api/lab/nodes` timed out after 20 seconds. A TCP
+probe and ping both failed from source `10.10.100.130`; trace reached
+`10.10.100.1`, which reported the destination unreachable. The current
+workstation has no route for `10.10.99.0/24`. This is classified as a current
+workstation routing diagnostic, not proof that the six- or seven-machine lab
+is unavailable. The parity-eligible package remains ready for submission once
+the controller registry is reachable from this host or an approved controller
+path is used.
+
+At this checkpoint no CI workflow was inspected or changed, no benchmark ran
+in CI, and no push occurred. `application_send_turn_planning` remains applied
+as `legacy_current`; every adjacent axis remains `legacy_current`. One
+neutrality cell is retained negative, the broader neutrality matrix and
+independent-host campaign remain open, and the next portfolio axis remains
+unauthorized.
+
+### Evidence and trace synchronization verification
+
+After synchronizing the observation, controller, seam, campaign, shadow,
+acceptance/rollback, architecture, and verification summaries, the Release
+test-project build completed in 64.08 seconds with zero warnings and zero
+errors. The combined `REQ-QUIC-CRT-0175`, `REQ-QUIC-CRT-0176`, and
+`ProtocolLabPackageTemplateTests` filter passed 61 of 61 tests in 43.4269
+seconds.
+
+The four current trace artifacts
+`SPEC-QUIC-CRT-SEND-TURN-SHADOW`, `ARC-QUIC-CRT-0065`,
+`WI-QUIC-CRT-0066`, and `VER-QUIC-CRT-0067` each validate independently
+against `model/model.schema.json`. The repository-wide core validation remains
+a retained diagnostic with 2,692 pre-existing migration errors. Its report is
+`.artifacts/adaptive-runtime/spec-trace/core-after-send-turn-evidence.json`
+with SHA-256
+`83201597b1b498633a029612b929dfd086457a84df72e1e6e89f9c186144e2e8`.
+Only one broad-validator error names the current four-artifact slice:
+`SPEC-QUIC-CRT-SEND-TURN-SHADOW` cannot resolve its parent
+`SPEC-QUIC-CRT` because that parent is among the legacy artifacts rejected by
+the repository-wide model migration baseline. This checkpoint does not alter
+or conceal that unrelated baseline.

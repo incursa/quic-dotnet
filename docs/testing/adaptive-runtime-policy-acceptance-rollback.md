@@ -38,6 +38,25 @@ The only eligible non-conservative value is the frozen sticky read-dominant
 mechanism. Broader eligibility, a new cadence, or clearing the sticky-write
 fact requires a new planning and requirement slice.
 
+## Second-Axis Measurement Scope
+
+`application_send_turn_planning` is currently measurement-only. Its
+`legacy_current` and `conservative` identities both retain the current legal
+null-planner scheduler; observe-only and shadow always apply
+`legacy_current`. The exact rollback target is the force-legacy/null-planner
+path, and forced identities remain subject to priority, ordering, congestion,
+pacing, recovery, flow-control, ownership, lifecycle, queue, and buffer
+guards.
+
+One same-host disabled-versus-observe-only cell is retained as
+`negative_retained` because observe-only p95 exceeded the five-percent matched
+guardrail. It does not qualify this axis for active review. The broader
+neutrality matrix, complete Release correctness suite, independent-host
+counterfactual coverage, honest host and workload holdouts, deterministic
+offline replay, fairness outcomes, and campaign rollback proof remain required
+before a behavior-distinct rule can be proposed. No behavior-distinct planner
+or `active_internal` application is authorized by this measurement scope.
+
 ## Acceptance Gates
 
 All gates are conjunctive.

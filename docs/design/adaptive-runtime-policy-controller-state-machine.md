@@ -6,7 +6,8 @@ title: "Adaptive Runtime Controller State Machine"
 
 Status: receive-credit and application-send turn shadow runtimes implemented;
 send-turn raw-host export and permanent-runner epoch joins implemented;
-campaign verification pending; active policy blocked
+one local shadow cell and one retained-negative observation-neutrality cell
+executed; broader campaign verification remains open; active policy blocked
 
 The controller is a deterministic connection-local selector evaluated only at
 actor-safe boundaries. It publishes a compact immutable policy snapshot. It

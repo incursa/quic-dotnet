@@ -4,8 +4,9 @@ title: "Adaptive Runtime Permanent Local Campaign"
 
 # Adaptive Runtime Permanent Local Campaign
 
-Status: implemented permanent local campaign contract; evidence review in
-progress; active policy blocked
+Status: implemented permanent local campaign contract; one local shadow cell
+and one retained-negative observation-neutrality cell reviewed; broader matrix
+and independent-host evidence remain open; active policy blocked
 
 This plan defines permanent local evidence required before any adaptive policy
 is taken to ProtocolLab. Local results are diagnostic and non-publishable. A
@@ -70,7 +71,9 @@ unset and must emit neither evidence nor construction provenance. Observe-only
 must emit recommendation-free raw records and checksum-backed epoch rows.
 Both treatments apply `legacy_current`; the result retains separate sample
 outcomes and pressure artifacts and remains diagnostic until the broader
-neutrality matrix is complete.
+neutrality matrix is complete. The first executed same-host cell is retained
+as `negative_retained` because observe-only p95 exceeded the matched
+five-percent guardrail; it is not relabeled as neutral by later evidence.
 
 ## Permanent Workload Matrix
 

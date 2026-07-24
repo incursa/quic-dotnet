@@ -6,7 +6,9 @@ title: "Adaptive Runtime Shadow-Mode Verification"
 
 Status: receive-credit shadow foundation implemented and verified;
 application-send turn runtime foundation implemented and focused-test
-verified; permanent campaign verification pending; active policy blocked
+verified; one local shadow cell and one retained-negative
+disabled-versus-observe-only cell executed; broader campaign verification
+pending; active policy blocked
 
 Shadow mode computes and records a proposed controller snapshot while the
 existing runtime behavior remains authoritative. It is the only permitted
@@ -63,9 +65,12 @@ simultaneous shadow ownership and non-legacy adjacent-axis forcing, and leaves
 the null-planner path authoritative. Versioned raw-host records,
 permanent-runner schema-valid epoch/result joins, and the same-binary
 disabled-versus-observe-only ABBA runner path are implemented. Executed local
-shadow evidence exists; executed neutrality evidence remains required before
-this section is verified end to end. Recovery probes do not create
-application-send turn records.
+shadow evidence exists. The first executed same-host neutrality cell is
+`negative_retained`: observe-only p95 exceeded the matched five-percent
+guardrail even though correctness was clean. Broader workload and
+independent-host neutrality evidence remains required before this section is
+verified end to end. Recovery probes do not create application-send turn
+records.
 
 ## Deterministic Tests
 
