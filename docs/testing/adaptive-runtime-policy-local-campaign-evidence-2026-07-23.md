@@ -3115,3 +3115,50 @@ paths precede Stage 2 useful actor work units, ready-stream fairness
 observations, exactly-once repost design, force-readiness, and rollback. No
 large dataset or ML analysis is authorized before those architecture gates.
 Production activation remains unauthorized.
+
+## Stage 2 Sent-Plaintext Retention Buffer Release
+
+Local commit
+`d1931d02d2e29cff32ae8c1fb7783568c01fe206` extends
+`REQ-QUIC-CRT-0185` to `sent_packet_plaintext_retention` without changing
+retransmission selection, packet construction, congestion, pacing, recovery,
+flow-control, or buffer limits.
+
+An application retransmission rebuild rents a distinct
+`SentPacketRetention` owner and now requests terminal correlation after the
+copy. The new token moves into sent-packet state, survives loss and direct
+retransmission with that array, and closes exactly once on acknowledgment,
+reset suppression, replacement, terminal discard, final disposal, or a
+construction failure. The source formatted or retransmission-clone owner
+closes separately with `CopiedToNextOwner`; the two owners are never relabeled
+as one lifetime. Release observation and raw wrapper v5 add only this closed
+path while retaining v1 through v4 as immutable compatibility contracts.
+
+The focused verification sequence is:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| Initial v5 raw-schema parse checks | Three parse attempts exposed a misplaced `then` block, a missing object close, and one extra closing brace while the new file was still unstaged | `diagnostic_only`; schema-authoring diagnostics only. The invalid drafts were never committed, exported, or used to classify data. |
+| Test-project Release build | Zero warnings and zero errors in 60.90 seconds | `accepted` focused build evidence. |
+| Stage 2 requirement, sent-packet ownership, and raw-package band | 73 passed, zero failed, zero skipped in 13 seconds | `accepted`; includes sent-retention loss/retransmission/ACK, contradictory reason handling, v5 schema validation, exact joins, and permanent package identity. |
+| First retransmission and recovery-probe filter | Nine passed, zero failed, zero skipped, but only the retransmission-queue class matched because the two requested RFC class names were incorrect | `diagnostic_only`; the invocation was green but did not establish the intended recovery-probe coverage. |
+| Corrected RFC 9002 recovery-probe and RFC 9000 coalesced recovery-probe band | 23 passed, zero failed, zero skipped in one second | `accepted`; application rebuild, recovery probe, and coalescing behavior remain correct. |
+| Raw-host Release build | Zero warnings and zero errors in 3.72 seconds | `accepted`; v5 release records compile in the permanent host. |
+| Final PowerShell, JSON, and focused trace-home parse validation | Both edited scripts, both v5 schemas, and the Stage 2 specification, architecture, work item, and verification JSON parsed successfully | `accepted` focused contract syntax and trace-location evidence. |
+
+No campaign axis varied and no new raw, unified, normalized, curated, split,
+or analysis rows were generated. Receive credit, all four Stage 1 axes,
+`actor_work_quantum`, and `buffer_copy_coalescing` remain applied as
+`legacy_current` outside earlier explicitly retained Stage 1 smoke treatments.
+Dataset inclusion and exclusion counts are unchanged. No BenchmarkDotNet run,
+performance claim, large campaign, ProtocolLab deployment, dataset transform,
+ML analysis, CI run, push, or active behavior occurred.
+
+Six owner paths are now terminally correlated: `receive_segment`,
+`application_write_request`, `oversized_raw_queue`,
+`formatted_stream_payload`, `retransmission_clone`, and
+`sent_packet_plaintext_retention`. Combined application payloads, protected
+packet owners, and endpoint handoff remain explicitly uncorrelated and
+non-forceable. Those paths remain ahead of Stage 2 actor work-unit, fairness,
+exactly-once repost, force-readiness, and rollback gates. Production activation
+remains unauthorized.
