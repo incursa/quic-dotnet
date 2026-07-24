@@ -853,3 +853,38 @@ normal release decision, or deploy a new ProtocolLab campaign from this
 diagnostic alone. This is a package correctness and provenance gate; the
 available multi-host ProtocolLab capacity remains suitable for the later,
 reviewed campaign once that gate is resolved.
+
+### Current-Source Receive-Credit And Stream-Capacity Recheck
+
+The package provenance investigation did not change runtime source. To ensure
+that the existing receive-credit and stream-capacity correctness checkpoint
+remains present at the current checkout, the already-built Release test binary
+was rechecked at quic-dotnet commit
+`81e1338ce98b04157eb0036d906c7e68b7729129` with no restore, build, or
+performance measurement.
+
+```powershell
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build --no-restore --disable-build-servers --nologo --filter "FullyQualifiedName~FlowControlBlockedStreamWriteResumesAfterPeerRaisesStreamCredit|FullyQualifiedName~REQ_QUIC_RFC9000_0177" --logger "console;verbosity=minimal"
+```
+
+This passed 6 of 6 flow-control blocked-write/resume tests in one second. Its
+retained stdout is
+`C:\Users\Samuel\AppData\Local\Temp\quic-dotnet-flow-control-checkpoint-20260723\stdout.log`
+with SHA-256
+`887ee8ba736f5f4caf625423cd878acf8823892e82aec3417a973f831489407e`.
+
+```powershell
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build --no-restore --disable-build-servers --nologo --filter "FullyQualifiedName~REQ_QUIC_API_0009|FullyQualifiedName~REQ_QUIC_API_0014|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S4P6_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S4P6_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S4P6_0011" --logger "console;verbosity=minimal"
+```
+
+This passed 32 of 32 stream-capacity/MAX_STREAMS/open-pending tests in three
+seconds. Its retained stdout is
+`C:\Users\Samuel\AppData\Local\Temp\quic-dotnet-stream-capacity-checkpoint-20260723\stdout.log`
+with SHA-256
+`b3a354c0db97c82ee9364dc63724a6ba9a963632b170a4c4e982d3adbda281d2`.
+
+These are deterministic correctness checks, not performance evidence. Together
+with the retained full Release suite and prior multi-host evidence, they
+confirm the prerequisite correctness checkpoint remains preserved. The
+separately recorded package `1.0.6` failure remains unresolved and does not
+authorize a package-backed campaign, policy transition, or active behavior.
