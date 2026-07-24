@@ -176,6 +176,25 @@ public sealed class QuicConnectionRuntimeCompletionSourcePoolingTests
         MethodInfo method = instance.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic)
             ?? throw new InvalidOperationException($"Could not find {methodName}.");
 
+        ParameterInfo[] parameters = method.GetParameters();
+        if (arguments.Length < parameters.Length)
+        {
+            object?[] completedArguments = new object?[parameters.Length];
+            arguments.CopyTo(completedArguments, 0);
+            for (int index = arguments.Length; index < parameters.Length; index++)
+            {
+                if (!parameters[index].IsOptional)
+                {
+                    throw new TargetParameterCountException(
+                        $"{methodName} requires {parameters.Length} arguments.");
+                }
+
+                completedArguments[index] = Type.Missing;
+            }
+
+            arguments = completedArguments;
+        }
+
         _ = method.Invoke(instance, arguments);
     }
 
