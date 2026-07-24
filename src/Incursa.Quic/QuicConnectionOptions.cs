@@ -170,4 +170,12 @@ public abstract class QuicConnectionOptions
     internal QuicApplicationSendTurnObservationMode ApplicationSendTurnObservationMode { get; set; }
 
     internal IQuicApplicationSendTurnEvidenceSink? ApplicationSendTurnEvidenceSink { get; set; }
+
+    // CONTEXT: Internal-only Stage 1 packet-plan control. This policy may
+    // shorten only the already-legal application-send batch prefix.
+    internal QuicApplicationSendBatchPolicyMode? ForcedApplicationSendBatchPolicyMode { get; set; }
+
+    internal QuicApplicationSendBatchObservationMode ApplicationSendBatchObservationMode { get; set; }
+
+    internal IQuicApplicationSendBatchEvidenceSink? ApplicationSendBatchEvidenceSink { get; set; }
 }

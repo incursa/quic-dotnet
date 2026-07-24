@@ -52,7 +52,7 @@ evidence and are not rewritten into v2.
 
 | Axis | Legacy implementation | Initial closed values | Boundary and latch | Missing minimum seam |
 | --- | --- | --- | --- | --- |
-| `application_send_batch_formation` | `QuicApplicationSendScheduler` calls `QuicApplicationSendQueue.SelectQueuedApplicationSendBatchCount` to fill the already-computed payload budget; raw stream data stays single. | `legacy_current`, `single_eligible` | One packet plan; latched until that plan commits or aborts. | Connection-local mode, lower-only batch-count policy, observe/shadow snapshot, plan identity, attributed fill/count outcome, force-legacy rollback. |
+| `application_send_batch_formation` | `QuicApplicationSendScheduler` calls `QuicApplicationSendQueue.SelectQueuedApplicationSendBatchCount` to fill the already-computed payload budget; raw stream data stays single. | `legacy_current`, `single_eligible` | One packet plan; latched until that plan commits or aborts. | Implemented: connection-local forcing, lower-only selection, observe/shadow decision, bounded validity and safety reasons, plan outcome, listener copy, replay, guarded sink, and force-legacy rollback. Still open: unified raw export, permanent campaign control, BenchmarkDotNet cost evidence, full Release, and multi-host verification. |
 | `queued_send_burst_budget` | `QuicSendPolicy` caps queued work at 4 datagrams before handshake confirmation and 12 after, then congestion and anti-amplification reduce the legal budget. | `legacy_current`, `single_datagram` | One actor turn; an in-progress packet plan remains latched. | Connection-local lower-only cap, observe/shadow snapshot, requested/legal/applied cap outcome, burst-hit/follow-on counters, force-legacy rollback. |
 | `oversized_write_admission_quantum` | At logical-write admission, the retained selector chooses two 32 KiB chunks per actor turn only with a dispatcher and 16-24 distinct observed streams; otherwise one chunk. | `legacy_current`, `single_fragment`, `bounded_multi_fragment` | Logical-write admission; immutable through fragmentation, continuation, cancellation, disposal, and completion. | Explicit mode stored with the completion, observe/shadow admission snapshot, quantum/continuation outcome, internal force seam, exact rollback. |
 
@@ -157,7 +157,8 @@ will relate to, not be replaced by, the unified Stage 1 set.
    removing its v1 exporter; add deterministic construction joins and bounded
    publisher-loss provenance.
 3. Add the batch-formation lower-only policy at the existing packet-plan
-   boundary, with forced/observe/shadow modes and plan outcomes.
+   boundary, with forced/observe/shadow modes and plan outcomes. Completed
+   locally; focused Release build and requirement/scheduler tests are green.
 4. Add the burst-budget lower-only policy where the runtime computes the
    existing 4/12 cap, with actor-turn latching and authoritative safety
    reduction.

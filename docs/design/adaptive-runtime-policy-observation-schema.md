@@ -4,12 +4,12 @@ title: "Adaptive Runtime Connection Observation Schema"
 
 # Adaptive Runtime Connection Observation Schema
 
-Status: receive-credit v1 and application-send turn runtime subset
-implemented; send-turn raw-host export and standalone epoch conversion
-implemented; permanent runner capture and result/checksum joins implemented;
-the common Stage 1 four-axis in-memory contract, unified epoch schema,
-separate decision schema, and semantic join validator are implemented but
-runtime emission for all four axes remains pending;
+Status: receive-credit v1, application-send turn, and application-send batch
+runtime subsets implemented; send-turn raw-host export and standalone epoch
+conversion implemented; permanent runner capture and result/checksum joins
+implemented; the common Stage 1 four-axis in-memory contract, unified epoch
+schema, separate decision schema, and semantic join validator are implemented
+but unified runtime emission for all four axes remains pending;
 one local shadow cell and one retained-negative observation-neutrality cell
 executed; broader neutrality, independent-host, and active-policy review remain
 open
@@ -53,6 +53,13 @@ forced axis per epoch, and requires every unforced adjacent axis to apply
 `legacy_current`. Forced and applied values must match unless an explicit
 safety override is recorded; shadow recommendations never change the applied
 value.
+
+Observation ownership is independent from treatment ownership. A connection
+may enable receive-credit, send-turn, and batch observation together so one
+execution can populate contemporaneous axis records. At most one axis may have
+a behavior-distinct forced treatment; every adjacent applied value remains
+`legacy_current`. Observe-only and shadow modes therefore do not compete for a
+single global ownership slot.
 
 ## Epoch Envelope
 
@@ -109,6 +116,34 @@ the exporter gives it the minimum positive schema duration and retains
 `terminal_partial_epoch`; it is never analysis-clean. Signals not captured by
 the axis-specific runtime record, including `has_issued_application_data`,
 remain null rather than being fabricated as zero or false.
+
+## Application-Send Batch Formation V1 Subset
+
+The implemented `application_send_batch_formation` record is captured at the
+existing packet-plan boundary after the runtime has computed the legal payload
+and resource budget. Its closed values are `legacy_current` and
+`single_eligible`. `legacy_current` retains the existing eligible-prefix count;
+`single_eligible` may reduce that count to one but cannot select an ineligible
+write, increase a payload budget, change priority or same-stream ordering, or
+bypass FIN, ownership, flow-control, congestion, pacing, anti-amplification,
+recovery, lifecycle, cancellation, disposal, queue, packet, or buffer guards.
+
+The v1 observation retains a nonzero packet-plan sequence, monotonic capture
+ticks, maximum legal payload bytes, legal eligible-write count and bytes,
+bounded missing and stale masks, saturation/contradiction/out-of-domain
+conditions, and lifecycle flags. The decision retains observation, rule,
+snapshot, reason, and provenance versions; forced and shadow identities;
+selected and applied values; selection source; bounded reason and safety
+override; and a one-packet-plan latch. The outcome records the actual plan
+kind, applied write count, whether queued data remains, and the authoritative
+blocked reason. A failing evidence sink is swallowed and cannot change
+transport completion.
+
+The initial shadow rule is deliberately neutral for complete inputs:
+`legacy_current` is recommended and applied. Invalid shadow inputs recommend
+the conservative `single_eligible` value but still apply `legacy_current`.
+Forced modes bypass selection only; a blocked, terminal, or disposed plan
+records the safety override and leaves runtime authority unchanged.
 
 ## Signal Inventory
 

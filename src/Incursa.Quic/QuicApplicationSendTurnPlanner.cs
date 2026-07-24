@@ -38,6 +38,21 @@ internal static class QuicApplicationSendTurnPlannerDispatch
         QuicQueuedApplicationSendBudget budget,
         out QuicStreamFrame firstStreamFrame,
         out Exception? exception)
+        => SelectQueuedApplicationSendPlan(
+            planner,
+            sortedQueuedWrites,
+            budget,
+            QuicApplicationSendBatchPolicyMode.LegacyCurrent,
+            out firstStreamFrame,
+            out exception);
+
+    internal static QuicApplicationSendPlan SelectQueuedApplicationSendPlan(
+        IQuicApplicationSendTurnPlanner? planner,
+        Span<PendingApplicationSendRequest> sortedQueuedWrites,
+        QuicQueuedApplicationSendBudget budget,
+        QuicApplicationSendBatchPolicyMode batchPolicyMode,
+        out QuicStreamFrame firstStreamFrame,
+        out Exception? exception)
     {
         if (planner is not null && !sortedQueuedWrites.IsEmpty)
         {
@@ -72,6 +87,7 @@ internal static class QuicApplicationSendTurnPlannerDispatch
         return QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
             sortedQueuedWrites,
             budget,
+            batchPolicyMode,
             out firstStreamFrame,
             out exception);
     }

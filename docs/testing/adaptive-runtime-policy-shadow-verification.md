@@ -60,9 +60,11 @@ creating a scheduler consumer. Missing, stale, saturated, contradictory,
 recovery-unstable, resource-constrained, terminal, and out-of-domain inputs
 recommend `conservative`. The snapshot and recommendation expire after one
 actor turn, while already selected logical writes retain their independent
-operation latches. The runtime swallows diagnostic sink failures, rejects
-simultaneous shadow ownership and non-legacy adjacent-axis forcing, and leaves
-the null-planner path authoritative. Versioned raw-host records,
+operation latches. The runtime swallows diagnostic sink failures and permits
+multiple implemented axes to observe or shadow-recommend in the same
+connection while rejecting behavior-distinct adjacent-axis forcing. The
+null-planner path remains authoritative whenever send-turn applies
+`legacy_current`. Versioned raw-host records,
 permanent-runner schema-valid epoch/result joins, and the same-binary
 disabled-versus-observe-only ABBA runner path are implemented. Executed local
 shadow evidence exists. The first executed same-host neutrality cell is

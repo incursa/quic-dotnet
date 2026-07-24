@@ -65,6 +65,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const int UnconfiguredReceiveCreditPolicyMode = -1;
     private const int UnconfiguredApplicationSendTurnPolicyMode = -1;
     private const int UnconfiguredApplicationSendTurnObservationMode = -1;
+    private const int UnconfiguredApplicationSendBatchPolicyMode = -1;
+    private const int UnconfiguredApplicationSendBatchObservationMode = -1;
     private const int MaximumObservedApplicationSendTurnWrites = 64;
     private const int AdaptiveRuntimeObservationDisabled = 0;
     private const int AdaptiveRuntimeObservationConfiguring = 1;
@@ -98,6 +100,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private int receiveCreditPolicyMode = UnconfiguredReceiveCreditPolicyMode;
     private int applicationSendTurnPolicyMode = UnconfiguredApplicationSendTurnPolicyMode;
     private int applicationSendTurnObservationMode = UnconfiguredApplicationSendTurnObservationMode;
+    private int applicationSendBatchPolicyMode = UnconfiguredApplicationSendBatchPolicyMode;
+    private int applicationSendBatchObservationMode = UnconfiguredApplicationSendBatchObservationMode;
+    private ulong applicationSendBatchPlanSequence;
     private ulong applicationSendTurnSequence;
     private uint applicationSendTurnBurstLimitHits;
     private uint applicationSendTurnActorServiceTimeEwmaMicros;
@@ -112,6 +117,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private QuicReceiveCreditShadowController receiveCreditShadowController = default;
     private IQuicApplicationSendTurnEvidenceSink? applicationSendTurnEvidenceSink;
     private QuicApplicationSendTurnShadowController applicationSendTurnShadowController = default;
+    private IQuicApplicationSendBatchEvidenceSink? applicationSendBatchEvidenceSink;
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
     private readonly object scheduledFlowControlCreditGate = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
@@ -1050,8 +1056,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         QuicReceiveCreditPolicyMode? forcedMode = options.ForcedReceiveCreditPolicyMode;
         QuicApplicationSendTurnPolicyMode? forcedApplicationSendTurnMode = options.ForcedApplicationSendTurnPolicyMode;
+        QuicApplicationSendBatchPolicyMode? forcedApplicationSendBatchMode =
+            options.ForcedApplicationSendBatchPolicyMode;
         QuicApplicationSendTurnObservationMode requestedApplicationSendTurnObservationMode =
             options.ApplicationSendTurnObservationMode;
+        QuicApplicationSendBatchObservationMode requestedApplicationSendBatchObservationMode =
+            options.ApplicationSendBatchObservationMode;
         if (requestedApplicationSendTurnObservationMode is < QuicApplicationSendTurnObservationMode.Disabled
             or > QuicApplicationSendTurnObservationMode.Shadow)
         {
@@ -1062,10 +1072,64 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         bool applicationSendTurnObservationEnabled =
             requestedApplicationSendTurnObservationMode != QuicApplicationSendTurnObservationMode.Disabled;
+        if (requestedApplicationSendBatchObservationMode
+                is < QuicApplicationSendBatchObservationMode.Disabled
+                or > QuicApplicationSendBatchObservationMode.Shadow)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(options),
+                "The application-send batch observation mode is invalid.");
+        }
+
+        if (forcedApplicationSendBatchMode
+                is < QuicApplicationSendBatchPolicyMode.LegacyCurrent
+                or > QuicApplicationSendBatchPolicyMode.SingleEligible)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(options),
+                "The forced application-send batch policy mode is invalid.");
+        }
+
+        bool applicationSendBatchObservationEnabled =
+            requestedApplicationSendBatchObservationMode
+                != QuicApplicationSendBatchObservationMode.Disabled;
         if (!applicationSendTurnObservationEnabled && options.ApplicationSendTurnEvidenceSink is not null)
         {
             throw new InvalidOperationException(
                 "Application-send turn evidence export requires observe-only or shadow mode.");
+        }
+
+        if (!applicationSendBatchObservationEnabled
+            && options.ApplicationSendBatchEvidenceSink is not null)
+        {
+            throw new InvalidOperationException(
+                "Application-send batch evidence export requires observe-only or shadow mode.");
+        }
+
+        if (applicationSendBatchObservationEnabled
+            && options.ApplicationSendBatchEvidenceSink is null)
+        {
+            throw new InvalidOperationException(
+                "Application-send batch observe-only and shadow modes require an evidence sink.");
+        }
+
+        bool applicationSendBatchTreatmentSelected =
+            forcedApplicationSendBatchMode
+                is QuicApplicationSendBatchPolicyMode.SingleEligible;
+        if (applicationSendBatchTreatmentSelected)
+        {
+            if (forcedMode is not null and not QuicReceiveCreditPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Application-send batch policy requires the legacy_current receive-credit policy.");
+            }
+
+            if (forcedApplicationSendTurnMode is not null
+                and not QuicApplicationSendTurnPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Application-send batch policy requires the legacy_current application-send turn policy.");
+            }
         }
 
         if (applicationSendTurnObservationEnabled)
@@ -1080,12 +1144,6 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             {
                 throw new InvalidOperationException(
                     "Application-send turn observation requires the null-planner legacy_current path.");
-            }
-
-            if (options.AdaptiveRuntimeShadowEnabled)
-            {
-                throw new InvalidOperationException(
-                    "Only one adaptive-runtime shadow axis can be enabled on a connection.");
             }
 
             if (forcedMode is not null and not QuicReceiveCreditPolicyMode.LegacyCurrent)
@@ -1138,6 +1196,25 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 ConfigureApplicationSendTurnPolicyMode(applicationSendTurnMode);
             }
 
+            if (forcedApplicationSendBatchMode is { } applicationSendBatchMode)
+            {
+                ConfigureApplicationSendBatchPolicyMode(applicationSendBatchMode);
+            }
+
+            if (applicationSendTurnObservationEnabled)
+            {
+                ConfigureApplicationSendTurnObservation(
+                    requestedApplicationSendTurnObservationMode,
+                    options.ApplicationSendTurnEvidenceSink!);
+            }
+
+            if (applicationSendBatchObservationEnabled)
+            {
+                ConfigureApplicationSendBatchObservation(
+                    requestedApplicationSendBatchObservationMode,
+                    options.ApplicationSendBatchEvidenceSink!);
+            }
+
             ConfigureAdaptiveRuntimeEpochSink(
                 options.AdaptiveRuntimeShadowEpochInterval,
                 options.AdaptiveRuntimeShadowEpochSink);
@@ -1164,11 +1241,23 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 "Application-send turn provenance requires a forced application-send turn policy.");
         }
 
+        if (forcedApplicationSendBatchMode is not null)
+        {
+            ConfigureApplicationSendBatchPolicyMode(forcedApplicationSendBatchMode.Value);
+        }
+
         if (applicationSendTurnObservationEnabled)
         {
             ConfigureApplicationSendTurnObservation(
                 requestedApplicationSendTurnObservationMode,
                 options.ApplicationSendTurnEvidenceSink!);
+        }
+
+        if (applicationSendBatchObservationEnabled)
+        {
+            ConfigureApplicationSendBatchObservation(
+                requestedApplicationSendBatchObservationMode,
+                options.ApplicationSendBatchEvidenceSink!);
         }
 
         if (options.AdaptiveRuntimeShadowEpochSink is not null
@@ -1212,6 +1301,26 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             : null;
     }
 
+    internal void ConfigureApplicationSendBatchPolicyMode(
+        QuicApplicationSendBatchPolicyMode mode)
+    {
+        if (mode is < QuicApplicationSendBatchPolicyMode.LegacyCurrent
+            or > QuicApplicationSendBatchPolicyMode.SingleEligible)
+        {
+            throw new ArgumentOutOfRangeException(nameof(mode));
+        }
+
+        if (Interlocked.CompareExchange(
+                ref applicationSendBatchPolicyMode,
+                (int)mode,
+                UnconfiguredApplicationSendBatchPolicyMode)
+            != UnconfiguredApplicationSendBatchPolicyMode)
+        {
+            throw new InvalidOperationException(
+                "The application-send batch policy mode has already been configured.");
+        }
+    }
+
     private void ConfigureApplicationSendTurnObservation(
         QuicApplicationSendTurnObservationMode mode,
         IQuicApplicationSendTurnEvidenceSink sink)
@@ -1233,6 +1342,23 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         applicationSendTurnEvidenceSink = sink;
+    }
+
+    private void ConfigureApplicationSendBatchObservation(
+        QuicApplicationSendBatchObservationMode mode,
+        IQuicApplicationSendBatchEvidenceSink sink)
+    {
+        if (Interlocked.CompareExchange(
+                ref applicationSendBatchObservationMode,
+                (int)mode,
+                UnconfiguredApplicationSendBatchObservationMode)
+            != UnconfiguredApplicationSendBatchObservationMode)
+        {
+            throw new InvalidOperationException(
+                "The application-send batch observation mode has already been configured.");
+        }
+
+        applicationSendBatchEvidenceSink = sink;
     }
 
     private void ConfigureAdaptiveRuntimeEpochSink(
@@ -1460,7 +1586,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
     }
 
-    private QuicReceiveCreditPolicyMode GetAppliedReceiveCreditPolicyMode()
+    internal QuicReceiveCreditPolicyMode GetAppliedReceiveCreditPolicyMode()
     {
         int configuredMode = Volatile.Read(ref receiveCreditPolicyMode);
         return configuredMode switch
@@ -1768,6 +1894,22 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             (int)QuicApplicationSendTurnObservationMode.Shadow =>
                 QuicApplicationSendTurnObservationMode.Shadow,
             _ => QuicApplicationSendTurnObservationMode.Disabled,
+        };
+
+    internal QuicApplicationSendBatchPolicyMode ApplicationSendBatchPolicyMode
+        => Volatile.Read(ref applicationSendBatchPolicyMode)
+            == (int)QuicApplicationSendBatchPolicyMode.SingleEligible
+                ? QuicApplicationSendBatchPolicyMode.SingleEligible
+                : QuicApplicationSendBatchPolicyMode.LegacyCurrent;
+
+    internal QuicApplicationSendBatchObservationMode ApplicationSendBatchObservationMode
+        => Volatile.Read(ref applicationSendBatchObservationMode) switch
+        {
+            (int)QuicApplicationSendBatchObservationMode.ObserveOnly =>
+                QuicApplicationSendBatchObservationMode.ObserveOnly,
+            (int)QuicApplicationSendBatchObservationMode.Shadow =>
+                QuicApplicationSendBatchObservationMode.Shadow,
+            _ => QuicApplicationSendBatchObservationMode.Disabled,
         };
 
     internal bool TryBeginRuntimePressureSnapshot(

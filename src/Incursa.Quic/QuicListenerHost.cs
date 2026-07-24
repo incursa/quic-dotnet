@@ -2422,6 +2422,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         selectedOptions.ApplicationSendTurnPolicyProvenanceSink = returnedOptions.ApplicationSendTurnPolicyProvenanceSink;
         selectedOptions.ApplicationSendTurnObservationMode = returnedOptions.ApplicationSendTurnObservationMode;
         selectedOptions.ApplicationSendTurnEvidenceSink = returnedOptions.ApplicationSendTurnEvidenceSink;
+        selectedOptions.ForcedApplicationSendBatchPolicyMode = returnedOptions.ForcedApplicationSendBatchPolicyMode;
+        selectedOptions.ApplicationSendBatchObservationMode = returnedOptions.ApplicationSendBatchObservationMode;
+        selectedOptions.ApplicationSendBatchEvidenceSink = returnedOptions.ApplicationSendBatchEvidenceSink;
 
         QuicReceiveWindowSizes returnedWindowSizes = returnedOptions.InitialReceiveWindowSizes;
         selectedOptions.InitialReceiveWindowSizes = new QuicReceiveWindowSizes

@@ -56,9 +56,13 @@ ownership, or buffer bounds.
 The `application_send_turn_planning` raw host accepts independently selected
 `legacy_current`, `conservative`, `observe_only`, and `shadow` values.
 Forced construction provenance and observe-only/shadow turn records use
-separate versioned output streams. The host rejects simultaneous receive-credit
-and send-turn selection and explicitly configures adjacent receive-credit
-behavior as `legacy_current`. For a send-turn `-ShadowOnly` cell, the permanent
+separate versioned output streams. This retained send-turn-only host rejects
+simultaneous receive-credit and send-turn selection and explicitly configures
+adjacent receive-credit behavior as `legacy_current`; it remains valid
+historical evidence but is not the unified Stage 1 host contract. The unified
+host must observe every implemented Stage 1 axis together while varying at
+most one treatment and keeping every adjacent applied value
+`legacy_current`. For a send-turn `-ShadowOnly` cell, the permanent
 local runner now converts and validates the raw turn records, adds the epoch
 rows and export manifest to the checksum inventory, and verifies their result,
 sample, and raw-source joins. This implements the evidence path; it does not

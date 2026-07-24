@@ -705,9 +705,18 @@ internal sealed class QuicApplicationSendQueue
     internal static int SelectQueuedApplicationSendBatchCount(
         ReadOnlySpan<PendingApplicationSendRequest> queuedWrites,
         int maximumPayloadBytes)
+        => SelectQueuedApplicationSendBatchCount(
+            queuedWrites,
+            maximumPayloadBytes,
+            out _);
+
+    internal static int SelectQueuedApplicationSendBatchCount(
+        ReadOnlySpan<PendingApplicationSendRequest> queuedWrites,
+        int maximumPayloadBytes,
+        out int selectedBytes)
     {
         int selectedCount = 0;
-        int selectedBytes = 0;
+        selectedBytes = 0;
         foreach (PendingApplicationSendRequest queuedWrite in queuedWrites)
         {
             int nextSelectedBytes = checked(selectedBytes + queuedWrite.StreamPayloadLength);

@@ -1405,14 +1405,20 @@ internal sealed partial class QuicConnectionRuntime
 
         bool observeApplicationSendTurn =
             publishTurnEvidence && HasApplicationSendTurnObservation();
+        bool observeApplicationSendBatch = HasApplicationSendBatchObservation();
+        QuicApplicationSendTurnQueueSnapshot queueSnapshot = default;
+        QuicSendPolicySnapshot policySnapshot = default;
+        if (observeApplicationSendTurn || observeApplicationSendBatch)
+        {
+            queueSnapshot = applicationSendQueue.CaptureBoundedTurnSnapshot(
+                GetElapsedMicros(nowTicks),
+                MaximumObservedApplicationSendTurnWrites,
+                QuicApplicationSendPressureClassifier.MaximumObservedDistinctStreamCount);
+            policySnapshot = CaptureQueuedApplicationSendPolicySnapshot();
+        }
+
         if (observeApplicationSendTurn)
         {
-            QuicApplicationSendTurnQueueSnapshot queueSnapshot =
-                applicationSendQueue.CaptureBoundedTurnSnapshot(
-                    GetElapsedMicros(nowTicks),
-                    MaximumObservedApplicationSendTurnWrites,
-                    QuicApplicationSendPressureClassifier.MaximumObservedDistinctStreamCount);
-            QuicSendPolicySnapshot policySnapshot = CaptureQueuedApplicationSendPolicySnapshot();
             QuicQueuedApplicationSendBudget observedBudget =
                 QuicSendPolicy.ComputeQueuedApplicationSendBudget(policySnapshot);
             TryPublishApplicationSendTurnEvidenceAtPlanningBoundary(
@@ -1434,6 +1440,8 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlySpan<PendingApplicationSendRequest> selectedWrites = default;
         bool hasOnlyQueuedWrite = applicationSendQueue.TryGetOnlyQueuedWrite(out onlyQueuedWrite);
         bool formattedRawQueuedWrite = false;
+        QuicApplicationSendBatchPolicyMode batchPolicyMode =
+            ApplicationSendBatchPolicyMode;
 
         try
         {
@@ -1442,8 +1450,15 @@ internal sealed partial class QuicConnectionRuntime
                 QuicApplicationSendPlan sendPlan = QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
                     onlyQueuedWrite,
                     schedulerBudget,
+                    batchPolicyMode,
                     out QuicStreamFrame onlyQueuedWriteFrame,
                     out exception);
+                TryPublishApplicationSendBatchEvidenceAtPlanningBoundary(
+                    nowTicks,
+                    schedulerBudget,
+                    in queueSnapshot,
+                    in policySnapshot,
+                    in sendPlan);
                 if (TryHandleNoQueuedApplicationSendPlan(sendPlan, ref exception))
                 {
                     return false;
@@ -1517,8 +1532,19 @@ internal sealed partial class QuicConnectionRuntime
                     QuicApplicationSendPlan nextWritePlan = QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
                         nextQueuedWrite,
                         schedulerBudget,
+                        batchPolicyMode,
                         out QuicStreamFrame nextQueuedWriteFrame,
                         out exception);
+                    if (nextWritePlan.Kind == QuicApplicationSendPlanKind.None
+                        || nextWritePlan.Kind == QuicApplicationSendPlanKind.Fragment)
+                    {
+                        TryPublishApplicationSendBatchEvidenceAtPlanningBoundary(
+                            nowTicks,
+                            schedulerBudget,
+                            in queueSnapshot,
+                            in policySnapshot,
+                            in nextWritePlan);
+                    }
                     if (TryHandleNoQueuedApplicationSendPlan(nextWritePlan, ref exception))
                     {
                         return false;
@@ -1563,14 +1589,22 @@ internal sealed partial class QuicConnectionRuntime
                     ? QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
                         sortedQueuedWrites,
                         schedulerBudget,
+                        batchPolicyMode,
                         out firstSelectedWriteFrame,
                         out exception)
                     : QuicApplicationSendTurnPlannerDispatch.SelectQueuedApplicationSendPlan(
                         applicationSendTurnPlanner,
                         sortedQueuedWrites,
                         schedulerBudget,
+                        batchPolicyMode,
                         out firstSelectedWriteFrame,
                         out exception);
+                TryPublishApplicationSendBatchEvidenceAtPlanningBoundary(
+                    nowTicks,
+                    schedulerBudget,
+                    in queueSnapshot,
+                    in policySnapshot,
+                    in sendPlan);
                 if (TryHandleNoQueuedApplicationSendPlan(sendPlan, ref exception))
                 {
                     return false;
@@ -1974,6 +2008,134 @@ internal sealed partial class QuicConnectionRuntime
         int mode = Volatile.Read(ref applicationSendTurnObservationMode);
         return mode is (int)QuicApplicationSendTurnObservationMode.ObserveOnly
             or (int)QuicApplicationSendTurnObservationMode.Shadow;
+    }
+
+    private bool HasApplicationSendBatchObservation()
+    {
+        int mode = Volatile.Read(ref applicationSendBatchObservationMode);
+        return mode is (int)QuicApplicationSendBatchObservationMode.ObserveOnly
+            or (int)QuicApplicationSendBatchObservationMode.Shadow;
+    }
+
+    private void TryPublishApplicationSendBatchEvidenceAtPlanningBoundary(
+        long nowTicks,
+        QuicQueuedApplicationSendBudget schedulerBudget,
+        in QuicApplicationSendTurnQueueSnapshot queueSnapshot,
+        in QuicSendPolicySnapshot policySnapshot,
+        in QuicApplicationSendPlan plan)
+    {
+        if (!HasApplicationSendBatchObservation()
+            || applicationSendBatchEvidenceSink is not { } sink
+            || applicationSendBatchPlanSequence == ulong.MaxValue)
+        {
+            return;
+        }
+
+        QuicApplicationSendBatchObservationCondition conditions =
+            QuicApplicationSendBatchObservationCondition.None;
+        if (!queueSnapshot.Complete
+            || plan.EligibleWriteBytes == int.MaxValue)
+        {
+            conditions |=
+                QuicApplicationSendBatchObservationCondition.ArithmeticSaturated;
+        }
+
+        if ((plan.Kind == QuicApplicationSendPlanKind.None
+                && plan.SelectedWriteCount != 0)
+            || plan.SelectedWriteCount > plan.EligibleWriteCount)
+        {
+            conditions |= QuicApplicationSendBatchObservationCondition.Contradictory;
+        }
+
+        if (plan.BlockedReason is QuicSendPolicyBlockedReason.InvalidPayloadBudget
+            or QuicSendPolicyBlockedReason.InvalidQueuedApplicationSend)
+        {
+            conditions |= QuicApplicationSendBatchObservationCondition.OutOfDomain;
+        }
+
+        QuicApplicationSendBatchSignalMask missingSignalMask =
+            QuicApplicationSendBatchSignalMask.None;
+        uint queueDelayEwmaMicros = 0;
+        if (applicationSendPressureClassifier.HasQueueDelay)
+        {
+            queueDelayEwmaMicros =
+                (uint)applicationSendPressureClassifier.QueueDelayEwmaMicros;
+        }
+        else
+        {
+            missingSignalMask |=
+                QuicApplicationSendBatchSignalMask.QueueDelayEwma;
+        }
+
+        uint actorServiceTimeEwmaMicros = 0;
+        if (hasApplicationSendTurnActorServiceTime != 0)
+        {
+            actorServiceTimeEwmaMicros =
+                applicationSendTurnActorServiceTimeEwmaMicros;
+        }
+        else
+        {
+            missingSignalMask |=
+                QuicApplicationSendBatchSignalMask.ActorServiceTimeEwma;
+        }
+
+        ulong planSequence = applicationSendBatchPlanSequence + 1;
+        QuicApplicationSendBatchObservation observation = new(
+            planSequence,
+            nowTicks,
+            QuicApplicationSendBatchObservation.CurrentObservationContractVersion,
+            QuicApplicationSendBatchObservation.CurrentRuleVersion,
+            missingSignalMask,
+            QuicApplicationSendBatchSignalMask.None,
+            conditions,
+            CaptureAdaptiveRuntimeLifecycleFlags(),
+            schedulerBudget.MaxPayloadBytes,
+            plan.EligibleWriteCount,
+            plan.EligibleWriteBytes,
+            queueSnapshot.QueuedApplicationWrites,
+            queueSnapshot.OutboundBacklogBytes,
+            queueSnapshot.DistinctQueuedStreams,
+            queueSnapshot.OldestQueuedSendAgeMicros,
+            queueDelayEwmaMicros,
+            actorServiceTimeEwmaMicros,
+            policySnapshot.BytesInFlightBytes,
+            policySnapshot.CongestionWindowBytes,
+            queueSnapshot.RetainedSendBuffers,
+            queueSnapshot.RetainedSendBytes);
+        int configuredPolicy = Volatile.Read(ref applicationSendBatchPolicyMode);
+        bool hasForcedValue =
+            configuredPolicy != UnconfiguredApplicationSendBatchPolicyMode;
+        QuicApplicationSendBatchPolicyMode forcedValue =
+            configuredPolicy == (int)QuicApplicationSendBatchPolicyMode.SingleEligible
+                ? QuicApplicationSendBatchPolicyMode.SingleEligible
+                : QuicApplicationSendBatchPolicyMode.LegacyCurrent;
+        QuicApplicationSendBatchObservationMode observationMode =
+            ApplicationSendBatchObservationMode;
+        QuicAdaptiveRuntimeStage1AxisDecision decision =
+            QuicApplicationSendBatchPolicy.Evaluate(
+                in observation,
+                observationMode,
+                hasForcedValue,
+                forcedValue,
+                in plan);
+        QuicApplicationSendBatchEvidence evidence = new(
+            observationMode,
+            observation,
+            decision,
+            plan.Kind,
+            plan.SelectedWriteCount,
+            plan.HasMoreQueuedData,
+            plan.BlockedReason);
+
+        applicationSendBatchPlanSequence = planSequence;
+        try
+        {
+            _ = sink.TryPublish(in evidence);
+        }
+        catch (Exception)
+        {
+            // Evidence export is diagnostic-only. A failed sink must never affect transport behavior.
+        }
     }
 
     private void TryPublishApplicationSendTurnEvidenceAtPlanningBoundary(

@@ -4,10 +4,11 @@ title: "Adaptive Runtime Controller State Machine"
 
 # Adaptive Runtime Controller State Machine
 
-Status: receive-credit and application-send turn shadow runtimes implemented;
-send-turn raw-host export and permanent-runner epoch joins implemented;
-one local shadow cell and one retained-negative observation-neutrality cell
-executed; broader campaign verification remains open; active policy blocked
+Status: receive-credit, application-send turn, and application-send batch
+shadow runtimes implemented; send-turn raw-host export and permanent-runner
+epoch joins implemented; one local send-turn shadow cell and one
+retained-negative observation-neutrality cell executed; unified export and
+broader campaign verification remain open; active policy blocked
 
 The controller is a deterministic connection-local selector evaluated only at
 actor-safe boundaries. It publishes a compact immutable policy snapshot. It
@@ -39,9 +40,19 @@ planner consumer, and the snapshot expires after one actor turn. The initial
 closed recommendation set is `legacy_current` and `conservative`; both retain
 the current legal planner behavior until a later behavior-distinct proposal
 has its own reviewed requirement and evidence package. Observe-only and shadow
-configuration is connection-local, rejects simultaneous shadow ownership by
-another axis, and requires adjacent receive-credit behavior to remain
-`legacy_current`.
+configuration is connection-local. Multiple implemented axes may observe or
+shadow-recommend in the same connection so unified epochs retain
+contemporaneous evidence. Treatment ownership remains singular: at most one
+axis may be forced to a behavior-distinct value and every adjacent applied
+value remains `legacy_current`.
+
+The implemented `application_send_batch_formation` selector resolves
+`legacy_current` or `single_eligible` after the correctness-critical runtime
+has produced an already-legal eligible prefix. Its snapshot and decision latch
+for exactly one packet plan. Observe-only records the legacy decision; shadow
+may recommend but never applies a new value; forcing can only shorten the
+prefix and cannot bypass a blocked, terminal, disposed, or otherwise
+authoritative runtime plan.
 
 ## States
 

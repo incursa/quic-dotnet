@@ -170,7 +170,7 @@ public sealed class REQ_QUIC_CRT_0175
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void OnlyOneAxisCanOwnShadowSelection()
+    public void ReceiveCreditAndSendTurnShadowObserversCanCoexist()
     {
         using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
         QuicClientConnectionOptions options = new()
@@ -180,12 +180,14 @@ public sealed class REQ_QUIC_CRT_0175
             ApplicationSendTurnEvidenceSink = new RecordingApplicationSendTurnEvidenceSink(),
         };
 
-        InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
-            () => runtime.ConfigureAdaptiveRuntimePolicy(options));
+        runtime.ConfigureAdaptiveRuntimePolicy(options);
 
         Assert.Equal(
-            "Only one adaptive-runtime shadow axis can be enabled on a connection.",
-            exception.Message);
+            QuicApplicationSendTurnObservationMode.Shadow,
+            runtime.ApplicationSendTurnObservationMode);
+        Assert.Equal(
+            QuicReceiveCreditPolicyMode.LegacyCurrent,
+            runtime.GetAppliedReceiveCreditPolicyMode());
         Assert.Null(runtime.ApplicationSendTurnPlanner);
     }
 
