@@ -103,7 +103,10 @@ internal sealed class QuicRetransmissionQueue
                 && retransmission.PacketNumber == key.PacketNumber)
             {
                 removedOldest |= RecordRemoval(retransmission);
-                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                    retransmission,
+                    bufferCopyOperationObserver,
+                    QuicBufferReleaseReason.Completed);
                 removed = true;
                 continue;
             }
@@ -131,7 +134,10 @@ internal sealed class QuicRetransmissionQueue
             if (retransmission.PacketNumberSpace == packetNumberSpace)
             {
                 removedOldest |= RecordRemoval(retransmission);
-                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                    retransmission,
+                    bufferCopyOperationObserver,
+                    QuicBufferReleaseReason.Terminal);
                 updated = true;
                 continue;
             }
@@ -159,7 +165,10 @@ internal sealed class QuicRetransmissionQueue
             if (retransmission.PacketProtectionLevel == packetProtectionLevel)
             {
                 removedOldest |= RecordRemoval(retransmission);
-                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                    retransmission,
+                    bufferCopyOperationObserver,
+                    QuicBufferReleaseReason.Terminal);
                 updated = true;
                 continue;
             }
@@ -188,7 +197,10 @@ internal sealed class QuicRetransmissionQueue
                 && retransmission.OneRttKeyPhase == keyPhase)
             {
                 removedOldest |= RecordRemoval(retransmission);
-                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                    retransmission,
+                    bufferCopyOperationObserver,
+                    QuicBufferReleaseReason.Terminal);
                 updated = true;
                 continue;
             }
@@ -216,7 +228,10 @@ internal sealed class QuicRetransmissionQueue
             if (retransmission.SentAtMicros < discardBeforeSentAtMicros)
             {
                 removedOldest |= RecordRemoval(retransmission);
-                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                    retransmission,
+                    bufferCopyOperationObserver,
+                    QuicBufferReleaseReason.Terminal);
                 updated = true;
                 continue;
             }
@@ -252,7 +267,10 @@ internal sealed class QuicRetransmissionQueue
 
             updated = true;
             removedOldest |= RecordRemoval(retransmission);
-            QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
+            QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                retransmission,
+                bufferCopyOperationObserver,
+                QuicBufferReleaseReason.Reset);
         }
 
         RefreshOldestSentAtMicros(removedOldest);
@@ -280,7 +298,10 @@ internal sealed class QuicRetransmissionQueue
 
             updated = true;
             removedOldest |= RecordRemoval(retransmission);
-            QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
+            QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                retransmission,
+                bufferCopyOperationObserver,
+                QuicBufferReleaseReason.Reset);
         }
 
         RefreshOldestSentAtMicros(removedOldest);
@@ -308,7 +329,10 @@ internal sealed class QuicRetransmissionQueue
 
             updated = true;
             removedOldest |= RecordRemoval(retransmission);
-            QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
+            QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                retransmission,
+                bufferCopyOperationObserver,
+                QuicBufferReleaseReason.Reset);
         }
 
         RefreshOldestSentAtMicros(removedOldest);
@@ -325,6 +349,29 @@ internal sealed class QuicRetransmissionQueue
 
         retransmission = pendingRetransmissions.Dequeue();
         RefreshOldestSentAtMicros(RecordRemoval(retransmission));
+        return true;
+    }
+
+    internal bool Clear(
+        QuicBufferReleaseReason releaseReason =
+            QuicBufferReleaseReason.Terminal)
+    {
+        if (pendingRetransmissions.Count == 0)
+        {
+            return false;
+        }
+
+        while (pendingRetransmissions.TryDequeue(
+            out QuicConnectionRetransmissionPlan retransmission))
+        {
+            _ = RecordRemoval(retransmission);
+            QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                retransmission,
+                bufferCopyOperationObserver,
+                releaseReason);
+        }
+
+        oldestSentAtMicros = null;
         return true;
     }
 
@@ -407,7 +454,9 @@ internal sealed class QuicRetransmissionQueue
                 packet.PlaintextPayload,
                 packet.OneRttKeyPhase,
                 PlaintextPayloadOwner: packet.PlaintextPayloadOwner,
-                PacketBytesOwner: packet.PacketBytesOwner);
+                PacketBytesOwner: packet.PacketBytesOwner,
+                PlaintextPayloadLifetimeToken:
+                    packet.PlaintextPayloadLifetimeToken);
             AddClonedRetainedPlan(retained, ref retainedRetransmissions);
         }
 
@@ -431,17 +480,26 @@ internal sealed class QuicRetransmissionQueue
         QuicConnectionRetransmissionPlan retained = CloneOwnedPlaintext(retransmission);
         try
         {
+            retained = retained with
+            {
+                PlaintextPayloadLifetimeToken =
+                    TryObserveRetransmissionClone(
+                        retransmission,
+                        retained),
+            };
             retainedRetransmissions.Add(retained);
-            TryObserveRetransmissionClone(retransmission, retained);
         }
         catch
         {
-            QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retained);
+            QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                retained,
+                bufferCopyOperationObserver,
+                QuicBufferReleaseReason.Failed);
             throw;
         }
     }
 
-    private void TryObserveRetransmissionClone(
+    private QuicBufferCopyLifetimeToken TryObserveRetransmissionClone(
         QuicConnectionRetransmissionPlan source,
         QuicConnectionRetransmissionPlan retained)
     {
@@ -453,12 +511,12 @@ internal sealed class QuicRetransmissionQueue
                 source.PlaintextPayloadOwner,
                 retained.PlaintextPayloadOwner))
         {
-            return;
+            return default;
         }
 
         try
         {
-            _ = observer.ObserveBufferCopy(
+            return observer.ObserveBufferCopy(
                 QuicBufferCopyPath.RetransmissionClone,
                 QuicBufferCopyOperation.Clone,
                 QuicBufferCopyDecisionBoundary.RetransmissionClone,
@@ -471,12 +529,13 @@ internal sealed class QuicRetransmissionQueue
                 requestedCapacityBytes: source.PlaintextPayload.Length,
                 retainedCapacityBytes:
                     retained.PlaintextPayloadOwner.Length,
-                trackTerminalRelease: false);
+                trackTerminalRelease: true);
         }
         catch (Exception)
         {
             // Copy evidence is diagnostic-only. A failed observer cannot
             // interrupt migration retention or change clone ownership.
+            return default;
         }
     }
 
@@ -504,6 +563,7 @@ internal sealed class QuicRetransmissionQueue
             PlaintextPayload = payloadOwner.AsMemory(0, payloadLength),
             PlaintextPayloadOwner = payloadOwner,
             PacketBytesOwner = null,
+            PlaintextPayloadLifetimeToken = default,
         };
     }
 

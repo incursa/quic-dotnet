@@ -234,8 +234,8 @@ stream reset emits exactly one `Reset` release. Capacity reuse does not create
 a second token. Construction and release are retained as separate raw records
 joined by `connectionKey + operationSequence`; current schemas are
 `adaptive-runtime-buffer-copy-raw-v2` and
-`adaptive-runtime-buffer-release-raw-v3`. The receive-only release v1 and
-receive-plus-write-request release v2 schemas remain immutable. A bounded
+`adaptive-runtime-buffer-release-raw-v4`. Release v1 through v3 remain
+immutable compatibility contracts for their earlier closed path sets. A bounded
 writer rejection emits
 `quic-buffer-evidence-export-failure-v1` and invalidates the evidence rather
 than changing ownership or runtime progress. The raw construction stream is
@@ -262,3 +262,17 @@ Every release follows the authoritative pool return, and a rejecting or
 throwing evidence sink cannot change queue mutation or send progress. Release
 observation/raw v3 adds only this closed path; it does not make
 `buffer_copy_coalescing` forceable.
+
+The formatted stream payload checkpoint begins the fourth delivery item
+without yet enabling combined-payload correlation. Every successfully
+formatted owner now receives a token and keeps it through delayed-send queue
+storage, packet tracking, and loss. A direct retransmission keeps the same
+token through ACK, stream suppression, terminal discard, replacement, or
+disposal because the same array moves into the retransmission plan and then
+back into sent-packet ownership. A rebuild that copies into a new
+sent-retention owner closes the formatted token with `CopiedToNextOwner`; that
+new owner is not yet terminally correlated. A path-migration clone creates a
+distinct `retransmission_clone` token for the distinct array. Release
+observation/raw v4 adds these two closed paths. Combined payload construction,
+sent-retention copies, protected packet owners, and endpoint handoff remain
+explicitly uncorrelated and non-forceable.

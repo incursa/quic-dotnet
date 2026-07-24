@@ -1040,6 +1040,249 @@ public sealed class REQ_QUIC_CRT_0182
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void SentPacketAcknowledgmentReleasesFormattedPayloadToken()
+    {
+        RecordingOperationObserver observer = new();
+        QuicConnectionSendRuntime sendRuntime = new();
+        sendRuntime.ConfigureBufferCopyOperationObserver(observer);
+        byte[] owner = QuicBufferPool.RentBytes(
+            64,
+            QuicBufferPoolOwner.FormattedStreamPayload);
+        QuicBufferCopyLifetimeToken token = new(
+            OperationSequence: 81,
+            QuicBufferCopyPath.FormattedStreamPayload,
+            ConstructionTicks: 1,
+            RetainedCapacityBytes: (ulong)owner.Length);
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 21,
+            PayloadBytes: 64,
+            SentAtMicros: 100,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PlaintextPayload: owner.AsMemory(0, 32),
+            PlaintextPayloadOwner: owner,
+            PlaintextPayloadLifetimeToken: token));
+
+        Assert.True(sendRuntime.TryAcknowledgePacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 21));
+
+        QuicBufferReleaseObservation release =
+            Assert.Single(observer.Releases);
+        Assert.Equal(token.OperationSequence, release.OperationSequence);
+        Assert.Equal(
+            QuicBufferCopyPath.FormattedStreamPayload,
+            release.Path);
+        Assert.Equal(
+            QuicBufferReleaseReason.Completed,
+            release.Reason);
+        Assert.Equal((ulong)owner.Length, release.ReleasedCapacityBytes);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void LossAndRetransmissionPreserveFormattedPayloadToken()
+    {
+        RecordingOperationObserver observer = new();
+        QuicConnectionSendRuntime sendRuntime = new();
+        sendRuntime.ConfigureBufferCopyOperationObserver(observer);
+        byte[] owner = QuicBufferPool.RentBytes(
+            64,
+            QuicBufferPoolOwner.FormattedStreamPayload);
+        QuicBufferCopyLifetimeToken token = new(
+            OperationSequence: 82,
+            QuicBufferCopyPath.FormattedStreamPayload,
+            ConstructionTicks: 1,
+            RetainedCapacityBytes: (ulong)owner.Length);
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 22,
+            PayloadBytes: 64,
+            SentAtMicros: 100,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PlaintextPayload: owner.AsMemory(0, 32),
+            PlaintextPayloadOwner: owner,
+            PlaintextPayloadLifetimeToken: token));
+
+        Assert.True(sendRuntime.TryRegisterLoss(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 22));
+        Assert.Empty(observer.Releases);
+        Assert.True(sendRuntime.TryDequeueRetransmission(
+            out QuicConnectionRetransmissionPlan retransmission));
+        Assert.Same(owner, retransmission.PlaintextPayloadOwner);
+        Assert.Equal(
+            token,
+            retransmission.PlaintextPayloadLifetimeToken);
+
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 23,
+            PayloadBytes: retransmission.PayloadBytes,
+            SentAtMicros: 200,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PlaintextPayload: retransmission.PlaintextPayload,
+            PlaintextPayloadOwner:
+                retransmission.PlaintextPayloadOwner,
+            PlaintextPayloadLifetimeToken:
+                retransmission.PlaintextPayloadLifetimeToken));
+        Assert.True(sendRuntime.TryAcknowledgePacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 23));
+
+        QuicBufferReleaseObservation release =
+            Assert.Single(observer.Releases);
+        Assert.Equal(token.OperationSequence, release.OperationSequence);
+        Assert.Equal(
+            QuicBufferReleaseReason.Completed,
+            release.Reason);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void SentPacketDiscardReleasesFormattedPayloadAsTerminal()
+    {
+        RecordingOperationObserver observer = new();
+        QuicConnectionSendRuntime sendRuntime = new();
+        sendRuntime.ConfigureBufferCopyOperationObserver(observer);
+        byte[] owner = QuicBufferPool.RentBytes(
+            32,
+            QuicBufferPoolOwner.FormattedStreamPayload);
+        QuicBufferCopyLifetimeToken token = new(
+            OperationSequence: 83,
+            QuicBufferCopyPath.FormattedStreamPayload,
+            ConstructionTicks: 1,
+            RetainedCapacityBytes: (ulong)owner.Length);
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 24,
+            PayloadBytes: 32,
+            SentAtMicros: 100,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PlaintextPayload: owner.AsMemory(0, 16),
+            PlaintextPayloadOwner: owner,
+            PlaintextPayloadLifetimeToken: token));
+
+        Assert.True(sendRuntime.TryDiscardPacketNumberSpace(
+            QuicPacketNumberSpace.ApplicationData));
+
+        QuicBufferReleaseObservation release =
+            Assert.Single(observer.Releases);
+        Assert.Equal(token.OperationSequence, release.OperationSequence);
+        Assert.Equal(
+            QuicBufferReleaseReason.Terminal,
+            release.Reason);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void FinalOwnerDrainDistinguishesDisposalAndReleasesAllPackets()
+    {
+        RecordingOperationObserver observer = new();
+        QuicConnectionSendRuntime sendRuntime = new();
+        sendRuntime.ConfigureBufferCopyOperationObserver(observer);
+        byte[] sentOwner = QuicBufferPool.RentBytes(
+            32,
+            QuicBufferPoolOwner.FormattedStreamPayload);
+        byte[] retransmissionOwner = QuicBufferPool.RentBytes(
+            32,
+            QuicBufferPoolOwner.FormattedStreamPayload);
+        QuicBufferCopyLifetimeToken sentToken = new(
+            OperationSequence: 84,
+            QuicBufferCopyPath.FormattedStreamPayload,
+            ConstructionTicks: 1,
+            RetainedCapacityBytes: (ulong)sentOwner.Length);
+        QuicBufferCopyLifetimeToken retransmissionToken = new(
+            OperationSequence: 85,
+            QuicBufferCopyPath.FormattedStreamPayload,
+            ConstructionTicks: 1,
+            RetainedCapacityBytes: (ulong)retransmissionOwner.Length);
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 25,
+            PayloadBytes: 32,
+            SentAtMicros: 100,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PlaintextPayload: sentOwner.AsMemory(0, 16),
+            PlaintextPayloadOwner: sentOwner,
+            PlaintextPayloadLifetimeToken: sentToken));
+        sendRuntime.QueueRetransmission(
+            new QuicConnectionRetransmissionPlan(
+                QuicPacketNumberSpace.ApplicationData,
+                PacketNumber: 26,
+                PayloadBytes: 32,
+                SentAtMicros: 100,
+                ProbePacket: false,
+                CryptoMetadata: null,
+                PacketBytes: default,
+                PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+                StreamId: 4,
+                StreamIds: null,
+                PlaintextPayload: retransmissionOwner.AsMemory(0, 16),
+                OneRttKeyPhase: 0,
+                PlaintextPayloadOwner: retransmissionOwner,
+                PacketBytesOwner: null,
+                PlaintextPayloadLifetimeToken: retransmissionToken));
+
+        Assert.True(sendRuntime.ReleaseAllOwnedPacketResources(
+            QuicBufferReleaseReason.Disposed));
+
+        Assert.Empty(sendRuntime.SentPackets);
+        Assert.Equal(0, sendRuntime.PendingRetransmissionCount);
+        Assert.Collection(
+            observer.Releases.OrderBy(static release =>
+                release.OperationSequence),
+            release =>
+            {
+                Assert.Equal(sentToken.OperationSequence, release.OperationSequence);
+                Assert.Equal(QuicBufferReleaseReason.Disposed, release.Reason);
+            },
+            release =>
+            {
+                Assert.Equal(
+                    retransmissionToken.OperationSequence,
+                    release.OperationSequence);
+                Assert.Equal(QuicBufferReleaseReason.Disposed, release.Reason);
+            });
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void SentPacketReleaseObserverFailureCannotBlockAcknowledgment()
+    {
+        QuicConnectionSendRuntime sendRuntime = new();
+        sendRuntime.ConfigureBufferCopyOperationObserver(
+            new ReleaseThrowingOperationObserver());
+        byte[] owner = QuicBufferPool.RentBytes(
+            16,
+            QuicBufferPoolOwner.FormattedStreamPayload);
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 27,
+            PayloadBytes: 16,
+            SentAtMicros: 100,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PlaintextPayload: owner.AsMemory(0, 16),
+            PlaintextPayloadOwner: owner,
+            PlaintextPayloadLifetimeToken: new QuicBufferCopyLifetimeToken(
+                OperationSequence: 86,
+                QuicBufferCopyPath.FormattedStreamPayload,
+                ConstructionTicks: 1,
+                RetainedCapacityBytes: (ulong)owner.Length)));
+
+        Assert.True(sendRuntime.TryAcknowledgePacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 27));
+        Assert.Empty(sendRuntime.SentPackets);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void BufferReleaseReportsContradictoryAndOutOfDomainState()
@@ -1098,8 +1341,25 @@ public sealed class REQ_QUIC_CRT_0182
                 in oversizedRawQueue,
                 QuicBufferReleaseReason.Delivered,
                 releasedCapacityBytes: 8);
+        QuicBufferCopyLifetimeToken formattedPayload =
+            runtime.TryPublishBufferCopyObservation(
+                QuicBufferCopyPath.FormattedStreamPayload,
+                QuicBufferCopyOperation.Copy,
+                QuicBufferCopyDecisionBoundary.PacketPlan,
+                joinOperationSequence: 4,
+                logicalBytes: 8,
+                copiedBytes: 8,
+                sourceSegmentCount: 1,
+                requestedCapacityBytes: 8,
+                retainedCapacityBytes: 8,
+                trackTerminalRelease: true);
+        ((IQuicBufferCopyOperationObserver)runtime)
+            .ObserveBufferRelease(
+                in formattedPayload,
+                QuicBufferReleaseReason.Recycled,
+                releasedCapacityBytes: 8);
 
-        Assert.Equal(3, sink.Releases.Count);
+        Assert.Equal(4, sink.Releases.Count);
         Assert.True(sink.Releases[0].Validity.HasFlag(
             QuicBufferReleaseValidity.Contradictory));
         Assert.True(sink.Releases[0].Validity.HasFlag(
@@ -1109,6 +1369,8 @@ public sealed class REQ_QUIC_CRT_0182
         Assert.True(sink.Releases[1].Validity.HasFlag(
             QuicBufferReleaseValidity.OutOfDomain));
         Assert.True(sink.Releases[2].Validity.HasFlag(
+            QuicBufferReleaseValidity.Contradictory));
+        Assert.True(sink.Releases[3].Validity.HasFlag(
             QuicBufferReleaseValidity.Contradictory));
     }
 
@@ -1157,11 +1419,23 @@ public sealed class REQ_QUIC_CRT_0182
         Assert.True(sendRuntime.TryDequeueRetransmission(
             out QuicConnectionRetransmissionPlan retransmission));
         Assert.NotSame(owner, retransmission.PlaintextPayloadOwner);
+        Assert.False(
+            retransmission.PlaintextPayloadLifetimeToken.IsEmpty);
         Assert.Equal(
             Enumerable.Repeat((byte)0x5A, 32),
             retransmission.PlaintextPayload.ToArray());
         QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
-            retransmission);
+            retransmission,
+            observer,
+            QuicBufferReleaseReason.Terminal);
+        QuicBufferReleaseObservation release =
+            Assert.Single(observer.Releases);
+        Assert.Equal(
+            QuicBufferCopyPath.RetransmissionClone,
+            release.Path);
+        Assert.Equal(
+            QuicBufferReleaseReason.Terminal,
+            release.Reason);
     }
 
     [Fact]
@@ -1359,7 +1633,7 @@ public sealed class REQ_QUIC_CRT_0182
                 JsonSerializer.Serialize(
                     new
                     {
-                        schemaVersion = "quic-buffer-release-raw-v3",
+                        schemaVersion = "quic-buffer-release-raw-v4",
                         connectionKey = "connection-0001",
                         observation = release,
                     },

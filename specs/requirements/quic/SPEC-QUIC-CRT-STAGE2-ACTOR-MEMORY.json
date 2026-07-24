@@ -161,13 +161,15 @@
           "schemas/adaptive-runtime-buffer-release-observation-v1.schema.json",
           "schemas/adaptive-runtime-buffer-release-observation-v2.schema.json",
           "schemas/adaptive-runtime-buffer-release-observation-v3.schema.json",
+          "schemas/adaptive-runtime-buffer-release-observation-v4.schema.json",
           "schemas/adaptive-runtime-buffer-release-raw-v1.schema.json",
           "schemas/adaptive-runtime-buffer-release-raw-v2.schema.json",
-          "schemas/adaptive-runtime-buffer-release-raw-v3.schema.json"
+          "schemas/adaptive-runtime-buffer-release-raw-v3.schema.json",
+          "schemas/adaptive-runtime-buffer-release-raw-v4.schema.json"
         ]
       },
       "notes": [
-        "Receive-segment, flow-control retry request, and oversized raw queue ownership are checkpointed; remaining owner paths stay explicit and non-forceable until separately checkpointed.",
+        "Receive-segment, flow-control retry request, oversized raw queue, formatted stream payload, and path-migration retransmission-clone ownership are checkpointed; remaining owner paths stay explicit and non-forceable until separately checkpointed.",
         "Ownership transfer is not terminal release and cannot create a duplicate completion outcome."
       ]
     }

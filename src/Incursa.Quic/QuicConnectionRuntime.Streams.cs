@@ -409,7 +409,9 @@ internal sealed partial class QuicConnectionRuntime
                 ReadOnlySpan<byte>.Empty,
                 fin: false,
                 out byte[] streamPayload,
-                out int streamPayloadLength))
+                out int streamPayloadLength,
+                out QuicBufferCopyLifetimeToken
+                    streamPayloadLifetimeToken))
         {
             openCompletion!.TrySetException(new InvalidOperationException("The connection runtime could not build the stream open payload."));
             return true;
@@ -418,6 +420,7 @@ internal sealed partial class QuicConnectionRuntime
         if (!TryProtectAndAccountStreamApplicationPayload(
             streamPayload.AsMemory(0, streamPayloadLength),
             streamPayload,
+            streamPayloadLifetimeToken,
             "The connection runtime could not protect the stream open packet.",
             "The connection cannot send the stream open packet.",
             probePacket: false,
@@ -428,7 +431,10 @@ internal sealed partial class QuicConnectionRuntime
             out ReadOnlyMemory<byte> protectedPacket,
             out Exception? payloadException))
         {
-            QuicBufferPool.ReturnBytes(streamPayload);
+            ReleaseTrackedBufferOwner(
+                streamPayload,
+                in streamPayloadLifetimeToken,
+                QuicBufferReleaseReason.Failed);
             if (IsTransientCongestionExhaustion(payloadException))
             {
                 if (!streamRegistry.Bookkeeping.TryOpenLocalStream(bidirectional, out QuicStreamId congestionCommittedStreamId, out QuicStreamsBlockedFrame congestionCommittedBlockedFrame))
@@ -928,7 +934,9 @@ internal sealed partial class QuicConnectionRuntime
                 committedStreamDataSuffix,
                 finishWrites,
                 out byte[] streamPayload,
-                out int streamPayloadLength))
+                out int streamPayloadLength,
+                out QuicBufferCopyLifetimeToken
+                    streamPayloadLifetimeToken))
         {
             return FailWriteAfterRollback(
                 requestId,
@@ -954,6 +962,7 @@ internal sealed partial class QuicConnectionRuntime
                 streamPriority,
                 streamPayload,
                 streamPayloadLength,
+                streamPayloadLifetimeToken,
                 QuicApplicationSendQueueCause.PendingRetransmission,
                 nowTicks,
                 tryFlushPendingApplicationSendsAfterEnqueue: true,
@@ -985,6 +994,7 @@ internal sealed partial class QuicConnectionRuntime
                 streamPriority,
                 streamPayload,
                 streamPayloadLength,
+                streamPayloadLifetimeToken,
                 QuicApplicationSendQueueCause.SmallWriteDelay,
                 nowTicks,
                 tryFlushPendingApplicationSendsAfterEnqueue: false,
@@ -1004,6 +1014,7 @@ internal sealed partial class QuicConnectionRuntime
         if (!TryProtectAndAccountStreamApplicationPayload(
             streamPayload.AsMemory(0, streamPayloadLength),
             streamPayload,
+            streamPayloadLifetimeToken,
             "The connection runtime could not protect the stream write packet.",
             StreamWriteSendBlockedMessage,
             probePacket: false,
@@ -1023,6 +1034,7 @@ internal sealed partial class QuicConnectionRuntime
                     streamPriority,
                     streamPayload,
                     streamPayloadLength,
+                    streamPayloadLifetimeToken,
                     QuicApplicationSendQueueCause.DirectSendBlocked,
                     nowTicks,
                     tryFlushPendingApplicationSendsAfterEnqueue: true,
@@ -1047,7 +1059,10 @@ internal sealed partial class QuicConnectionRuntime
                 return true;
             }
 
-            QuicBufferPool.ReturnBytes(streamPayload);
+            ReleaseTrackedBufferOwner(
+                streamPayload,
+                in streamPayloadLifetimeToken,
+                QuicBufferReleaseReason.Failed);
             return FailWriteAfterRollback(
                 requestId,
                 completion,
@@ -1098,7 +1113,9 @@ internal sealed partial class QuicConnectionRuntime
                 queuedFrame.StreamData[..fragmentDataLength],
                 fin: false,
                 out byte[] fragmentPayload,
-                out int fragmentPayloadLength))
+                out int fragmentPayloadLength,
+                out QuicBufferCopyLifetimeToken
+                    fragmentPayloadLifetimeToken))
         {
             exception = new InvalidOperationException("The connection runtime could not build the queued stream write fragment.");
             return false;
@@ -1116,7 +1133,10 @@ internal sealed partial class QuicConnectionRuntime
                 queuedWrite.StreamPayload.Length,
                 out remainderLayout))
         {
-            QuicBufferPool.ReturnBytes(fragmentPayload);
+            ReleaseTrackedBufferOwner(
+                fragmentPayload,
+                in fragmentPayloadLifetimeToken,
+                QuicBufferReleaseReason.Failed);
             exception = new InvalidOperationException("The connection runtime could not plan the queued stream write remainder.");
             return false;
         }
@@ -1131,6 +1151,7 @@ internal sealed partial class QuicConnectionRuntime
         if (!TryProtectAndAccountStreamApplicationPayload(
                 fragmentPayload.AsMemory(0, fragmentPayloadLength),
                 fragmentPayload,
+                fragmentPayloadLifetimeToken,
                 "The connection runtime could not protect the queued stream write packet.",
                 QueuedStreamWriteSendBlockedMessage,
                 probePacket: false,
@@ -1145,7 +1166,10 @@ internal sealed partial class QuicConnectionRuntime
                 tlsState.Role,
                 "fragment_protect_and_account",
                 protectStartedTimestamp);
-            QuicBufferPool.ReturnBytes(fragmentPayload);
+            ReleaseTrackedBufferOwner(
+                fragmentPayload,
+                in fragmentPayloadLifetimeToken,
+                QuicBufferReleaseReason.Failed);
             return false;
         }
 
@@ -1279,6 +1303,7 @@ internal sealed partial class QuicConnectionRuntime
         int priority,
         byte[] streamPayload,
         int streamPayloadLength,
+        QuicBufferCopyLifetimeToken lifetimeToken,
         QuicApplicationSendQueueCause queueCause,
         long nowTicks,
         bool tryFlushPendingApplicationSendsAfterEnqueue,
@@ -1288,6 +1313,7 @@ internal sealed partial class QuicConnectionRuntime
             priority,
             streamPayload,
             streamPayloadLength,
+            lifetimeToken,
             queueCause,
             nowTicks,
             tryFlushPendingApplicationSendsAfterEnqueue,
@@ -1299,6 +1325,7 @@ internal sealed partial class QuicConnectionRuntime
         int priority,
         byte[] streamPayload,
         int streamPayloadLength,
+        QuicBufferCopyLifetimeToken lifetimeToken,
         QuicApplicationSendQueueCause queueCause,
         long nowTicks,
         bool tryFlushPendingApplicationSendsAfterEnqueue,
@@ -1312,7 +1339,8 @@ internal sealed partial class QuicConnectionRuntime
             streamPayload,
             streamPayloadLength,
             GetElapsedMicros(nowTicks),
-            queueCause);
+            queueCause,
+            lifetimeToken);
 
         if (applicationSendQueue.Count == 1)
         {
@@ -1398,7 +1426,9 @@ internal sealed partial class QuicConnectionRuntime
                 frame.StreamData,
                 fin: true,
                 out byte[] finalPayload,
-                out int finalPayloadLength))
+                out int finalPayloadLength,
+                out QuicBufferCopyLifetimeToken
+                    finalPayloadLifetimeToken))
         {
             return false;
         }
@@ -1406,9 +1436,13 @@ internal sealed partial class QuicConnectionRuntime
         if (!applicationSendQueue.TryReplaceQueuedWritePayload(
                 queuedWrite.Sequence,
                 finalPayload,
-                finalPayloadLength))
+                finalPayloadLength,
+                finalPayloadLifetimeToken))
         {
-            QuicBufferPool.ReturnBytes(finalPayload);
+            ReleaseTrackedBufferOwner(
+                finalPayload,
+                in finalPayloadLifetimeToken,
+                QuicBufferReleaseReason.Failed);
             return false;
         }
 
@@ -1489,6 +1523,8 @@ internal sealed partial class QuicConnectionRuntime
             $"app-tx flush-start role={tlsState.Role} queue={applicationSendQueue.Count} probe={probePacket} hasOnlyQueuedWrite={applicationSendQueue.Count == 1}.");
 
         ReadOnlyMemory<byte> combinedPayload = default;
+        QuicBufferCopyLifetimeToken
+            combinedPayloadLifetimeToken = default;
         ulong? payloadStreamId = null;
         ulong[]? streamIds = null;
         PendingApplicationSendRequest onlyQueuedWrite = default;
@@ -1558,7 +1594,8 @@ internal sealed partial class QuicConnectionRuntime
                             onlyQueuedWriteFrame.StreamData,
                             onlyQueuedWriteFrame.IsFin,
                             out combinedPayloadOwner,
-                            out int formattedPayloadLength))
+                            out int formattedPayloadLength,
+                            out combinedPayloadLifetimeToken))
                     {
                         exception = new InvalidOperationException("The connection runtime could not format the queued raw stream write.");
                         return false;
@@ -1708,7 +1745,8 @@ internal sealed partial class QuicConnectionRuntime
                             rawQueuedWriteFrame.StreamData,
                             rawQueuedWriteFrame.IsFin,
                             out combinedPayloadOwner,
-                            out int formattedPayloadLength))
+                            out int formattedPayloadLength,
+                            out combinedPayloadLifetimeToken))
                     {
                         exception = new InvalidOperationException("The connection runtime could not format the selected queued raw stream write.");
                         return false;
@@ -1772,6 +1810,9 @@ internal sealed partial class QuicConnectionRuntime
                 formattedRawQueuedWrite || !hasOnlyQueuedWrite
                     ? combinedPayloadOwner
                     : onlyQueuedWrite.StreamPayload,
+                formattedRawQueuedWrite || !hasOnlyQueuedWrite
+                    ? combinedPayloadLifetimeToken
+                    : onlyQueuedWrite.LifetimeToken,
                 "The connection runtime could not protect the queued stream write packet.",
                 QueuedStreamWriteSendBlockedMessage,
                 probePacket,
@@ -1860,7 +1901,10 @@ internal sealed partial class QuicConnectionRuntime
 
             if (combinedPayloadOwner is not null)
             {
-                QuicBufferPool.ReturnBytes(combinedPayloadOwner);
+                ReleaseTrackedBufferOwner(
+                    combinedPayloadOwner,
+                    in combinedPayloadLifetimeToken,
+                    QuicBufferReleaseReason.Failed);
             }
 
             if (queuedWrites is not null)
@@ -1873,6 +1917,8 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryProtectAndAccountStreamApplicationPayload(
         ReadOnlyMemory<byte> payload,
         byte[]? plaintextPayloadOwner,
+        QuicBufferCopyLifetimeToken
+            plaintextPayloadLifetimeToken,
         string protectFailureMessage,
         string amplificationFailureMessage,
         bool probePacket,
@@ -1917,6 +1963,8 @@ internal sealed partial class QuicConnectionRuntime
             streamId: streamId,
             streamIds: streamIds,
             plaintextPayloadOwner: plaintextPayloadOwner,
+            plaintextPayloadLifetimeToken:
+                plaintextPayloadLifetimeToken,
             enforcePathMaximumDatagramSize: true);
     }
 
@@ -4087,7 +4135,9 @@ internal sealed partial class QuicConnectionRuntime
         ulong? streamId = null,
         ulong[]? streamIds = null,
         byte[]? plaintextPayloadOwner = null,
-        bool enforcePathMaximumDatagramSize = false)
+        bool enforcePathMaximumDatagramSize = false,
+        QuicBufferCopyLifetimeToken
+            plaintextPayloadLifetimeToken = default)
     {
         sendPathIdentity = default;
         protectedPacket = ReadOnlyMemory<byte>.Empty;
@@ -4332,7 +4382,9 @@ internal sealed partial class QuicConnectionRuntime
                 streamIds: streamIds,
                 plaintextPayload: payload,
                 plaintextPayloadOwner: plaintextPayloadOwner,
-                packetBytesOwner: protectedPacketOwner);
+                packetBytesOwner: protectedPacketOwner,
+                plaintextPayloadLifetimeToken:
+                    plaintextPayloadLifetimeToken);
             QuicMetrics.RecordApplicationSendPhaseTime(
                 tlsState.Role,
                 "packet_tracking",
@@ -4594,7 +4646,10 @@ internal sealed partial class QuicConnectionRuntime
 
             if (datagram.IsEmpty)
             {
-                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(probeRetransmission);
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                    probeRetransmission,
+                    (IQuicBufferCopyOperationObserver)this,
+                    QuicBufferReleaseReason.Failed);
                 return false;
             }
 
@@ -4647,7 +4702,10 @@ internal sealed partial class QuicConnectionRuntime
 
             if (rebuildableCryptoRetransmission || rebuildableApplicationRetransmission)
             {
-                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(probeRetransmission);
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                    probeRetransmission,
+                    (IQuicBufferCopyOperationObserver)this,
+                    QuicBufferReleaseReason.CopiedToNextOwner);
             }
 
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
@@ -4709,7 +4767,10 @@ internal sealed partial class QuicConnectionRuntime
 
             if (datagram.IsEmpty)
             {
-                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                    retransmission,
+                    (IQuicBufferCopyOperationObserver)this,
+                    QuicBufferReleaseReason.Failed);
                 continue;
             }
 
@@ -4762,7 +4823,10 @@ internal sealed partial class QuicConnectionRuntime
 
             if (rebuildableCryptoRetransmission || rebuildableApplicationRetransmission)
             {
-                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                    retransmission,
+                    (IQuicBufferCopyOperationObserver)this,
+                    QuicBufferReleaseReason.CopiedToNextOwner);
             }
 
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
@@ -5251,7 +5315,10 @@ internal sealed partial class QuicConnectionRuntime
             }
             else
             {
-                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(initialRetransmission);
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                    initialRetransmission,
+                    (IQuicBufferCopyOperationObserver)this,
+                    QuicBufferReleaseReason.CopiedToNextOwner);
             }
 
             if (queueHandshakeForRetry)
@@ -5260,7 +5327,10 @@ internal sealed partial class QuicConnectionRuntime
             }
             else
             {
-                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(handshakeRetransmission);
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                    handshakeRetransmission,
+                    (IQuicBufferCopyOperationObserver)this,
+                    QuicBufferReleaseReason.CopiedToNextOwner);
             }
         }
     }
@@ -5428,7 +5498,10 @@ internal sealed partial class QuicConnectionRuntime
             }
             else
             {
-                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(handshakeRetransmission);
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                    handshakeRetransmission,
+                    (IQuicBufferCopyOperationObserver)this,
+                    QuicBufferReleaseReason.CopiedToNextOwner);
             }
 
             if (queueApplicationForRetry)
@@ -5437,7 +5510,10 @@ internal sealed partial class QuicConnectionRuntime
             }
             else
             {
-                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(applicationRetransmission);
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+                    applicationRetransmission,
+                    (IQuicBufferCopyOperationObserver)this,
+                    QuicBufferReleaseReason.CopiedToNextOwner);
             }
         }
     }
@@ -6244,6 +6320,8 @@ internal sealed partial class QuicConnectionRuntime
             PlaintextPayload: retransmission.PlaintextPayload,
             PlaintextPayloadOwner: retransmission.PlaintextPayloadOwner,
             PacketBytesOwner: retransmission.PacketBytesOwner,
+            PlaintextPayloadLifetimeToken:
+                retransmission.PlaintextPayloadLifetimeToken,
             OneRttKeyPhase: retransmission.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
                 && packetProtectionLevel == QuicTlsEncryptionLevel.OneRtt
                 ? tlsState.CurrentOneRttKeyPhase
@@ -6389,7 +6467,9 @@ internal sealed partial class QuicConnectionRuntime
         ulong[]? streamIds = null,
         ReadOnlyMemory<byte> plaintextPayload = default,
         byte[]? plaintextPayloadOwner = null,
-        byte[]? packetBytesOwner = null)
+        byte[]? packetBytesOwner = null,
+        QuicBufferCopyLifetimeToken
+            plaintextPayloadLifetimeToken = default)
     {
         long sentStateStartedTimestamp = QuicMetrics.GetApplicationSendPhaseStartTimestamp();
         sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
@@ -6408,6 +6488,8 @@ internal sealed partial class QuicConnectionRuntime
             PlaintextPayload: plaintextPayload,
             PlaintextPayloadOwner: plaintextPayloadOwner,
             PacketBytesOwner: packetBytesOwner,
+            PlaintextPayloadLifetimeToken:
+                plaintextPayloadLifetimeToken,
             OneRttKeyPhase: packetProtectionLevel == QuicTlsEncryptionLevel.OneRtt
                 ? tlsState.CurrentOneRttKeyPhase
                 : null));
@@ -6499,7 +6581,8 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlySpan<byte> streamData,
         bool fin,
         out byte[] payload,
-        out int payloadLength)
+        out int payloadLength,
+        out QuicBufferCopyLifetimeToken lifetimeToken)
         => TryBuildOutboundStreamPayload(
             streamId,
             offset,
@@ -6507,7 +6590,8 @@ internal sealed partial class QuicConnectionRuntime
             ReadOnlySpan<byte>.Empty,
             fin,
             out payload,
-            out payloadLength);
+            out payloadLength,
+            out lifetimeToken);
 
     private bool TryBuildOutboundStreamPayload(
         ulong streamId,
@@ -6516,10 +6600,12 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlySpan<byte> streamDataSuffix,
         bool fin,
         out byte[] payload,
-        out int payloadLength)
+        out int payloadLength,
+        out QuicBufferCopyLifetimeToken lifetimeToken)
     {
         payload = [];
         payloadLength = 0;
+        lifetimeToken = default;
 
         byte frameType = OutboundStreamControlFrameType;
         if (offset != 0)
@@ -6567,24 +6653,37 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             payload = bufferLease.TransferOwnership(out payloadLength);
-            TryPublishBufferCopyObservation(
-                QuicBufferCopyPath.FormattedStreamPayload,
-                QuicBufferCopyOperation.Format,
-                QuicBufferCopyDecisionBoundary.PacketPlan,
-                joinOperationSequence: null,
-                logicalBytes: streamDataLength,
-                copiedBytes: streamDataLength,
-                sourceSegmentCount:
-                    (streamData.IsEmpty ? 0 : 1)
-                    + (streamDataSuffix.IsEmpty ? 0 : 1),
-                requestedCapacityBytes: bufferLength,
-                retainedCapacityBytes: payload.Length);
+            lifetimeToken = TryPublishBufferCopyObservation(
+                    QuicBufferCopyPath.FormattedStreamPayload,
+                    QuicBufferCopyOperation.Format,
+                    QuicBufferCopyDecisionBoundary.PacketPlan,
+                    joinOperationSequence: null,
+                    logicalBytes: streamDataLength,
+                    copiedBytes: streamDataLength,
+                    sourceSegmentCount:
+                        (streamData.IsEmpty ? 0 : 1)
+                        + (streamDataSuffix.IsEmpty ? 0 : 1),
+                    requestedCapacityBytes: bufferLength,
+                    retainedCapacityBytes: payload.Length,
+                    trackTerminalRelease: true);
             return true;
         }
         finally
         {
             bufferLease.Dispose();
         }
+    }
+
+    private void ReleaseTrackedBufferOwner(
+        byte[] owner,
+        in QuicBufferCopyLifetimeToken lifetimeToken,
+        QuicBufferReleaseReason reason)
+    {
+        QuicBufferPool.ReturnBytes(owner);
+        TryPublishBufferReleaseObservation(
+            in lifetimeToken,
+            reason,
+            owner.Length);
     }
 
     private static bool TryGetOutboundStreamFrameLength(

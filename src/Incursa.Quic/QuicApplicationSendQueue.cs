@@ -349,7 +349,8 @@ internal sealed class QuicApplicationSendQueue
         byte[] streamPayload,
         int streamPayloadLength,
         ulong firstEnqueuedAtMicros = 0,
-        QuicApplicationSendQueueCause queueCause = QuicApplicationSendQueueCause.SmallWriteDelay)
+        QuicApplicationSendQueueCause queueCause = QuicApplicationSendQueueCause.SmallWriteDelay,
+        QuicBufferCopyLifetimeToken lifetimeToken = default)
     {
         PendingApplicationSendRequest request = new(
             TakeNextSequence(),
@@ -358,7 +359,8 @@ internal sealed class QuicApplicationSendQueue
             streamPayload,
             streamPayloadLength,
             firstEnqueuedAtMicros,
-            queueCause);
+            queueCause,
+            LifetimeToken: lifetimeToken);
 
         if (pendingRequestsOrdered && pendingRequests.Count < MaintainedOrderThreshold)
         {

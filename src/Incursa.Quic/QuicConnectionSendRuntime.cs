@@ -95,7 +95,8 @@ internal record struct QuicConnectionSentPacket
         ReadOnlyMemory<byte> PlaintextPayload = default,
         ulong? OneRttKeyPhase = null,
         byte[]? PlaintextPayloadOwner = null,
-        byte[]? PacketBytesOwner = null)
+        byte[]? PacketBytesOwner = null,
+        QuicBufferCopyLifetimeToken PlaintextPayloadLifetimeToken = default)
     {
         this.PacketNumberSpace = PacketNumberSpace;
         this.PacketNumber = PacketNumber;
@@ -119,6 +120,8 @@ internal record struct QuicConnectionSentPacket
         this.PlaintextPayload = PlaintextPayload;
         this.PlaintextPayloadOwner = PlaintextPayloadOwner;
         this.PacketBytesOwner = PacketBytesOwner;
+        this.PlaintextPayloadLifetimeToken =
+            PlaintextPayloadLifetimeToken;
     }
 
     public QuicPacketNumberSpace PacketNumberSpace { readonly get; init; }
@@ -205,6 +208,12 @@ internal record struct QuicConnectionSentPacket
 
     public byte[]? PacketBytesOwner { readonly get; init; }
 
+    public QuicBufferCopyLifetimeToken PlaintextPayloadLifetimeToken
+    {
+        readonly get;
+        init;
+    }
+
     public readonly void Deconstruct(
         out QuicPacketNumberSpace PacketNumberSpace,
         out ulong PacketNumber,
@@ -265,7 +274,8 @@ internal readonly record struct QuicConnectionRetransmissionPlan(
     ReadOnlyMemory<byte> PlaintextPayload = default,
     ulong? OneRttKeyPhase = null,
     byte[]? PlaintextPayloadOwner = null,
-    byte[]? PacketBytesOwner = null);
+    byte[]? PacketBytesOwner = null,
+    QuicBufferCopyLifetimeToken PlaintextPayloadLifetimeToken = default);
 
 internal readonly record struct QuicConnectionPendingSendReservation(ulong Sequence);
 
@@ -288,6 +298,7 @@ internal sealed class QuicConnectionSendRuntime
     private ulong? oldestSentPacketAtMicros;
     private QuicConnectionSentPacketKey? latestTrackedPacketKey;
     private QuicConnectionSentPacket pendingSendPacket;
+    private IQuicBufferCopyOperationObserver? bufferCopyOperationObserver;
     private ulong pendingSendReservationSequence;
     private ulong nextPendingSendReservationSequence;
     private bool hasPendingSendReservation;
@@ -463,6 +474,15 @@ internal sealed class QuicConnectionSendRuntime
         IQuicBufferCopyOperationObserver observer)
     {
         ArgumentNullException.ThrowIfNull(observer);
+        if (Interlocked.CompareExchange(
+                ref bufferCopyOperationObserver,
+                observer,
+                comparand: null) is not null)
+        {
+            throw new InvalidOperationException(
+                "The send runtime buffer-copy observer has already been configured.");
+        }
+
         retransmissionQueue.ConfigureBufferCopyOperationObserver(observer);
     }
 
@@ -582,7 +602,9 @@ internal sealed class QuicConnectionSendRuntime
         packet = packet with { SentAtMicros = sentAtMicros };
         if (!TrackSentPacketCore(packet, reservedSend: true))
         {
-            ReleasePacketOwners(packet);
+            ReleasePacketOwners(
+                packet,
+                QuicBufferReleaseReason.Failed);
             return false;
         }
 
@@ -599,7 +621,9 @@ internal sealed class QuicConnectionSendRuntime
         bool released = flowController.TryReleasePacketSendReservation(
             packet.PayloadBytes,
             packet.AckOnlyPacket);
-        ReleasePacketOwners(packet);
+        ReleasePacketOwners(
+            packet,
+            QuicBufferReleaseReason.Canceled);
         return released;
     }
 
@@ -622,7 +646,9 @@ internal sealed class QuicConnectionSendRuntime
         return true;
     }
 
-    private void ReleasePendingSendReservation()
+    private void ReleasePendingSendReservation(
+        QuicBufferReleaseReason releaseReason =
+            QuicBufferReleaseReason.Canceled)
     {
         if (!hasPendingSendReservation)
         {
@@ -636,7 +662,9 @@ internal sealed class QuicConnectionSendRuntime
         _ = flowController.TryReleasePacketSendReservation(
             packet.PayloadBytes,
             packet.AckOnlyPacket);
-        ReleasePacketOwners(packet);
+        ReleasePacketOwners(
+            packet,
+            releaseReason);
     }
 
     public void TrackSentPacket(QuicConnectionSentPacket packet)
@@ -669,7 +697,9 @@ internal sealed class QuicConnectionSendRuntime
         QuicConnectionSentPacketKey key = new(packet.PacketNumberSpace, packet.PacketNumber);
         if (TryRemoveSentPacket(key, out QuicConnectionSentPacket replacedPacket))
         {
-            ReleasePacketOwners(replacedPacket);
+            ReleasePacketOwners(
+                replacedPacket,
+                QuicBufferReleaseReason.Replaced);
         }
 
         if (!packet.AckOnlyPacket)
@@ -696,7 +726,9 @@ internal sealed class QuicConnectionSendRuntime
 
         if (packet.AckOnlyPacket)
         {
-            ReleasePacketOwners(packet);
+            ReleasePacketOwners(
+                packet,
+                QuicBufferReleaseReason.Completed);
             return true;
         }
 
@@ -773,7 +805,9 @@ internal sealed class QuicConnectionSendRuntime
         if (removedSentPacket)
         {
             _ = TrySuppressResetStreamRetransmissionForAcknowledgedStreamData(acknowledgedPacket.PlaintextPayload.Span);
-            ReleasePacketOwners(acknowledgedPacket);
+            ReleasePacketOwners(
+                acknowledgedPacket,
+                QuicBufferReleaseReason.Completed);
         }
 
         bool acknowledgmentRestartsProbeTimeout =
@@ -821,7 +855,9 @@ internal sealed class QuicConnectionSendRuntime
             {
                 if (TryRemoveSentPacket(key, out QuicConnectionSentPacket removedPacket))
                 {
-                    ReleasePacketOwners(removedPacket);
+                    ReleasePacketOwners(
+                        removedPacket,
+                        QuicBufferReleaseReason.Terminal);
                     updated = true;
                 }
             }
@@ -873,6 +909,7 @@ internal sealed class QuicConnectionSendRuntime
                 {
                     PlaintextPayloadOwner = null,
                     PacketBytesOwner = null,
+                    PlaintextPayloadLifetimeToken = default,
                 };
             }
 
@@ -884,7 +921,10 @@ internal sealed class QuicConnectionSendRuntime
             {
                 foreach (QuicConnectionRetransmissionPlan retransmission in retainedRetransmissions)
                 {
-                    ReleaseRetransmissionPlanResources(retransmission);
+                    ReleaseRetransmissionPlanResources(
+                        retransmission,
+                        bufferCopyOperationObserver,
+                        QuicBufferReleaseReason.Failed);
                 }
             }
         }
@@ -921,7 +961,9 @@ internal sealed class QuicConnectionSendRuntime
             {
                 if (TryRemoveSentPacket(key, out QuicConnectionSentPacket removedPacket))
                 {
-                    ReleasePacketOwners(removedPacket);
+                    ReleasePacketOwners(
+                        removedPacket,
+                        QuicBufferReleaseReason.Terminal);
                     updated = true;
                 }
             }
@@ -963,7 +1005,9 @@ internal sealed class QuicConnectionSendRuntime
             {
                 if (TryRemoveSentPacket(key, out QuicConnectionSentPacket removedPacket))
                 {
-                    ReleasePacketOwners(removedPacket);
+                    ReleasePacketOwners(
+                        removedPacket,
+                        QuicBufferReleaseReason.Terminal);
                     updated = true;
                 }
             }
@@ -1028,11 +1072,14 @@ internal sealed class QuicConnectionSendRuntime
                 packet.PlaintextPayload,
                 packet.OneRttKeyPhase,
                 packet.PlaintextPayloadOwner,
-                packet.PacketBytesOwner));
+                packet.PacketBytesOwner,
+                packet.PlaintextPayloadLifetimeToken));
         }
         else
         {
-            ReleasePacketOwners(packet);
+            ReleasePacketOwners(
+                packet,
+                QuicBufferReleaseReason.Failed);
         }
 
         ProbeTimeoutCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
@@ -1347,9 +1394,50 @@ internal sealed class QuicConnectionSendRuntime
         retransmissionQueue.QueueRetransmission(retransmission);
     }
 
-    internal static void ReleaseRetransmissionPlanResources(QuicConnectionRetransmissionPlan retransmission)
+    internal bool ReleaseAllOwnedPacketResources(
+        QuicBufferReleaseReason releaseReason)
     {
-        ReleasePacketOwners(retransmission.PlaintextPayloadOwner, retransmission.PacketBytesOwner);
+        bool updated = hasPendingSendReservation;
+        ReleasePendingSendReservation(releaseReason);
+
+        if (sentPackets.Count != 0)
+        {
+            QuicConnectionSentPacketKey[] retainedKeys =
+                [.. sentPackets.Keys];
+            foreach (QuicConnectionSentPacketKey key in retainedKeys)
+            {
+                if (!TryRemoveSentPacket(
+                    key,
+                    out QuicConnectionSentPacket retainedPacket))
+                {
+                    continue;
+                }
+
+                _ = flowController.TryDiscardExternallyRetainedPacket(
+                    retainedPacket);
+                ReleasePacketOwners(retainedPacket, releaseReason);
+                updated = true;
+            }
+        }
+
+        updated |= retransmissionQueue.Clear(releaseReason);
+        LossDetectionDeadlineMicros = null;
+        latestTrackedPacketKey = null;
+        return updated;
+    }
+
+    internal static void ReleaseRetransmissionPlanResources(
+        QuicConnectionRetransmissionPlan retransmission,
+        IQuicBufferCopyOperationObserver? observer = null,
+        QuicBufferReleaseReason reason =
+            QuicBufferReleaseReason.Terminal)
+    {
+        ReleasePacketOwners(
+            retransmission.PlaintextPayloadOwner,
+            retransmission.PacketBytesOwner,
+            retransmission.PlaintextPayloadLifetimeToken,
+            observer,
+            reason);
     }
 
     public void ClearLossDetectionDeadline()
@@ -1414,16 +1502,43 @@ internal sealed class QuicConnectionSendRuntime
         }
     }
 
-    private static void ReleasePacketOwners(QuicConnectionSentPacket packet)
+    private void ReleasePacketOwners(
+        QuicConnectionSentPacket packet,
+        QuicBufferReleaseReason reason)
     {
-        ReleasePacketOwners(packet.PlaintextPayloadOwner, packet.PacketBytesOwner);
+        ReleasePacketOwners(
+            packet.PlaintextPayloadOwner,
+            packet.PacketBytesOwner,
+            packet.PlaintextPayloadLifetimeToken,
+            bufferCopyOperationObserver,
+            reason);
     }
 
-    private static void ReleasePacketOwners(byte[]? plaintextPayloadOwner, byte[]? packetBytesOwner)
+    private static void ReleasePacketOwners(
+        byte[]? plaintextPayloadOwner,
+        byte[]? packetBytesOwner,
+        QuicBufferCopyLifetimeToken lifetimeToken,
+        IQuicBufferCopyOperationObserver? observer,
+        QuicBufferReleaseReason reason)
     {
         if (plaintextPayloadOwner is not null)
         {
             QuicBufferPool.ReturnBytes(plaintextPayloadOwner);
+            if (observer is not null && !lifetimeToken.IsEmpty)
+            {
+                try
+                {
+                    observer.ObserveBufferRelease(
+                        in lifetimeToken,
+                        reason,
+                        plaintextPayloadOwner.Length);
+                }
+                catch (Exception)
+                {
+                    // Release evidence follows the authoritative pool return
+                    // and cannot change recovery ownership or progress.
+                }
+            }
         }
 
         if (packetBytesOwner is not null

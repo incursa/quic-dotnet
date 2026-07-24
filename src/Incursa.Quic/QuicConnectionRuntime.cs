@@ -2979,6 +2979,10 @@ internal sealed partial class QuicConnectionRuntime :
                 reason is QuicBufferReleaseReason.Delivered
                     or QuicBufferReleaseReason.Reset
                     or QuicBufferReleaseReason.Recycled,
+            QuicBufferCopyPath.FormattedStreamPayload
+                or QuicBufferCopyPath.RetransmissionClone =>
+                reason is QuicBufferReleaseReason.Delivered
+                    or QuicBufferReleaseReason.Recycled,
             _ => false,
         })
         {
@@ -4985,6 +4989,8 @@ internal sealed partial class QuicConnectionRuntime :
                 await processing.ConfigureAwait(false);
             }
 
+            _ = sendRuntime.ReleaseAllOwnedPacketResources(
+                QuicBufferReleaseReason.Disposed);
             peerConnectionIdState.Clear();
             issuedConnectionIdState.Reset();
             ClearBufferedEstablishmentHandshakePackets();
