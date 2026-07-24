@@ -632,6 +632,10 @@ public sealed class ProtocolLabPackageTemplateTests
 
         Assert.Contains("$allShadowEpochs = @(if ($isReceiveCreditAxis)", script, StringComparison.Ordinal);
         Assert.DoesNotContain("$allShadowEpochs = if ($isReceiveCreditAxis)", script, StringComparison.Ordinal);
+        Assert.Contains(
+            "if (-not $ShadowOnly -and -not $ObservationNeutrality) {\n    foreach ($policyValue in @($PolicyA, $PolicyB))",
+            script.Replace("\r\n", "\n"),
+            StringComparison.Ordinal);
     }
 
     [Theory]

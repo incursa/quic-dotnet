@@ -785,9 +785,11 @@ $allowedPolicyValues = if ($isReceiveCreditAxis) {
 else {
     @('legacy_current', 'conservative')
 }
-foreach ($policyValue in @($PolicyA, $PolicyB)) {
-    if ($policyValue -notin $allowedPolicyValues) {
-        throw "Policy '$policyValue' is not valid for axis '$PolicyAxis'. Allowed values: $($allowedPolicyValues -join ', ')."
+if (-not $ShadowOnly -and -not $ObservationNeutrality) {
+    foreach ($policyValue in @($PolicyA, $PolicyB)) {
+        if ($policyValue -notin $allowedPolicyValues) {
+            throw "Policy '$policyValue' is not valid for axis '$PolicyAxis'. Allowed values: $($allowedPolicyValues -join ', ')."
+        }
     }
 }
 
