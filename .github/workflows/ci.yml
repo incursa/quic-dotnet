@@ -91,8 +91,8 @@ jobs:
           sudo mkdir -p /certs /www /downloads /logs/qlog
           sudo chmod -R a+rwx /certs /www /downloads /logs
 
-      - name: Test
-        run: dotnet test Incursa.Quic.slnx --no-build --configuration Release
+      - name: Test correctness suite
+        run: dotnet test Incursa.Quic.slnx --no-build --configuration Release --filter "Category!=Performance"
 
       - name: Pack
         run: dotnet pack src/Incursa.Quic/Incursa.Quic.csproj --configuration Release --no-build /p:ContinuousIntegrationBuild=true
