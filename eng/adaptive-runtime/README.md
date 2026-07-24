@@ -106,6 +106,28 @@ honestly. The canonical illustrative fixture therefore produces
 `status = insufficient_group_diversity` because it contains only one host and
 one workload family.
 
+Create the versioned, axis-specific descriptive analysis handoff only after
+the normalized, curated, and split artifacts exist:
+
+```powershell
+./eng/adaptive-runtime/Measure-AdaptiveRuntimeApplicationSendTurnDataset.ps1 `
+  -NormalizedDatasetPath ./.artifacts/adaptive-runtime/dataset/normalized/normalized-dataset.json `
+  -CuratedManifestPath ./.artifacts/adaptive-runtime/dataset/curated/curated-manifest.json `
+  -SplitManifestPath ./.artifacts/adaptive-runtime/dataset/split/split-manifest.json `
+  -OutputPath ./.artifacts/adaptive-runtime/analysis/application-send-turn-analysis.json `
+  -AnalysisId application-send-turn-analysis-v1
+```
+
+The adapter validates each artifact and the normalized-to-curated-to-split
+checksum chain, requires exact unique row-ID coverage, rejects policy values
+outside the closed `application_send_turn_planning` set, and audits forbidden
+production features. Feature distributions use only curated included epochs.
+Sample throughput, p95 latency, and buffer-pool outcomes are deduplicated by
+sample and labeled `descriptive_only_not_epoch_independent`; they are not
+treated as thousands of independent epoch outcomes. Insufficient host or
+workload diversity emits `ruleProposal.status = holdout_blocked`, a null
+candidate rule, and `activeInternalAuthorized = false`.
+
 Run one permanent forced-policy A/B/B/A or B/A/A/B local cell with the
 source-backed raw QUIC ProtocolLab harness:
 

@@ -18,6 +18,7 @@ repository-config tooling.
 - [`adaptive-runtime-policy-normalized-dataset-v1.schema.json`](adaptive-runtime-policy-normalized-dataset-v1.schema.json)
 - [`adaptive-runtime-policy-curated-manifest-v1.schema.json`](adaptive-runtime-policy-curated-manifest-v1.schema.json)
 - [`adaptive-runtime-policy-split-manifest-v1.schema.json`](adaptive-runtime-policy-split-manifest-v1.schema.json)
+- [`adaptive-runtime-application-send-turn-analysis-v1.schema.json`](adaptive-runtime-application-send-turn-analysis-v1.schema.json)
 
 ## Notes
 

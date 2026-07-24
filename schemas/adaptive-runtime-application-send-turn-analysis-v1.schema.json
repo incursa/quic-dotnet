@@ -1,0 +1,337 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-application-send-turn-analysis-v1.schema.json",
+  "title": "Adaptive Runtime Application-Send Turn Analysis v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "analysisId",
+    "createdUtc",
+    "codeCommit",
+    "source",
+    "scope",
+    "quality",
+    "featureDistributions",
+    "sampleScopedOutcomes",
+    "leakageAudit",
+    "ruleProposal"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "adaptive-runtime-application-send-turn-analysis-v1"
+    },
+    "analysisId": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "createdUtc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "codeCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{7,40}$"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "normalizedDataset",
+        "curatedManifest",
+        "splitManifest"
+      ],
+      "properties": {
+        "normalizedDataset": {
+          "$ref": "#/$defs/artifactReference"
+        },
+        "curatedManifest": {
+          "$ref": "#/$defs/artifactReference"
+        },
+        "splitManifest": {
+          "$ref": "#/$defs/artifactReference"
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policyAxis",
+        "rowCount",
+        "includedRowCount",
+        "excludedRowCount",
+        "includedSampleCount",
+        "hostFingerprintCount",
+        "workloadFamilyCount",
+        "splitStatus"
+      ],
+      "properties": {
+        "policyAxis": {
+          "const": "application_send_turn_planning"
+        },
+        "rowCount": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "includedRowCount": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "excludedRowCount": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "includedSampleCount": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "hostFingerprintCount": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "workloadFamilyCount": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "splitStatus": {
+          "enum": [
+            "ready",
+            "insufficient_group_diversity",
+            "holdout_blocked"
+          ]
+        }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classificationCounts",
+        "modeCounts",
+        "appliedPolicyCounts",
+        "reasonCounts",
+        "recommendationCounts",
+        "exclusionFlagCounts",
+        "outOfDomainRowCount"
+      ],
+      "properties": {
+        "classificationCounts": {
+          "$ref": "#/$defs/countMap"
+        },
+        "modeCounts": {
+          "$ref": "#/$defs/countMap"
+        },
+        "appliedPolicyCounts": {
+          "$ref": "#/$defs/countMap"
+        },
+        "reasonCounts": {
+          "$ref": "#/$defs/countMap"
+        },
+        "recommendationCounts": {
+          "$ref": "#/$defs/countMap"
+        },
+        "exclusionFlagCounts": {
+          "$ref": "#/$defs/countMap"
+        },
+        "outOfDomainRowCount": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        }
+      }
+    },
+    "featureDistributions": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/$defs/distribution"
+      }
+    },
+    "sampleScopedOutcomes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "distributions"
+      ],
+      "properties": {
+        "scope": {
+          "const": "descriptive_only_not_epoch_independent"
+        },
+        "distributions": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "$ref": "#/$defs/sampleDistribution"
+          }
+        }
+      }
+    },
+    "leakageAudit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "workloadIdentitySeparated",
+        "forbiddenFieldsChecked",
+        "forbiddenFieldsFound",
+        "passed"
+      ],
+      "properties": {
+        "workloadIdentitySeparated": {
+          "type": "boolean"
+        },
+        "forbiddenFieldsChecked": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "forbiddenFieldsFound": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "passed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ruleProposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reason",
+        "candidateRule",
+        "activeInternalAuthorized"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "holdout_blocked",
+            "insufficient_counterfactual_coverage",
+            "review_required"
+          ]
+        },
+        "reason": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "candidateRule": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "activeInternalAuthorized": {
+          "const": false
+        }
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nonNegativeInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{64}$"
+    },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "countMap": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/nonNegativeInteger"
+      }
+    },
+    "distribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "count",
+        "missingCount",
+        "minimum",
+        "p50",
+        "p95",
+        "maximum"
+      ],
+      "properties": {
+        "count": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "missingCount": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "minimum": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "p50": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "p95": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "maximum": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "sampleDistribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sampleCount",
+        "missingSampleCount",
+        "minimum",
+        "maximum"
+      ],
+      "properties": {
+        "sampleCount": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "missingSampleCount": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "minimum": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "maximum": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

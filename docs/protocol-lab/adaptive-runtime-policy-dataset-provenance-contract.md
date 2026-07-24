@@ -76,6 +76,19 @@ congestion window, bytes in flight, retained send buffers and bytes, and the
 missing, stale, lifecycle, and out-of-domain flags. Workload identity remains
 in the separate analysis-only block and is not copied into `modelFeatures`.
 
+The first axis-specific analysis adapter is
+[`../../eng/adaptive-runtime/Measure-AdaptiveRuntimeApplicationSendTurnDataset.ps1`](../../eng/adaptive-runtime/Measure-AdaptiveRuntimeApplicationSendTurnDataset.ps1).
+It accepts only `application_send_turn_planning`, validates the exact
+normalized-to-curated-to-split ID and checksum chain, requires unique complete
+row coverage in both manifests, and emits the closed
+[`../../schemas/adaptive-runtime-application-send-turn-analysis-v1.schema.json`](../../schemas/adaptive-runtime-application-send-turn-analysis-v1.schema.json)
+report. Feature distributions use curated included rows. Repeated
+sample-scoped outcomes are deduplicated by sample and explicitly labeled
+descriptive rather than epoch-independent. The report audits prohibited
+production inputs and cannot emit an active rule: insufficient group diversity
+produces `holdout_blocked`, a null candidate, and
+`activeInternalAuthorized = false`.
+
 ## Row Semantics
 
 An epoch row contains pre-decision observations, the policy applied during the

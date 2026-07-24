@@ -731,6 +731,127 @@ public sealed class REQ_QUIC_CRT_0176
         }
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void OfflineAnalysisValidatesManifestChainAndKeepsRuleProposalBlocked()
+    {
+        string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
+        string outputRoot = Path.Combine(
+            repoRoot,
+            ".artifacts",
+            "adaptive-runtime",
+            $"send-turn-analysis-{Guid.NewGuid():N}");
+        string pipelineRoot = Path.Combine(outputRoot, "pipeline");
+
+        try
+        {
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult pipeline =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Invoke-AdaptiveRuntimeDatasetPipeline.ps1",
+                    "-LocalResultPath",
+                    AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                        "tests/fixtures/adaptive-runtime-policy/local-result.shadow.checksum.example.json"),
+                    "-EpochDatasetPath",
+                    AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
+                        "tests/fixtures/adaptive-runtime-policy/epoch-row.shadow.checksum.example.json"),
+                    "-OutputRoot", pipelineRoot,
+                    "-DatasetId", "application-send-turn-analysis-test",
+                    "-DatasetVersion", "test-v1");
+            Assert.True(pipeline.ExitCode == 0, pipeline.Output);
+
+            string normalizedPath = Path.Combine(pipelineRoot, "normalized", "normalized-dataset.json");
+            string curatedPath = Path.Combine(pipelineRoot, "curated", "curated-manifest.json");
+            string splitPath = Path.Combine(pipelineRoot, "split", "split-manifest.json");
+
+            System.Text.Json.Nodes.JsonObject normalized =
+                System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(normalizedPath))!.AsObject();
+            System.Text.Json.Nodes.JsonObject normalizedRow = normalized["rows"]![0]!.AsObject();
+            normalizedRow["policyAxis"] = "application_send_turn_planning";
+            normalizedRow["mode"] = "shadow";
+            normalizedRow["selectedPolicy"] = "legacy_current";
+            normalizedRow["appliedPolicy"] = "legacy_current";
+            normalizedRow["forcedPolicy"] = null;
+            normalizedRow["shadowRecommendation"] = "conservative";
+            normalizedRow["selectionSource"] = "shadow_rule";
+            normalizedRow["reasonCode"] = "missing_signal";
+            normalizedRow["sourceExclusionFlags"] = new System.Text.Json.Nodes.JsonArray("none");
+            normalizedRow["defaultCurationDecision"] = "include";
+            normalizedRow["defaultCurationReasons"] = new System.Text.Json.Nodes.JsonArray("none");
+            File.WriteAllText(normalizedPath, normalized.ToJsonString());
+            string normalizedSha256 = GetSha256(normalizedPath);
+
+            System.Text.Json.Nodes.JsonObject curated =
+                System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(curatedPath))!.AsObject();
+            curated["normalizedDataset"]!["sha256"] = normalizedSha256;
+            System.Text.Json.Nodes.JsonObject decision = curated["rowDecisions"]![0]!.AsObject();
+            decision["decision"] = "included";
+            decision["reasonCodes"] = new System.Text.Json.Nodes.JsonArray("none");
+            curated["summary"]!["includedRowCount"] = 1;
+            curated["summary"]!["excludedRowCount"] = 0;
+            File.WriteAllText(curatedPath, curated.ToJsonString());
+            string curatedSha256 = GetSha256(curatedPath);
+
+            System.Text.Json.Nodes.JsonObject split =
+                System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(splitPath))!.AsObject();
+            split["curatedManifest"]!["sha256"] = curatedSha256;
+            File.WriteAllText(splitPath, split.ToJsonString());
+
+            string reportPath = Path.Combine(outputRoot, "analysis", "report.json");
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult analysis =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Measure-AdaptiveRuntimeApplicationSendTurnDataset.ps1",
+                    "-NormalizedDatasetPath", normalizedPath,
+                    "-CuratedManifestPath", curatedPath,
+                    "-SplitManifestPath", splitPath,
+                    "-OutputPath", reportPath,
+                    "-AnalysisId", "application-send-turn-analysis-test");
+
+            Assert.True(analysis.ExitCode == 0, analysis.Output);
+            using JsonDocument report = JsonDocument.Parse(File.ReadAllText(reportPath));
+            JsonElement root = report.RootElement;
+            Assert.Equal("application_send_turn_planning", root.GetProperty("scope").GetProperty("policyAxis").GetString());
+            Assert.Equal(1, root.GetProperty("scope").GetProperty("includedRowCount").GetInt32());
+            Assert.Equal(1, root.GetProperty("scope").GetProperty("includedSampleCount").GetInt32());
+            Assert.True(root.GetProperty("leakageAudit").GetProperty("passed").GetBoolean());
+            Assert.Empty(root.GetProperty("leakageAudit").GetProperty("forbiddenFieldsFound").EnumerateArray());
+            Assert.Equal("holdout_blocked", root.GetProperty("ruleProposal").GetProperty("status").GetString());
+            Assert.Equal(JsonValueKind.Null, root.GetProperty("ruleProposal").GetProperty("candidateRule").ValueKind);
+            Assert.False(root.GetProperty("ruleProposal").GetProperty("activeInternalAuthorized").GetBoolean());
+            Assert.Equal(
+                1,
+                root.GetProperty("featureDistributions")
+                    .GetProperty("queuedApplicationWrites")
+                    .GetProperty("count")
+                    .GetInt32());
+            Assert.Equal(
+                "descriptive_only_not_epoch_independent",
+                root.GetProperty("sampleScopedOutcomes").GetProperty("scope").GetString());
+
+            split["curatedManifest"]!["sha256"] = new string('0', 64);
+            File.WriteAllText(splitPath, split.ToJsonString());
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult brokenJoin =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Measure-AdaptiveRuntimeApplicationSendTurnDataset.ps1",
+                    "-NormalizedDatasetPath", normalizedPath,
+                    "-CuratedManifestPath", curatedPath,
+                    "-SplitManifestPath", splitPath,
+                    "-OutputPath", Path.Combine(outputRoot, "analysis", "broken-report.json"));
+            Assert.NotEqual(0, brokenJoin.ExitCode);
+            Assert.Contains(
+                "Split manifest does not identify the supplied curated manifest",
+                brokenJoin.Output,
+                StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(outputRoot))
+            {
+                Directory.Delete(outputRoot, recursive: true);
+            }
+        }
+    }
+
     private static AdaptiveRuntimePolicyScriptTestSupport.ProcessResult RunSendTurnEvidenceExporter(
         string rawEvidencePath,
         string outputDirectory,
@@ -767,6 +888,11 @@ public sealed class REQ_QUIC_CRT_0176
             "-RepositoryRoot", repoRoot,
             "-RepositoryCommit", "0123456789abcdef0123456789abcdef01234567");
     }
+
+    private static string GetSha256(string path) =>
+        Convert.ToHexString(
+            System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(path)))
+        .ToLowerInvariant();
 
     private static void CopyDirectory(string sourceDirectory, string destinationDirectory)
     {
