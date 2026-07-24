@@ -19,8 +19,8 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v4.schema.json'
-$actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v2.schema.json'
+$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v5.schema.json'
+$actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v3.schema.json'
 $resolvedRawEpochPath = (Resolve-Path -LiteralPath $RawEpochPath).Path
 $resolvedActorObservationPath = (Resolve-Path -LiteralPath $ActorObservationPath).Path
 $seenKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
@@ -33,6 +33,10 @@ $actorEpochRowByActorKey = @{}
 $actorContenderCountByEpoch = @{}
 $actorContenderMaximumByEpoch = @{}
 $actorContendedTurnCountByEpoch = @{}
+$actorAcceptedWorkCountByEpoch = @{}
+$actorAcceptedWorkTotalByEpoch = @{}
+$actorAcceptedWorkMaximumByEpoch = @{}
+$actorAcceptedWorkRemainingTurnsByEpoch = @{}
 $joinFailures = [System.Collections.Generic.List[string]]::new()
 $duplicateKeys = [System.Collections.Generic.List[string]]::new()
 $outOfOrderKeys = [System.Collections.Generic.List[string]]::new()
@@ -91,6 +95,19 @@ function Test-ActorValidityFlag {
     }
 
     return (([uint64] $Value -band $Mask) -ne 0)
+}
+
+function Add-ActorUInt64Saturating {
+    param(
+        [uint64] $Current,
+        [uint64] $Value
+    )
+
+    if ([uint64]::MaxValue - $Current -lt $Value) {
+        return [uint64]::MaxValue
+    }
+
+    return [uint64] ($Current + $Value)
 }
 
 foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
@@ -175,6 +192,14 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
                     [uint64] $actorSummary.maximumServiceContenderCount
                 contendedTurnCount =
                     [uint64] $actorSummary.contendedTurnCount
+                acceptedWorkObservationCount =
+                    [uint64] $actorSummary.acceptedConnectionWorkObservationCount
+                acceptedWorkTotal =
+                    [uint64] $actorSummary.totalAcceptedConnectionWorkItemsAfterCurrent
+                acceptedWorkMaximum =
+                    [uint64] $actorSummary.maximumAcceptedConnectionWorkItemsAfterCurrent
+                acceptedWorkRemainingTurns =
+                    [uint64] $actorSummary.turnsWithAcceptedConnectionWorkRemaining
             }
             for ($actorSequence = $first;
                 $actorSequence -le $last;
@@ -213,6 +238,15 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
         [uint64] $actorSummary.contendedTurnCount -gt
         [uint64] $actorSummary.serviceContenderObservationCount) {
         [void] $joinFailures.Add("$rowKey|actor-service-contender-count")
+    }
+    if ([uint64] $actorSummary.acceptedConnectionWorkObservationCount -gt
+        [uint64] $actorSummary.actorTurnCount -or
+        [uint64] $actorSummary.turnsWithAcceptedConnectionWorkRemaining -gt
+        [uint64] $actorSummary.acceptedConnectionWorkObservationCount -or
+        [uint64] $actorSummary.maximumAcceptedConnectionWorkItemsAfterCurrent -gt
+        [uint64] $actorSummary.totalAcceptedConnectionWorkItemsAfterCurrent) {
+        [void] $joinFailures.Add(
+            "$rowKey|actor-accepted-connection-work-count")
     }
     if ([bool] $epoch.bufferCopy.hasObservation) {
         $bufferObservationRowCount++
@@ -312,6 +346,51 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedActorObservationPath)) {
                     $actorEpochRowKey] + 1
         }
     }
+
+    $acceptedWorkMissing = Test-ActorValidityFlag `
+        -Value $record.observation.validity `
+        -Name 'MissingAcceptedConnectionWorkItemsAfterCurrent' `
+        -Mask (1L -shl 10)
+    $hasAcceptedWork =
+        $null -ne
+            $record.observation.acceptedConnectionWorkItemsAfterCurrent
+    if ($hasAcceptedWork -eq $acceptedWorkMissing -or
+        ($hasAcceptedWork -and $contenderInvalid)) {
+        [void] $joinFailures.Add(
+            "$rowKey|actor-accepted-connection-work-validity")
+    }
+    if ($actorEpochRowByActorKey.ContainsKey($rowKey) -and
+        $hasAcceptedWork) {
+        $actorEpochRowKey = [string] $actorEpochRowByActorKey[$rowKey]
+        $acceptedWork = [uint64] (
+            $record.observation.acceptedConnectionWorkItemsAfterCurrent)
+        if (-not $actorAcceptedWorkCountByEpoch.ContainsKey(
+                $actorEpochRowKey)) {
+            $actorAcceptedWorkCountByEpoch[$actorEpochRowKey] = [uint64]0
+            $actorAcceptedWorkTotalByEpoch[$actorEpochRowKey] = [uint64]0
+            $actorAcceptedWorkMaximumByEpoch[$actorEpochRowKey] = [uint64]0
+            $actorAcceptedWorkRemainingTurnsByEpoch[
+                $actorEpochRowKey] = [uint64]0
+        }
+
+        $actorAcceptedWorkCountByEpoch[$actorEpochRowKey] =
+            [uint64] $actorAcceptedWorkCountByEpoch[$actorEpochRowKey] + 1
+        $actorAcceptedWorkTotalByEpoch[$actorEpochRowKey] =
+            Add-ActorUInt64Saturating `
+                -Current ([uint64] $actorAcceptedWorkTotalByEpoch[
+                    $actorEpochRowKey]) `
+                -Value $acceptedWork
+        if ($acceptedWork -gt
+            [uint64] $actorAcceptedWorkMaximumByEpoch[$actorEpochRowKey]) {
+            $actorAcceptedWorkMaximumByEpoch[$actorEpochRowKey] =
+                $acceptedWork
+        }
+        if ($acceptedWork -gt 0) {
+            $actorAcceptedWorkRemainingTurnsByEpoch[$actorEpochRowKey] =
+                [uint64] $actorAcceptedWorkRemainingTurnsByEpoch[
+                    $actorEpochRowKey] + 1
+        }
+    }
 }
 
 if ($null -ne $SourceActorObservationRowCount -and
@@ -354,6 +433,47 @@ foreach ($actorEpochRowKey in $actorEpochSummaryByRowKey.Keys) {
         [void] $joinFailures.Add(
             "$actorEpochRowKey|actor-service-contender-aggregate")
     }
+
+    $actualAcceptedWorkCount = if (
+        $actorAcceptedWorkCountByEpoch.ContainsKey($actorEpochRowKey)) {
+        [uint64] $actorAcceptedWorkCountByEpoch[$actorEpochRowKey]
+    }
+    else {
+        [uint64]0
+    }
+    $actualAcceptedWorkTotal = if (
+        $actorAcceptedWorkTotalByEpoch.ContainsKey($actorEpochRowKey)) {
+        [uint64] $actorAcceptedWorkTotalByEpoch[$actorEpochRowKey]
+    }
+    else {
+        [uint64]0
+    }
+    $actualAcceptedWorkMaximum = if (
+        $actorAcceptedWorkMaximumByEpoch.ContainsKey($actorEpochRowKey)) {
+        [uint64] $actorAcceptedWorkMaximumByEpoch[$actorEpochRowKey]
+    }
+    else {
+        [uint64]0
+    }
+    $actualAcceptedWorkRemainingTurns = if (
+        $actorAcceptedWorkRemainingTurnsByEpoch.ContainsKey(
+            $actorEpochRowKey)) {
+        [uint64] $actorAcceptedWorkRemainingTurnsByEpoch[$actorEpochRowKey]
+    }
+    else {
+        [uint64]0
+    }
+    if ([uint64] $summary.acceptedWorkObservationCount -ne
+            $actualAcceptedWorkCount -or
+        [uint64] $summary.acceptedWorkTotal -ne
+            $actualAcceptedWorkTotal -or
+        [uint64] $summary.acceptedWorkMaximum -ne
+            $actualAcceptedWorkMaximum -or
+        [uint64] $summary.acceptedWorkRemainingTurns -ne
+            $actualAcceptedWorkRemainingTurns) {
+        [void] $joinFailures.Add(
+            "$actorEpochRowKey|actor-accepted-connection-work-aggregate")
+    }
 }
 
 $valid =
@@ -379,7 +499,7 @@ if (-not $valid) {
 }
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-validation-v5'
+    schemaVersion = 'adaptive-runtime-unified-raw-validation-v6'
     valid = $true
     rawEpochRowCount = $rowCount
     axisRecordCount = $axisRecordCount

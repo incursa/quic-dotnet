@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-unified-epoch-raw-v5.schema.json",
+  "title": "Adaptive Runtime Unified Connection Epoch Raw v5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "connectionKey", "epoch"],
+  "properties": {
+    "schemaVersion": {
+      "const": "adaptive-runtime-unified-epoch-raw-v5"
+    },
+    "connectionKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "epoch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "connectionObservation",
+        "receiveCreditSnapshot",
+        "postServiceBoundary",
+        "stage1",
+        "actorService",
+        "bufferCopy",
+        "evidenceContractVersion",
+        "connectionEpochSequence"
+      ],
+      "properties": {
+        "connectionObservation": {
+          "type": "object",
+          "required": [
+            "connectionEpochSequence",
+            "epochStartTicks",
+            "epochEndTicks",
+            "activeDurationMicros",
+            "observationContractVersion",
+            "policyRuleVersion"
+          ],
+          "properties": {
+            "connectionEpochSequence": { "type": "integer", "minimum": 1 },
+            "epochStartTicks": { "type": "integer" },
+            "epochEndTicks": { "type": "integer" },
+            "activeDurationMicros": { "type": "integer", "minimum": 0 },
+            "observationContractVersion": {
+              "const": "adaptive-runtime-connection-observation-v1"
+            },
+            "policyRuleVersion": { "const": "receive-credit-legacy-v1" }
+          }
+        },
+        "receiveCreditSnapshot": {
+          "type": "object",
+          "required": [
+            "snapshotVersion",
+            "ruleVersion",
+            "epochSequence",
+            "appliedPolicy",
+            "proposedPolicy",
+            "reason"
+          ],
+          "properties": {
+            "snapshotVersion": { "type": "integer", "minimum": 1 },
+            "ruleVersion": { "type": "string", "minLength": 1 },
+            "epochSequence": { "type": "integer", "minimum": 1 },
+            "appliedPolicy": { "type": ["string", "integer"] },
+            "proposedPolicy": { "type": ["string", "integer"] },
+            "reason": { "type": ["string", "integer"] }
+          }
+        },
+        "postServiceBoundary": {
+          "type": "object",
+          "required": [
+            "connectionEpochSequence",
+            "epochEndTicks",
+            "source",
+            "disposition",
+            "actorServiceSequence",
+            "actorObservationPublished",
+            "resourceReleaseCompleted",
+            "validity",
+            "boundaryContractVersion"
+          ],
+          "properties": {
+            "connectionEpochSequence": { "type": "integer", "minimum": 1 },
+            "epochEndTicks": { "type": "integer" },
+            "source": { "type": ["string", "integer"] },
+            "disposition": { "type": ["string", "integer"] },
+            "actorServiceSequence": {
+              "type": ["integer", "null"],
+              "minimum": 1
+            },
+            "actorObservationPublished": { "type": "boolean" },
+            "resourceReleaseCompleted": { "type": "boolean" },
+            "validity": { "type": ["string", "integer"] },
+            "boundaryContractVersion": {
+              "const": "adaptive-runtime-post-service-boundary-v1"
+            }
+          }
+        },
+        "stage1": {
+          "type": "object",
+          "required": [
+            "epochIndex",
+            "epochStartOffsetMicros",
+            "epochDurationMicros",
+            "policySnapshot",
+            "applicationSendTurnPlanning",
+            "applicationSendBatchFormation",
+            "queuedSendBurstBudget",
+            "oversizedWriteAdmissionQuantum"
+          ],
+          "properties": {
+            "epochIndex": { "type": "integer", "minimum": 1 },
+            "epochStartOffsetMicros": { "type": "integer", "minimum": 0 },
+            "epochDurationMicros": { "type": "integer", "minimum": 1 },
+            "policySnapshot": { "type": "object" },
+            "applicationSendTurnPlanning": { "type": "object" },
+            "applicationSendBatchFormation": { "type": "object" },
+            "queuedSendBurstBudget": { "type": "object" },
+            "oversizedWriteAdmissionQuantum": { "type": "object" }
+          }
+        },
+        "actorService": {
+          "type": "object",
+          "required": [
+            "hasObservation",
+            "firstServiceSequence",
+            "lastServiceSequence",
+            "actorTurnCount",
+            "timerCount",
+            "interServiceGapObservationCount",
+            "deadlineLatenessObservationCount",
+            "serviceContenderObservationCount",
+            "maximumServiceContenderCount",
+            "contendedTurnCount",
+            "acceptedConnectionWorkObservationCount",
+            "totalAcceptedConnectionWorkItemsAfterCurrent",
+            "maximumAcceptedConnectionWorkItemsAfterCurrent",
+            "turnsWithAcceptedConnectionWorkRemaining",
+            "validity",
+            "epochContractVersion"
+          ],
+          "properties": {
+            "hasObservation": { "type": "boolean" },
+            "firstServiceSequence": { "type": "integer", "minimum": 0 },
+            "lastServiceSequence": { "type": "integer", "minimum": 0 },
+            "actorTurnCount": { "type": "integer", "minimum": 0 },
+            "timerCount": { "type": "integer", "minimum": 0 },
+            "interServiceGapObservationCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "deadlineLatenessObservationCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "serviceContenderObservationCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "maximumServiceContenderCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "contendedTurnCount": { "type": "integer", "minimum": 0 },
+            "acceptedConnectionWorkObservationCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "totalAcceptedConnectionWorkItemsAfterCurrent": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "maximumAcceptedConnectionWorkItemsAfterCurrent": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "turnsWithAcceptedConnectionWorkRemaining": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "validity": { "type": ["string", "integer"] },
+            "epochContractVersion": {
+              "const": "quic-actor-service-epoch-v4"
+            }
+          }
+        },
+        "bufferCopy": {
+          "type": "object",
+          "required": [
+            "hasObservation",
+            "firstOperationSequence",
+            "lastOperationSequence",
+            "operationCount",
+            "validity",
+            "epochContractVersion"
+          ],
+          "properties": {
+            "hasObservation": { "type": "boolean" },
+            "firstOperationSequence": { "type": "integer", "minimum": 0 },
+            "lastOperationSequence": { "type": "integer", "minimum": 0 },
+            "operationCount": { "type": "integer", "minimum": 0 },
+            "validity": { "type": ["string", "integer"] },
+            "epochContractVersion": { "const": "quic-buffer-copy-epoch-v3" }
+          }
+        },
+        "evidenceContractVersion": {
+          "const": "adaptive-runtime-unified-epoch-evidence-v5"
+        },
+        "connectionEpochSequence": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

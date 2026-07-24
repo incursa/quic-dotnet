@@ -1038,6 +1038,10 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 
                 ulong? serviceContenderCountAtStart =
                     CaptureServiceContenderCount(ref validity);
+                ulong? acceptedConnectionWorkItemsAfterCurrent =
+                    CaptureAcceptedConnectionWorkItemsAfterCurrent(
+                        runtime,
+                        ref validity);
                 actorServiceSequence =
                     runtime.GetNextActorServiceObservationSequence();
                 QuicActorServiceObservation observation = new(
@@ -1069,7 +1073,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     validity,
                     interServiceGapMicros,
                     deadlineLatenessMicros,
-                    serviceContenderCountAtStart);
+                    serviceContenderCountAtStart,
+                    acceptedConnectionWorkItemsAfterCurrent);
                 actorObservationPublished =
                     runtime.TryPublishActorServiceObservation(in observation);
             }
@@ -1185,6 +1190,38 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         }
 
         return (ulong)count;
+    }
+
+    private ulong? CaptureAcceptedConnectionWorkItemsAfterCurrent(
+        QuicConnectionRuntime runtime,
+        ref QuicActorServiceValidity validity)
+    {
+        bool stateInvalid =
+            Volatile.Read(ref serviceContenderStateInvalid) != 0;
+        if (stateInvalid
+            || !runtime.TryCaptureAcceptedActorShardWorkItemsAfterCurrent(
+                out ulong acceptedWorkItemsAfterCurrent))
+        {
+            validity |=
+                QuicActorServiceValidity
+                    .MissingAcceptedConnectionWorkItemsAfterCurrent;
+            if (stateInvalid)
+            {
+                validity |=
+                    QuicActorServiceValidity.ServiceContenderStateInvalid;
+            }
+
+            if (Volatile.Read(
+                    ref serviceContenderArithmeticSaturated) != 0)
+            {
+                validity |=
+                    QuicActorServiceValidity.ArithmeticSaturated;
+            }
+
+            return null;
+        }
+
+        return acceptedWorkItemsAfterCurrent;
     }
 
 

@@ -17,9 +17,9 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $observationSchemaPath = Join-Path $RepositoryRoot `
-    'schemas\adaptive-runtime-actor-service-observation-v3.schema.json'
+    'schemas\adaptive-runtime-actor-service-observation-v4.schema.json'
 $epochSchemaPath = Join-Path $RepositoryRoot `
-    'schemas\adaptive-runtime-actor-service-epoch-v3.schema.json'
+    'schemas\adaptive-runtime-actor-service-epoch-v4.schema.json'
 $failures = [System.Collections.Generic.List[string]]::new()
 $observations = [System.Collections.Generic.List[object]]::new()
 
@@ -40,6 +40,19 @@ function Test-ActorValidityFlag {
     }
 
     return (([uint64] $Value -band $Mask) -ne 0)
+}
+
+function Add-ActorUInt64Saturating {
+    param(
+        [uint64] $Current,
+        [uint64] $Value
+    )
+
+    if ([uint64]::MaxValue - $Current -lt $Value) {
+        return [uint64]::MaxValue
+    }
+
+    return [uint64] ($Current + $Value)
 }
 
 foreach ($line in Get-Content -LiteralPath $ObservationPath) {
@@ -67,6 +80,10 @@ $lastWakePosition = [ulong]0
 $observedServiceContenderCount = [ulong]0
 $maximumObservedServiceContenderCount = [ulong]0
 $observedContendedTurnCount = [ulong]0
+$acceptedWorkObservationCount = [ulong]0
+$totalAcceptedWorkItemsAfterCurrent = [ulong]0
+$maximumAcceptedWorkItemsAfterCurrent = [ulong]0
+$turnsWithAcceptedWorkRemaining = [ulong]0
 foreach ($observation in $observations) {
     $serviceSequence = [ulong] $observation.serviceSequence
     $wakeSequence = [ulong] $observation.wakeSequence
@@ -154,6 +171,36 @@ foreach ($observation in $observations) {
             $observedContendedTurnCount++
         }
     }
+
+    $acceptedWorkMissing = Test-ActorValidityFlag `
+        -Value $observation.validity `
+        -Name 'MissingAcceptedConnectionWorkItemsAfterCurrent' `
+        -Mask (1L -shl 10)
+    $hasAcceptedWork =
+        $null -ne $observation.acceptedConnectionWorkItemsAfterCurrent
+    if ($hasAcceptedWork -eq $acceptedWorkMissing) {
+        $failures.Add(
+            "Actor observation '$serviceSequence' has contradictory accepted-connection-work validity.")
+    }
+    if ($hasAcceptedWork -and $contenderInvalid) {
+        $failures.Add(
+            "Actor observation '$serviceSequence' exposes accepted connection work from invalid accounting.")
+    }
+    if ($hasAcceptedWork) {
+        $acceptedWork =
+            [ulong] $observation.acceptedConnectionWorkItemsAfterCurrent
+        $acceptedWorkObservationCount++
+        $totalAcceptedWorkItemsAfterCurrent =
+            Add-ActorUInt64Saturating `
+                -Current $totalAcceptedWorkItemsAfterCurrent `
+                -Value $acceptedWork
+        if ($acceptedWork -gt $maximumAcceptedWorkItemsAfterCurrent) {
+            $maximumAcceptedWorkItemsAfterCurrent = $acceptedWork
+        }
+        if ($acceptedWork -gt 0) {
+            $turnsWithAcceptedWorkRemaining++
+        }
+    }
 }
 
 $epochJson = Get-Content -LiteralPath $EpochSummaryPath -Raw
@@ -190,6 +237,14 @@ $maximumServiceContenderCount =
     [ulong] $epoch.maximumServiceContenderCount
 $contendedTurnCount =
     [ulong] $epoch.contendedTurnCount
+$epochAcceptedWorkObservationCount =
+    [ulong] $epoch.acceptedConnectionWorkObservationCount
+$epochTotalAcceptedWorkItemsAfterCurrent =
+    [ulong] $epoch.totalAcceptedConnectionWorkItemsAfterCurrent
+$epochMaximumAcceptedWorkItemsAfterCurrent =
+    [ulong] $epoch.maximumAcceptedConnectionWorkItemsAfterCurrent
+$epochTurnsWithAcceptedWorkRemaining =
+    [ulong] $epoch.turnsWithAcceptedConnectionWorkRemaining
 $dispositionCount =
     [ulong] $epoch.completedTurnCount +
     [ulong] $epoch.skippedTurnCount +
@@ -274,10 +329,32 @@ if ($contendedTurnCount -ne $observedContendedTurnCount) {
     $failures.Add(
         'Contended turn count does not match raw observations.')
 }
+if ($epochAcceptedWorkObservationCount -gt $turnCount -or
+    $epochTurnsWithAcceptedWorkRemaining -gt
+        $epochAcceptedWorkObservationCount) {
+    $failures.Add(
+        'Accepted connection work counts exceed actor observation bounds.')
+}
+if ($epochMaximumAcceptedWorkItemsAfterCurrent -gt
+    $epochTotalAcceptedWorkItemsAfterCurrent) {
+    $failures.Add(
+        'Maximum accepted connection work exceeds the epoch total.')
+}
+if ($epochAcceptedWorkObservationCount -ne
+        $acceptedWorkObservationCount -or
+    $epochTotalAcceptedWorkItemsAfterCurrent -ne
+        $totalAcceptedWorkItemsAfterCurrent -or
+    $epochMaximumAcceptedWorkItemsAfterCurrent -ne
+        $maximumAcceptedWorkItemsAfterCurrent -or
+    $epochTurnsWithAcceptedWorkRemaining -ne
+        $turnsWithAcceptedWorkRemaining) {
+    $failures.Add(
+        'Accepted connection work aggregation does not match raw observations.')
+}
 
 $result = [ordered]@{
     schemaVersion =
-        'adaptive-runtime-actor-service-evidence-validation-v3'
+        'adaptive-runtime-actor-service-evidence-validation-v4'
     valid = $failures.Count -eq 0
     observationRowCount = $observations.Count
     actorTurnCount = $turnCount

@@ -292,7 +292,7 @@ public sealed class REQ_QUIC_CRT_0183
             string unifiedSchema = Path.Combine(
                 repoRoot,
                 "schemas",
-                "adaptive-runtime-unified-epoch-evidence-v4.schema.json");
+                "adaptive-runtime-unified-epoch-evidence-v5.schema.json");
             string command =
                 $"$boundaryValid = Get-Content -LiteralPath "
                 + $"{AdaptiveRuntimePolicyScriptTestSupport.QuotePowerShellLiteral(boundaryPath)} "
@@ -317,6 +317,7 @@ public sealed class REQ_QUIC_CRT_0183
 
     [Fact]
     [Requirement("REQ-QUIC-CRT-0184")]
+    [Requirement("REQ-QUIC-CRT-0188")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void PermanentUnifiedRawExporterPreservesJoinedRowsAndManifest()
@@ -360,7 +361,7 @@ public sealed class REQ_QUIC_CRT_0183
                 new
                 {
                     schemaVersion =
-                        "adaptive-runtime-unified-epoch-raw-v4",
+                        "adaptive-runtime-unified-epoch-raw-v5",
                     connectionKey = "connection-0001",
                     epoch = evidence,
                 },
@@ -369,7 +370,7 @@ public sealed class REQ_QUIC_CRT_0183
                 new
                 {
                     schemaVersion =
-                        "adaptive-runtime-actor-service-raw-v2",
+                        "adaptive-runtime-actor-service-raw-v3",
                     connectionKey = "connection-0001",
                     observation = actor,
                 },
@@ -575,7 +576,7 @@ public sealed class REQ_QUIC_CRT_0183
                             new
                             {
                                 schemaVersion =
-                                    "adaptive-runtime-unified-epoch-raw-v4",
+                                    "adaptive-runtime-unified-epoch-raw-v5",
                                 connectionKey = "connection-0001",
                                 epoch = mismatchedEvidence,
                             },
@@ -597,6 +598,52 @@ public sealed class REQ_QUIC_CRT_0183
             Assert.Contains(
                 "joinFailures=1",
                 mismatchedContender.Output,
+                StringComparison.Ordinal);
+
+            QuicAdaptiveRuntimeUnifiedEpochEvidence
+                mismatchedAcceptedWorkEvidence =
+                    evidence with
+                    {
+                        ActorService = evidence.ActorService with
+                        {
+                            TotalAcceptedConnectionWorkItemsAfterCurrent = 1,
+                            MaximumAcceptedConnectionWorkItemsAfterCurrent = 1,
+                            TurnsWithAcceptedConnectionWorkRemaining = 1,
+                        },
+                    };
+            string mismatchedAcceptedWorkHostLogPath = Path.Combine(
+                temporaryDirectory,
+                "mismatched-accepted-work-host.log");
+            File.WriteAllLines(
+                mismatchedAcceptedWorkHostLogPath,
+                [
+                    "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON="
+                        + JsonSerializer.Serialize(
+                            new
+                            {
+                                schemaVersion =
+                                    "adaptive-runtime-unified-epoch-raw-v5",
+                                connectionKey = "connection-0001",
+                                epoch = mismatchedAcceptedWorkEvidence,
+                            },
+                            jsonOptions),
+                    "QUIC_ACTOR_SERVICE_OBSERVATION_JSON="
+                        + actorRawJson,
+                ]);
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult
+                mismatchedAcceptedWork =
+                    AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                        "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+                        "-HostLogPath",
+                        mismatchedAcceptedWorkHostLogPath,
+                        "-OutputDirectory",
+                        Path.Combine(
+                            temporaryDirectory,
+                            "mismatched-accepted-work-export"));
+            Assert.NotEqual(0, mismatchedAcceptedWork.ExitCode);
+            Assert.Contains(
+                "joinFailures=1",
+                mismatchedAcceptedWork.Output,
                 StringComparison.Ordinal);
 
             AdaptiveRuntimePolicyScriptTestSupport.ProcessResult second =
@@ -712,7 +759,8 @@ public sealed class REQ_QUIC_CRT_0183
             QuicConnectionPhase.Active,
             DisposalStarted: false,
             QuicActorServiceValidity.None,
-            ServiceContenderCountAtStart: 1);
+            ServiceContenderCountAtStart: 1,
+            AcceptedConnectionWorkItemsAfterCurrent: 0);
 
     private static QuicBufferCopyObservation CreateBufferObservation()
         => new(

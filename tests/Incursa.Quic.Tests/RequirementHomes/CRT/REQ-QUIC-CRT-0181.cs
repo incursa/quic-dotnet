@@ -11,6 +11,7 @@ namespace Incursa.Quic.Tests.RequirementHomes.CRT;
 public sealed class REQ_QUIC_CRT_0181
 {
     [Fact]
+    [Requirement("REQ-QUIC-CRT-0188")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task ObserveOnlyShardServiceProducesBoundedConnectionEvidence()
@@ -53,6 +54,18 @@ public sealed class REQ_QUIC_CRT_0181
         Assert.Equal(1UL, summary.ServiceContenderObservationCount);
         Assert.Equal(1UL, summary.MaximumServiceContenderCount);
         Assert.Equal(0UL, summary.ContendedTurnCount);
+        Assert.Equal(
+            1UL,
+            summary.AcceptedConnectionWorkObservationCount);
+        Assert.Equal(
+            0UL,
+            summary.TotalAcceptedConnectionWorkItemsAfterCurrent);
+        Assert.Equal(
+            0UL,
+            summary.MaximumAcceptedConnectionWorkItemsAfterCurrent);
+        Assert.Equal(
+            0UL,
+            summary.TurnsWithAcceptedConnectionWorkRemaining);
         Assert.True(
             (summary.Validity
                 & QuicActorServiceValidity.UsefulWorkUnitsUndefined) != 0);
@@ -74,6 +87,7 @@ public sealed class REQ_QUIC_CRT_0181
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-CRT-0188")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task ShardTracksPostedOrServicingConnectionContendersWithoutRunnableClaim()
@@ -119,6 +133,11 @@ public sealed class REQ_QUIC_CRT_0181
             observations.Select(
                 static observation =>
                     observation.ServiceContenderCountAtStart));
+        Assert.Equal(
+            [1UL, 0UL, 0UL],
+            observations.Select(
+                static observation =>
+                    observation.AcceptedConnectionWorkItemsAfterCurrent));
         Assert.Equal(0, shard.ServiceContenderCount);
         Assert.True(shard.ServiceContenderStateValid);
         Assert.All(
@@ -133,6 +152,11 @@ public sealed class REQ_QUIC_CRT_0181
                     (observation.Validity
                         & QuicActorServiceValidity
                             .MissingServiceContenderCount) == 0);
+                Assert.True(
+                    (observation.Validity
+                        & QuicActorServiceValidity
+                            .MissingAcceptedConnectionWorkItemsAfterCurrent)
+                    == 0);
             });
     }
 
@@ -193,6 +217,7 @@ public sealed class REQ_QUIC_CRT_0181
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-CRT-0188")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ListenerOptionCopyPreservesActorObservationModeAndSink()
@@ -361,7 +386,8 @@ public sealed class REQ_QUIC_CRT_0181
             effectCount: 2,
             applicationSendFollowOnCount: 3,
             interServiceGapMicros: 10,
-            serviceContenderCountAtStart: 2);
+            serviceContenderCountAtStart: 2,
+            acceptedConnectionWorkItemsAfterCurrent: 1);
         QuicActorServiceObservation second = CreateObservation(
             serviceSequence: 6,
             wakeSequence: 3,
@@ -372,7 +398,8 @@ public sealed class REQ_QUIC_CRT_0181
             applicationSendFollowOnCount: 0,
             interServiceGapMicros: 20,
             deadlineLatenessMicros: 5,
-            serviceContenderCountAtStart: 1);
+            serviceContenderCountAtStart: 1,
+            acceptedConnectionWorkItemsAfterCurrent: 0);
 
         Assert.True(accumulator.TryPublish(in first));
         Assert.True(accumulator.TryPublish(in second));
@@ -397,9 +424,61 @@ public sealed class REQ_QUIC_CRT_0181
         Assert.Equal(2UL, summary.ServiceContenderObservationCount);
         Assert.Equal(2UL, summary.MaximumServiceContenderCount);
         Assert.Equal(1UL, summary.ContendedTurnCount);
+        Assert.Equal(
+            2UL,
+            summary.AcceptedConnectionWorkObservationCount);
+        Assert.Equal(
+            1UL,
+            summary.TotalAcceptedConnectionWorkItemsAfterCurrent);
+        Assert.Equal(
+            1UL,
+            summary.MaximumAcceptedConnectionWorkItemsAfterCurrent);
+        Assert.Equal(
+            1UL,
+            summary.TurnsWithAcceptedConnectionWorkRemaining);
         Assert.True(
             (summary.Validity
                 & QuicActorServiceValidity.MissingQueueDelay) != 0);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0188")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void MissingAcceptedConnectionWorkRemainsExplicitAndUnaggregated()
+    {
+        QuicActorServiceObservation observation = CreateObservation(
+            serviceSequence: 1,
+            wakeSequence: 1,
+            QuicActorWorkKind.FlowControlCreditUpdate,
+            queueDelayMicros: 1,
+            serviceTimeMicros: 1,
+            effectCount: 0,
+            applicationSendFollowOnCount: 0,
+            acceptedConnectionWorkItemsAfterCurrent: null);
+        Assert.True(
+            (observation.Validity
+                & QuicActorServiceValidity
+                    .MissingAcceptedConnectionWorkItemsAfterCurrent) != 0);
+
+        QuicActorServiceEpochAccumulator accumulator = new();
+        Assert.True(accumulator.TryPublish(in observation));
+        QuicActorServiceEpochSummary summary =
+            accumulator.CaptureAndReset();
+
+        Assert.Equal(1UL, summary.ActorTurnCount);
+        Assert.Equal(
+            0UL,
+            summary.AcceptedConnectionWorkObservationCount);
+        Assert.Equal(
+            0UL,
+            summary.TotalAcceptedConnectionWorkItemsAfterCurrent);
+        Assert.Equal(
+            0UL,
+            summary.MaximumAcceptedConnectionWorkItemsAfterCurrent);
+        Assert.Equal(
+            0UL,
+            summary.TurnsWithAcceptedConnectionWorkRemaining);
     }
 
     [Fact]
@@ -468,6 +547,37 @@ public sealed class REQ_QUIC_CRT_0181
                 validation.RootElement
                     .GetProperty("actorTurnCount")
                     .GetInt32());
+
+            QuicActorServiceObservation invalidObservation =
+                observation with
+                {
+                    Validity = observation.Validity
+                        | QuicActorServiceValidity
+                            .ServiceContenderStateInvalid,
+                };
+            QuicActorServiceEpochAccumulator invalidAccumulator = new();
+            Assert.True(
+                invalidAccumulator.TryPublish(in invalidObservation));
+            QuicActorServiceEpochSummary invalidSummary =
+                invalidAccumulator.CaptureAndReset();
+            File.WriteAllText(
+                observationPath,
+                JsonSerializer.Serialize(invalidObservation, options));
+            File.WriteAllText(
+                epochPath,
+                JsonSerializer.Serialize(invalidSummary, options));
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult invalid =
+                AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                    "eng/adaptive-runtime/Test-AdaptiveRuntimeActorServiceEvidence.ps1",
+                    "-ObservationPath",
+                    observationPath,
+                    "-EpochSummaryPath",
+                    epochPath);
+            Assert.NotEqual(0, invalid.ExitCode);
+            Assert.Contains(
+                "exposes accepted connection work from invalid accounting",
+                invalid.Output,
+                StringComparison.Ordinal);
         }
         finally
         {
@@ -485,7 +595,8 @@ public sealed class REQ_QUIC_CRT_0181
         uint applicationSendFollowOnCount,
         ulong? interServiceGapMicros = null,
         ulong? deadlineLatenessMicros = null,
-        ulong? serviceContenderCountAtStart = 1)
+        ulong? serviceContenderCountAtStart = 1,
+        ulong? acceptedConnectionWorkItemsAfterCurrent = 0)
     {
         QuicActorServiceValidity validity =
             QuicActorServiceValidity.MissingRunnableConnectionCount
@@ -503,6 +614,12 @@ public sealed class REQ_QUIC_CRT_0181
             && !deadlineLatenessMicros.HasValue)
         {
             validity |= QuicActorServiceValidity.MissingDeadlineLateness;
+        }
+        if (!acceptedConnectionWorkItemsAfterCurrent.HasValue)
+        {
+            validity |=
+                QuicActorServiceValidity
+                    .MissingAcceptedConnectionWorkItemsAfterCurrent;
         }
 
         return new QuicActorServiceObservation(
@@ -526,7 +643,8 @@ public sealed class REQ_QUIC_CRT_0181
             validity,
             interServiceGapMicros,
             deadlineLatenessMicros,
-            serviceContenderCountAtStart);
+            serviceContenderCountAtStart,
+            acceptedConnectionWorkItemsAfterCurrent);
     }
 
     private sealed class ThrowingSink : IQuicActorServiceEvidenceSink

@@ -43,10 +43,14 @@ internal readonly record struct QuicActorServiceEpochSummary(
     ulong DeadlineLatenessEwmaMicros,
     ulong ServiceContenderObservationCount = 0,
     ulong MaximumServiceContenderCount = 0,
-    ulong ContendedTurnCount = 0)
+    ulong ContendedTurnCount = 0,
+    ulong AcceptedConnectionWorkObservationCount = 0,
+    ulong TotalAcceptedConnectionWorkItemsAfterCurrent = 0,
+    ulong MaximumAcceptedConnectionWorkItemsAfterCurrent = 0,
+    ulong TurnsWithAcceptedConnectionWorkRemaining = 0)
 {
     internal const string CurrentEpochContractVersion =
-        "quic-actor-service-epoch-v3";
+        "quic-actor-service-epoch-v4";
 
     public string EpochContractVersion => CurrentEpochContractVersion;
 }
@@ -98,6 +102,10 @@ internal sealed class QuicActorServiceEpochAccumulator :
     private ulong serviceContenderObservationCount;
     private ulong maximumServiceContenderCount;
     private ulong contendedTurnCount;
+    private ulong acceptedConnectionWorkObservationCount;
+    private ulong totalAcceptedConnectionWorkItemsAfterCurrent;
+    private ulong maximumAcceptedConnectionWorkItemsAfterCurrent;
+    private ulong turnsWithAcceptedConnectionWorkRemaining;
 
     public bool TryPublish(in QuicActorServiceObservation observation)
     {
@@ -216,6 +224,26 @@ internal sealed class QuicActorServiceEpochAccumulator :
                 }
             }
 
+            if (observation.AcceptedConnectionWorkItemsAfterCurrent
+                is { } acceptedWorkItemsAfterCurrent)
+            {
+                AddSaturating(
+                    ref acceptedConnectionWorkObservationCount,
+                    1);
+                AddSaturating(
+                    ref totalAcceptedConnectionWorkItemsAfterCurrent,
+                    acceptedWorkItemsAfterCurrent);
+                maximumAcceptedConnectionWorkItemsAfterCurrent = Math.Max(
+                    maximumAcceptedConnectionWorkItemsAfterCurrent,
+                    acceptedWorkItemsAfterCurrent);
+                if (acceptedWorkItemsAfterCurrent > 0)
+                {
+                    AddSaturating(
+                        ref turnsWithAcceptedConnectionWorkRemaining,
+                        1);
+                }
+            }
+
             validity |= observation.Validity;
         }
 
@@ -266,7 +294,11 @@ internal sealed class QuicActorServiceEpochAccumulator :
                 deadlineLatenessEwmaMicros,
                 serviceContenderObservationCount,
                 maximumServiceContenderCount,
-                contendedTurnCount);
+                contendedTurnCount,
+                acceptedConnectionWorkObservationCount,
+                totalAcceptedConnectionWorkItemsAfterCurrent,
+                maximumAcceptedConnectionWorkItemsAfterCurrent,
+                turnsWithAcceptedConnectionWorkRemaining);
             Reset();
             return summary;
         }
@@ -372,5 +404,9 @@ internal sealed class QuicActorServiceEpochAccumulator :
         serviceContenderObservationCount = 0;
         maximumServiceContenderCount = 0;
         contendedTurnCount = 0;
+        acceptedConnectionWorkObservationCount = 0;
+        totalAcceptedConnectionWorkItemsAfterCurrent = 0;
+        maximumAcceptedConnectionWorkItemsAfterCurrent = 0;
+        turnsWithAcceptedConnectionWorkRemaining = 0;
     }
 }

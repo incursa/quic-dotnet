@@ -2879,6 +2879,21 @@ internal sealed partial class QuicConnectionRuntime :
         }
     }
 
+    internal bool TryCaptureAcceptedActorShardWorkItemsAfterCurrent(
+        out ulong acceptedWorkItemsAfterCurrent)
+    {
+        long current = Volatile.Read(
+            ref actorShardOutstandingWorkItemCount);
+        if (current <= 0 || current == long.MaxValue)
+        {
+            acceptedWorkItemsAfterCurrent = 0;
+            return false;
+        }
+
+        acceptedWorkItemsAfterCurrent = (ulong)(current - 1);
+        return true;
+    }
+
     internal bool TryPublishActorServiceObservation(
         in QuicActorServiceObservation observation)
     {

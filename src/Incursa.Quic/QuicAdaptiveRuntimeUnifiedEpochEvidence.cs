@@ -14,7 +14,7 @@ internal readonly record struct QuicAdaptiveRuntimeUnifiedEpochEvidence(
     QuicBufferCopyEpochSummary BufferCopy)
 {
     internal const string CurrentEvidenceContractVersion =
-        "adaptive-runtime-unified-epoch-evidence-v4";
+        "adaptive-runtime-unified-epoch-evidence-v5";
 
     public string EvidenceContractVersion =>
         CurrentEvidenceContractVersion;

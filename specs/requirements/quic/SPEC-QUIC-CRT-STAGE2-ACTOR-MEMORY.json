@@ -30,7 +30,7 @@
     {
       "id": "REQ-QUIC-CRT-0181",
       "title": "Record bounded behavior-neutral actor service evidence",
-      "statement": "The runtime MUST support disabled and observe-only actor service instrumentation that records one versioned connection-attributable observation for each observed shard dispatch with monotonic service sequence, bounded wake identity, closed work kind, queue delay, complete service duration, connection-local inter-service gap after the first observation, exact nonnegative scheduled deadline lateness for deadline-scheduler timer work, exact posted-or-servicing connection contender count at service start when valid, pending work count, effect and follow-on counts, lifecycle disposition, explicit missing, invalid, and saturated state, and deterministic epoch aggregation; keep sink failures diagnostic-only; preserve the legacy_current shard drain, timer ordering and priority, recovery, terminal, progress, compact work-item layout, and ownership behavior; and never treat scenario, payload, requested concurrency, peer, URL, application identity, event count, pending inbox depth, queue delay, inter-service gap, or service-contender count as an invented production work-unit, runnable-connection, oldest-item, continuous-runnable, starvation, or fairness signal.",
+      "statement": "The runtime MUST support disabled and observe-only actor service instrumentation that records one versioned connection-attributable observation for each observed shard dispatch with monotonic service sequence, bounded wake identity, closed work kind, queue delay, complete service duration, connection-local inter-service gap after the first observation, exact nonnegative scheduled deadline lateness for deadline-scheduler timer work, exact posted-or-servicing connection contender count at service start when valid, exact accepted connection work items after the current dispatch when valid, pending work count, effect and follow-on counts, lifecycle disposition, explicit missing, invalid, and saturated state, and deterministic epoch aggregation; keep sink failures diagnostic-only; preserve the legacy_current shard drain, timer ordering and priority, recovery, terminal, progress, compact work-item layout, and ownership behavior; and never treat scenario, payload, requested concurrency, peer, URL, application identity, event count, pending inbox depth, queue delay, inter-service gap, service-contender count, or accepted-dispatch backlog as an invented production work-unit, runnable-connection, internal continuation-ready, oldest-item, continuous-runnable, starvation, or fairness signal.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-CRT-0067"
@@ -50,7 +50,9 @@
           "schemas/adaptive-runtime-actor-service-observation-v2.schema.json",
           "schemas/adaptive-runtime-actor-service-epoch-v2.schema.json",
           "schemas/adaptive-runtime-actor-service-observation-v3.schema.json",
-          "schemas/adaptive-runtime-actor-service-epoch-v3.schema.json"
+          "schemas/adaptive-runtime-actor-service-epoch-v3.schema.json",
+          "schemas/adaptive-runtime-actor-service-observation-v4.schema.json",
+          "schemas/adaptive-runtime-actor-service-epoch-v4.schema.json"
         ]
       },
       "notes": [
@@ -108,7 +110,8 @@
           "schemas/adaptive-runtime-unified-epoch-evidence-v1.schema.json",
           "schemas/adaptive-runtime-unified-epoch-evidence-v2.schema.json",
           "schemas/adaptive-runtime-unified-epoch-evidence-v3.schema.json",
-          "schemas/adaptive-runtime-unified-epoch-evidence-v4.schema.json"
+          "schemas/adaptive-runtime-unified-epoch-evidence-v4.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-evidence-v5.schema.json"
         ]
       },
       "notes": [
@@ -145,7 +148,10 @@
           "schemas/adaptive-runtime-unified-raw-export-manifest-v4.schema.json",
           "schemas/adaptive-runtime-unified-epoch-raw-v4.schema.json",
           "schemas/adaptive-runtime-actor-service-raw-v2.schema.json",
-          "schemas/adaptive-runtime-unified-raw-export-manifest-v5.schema.json"
+          "schemas/adaptive-runtime-unified-raw-export-manifest-v5.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-raw-v5.schema.json",
+          "schemas/adaptive-runtime-actor-service-raw-v3.schema.json",
+          "schemas/adaptive-runtime-unified-raw-export-manifest-v6.schema.json"
         ]
       },
       "notes": [
@@ -246,8 +252,39 @@
         ]
       },
       "notes": [
-        "Actor observation v3 and epoch v3 expose the exact count at service start with missing, invalid, and saturated state; unified evidence and raw v4 plus actor raw v2 preserve exact per-epoch aggregation and raw membership while retained versions remain immutable.",
+        "Actor observation and epoch v4 retain the exact count at service start with missing, invalid, and saturated state; unified evidence and raw v5 plus actor raw v3 preserve exact per-epoch aggregation and raw membership while retained versions remain immutable.",
         "MissingRunnableConnectionCount remains authoritative until a distinct runnable-state contract is implemented."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0188",
+      "title": "Record exact accepted connection work after each dispatch",
+      "statement": "The runtime MUST capture before current-item accounting completion the exact connection-local count of already accepted shard work items remaining after each observed dispatch; expose null plus explicit missing, invalid, or saturated validity when the accounting state cannot support an exact value; aggregate observation coverage, total, maximum, and positive-backlog turns with saturating fixed fields; validate those aggregates against exact source-scoped raw dispatch membership; preserve the complete work-item transition, effect, handoff, resource-release, post-service, timer, recovery, terminal, cancellation, disposal, ownership, and legacy scheduling boundary; and keep the accepted-dispatch backlog distinct from runnable state, internal continuation readiness, starvation, fairness, scalar work units, repost ownership, controller input, and active policy behavior.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0067"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0068"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0069"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md",
+          "src/Incursa.Quic/QuicActorServiceObservation.cs",
+          "src/Incursa.Quic/QuicActorServiceEpochAccumulator.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicConnectionRuntimeShard.cs",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeActorServiceEvidence.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeUnifiedRawEvidence.ps1",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0181.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0183.cs"
+        ]
+      },
+      "notes": [
+        "The exact value covers already accepted connection dispatches only; it does not enumerate or claim readiness of internal protocol queues.",
+        "The continuation repost gate remains disconnected and actor_work_quantum remains legacy_current and non-forceable."
       ]
     }
   ]
