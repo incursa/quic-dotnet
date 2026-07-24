@@ -617,7 +617,11 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             QuicConnectionRuntimeShardWorkItem workItem = new(
                 entry.Handle,
                 entry.Runtime,
-                new QuicConnectionTimerExpiredEvent(nowTicks, entry.TimerKind, entry.Generation));
+                new QuicConnectionTimerExpiredEvent(
+                    nowTicks,
+                    entry.TimerKind,
+                    entry.Generation),
+                entry.DueTicks);
             if (!TryWriteWorkItem(in workItem))
             {
                 break;
@@ -655,6 +659,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         long serviceStartedTimestamp = observeActorService
             ? Stopwatch.GetTimestamp()
             : QuicMetrics.GetRuntimeShardServiceStartTimestamp();
+        long serviceStartedClockTicks = observeActorService
+            ? clock.Ticks
+            : 0;
         bool flushMeasurementStarted = false;
         var effectCount = 0;
         var applicationSendFollowOnCount = 0;
@@ -894,7 +901,6 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 QuicActorServiceValidity validity =
                     QuicActorServiceValidity.MissingRunnableConnectionCount
                     | QuicActorServiceValidity.MissingOldestShardItemAge
-                    | QuicActorServiceValidity.MissingDeadlineLateness
                     | QuicActorServiceValidity.UsefulWorkUnitsUndefined;
                 ulong? queueDelayMicros = null;
                 if (workItem.EnqueuedTimestamp == 0
@@ -908,6 +914,55 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     queueDelayMicros = GetElapsedMicros(
                         workItem.EnqueuedTimestamp,
                         serviceStartedTimestamp);
+                }
+
+                ulong? interServiceGapMicros = null;
+                long previousServiceStartedTimestamp =
+                    runtime.ExchangeActorServiceStartedTimestamp(
+                        serviceStartedTimestamp);
+                if (previousServiceStartedTimestamp <= 0
+                    || previousServiceStartedTimestamp
+                        > serviceStartedTimestamp)
+                {
+                    validity |=
+                        QuicActorServiceValidity.MissingInterServiceGap;
+                    if (previousServiceStartedTimestamp
+                        > serviceStartedTimestamp)
+                    {
+                        validity |=
+                            QuicActorServiceValidity.TimeDomainOutOfRange;
+                    }
+                }
+                else
+                {
+                    interServiceGapMicros = GetElapsedMicros(
+                        previousServiceStartedTimestamp,
+                        serviceStartedTimestamp);
+                }
+
+                ulong? deadlineLatenessMicros = null;
+                if (GetActorWorkKind(in workItem)
+                    == QuicActorWorkKind.Timer)
+                {
+                    if (workItem.ScheduledDueTicks is { } scheduledDueTicks
+                        && scheduledDueTicks >= 0
+                        && serviceStartedClockTicks >= scheduledDueTicks)
+                    {
+                        deadlineLatenessMicros =
+                            ConvertStopwatchTicksToMicros(
+                                serviceStartedClockTicks
+                                - scheduledDueTicks);
+                    }
+                    else
+                    {
+                        validity |=
+                            QuicActorServiceValidity.MissingDeadlineLateness;
+                        if (workItem.ScheduledDueTicks.HasValue)
+                        {
+                            validity |=
+                                QuicActorServiceValidity.TimeDomainOutOfRange;
+                        }
+                    }
                 }
 
                 actorServiceSequence =
@@ -938,7 +993,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                         ref validity),
                     runtime.Phase,
                     runtime.IsDisposed,
-                    validity);
+                    validity,
+                    interServiceGapMicros,
+                    deadlineLatenessMicros);
                 actorObservationPublished =
                     runtime.TryPublishActorServiceObservation(in observation);
             }
@@ -1001,6 +1058,31 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             startedTimestamp,
             completedTimestamp).Ticks;
         return ticks <= 0 ? 0 : (ulong)(ticks / TimeSpan.TicksPerMicrosecond);
+    }
+
+    private static ulong ConvertStopwatchTicksToMicros(long ticks)
+    {
+        if (ticks <= 0)
+        {
+            return 0;
+        }
+
+        ulong positiveTicks = (ulong)ticks;
+        ulong frequency = (ulong)Stopwatch.Frequency;
+        ulong wholeSeconds = positiveTicks / frequency;
+        ulong remainingTicks = positiveTicks % frequency;
+        const ulong microsPerSecond = 1_000_000UL;
+        if (wholeSeconds > ulong.MaxValue / microsPerSecond)
+        {
+            return ulong.MaxValue;
+        }
+
+        ulong wholeMicros = wholeSeconds * microsPerSecond;
+        ulong partialMicros =
+            (remainingTicks * microsPerSecond) / frequency;
+        return ulong.MaxValue - wholeMicros < partialMicros
+            ? ulong.MaxValue
+            : wholeMicros + partialMicros;
     }
 
     private static uint ToUInt32Saturating(

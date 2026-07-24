@@ -32,6 +32,7 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
     private const byte Ect1EcnCountsEncoding = 2 << 1;
     private const byte EcnCeCountsEncoding = 3 << 1;
     private const byte ExtendedEcnCountsEncoding = 4 << 1;
+    private const byte HasScheduledDeadlineFlag = 1 << 4;
 
     private readonly object? connectionEventOrOwnedDatagramBuffer;
     private readonly QuicConnectionPathIdentity packetPathIdentity;
@@ -51,6 +52,20 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
         Runtime = runtime;
         connectionEventOrOwnedDatagramBuffer = connectionEvent;
         Kind = QuicConnectionRuntimeShardWorkItemKind.Event;
+    }
+
+    internal QuicConnectionRuntimeShardWorkItem(
+        QuicConnectionHandle handle,
+        QuicConnectionRuntime runtime,
+        QuicConnectionEvent connectionEvent,
+        long scheduledDueTicks)
+    {
+        Handle = handle;
+        Runtime = runtime;
+        connectionEventOrOwnedDatagramBuffer = connectionEvent;
+        Kind = QuicConnectionRuntimeShardWorkItemKind.Event;
+        observedAtTicksOrRequestId = scheduledDueTicks;
+        flags = HasScheduledDeadlineFlag;
     }
 
     internal QuicConnectionRuntimeShardWorkItem(
@@ -179,6 +194,12 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
         : default;
 
     internal long EnqueuedTimestamp { get; init; }
+
+    internal long? ScheduledDueTicks =>
+        Kind == QuicConnectionRuntimeShardWorkItemKind.Event
+        && HasFlag(HasScheduledDeadlineFlag)
+            ? observedAtTicksOrRequestId
+            : null;
 
     private bool HasFlag(byte flag) => (flags & flag) != 0;
 

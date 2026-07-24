@@ -17,11 +17,30 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $observationSchemaPath = Join-Path $RepositoryRoot `
-    'schemas\adaptive-runtime-actor-service-observation-v1.schema.json'
+    'schemas\adaptive-runtime-actor-service-observation-v2.schema.json'
 $epochSchemaPath = Join-Path $RepositoryRoot `
-    'schemas\adaptive-runtime-actor-service-epoch-v1.schema.json'
+    'schemas\adaptive-runtime-actor-service-epoch-v2.schema.json'
 $failures = [System.Collections.Generic.List[string]]::new()
 $observations = [System.Collections.Generic.List[object]]::new()
+
+function Test-ActorValidityFlag {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object] $Value,
+
+        [Parameter(Mandatory = $true)]
+        [string] $Name,
+
+        [Parameter(Mandatory = $true)]
+        [uint64] $Mask
+    )
+
+    if ($Value -is [string]) {
+        return ([string] $Value) -match "(^|, )$([regex]::Escape($Name))($|, )"
+    }
+
+    return (([uint64] $Value -band $Mask) -ne 0)
+}
 
 foreach ($line in Get-Content -LiteralPath $ObservationPath) {
     if ([string]::IsNullOrWhiteSpace($line)) {
@@ -71,6 +90,33 @@ foreach ($observation in $observations) {
 
     $lastWakeSequence = $wakeSequence
     $lastWakePosition = $wakePosition
+
+    $deadlineMissing = Test-ActorValidityFlag `
+        -Value $observation.validity `
+        -Name 'MissingDeadlineLateness' `
+        -Mask (1L -shl 3)
+    $hasDeadlineLateness =
+        $null -ne $observation.deadlineLatenessMicros
+    if ([string] $observation.workKind -eq 'Timer') {
+        if ($hasDeadlineLateness -eq $deadlineMissing) {
+            $failures.Add(
+                "Timer observation '$serviceSequence' has contradictory deadline-lateness validity.")
+        }
+    }
+    elseif ($hasDeadlineLateness -or $deadlineMissing) {
+        $failures.Add(
+            "Non-timer observation '$serviceSequence' contains deadline-lateness state.")
+    }
+
+    $gapMissing = Test-ActorValidityFlag `
+        -Value $observation.validity `
+        -Name 'MissingInterServiceGap' `
+        -Mask (1L -shl 6)
+    $hasGap = $null -ne $observation.interServiceGapMicros
+    if ($hasGap -eq $gapMissing) {
+        $failures.Add(
+            "Actor observation '$serviceSequence' has contradictory inter-service-gap validity.")
+    }
 }
 
 $epochJson = Get-Content -LiteralPath $EpochSummaryPath -Raw
@@ -89,6 +135,18 @@ $maximumServiceTimeMicros =
     [ulong] $epoch.maximumServiceTimeMicros
 $totalServiceTimeMicros =
     [ulong] $epoch.totalServiceTimeMicros
+$interServiceGapObservationCount =
+    [ulong] $epoch.interServiceGapObservationCount
+$totalInterServiceGapMicros =
+    [ulong] $epoch.totalInterServiceGapMicros
+$maximumInterServiceGapMicros =
+    [ulong] $epoch.maximumInterServiceGapMicros
+$deadlineLatenessObservationCount =
+    [ulong] $epoch.deadlineLatenessObservationCount
+$totalDeadlineLatenessMicros =
+    [ulong] $epoch.totalDeadlineLatenessMicros
+$maximumDeadlineLatenessMicros =
+    [ulong] $epoch.maximumDeadlineLatenessMicros
 $dispositionCount =
     [ulong] $epoch.completedTurnCount +
     [ulong] $epoch.skippedTurnCount +
@@ -135,10 +193,26 @@ if ($maximumServiceTimeMicros -gt $totalServiceTimeMicros) {
     $failures.Add(
         'Maximum service time exceeds total service time.')
 }
+if ($interServiceGapObservationCount -gt $turnCount) {
+    $failures.Add(
+        'Inter-service-gap observation count exceeds actor turn count.')
+}
+if ($maximumInterServiceGapMicros -gt $totalInterServiceGapMicros) {
+    $failures.Add(
+        'Maximum inter-service gap exceeds total inter-service gap.')
+}
+if ($deadlineLatenessObservationCount -gt [ulong] $epoch.timerCount) {
+    $failures.Add(
+        'Deadline-lateness observation count exceeds timer turn count.')
+}
+if ($maximumDeadlineLatenessMicros -gt $totalDeadlineLatenessMicros) {
+    $failures.Add(
+        'Maximum deadline lateness exceeds total deadline lateness.')
+}
 
 $result = [ordered]@{
     schemaVersion =
-        'adaptive-runtime-actor-service-evidence-validation-v1'
+        'adaptive-runtime-actor-service-evidence-validation-v2'
     valid = $failures.Count -eq 0
     observationRowCount = $observations.Count
     actorTurnCount = $turnCount

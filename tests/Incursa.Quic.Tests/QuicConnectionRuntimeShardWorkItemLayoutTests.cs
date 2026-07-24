@@ -74,6 +74,28 @@ public sealed class QuicConnectionRuntimeShardWorkItemLayoutTests
         Assert.Equal(0, item.RequestId);
         Assert.True(item.StreamData.IsEmpty);
         Assert.True(item.StreamDataSuffix.IsEmpty);
+        Assert.Null(item.ScheduledDueTicks);
+    }
+
+    [Fact]
+    public void TimerVariantUsesExistingStorageForScheduledDeadline()
+    {
+        using QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicConnectionTimerExpiredEvent connectionEvent = new(
+            7,
+            QuicConnectionTimerKind.ApplicationSendDelay,
+            9);
+        QuicConnectionRuntimeShardWorkItem item = new(
+            new QuicConnectionHandle(5),
+            runtime,
+            connectionEvent,
+            scheduledDueTicks: long.MinValue);
+
+        Assert.Equal(144, Unsafe.SizeOf<QuicConnectionRuntimeShardWorkItem>());
+        Assert.Same(connectionEvent, item.ConnectionEvent);
+        Assert.Equal(long.MinValue, item.ScheduledDueTicks);
+        Assert.Equal(0, item.RequestId);
     }
 
     [Fact]

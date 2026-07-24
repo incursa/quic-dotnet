@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -56,6 +57,12 @@ public sealed class REQ_QUIC_CRT_0181
             (summary.Validity
                 & QuicActorServiceValidity.MissingRunnableConnectionCount)
             != 0);
+        Assert.True(
+            (summary.Validity
+                & QuicActorServiceValidity.MissingInterServiceGap) != 0);
+        Assert.True(
+            (summary.Validity
+                & QuicActorServiceValidity.MissingDeadlineLateness) == 0);
 
         QuicActorServiceEpochSummary empty =
             accumulator.CaptureAndReset();
@@ -155,6 +162,107 @@ public sealed class REQ_QUIC_CRT_0181
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public async Task ConsecutiveServiceRecordsConnectionLocalGapWithoutRunnableClaim()
+    {
+        FakeMonotonicClock clock = new(0);
+        RecordingSink sink = new();
+        using QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            clock);
+        runtime.ConfigureAdaptiveRuntimePolicy(new QuicServerConnectionOptions
+        {
+            ActorServiceObservationMode =
+                QuicActorServiceObservationMode.ObserveOnly,
+            ActorServiceEvidenceSink = sink,
+        });
+        await using QuicConnectionRuntimeShard shard = new(4, clock);
+        Task consumer = shard.RunAsync();
+
+        Assert.True(shard.TryPostFlowControlCreditUpdate(
+            new QuicConnectionHandle(3),
+            runtime));
+        Assert.True(shard.TryPostFlowControlCreditUpdate(
+            new QuicConnectionHandle(3),
+            runtime));
+        await sink.WaitForCountAsync(2);
+        await shard.DisposeAsync();
+        await consumer;
+
+        QuicActorServiceObservation[] observations = sink.Observations;
+        Assert.Equal(2, observations.Length);
+        Assert.Null(observations[0].InterServiceGapMicros);
+        Assert.True(
+            (observations[0].Validity
+                & QuicActorServiceValidity.MissingInterServiceGap) != 0);
+        Assert.NotNull(observations[1].InterServiceGapMicros);
+        Assert.True(
+            (observations[1].Validity
+                & QuicActorServiceValidity.MissingInterServiceGap) == 0);
+        Assert.All(
+            observations,
+            observation =>
+            {
+                Assert.Null(observation.DeadlineLatenessMicros);
+                Assert.True(
+                    (observation.Validity
+                        & QuicActorServiceValidity
+                            .MissingDeadlineLateness) == 0);
+                Assert.True(
+                    (observation.Validity
+                        & QuicActorServiceValidity
+                            .MissingRunnableConnectionCount) != 0);
+            });
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ScheduledTimerRecordsExactDeadlineLateness()
+    {
+        long dueTicks = Stopwatch.Frequency;
+        long latenessTicks = Stopwatch.Frequency / 100;
+        FakeMonotonicClock clock = new(dueTicks + latenessTicks);
+        RecordingSink sink = new();
+        using QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            clock);
+        runtime.ConfigureAdaptiveRuntimePolicy(new QuicServerConnectionOptions
+        {
+            ActorServiceObservationMode =
+                QuicActorServiceObservationMode.ObserveOnly,
+            ActorServiceEvidenceSink = sink,
+        });
+        await using QuicConnectionRuntimeShard shard = new(5, clock);
+        shard.ApplyEffect(
+            new QuicConnectionHandle(4),
+            runtime,
+            new QuicConnectionArmTimerEffect(
+                QuicConnectionTimerKind.ApplicationSendDelay,
+                Generation: 1,
+                new QuicConnectionTimerPriority(dueTicks, Sequence: 1)));
+
+        Task consumer = shard.RunAsync();
+        await sink.WaitForCountAsync(1);
+        await shard.DisposeAsync();
+        await consumer;
+
+        QuicActorServiceObservation observation =
+            Assert.Single(sink.Observations);
+        Assert.Equal(QuicActorWorkKind.Timer, observation.WorkKind);
+        ulong expectedLatenessMicros =
+            ((ulong)latenessTicks * 1_000_000UL)
+            / (ulong)Stopwatch.Frequency;
+        Assert.Equal(
+            expectedLatenessMicros,
+            observation.DeadlineLatenessMicros);
+        Assert.True(
+            (observation.Validity
+                & QuicActorServiceValidity.MissingDeadlineLateness) == 0);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void EpochAccumulatorRetainsClosedKindsWakeChangesAndFollowOns()
     {
         QuicActorServiceEpochAccumulator accumulator = new();
@@ -165,7 +273,8 @@ public sealed class REQ_QUIC_CRT_0181
             queueDelayMicros: 10,
             serviceTimeMicros: 20,
             effectCount: 2,
-            applicationSendFollowOnCount: 3);
+            applicationSendFollowOnCount: 3,
+            interServiceGapMicros: 10);
         QuicActorServiceObservation second = CreateObservation(
             serviceSequence: 6,
             wakeSequence: 3,
@@ -173,7 +282,9 @@ public sealed class REQ_QUIC_CRT_0181
             queueDelayMicros: null,
             serviceTimeMicros: 40,
             effectCount: 1,
-            applicationSendFollowOnCount: 0);
+            applicationSendFollowOnCount: 0,
+            interServiceGapMicros: 20,
+            deadlineLatenessMicros: 5);
 
         Assert.True(accumulator.TryPublish(in first));
         Assert.True(accumulator.TryPublish(in second));
@@ -189,6 +300,12 @@ public sealed class REQ_QUIC_CRT_0181
         Assert.Equal(1UL, summary.QueueDelayObservationCount);
         Assert.Equal(3UL, summary.TotalEffectCount);
         Assert.Equal(3UL, summary.ApplicationSendFollowOnCount);
+        Assert.Equal(2UL, summary.InterServiceGapObservationCount);
+        Assert.Equal(30UL, summary.TotalInterServiceGapMicros);
+        Assert.Equal(20UL, summary.MaximumInterServiceGapMicros);
+        Assert.Equal(1UL, summary.DeadlineLatenessObservationCount);
+        Assert.Equal(5UL, summary.TotalDeadlineLatenessMicros);
+        Assert.Equal(5UL, summary.MaximumDeadlineLatenessMicros);
         Assert.True(
             (summary.Validity
                 & QuicActorServiceValidity.MissingQueueDelay) != 0);
@@ -274,16 +391,26 @@ public sealed class REQ_QUIC_CRT_0181
         ulong? queueDelayMicros,
         ulong serviceTimeMicros,
         uint effectCount,
-        uint applicationSendFollowOnCount)
+        uint applicationSendFollowOnCount,
+        ulong? interServiceGapMicros = null,
+        ulong? deadlineLatenessMicros = null)
     {
         QuicActorServiceValidity validity =
             QuicActorServiceValidity.MissingRunnableConnectionCount
             | QuicActorServiceValidity.MissingOldestShardItemAge
-            | QuicActorServiceValidity.MissingDeadlineLateness
             | QuicActorServiceValidity.UsefulWorkUnitsUndefined;
         if (!queueDelayMicros.HasValue)
         {
             validity |= QuicActorServiceValidity.MissingQueueDelay;
+        }
+        if (!interServiceGapMicros.HasValue)
+        {
+            validity |= QuicActorServiceValidity.MissingInterServiceGap;
+        }
+        if (workKind == QuicActorWorkKind.Timer
+            && !deadlineLatenessMicros.HasValue)
+        {
+            validity |= QuicActorServiceValidity.MissingDeadlineLateness;
         }
 
         return new QuicActorServiceObservation(
@@ -304,7 +431,9 @@ public sealed class REQ_QUIC_CRT_0181
             StreamCapacityFollowOnCount: 0,
             QuicConnectionPhase.Active,
             DisposalStarted: false,
-            validity);
+            validity,
+            interServiceGapMicros,
+            deadlineLatenessMicros);
     }
 
     private sealed class ThrowingSink : IQuicActorServiceEvidenceSink
@@ -312,5 +441,59 @@ public sealed class REQ_QUIC_CRT_0181
         public bool TryPublish(
             in QuicActorServiceObservation observation)
             => throw new InvalidOperationException("diagnostic sink failure");
+    }
+
+    private sealed class RecordingSink : IQuicActorServiceEvidenceSink
+    {
+        private readonly object gate = new();
+        private readonly List<QuicActorServiceObservation> observations = [];
+        private TaskCompletionSource changed =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        internal QuicActorServiceObservation[] Observations
+        {
+            get
+            {
+                lock (gate)
+                {
+                    return [.. observations];
+                }
+            }
+        }
+
+        public bool TryPublish(
+            in QuicActorServiceObservation observation)
+        {
+            lock (gate)
+            {
+                observations.Add(observation);
+                changed.TrySetResult();
+                changed = new(
+                    TaskCreationOptions.RunContinuationsAsynchronously);
+            }
+
+            return true;
+        }
+
+        internal async Task WaitForCountAsync(int expectedCount)
+        {
+            using CancellationTokenSource timeout =
+                new(TimeSpan.FromSeconds(5));
+            while (true)
+            {
+                Task wait;
+                lock (gate)
+                {
+                    if (observations.Count >= expectedCount)
+                    {
+                        return;
+                    }
+
+                    wait = changed.Task;
+                }
+
+                await wait.WaitAsync(timeout.Token);
+            }
+        }
     }
 }

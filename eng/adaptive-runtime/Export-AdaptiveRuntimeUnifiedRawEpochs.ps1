@@ -19,8 +19,8 @@ $ErrorActionPreference = 'Stop'
 
 $prefix = 'QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON='
 $failurePrefix = 'QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_FAILURE_JSON='
-$rawSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v2.schema.json'
-$manifestSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-raw-export-manifest-v2.schema.json'
+$rawSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v3.schema.json'
+$manifestSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-raw-export-manifest-v3.schema.json'
 $validatorPath = Join-Path $RepositoryRoot 'eng\adaptive-runtime\Test-AdaptiveRuntimeUnifiedRawEvidence.ps1'
 $resolvedOutputDirectory = Resolve-AdaptiveRuntimePath -Path $OutputDirectory
 $rawEpochPath = Join-Path $resolvedOutputDirectory 'adaptive-runtime-unified-raw-epochs.jsonl'
@@ -118,9 +118,9 @@ if ($failures.Count -ne 0) {
 }
 
 $manifest = [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-export-manifest-v2'
+    schemaVersion = 'adaptive-runtime-unified-raw-export-manifest-v3'
     createdUtc = (Get-Date).ToUniversalTime().ToString('o')
-    rawEpochSchemaVersion = 'adaptive-runtime-unified-epoch-raw-v2'
+    rawEpochSchemaVersion = 'adaptive-runtime-unified-epoch-raw-v3'
     classification = if ($failures.Count -eq 0) {
         'accepted'
     }
@@ -145,7 +145,7 @@ $manifest = [ordered]@{
     -OutputPath $manifestPath)
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-export-result-v2'
+    schemaVersion = 'adaptive-runtime-unified-raw-export-result-v3'
     rowCount = $manifest.rowCount
     axisRecordCount = $manifest.axisRecordCount
     connectionCount = $manifest.connectionCount

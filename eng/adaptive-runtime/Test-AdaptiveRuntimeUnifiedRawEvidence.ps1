@@ -14,7 +14,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v2.schema.json'
+$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v3.schema.json'
 $resolvedRawEpochPath = (Resolve-Path -LiteralPath $RawEpochPath).Path
 $seenKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $lastSequenceByConnection = @{}
@@ -105,6 +105,14 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
     if ([bool] $epoch.actorService.hasObservation) {
         $actorObservationRowCount++
     }
+    if ([uint64] $epoch.actorService.interServiceGapObservationCount -gt
+        [uint64] $epoch.actorService.actorTurnCount) {
+        [void] $joinFailures.Add("$rowKey|actor-inter-service-gap")
+    }
+    if ([uint64] $epoch.actorService.deadlineLatenessObservationCount -gt
+        [uint64] $epoch.actorService.timerCount) {
+        [void] $joinFailures.Add("$rowKey|actor-deadline-lateness")
+    }
     if ([bool] $epoch.bufferCopy.hasObservation) {
         $bufferObservationRowCount++
     }
@@ -140,7 +148,7 @@ if (-not $valid) {
 }
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-validation-v2'
+    schemaVersion = 'adaptive-runtime-unified-raw-validation-v3'
     valid = $true
     rawEpochRowCount = $rowCount
     axisRecordCount = $axisRecordCount

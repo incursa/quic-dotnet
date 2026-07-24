@@ -30,7 +30,7 @@
     {
       "id": "REQ-QUIC-CRT-0181",
       "title": "Record bounded behavior-neutral actor service evidence",
-      "statement": "The runtime MUST support disabled and observe-only actor service instrumentation that records one versioned connection-attributable observation for each observed shard dispatch with monotonic service sequence, bounded wake identity, closed work kind, queue delay, complete service duration, pending work count, effect and follow-on counts, lifecycle disposition, explicit missing and saturated state, and deterministic epoch aggregation; keep sink failures diagnostic-only; preserve the legacy_current shard drain, timer, recovery, terminal, progress, and ownership behavior; and never treat scenario, payload, requested concurrency, peer, URL, application identity, event count, pending inbox depth, or queue delay as an invented production work-unit, runnable-connection, oldest-item, or deadline-lateness signal.",
+      "statement": "The runtime MUST support disabled and observe-only actor service instrumentation that records one versioned connection-attributable observation for each observed shard dispatch with monotonic service sequence, bounded wake identity, closed work kind, queue delay, complete service duration, connection-local inter-service gap after the first observation, exact nonnegative scheduled deadline lateness for deadline-scheduler timer work, pending work count, effect and follow-on counts, lifecycle disposition, explicit missing and saturated state, and deterministic epoch aggregation; keep sink failures diagnostic-only; preserve the legacy_current shard drain, timer ordering and priority, recovery, terminal, progress, compact work-item layout, and ownership behavior; and never treat scenario, payload, requested concurrency, peer, URL, application identity, event count, pending inbox depth, queue delay, or inter-service gap as an invented production work-unit, runnable-connection, oldest-item, continuous-runnable, or starvation signal.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-CRT-0067"
@@ -46,7 +46,9 @@
           "docs/design/adaptive-runtime-policy-seam-inventory.md",
           "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md",
           "schemas/adaptive-runtime-actor-service-observation-v1.schema.json",
-          "schemas/adaptive-runtime-actor-service-epoch-v1.schema.json"
+          "schemas/adaptive-runtime-actor-service-epoch-v1.schema.json",
+          "schemas/adaptive-runtime-actor-service-observation-v2.schema.json",
+          "schemas/adaptive-runtime-actor-service-epoch-v2.schema.json"
         ]
       },
       "notes": [
@@ -102,7 +104,8 @@
           "schemas/adaptive-runtime-epoch-raw-v2.schema.json",
           "schemas/adaptive-runtime-post-service-boundary-v1.schema.json",
           "schemas/adaptive-runtime-unified-epoch-evidence-v1.schema.json",
-          "schemas/adaptive-runtime-unified-epoch-evidence-v2.schema.json"
+          "schemas/adaptive-runtime-unified-epoch-evidence-v2.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-evidence-v3.schema.json"
         ]
       },
       "notes": [
@@ -131,7 +134,9 @@
           "schemas/adaptive-runtime-unified-epoch-raw-v1.schema.json",
           "schemas/adaptive-runtime-unified-raw-export-manifest-v1.schema.json",
           "schemas/adaptive-runtime-unified-epoch-raw-v2.schema.json",
-          "schemas/adaptive-runtime-unified-raw-export-manifest-v2.schema.json"
+          "schemas/adaptive-runtime-unified-raw-export-manifest-v2.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-raw-v3.schema.json",
+          "schemas/adaptive-runtime-unified-raw-export-manifest-v3.schema.json"
         ]
       },
       "notes": [

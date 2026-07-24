@@ -140,6 +140,7 @@ internal sealed partial class QuicConnectionRuntime :
     private IQuicApplicationSendBatchEvidenceSink? applicationSendBatchEvidenceSink;
     private IQuicActorServiceEvidenceSink? actorServiceEvidenceSink;
     private long actorServiceObservationSequence;
+    private long actorLastServiceStartedTimestamp;
     private IQuicBufferCopyEvidenceSink? bufferCopyEvidenceSink;
     private IQuicBufferReleaseEvidenceSink? bufferReleaseEvidenceSink;
     private long bufferCopyObservationSequence;
@@ -2820,6 +2821,12 @@ internal sealed partial class QuicConnectionRuntime :
     internal ulong GetNextActorServiceObservationSequence()
         => unchecked((ulong)Interlocked.Increment(
             ref actorServiceObservationSequence));
+
+    internal long ExchangeActorServiceStartedTimestamp(
+        long serviceStartedTimestamp)
+        => Interlocked.Exchange(
+            ref actorLastServiceStartedTimestamp,
+            serviceStartedTimestamp);
 
     internal bool TryPublishActorServiceObservation(
         in QuicActorServiceObservation observation)

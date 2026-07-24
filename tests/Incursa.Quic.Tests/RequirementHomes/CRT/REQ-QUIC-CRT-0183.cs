@@ -292,7 +292,7 @@ public sealed class REQ_QUIC_CRT_0183
             string unifiedSchema = Path.Combine(
                 repoRoot,
                 "schemas",
-                "adaptive-runtime-unified-epoch-evidence-v2.schema.json");
+                "adaptive-runtime-unified-epoch-evidence-v3.schema.json");
             string command =
                 $"$boundaryValid = Get-Content -LiteralPath "
                 + $"{AdaptiveRuntimePolicyScriptTestSupport.QuotePowerShellLiteral(boundaryPath)} "
@@ -360,7 +360,7 @@ public sealed class REQ_QUIC_CRT_0183
                 new
                 {
                     schemaVersion =
-                        "adaptive-runtime-unified-epoch-raw-v2",
+                        "adaptive-runtime-unified-epoch-raw-v3",
                     connectionKey = "connection-0001",
                     epoch = evidence,
                 },

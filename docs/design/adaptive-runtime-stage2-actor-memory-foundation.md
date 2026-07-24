@@ -57,9 +57,10 @@ Supplying a sink while disabled or enabling observation without a sink is a
 configuration error. Sink return values and exceptions are diagnostic-only
 and cannot affect transition, effect, timer, ownership, or disposal behavior.
 
-The observation contract is
-`quic-actor-service-observation-v1`. The provenance contract is
-`quic-actor-service-provenance-v1`.
+The current observation contract is
+`quic-actor-service-observation-v2`. The provenance contract is
+`quic-actor-service-provenance-v2`. Retained v1 observation and provenance
+contracts remain immutable.
 
 One observation describes one shard dispatch of one connection work item and
 contains:
@@ -70,6 +71,9 @@ contains:
 - a closed work kind;
 - a bounded completion, skip, or fault disposition;
 - queue delay when an enqueue timestamp exists;
+- connection-local inter-service gap after the first observed dispatch;
+- scheduled timer lateness when the work item came from the shard deadline
+  scheduler;
 - complete transition-plus-effect service duration;
 - pending work-item count after dequeue;
 - emitted effect count;
@@ -88,7 +92,7 @@ The closed work kinds are:
 - stream open;
 - stream write.
 
-The v1 record never contains scenario name, payload label or constant,
+The record never contains scenario name, payload label or constant,
 requested concurrency, peer identity, URL, application identity, stream
 identity, application data, packet bytes, or buffer contents.
 
@@ -131,7 +135,7 @@ large write, one timer, and one credit flush are equivalent. A future
 the expensive kinds before it can convert the vector into a cap or immutable
 plan.
 
-`UsefulWorkUnitsUndefined` remains set in observation version 1. Removing that
+`UsefulWorkUnitsUndefined` remains set in observation version 2. Removing that
 flag requires a reviewed observation-version change, deterministic mechanism
 tests, and evidence that the proposed unit predicts service cost across
 packet, API, timer, recovery, and terminal work without workload identity.
@@ -187,7 +191,8 @@ remain required before integration.
 ## Epoch Aggregation
 
 `QuicActorServiceEpochAccumulator` consumes observation records and produces
-`quic-actor-service-epoch-v1` summaries. It retains only bounded scalar state:
+`quic-actor-service-epoch-v2` summaries. Retained v1 summaries remain
+immutable. Version 2 retains only bounded scalar state:
 
 - first and last service sequence;
 - total, completed, skipped, and faulted turns;
@@ -195,6 +200,9 @@ remain required before integration.
 - observed wake count and maximum wake position;
 - service total, maximum, and integer EWMA;
 - queue-delay observation count, total, maximum, and integer EWMA;
+- inter-service-gap observation count, total, maximum, and integer EWMA;
+- scheduled deadline-lateness observation count, total, maximum, and integer
+  EWMA;
 - maximum pending work-item count after dequeue;
 - total effects;
 - three follow-on totals; and
@@ -223,13 +231,13 @@ receive-credit snapshot, and boundary. The deterministic join requires equal
 connection epoch sequence and epoch end tick. A mismatched, duplicate,
 out-of-order, or nonpositive epoch is rejected before any accumulator resets.
 The joined record is
-`adaptive-runtime-unified-epoch-evidence-v2`; retained v1 rows remain
+`adaptive-runtime-unified-epoch-evidence-v3`; retained v1 and v2 rows remain
 immutable.
 
 The raw QUIC harness now configures the same unified accumulator as every
 relevant connection-local evidence sink whenever an adaptive execution is
 requested. It writes one
-`adaptive-runtime-unified-epoch-raw-v2` wrapper per sealed epoch while
+`adaptive-runtime-unified-epoch-raw-v3` wrapper per sealed epoch while
 retaining the earlier receive-credit and Stage 1 compatibility streams.
 The append-only exporter retains source hashes, raw rows, validation summary,
 and manifest; checks exact monotonic joins and one varied axis; and preserves
@@ -237,19 +245,32 @@ bounded-channel failures as explicit `invalid_contract` evidence. Command,
 binary, host, workload, classification, and checksum inventory remain the
 campaign runner's provenance layer and are not accepted from runtime inputs.
 
-## Explicitly Missing V1 Inputs
+## Explicitly Missing V2 Inputs
 
 The shard cannot yet provide the following honestly at connection scope:
 
 - runnable connection count;
 - oldest shard item age;
-- deadline lateness;
 - reviewed scalar useful-work units.
 
-Every v1 record marks those inputs missing. Queue delay for a work item is not
-relabeled as oldest shard item age. Pending inbox depth is not relabeled as
-runnable connection count. Timer service is not relabeled as deadline
-lateness. Event count is not relabeled as a useful-work quantum.
+Every v2 record marks the remaining inputs missing. Queue delay for a work
+item is not relabeled as oldest shard item age. Pending inbox depth is not
+relabeled as runnable connection count. Inter-service gap is not relabeled as
+continuous runnable time or starvation. Event count is not relabeled as a
+useful-work quantum.
+
+The shard deadline scheduler already owns the exact scheduled due tick. The
+timer work item now retains that tick in an existing inactive storage slot and
+records nonnegative lateness at actor service start. Timer work posted through
+another path without scheduler provenance remains explicitly missing;
+non-timer work treats deadline lateness as not applicable rather than missing.
+This observation does not change timer order, wake behavior, or priority.
+
+The connection runtime atomically exchanges the previous observed service
+start timestamp and records the elapsed gap after the first dispatch. This is
+a connection-local service-cadence precursor only. It cannot establish that a
+connection stayed runnable throughout the gap, which other connections were
+runnable, or whether starvation occurred.
 
 ## Actor-Quantum Safety Gate
 
@@ -331,7 +352,10 @@ Requirement homes `REQ-QUIC-CRT-0181`, `REQ-QUIC-CRT-0183`, and
 - schema-valid observation and epoch records;
 - semantic count and sequence validation;
 - bounded epoch accumulation and reset;
-- follow-on attribution; and
+- follow-on attribution;
+- exact scheduled timer lateness without changing timer priority;
+- connection-local inter-service gap without a runnable or starvation claim;
+- unchanged compact shard work-item size; and
 - sink-failure neutrality;
 - hosted post-service ordering after actor observation and resource release;
 - versioned source, disposition, actor-publication, release, and fault state;
@@ -355,9 +379,9 @@ outside correctness CI.
 
 ## Remaining Stage 2 Order
 
-1. Complete actor timer-lateness, runnable-state, complete-shard coverage, and
-   fairness observations without relabeling inbox depth as runnable
-   connections.
+1. Complete runnable-state, complete-shard coverage, and fairness observations
+   without relabeling inbox depth or inter-service gap as continuous runnable
+   connection state.
 2. Define exact remaining-work signals and reviewed cooperative yield sites
    for every preemptible kind.
 3. Integrate the proven generation-token repost gate only after timer,

@@ -32,10 +32,18 @@ internal readonly record struct QuicActorServiceEpochSummary(
     ulong ApplicationSendFollowOnCount,
     ulong FlowControlFollowOnCount,
     ulong StreamCapacityFollowOnCount,
-    QuicActorServiceValidity Validity)
+    QuicActorServiceValidity Validity,
+    ulong InterServiceGapObservationCount,
+    ulong TotalInterServiceGapMicros,
+    ulong MaximumInterServiceGapMicros,
+    ulong InterServiceGapEwmaMicros,
+    ulong DeadlineLatenessObservationCount,
+    ulong TotalDeadlineLatenessMicros,
+    ulong MaximumDeadlineLatenessMicros,
+    ulong DeadlineLatenessEwmaMicros)
 {
     internal const string CurrentEpochContractVersion =
-        "quic-actor-service-epoch-v1";
+        "quic-actor-service-epoch-v2";
 
     public string EpochContractVersion => CurrentEpochContractVersion;
 }
@@ -76,6 +84,14 @@ internal sealed class QuicActorServiceEpochAccumulator :
     private ulong applicationSendFollowOnCount;
     private ulong flowControlFollowOnCount;
     private ulong streamCapacityFollowOnCount;
+    private ulong interServiceGapObservationCount;
+    private ulong totalInterServiceGapMicros;
+    private ulong maximumInterServiceGapMicros;
+    private ulong interServiceGapEwmaMicros;
+    private ulong deadlineLatenessObservationCount;
+    private ulong totalDeadlineLatenessMicros;
+    private ulong maximumDeadlineLatenessMicros;
+    private ulong deadlineLatenessEwmaMicros;
 
     public bool TryPublish(in QuicActorServiceObservation observation)
     {
@@ -150,6 +166,37 @@ internal sealed class QuicActorServiceEpochAccumulator :
             AddSaturating(
                 ref streamCapacityFollowOnCount,
                 observation.StreamCapacityFollowOnCount);
+            if (observation.InterServiceGapMicros is { } interServiceGapMicros)
+            {
+                AddSaturating(ref interServiceGapObservationCount, 1);
+                AddSaturating(
+                    ref totalInterServiceGapMicros,
+                    interServiceGapMicros);
+                maximumInterServiceGapMicros = Math.Max(
+                    maximumInterServiceGapMicros,
+                    interServiceGapMicros);
+                interServiceGapEwmaMicros = UpdateEwma(
+                    interServiceGapEwmaMicros,
+                    interServiceGapMicros,
+                    interServiceGapObservationCount == 1);
+            }
+
+            if (observation.DeadlineLatenessMicros
+                is { } deadlineLatenessMicros)
+            {
+                AddSaturating(ref deadlineLatenessObservationCount, 1);
+                AddSaturating(
+                    ref totalDeadlineLatenessMicros,
+                    deadlineLatenessMicros);
+                maximumDeadlineLatenessMicros = Math.Max(
+                    maximumDeadlineLatenessMicros,
+                    deadlineLatenessMicros);
+                deadlineLatenessEwmaMicros = UpdateEwma(
+                    deadlineLatenessEwmaMicros,
+                    deadlineLatenessMicros,
+                    deadlineLatenessObservationCount == 1);
+            }
+
             validity |= observation.Validity;
         }
 
@@ -189,7 +236,15 @@ internal sealed class QuicActorServiceEpochAccumulator :
                 applicationSendFollowOnCount,
                 flowControlFollowOnCount,
                 streamCapacityFollowOnCount,
-                validity);
+                validity,
+                interServiceGapObservationCount,
+                totalInterServiceGapMicros,
+                maximumInterServiceGapMicros,
+                interServiceGapEwmaMicros,
+                deadlineLatenessObservationCount,
+                totalDeadlineLatenessMicros,
+                maximumDeadlineLatenessMicros,
+                deadlineLatenessEwmaMicros);
             Reset();
             return summary;
         }
@@ -284,5 +339,13 @@ internal sealed class QuicActorServiceEpochAccumulator :
         applicationSendFollowOnCount = 0;
         flowControlFollowOnCount = 0;
         streamCapacityFollowOnCount = 0;
+        interServiceGapObservationCount = 0;
+        totalInterServiceGapMicros = 0;
+        maximumInterServiceGapMicros = 0;
+        interServiceGapEwmaMicros = 0;
+        deadlineLatenessObservationCount = 0;
+        totalDeadlineLatenessMicros = 0;
+        maximumDeadlineLatenessMicros = 0;
+        deadlineLatenessEwmaMicros = 0;
     }
 }
