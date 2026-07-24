@@ -33,6 +33,7 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
     private const byte EcnCeCountsEncoding = 3 << 1;
     private const byte ExtendedEcnCountsEncoding = 4 << 1;
     private const byte HasScheduledDeadlineFlag = 1 << 4;
+    private const byte HasActorServiceContenderTrackingFlag = 1 << 5;
 
     private readonly object? connectionEventOrOwnedDatagramBuffer;
     private readonly QuicConnectionPathIdentity packetPathIdentity;
@@ -41,7 +42,7 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
     private readonly long observedAtTicksOrRequestId;
     private readonly ulong routedConnectionIdOrStreamId;
     private readonly int streamTypeOrActionKind;
-    private readonly byte flags;
+    private byte Flags { get; init; }
 
     internal QuicConnectionRuntimeShardWorkItem(
         QuicConnectionHandle handle,
@@ -65,7 +66,7 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
         connectionEventOrOwnedDatagramBuffer = connectionEvent;
         Kind = QuicConnectionRuntimeShardWorkItemKind.Event;
         observedAtTicksOrRequestId = scheduledDueTicks;
-        flags = HasScheduledDeadlineFlag;
+        Flags = HasScheduledDeadlineFlag;
     }
 
     internal QuicConnectionRuntimeShardWorkItem(
@@ -86,7 +87,7 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
         connectionEventOrOwnedDatagramBuffer = extendedEcnCounts.HasValue
             ? new ExtendedPacketState(ownedDatagramBuffer, extendedEcnCounts.Value)
             : ownedDatagramBuffer;
-        flags = (byte)(
+        Flags = (byte)(
             (packetReceived.RoutedLocallyIssuedConnectionId.HasValue ? HasRoutedConnectionIdFlag : 0)
             | ecnCountsEncoding);
         OwnedDatagramBufferOwnership = ownedDatagramBufferOwnership;
@@ -201,7 +202,18 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
             ? observedAtTicksOrRequestId
             : null;
 
-    private bool HasFlag(byte flag) => (flags & flag) != 0;
+    internal bool ActorServiceContenderTrackingAccepted =>
+        HasFlag(HasActorServiceContenderTrackingFlag);
+
+    internal QuicConnectionRuntimeShardWorkItem
+        WithActorServiceContenderTrackingAccepted()
+        => this with
+        {
+            Flags = (byte)(
+                Flags | HasActorServiceContenderTrackingFlag),
+        };
+
+    private bool HasFlag(byte flag) => (Flags & flag) != 0;
 
     private static byte EncodeEcnCounts(
         QuicEcnCounts? ecnCounts,
@@ -243,7 +255,7 @@ internal readonly record struct QuicConnectionRuntimeShardWorkItem
         ulong? routedConnectionId = HasFlag(HasRoutedConnectionIdFlag)
             ? routedConnectionIdOrStreamId
             : null;
-        QuicEcnCounts? ecnCounts = (flags & EcnCountsEncodingMask) switch
+        QuicEcnCounts? ecnCounts = (Flags & EcnCountsEncodingMask) switch
         {
             0 => null,
             Ect0EcnCountsEncoding => new QuicEcnCounts(1, 0, 0),

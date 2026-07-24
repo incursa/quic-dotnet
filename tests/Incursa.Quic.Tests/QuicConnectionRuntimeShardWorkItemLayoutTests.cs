@@ -99,6 +99,30 @@ public sealed class QuicConnectionRuntimeShardWorkItemLayoutTests
     }
 
     [Fact]
+    public void ActorServiceContenderTrackingUsesExistingFlagStorage()
+    {
+        using QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicConnectionRuntimeShardWorkItem item = new(
+            new QuicConnectionHandle(5),
+            runtime,
+            new QuicConnectionTimerExpiredEvent(
+                7,
+                QuicConnectionTimerKind.ApplicationSendDelay,
+                9),
+            scheduledDueTicks: long.MinValue);
+
+        QuicConnectionRuntimeShardWorkItem tracked =
+            item.WithActorServiceContenderTrackingAccepted();
+
+        Assert.Equal(144, Unsafe.SizeOf<QuicConnectionRuntimeShardWorkItem>());
+        Assert.False(item.ActorServiceContenderTrackingAccepted);
+        Assert.True(tracked.ActorServiceContenderTrackingAccepted);
+        Assert.Equal(long.MinValue, tracked.ScheduledDueTicks);
+        Assert.Same(item.ConnectionEvent, tracked.ConnectionEvent);
+    }
+
+    [Fact]
     public void PacketVariantRoundTripsFullRangeNullableMetadataAndOwnership()
     {
         using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());

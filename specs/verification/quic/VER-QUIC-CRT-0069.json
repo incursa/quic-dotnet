@@ -18,7 +18,8 @@
     "REQ-QUIC-CRT-0183",
     "REQ-QUIC-CRT-0184",
     "REQ-QUIC-CRT-0185",
-    "REQ-QUIC-CRT-0186"
+    "REQ-QUIC-CRT-0186",
+    "REQ-QUIC-CRT-0187"
   ],
   "scope": "Verify behavior-neutral actor-service and selected send-side buffer-copy observation, bounded epoch aggregation, versioned post-service publication, Stage 1 and Stage 2 joins, append-only raw export, explicit missing state, sink isolation, legacy identity, and preservation of shard scheduling and ownership. Do not verify or authorize a forceable quantum, distinct buffer strategy, fairness rule, backpressure rule, performance claim, or active behavior.",
   "verification_method": "Canonical SpecTrace validation, deterministic requirement-home tests, schema and semantic validation, and focused existing shard, deadline, application-send queue, ownership, stream-capacity, flow-control, metrics, cancellation, disposal, retransmission, and terminal correctness tests.",
@@ -39,6 +40,7 @@
     "Verify inter-service gap is absent with explicit validity on the first observed connection dispatch, present on later dispatches, aggregated with bounded counters, and never asserted as continuous runnable time or starvation.",
     "Verify the versioned useful-work vector preserves unlike dispatch, effect, follow-on, duration, and optional queue-delay components without producing a scalar quantum.",
     "Verify the connection-local repost gate gives one enqueue owner per generation; coalesces requests during service; creates at most one next generation for remaining work or a concurrent request; rejects stale, duplicate, and empty tokens; and fails closed for abandoned posts and stop.",
+    "Verify service-contender accounting increments once per connection with accepted posted or servicing work, coalesces multiple work items, returns to zero after service or shutdown drain, preserves the 144-byte work-item layout, and remains distinct from runnable state.",
     "Verify observation and epoch JSON against their schemas and semantic count and sequence rules.",
     "Verify a throwing sink cannot interrupt actor progress or ownership release.",
     "Verify buffer-copy records remain selected and applied legacy_current with null force and shadow identity, one buffer-lifetime latch, and explicit missing terminal-release, retained-age, and pool-outstanding state.",

@@ -19,7 +19,8 @@
     "REQ-QUIC-CRT-0183",
     "REQ-QUIC-CRT-0184",
     "REQ-QUIC-CRT-0185",
-    "REQ-QUIC-CRT-0186"
+    "REQ-QUIC-CRT-0186",
+    "REQ-QUIC-CRT-0187"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicActorServiceObservation.cs",

@@ -77,6 +77,14 @@ missing, duplicate, orphan, out-of-order, and bounded-channel-failed records
 are invalid contract evidence. This does not add a policy value, controller
 input, runnable-state claim, or scheduling behavior.
 
+`REQ-QUIC-CRT-0187` now maintains exact shard-wide accounting for connections
+with one or more accepted posted-or-servicing work items. Multiple work items
+for the same connection coalesce into one contender; rejection, post-service
+completion, resource release, and shutdown drain close the count. The
+acceptance bit reuses compact work-item flag storage, so the layout remains
+144 bytes. This accounting is not yet emitted by actor observation v2 and is
+not a runnable, starvation, fairness, or controller signal.
+
 ## Required Seam Contract Before Activation
 
 Every controller-managed axis must eventually expose the same internal

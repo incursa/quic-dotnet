@@ -60,6 +60,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 
     private int consumerStarted;
     private int disposed;
+    private int serviceContenderStateInvalid;
+    private long serviceContenderCount;
     private Task? processingTask;
 
     /// <summary>
@@ -97,6 +99,12 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
     /// Gets the shard index assigned by the host.
     /// </summary>
     public int ShardIndex => shardIndex;
+
+    internal long ServiceContenderCount =>
+        Math.Max(0, Volatile.Read(ref serviceContenderCount));
+
+    internal bool ServiceContenderStateValid =>
+        Volatile.Read(ref serviceContenderStateInvalid) == 0;
 
     /// <summary>
     /// Exposes the shard-local timer scheduler so the runtime can arm and cancel deadlines through this shard.
@@ -294,6 +302,30 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             if (processing is not null)
             {
                 await processing.ConfigureAwait(false);
+            }
+            else
+            {
+                while (inbox.Reader.TryRead(
+                    out QuicConnectionRuntimeShardWorkItem workItem))
+                {
+                    QuicMetrics.RecordRuntimeShardWorkItemDequeued(
+                        metricsRegistration,
+                        in workItem);
+                    if (IsDeadlineWakeWorkItem(workItem))
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        ReleaseWorkItemResources(workItem);
+                    }
+                    finally
+                    {
+                        CompleteActorServiceContenderTracking(
+                            in workItem);
+                    }
+                }
             }
         }
         finally
@@ -534,7 +566,14 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     continue;
                 }
 
-                ReleaseWorkItemResources(workItem);
+                try
+                {
+                    ReleaseWorkItemResources(workItem);
+                }
+                finally
+                {
+                    CompleteActorServiceContenderTracking(in workItem);
+                }
             }
         }
 
@@ -599,10 +638,38 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         {
             EnqueuedTimestamp = enqueuedTimestamp,
         };
+        if (queuedWorkItem.Runtime is { } runtime)
+        {
+            if (runtime.TryBeginActorShardWorkItem(
+                    out bool becameServiceContender))
+            {
+                bool aggregateAccepted =
+                    !becameServiceContender
+                    || TryIncrementServiceContenderCount();
+                if (aggregateAccepted)
+                {
+                    queuedWorkItem =
+                        queuedWorkItem
+                            .WithActorServiceContenderTrackingAccepted();
+                }
+                else
+                {
+                    _ = runtime.TryCompleteActorShardWorkItem(out _);
+                }
+            }
+            else
+            {
+                Volatile.Write(
+                    ref serviceContenderStateInvalid,
+                    1);
+            }
+        }
+
         metricsRegistration.BeginEnqueue(in queuedWorkItem);
         if (!inbox.Writer.TryWrite(queuedWorkItem))
         {
             metricsRegistration.CancelEnqueue(in queuedWorkItem);
+            CompleteActorServiceContenderTracking(in queuedWorkItem);
             return false;
         }
 
@@ -1000,27 +1067,87 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     runtime.TryPublishActorServiceObservation(in observation);
             }
 
-            bool resourceReleaseCompleted = false;
             try
             {
-                ReleaseWorkItemResources(workItem);
-                resourceReleaseCompleted = true;
+                bool resourceReleaseCompleted = false;
+                try
+                {
+                    ReleaseWorkItemResources(workItem);
+                    resourceReleaseCompleted = true;
+                }
+                finally
+                {
+                    if (transitionCompleted && runtime is not null)
+                    {
+                        runtime.TryPublishReceiveCreditShadowAtPostServiceBoundary(
+                            clock.Ticks,
+                            QuicAdaptiveRuntimePostServiceBoundarySource.HostedShard,
+                            actorDisposition,
+                            actorServiceSequence,
+                            actorObservationPublished,
+                            resourceReleaseCompleted);
+                    }
+                }
             }
             finally
             {
-                if (transitionCompleted && runtime is not null)
-                {
-                    runtime.TryPublishReceiveCreditShadowAtPostServiceBoundary(
-                        clock.Ticks,
-                        QuicAdaptiveRuntimePostServiceBoundarySource.HostedShard,
-                        actorDisposition,
-                        actorServiceSequence,
-                        actorObservationPublished,
-                        resourceReleaseCompleted);
-                }
+                CompleteActorServiceContenderTracking(in workItem);
             }
         }
     }
+
+    private bool TryIncrementServiceContenderCount()
+    {
+        while (true)
+        {
+            long current = Volatile.Read(ref serviceContenderCount);
+            if (current == long.MaxValue)
+            {
+                Volatile.Write(ref serviceContenderStateInvalid, 1);
+                return false;
+            }
+
+            if (Interlocked.CompareExchange(
+                    ref serviceContenderCount,
+                    current + 1,
+                    current)
+                == current)
+            {
+                return true;
+            }
+        }
+    }
+
+    private void CompleteActorServiceContenderTracking(
+        in QuicConnectionRuntimeShardWorkItem workItem)
+    {
+        if (!workItem.ActorServiceContenderTrackingAccepted
+            || workItem.Runtime is not { } runtime)
+        {
+            return;
+        }
+
+        if (!runtime.TryCompleteActorShardWorkItem(
+                out bool stoppedBeingServiceContender))
+        {
+            Volatile.Write(ref serviceContenderStateInvalid, 1);
+            return;
+        }
+
+        if (!stoppedBeingServiceContender)
+        {
+            return;
+        }
+
+        long remaining = Interlocked.Decrement(
+            ref serviceContenderCount);
+        if (remaining < 0)
+        {
+            Interlocked.Exchange(ref serviceContenderCount, 0);
+            Volatile.Write(ref serviceContenderStateInvalid, 1);
+        }
+    }
+
 
     private static QuicActorWorkKind GetActorWorkKind(
         in QuicConnectionRuntimeShardWorkItem workItem)

@@ -215,6 +215,34 @@
         "The useful-work vector is evidence, not a scalar quantum or production controller rule.",
         "The repost gate does not enqueue, execute, preempt, or own protocol work and is not yet connected to the legacy_current shard drain."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0187",
+      "title": "Account exactly for posted or servicing shard connections",
+      "statement": "The shard MUST maintain an exact bounded count of connections with at least one accepted posted or servicing shard work item by incrementing a connection-local outstanding count before enqueue, incrementing the shard count only on the zero-to-one connection transition, carrying acceptance in compact work-item flag storage, rolling back rejected enqueue, decrementing after post-service publication and resource release or shutdown drain, decrementing the shard count only on the one-to-zero connection transition, failing closed on saturation or underflow, preserving the 144-byte work-item layout, timer provenance, resource ownership, cancellation, disposal, terminal drain, and legacy scheduling, and withholding any runnable-connection, continuous-runnable, starvation, fairness, or controller-input interpretation until a later versioned observation contract and complete-shard coverage proof are reviewed.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0067"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0068"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0069"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md",
+          "src/Incursa.Quic/QuicConnectionRuntimeHostEventModels.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicConnectionRuntimeShard.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0181.cs",
+          "tests/Incursa.Quic.Tests/QuicConnectionRuntimeShardWorkItemLayoutTests.cs"
+        ]
+      },
+      "notes": [
+        "This requirement establishes exact accounting only; actor observation v2 and unified evidence v3 remain unchanged.",
+        "MissingRunnableConnectionCount remains authoritative until a distinct runnable-state contract is implemented."
+      ]
     }
   ]
 }

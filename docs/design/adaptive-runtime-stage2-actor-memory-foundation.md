@@ -342,6 +342,15 @@ cancellation, disposal, or terminal work.
 
 ## Verification
 
+The exact accounting foundation for later complete-shard evidence is
+`REQ-QUIC-CRT-0187`. It counts a connection once while it has one or more
+accepted posted-or-servicing shard work items. Acceptance uses one compact
+work-item flag; enqueue rejection, normal post-service completion, resource
+release, cancellation, disposal, and shutdown drain close the count. The
+work-item remains 144 bytes. This is not yet emitted by actor observation v2
+and is not a runnable-connection, continuous-runnable, starvation, fairness,
+or controller-input claim.
+
 Requirement homes `REQ-QUIC-CRT-0181`, `REQ-QUIC-CRT-0183`, and
 `REQ-QUIC-CRT-0184` verify:
 

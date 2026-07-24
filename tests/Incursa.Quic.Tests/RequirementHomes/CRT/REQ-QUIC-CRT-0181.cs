@@ -71,6 +71,80 @@ public sealed class REQ_QUIC_CRT_0181
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ShardTracksPostedOrServicingConnectionContendersWithoutRunnableClaim()
+    {
+        FakeMonotonicClock clock = new(0);
+        RecordingSink sink = new();
+        using QuicConnectionRuntime firstRuntime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            clock);
+        using QuicConnectionRuntime secondRuntime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState(),
+            clock);
+        QuicServerConnectionOptions options = new()
+        {
+            ActorServiceObservationMode =
+                QuicActorServiceObservationMode.ObserveOnly,
+            ActorServiceEvidenceSink = sink,
+        };
+        firstRuntime.ConfigureAdaptiveRuntimePolicy(options);
+        secondRuntime.ConfigureAdaptiveRuntimePolicy(options);
+        await using QuicConnectionRuntimeShard shard = new(8, clock);
+
+        Assert.True(shard.TryPostFlowControlCreditUpdate(
+            new QuicConnectionHandle(11),
+            firstRuntime));
+        Assert.True(shard.TryPostFlowControlCreditUpdate(
+            new QuicConnectionHandle(11),
+            firstRuntime));
+        Assert.True(shard.TryPostFlowControlCreditUpdate(
+            new QuicConnectionHandle(12),
+            secondRuntime));
+        Assert.Equal(2, shard.ServiceContenderCount);
+        Assert.True(shard.ServiceContenderStateValid);
+        Task consumer = shard.RunAsync();
+        await sink.WaitForCountAsync(3);
+        await shard.DisposeAsync();
+        await consumer;
+
+        QuicActorServiceObservation[] observations = sink.Observations;
+        Assert.Equal(3, observations.Length);
+        Assert.Equal(0, shard.ServiceContenderCount);
+        Assert.True(shard.ServiceContenderStateValid);
+        Assert.All(
+            observations,
+            observation =>
+            {
+                Assert.True(
+                    (observation.Validity
+                        & QuicActorServiceValidity
+                            .MissingRunnableConnectionCount) != 0);
+            });
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ShutdownBeforeConsumerStartDrainsServiceContenderAccounting()
+    {
+        using QuicConnectionRuntime runtime = new(
+            QuicConnectionStreamStateTestHelpers.CreateState());
+        QuicConnectionRuntimeShard shard = new(9);
+
+        Assert.True(shard.TryPostFlowControlCreditUpdate(
+            new QuicConnectionHandle(13),
+            runtime));
+        Assert.Equal(1, shard.ServiceContenderCount);
+
+        await shard.DisposeAsync();
+
+        Assert.Equal(0, shard.ServiceContenderCount);
+        Assert.True(shard.ServiceContenderStateValid);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ObservationConfigurationRequiresAnExactModeAndSinkPair()

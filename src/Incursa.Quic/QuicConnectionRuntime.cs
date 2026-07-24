@@ -141,6 +141,7 @@ internal sealed partial class QuicConnectionRuntime :
     private IQuicActorServiceEvidenceSink? actorServiceEvidenceSink;
     private long actorServiceObservationSequence;
     private long actorLastServiceStartedTimestamp;
+    private long actorShardOutstandingWorkItemCount;
     private IQuicBufferCopyEvidenceSink? bufferCopyEvidenceSink;
     private IQuicBufferReleaseEvidenceSink? bufferReleaseEvidenceSink;
     private long bufferCopyObservationSequence;
@@ -2827,6 +2828,56 @@ internal sealed partial class QuicConnectionRuntime :
         => Interlocked.Exchange(
             ref actorLastServiceStartedTimestamp,
             serviceStartedTimestamp);
+
+    internal bool TryBeginActorShardWorkItem(
+        out bool becameServiceContender)
+    {
+        while (true)
+        {
+            long current = Volatile.Read(
+                ref actorShardOutstandingWorkItemCount);
+            if (current == long.MaxValue)
+            {
+                becameServiceContender = false;
+                return false;
+            }
+
+            if (Interlocked.CompareExchange(
+                    ref actorShardOutstandingWorkItemCount,
+                    current + 1,
+                    current)
+                == current)
+            {
+                becameServiceContender = current == 0;
+                return true;
+            }
+        }
+    }
+
+    internal bool TryCompleteActorShardWorkItem(
+        out bool stoppedBeingServiceContender)
+    {
+        while (true)
+        {
+            long current = Volatile.Read(
+                ref actorShardOutstandingWorkItemCount);
+            if (current <= 0)
+            {
+                stoppedBeingServiceContender = false;
+                return false;
+            }
+
+            if (Interlocked.CompareExchange(
+                    ref actorShardOutstandingWorkItemCount,
+                    current - 1,
+                    current)
+                == current)
+            {
+                stoppedBeingServiceContender = current == 1;
+                return true;
+            }
+        }
+    }
 
     internal bool TryPublishActorServiceObservation(
         in QuicActorServiceObservation observation)
