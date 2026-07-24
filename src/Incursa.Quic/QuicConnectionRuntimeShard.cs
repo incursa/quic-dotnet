@@ -338,6 +338,12 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         bool measurePacketRuns = false;
         QuicConnectionRuntime? packetRunRuntime = null;
         var packetRunLength = 0;
+        ulong actorWakeSequence = 1;
+        uint actorWakePosition = 0;
+        QuicActorWakeCompletion actorWakeCompletion =
+            QuicActorWakeCompletion.ConsumerStart;
+        QuicActorWakeSource actorWakeSource =
+            QuicActorWakeSource.ConsumerStart;
 
         try
         {
@@ -369,6 +375,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     if (IsDeadlineWakeWorkItem(workItem))
                     {
                         deferredApplicationAckPacketCount = 0;
+                        actorWakeSource = QuicActorWakeSource.Deadline;
                         RecordPacketRunBoundary("deadline_wake");
                         continue;
                     }
@@ -391,6 +398,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 
                     TrackPacketRun(in workItem);
                     productiveWorkItemsInWakeCycle++;
+                    actorWakePosition = IncrementSaturating(actorWakePosition);
                     ProcessWorkItem(
                         workItem,
                         transitionObserver,
@@ -398,7 +406,12 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                         sendDatagramObserver,
                         sendDatagramBatchObserver,
                         deferApplicationAckFinalization,
-                        finalizePendingApplicationAck);
+                        finalizePendingApplicationAck,
+                        actorWakeSequence,
+                        actorWakePosition,
+                        actorWakeCompletion,
+                        actorWakeSource,
+                        GetPendingWorkItemCount());
                     deferredApplicationAckPacketCount = deferApplicationAckFinalization
                         ? deferredApplicationAckPacketCount + 1
                         : 0;
@@ -412,18 +425,26 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     QuicMetrics.RecordRuntimeShardWorkItemDequeued(metricsRegistration, in queuedTimerWorkItem);
                     if (IsDeadlineWakeWorkItem(queuedTimerWorkItem))
                     {
+                        actorWakeSource = QuicActorWakeSource.Deadline;
                         RecordPacketRunBoundary("deadline_wake");
                         continue;
                     }
 
                     TrackPacketRun(in queuedTimerWorkItem);
                     productiveWorkItemsInWakeCycle++;
+                    actorWakePosition = IncrementSaturating(actorWakePosition);
                     ProcessWorkItem(
                         queuedTimerWorkItem,
                         transitionObserver,
                         effectObserver,
                         sendDatagramObserver,
-                        sendDatagramBatchObserver);
+                        sendDatagramBatchObserver,
+                        actorWakeSequence: actorWakeSequence,
+                        actorWakePosition: actorWakePosition,
+                        actorWakeCompletion: actorWakeCompletion,
+                        actorWakeSource: actorWakeSource,
+                        pendingWorkItemsAfterDequeue:
+                            GetPendingWorkItemCount());
                     RecordPacketRunBoundary("single_read");
                     continue;
                 }
@@ -449,6 +470,13 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     hasActiveWakeCycle = true;
                     activeWakeCompletedSynchronously = completedSynchronously;
                     productiveWorkItemsInWakeCycle = 0;
+                    actorWakeSequence = IncrementSaturating(
+                        actorWakeSequence);
+                    actorWakePosition = 0;
+                    actorWakeCompletion = completedSynchronously
+                        ? QuicActorWakeCompletion.Synchronous
+                        : QuicActorWakeCompletion.Asynchronous;
+                    actorWakeSource = QuicActorWakeSource.Inbox;
                     continue;
                 }
 
@@ -477,6 +505,12 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 hasActiveWakeCycle = true;
                 activeWakeCompletedSynchronously = timedWaitCompletedSynchronously;
                 productiveWorkItemsInWakeCycle = 0;
+                actorWakeSequence = IncrementSaturating(actorWakeSequence);
+                actorWakePosition = 0;
+                actorWakeCompletion = timedWaitCompletedSynchronously
+                    ? QuicActorWakeCompletion.Synchronous
+                    : QuicActorWakeCompletion.Asynchronous;
+                actorWakeSource = QuicActorWakeSource.Inbox;
                 deadlineWakeTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             }
         }
@@ -539,6 +573,12 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             packetRunRuntime = null;
             packetRunLength = 0;
         }
+
+        ulong GetPendingWorkItemCount()
+        {
+            long count = metricsRegistration.InboxDepth;
+            return count <= 0 ? 0 : (ulong)count;
+        }
     }
 
     /// <summary>
@@ -551,9 +591,13 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 
     private bool TryWriteWorkItem(in QuicConnectionRuntimeShardWorkItem workItem)
     {
+        long enqueuedTimestamp =
+            workItem.Runtime?.ActorServiceObservationEnabled == true
+                ? Stopwatch.GetTimestamp()
+                : QuicMetrics.GetRuntimeShardEnqueueTimestamp(workItem.Kind);
         QuicConnectionRuntimeShardWorkItem queuedWorkItem = workItem with
         {
-            EnqueuedTimestamp = QuicMetrics.GetRuntimeShardEnqueueTimestamp(workItem.Kind),
+            EnqueuedTimestamp = enqueuedTimestamp,
         };
         metricsRegistration.BeginEnqueue(in queuedWorkItem);
         if (!inbox.Writer.TryWrite(queuedWorkItem))
@@ -596,11 +640,28 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         Action<QuicConnectionHandle, QuicConnectionSendDatagramUpdate>? sendDatagramObserver,
         QuicConnectionSendDatagramBatchObserver? sendDatagramBatchObserver,
         bool deferApplicationAckFinalization = false,
-        bool finalizePendingApplicationAck = false)
+        bool finalizePendingApplicationAck = false,
+        ulong actorWakeSequence = 0,
+        uint actorWakePosition = 0,
+        QuicActorWakeCompletion actorWakeCompletion =
+            QuicActorWakeCompletion.ConsumerStart,
+        QuicActorWakeSource actorWakeSource =
+            QuicActorWakeSource.ConsumerStart,
+        ulong pendingWorkItemsAfterDequeue = 0)
     {
-        long serviceStartedTimestamp = QuicMetrics.GetRuntimeShardServiceStartTimestamp();
         QuicConnectionRuntime? runtime = workItem.Runtime;
+        bool observeActorService =
+            runtime?.ActorServiceObservationEnabled == true;
+        long serviceStartedTimestamp = observeActorService
+            ? Stopwatch.GetTimestamp()
+            : QuicMetrics.GetRuntimeShardServiceStartTimestamp();
         bool flushMeasurementStarted = false;
+        var effectCount = 0;
+        var applicationSendFollowOnCount = 0;
+        var flowControlFollowOnCount = 0;
+        var streamCapacityFollowOnCount = 0;
+        QuicActorServiceDisposition actorDisposition =
+            QuicActorServiceDisposition.Completed;
         try
         {
             if (runtime is null)
@@ -608,10 +669,19 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 return;
             }
 
-            if ((runtime.IsDisposed
-                    && workItem.ConnectionEvent is not QuicConnectionLocalCloseRequestedEvent)
-                || runtime.IsInboxConsumerRunning)
+            if (runtime.IsDisposed
+                && workItem.ConnectionEvent
+                    is not QuicConnectionLocalCloseRequestedEvent)
             {
+                actorDisposition =
+                    QuicActorServiceDisposition.SkippedDisposed;
+                return;
+            }
+
+            if (runtime.IsInboxConsumerRunning)
+            {
+                actorDisposition =
+                    QuicActorServiceDisposition.SkippedIndependentConsumer;
                 return;
             }
 
@@ -620,7 +690,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 suppressSendDatagramEffects: suppressHostedTimerEffectObjects
                     && (sendDatagramObserver is not null || sendDatagramBatchObserver is not null),
                 enableApplicationDatagramBatches: sendDatagramBatchObserver is not null);
-            flushMeasurementStarted = runtime.BeginRuntimeWorkItemFlushMeasurement();
+            flushMeasurementStarted =
+                runtime.BeginRuntimeWorkItemFlushMeasurement(
+                    observeActorService);
 
             if (workItem.Kind == QuicConnectionRuntimeShardWorkItemKind.StreamWrite
                 && workItem.EnqueuedTimestamp != 0
@@ -655,6 +727,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                         finalizePendingApplicationAck),
                 _ => runtime.Transition(workItem.ConnectionEvent!, clock.Ticks),
             };
+            effectCount = result.EffectCount;
             runtime.TryPublishReceiveCreditShadowAtActorBoundary(result.ObservedAtTicks);
             transitionObserver?.Invoke(workItem.Handle, result);
             runtime.ApplyPendingHostedTimerUpdates(workItem.Handle, deadlineScheduler);
@@ -773,27 +846,140 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 
             QuicMetrics.RecordRuntimePressureSnapshot(shardIndex, runtime);
         }
+        catch
+        {
+            actorDisposition = QuicActorServiceDisposition.Faulted;
+            throw;
+        }
         finally
         {
             if (flushMeasurementStarted)
             {
                 runtime!.TakeRuntimeWorkItemFlushMeasurement(
-                    out int applicationSendCount,
-                    out int flowControlCount,
-                    out int streamCapacityCount);
+                    out applicationSendFollowOnCount,
+                    out flowControlFollowOnCount,
+                    out streamCapacityFollowOnCount);
                 QuicMetrics.RecordRuntimeFollowOnFlushItems(
                     shardIndex,
                     in workItem,
-                    applicationSendCount,
-                    flowControlCount,
-                    streamCapacityCount);
+                    applicationSendFollowOnCount,
+                    flowControlFollowOnCount,
+                    streamCapacityFollowOnCount);
             }
 
             QuicMetrics.RecordRuntimeShardServiceTime(shardIndex, in workItem, serviceStartedTimestamp);
             runtime?.ConfigureHostedTimerEffectSuppression(suppress: false);
+            if (observeActorService && runtime is not null)
+            {
+                QuicActorServiceValidity validity =
+                    QuicActorServiceValidity.MissingRunnableConnectionCount
+                    | QuicActorServiceValidity.MissingOldestShardItemAge
+                    | QuicActorServiceValidity.MissingDeadlineLateness
+                    | QuicActorServiceValidity.UsefulWorkUnitsUndefined;
+                ulong? queueDelayMicros = null;
+                if (workItem.EnqueuedTimestamp == 0
+                    || workItem.EnqueuedTimestamp > serviceStartedTimestamp)
+                {
+                    validity |=
+                        QuicActorServiceValidity.MissingQueueDelay;
+                }
+                else
+                {
+                    queueDelayMicros = GetElapsedMicros(
+                        workItem.EnqueuedTimestamp,
+                        serviceStartedTimestamp);
+                }
+
+                QuicActorServiceObservation observation = new(
+                    runtime.GetNextActorServiceObservationSequence(),
+                    shardIndex,
+                    actorWakeSequence,
+                    actorWakePosition,
+                    actorWakeCompletion,
+                    actorWakeSource,
+                    GetActorWorkKind(in workItem),
+                    actorDisposition,
+                    queueDelayMicros,
+                    GetElapsedMicros(
+                        serviceStartedTimestamp,
+                        Stopwatch.GetTimestamp()),
+                    pendingWorkItemsAfterDequeue,
+                    ToUInt32Saturating(effectCount, ref validity),
+                    ToUInt32Saturating(
+                        applicationSendFollowOnCount,
+                        ref validity),
+                    ToUInt32Saturating(
+                        flowControlFollowOnCount,
+                        ref validity),
+                    ToUInt32Saturating(
+                        streamCapacityFollowOnCount,
+                        ref validity),
+                    runtime.Phase,
+                    runtime.IsDisposed,
+                    validity);
+                runtime.TryPublishActorServiceObservation(in observation);
+            }
+
             ReleaseWorkItemResources(workItem);
         }
     }
+
+    private static QuicActorWorkKind GetActorWorkKind(
+        in QuicConnectionRuntimeShardWorkItem workItem)
+        => workItem.Kind switch
+        {
+            QuicConnectionRuntimeShardWorkItemKind.Event
+                when workItem.ConnectionEvent
+                    is QuicConnectionTimerExpiredEvent =>
+                QuicActorWorkKind.Timer,
+            QuicConnectionRuntimeShardWorkItemKind.Event =>
+                QuicActorWorkKind.ConnectionEvent,
+            QuicConnectionRuntimeShardWorkItemKind.PacketReceived =>
+                QuicActorWorkKind.PacketReceived,
+            QuicConnectionRuntimeShardWorkItemKind.StreamCapacityRelease =>
+                QuicActorWorkKind.StreamCapacityRelease,
+            QuicConnectionRuntimeShardWorkItemKind.FlowControlCreditUpdate =>
+                QuicActorWorkKind.FlowControlCreditUpdate,
+            QuicConnectionRuntimeShardWorkItemKind.StreamOpen =>
+                QuicActorWorkKind.StreamOpen,
+            QuicConnectionRuntimeShardWorkItemKind.StreamWrite =>
+                QuicActorWorkKind.StreamWrite,
+            _ => throw new ArgumentOutOfRangeException(nameof(workItem)),
+        };
+
+    private static ulong GetElapsedMicros(
+        long startedTimestamp,
+        long completedTimestamp)
+    {
+        if (completedTimestamp <= startedTimestamp)
+        {
+            return 0;
+        }
+
+        long ticks = Stopwatch.GetElapsedTime(
+            startedTimestamp,
+            completedTimestamp).Ticks;
+        return ticks <= 0 ? 0 : (ulong)(ticks / TimeSpan.TicksPerMicrosecond);
+    }
+
+    private static uint ToUInt32Saturating(
+        int value,
+        ref QuicActorServiceValidity validity)
+    {
+        if (value < 0)
+        {
+            validity |= QuicActorServiceValidity.ArithmeticSaturated;
+            return 0;
+        }
+
+        return (uint)value;
+    }
+
+    private static uint IncrementSaturating(uint value)
+        => value == uint.MaxValue ? uint.MaxValue : value + 1;
+
+    private static ulong IncrementSaturating(ulong value)
+        => value == ulong.MaxValue ? ulong.MaxValue : value + 1;
 
     private static bool IsDeadlineWakeWorkItem(QuicConnectionRuntimeShardWorkItem workItem)
         => workItem.Runtime is null && workItem.ConnectionEvent is null && workItem.Kind == QuicConnectionRuntimeShardWorkItemKind.Event;

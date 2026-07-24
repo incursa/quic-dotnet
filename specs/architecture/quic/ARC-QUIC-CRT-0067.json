@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0067",
+  "artifact_type": "architecture",
+  "status": "proposed",
+  "title": "Stage 2 actor service observation architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Add bounded connection-local actor service evidence without installing a work-quantum policy or changing shard scheduling.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY",
+    "ARC-QUIC-CRT-0066",
+    "WI-QUIC-CRT-0068",
+    "VER-QUIC-CRT-0069"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0181"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicActorServiceObservation.cs",
+    "src/Incursa.Quic/QuicActorServiceEpochAccumulator.cs",
+    "src/Incursa.Quic/QuicConnectionOptions.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeShard.cs",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeActorServiceEvidence.ps1",
+    "schemas/adaptive-runtime-actor-service-observation-v1.schema.json",
+    "schemas/adaptive-runtime-actor-service-epoch-v1.schema.json",
+    "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md"
+  ],
+  "design_summary": "A connection opts into ObserveOnly with a narrow evidence sink. The existing shard records a compact immutable value after each complete transition and effect dispatch, including queue delay, service duration, wake sequence and position, closed work kind, pending work count, emitted effects, three existing follow-on categories, lifecycle phase, and bounded disposition. The runtime owns a connection-local sequence and guards the sink so failure cannot affect progress. A fixed-field accumulator builds a bounded epoch summary with saturating totals, maxima, integer EWMAs, closed-kind counts, wake changes, and validity union. The legacy shard drain remains the only applied behavior.",
+  "data_and_state_considerations": "The observation and accumulator use enums, immutable record structs, fixed scalar fields, and one connection-local accumulator lock. They introduce no per-packet dependency injection, dictionary, stream scan, model, global lock, or unbounded state. Missing runnable-connection count, oldest shard item age, deadline lateness, and reviewed useful-work units remain explicit. Wake grouping is complete only when the run manifest proves full-shard observation coverage.",
+  "edge_cases_and_constraints": [
+    "Observation may measure existing follow-on counts but cannot limit or defer them.",
+    "A throwing or rejecting sink cannot interrupt transition, effect, ownership release, cancellation, disposal, recovery, timer, or terminal work.",
+    "Queue delay is not oldest-shard-item age, pending work-item count is not runnable-connection count, and timer service is not deadline lateness.",
+    "The Stage 1 epoch callback precedes complete actor service and cannot silently own the Stage 2 summary boundary.",
+    "Actor_work_quantum remains legacy_current and non-forceable until cooperative checkpoints and exactly-once repost are separately designed and verified.",
+    "Active_internal and production activation remain unauthorized."
+  ],
+  "alternatives_considered": [
+    "Use existing aggregate metrics as the dataset contract. Rejected because they are not connection-attributable, versioned, or deterministically joinable.",
+    "Treat each dequeued event as one equal work unit. Rejected because packet, API, timer, effect, and follow-on costs differ materially.",
+    "Add a quantum while instrumenting the loop. Rejected because no exactly-once repost or reviewed preemption seam exists.",
+    "Insert the actor summary into the current Stage 1 epoch callback. Rejected because that callback occurs before complete actor service and would shift or truncate attribution."
+  ],
+  "risks": [
+    "Observation overhead can perturb hot shard paths; disabled-path and later manual or nightly allocation checks remain required.",
+    "Partial per-connection coverage can be mistaken for complete wake membership; manifests must declare coverage.",
+    "A post-service fault can leave incomplete outcome information; bounded fault disposition remains explicit.",
+    "Primitive counts can be mistaken for a reviewed scalar quantum; UsefulWorkUnitsUndefined prevents that claim."
+  ],
+  "open_questions": [
+    "Which post-service boundary will publish actor epoch summaries and join them to Stage 1 epochs without shifting attribution?",
+    "Which bounded shard-pressure snapshot can expose runnable connection count and oldest item age without a global lock?"
+  ]
+}

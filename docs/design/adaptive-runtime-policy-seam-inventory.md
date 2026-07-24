@@ -4,12 +4,11 @@ title: "Adaptive Runtime Policy Seam Inventory"
 
 # Adaptive Runtime Policy Seam Inventory
 
-Status: implementation inventory reconciled; send-turn observe-only, shadow,
-raw-host export, and permanent-runner epoch joins implemented; batch formation
-and queued-send burst budget are internally forceable and observable at their
-safe boundaries; one local send-turn shadow cell and one retained-negative
-observation-neutrality cell executed; unified four-axis export, broader
-campaigns, and active policy blocked
+Status: implementation inventory reconciled; unified four-axis Stage 1 export,
+materialization, and correctness smoke checkpointed; Stage 2 actor-service
+observation contract implemented without a forceable actor quantum; broader
+campaigns, actor fairness policy, memory policy, and active behavior remain
+blocked
 
 This inventory describes controls that already exist in the runtime and the
 minimum seam work that would be required before a controller could observe or
@@ -64,7 +63,7 @@ existing correctness-critical runtime, never a second scheduler.
 | Flow-credit event coalescing | `QuicConnectionRuntime.TryQueueFlowControlCreditUpdate` and pending-credit flush | Coalesces producer notifications while preserving the highest pending MAX_DATA and MAX_STREAM_DATA values. | Producer-side synchronization plus at most one posted flush event until drained. | Pending values survive until runtime drain. | Focused tests can force sequences; no alternate policy exists. | Correctness-supporting mechanism, not an adaptive axis. Controller output must not bypass it. |
 | Peer stream-capacity release coalescing | `QuicConnectionRuntime.TryQueueStreamCapacityRelease` and pending-release flush | Coalesces generic release wakeups while retaining scheduled stream IDs. | Existing producer-to-actor handoff. | Until the pending set drains. | Focused tests only. | Not an adaptive axis. Preserve exact release semantics. |
 | Ready-stream ordering and fairness | `QuicApplicationSendQueue` priority/sequence order plus planner validation | Priority first, stable sequence within priority, and no later write may pass an earlier write on the same stream. | Existing queue ordering and planning snapshot. | Per queued request ordering. | Planner tests can force legal and illegal selections. | A future fairness quantum may use the planner seam, but the invariants are not configurable. |
-| Actor wake and maximum work per wake | `QuicConnectionRuntimeShard`, deadline scheduler, follow-on flushes | The shard inbox and inline follow-on flushes govern service. There is no stable connection-policy seam for a maximum-work quantum. | Actor loop; changing it can affect every connection on a shard. | No policy latch. | No. | Observe first. Do not add a controller output until ownership, cross-connection fairness, and wake cost have a separate design. |
+| Actor wake and maximum work per wake | `QuicConnectionRuntimeShard`, `QuicActorServiceObservation`, `QuicActorServiceEpochAccumulator`, deadline scheduler, follow-on flushes | The shard inbox and inline follow-on flushes still govern service. Disabled or observe-only mode can now record versioned connection-attributable dispatch, wake, queue-delay, full service-time, effect, follow-on, lifecycle, and bounded epoch evidence. Runnable-connection count, oldest shard item age, deadline lateness, and reviewed useful work units remain explicitly missing. | One behavior-neutral record after an existing complete transition-and-effect dispatch. A guarded connection-local sink and fixed-field accumulator add no dictionary, stream scan, model, global lock, or controller output. | Observation wake identity and epoch state are bounded; there is still no policy latch. | Observation only. `actor_work_quantum` remains `legacy_current` and non-forceable. | Implemented observation foundation under `REQ-QUIC-CRT-0181`. Do not add a controller output until cooperative yield/repost, timer priority, cross-connection fairness, terminal drain, recovery, and ownership have a separately reviewed design. |
 | Packet flush cadence | Runtime routing/stream send paths under `QuicSendPolicy`, congestion, pacing, recovery, and packet protection | Flushes authorized work at existing safe points and prioritizes retransmission where required. | Correctness-critical packet path. | Packet construction and accounting commit as one authoritative operation. | Partially forceable only through low-level tests. | Not ready as an adaptive seam. Never delay required progress or exceed existing budgets. |
 | Backpressure and retained-buffer bounds | Application-send queue, receive state, buffer pool, endpoint/socket send | Existing queues and owners have independent bounds and terminal cleanup. | Multiple producer and actor paths. | Ownership is latched until commit, cancellation, or disposal. | Individual bounds are testable; there is no unified policy seam. | Bounds remain hard limits. Adaptation may become more conservative before a bound but cannot raise it. |
 | Runtime pressure advice | Existing `QuicMetrics` pressure snapshots are diagnostic; no advisor interface exists | Samples retained buffers, retransmissions, receive retention, and queue state when instruments are enabled. | Coarse metrics snapshot, not per packet. | Immutable sample only. | Metrics listeners can enable sampling; no deterministic advisor fixture exists. | Define an immutable optional snapshot interface later. Absence, staleness, and disablement must map to conservative behavior. |
@@ -92,10 +91,11 @@ period. They exist to create counterfactual evidence.
 
 ## Readiness Classification
 
-Only receive-credit publication, oversized-write admission, application-send
-planning, and application-datagram batching have concrete selectable seams.
-Only the planner and datagram-batch interfaces are presently convenient to
-force per connection. Actor quantum, packet cadence, and backpressure are
-observation-only topics until separate designs establish safe boundaries.
+Receive-credit publication and the four Stage 1 send-path axes have concrete
+internal counterfactual seams, while application-datagram batching remains a
+separate retained adaptive precedent. Actor service now has a versioned
+observation-only seam, but actor quantum, packet cadence, buffer coalescing,
+and backpressure remain non-forceable until separate designs establish safe
+boundaries.
 
 No seam in this inventory is approved for new production adaptation.

@@ -67,6 +67,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const int UnconfiguredApplicationSendTurnObservationMode = -1;
     private const int UnconfiguredApplicationSendBatchPolicyMode = -1;
     private const int UnconfiguredApplicationSendBatchObservationMode = -1;
+    private const int UnconfiguredActorServiceObservationMode = -1;
     private const int UnconfiguredQueuedSendBurstPolicyMode = -1;
     private const int UnconfiguredQueuedSendBurstObservationMode = -1;
     private const int UnconfiguredOversizedWriteAdmissionPolicyMode = -1;
@@ -106,6 +107,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private int applicationSendTurnObservationMode = UnconfiguredApplicationSendTurnObservationMode;
     private int applicationSendBatchPolicyMode = UnconfiguredApplicationSendBatchPolicyMode;
     private int applicationSendBatchObservationMode = UnconfiguredApplicationSendBatchObservationMode;
+    private int actorServiceObservationMode = UnconfiguredActorServiceObservationMode;
     private int queuedSendBurstPolicyMode = UnconfiguredQueuedSendBurstPolicyMode;
     private int queuedSendBurstObservationMode = UnconfiguredQueuedSendBurstObservationMode;
     private int oversizedWriteAdmissionPolicyMode =
@@ -131,6 +133,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private IQuicApplicationSendTurnEvidenceSink? applicationSendTurnEvidenceSink;
     private QuicApplicationSendTurnShadowController applicationSendTurnShadowController = default;
     private IQuicApplicationSendBatchEvidenceSink? applicationSendBatchEvidenceSink;
+    private IQuicActorServiceEvidenceSink? actorServiceEvidenceSink;
+    private long actorServiceObservationSequence;
     private IQuicQueuedSendBurstEvidenceSink? queuedSendBurstEvidenceSink;
     private IQuicOversizedWriteAdmissionEvidenceSink? oversizedWriteAdmissionEvidenceSink;
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
@@ -1359,6 +1363,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         QuicOversizedWriteAdmissionObservationMode
             requestedOversizedWriteAdmissionObservationMode =
                 options.OversizedWriteAdmissionObservationMode;
+        QuicActorServiceObservationMode requestedActorServiceObservationMode =
+            options.ActorServiceObservationMode;
         if (requestedApplicationSendTurnObservationMode is < QuicApplicationSendTurnObservationMode.Disabled
             or > QuicApplicationSendTurnObservationMode.Shadow)
         {
@@ -1432,6 +1438,18 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         bool oversizedWriteAdmissionObservationEnabled =
             requestedOversizedWriteAdmissionObservationMode
                 != QuicOversizedWriteAdmissionObservationMode.Disabled;
+        if (requestedActorServiceObservationMode
+                is < QuicActorServiceObservationMode.Disabled
+                or > QuicActorServiceObservationMode.ObserveOnly)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(options),
+                "The actor service observation mode is invalid.");
+        }
+
+        bool actorServiceObservationEnabled =
+            requestedActorServiceObservationMode
+                != QuicActorServiceObservationMode.Disabled;
         if (!applicationSendTurnObservationEnabled && options.ApplicationSendTurnEvidenceSink is not null)
         {
             throw new InvalidOperationException(
@@ -1478,6 +1496,20 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         {
             throw new InvalidOperationException(
                 "Oversized-write admission observe-only and shadow modes require an evidence sink.");
+        }
+
+        if (!actorServiceObservationEnabled
+            && options.ActorServiceEvidenceSink is not null)
+        {
+            throw new InvalidOperationException(
+                "Actor service evidence export requires observe-only mode.");
+        }
+
+        if (actorServiceObservationEnabled
+            && options.ActorServiceEvidenceSink is null)
+        {
+            throw new InvalidOperationException(
+                "Actor service observe-only mode requires an evidence sink.");
         }
 
         bool applicationSendTurnTreatmentSelected =
@@ -1612,6 +1644,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                     "Application-send turn observation requires the legacy_current receive-credit policy.");
             }
 
+        }
+
+        if (actorServiceObservationEnabled)
+        {
+            ConfigureActorServiceObservation(
+                requestedActorServiceObservationMode,
+                options.ActorServiceEvidenceSink!);
         }
 
         if (options.AdaptiveRuntimeShadowEnabled)
@@ -1871,6 +1910,23 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         applicationSendBatchEvidenceSink = sink;
+    }
+
+    private void ConfigureActorServiceObservation(
+        QuicActorServiceObservationMode mode,
+        IQuicActorServiceEvidenceSink sink)
+    {
+        if (Interlocked.CompareExchange(
+                ref actorServiceObservationMode,
+                (int)mode,
+                UnconfiguredActorServiceObservationMode)
+            != UnconfiguredActorServiceObservationMode)
+        {
+            throw new InvalidOperationException(
+                "The actor service observation mode has already been configured.");
+        }
+
+        actorServiceEvidenceSink = sink;
     }
 
     private void ConfigureQueuedSendBurstObservation(
@@ -2575,9 +2631,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private int runtimeWorkItemFlushedStreamCapacityReleases;
     private bool runtimeWorkItemFlushMeasurementEnabled;
 
-    internal bool BeginRuntimeWorkItemFlushMeasurement()
+    internal bool BeginRuntimeWorkItemFlushMeasurement(
+        bool actorServiceObservationEnabled = false)
     {
-        runtimeWorkItemFlushMeasurementEnabled = QuicMetrics.RuntimeFollowOnFlushMetricsEnabled;
+        runtimeWorkItemFlushMeasurementEnabled =
+            actorServiceObservationEnabled
+            || QuicMetrics.RuntimeFollowOnFlushMetricsEnabled;
         if (!runtimeWorkItemFlushMeasurementEnabled)
         {
             return false;
@@ -2587,6 +2646,35 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         runtimeWorkItemFlushedFlowControlUpdates = 0;
         runtimeWorkItemFlushedStreamCapacityReleases = 0;
         return true;
+    }
+
+    internal bool ActorServiceObservationEnabled =>
+        Volatile.Read(ref actorServiceObservationMode)
+            == (int)QuicActorServiceObservationMode.ObserveOnly
+        && actorServiceEvidenceSink is not null;
+
+    internal ulong GetNextActorServiceObservationSequence()
+        => unchecked((ulong)Interlocked.Increment(
+            ref actorServiceObservationSequence));
+
+    internal void TryPublishActorServiceObservation(
+        in QuicActorServiceObservation observation)
+    {
+        IQuicActorServiceEvidenceSink? sink = actorServiceEvidenceSink;
+        if (sink is null || !ActorServiceObservationEnabled)
+        {
+            return;
+        }
+
+        try
+        {
+            _ = sink.TryPublish(in observation);
+        }
+        catch (Exception)
+        {
+            // Actor evidence is diagnostic-only. A failed sink must never
+            // affect runtime progress or resource ownership.
+        }
     }
 
     internal bool RuntimeWorkItemFlushMeasurementEnabled => runtimeWorkItemFlushMeasurementEnabled;

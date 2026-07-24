@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY",
+  "artifact_type": "specification",
+  "title": "Stage 2 actor and memory observation foundation",
+  "domain": "quic",
+  "capability": "adaptive-runtime-stage2-actor-memory",
+  "status": "proposed",
+  "owner": "quic-maintainers",
+  "tags": [
+    "adaptive-runtime",
+    "actor",
+    "memory",
+    "observation-only"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE1-SEND-PATH",
+    "ARC-QUIC-CRT-0067",
+    "WI-QUIC-CRT-0068",
+    "VER-QUIC-CRT-0069"
+  ],
+  "purpose": "Define bounded versioned actor service, wake, follow-on, queue, and lifecycle observations before any actor-work, fairness, buffer, or backpressure policy becomes forceable.",
+  "scope": "This specification covers behavior-neutral per-connection actor service observations, bounded epoch aggregation, explicit missing-state handling, schema and semantic validation, and the safety gates required before actor_work_quantum. It does not define a forceable actor policy, scalar work-unit threshold, buffer policy, backpressure policy, active_internal behavior, or production activation.",
+  "context": "The shard already exposes aggregate queue-delay, service-time, wake, packet-run, and follow-on metrics, but it does not expose a versioned connection-attributable evidence contract or an exactly-once repost seam. Stage 2 must preserve the current drain loop and record honest primitives before proposing a quantum.",
+  "open_questions": [
+    "Which cooperative transition and effect boundaries can yield while preserving exactly-once repost, timer priority, recovery, terminal drain, and buffer ownership?",
+    "How should complete shard observation coverage and runnable intervals be proven before cross-connection fairness statistics are accepted?"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-QUIC-CRT-0181",
+      "title": "Record bounded behavior-neutral actor service evidence",
+      "statement": "The runtime MUST support disabled and observe-only actor service instrumentation that records one versioned connection-attributable observation for each observed shard dispatch with monotonic service sequence, bounded wake identity, closed work kind, queue delay, complete service duration, pending work count, effect and follow-on counts, lifecycle disposition, explicit missing and saturated state, and deterministic epoch aggregation; keep sink failures diagnostic-only; preserve the legacy_current shard drain, timer, recovery, terminal, progress, and ownership behavior; and never treat scenario, payload, requested concurrency, peer, URL, application identity, event count, pending inbox depth, or queue delay as an invented production work-unit, runnable-connection, oldest-item, or deadline-lateness signal.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0067"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0068"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0069"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-axis-roadmap.md",
+          "docs/design/adaptive-runtime-policy-seam-inventory.md",
+          "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md",
+          "schemas/adaptive-runtime-actor-service-observation-v1.schema.json",
+          "schemas/adaptive-runtime-actor-service-epoch-v1.schema.json"
+        ]
+      },
+      "notes": [
+        "UsefulWorkUnitsUndefined remains explicit until a reviewed work-unit vector and cooperative safe checkpoints exist.",
+        "No actor_work_quantum value is forceable or active under this requirement."
+      ]
+    }
+  ]
+}

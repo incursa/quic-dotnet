@@ -194,4 +194,10 @@ public abstract class QuicConnectionOptions
     internal QuicOversizedWriteAdmissionObservationMode OversizedWriteAdmissionObservationMode { get; set; }
 
     internal IQuicOversizedWriteAdmissionEvidenceSink? OversizedWriteAdmissionEvidenceSink { get; set; }
+
+    // CONTEXT: Stage 2 starts with behavior-neutral actor service
+    // instrumentation. This does not install an actor work-quantum policy.
+    internal QuicActorServiceObservationMode ActorServiceObservationMode { get; set; }
+
+    internal IQuicActorServiceEvidenceSink? ActorServiceEvidenceSink { get; set; }
 }

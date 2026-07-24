@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0068",
+  "artifact_type": "work_item",
+  "status": "in_progress",
+  "title": "Implement Stage 2 actor service observations",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add behavior-neutral versioned actor service records and bounded epoch aggregation while preserving the legacy shard drain and deferring every forceable Stage 2 policy.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY",
+    "ARC-QUIC-CRT-0067",
+    "WI-QUIC-CRT-0067",
+    "VER-QUIC-CRT-0069"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0067"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0069"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0181"
+  ],
+  "planned_changes": "Define disabled and observe-only connection configuration; add the versioned immutable observation and fixed-field epoch accumulator; capture existing queue, service, wake, work-kind, effect, follow-on, lifecycle, skip, and fault primitives; keep missing runnable, oldest-item, deadline-lateness, and work-unit state explicit; add machine-readable schemas and semantic validation; test sink neutrality, sequence, aggregation, reset, and existing shard correctness; then design an exact post-service export boundary before permanent campaign emission.",
+  "verification_plan": "Build in Release before testing. Run REQ-QUIC-CRT-0181, existing shard, deadline, work-item layout, receive-buffer ownership, stream-capacity, flow-control, metrics, cancellation, disposal, and terminal tests. Validate observation and epoch schemas plus semantic count and sequence rules. Run manual or nightly cost and allocation checks outside correctness CI before enabling permanent high-volume export. Do not force actor_work_quantum or claim fairness or performance improvement.",
+  "out_of_scope": [
+    "Forceable actor_work_quantum values",
+    "Ready-stream fairness selection",
+    "Buffer copy or coalescing selection",
+    "Adaptive backpressure selection",
+    "Large campaign execution, dataset normalization, or ML analysis",
+    "Performance work in correctness CI",
+    "Active_internal or production activation"
+  ]
+}

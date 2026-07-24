@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0069",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Stage 2 actor service observation verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY",
+    "ARC-QUIC-CRT-0067",
+    "WI-QUIC-CRT-0068",
+    "VER-QUIC-CRT-0068"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0181"
+  ],
+  "scope": "Verify behavior-neutral actor service observation, bounded epoch aggregation, explicit missing state, sink isolation, and preservation of legacy shard scheduling. Do not verify or authorize a forceable quantum, fairness rule, buffer strategy, backpressure rule, performance claim, or active behavior.",
+  "verification_method": "Canonical SpecTrace validation, deterministic requirement-home tests, schema and semantic validation, and focused existing shard, deadline, ownership, stream-capacity, flow-control, metrics, cancellation, disposal, and terminal correctness tests.",
+  "preconditions": [
+    "The unified four-axis Stage 1 smoke and append-only materialization checkpoint remain preserved.",
+    "Receive-credit publication and every applied adaptive policy remain legacy_current.",
+    "The stopped 55,658-row send-turn-only normalization remains diagnostic_incomplete and is not restarted.",
+    "CI remains correctness-only and performance evidence remains manual or nightly.",
+    "Active_internal and production activation remain unauthorized."
+  ],
+  "procedure": [
+    "Validate SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY, ARC-QUIC-CRT-0067, WI-QUIC-CRT-0068, and VER-QUIC-CRT-0069 against the canonical model and check reciprocal trace links.",
+    "Build the test project in Release before running the Stage 2 requirement home.",
+    "Verify exact disabled and observe-only mode and sink pairing.",
+    "Verify one connection-local monotonic observation per observed shard dispatch with closed wake, work, disposition, phase, and validity values.",
+    "Verify queue, service, pending-work, effect, and follow-on attribution plus saturating bounded epoch accumulation and reset.",
+    "Verify observation and epoch JSON against their schemas and semantic count and sequence rules.",
+    "Verify a throwing sink cannot interrupt actor progress or ownership release.",
+    "Run the existing shard, deadline, work-item layout, receive-buffer ownership, stream-capacity, flow-control, and metrics correctness band.",
+    "Keep runnable connection count, oldest shard item age, deadline lateness, and useful work units explicitly missing until their reviewed seams exist."
+  ],
+  "expected_result": "Actor service evidence is versioned, bounded, connection-attributable, schema-valid, semantically validated, and behavior-neutral; missing inputs remain explicit; legacy shard drain, timer, recovery, terminal, progress, and ownership behavior remains authoritative; and no forceable or active Stage 2 policy is introduced.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0181.cs",
+    "tests/Incursa.Quic.Tests/MetricsTests.cs",
+    "tests/Incursa.Quic.Tests/QuicConnectionRuntimeShardWorkItemLayoutTests.cs",
+    "tests/Incursa.Quic.Tests/QuicConnectionRuntimeShardReceiveBufferOwnershipTests.cs",
+    "src/Incursa.Quic/QuicActorServiceObservation.cs",
+    "src/Incursa.Quic/QuicActorServiceEpochAccumulator.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeShard.cs",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeActorServiceEvidence.ps1",
+    "schemas/adaptive-runtime-actor-service-observation-v1.schema.json",
+    "schemas/adaptive-runtime-actor-service-epoch-v1.schema.json",
+    "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md"
+  ],
+  "status_summary": "In progress. The observe-only connection contract, versioned service record, bounded epoch accumulator, schemas, semantic validator, and initial deterministic tests are implemented. Runnable connection count, oldest shard item age, deadline lateness, reviewed useful work units, exact post-service permanent export, complete fairness outcomes, and every forceable Stage 2 policy remain open. No active behavior is authorized."
+}

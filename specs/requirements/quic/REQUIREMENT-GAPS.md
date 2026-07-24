@@ -41,7 +41,16 @@ This ledger tracks open questions, ambiguities, and follow-up decisions for QUIC
   covering exact four-axis epoch records, deterministic decision joins,
   application-send batch formation, queued-send burst budget, oversized-write
   admission quantum, safety-authoritative forcing, shadow neutrality, and
-  force-legacy rollback. The matching design, delivery, and proof homes for
+  force-legacy rollback. The first Stage 2 observation-only tranche is
+  trace-owned by `REQ-QUIC-CRT-0181` in
+  `SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY`, with `ARC-QUIC-CRT-0067`,
+  `WI-QUIC-CRT-0068`, and `VER-QUIC-CRT-0069` covering bounded
+  connection-attributable actor service, wake, queue-delay, effect, follow-on,
+  lifecycle, and epoch evidence. Runnable-connection count, oldest shard item
+  age, deadline lateness, useful actor work units, an exactly-once cooperative
+  repost seam, buffer-copy/coalescing selection, and adaptive backpressure
+  remain explicit open Stage 2 gaps; no actor policy is forceable. The matching
+  design, delivery, and proof homes for
   the shadow foundation remain `ARC-QUIC-CRT-0059`, `WI-QUIC-CRT-0060`, and
   `VER-QUIC-CRT-0061`. This gap still owns only the later active controller and
   any behavior-distinct application-send planner or wider policy beyond those

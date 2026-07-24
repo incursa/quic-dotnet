@@ -4,16 +4,11 @@ title: "Adaptive Runtime Connection Observation Schema"
 
 # Adaptive Runtime Connection Observation Schema
 
-Status: receive-credit v1, application-send turn, application-send batch, and
-queued-send burst runtime subsets implemented; send-turn raw-host export and
-standalone epoch conversion implemented; permanent runner capture and
-result/checksum joins implemented; the common Stage 1 four-axis in-memory
-contract, unified epoch schema, separate decision schema, and semantic join
-validator are implemented but unified runtime emission for all four axes
-remains pending;
-one local shadow cell and one retained-negative observation-neutrality cell
-executed; broader neutrality, independent-host, and active-policy review remain
-open
+Status: unified Stage 1 four-axis runtime emission, materialization, semantic
+validation, and the first correctness smoke are checkpointed; the Stage 2
+actor-service observation and bounded epoch contracts are implemented without
+a forceable actor policy or permanent Stage 1 join; broader correctness,
+independent-host, and active-policy review remain open
 
 The controller consumes one immutable, connection-local observation per
 bounded epoch. Actor work updates primitive counters; snapshot construction
@@ -76,6 +71,35 @@ execution can populate contemporaneous axis records. At most one axis may have
 a behavior-distinct forced treatment; every adjacent applied value remains
 `legacy_current`. Observe-only and shadow modes therefore do not compete for a
 single global ownership slot.
+
+## Stage 2 Actor Service Observation V1
+
+The behavior-neutral Stage 2 foundation uses
+[`../../schemas/adaptive-runtime-actor-service-observation-v1.schema.json`](../../schemas/adaptive-runtime-actor-service-observation-v1.schema.json)
+for one complete observed shard dispatch and
+[`../../schemas/adaptive-runtime-actor-service-epoch-v1.schema.json`](../../schemas/adaptive-runtime-actor-service-epoch-v1.schema.json)
+for its bounded connection-local aggregation. Each service record contains a
+monotonic connection sequence; shard, wake, and wake-position identity; closed
+work kind; enqueue delay; full transition-and-effect service duration; pending
+work count; emitted-effect and existing follow-on counts; lifecycle phase;
+completion disposition; and explicit validity flags. A guarded sink is
+diagnostic-only and cannot affect progress or ownership.
+
+The fixed-field accumulator retains closed work-kind, disposition, wake,
+duration, effect, and follow-on counters plus totals, maxima, integer EWMAs,
+and the union of validity flags. It has no dictionaries, stream scans, global
+lock, or unbounded state. Queue delay is not relabeled as oldest shard-item
+age, pending work count is not relabeled as runnable-connection count, and a
+dequeued event is not relabeled as a reviewed useful work unit.
+
+This v1 contract intentionally marks runnable-connection count, oldest shard
+item age, deadline lateness, and useful work units unavailable. It does not
+define policy values, forcing, shadow selection, or a latch for
+`actor_work_quantum`; the applied shard behavior remains `legacy_current`.
+The current Stage 1 epoch callback occurs before complete actor service, so
+actor summaries are not silently inserted into that row. A later exact
+post-service export boundary must define deterministic join keys and preserve
+sample scope before permanent unified campaign emission.
 
 ## Epoch Envelope
 

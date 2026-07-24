@@ -190,6 +190,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-CRT-0064.json`](ARC-QUIC-CRT-0064.json): canonical application-send turn campaign provenance architecture source
 - [`ARC-QUIC-CRT-0065.json`](ARC-QUIC-CRT-0065.json): canonical application-send turn shadow policy architecture source
 - [`ARC-QUIC-CRT-0066.json`](ARC-QUIC-CRT-0066.json): canonical four-axis Stage 1 adaptive send-path policy architecture source
+- [`ARC-QUIC-CRT-0067.json`](ARC-QUIC-CRT-0067.json): canonical Stage 2 actor-service observation architecture source
 
 ## Notes
 
