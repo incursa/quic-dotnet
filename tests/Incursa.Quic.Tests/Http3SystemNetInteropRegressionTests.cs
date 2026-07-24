@@ -7,6 +7,8 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using Incursa.Qpack;
 using Incursa.Quic.Http3;
+using SystemNetQuicConnection = System.Net.Quic.QuicConnection;
+using SystemNetQuicListener = System.Net.Quic.QuicListener;
 
 namespace Incursa.Quic.Tests;
 
@@ -54,7 +56,10 @@ public sealed class Http3SystemNetInteropRegressionTests
     [Trait("Category", "Regression")]
     public async Task SystemNetClient_RepeatedlyPostsAndEchoesExact64KiBBody()
     {
-        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        if (!QuicConnection.IsSupported
+            || !QuicListener.IsSupported
+            || !SystemNetQuicConnection.IsSupported
+            || !SystemNetQuicListener.IsSupported)
         {
             return;
         }
@@ -83,7 +88,10 @@ public sealed class Http3SystemNetInteropRegressionTests
     [Trait("Category", "Regression")]
     public async Task SystemNetClient_PostsExactOneMiBBody()
     {
-        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        if (!QuicConnection.IsSupported
+            || !QuicListener.IsSupported
+            || !SystemNetQuicConnection.IsSupported
+            || !SystemNetQuicListener.IsSupported)
         {
             return;
         }
@@ -108,7 +116,10 @@ public sealed class Http3SystemNetInteropRegressionTests
     [Trait("Category", "Regression")]
     public async Task SystemNetClient_RepeatedOneMiBResponsesCompleteExactly()
     {
-        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        if (!QuicConnection.IsSupported
+            || !QuicListener.IsSupported
+            || !SystemNetQuicConnection.IsSupported
+            || !SystemNetQuicListener.IsSupported)
         {
             return;
         }
@@ -137,7 +148,10 @@ public sealed class Http3SystemNetInteropRegressionTests
     [Trait("Category", "Regression")]
     public async Task SystemNetClient_ConcurrentOneMiBResponsesCompleteExactly()
     {
-        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        if (!QuicConnection.IsSupported
+            || !QuicListener.IsSupported
+            || !SystemNetQuicConnection.IsSupported
+            || !SystemNetQuicListener.IsSupported)
         {
             return;
         }
