@@ -12,8 +12,23 @@ internal sealed class QuicRetransmissionQueue
     private long retainedBufferCount;
     private long retainedByteCount;
     private ulong? oldestSentAtMicros;
+    private IQuicBufferCopyOperationObserver? bufferCopyOperationObserver;
 
     public int Count => pendingRetransmissions.Count;
+
+    internal void ConfigureBufferCopyOperationObserver(
+        IQuicBufferCopyOperationObserver observer)
+    {
+        ArgumentNullException.ThrowIfNull(observer);
+        if (Interlocked.CompareExchange(
+                ref bufferCopyOperationObserver,
+                observer,
+                comparand: null) is not null)
+        {
+            throw new InvalidOperationException(
+                "The buffer-copy operation observer has already been configured.");
+        }
+    }
 
     internal QuicRetentionSnapshot CaptureRetentionSnapshot(ulong nowMicros)
     {
@@ -408,7 +423,7 @@ internal sealed class QuicRetransmissionQueue
         }
     }
 
-    private static void AddClonedRetainedPlan(
+    private void AddClonedRetainedPlan(
         QuicConnectionRetransmissionPlan retransmission,
         ref List<QuicConnectionRetransmissionPlan>? retainedRetransmissions)
     {
@@ -417,11 +432,50 @@ internal sealed class QuicRetransmissionQueue
         try
         {
             retainedRetransmissions.Add(retained);
+            TryObserveRetransmissionClone(retransmission, retained);
         }
         catch
         {
             QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retained);
             throw;
+        }
+    }
+
+    private void TryObserveRetransmissionClone(
+        QuicConnectionRetransmissionPlan source,
+        QuicConnectionRetransmissionPlan retained)
+    {
+        IQuicBufferCopyOperationObserver? observer =
+            bufferCopyOperationObserver;
+        if (observer is null
+            || retained.PlaintextPayloadOwner is null
+            || ReferenceEquals(
+                source.PlaintextPayloadOwner,
+                retained.PlaintextPayloadOwner))
+        {
+            return;
+        }
+
+        try
+        {
+            observer.ObserveBufferCopy(
+                QuicBufferCopyPath.RetransmissionClone,
+                QuicBufferCopyOperation.Clone,
+                QuicBufferCopyDecisionBoundary.RetransmissionClone,
+                source.PacketNumber <= long.MaxValue
+                    ? (long)source.PacketNumber
+                    : null,
+                source.PlaintextPayload.Length,
+                source.PlaintextPayload.Length,
+                sourceSegmentCount: 1,
+                requestedCapacityBytes: source.PlaintextPayload.Length,
+                retainedCapacityBytes:
+                    retained.PlaintextPayloadOwner.Length);
+        }
+        catch (Exception)
+        {
+            // Copy evidence is diagnostic-only. A failed observer cannot
+            // interrupt migration retention or change clone ownership.
         }
     }
 

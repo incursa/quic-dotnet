@@ -459,6 +459,13 @@ internal sealed class QuicConnectionSendRuntime
     internal QuicRetentionSnapshot CaptureRetransmissionRetentionSnapshot(ulong nowMicros)
         => retransmissionQueue.CaptureRetentionSnapshot(nowMicros);
 
+    internal void ConfigureBufferCopyOperationObserver(
+        IQuicBufferCopyOperationObserver observer)
+    {
+        ArgumentNullException.ThrowIfNull(observer);
+        retransmissionQueue.ConfigureBufferCopyOperationObserver(observer);
+    }
+
     internal bool HasPendingRetransmission(QuicPacketNumberSpace packetNumberSpace)
     {
         return retransmissionQueue.HasPendingRetransmission(packetNumberSpace);

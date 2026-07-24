@@ -29,7 +29,10 @@ namespace Incursa.Quic;
 // - QuicConnectionIssuedConnectionIdState owns locally issued connection-ID bookkeeping and stateless-reset token tracking.
 // - QuicConnectionRuntime.Lifecycle.cs owns terminal transitions, diagnostics, and shared helpers.
 
-internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposable
+internal sealed partial class QuicConnectionRuntime :
+    IAsyncDisposable,
+    IDisposable,
+    IQuicBufferCopyOperationObserver
 {
     private const ulong TerminalLifetimePtoMultiplier = 3;
     private const ulong MicrosecondsPerSecond = 1_000_000UL;
@@ -1992,6 +1995,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         bufferCopyEvidenceSink = sink;
+        sendRuntime.ConfigureBufferCopyOperationObserver(this);
+        streamRegistry.Bookkeeping.ConfigureBufferCopyOperationObserver(this);
     }
 
     private void ConfigureQueuedSendBurstObservation(
@@ -2826,6 +2831,29 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             // Copy evidence is diagnostic-only. Ownership and runtime
             // progress cannot depend on a sink.
         }
+    }
+
+    void IQuicBufferCopyOperationObserver.ObserveBufferCopy(
+        QuicBufferCopyPath path,
+        QuicBufferCopyOperation operation,
+        QuicBufferCopyDecisionBoundary decisionBoundary,
+        long? joinOperationSequence,
+        int logicalBytes,
+        int copiedBytes,
+        int sourceSegmentCount,
+        int requestedCapacityBytes,
+        int retainedCapacityBytes)
+    {
+        TryPublishBufferCopyObservation(
+            path,
+            operation,
+            decisionBoundary,
+            joinOperationSequence,
+            logicalBytes,
+            copiedBytes,
+            sourceSegmentCount,
+            requestedCapacityBytes,
+            retainedCapacityBytes);
     }
 
     private static ulong ToUInt64Saturating(

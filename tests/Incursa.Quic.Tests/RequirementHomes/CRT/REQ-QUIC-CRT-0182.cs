@@ -443,6 +443,167 @@ public sealed class REQ_QUIC_CRT_0182
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void ReceiveSegmentProducersReportCopyAndCapacityReuse()
+    {
+        QuicConnectionStreamState state =
+            QuicConnectionStreamStateTestHelpers.CreateState(
+                isServer: true,
+                connectionReceiveLimit: 8 * 1024,
+                peerBidirectionalReceiveLimit: 8 * 1024);
+        RecordingSink sink = new();
+        using QuicConnectionRuntime runtime = new(state);
+        runtime.ConfigureAdaptiveRuntimePolicy(
+            new QuicServerConnectionOptions
+            {
+                BufferCopyObservationMode =
+                    QuicBufferCopyObservationMode.ObserveOnly,
+                BufferCopyEvidenceSink = sink,
+            });
+
+        byte[] first = Enumerable.Repeat((byte)0x31, 1_024).ToArray();
+        byte[] second = Enumerable.Repeat((byte)0x32, 1_000).ToArray();
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(
+                streamId: 0,
+                offset: 0,
+                first,
+                fin: false),
+            out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(
+                streamId: 0,
+                offset: (ulong)first.Length,
+                second,
+                fin: true),
+            out errorCode));
+        Assert.Equal(default, errorCode);
+
+        QuicBufferCopyObservation[] observations =
+            [.. sink.Observations.Where(
+                static observation =>
+                    observation.Path
+                        == QuicBufferCopyPath.ReceiveSegment)];
+        Assert.Equal(2, observations.Length);
+        Assert.Equal(
+            QuicBufferCopyOperation.Copy,
+            observations[0].Operation);
+        Assert.Equal(
+            QuicBufferCopyOperation.ReuseAndCopy,
+            observations[1].Operation);
+        Assert.Equal((ulong)first.Length, observations[0].CopiedBytes);
+        Assert.Equal(1_000UL, observations[1].CopiedBytes);
+        Assert.True(
+            observations[0].RetainedCapacityBytes
+                >= observations[0].RequestedCapacityBytes);
+        Assert.Equal(
+            observations[0].RetainedCapacityBytes,
+            observations[1].RetainedCapacityBytes);
+
+        byte[] destination = new byte[first.Length + second.Length];
+        Assert.True(state.TryReadStreamData(
+            streamIdValue: 0,
+            destination,
+            out int bytesWritten,
+            out bool completed,
+            out _,
+            out _,
+            out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(destination.Length, bytesWritten);
+        Assert.True(completed);
+        Assert.Equal(default, state.CaptureReceiveRetentionSnapshot());
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void PathMigrationCloneProducerReportsOwnedPlaintextCopy()
+    {
+        QuicConnectionSendRuntime sendRuntime = new();
+        RecordingOperationObserver observer = new();
+        sendRuntime.ConfigureBufferCopyOperationObserver(observer);
+        byte[] owner = QuicBufferPool.RentBytes(
+            32,
+            QuicBufferPoolOwner.SentPacketRetention);
+        owner.AsSpan(0, 32).Fill(0x5A);
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 7,
+            PayloadBytes: 32,
+            SentAtMicros: 1_000,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PlaintextPayload: owner.AsMemory(0, 32),
+            PlaintextPayloadOwner: owner));
+
+        Assert.True(
+            sendRuntime.TryDiscardPacketNumberSpaceForPathMigration(
+                QuicPacketNumberSpace.ApplicationData));
+
+        ObservedOperation operation =
+            Assert.Single(observer.Operations);
+        Assert.Equal(
+            QuicBufferCopyPath.RetransmissionClone,
+            operation.Path);
+        Assert.Equal(
+            QuicBufferCopyOperation.Clone,
+            operation.Operation);
+        Assert.Equal(
+            QuicBufferCopyDecisionBoundary.RetransmissionClone,
+            operation.DecisionBoundary);
+        Assert.Equal(7, operation.JoinOperationSequence);
+        Assert.Equal(32, operation.CopiedBytes);
+        Assert.True(
+            operation.RetainedCapacityBytes
+                >= operation.RequestedCapacityBytes);
+
+        Assert.True(sendRuntime.TryDequeueRetransmission(
+            out QuicConnectionRetransmissionPlan retransmission));
+        Assert.NotSame(owner, retransmission.PlaintextPayloadOwner);
+        Assert.Equal(
+            Enumerable.Repeat((byte)0x5A, 32),
+            retransmission.PlaintextPayload.ToArray());
+        QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+            retransmission);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ThrowingOperationObserverCannotInterruptMigrationClone()
+    {
+        QuicConnectionSendRuntime sendRuntime = new();
+        sendRuntime.ConfigureBufferCopyOperationObserver(
+            new ThrowingOperationObserver());
+        byte[] owner = QuicBufferPool.RentBytes(
+            8,
+            QuicBufferPoolOwner.SentPacketRetention);
+        owner.AsSpan(0, 8).Fill(0x7B);
+        byte[] expected = owner.AsSpan(0, 8).ToArray();
+        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            PacketNumber: 9,
+            PayloadBytes: 8,
+            SentAtMicros: 1_000,
+            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            PlaintextPayload: owner.AsMemory(0, 8),
+            PlaintextPayloadOwner: owner));
+
+        Assert.True(
+            sendRuntime.TryDiscardPacketNumberSpaceForPathMigration(
+                QuicPacketNumberSpace.ApplicationData));
+        Assert.True(sendRuntime.TryDequeueRetransmission(
+            out QuicConnectionRetransmissionPlan retransmission));
+        Assert.Equal(
+            expected,
+            retransmission.PlaintextPayload.ToArray());
+        QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(
+            retransmission);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void ObservationAndEpochSummaryPassSchemaAndSemanticValidation()
     {
         string repoRoot =
@@ -546,5 +707,95 @@ public sealed class REQ_QUIC_CRT_0182
         public bool TryPublish(
             in QuicBufferCopyObservation observation)
             => throw new InvalidOperationException("diagnostic sink failure");
+    }
+
+    private sealed class RecordingOperationObserver :
+        IQuicBufferCopyOperationObserver
+    {
+        internal List<ObservedOperation> Operations { get; } = [];
+
+        public void ObserveBufferCopy(
+            QuicBufferCopyPath path,
+            QuicBufferCopyOperation operation,
+            QuicBufferCopyDecisionBoundary decisionBoundary,
+            long? joinOperationSequence,
+            int logicalBytes,
+            int copiedBytes,
+            int sourceSegmentCount,
+            int requestedCapacityBytes,
+            int retainedCapacityBytes)
+        {
+            Operations.Add(new ObservedOperation(
+                path,
+                operation,
+                decisionBoundary,
+                joinOperationSequence,
+                logicalBytes,
+                copiedBytes,
+                sourceSegmentCount,
+                requestedCapacityBytes,
+                retainedCapacityBytes));
+        }
+    }
+
+    private sealed class ThrowingOperationObserver :
+        IQuicBufferCopyOperationObserver
+    {
+        public void ObserveBufferCopy(
+            QuicBufferCopyPath path,
+            QuicBufferCopyOperation operation,
+            QuicBufferCopyDecisionBoundary decisionBoundary,
+            long? joinOperationSequence,
+            int logicalBytes,
+            int copiedBytes,
+            int sourceSegmentCount,
+            int requestedCapacityBytes,
+            int retainedCapacityBytes)
+            => throw new InvalidOperationException(
+                "diagnostic operation observer failure");
+    }
+
+    private readonly record struct ObservedOperation(
+        QuicBufferCopyPath Path,
+        QuicBufferCopyOperation Operation,
+        QuicBufferCopyDecisionBoundary DecisionBoundary,
+        long? JoinOperationSequence,
+        int LogicalBytes,
+        int CopiedBytes,
+        int SourceSegmentCount,
+        int RequestedCapacityBytes,
+        int RetainedCapacityBytes);
+
+    private static QuicStreamFrame ParseStreamFrame(
+        ulong streamId,
+        ulong offset,
+        ReadOnlySpan<byte> payload,
+        bool fin)
+    {
+        byte frameType =
+            QuicStreamFrameBits.StreamFrameTypeMinimum
+            | QuicStreamFrameBits.LengthBitMask;
+        if (offset != 0)
+        {
+            frameType |= QuicStreamFrameBits.OffsetBitMask;
+        }
+
+        if (fin)
+        {
+            frameType |= QuicStreamFrameBits.FinBitMask;
+        }
+
+        byte[] buffer = new byte[payload.Length + 32];
+        Assert.True(QuicFrameCodec.TryFormatStreamFrame(
+            frameType,
+            streamId,
+            offset,
+            payload,
+            buffer,
+            out int bytesWritten));
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            buffer.AsSpan(0, bytesWritten),
+            out QuicStreamFrame frame));
+        return frame;
     }
 }

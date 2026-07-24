@@ -54,6 +54,7 @@ internal sealed class QuicConnectionStreamState
     private long retainedReceiveBufferBytes;
     private long bufferedReadableBytes;
     private long bufferedReadableStreamCount;
+    private IQuicBufferCopyOperationObserver? bufferCopyOperationObserver;
     private bool hasCreatedIncomingBidirectionalStream;
     private bool hasCreatedIncomingUnidirectionalStream;
 
@@ -88,6 +89,20 @@ internal sealed class QuicConnectionStreamState
     public ulong PeerUnidirectionalStreamLimit => peerUnidirectionalStreamLimit;
     public ulong IncomingBidirectionalStreamLimit => incomingBidirectionalStreamLimit;
     public ulong IncomingUnidirectionalStreamLimit => incomingUnidirectionalStreamLimit;
+
+    internal void ConfigureBufferCopyOperationObserver(
+        IQuicBufferCopyOperationObserver observer)
+    {
+        ArgumentNullException.ThrowIfNull(observer);
+        if (Interlocked.CompareExchange(
+                ref bufferCopyOperationObserver,
+                observer,
+                comparand: null) is not null)
+        {
+            throw new InvalidOperationException(
+                "The buffer-copy operation observer has already been configured.");
+        }
+    }
 
     // CONTEXT: Local stream reservation stays split from commit so callers can check whether the next
     // stream ID is available and surface STREAMS_BLOCKED without consuming quota until a stream is
@@ -2047,7 +2062,7 @@ internal sealed class QuicConnectionStreamState
         state.HasSecondInlineBufferedSegment = false;
     }
 
-    private static bool TryAppendBufferedSegment(
+    private bool TryAppendBufferedSegment(
         StreamState state,
         int index,
         BufferedSegment segment,
@@ -2064,6 +2079,11 @@ internal sealed class QuicConnectionStreamState
 
         data.CopyTo(segment.Data.AsSpan(appendOffset));
         SetBufferedSegment(state, index, segment with { Length = segment.Length + data.Length });
+        TryObserveReceiveSegment(
+            QuicBufferCopyOperation.ReuseAndCopy,
+            data.Length,
+            requestedCapacityBytes: data.Length,
+            retainedCapacityBytes: segment.Data.Length);
         return true;
     }
 
@@ -2160,7 +2180,45 @@ internal sealed class QuicConnectionStreamState
         data.Slice(dataIndex, length).CopyTo(segmentData);
         retainedReceiveBufferCount++;
         retainedReceiveBufferBytes += segmentData.Length;
+        TryObserveReceiveSegment(
+            QuicBufferCopyOperation.Copy,
+            length,
+            minimumCapacity,
+            segmentData.Length);
         return new BufferedSegment(offset, segmentData, DataOffset: 0, Length: length, OwnsData: true);
+    }
+
+    private void TryObserveReceiveSegment(
+        QuicBufferCopyOperation operation,
+        int copiedBytes,
+        int requestedCapacityBytes,
+        int retainedCapacityBytes)
+    {
+        IQuicBufferCopyOperationObserver? observer =
+            bufferCopyOperationObserver;
+        if (observer is null)
+        {
+            return;
+        }
+
+        try
+        {
+            observer.ObserveBufferCopy(
+                QuicBufferCopyPath.ReceiveSegment,
+                operation,
+                QuicBufferCopyDecisionBoundary.ReceiveSegmentInsertion,
+                joinOperationSequence: null,
+                logicalBytes: copiedBytes,
+                copiedBytes,
+                sourceSegmentCount: copiedBytes == 0 ? 0 : 1,
+                requestedCapacityBytes,
+                retainedCapacityBytes);
+        }
+        catch (Exception)
+        {
+            // Copy evidence is diagnostic-only. A failed observer cannot
+            // interrupt receive insertion or change segment ownership.
+        }
     }
 
     private void RemoveBufferedSegmentAt(StreamState state, int index)
