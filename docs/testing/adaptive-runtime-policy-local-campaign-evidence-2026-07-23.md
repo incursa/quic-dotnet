@@ -1611,3 +1611,68 @@ Only one broad-validator error names the current four-artifact slice:
 `SPEC-QUIC-CRT` because that parent is among the legacy artifacts rejected by
 the repository-wide model migration baseline. This checkpoint does not alter
 or conceal that unrelated baseline.
+
+## Permanent ProtocolLab Plans And ARM64 Package Cohort
+
+Commit `37711c95` adds the versioned
+`adaptive-runtime-protocol-lab-campaign-v1` manifest and permanent campaign
+driver. Commit `fb0ccb92` fixes clean-worktree empty-array serialization found
+by the first commit-pinned plan attempt. Commit `ee7cb9ef` extends the raw QUIC
+implementation package to explicit Linux ARM64 and macOS ARM64 payloads while
+leaving the default x64 package cohort unchanged.
+
+The driver is plan-only unless `-Execute` is supplied. Execution requires a
+clean worktree, creates distinct treatment package versions, requests
+controller-owned `isolated-pair` placement, records no explicit worker ID,
+retains every returned job and topology, and leaves completed cells
+unclassified until ingestion. Shared physical hosts are
+`environment_invalid`; repeated host pairs remain
+`host_rotation_unverified`. The manifest always has
+`activeInternalAuthorized = false`.
+
+The Release test-project build passed with zero warnings and zero errors. The
+focused package and campaign home passed 25 of 25 tests, including schema-valid
+shadow ABBA and forced-counterfactual BAAB plans. The explicit dirty-source
+execution guard also rejected execution before any controller access while
+the implementation slice was uncommitted.
+
+Two clean plans now target exact commit
+`fb0ccb9257a754e382adfd1746758d855cf9b928`:
+
+| Campaign | Sequence and treatments | Manifest SHA-256 | Inventory SHA-256 |
+| --- | --- | --- | --- |
+| `application-send-turn-shadow-20260724-r001` | ABBA; A `legacy_current`, B `shadow` | `d7aec0563519e0547abb83cef3f3d066604bcd1b1a5a407b92f91e46b0f7fe63` | `2611375a31161ca8cac802e52885064199836178fce3b595963ad9c5b1c1d5b0` |
+| `application-send-turn-forced-20260724-r001` | BAAB; A `legacy_current`, B `conservative` | `9862fa144dadd99d9bc88962eae6318a52ff116b21d971109b899bcd558e364d` | `b8fe8c32302465ff7d3456d2e54a746e69439ed6a77ef0b3c7d30dffa0a21191` |
+
+Both plans contain four ordered cells, apply `legacy_current`, freeze adjacent
+axes at `legacy_current`, request the load-validated raw QUIC multiplex and
+duplex scenarios, and remain `planned`. No package upload or controller job
+occurred.
+
+Three clean dual-ARM64 implementation packages were then materialized from
+exact commit `ee7cb9efe4834bfa17ec3f574ff2660437e8fdaa`:
+
+| Policy identity | Package SHA-256 | Attestation SHA-256 | Bytes |
+| --- | --- | --- | ---: |
+| `legacy_current` | `6c2dd7046a1e534ae6010131de889ae868fbd374b1b5e3571302d0b5b8d5814e` | `912b560a534225cdc615f0906b35997786e308002989e6c162a7d70e1f8bbc7d` | 2,465,323 |
+| `conservative` | `48e794bcacce38996212c62ce6d803b32e7d9210d327f280299d9f7620ef7270` | `5af75b760f9040428448f2b48e10b9aa994a3c70967b99874c089922cf81dae5` | 2,465,317 |
+| `shadow` | `76dc1a2393f211a9e6748179f1bd6d9ffe3b83db436024ef45e2c52770a99b76` | `0d39d55aa4b600f739aa791e48cb45026b4e6bf4298ab670ae45a551f5f91b43` | 2,465,307 |
+
+Each package is parity-eligible, includes exactly `linux-arm64` and
+`osx-arm64`, and carries `linux/arm64` and `macos/arm64` execution
+environments. The policy stamp is distinct and no receive-credit override is
+present. These artifacts prove cross-compilation and package materialization,
+not worker readiness, platform correctness, performance, or host holdout
+eligibility.
+
+The first ARM64 command used `pwsh -File` with
+`linux-arm64,osx-arm64`, which PowerShell bound as one literal runtime
+identifier and rejected before any publish. The corrected direct invocation
+passed a two-element array and produced the packages above. The rejected
+command remains a diagnostic syntax failure; it is not measurement evidence.
+
+The current workstation routing diagnostic remains unchanged, so neither the
+new x64 plans nor ARM64 packages were uploaded. This is not a claim that the
+multi-host lab is unavailable. `application_send_turn_planning` remains the
+only active work axis and still applies `legacy_current`; the next portfolio
+axis remains unauthorized.
