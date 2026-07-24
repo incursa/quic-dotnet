@@ -651,11 +651,20 @@ public sealed class ProtocolLabPackageTemplateTests
             repoRoot,
             "schemas",
             "adaptive-runtime-application-send-turn-counterfactual-analysis-v1.schema.json"));
+        var datasetPipeline = File.ReadAllText(Path.Combine(
+            repoRoot,
+            "eng",
+            "adaptive-runtime",
+            "Invoke-AdaptiveRuntimeDatasetPipeline.ps1"));
 
         Assert.Contains("cell_median_not_epoch_independent", script, StringComparison.Ordinal);
         Assert.Contains("server_application_send_not_exercised", script, StringComparison.Ordinal);
         Assert.Contains("activeInternalAuthorized = $false", script, StringComparison.Ordinal);
         Assert.Contains("\"const\": false", schema, StringComparison.Ordinal);
+        Assert.Contains(
+            "oldestQueuedSendAgeMicros = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'oldestApplicationSendAgeMicros'",
+            datasetPipeline,
+            StringComparison.Ordinal);
     }
 
     [Theory]

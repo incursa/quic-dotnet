@@ -333,7 +333,7 @@ foreach ($epochItem in ($epochRows | Sort-Object { $_.Document.campaignId }, { $
             queuedApplicationWrites = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'queuedApplicationWrites'
             outboundBacklogBytes = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'outboundBacklogBytes'
             distinctQueuedSendStreams = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'distinctQueuedSendStreams'
-            oldestQueuedSendAgeMicros = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'oldestQueuedSendAgeMicros'
+            oldestQueuedSendAgeMicros = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'oldestApplicationSendAgeMicros'
             queueDelayEwmaMicros = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'queueDelayEwmaMicros'
             actorServiceTimeEwmaMicros = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'actorServiceTimeEwmaMicros'
             queueToServiceRatioQ16 = Get-OptionalPropertyValue -InputObject $row.preDecisionObservations -PropertyName 'queueToServiceRatioQ16'
