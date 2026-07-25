@@ -1,0 +1,86 @@
+{
+  "schema_version": "adaptive-runtime-compiled-execution-manifest-v1",
+  "document_id": "adaptive_runtime_compiled_execution_manifest_blocked_axis_executable_v1",
+  "document_version": 1,
+  "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "trace_references": {
+    "requirement_ids": [
+      "REQ-QUIC-CRT-0198",
+      "REQ-QUIC-CRT-0199",
+      "REQ-QUIC-CRT-0200",
+      "REQ-QUIC-CRT-0201"
+    ],
+    "architecture_ids": [
+      "ARC-QUIC-CRT-0089"
+    ],
+    "work_item_ids": [
+      "WI-QUIC-CRT-0090"
+    ],
+    "verification_ids": [
+      "VER-QUIC-CRT-0091"
+    ]
+  },
+  "active_behavior_authorization": false,
+  "performance_acceptance_authorization": false,
+  "compiled_execution_manifest_id": "blocked-axis-executable-manifest",
+  "source_plan_ref": {
+    "document_id": "adaptive_runtime_experiment_plan_blocked_axis_executable_v1",
+    "schema_version": "adaptive-runtime-experiment-plan-v1",
+    "document_version": 1,
+    "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "source_validation_ref": {
+    "document_id": "adaptive_runtime_experiment_plan_validation_blocked_axis_executable_v1",
+    "schema_version": "adaptive-runtime-experiment-plan-validation-v1",
+    "document_version": 1,
+    "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "source_commit": "1111111",
+  "binary_provenance": [
+    {
+      "role": "source_plan",
+      "path": "eng/adaptive-runtime/experiment-control/adaptive-runtime-experiment-plan-v1.json",
+      "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ],
+  "host_capabilities": {
+    "host_id": "blocked-host",
+    "os": "windows",
+    "architecture": "x64",
+    "processor_count": 16,
+    "capability_flags": [
+      "source_plan_valid",
+      "current_combination_blocked",
+      "single_axis_executable",
+      "multi_axis_blocked",
+      "post_build_refs_present"
+    ]
+  },
+  "execution_order": [
+    "cell-1"
+  ],
+  "executable_cells": [
+    {
+      "cell_id": "cell-1",
+      "cell_order": 0,
+      "axis_ids": [
+        "application_send_batch_formation",
+        "buffer_copy_coalescing"
+      ],
+      "treatment_ids": [
+        "treatment-1",
+        "treatment-2"
+      ],
+      "execution_state": "executable"
+    }
+  ],
+  "post_build_refs": [
+    {
+      "document_id": "adaptive_runtime_experiment_plan_validation_blocked_axis_executable_v1",
+      "schema_version": "adaptive-runtime-experiment-plan-validation-v1",
+      "document_version": 1,
+      "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ],
+  "build_status": "blocked_by_capability"
+}

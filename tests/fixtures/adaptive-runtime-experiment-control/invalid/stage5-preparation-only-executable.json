@@ -1,0 +1,81 @@
+{
+  "schema_version": "adaptive-runtime-policy-axis-contract-v1",
+  "document_id": "adaptive_runtime_stage5_preparation_only_axis_contract_v1",
+  "document_version": 1,
+  "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "trace_references": {
+    "requirement_ids": [
+      "REQ-QUIC-CRT-0198",
+      "REQ-QUIC-CRT-0199",
+      "REQ-QUIC-CRT-0200",
+      "REQ-QUIC-CRT-0201"
+    ],
+    "architecture_ids": [
+      "ARC-QUIC-CRT-0089"
+    ],
+    "work_item_ids": [
+      "WI-QUIC-CRT-0090"
+    ],
+    "verification_ids": [
+      "VER-QUIC-CRT-0091"
+    ]
+  },
+  "active_behavior_authorization": false,
+  "performance_acceptance_authorization": false,
+  "axis_contracts": [
+    {
+      "axis_id": "stage5_preparation_only",
+      "status": "preparation_only",
+      "executable": true,
+      "policy_values": [
+        "legacy_current"
+      ],
+      "authority": {
+        "owner": "connection_actor",
+        "scope": "stage5",
+        "boundary": "preparation_only_boundary",
+        "latch": "stage5_latch"
+      },
+      "scope": "stage5",
+      "boundary": "preparation_only_boundary",
+      "latch": "stage5_latch",
+      "selected_value_compatibility": [
+        {
+          "selected_value": "legacy_current",
+          "candidate_value": "legacy_current",
+          "compatible": true,
+          "comparison_mode": "blocked_by_capability"
+        }
+      ],
+      "canonical_predicates": [
+        {
+          "predicate_id": "predicate.stage5.preparation_only",
+          "description": "stage5 preparation-only axes remain non-executable"
+        }
+      ],
+      "safety_clamps": [
+        {
+          "clamp_id": "clamp.stage5.not_executable",
+          "description": "preparation-only axes remain non-executable"
+        }
+      ],
+      "trace_references": {
+        "requirement_ids": [
+          "REQ-QUIC-CRT-0198",
+          "REQ-QUIC-CRT-0199",
+          "REQ-QUIC-CRT-0200",
+          "REQ-QUIC-CRT-0201"
+        ],
+        "architecture_ids": [
+          "ARC-QUIC-CRT-0089"
+        ],
+        "work_item_ids": [
+          "WI-QUIC-CRT-0090"
+        ],
+        "verification_ids": [
+          "VER-QUIC-CRT-0091"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "schema_version": "adaptive-runtime-experiment-plan-v1",
+  "document_id": "adaptive_runtime_experiment_plan_illegal_policy_value_v1",
+  "document_version": 1,
+  "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "trace_references": {
+    "requirement_ids": [
+      "REQ-QUIC-CRT-0198",
+      "REQ-QUIC-CRT-0199",
+      "REQ-QUIC-CRT-0200",
+      "REQ-QUIC-CRT-0201"
+    ],
+    "architecture_ids": [
+      "ARC-QUIC-CRT-0089"
+    ],
+    "work_item_ids": [
+      "WI-QUIC-CRT-0090"
+    ],
+    "verification_ids": [
+      "VER-QUIC-CRT-0091"
+    ]
+  },
+  "active_behavior_authorization": false,
+  "performance_acceptance_authorization": false,
+  "experiment_plan_id": "illegal-policy-value-plan",
+  "family_id": "send_composition",
+  "experiment_type": "isolated_counterfactual",
+  "fixed_axis_ids": [
+    "application_send_batch_formation",
+    "buffer_copy_coalescing"
+  ],
+  "varied_axis_ids": [
+    "application_send_turn_planning"
+  ],
+  "treatment_order": [
+    "turn-only"
+  ],
+  "treatments": [
+    {
+      "treatment_id": "turn-only",
+      "order_index": 0,
+      "axis_id": "application_send_turn_planning",
+      "configured_value": "single_eligible",
+      "candidate_value": "single_eligible"
+    }
+  ],
+  "planned_cells": [
+    {
+      "cell_id": "cell-1",
+      "cell_order": 0,
+      "treatment_ids": [
+        "turn-only"
+      ],
+      "axis_ids": [
+        "application_send_turn_planning"
+      ],
+      "expected_equivalence_group_id": "equiv-1",
+      "execution_state": "planned"
+    }
+  ],
+  "execution_status": "ready"
+}

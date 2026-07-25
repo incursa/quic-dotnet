@@ -1,0 +1,90 @@
+{
+  "schema_version": "adaptive-runtime-policy-axis-contract-v1",
+  "document_id": "adaptive_runtime_policy_axis_contracts_stale_version_reference_v1",
+  "document_version": 1,
+  "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "trace_references": {
+    "requirement_ids": [
+      "REQ-QUIC-CRT-0198",
+      "REQ-QUIC-CRT-0199",
+      "REQ-QUIC-CRT-0200",
+      "REQ-QUIC-CRT-0201"
+    ],
+    "architecture_ids": [
+      "ARC-QUIC-CRT-0089"
+    ],
+    "work_item_ids": [
+      "WI-QUIC-CRT-0090"
+    ],
+    "verification_ids": [
+      "VER-QUIC-CRT-0091"
+    ]
+  },
+  "active_behavior_authorization": false,
+  "performance_acceptance_authorization": false,
+  "axis_contracts": [
+    {
+      "axis_id": "application_send_batch_formation",
+      "status": "implemented",
+      "executable": true,
+      "policy_values": [
+        "legacy_current",
+        "single_eligible"
+      ],
+      "authority": {
+        "owner": "connection_actor",
+        "scope": "packet_plan",
+        "boundary": "after_legal_eligible_prefix_before_packet_plan_commit",
+        "latch": "packet_plan_latch"
+      },
+      "scope": "packet_plan",
+      "boundary": "after_legal_eligible_prefix_before_packet_plan_commit",
+      "latch": "packet_plan_latch",
+      "selected_value_compatibility": [
+        {
+          "selected_value": "legacy_current",
+          "candidate_value": "legacy_current",
+          "compatible": true,
+          "comparison_mode": "applied"
+        }
+      ],
+      "canonical_predicates": [
+        {
+          "predicate_id": "predicate.batch.lower_only",
+          "description": "single_eligible may only shorten an already legal eligible prefix"
+        }
+      ],
+      "safety_clamps": [
+        {
+          "clamp_id": "clamp.batch.cannot_widen",
+          "description": "the selected value cannot widen the legal prefix"
+        }
+      ],
+      "compatibility_refs": [
+        {
+          "document_id": "adaptive_runtime_policy_axis_contracts_v1",
+          "schema_version": "adaptive-runtime-policy-axis-contract-v0",
+          "document_version": 1,
+          "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "trace_references": {
+        "requirement_ids": [
+          "REQ-QUIC-CRT-0198",
+          "REQ-QUIC-CRT-0199",
+          "REQ-QUIC-CRT-0200",
+          "REQ-QUIC-CRT-0201"
+        ],
+        "architecture_ids": [
+          "ARC-QUIC-CRT-0089"
+        ],
+        "work_item_ids": [
+          "WI-QUIC-CRT-0090"
+        ],
+        "verification_ids": [
+          "VER-QUIC-CRT-0091"
+        ]
+      }
+    }
+  ]
+}

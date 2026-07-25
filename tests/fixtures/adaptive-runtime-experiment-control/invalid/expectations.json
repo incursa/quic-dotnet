@@ -1,0 +1,17 @@
+{
+  "unknown-field.json": "unknown_field",
+  "duplicate-axis-definition.json": "duplicate_axis_definition",
+  "illegal-policy-value.json": "illegal_policy_value",
+  "unknown-contract-reference.json": "unknown_contract_reference",
+  "stale-version-reference.json": "stale_version_reference",
+  "blocked-axis-executable.json": "blocked_axis_executable",
+  "stage5-preparation-only-executable.json": "stage5_preparation_only_executable",
+  "active-behavior-authorization-true.json": "active_behavior_authorization_true",
+  "performance-acceptance-authorization-true.json": "performance_acceptance_authorization_true",
+  "malformed-hash.json": "malformed_hash",
+  "invalid-relationship-type.json": "invalid_relationship_type",
+  "duplicate-relationship-edge.json": "duplicate_relationship_edge",
+  "missing-canonical-predicate-reference.json": "missing_canonical_predicate_reference",
+  "fixed-varied-axis-overlap.json": "fixed_varied_axis_overlap",
+  "unsupported-experiment-type.json": "unsupported_experiment_type"
+}

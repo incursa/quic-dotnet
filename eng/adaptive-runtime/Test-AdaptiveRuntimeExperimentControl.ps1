@@ -4,7 +4,7 @@
 [CmdletBinding()]
 param(
     [switch] $UpdateContentHashes,
-    
+
     [string] $RepositoryRoot
 )
 

@@ -1,0 +1,54 @@
+{
+  "schema_version": "adaptive-runtime-combination-constraint-catalog-v1",
+  "document_id": "adaptive_runtime_combination_constraint_catalog_fixed_varied_axis_overlap_v1",
+  "document_version": 1,
+  "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "trace_references": {
+    "requirement_ids": [
+      "REQ-QUIC-CRT-0198",
+      "REQ-QUIC-CRT-0199",
+      "REQ-QUIC-CRT-0200",
+      "REQ-QUIC-CRT-0201"
+    ],
+    "architecture_ids": [
+      "ARC-QUIC-CRT-0089"
+    ],
+    "work_item_ids": [
+      "WI-QUIC-CRT-0090"
+    ],
+    "verification_ids": [
+      "VER-QUIC-CRT-0091"
+    ]
+  },
+  "active_behavior_authorization": false,
+  "performance_acceptance_authorization": false,
+  "combination_constraints": [
+    {
+      "constraint_id": "constraint.send_composition.fixed_varied_overlap",
+      "family_id": "send_composition",
+      "experiment_types": [
+        "interaction_screen"
+      ],
+      "fixed_axis_ids": [
+        "application_send_turn_planning"
+      ],
+      "varied_axis_ids": [
+        "application_send_turn_planning"
+      ],
+      "predicate_refs": [
+        "predicate.family.send_composition.permits_first_slice"
+      ],
+      "guard_refs": [
+        "guard.family.send_composition.current_capability_blocked"
+      ],
+      "legality": "legal",
+      "capability_state": "blocked",
+      "equivalence_state": "verification_only",
+      "measurement_authorized": false,
+      "promotion_deferred": true,
+      "notes": [
+        "The fixed and varied axis sets overlap on the same axis."
+      ]
+    }
+  ]
+}

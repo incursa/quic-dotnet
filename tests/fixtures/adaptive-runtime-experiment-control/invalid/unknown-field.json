@@ -1,0 +1,91 @@
+{
+  "schema_version": "adaptive-runtime-policy-axis-contract-v1",
+  "document_id": "adaptive_runtime_policy_axis_contracts_unknown_field_v1",
+  "document_version": 1,
+  "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "trace_references": {
+    "requirement_ids": [
+      "REQ-QUIC-CRT-0198",
+      "REQ-QUIC-CRT-0199",
+      "REQ-QUIC-CRT-0200",
+      "REQ-QUIC-CRT-0201"
+    ],
+    "architecture_ids": [
+      "ARC-QUIC-CRT-0089"
+    ],
+    "work_item_ids": [
+      "WI-QUIC-CRT-0090"
+    ],
+    "verification_ids": [
+      "VER-QUIC-CRT-0091"
+    ]
+  },
+  "active_behavior_authorization": false,
+  "performance_acceptance_authorization": false,
+  "axis_contracts": [
+    {
+      "axis_id": "application_send_turn_planning",
+      "status": "implemented",
+      "executable": true,
+      "policy_values": [
+        "legacy_current",
+        "conservative"
+      ],
+      "authority": {
+        "owner": "connection_actor",
+        "scope": "send_turn",
+        "boundary": "existing_application_send_actor_turn_planning_boundary",
+        "latch": "one_turn_planning_latch"
+      },
+      "scope": "send_turn",
+      "boundary": "existing_application_send_actor_turn_planning_boundary",
+      "latch": "one_turn_planning_latch",
+      "selected_value_compatibility": [
+        {
+          "selected_value": "legacy_current",
+          "candidate_value": "legacy_current",
+          "compatible": true,
+          "comparison_mode": "verification_only"
+        }
+      ],
+      "canonical_predicates": [
+        {
+          "predicate_id": "predicate.send_turn.behavior_equivalent",
+          "description": "legacy_current and conservative both normalize to legacy_priority_stable_sequence"
+        },
+        {
+          "predicate_id": "predicate.send_turn.order_preserving",
+          "description": "the planner must preserve priority and same-stream order"
+        },
+        {
+          "predicate_id": "predicate.send_turn.verification_only",
+          "description": "label comparison remains verification-only until a behavior-distinct planner exists"
+        }
+      ],
+      "safety_clamps": [
+        {
+          "clamp_id": "clamp.send_turn.no_active_planner",
+          "description": "the current slice does not introduce an active planner algorithm"
+        }
+      ],
+      "trace_references": {
+        "requirement_ids": [
+          "REQ-QUIC-CRT-0198",
+          "REQ-QUIC-CRT-0199",
+          "REQ-QUIC-CRT-0200",
+          "REQ-QUIC-CRT-0201"
+        ],
+        "architecture_ids": [
+          "ARC-QUIC-CRT-0089"
+        ],
+        "work_item_ids": [
+          "WI-QUIC-CRT-0090"
+        ],
+        "verification_ids": [
+          "VER-QUIC-CRT-0091"
+        ]
+      }
+    }
+  ],
+  "unknown_field": "this field must be rejected"
+}
