@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0082",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "Capability-gated application datagram batch transport verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -63,5 +63,5 @@
     "docs/design/adaptive-runtime-policy-observation-schema.md",
     "docs/design/adaptive-runtime-policy-seam-inventory.md"
   ],
-  "status_summary": "Implementation verification is in progress. No performance, campaign, dataset, ML, CI, push, active_internal, or production action is authorized."
+  "status_summary": "Release builds for the affected test project and raw host completed with zero warnings and zero errors. The final focused adaptive, unified, package, socket, terminal, cancellation, and ownership band passed 144 of 144 cases, including 25 REQ-QUIC-CRT-0195 cases. All four focused SpecTrace artifacts validate against the canonical model; changed PowerShell scripts parse; unified evidence/raw/manifest JSON schemas parse and their deterministic fixture coverage passes. No performance, campaign, dataset, ML, CI, push, active_internal, or production action occurred."
 }

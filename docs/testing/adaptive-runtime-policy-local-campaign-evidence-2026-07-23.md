@@ -4213,3 +4213,122 @@ force-legacy rollback tested. The next independent axis is
 `application_datagram_batch_transport`, including bounded platform-capability
 and fallback seams. Performance measurement, active behavior, CI work, push,
 and measurement-freeze release remain unauthorized.
+
+## Stage 4 Application Datagram Batch Transport Implementation Checkpoint
+
+Recorded: 2026-07-24.
+
+Active axis: `application_datagram_batch_transport`.
+
+Adjacent applied axes: `receive_credit_publication`, all four Stage 1 axes,
+both implementation-ready Stage 2 axes, both Stage 3 axes, and
+`connection_shard_placement` remain `legacy_current`. No campaign axis varied.
+
+Recovery and worktree disposition:
+
+- the starting clean checkpoint was `47386e07` (`Record connection shard
+  placement checkpoint evidence`);
+- the branch was `main`, ahead of `origin/main` by 100 commits before this
+  slice;
+- no adaptive transform, campaign, build, or test command was active at
+  recovery; only reusable MSBuild nodes and Codex helper processes were
+  present;
+- the stopped 55,658-epoch single-axis transform and every raw, hash,
+  classification, and partial artifact remain untouched and classified
+  `diagnostic_incomplete`;
+- the user-approved roadmap remains unchanged; and
+- CI was ignored, no performance command ran, no dataset row was generated,
+  and no push was attempted.
+
+Capability delivered:
+
+- stable axis ID `application_datagram_batch_transport`;
+- closed values `legacy_current`, `segmented_batch`, and
+  `ordinary_datagrams`;
+- retained server capability-gated batching and client one-way pressure
+  promotion under `legacy_current`;
+- exact application-send-turn decision boundary, a connection-lifetime client
+  promotion latch, and a monotonic socket-capability epoch;
+- disabled, observe-only, shadow, forced legacy, forced segmented, and forced
+  ordinary operation with forced, recommended, selected, applied, source,
+  reason, safety, fallback, validity, latch, and version state distinct;
+- platform, address-family, socket-probe, and custom-sender capability
+  classification, with forced segmented selection falling back to ordinary
+  datagrams when capability is unavailable;
+- connection-local configuration matching and the retained one
+  behavior-distinct-axis guard before evidence-sink attachment;
+- packet construction, source-address and ECN routing, packet size,
+  segmentation, partial-send failure, endpoint and buffer ownership,
+  cancellation, disposal, shutdown, recovery, congestion, pacing,
+  flow-control, queue, and buffer limits remain authoritative;
+- bounded sample-scoped socket-call, datagram, segment, byte, failure, partial,
+  and lifecycle outcomes without treating samples as independent epochs;
+- independently tested force-legacy rollback and throwing-sink neutrality;
+- unified evidence v12, unified raw v12, export manifest v13, and ten axis
+  records per epoch; and
+- raw-host plus permanent package force/observe/shadow wiring without running
+  a package or campaign.
+
+Correctness commands and accepted results:
+
+| Command or check | Result |
+| --- | --- |
+| `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --nologo` | zero warnings, zero errors in 46.32 seconds; final rebuild after the test-contract correction also had zero warnings and zero errors in 49.25 seconds |
+| `dotnet build eng/protocol-lab/servers/IncursaRawQuicServer/IncursaRawQuicServer.csproj -c Release --nologo` | zero warnings, zero errors in 5.97 seconds |
+| focused `REQ-QUIC-CRT-0195`, retained `REQ-QUIC-CRT-0162`, unified `REQ-QUIC-CRT-0183`, package, socket segmentation, listener send resilience, terminal cancellation, and ownership band | 144 passed, zero failed, zero skipped in 30 seconds |
+| PowerShell AST parse | changed exporter, validator, package, and runner scripts parsed with zero errors |
+| JSON parse | unified evidence v12, raw v12, and manifest v13 schemas parsed cleanly |
+| direct canonical SpecTrace model validation | four of four focused Stage 4 artifacts returned `True` |
+| focused reciprocal trace validation | `REQ-QUIC-CRT-0195 -> ARC-QUIC-CRT-0080 -> WI-QUIC-CRT-0081 -> VER-QUIC-CRT-0082` is reciprocal |
+| normative requirement check | `REQ-QUIC-CRT-0195` contains exactly one uppercase normative modal |
+| unified exporter fixture | deterministic `REQ-QUIC-CRT-0183` fixture validates ten axis records and transport configuration, capability, decision, and socket-call representation |
+| `git diff --check` and cached diff check | clean |
+
+Retained diagnostic results:
+
+- early implementation builds exposed analyzer rules S3358 and S1871 in the
+  initial policy expression and branch shape; both were corrected without
+  weakening the rule;
+- the first requirement-home build exposed internal enum accessibility and an
+  invalid coverage value; both test declarations were corrected;
+- a later requirement-home build used the nonexistent
+  `QuicQueuedSendBurstPolicyMode.Conservative`; it was corrected to the closed
+  `SingleDatagram` value;
+- the first direct Stage 4 specification validation rejected a pre-existing
+  empty optional `open_questions` array; the empty property was removed and
+  all four focused artifacts validate;
+- the verification closeout initially used the unsupported lifecycle value
+  `verified`; canonical validation rejected it and the artifact now uses the
+  closed verification status `passed`;
+- the first 144-case focused run retained 143 passes and one failure because
+  the package-template assertion still named unified raw v11; the assertion
+  now names v12 and the complete rerun passed; and
+- raw semantic validation review found that a persisted last decision can be
+  present in an epoch with zero new decision events. The validator now rejects
+  positive decision counts without a decision while permitting the bounded
+  persisted decision state.
+
+Evidence counts:
+
+- implemented unified axis records per epoch: 10;
+- focused transport-axis cases: 25;
+- final affected adaptive, unified, package, socket, terminal, cancellation,
+  and ownership band: 144 passed;
+- diagnostic predecessor band: 143 passed and 1 failed;
+- performance rows: 0;
+- new campaign raw, normalized, curated, split, or analysis rows: 0;
+- dataset inclusions and exclusions: unchanged;
+- campaigns and ProtocolLab deployments: 0;
+- BenchmarkDotNet invocations: 0; and
+- ML or threshold derivations: 0.
+
+Local implementation commit: `c9f6ec39` (`Implement application datagram
+batch transport axis`). Nothing was pushed.
+
+Stage 4 disposition: both ordinary Stage 4 axes are implementation-ready,
+observable, shadowable, independently forceable, unified-row represented, and
+force-legacy rollback tested. The next axis is Stage 5
+`congestion_pacing_profile`, which requires its separate protocol-safety
+architecture and must not be activated merely to mark it complete.
+Performance measurement, active behavior, CI work, push, and
+measurement-freeze release remain unauthorized.
