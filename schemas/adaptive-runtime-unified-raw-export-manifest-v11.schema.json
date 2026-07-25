@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-unified-raw-export-manifest-v11.schema.json",
+  "title": "Adaptive Runtime Unified Raw Export Manifest v11",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "createdUtc",
+    "rawEpochSchemaVersion",
+    "actorRawObservationSchemaVersion",
+    "bufferRawObservationSchemaVersion",
+    "adaptiveBackpressureRawObservationSchemaVersion",
+    "packetFlushCadenceRawObservationSchemaVersion",
+    "receiveDeliveryQuantumRawObservationSchemaVersion",
+    "classification",
+    "rowCount",
+    "axisRecordCount",
+    "connectionCount",
+    "actorEpochRowCount",
+    "actorObservationRowCount",
+    "bufferObservationRowCount",
+    "adaptiveBackpressureEpochRowCount",
+    "adaptiveBackpressureObservationRowCount",
+    "packetFlushCadenceEpochRowCount",
+    "packetFlushCadenceObservationRowCount",
+    "receiveDeliveryQuantumEpochRowCount",
+    "receiveDeliveryQuantumObservationRowCount",
+    "actorExportFailureCount",
+    "exportFailureCount",
+    "sources",
+    "artifacts"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "adaptive-runtime-unified-raw-export-manifest-v11"
+    },
+    "createdUtc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rawEpochSchemaVersion": {
+      "const": "adaptive-runtime-unified-epoch-raw-v10"
+    },
+    "actorRawObservationSchemaVersion": {
+      "const": "adaptive-runtime-actor-service-raw-v4"
+    },
+    "bufferRawObservationSchemaVersion": {
+      "const": "quic-buffer-copy-raw-v4"
+    },
+    "adaptiveBackpressureRawObservationSchemaVersion": {
+      "const": "quic-adaptive-backpressure-raw-v1"
+    },
+    "packetFlushCadenceRawObservationSchemaVersion": {
+      "const": "quic-packet-flush-cadence-raw-v1"
+    },
+    "receiveDeliveryQuantumRawObservationSchemaVersion": {
+      "const": "quic-receive-delivery-quantum-raw-v1"
+    },
+    "classification": {
+      "enum": [
+        "accepted",
+        "invalid_contract"
+      ]
+    },
+    "rowCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "axisRecordCount": {
+      "type": "integer",
+      "minimum": 8
+    },
+    "connectionCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "actorEpochRowCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "actorObservationRowCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "bufferObservationRowCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "adaptiveBackpressureEpochRowCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "adaptiveBackpressureObservationRowCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "packetFlushCadenceEpochRowCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "packetFlushCadenceObservationRowCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "receiveDeliveryQuantumEpochRowCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "receiveDeliveryQuantumObservationRowCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "actorExportFailureCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "exportFailureCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "sha256",
+          "rowCount",
+          "actorObservationRowCount",
+          "adaptiveBackpressureEpochRowCount",
+          "adaptiveBackpressureObservationRowCount",
+          "packetFlushCadenceEpochRowCount",
+          "packetFlushCadenceObservationRowCount",
+          "receiveDeliveryQuantumEpochRowCount",
+          "receiveDeliveryQuantumObservationRowCount",
+          "actorExportFailureCount",
+          "exportFailureCount"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "rowCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "actorObservationRowCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "adaptiveBackpressureEpochRowCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "adaptiveBackpressureObservationRowCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "packetFlushCadenceEpochRowCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "packetFlushCadenceObservationRowCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "receiveDeliveryQuantumEpochRowCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "receiveDeliveryQuantumObservationRowCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "actorExportFailureCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exportFailureCount": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "role",
+          "path",
+          "sha256",
+          "bytes"
+        ],
+        "properties": {
+          "role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}

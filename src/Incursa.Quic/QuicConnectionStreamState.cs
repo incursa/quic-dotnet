@@ -978,10 +978,40 @@ internal sealed class QuicConnectionStreamState
         out QuicMaxDataFrame maxDataFrame,
         out QuicMaxStreamDataFrame maxStreamDataFrame,
         out QuicTransportErrorCode errorCode)
+        => TryReadStreamData(
+            streamIdValue,
+            destination,
+            useBatchedReceiveCredit,
+            maximumSourceSegments: int.MaxValue,
+            out bytesWritten,
+            out _,
+            out completed,
+            out maxDataFrame,
+            out maxStreamDataFrame,
+            out errorCode);
+
+    internal bool TryReadStreamData(
+        ulong streamIdValue,
+        Span<byte> destination,
+        bool useBatchedReceiveCredit,
+        int maximumSourceSegments,
+        out int bytesWritten,
+        out int sourceSegmentsRead,
+        out bool completed,
+        out QuicMaxDataFrame maxDataFrame,
+        out QuicMaxStreamDataFrame maxStreamDataFrame,
+        out QuicTransportErrorCode errorCode)
     {
+        if (maximumSourceSegments <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(maximumSourceSegments));
+        }
+
         lock (syncRoot)
         {
             bytesWritten = 0;
+            sourceSegmentsRead = 0;
             completed = false;
             maxDataFrame = default;
             maxStreamDataFrame = default;
@@ -1006,7 +1036,9 @@ internal sealed class QuicConnectionStreamState
             ulong expectedOffset = state.ReadOffset;
             int destinationIndex = 0;
 
-            while (destinationIndex < destination.Length && GetBufferedSegmentCount(state) > 0)
+            while (destinationIndex < destination.Length
+                && sourceSegmentsRead < maximumSourceSegments
+                && GetBufferedSegmentCount(state) > 0)
             {
                 BufferedSegment entry = GetBufferedSegment(state, 0);
                 if (entry.Offset > expectedOffset)
@@ -1029,6 +1061,7 @@ internal sealed class QuicConnectionStreamState
 
                 int bytesToCopy = Math.Min(entry.Length, destination.Length - destinationIndex);
                 entry.DataSpan[..bytesToCopy].CopyTo(destination[destinationIndex..]);
+                sourceSegmentsRead++;
                 destinationIndex += bytesToCopy;
                 expectedOffset += (ulong)bytesToCopy;
                 DecreaseBufferedReadableBytes(state, bytesToCopy);

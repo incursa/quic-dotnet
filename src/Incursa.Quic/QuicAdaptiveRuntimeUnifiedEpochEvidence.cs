@@ -13,10 +13,11 @@ internal readonly record struct QuicAdaptiveRuntimeUnifiedEpochEvidence(
     QuicActorServiceEpochSummary ActorService,
     QuicBufferCopyEpochSummary BufferCopy,
     QuicAdaptiveBackpressureEpochSummary AdaptiveBackpressure,
-    QuicPacketFlushCadenceEpochSummary PacketFlushCadence)
+    QuicPacketFlushCadenceEpochSummary PacketFlushCadence,
+    QuicReceiveDeliveryQuantumEpochSummary ReceiveDeliveryQuantum)
 {
     internal const string CurrentEvidenceContractVersion =
-        "adaptive-runtime-unified-epoch-evidence-v9";
+        "adaptive-runtime-unified-epoch-evidence-v10";
 
     public string EvidenceContractVersion =>
         CurrentEvidenceContractVersion;
@@ -43,7 +44,8 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
     IQuicActorServiceEvidenceSink,
     IQuicBufferCopyEvidenceSink,
     IQuicAdaptiveBackpressureEvidenceSink,
-    IQuicPacketFlushCadenceEvidenceSink
+    IQuicPacketFlushCadenceEvidenceSink,
+    IQuicReceiveDeliveryQuantumEvidenceSink
 {
     private const ulong MicrosPerSecond = 1_000_000UL;
     private readonly object gate = new();
@@ -54,6 +56,8 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
         adaptiveBackpressure;
     private readonly QuicPacketFlushCadenceEpochAccumulator
         packetFlushCadence;
+    private readonly QuicReceiveDeliveryQuantumEpochAccumulator
+        receiveDeliveryQuantum;
     private readonly IQuicAdaptiveRuntimeUnifiedEpochEvidenceSink sink;
     private bool hasEpochOrigin;
     private long epochOriginTicks;
@@ -73,6 +77,9 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
             QuicPacketFlushCadencePolicy.CreateConfiguredSnapshot(
                 QuicPacketFlushCadenceObservationMode.Disabled,
                 forcedValue: null),
+            QuicReceiveDeliveryQuantumPolicy.CreateConfiguredSnapshot(
+                QuicReceiveDeliveryQuantumObservationMode.Disabled,
+                forcedValue: null),
             sink)
     {
     }
@@ -89,6 +96,9 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
                 forcedValue: null),
             QuicPacketFlushCadencePolicy.CreateConfiguredSnapshot(
                 QuicPacketFlushCadenceObservationMode.Disabled,
+                forcedValue: null),
+            QuicReceiveDeliveryQuantumPolicy.CreateConfiguredSnapshot(
+                QuicReceiveDeliveryQuantumObservationMode.Disabled,
                 forcedValue: null),
             sink)
     {
@@ -107,6 +117,9 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
             QuicPacketFlushCadencePolicy.CreateConfiguredSnapshot(
                 QuicPacketFlushCadenceObservationMode.Disabled,
                 forcedValue: null),
+            QuicReceiveDeliveryQuantumPolicy.CreateConfiguredSnapshot(
+                QuicReceiveDeliveryQuantumObservationMode.Disabled,
+                forcedValue: null),
             sink)
     {
     }
@@ -119,6 +132,28 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
         in QuicPacketFlushCadenceConfiguredPolicySnapshot
             configuredPacketFlushCadencePolicy,
         IQuicAdaptiveRuntimeUnifiedEpochEvidenceSink sink)
+        : this(
+            in configuredStage1Policy,
+            in configuredBufferCopyPolicy,
+            in configuredAdaptiveBackpressurePolicy,
+            in configuredPacketFlushCadencePolicy,
+            QuicReceiveDeliveryQuantumPolicy.CreateConfiguredSnapshot(
+                QuicReceiveDeliveryQuantumObservationMode.Disabled,
+                forcedValue: null),
+            sink)
+    {
+    }
+
+    internal QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator(
+        in QuicAdaptiveRuntimeStage1PolicySnapshot configuredStage1Policy,
+        in QuicBufferCopyConfiguredPolicySnapshot configuredBufferCopyPolicy,
+        in QuicAdaptiveBackpressureConfiguredPolicySnapshot
+            configuredAdaptiveBackpressurePolicy,
+        in QuicPacketFlushCadenceConfiguredPolicySnapshot
+            configuredPacketFlushCadencePolicy,
+        in QuicReceiveDeliveryQuantumConfiguredPolicySnapshot
+            configuredReceiveDeliveryQuantumPolicy,
+        IQuicAdaptiveRuntimeUnifiedEpochEvidenceSink sink)
     {
         ArgumentNullException.ThrowIfNull(sink);
         stage1 = new(in configuredStage1Policy);
@@ -127,6 +162,8 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
             new(in configuredAdaptiveBackpressurePolicy);
         packetFlushCadence =
             new(in configuredPacketFlushCadencePolicy);
+        receiveDeliveryQuantum =
+            new(in configuredReceiveDeliveryQuantumPolicy);
         this.sink = sink;
     }
 
@@ -197,6 +234,15 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
     }
 
     public bool TryPublish(
+        in QuicReceiveDeliveryQuantumObservation observation)
+    {
+        lock (gate)
+        {
+            return receiveDeliveryQuantum.TryPublish(in observation);
+        }
+    }
+
+    public bool TryPublish(
         in QuicAdaptiveRuntimeConnectionObservation observation,
         in QuicReceiveCreditPolicySnapshot snapshot,
         in QuicAdaptiveRuntimePostServiceBoundary boundary)
@@ -244,6 +290,8 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
                     adaptiveBackpressure.CaptureAndReset();
             QuicPacketFlushCadenceEpochSummary packetFlushCadenceEvidence =
                 packetFlushCadence.CaptureAndReset();
+            QuicReceiveDeliveryQuantumEpochSummary receiveDeliveryEvidence =
+                receiveDeliveryQuantum.CaptureAndReset();
             QuicAdaptiveRuntimeUnifiedEpochEvidence unified = new(
                 observation,
                 snapshot,
@@ -252,7 +300,8 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
                 actorServiceEvidence,
                 bufferCopyEvidence,
                 adaptiveBackpressureEvidence,
-                packetFlushCadenceEvidence);
+                packetFlushCadenceEvidence,
+                receiveDeliveryEvidence);
 
             lastEpochSequence = epochSequence;
             return sink.TryPublish(in unified);

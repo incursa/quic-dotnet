@@ -17,13 +17,16 @@
     "SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY",
     "ARC-QUIC-CRT-0071",
     "WI-QUIC-CRT-0072",
-    "VER-QUIC-CRT-0073"
+    "VER-QUIC-CRT-0073",
+    "ARC-QUIC-CRT-0074",
+    "WI-QUIC-CRT-0075",
+    "VER-QUIC-CRT-0076"
   ],
-  "purpose": "Define an independently forceable packet_flush_cadence seam at an existing optional application-send delay while preserving packet, recovery, congestion, pacing, flow-control, lifecycle, and ownership authority, and retain receive_delivery_quantum as the next bounded inventory item.",
-  "scope": "This specification covers the legacy_current and prompt packet_flush_cadence values, disabled, observe-only, shadow, forcing, exact decision and latch boundaries, authoritative fallback, bounded sample and epoch evidence, exact raw joins, rollback, and deterministic correctness proof. It does not authorize performance measurement, threshold tuning, receive_delivery_quantum behavior, active_internal, or production activation.",
-  "context": "The existing application-send path already delays eligible writes smaller than 32 bytes for one millisecond using a generation-checked lifecycle timer. The force seam may retain or remove only that optional delay after payload construction and before packet protection; it may not create a new flush owner or weaken required progress.",
+  "purpose": "Define independently forceable packet_flush_cadence and receive_delivery_quantum seams at existing bounded send and application-read boundaries while preserving packet, recovery, congestion, pacing, flow-control, lifecycle, receive-credit, and ownership authority.",
+  "scope": "This specification covers closed policy values, disabled, observe-only, shadow, forcing, exact decision and latch boundaries, authoritative fallback, bounded sample and epoch evidence, exact raw joins, rollback, and deterministic correctness proof for packet_flush_cadence and receive_delivery_quantum. It does not authorize performance measurement, threshold tuning, active_internal, or production activation.",
+  "context": "The packet seam owns only the existing optional small-write delay. The receive seam owns only how many already-contiguous receive-buffer source segments may contribute to one productive application read; it does not own wake scheduling, receive-credit policy, buffer lifetime, or terminal state.",
   "open_questions": [
-    "Which bounded receive delivery or wake boundary can vary without changing receive credit, buffer ownership, FIN or reset ordering, cancellation, or terminal drain?"
+    "Should single_segment remain shadow-only after measurement, or merit a later one-axis active_internal review?"
   ],
   "requirements": [
     {
@@ -63,6 +66,47 @@
       "notes": [
         "prompt is a reviewed mechanism value, not a performance-derived threshold or claim of improvement.",
         "Measurement, receive-delivery behavior, active_internal, and production activation remain outside this requirement."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0193",
+      "title": "Force bounded application receive delivery quantum without weakening receive authority",
+      "statement": "The runtime MUST expose the receive_delivery_quantum axis with the closed legacy_current and single_segment values; preserve delivery from every contiguous receive-buffer segment that fits the caller buffer under legacy_current; make single_segment return bytes from at most one existing contiguous source segment per productive application read; evaluate after cancellation, terminal, and zero-buffer checks and at the existing data-copy loop; latch the decision for one application read call; support disabled, observe-only, shadow, forced-legacy, and forced-single-segment operation with forced, recommended, selected, and applied identities distinct; keep receive_credit_publication fixed at legacy_current and make receive ordering, buffer ownership and release, FIN, reset, close, cancellation, disposal, flow-control progress, congestion, pacing, recovery, packet limits, and terminal behavior authoritative under every forced value; handle missing, stale, saturated, contradictory, invalid, out-of-domain, and lifecycle input with bounded reasons and legacy fallback; record versioned productive-read observations and configured unified-epoch provenance with exact source-scoped connection and operation-sequence joins and recomputed attributable outcomes; reject simultaneous behavior-distinct forcing of adjacent axes; independently prove force-legacy rollback; exclude scenario, workload, payload constants, requested concurrency, peer, URL, host, and application identity from controller inputs; and keep active_internal and production selection unavailable.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0074"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0075"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0076"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-axis-roadmap.md",
+          "docs/design/adaptive-runtime-policy-axis-implementation-matrix.md",
+          "docs/design/adaptive-runtime-policy-controller-state-machine.md",
+          "docs/design/adaptive-runtime-policy-observation-schema.md",
+          "docs/design/adaptive-runtime-policy-seam-inventory.md",
+          "docs/design/adaptive-runtime-stage3-packet-receive-foundation.md",
+          "src/Incursa.Quic/QuicReceiveDeliveryQuantumPolicy.cs",
+          "src/Incursa.Quic/QuicReceiveDeliveryQuantumEpochAccumulator.cs",
+          "src/Incursa.Quic/QuicConnectionStreamState.cs",
+          "src/Incursa.Quic/QuicStream.cs",
+          "src/Incursa.Quic/QuicAdaptiveRuntimeUnifiedEpochEvidence.cs",
+          "schemas/adaptive-runtime-receive-delivery-quantum-observation-v1.schema.json",
+          "schemas/adaptive-runtime-receive-delivery-quantum-epoch-v1.schema.json",
+          "schemas/adaptive-runtime-receive-delivery-quantum-raw-v1.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-evidence-v10.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-raw-v10.schema.json",
+          "schemas/adaptive-runtime-unified-raw-export-manifest-v11.schema.json",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0193.cs"
+        ]
+      },
+      "notes": [
+        "single_segment is a reviewed mechanism value, not a performance-derived threshold or claim of improvement.",
+        "The seam permits legal short reads but cannot change receive-credit selection, ordering, ownership, or terminal behavior.",
+        "Measurement, active_internal, and production activation remain outside this requirement."
       ]
     }
   ]

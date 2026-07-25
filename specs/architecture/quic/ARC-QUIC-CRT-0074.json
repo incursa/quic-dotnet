@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0074",
+  "artifact_type": "architecture",
+  "status": "proposed",
+  "title": "Bounded application receive delivery quantum seam",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0193 with an independently forceable source-segment cap at the existing productive application-read copy loop without changing receive credit, wake ownership, terminal semantics, or buffer lifetime.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE3-PACKET-RECEIVE",
+    "WI-QUIC-CRT-0075",
+    "VER-QUIC-CRT-0076"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0193"
+  ],
+  "key_components": [
+    "QuicReceiveDeliveryQuantumPolicy",
+    "QuicReceiveDeliveryQuantumEpochAccumulator",
+    "QuicConnectionStreamState contiguous receive-buffer copy loop",
+    "QuicStream productive application-read boundary",
+    "QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator",
+    "IncursaRawQuicServer receive-delivery force and evidence wiring",
+    "Unified raw exporter and semantic validator"
+  ],
+  "design_summary": "The closed values are legacy_current and single_segment. legacy_current preserves the existing loop over every contiguous source segment that fits the caller buffer. single_segment stops after the first productive source segment and returns a legal short read. The decision occurs after cancellation, terminal, and zero-buffer handling and is latched for one application read call. Observe-only applies legacy; shadow recommends single_segment while applying legacy. Forced values bypass selection only, not safety. Configured identity is retained in every unified epoch and productive reads are separate sample-scoped rows joined by source, connection, and operation sequence.",
+  "data_and_state_considerations": "The disabled and unforced path calls the legacy overload and does not construct an observation. The enabled path reads only the caller buffer length and bounded lifecycle validity already present at the read boundary. No wake scheduler, queue, dictionary, stream scan, allocation, model, global lock, or new buffer owner is introduced. The stream-state overload reports bytes and source-segment count while preserving the existing credit and completion outputs.",
+  "edge_cases_and_constraints": [
+    "Missing, stale, saturated, contradictory, invalid, out-of-domain, or lifecycle input falls back to legacy_current even when single_segment is forced.",
+    "Cancellation, reset, close, FIN, zero-buffer reads, disposal, and terminal handling run before the policy boundary and retain authority.",
+    "receive_credit_publication remains legacy_current and the existing batched-credit decision is passed through unchanged.",
+    "Receive ordering, buffer ownership and release, flow-control progress, congestion, pacing, recovery, packet limits, and terminal drain remain authoritative.",
+    "Only one behavior-distinct adaptive axis may be forced; every adjacent applied axis remains legacy_current.",
+    "Scenario, workload, payload constants, concurrency, peers, URLs, hosts, and application identity are not controller inputs.",
+    "No active_internal or production selection is present."
+  ],
+  "alternatives_considered": [
+    "A wake coalescer was rejected because it would create another scheduler and progress owner.",
+    "A byte threshold was rejected because threshold tuning and measurement are frozen.",
+    "Changing receive-credit publication was rejected because it is a separate retained foundation axis.",
+    "Copy coalescing and buffer replacement were rejected because they would alter ownership rather than one read-call delivery quantum."
+  ],
+  "risks": [
+    "A short read could be mistaken for terminal completion; existing Stream semantics and explicit completion outputs remain authoritative.",
+    "An operation row could be mistaken for an epoch-independent outcome; it remains a separate raw stream with exact range joins.",
+    "The value may be neutral or harmful; no performance claim or activation is authorized before the measurement freeze is separately released."
+  ],
+  "open_questions": [
+    "Does single_segment merit later shadow-only or active-internal review after implementation and measurement freezes are separately released?"
+  ]
+}

@@ -25,12 +25,15 @@ $adaptiveBackpressurePrefix =
     'QUIC_ADAPTIVE_BACKPRESSURE_EVIDENCE_JSON='
 $packetFlushCadencePrefix =
     'QUIC_PACKET_FLUSH_CADENCE_EVIDENCE_JSON='
-$rawSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v9.schema.json'
+$receiveDeliveryQuantumPrefix =
+    'QUIC_RECEIVE_DELIVERY_QUANTUM_EVIDENCE_JSON='
+$rawSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v10.schema.json'
 $actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v4.schema.json'
 $actorFailureSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-export-failure-v1.schema.json'
 $adaptiveBackpressureSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-backpressure-raw-v1.schema.json'
 $packetFlushCadenceSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-packet-flush-cadence-raw-v1.schema.json'
-$manifestSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-raw-export-manifest-v10.schema.json'
+$receiveDeliveryQuantumSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-receive-delivery-quantum-raw-v1.schema.json'
+$manifestSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-raw-export-manifest-v11.schema.json'
 $validatorPath = Join-Path $RepositoryRoot 'eng\adaptive-runtime\Test-AdaptiveRuntimeUnifiedRawEvidence.ps1'
 $resolvedOutputDirectory = Resolve-AdaptiveRuntimePath -Path $OutputDirectory
 $rawEpochPath = Join-Path $resolvedOutputDirectory 'adaptive-runtime-unified-raw-epochs.jsonl'
@@ -39,6 +42,8 @@ $adaptiveBackpressureObservationPath =
     Join-Path $resolvedOutputDirectory 'adaptive-runtime-backpressure-observations.jsonl'
 $packetFlushCadenceObservationPath =
     Join-Path $resolvedOutputDirectory 'adaptive-runtime-packet-flush-cadence-observations.jsonl'
+$receiveDeliveryQuantumObservationPath =
+    Join-Path $resolvedOutputDirectory 'adaptive-runtime-receive-delivery-quantum-observations.jsonl'
 $validationPath = Join-Path $resolvedOutputDirectory 'raw-validation-summary.json'
 $manifestPath = Join-Path $resolvedOutputDirectory 'raw-export-manifest.json'
 $failurePath = Join-Path $resolvedOutputDirectory 'raw-export-failures.jsonl'
@@ -48,6 +53,7 @@ foreach ($path in @(
     $actorObservationPath,
     $adaptiveBackpressureObservationPath,
     $packetFlushCadenceObservationPath,
+    $receiveDeliveryQuantumObservationPath,
     $validationPath,
     $manifestPath,
     $failurePath
@@ -63,6 +69,8 @@ $adaptiveBackpressureObservations =
     [System.Collections.Generic.List[string]]::new()
 $packetFlushCadenceObservations =
     [System.Collections.Generic.List[string]]::new()
+$receiveDeliveryQuantumObservations =
+    [System.Collections.Generic.List[string]]::new()
 $failures = [System.Collections.Generic.List[string]]::new()
 $sources = [System.Collections.Generic.List[object]]::new()
 foreach ($sourcePath in @($HostLogPath | Sort-Object)) {
@@ -73,6 +81,8 @@ foreach ($sourcePath in @($HostLogPath | Sort-Object)) {
     $sourceAdaptiveBackpressureObservationCount = 0
     $sourcePacketFlushCadenceEpochCount = 0
     $sourcePacketFlushCadenceObservationCount = 0
+    $sourceReceiveDeliveryQuantumEpochCount = 0
+    $sourceReceiveDeliveryQuantumObservationCount = 0
     $sourceActorFailureCount = 0
     $sourceFailureCount = 0
     foreach ($line in [System.IO.File]::ReadLines($resolvedSourcePath)) {
@@ -90,6 +100,9 @@ foreach ($sourcePath in @($HostLogPath | Sort-Object)) {
             }
             if ([bool] $parsedRecord.epoch.packetFlushCadence.hasObservation) {
                 $sourcePacketFlushCadenceEpochCount++
+            }
+            if ([bool] $parsedRecord.epoch.receiveDeliveryQuantum.hasObservation) {
+                $sourceReceiveDeliveryQuantumEpochCount++
             }
         }
         elseif ($line.StartsWith($actorPrefix, [StringComparison]::Ordinal)) {
@@ -131,6 +144,21 @@ foreach ($sourcePath in @($HostLogPath | Sort-Object)) {
             [void] $packetFlushCadenceObservations.Add($json)
             $sourcePacketFlushCadenceObservationCount++
         }
+        elseif ($line.StartsWith(
+                $receiveDeliveryQuantumPrefix,
+                [StringComparison]::Ordinal)) {
+            $json = $line.Substring($receiveDeliveryQuantumPrefix.Length)
+            if (-not (
+                    $json |
+                        Test-Json `
+                            -SchemaFile $receiveDeliveryQuantumSchemaPath `
+                            -ErrorAction Stop)) {
+                throw "Receive-delivery quantum raw observation from '$resolvedSourcePath' failed schema validation."
+            }
+
+            [void] $receiveDeliveryQuantumObservations.Add($json)
+            $sourceReceiveDeliveryQuantumObservationCount++
+        }
         elseif ($line.StartsWith($actorFailurePrefix, [StringComparison]::Ordinal)) {
             $json = $line.Substring($actorFailurePrefix.Length)
             if (-not ($json | Test-Json -SchemaFile $actorFailureSchemaPath -ErrorAction Stop)) {
@@ -159,6 +187,10 @@ foreach ($sourcePath in @($HostLogPath | Sort-Object)) {
             $sourcePacketFlushCadenceEpochCount
         packetFlushCadenceObservationRowCount =
             $sourcePacketFlushCadenceObservationCount
+        receiveDeliveryQuantumEpochRowCount =
+            $sourceReceiveDeliveryQuantumEpochCount
+        receiveDeliveryQuantumObservationRowCount =
+            $sourceReceiveDeliveryQuantumObservationCount
         actorExportFailureCount = $sourceActorFailureCount
         exportFailureCount = $sourceFailureCount
     })
@@ -185,6 +217,10 @@ New-Item -ItemType Directory -Path $resolvedOutputDirectory -Force | Out-Null
     $packetFlushCadenceObservationPath,
     $packetFlushCadenceObservations,
     [System.Text.UTF8Encoding]::new($false))
+[System.IO.File]::WriteAllLines(
+    $receiveDeliveryQuantumObservationPath,
+    $receiveDeliveryQuantumObservations,
+    [System.Text.UTF8Encoding]::new($false))
 if ($failures.Count -ne 0) {
     [System.IO.File]::WriteAllLines(
         $failurePath,
@@ -199,6 +235,8 @@ $validationJson = & $validatorPath `
         $adaptiveBackpressureObservationPath `
     -PacketFlushCadenceObservationPath `
         $packetFlushCadenceObservationPath `
+    -ReceiveDeliveryQuantumObservationPath `
+        $receiveDeliveryQuantumObservationPath `
     -SourceRowCount @($sources | ForEach-Object { [int] $_.rowCount }) `
     -SourceActorObservationRowCount @(
         $sources | ForEach-Object { [int] $_.actorObservationRowCount }) `
@@ -211,6 +249,11 @@ $validationJson = & $validatorPath `
         $sources |
             ForEach-Object {
                 [int] $_.packetFlushCadenceObservationRowCount
+            }) `
+    -SourceReceiveDeliveryQuantumObservationRowCount @(
+        $sources |
+            ForEach-Object {
+                [int] $_.receiveDeliveryQuantumObservationRowCount
             }) `
     -RepositoryRoot $RepositoryRoot
 if (-not $?) {
@@ -253,6 +296,14 @@ $artifactRecords = [System.Collections.Generic.List[object]]::new()
         (Get-Item -LiteralPath $packetFlushCadenceObservationPath).Length
 })
 [void] $artifactRecords.Add([ordered]@{
+    role = 'receive_delivery_quantum_observations'
+    path = $receiveDeliveryQuantumObservationPath
+    sha256 =
+        Get-FileSha256Hex -Path $receiveDeliveryQuantumObservationPath
+    bytes =
+        (Get-Item -LiteralPath $receiveDeliveryQuantumObservationPath).Length
+})
+[void] $artifactRecords.Add([ordered]@{
     role = 'validation_summary'
     path = $validationPath
     sha256 = Get-FileSha256Hex -Path $validationPath
@@ -268,9 +319,9 @@ if ($failures.Count -ne 0) {
 }
 
 $manifest = [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-export-manifest-v10'
+    schemaVersion = 'adaptive-runtime-unified-raw-export-manifest-v11'
     createdUtc = (Get-Date).ToUniversalTime().ToString('o')
-    rawEpochSchemaVersion = 'adaptive-runtime-unified-epoch-raw-v9'
+    rawEpochSchemaVersion = 'adaptive-runtime-unified-epoch-raw-v10'
     actorRawObservationSchemaVersion =
         'adaptive-runtime-actor-service-raw-v4'
     bufferRawObservationSchemaVersion = 'quic-buffer-copy-raw-v4'
@@ -278,6 +329,8 @@ $manifest = [ordered]@{
         'quic-adaptive-backpressure-raw-v1'
     packetFlushCadenceRawObservationSchemaVersion =
         'quic-packet-flush-cadence-raw-v1'
+    receiveDeliveryQuantumRawObservationSchemaVersion =
+        'quic-receive-delivery-quantum-raw-v1'
     classification = if ($failures.Count -eq 0) {
         'accepted'
     }
@@ -300,6 +353,10 @@ $manifest = [ordered]@{
         [int] $validationDocument.packetFlushCadenceEpochRowCount
     packetFlushCadenceObservationRowCount =
         [int] $validationDocument.packetFlushCadenceObservationRowCount
+    receiveDeliveryQuantumEpochRowCount =
+        [int] $validationDocument.receiveDeliveryQuantumEpochRowCount
+    receiveDeliveryQuantumObservationRowCount =
+        [int] $validationDocument.receiveDeliveryQuantumObservationRowCount
     actorExportFailureCount = [int] (
         @(
             $sources |
@@ -318,7 +375,7 @@ $manifest = [ordered]@{
     -OutputPath $manifestPath)
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-export-result-v10'
+    schemaVersion = 'adaptive-runtime-unified-raw-export-result-v11'
     rowCount = $manifest.rowCount
     axisRecordCount = $manifest.axisRecordCount
     connectionCount = $manifest.connectionCount
@@ -333,6 +390,10 @@ $manifest = [ordered]@{
         $manifest.packetFlushCadenceEpochRowCount
     packetFlushCadenceObservationRowCount =
         $manifest.packetFlushCadenceObservationRowCount
+    receiveDeliveryQuantumEpochRowCount =
+        $manifest.receiveDeliveryQuantumEpochRowCount
+    receiveDeliveryQuantumObservationRowCount =
+        $manifest.receiveDeliveryQuantumObservationRowCount
     actorExportFailureCount = $manifest.actorExportFailureCount
     exportFailureCount = $manifest.exportFailureCount
     classification = $manifest.classification
@@ -342,6 +403,8 @@ $manifest = [ordered]@{
         $adaptiveBackpressureObservationPath
     packetFlushCadenceObservationPath =
         $packetFlushCadenceObservationPath
+    receiveDeliveryQuantumObservationPath =
+        $receiveDeliveryQuantumObservationPath
     validationPath = $validationPath
     manifestPath = $manifestPath
 } | ConvertTo-Json -Depth 100

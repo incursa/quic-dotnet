@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.local/schemas/adaptive-runtime-receive-delivery-quantum-raw-v1.schema.json",
+  "title": "Adaptive Runtime Receive Delivery Quantum Raw V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "connectionKey",
+    "observation"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "quic-receive-delivery-quantum-raw-v1" },
+    "connectionKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "axisId",
+        "observationVersion",
+        "ruleVersion",
+        "snapshotVersion",
+        "reasonVersion",
+        "provenanceVersion",
+        "operationSequence",
+        "streamId",
+        "decision",
+        "deliveredBytes",
+        "sourceSegmentsRead",
+        "completed",
+        "batchedReceiveCredit"
+      ],
+      "properties": {
+        "axisId": { "const": "receive_delivery_quantum" },
+        "observationVersion": { "const": "quic-receive-delivery-quantum-observation-v1" },
+        "ruleVersion": { "const": "quic-receive-delivery-single-segment-rule-v1" },
+        "snapshotVersion": { "const": "quic-receive-delivery-quantum-policy-snapshot-v1" },
+        "reasonVersion": { "const": "quic-receive-delivery-quantum-reason-v1" },
+        "provenanceVersion": { "const": "quic-receive-delivery-quantum-provenance-v1" },
+        "operationSequence": { "type": "integer", "minimum": 1 },
+        "streamId": { "type": "integer", "minimum": 0 },
+        "decision": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "hasForcedValue",
+            "forcedValue",
+            "hasShadowRecommendation",
+            "shadowRecommendation",
+            "selectedValue",
+            "appliedValue",
+            "selectionSource",
+            "reasonCode",
+            "safetyOverride",
+            "decisionBoundary",
+            "latchLifetime",
+            "fallbackApplied",
+            "maximumSourceSegments",
+            "requestedBufferLength",
+            "validity"
+          ],
+          "properties": {
+            "mode": { "enum": ["Disabled", "ObserveOnly", "Shadow"] },
+            "hasForcedValue": { "type": "boolean" },
+            "forcedValue": { "enum": ["LegacyCurrent", "SingleSegment"] },
+            "hasShadowRecommendation": { "type": "boolean" },
+            "shadowRecommendation": { "enum": ["LegacyCurrent", "SingleSegment"] },
+            "selectedValue": { "enum": ["LegacyCurrent", "SingleSegment"] },
+            "appliedValue": { "enum": ["LegacyCurrent", "SingleSegment"] },
+            "selectionSource": { "enum": ["LegacyCurrent", "Forced", "ShadowRule", "SafetyOverride"] },
+            "reasonCode": {
+              "enum": [
+                "LegacyCurrent",
+                "ObserveOnly",
+                "ForcedSingleSegment",
+                "ShadowSingleSegment",
+                "LegacyAllAvailable",
+                "SingleSegmentApplied",
+                "MissingInput",
+                "StaleInput",
+                "ArithmeticSaturated",
+                "Contradictory",
+                "OutOfDomain",
+                "InvalidInput",
+                "LifecycleGuard"
+              ]
+            },
+            "safetyOverride": { "enum": ["None", "InvalidObservation", "Lifecycle"] },
+            "decisionBoundary": { "const": "ProductiveApplicationRead" },
+            "latchLifetime": { "const": "ApplicationReadCall" },
+            "fallbackApplied": { "type": "boolean" },
+            "maximumSourceSegments": { "type": "integer", "minimum": 1, "maximum": 2147483647 },
+            "requestedBufferLength": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+            "validity": { "type": "string", "minLength": 4, "maxLength": 256 }
+          }
+        },
+        "deliveredBytes": { "type": "integer", "minimum": 1, "maximum": 4294967295 },
+        "sourceSegmentsRead": { "type": "integer", "minimum": 1, "maximum": 4294967295 },
+        "completed": { "type": "boolean" },
+        "batchedReceiveCredit": { "type": "boolean" }
+      }
+    }
+  }
+}

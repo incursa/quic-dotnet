@@ -809,11 +809,27 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
         }
 
         bool shouldUseBatchedReceiveCredit = runtime?.ShouldUseBatchedReceiveCreditPath() ?? false;
+        bool receiveDeliveryQuantumEnabled =
+            runtime?.ReceiveDeliveryQuantumDecisionEnabled ?? false;
+        QuicReceiveDeliveryQuantumPolicyDecision receiveDeliveryDecision =
+            default;
+        int maximumSourceSegments = int.MaxValue;
+        if (receiveDeliveryQuantumEnabled)
+        {
+            receiveDeliveryDecision =
+                runtime!.ResolveReceiveDeliveryQuantumPolicyDecision(
+                    buffer.Length);
+            maximumSourceSegments =
+                receiveDeliveryDecision.MaximumSourceSegments;
+        }
+
         if (bookkeeping.TryReadStreamData(
             streamId,
             buffer.Span,
             shouldUseBatchedReceiveCredit,
+            maximumSourceSegments,
             out int bytesWritten,
+            out int sourceSegmentsRead,
             out bool completed,
             out QuicMaxDataFrame maxDataFrame,
             out QuicMaxStreamDataFrame maxStreamDataFrame,
@@ -827,6 +843,17 @@ public sealed class QuicStream : Stream, IQuicStreamNotificationObserver
                     : null;
 
                 runtime?.TryQueueFlowControlCreditUpdate(maxDataUpdate, maxStreamDataUpdate);
+            }
+
+            if (receiveDeliveryQuantumEnabled && bytesWritten > 0)
+            {
+                runtime!.TryPublishReceiveDeliveryQuantumObservation(
+                    streamId,
+                    in receiveDeliveryDecision,
+                    bytesWritten,
+                    sourceSegmentsRead,
+                    completed,
+                    shouldUseBatchedReceiveCredit);
             }
 
             if (completed)

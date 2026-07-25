@@ -15,6 +15,9 @@ param(
     [Parameter(Mandatory = $true)]
     [string] $PacketFlushCadenceObservationPath,
 
+    [Parameter(Mandatory = $true)]
+    [string] $ReceiveDeliveryQuantumObservationPath,
+
     [int[]] $SourceRowCount,
 
     [int[]] $SourceActorObservationRowCount,
@@ -23,24 +26,30 @@ param(
 
     [int[]] $SourcePacketFlushCadenceObservationRowCount,
 
+    [int[]] $SourceReceiveDeliveryQuantumObservationRowCount,
+
     [string] $RepositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v9.schema.json'
+$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v10.schema.json'
 $actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v4.schema.json'
 $adaptiveBackpressureSchemaPath =
     Join-Path $RepositoryRoot 'schemas\adaptive-runtime-backpressure-raw-v1.schema.json'
 $packetFlushCadenceSchemaPath =
     Join-Path $RepositoryRoot 'schemas\adaptive-runtime-packet-flush-cadence-raw-v1.schema.json'
+$receiveDeliveryQuantumSchemaPath =
+    Join-Path $RepositoryRoot 'schemas\adaptive-runtime-receive-delivery-quantum-raw-v1.schema.json'
 $resolvedRawEpochPath = (Resolve-Path -LiteralPath $RawEpochPath).Path
 $resolvedActorObservationPath = (Resolve-Path -LiteralPath $ActorObservationPath).Path
 $resolvedAdaptiveBackpressureObservationPath =
     (Resolve-Path -LiteralPath $AdaptiveBackpressureObservationPath).Path
 $resolvedPacketFlushCadenceObservationPath =
     (Resolve-Path -LiteralPath $PacketFlushCadenceObservationPath).Path
+$resolvedReceiveDeliveryQuantumObservationPath =
+    (Resolve-Path -LiteralPath $ReceiveDeliveryQuantumObservationPath).Path
 $seenKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $expectedActorKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $seenActorKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
@@ -56,10 +65,17 @@ $expectedPacketFlushCadenceKeys =
 $seenPacketFlushCadenceKeys =
     [System.Collections.Generic.HashSet[string]]::new(
         [StringComparer]::Ordinal)
+$expectedReceiveDeliveryQuantumKeys =
+    [System.Collections.Generic.HashSet[string]]::new(
+        [StringComparer]::Ordinal)
+$seenReceiveDeliveryQuantumKeys =
+    [System.Collections.Generic.HashSet[string]]::new(
+        [StringComparer]::Ordinal)
 $lastSequenceByConnection = @{}
 $lastActorSequenceByConnection = @{}
 $lastAdaptiveBackpressureSequenceByConnection = @{}
 $lastPacketFlushCadenceSequenceByConnection = @{}
+$lastReceiveDeliveryQuantumSequenceByConnection = @{}
 $actorEpochSummaryByRowKey = @{}
 $actorEpochRowByActorKey = @{}
 $actorContenderCountByEpoch = @{}
@@ -76,6 +92,9 @@ $adaptiveBackpressureAggregateByEpoch = @{}
 $packetFlushCadenceEpochByOperationKey = @{}
 $packetFlushCadenceSummaryByEpoch = @{}
 $packetFlushCadenceAggregateByEpoch = @{}
+$receiveDeliveryQuantumEpochByOperationKey = @{}
+$receiveDeliveryQuantumSummaryByEpoch = @{}
+$receiveDeliveryQuantumAggregateByEpoch = @{}
 $joinFailures = [System.Collections.Generic.List[string]]::new()
 $duplicateKeys = [System.Collections.Generic.List[string]]::new()
 $outOfOrderKeys = [System.Collections.Generic.List[string]]::new()
@@ -94,6 +113,12 @@ $outOfOrderPacketFlushCadenceKeys =
     [System.Collections.Generic.List[string]]::new()
 $orphanPacketFlushCadenceKeys =
     [System.Collections.Generic.List[string]]::new()
+$duplicateReceiveDeliveryQuantumKeys =
+    [System.Collections.Generic.List[string]]::new()
+$outOfOrderReceiveDeliveryQuantumKeys =
+    [System.Collections.Generic.List[string]]::new()
+$orphanReceiveDeliveryQuantumKeys =
+    [System.Collections.Generic.List[string]]::new()
 $multiAxisRows = [System.Collections.Generic.List[string]]::new()
 $rowCount = 0
 $axisRecordCount = 0
@@ -104,6 +129,8 @@ $adaptiveBackpressureEpochRowCount = 0
 $adaptiveBackpressureObservationRowCount = 0
 $packetFlushCadenceEpochRowCount = 0
 $packetFlushCadenceObservationRowCount = 0
+$receiveDeliveryQuantumEpochRowCount = 0
+$receiveDeliveryQuantumObservationRowCount = 0
 $sourceIndex = 0
 $sourceRowOffset = 0
 
@@ -217,7 +244,7 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
         $epoch.stage1.queuedSendBurstBudget,
         $epoch.stage1.oversizedWriteAdmissionQuantum
     )
-    $axisRecordCount += $stage1Records.Count + 3
+    $axisRecordCount += $stage1Records.Count + 4
     $nonLegacyApplied = @($stage1Records | Where-Object {
         [string] $_.decision.appliedValue -ne 'LegacyCurrent'
     }).Count
@@ -238,6 +265,11 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
     $packetFlushSummary = $epoch.packetFlushCadence
     $packetFlushSnapshot = $packetFlushSummary.policySnapshot
     if ([string] $packetFlushSnapshot.appliedValue -ne 'LegacyCurrent') {
+        $nonLegacyApplied++
+    }
+    $receiveDeliverySummary = $epoch.receiveDeliveryQuantum
+    $receiveDeliverySnapshot = $receiveDeliverySummary.policySnapshot
+    if ([string] $receiveDeliverySnapshot.appliedValue -ne 'LegacyCurrent') {
         $nonLegacyApplied++
     }
     if ($nonLegacyApplied -gt 1) {
@@ -606,6 +638,113 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
             'LegacyCurrent') {
         [void] $joinFailures.Add(
             "$rowKey|packet-flush-legacy-identity")
+    }
+
+    if ([bool] $receiveDeliverySummary.hasObservation) {
+        $receiveDeliveryQuantumEpochRowCount++
+        $receiveDeliveryFirst =
+            [uint64] $receiveDeliverySummary.firstOperationSequence
+        $receiveDeliveryLast =
+            [uint64] $receiveDeliverySummary.lastOperationSequence
+        $receiveDeliveryCount =
+            [uint64] $receiveDeliverySummary.operationCount
+        if ($receiveDeliveryCount -eq 0 -or
+            $receiveDeliveryFirst -eq 0 -or
+            $receiveDeliveryLast -lt $receiveDeliveryFirst -or
+            $receiveDeliveryCount -ne
+                (($receiveDeliveryLast - $receiveDeliveryFirst) + 1)) {
+            [void] $joinFailures.Add("$rowKey|receive-delivery-range")
+        }
+        else {
+            $receiveDeliveryQuantumSummaryByEpoch[$rowKey] =
+                [ordered]@{
+                    OperationCount = $receiveDeliveryCount
+                    SingleSegmentOperationCount =
+                        [uint64] $receiveDeliverySummary.singleSegmentOperationCount
+                    CompletedOperationCount =
+                        [uint64] $receiveDeliverySummary.completedOperationCount
+                    BatchedReceiveCreditOperationCount =
+                        [uint64] $receiveDeliverySummary.batchedReceiveCreditOperationCount
+                    SafetyOverrideCount =
+                        [uint64] $receiveDeliverySummary.safetyOverrideCount
+                    FallbackCount =
+                        [uint64] $receiveDeliverySummary.fallbackCount
+                    DeliveredBytes =
+                        [uint64] $receiveDeliverySummary.deliveredBytes
+                    SourceSegmentsRead =
+                        [uint64] $receiveDeliverySummary.sourceSegmentsRead
+                    MaximumRequestedBufferLength =
+                        [uint64] $receiveDeliverySummary.maximumRequestedBufferLength
+                    MaximumDeliveredBytes =
+                        [uint64] $receiveDeliverySummary.maximumDeliveredBytes
+                    MaximumSourceSegmentsRead =
+                        [uint64] $receiveDeliverySummary.maximumSourceSegmentsRead
+                }
+            for ($receiveDeliverySequence = $receiveDeliveryFirst;
+                $receiveDeliverySequence -le $receiveDeliveryLast;
+                $receiveDeliverySequence++) {
+                $receiveDeliveryKey =
+                    "$scopedConnectionKey|$receiveDeliverySequence"
+                [void] $expectedReceiveDeliveryQuantumKeys.Add(
+                    $receiveDeliveryKey)
+                if ($receiveDeliveryQuantumEpochByOperationKey.ContainsKey(
+                        $receiveDeliveryKey)) {
+                    [void] $joinFailures.Add(
+                        "$rowKey|receive-delivery-range-overlap")
+                }
+                else {
+                    $receiveDeliveryQuantumEpochByOperationKey[
+                        $receiveDeliveryKey] = $rowKey
+                }
+                if ($receiveDeliverySequence -eq [uint64]::MaxValue) {
+                    break
+                }
+            }
+        }
+    }
+    elseif ([uint64] $receiveDeliverySummary.operationCount -ne 0 -or
+        [uint64] $receiveDeliverySummary.firstOperationSequence -ne 0 -or
+        [uint64] $receiveDeliverySummary.lastOperationSequence -ne 0) {
+        [void] $joinFailures.Add("$rowKey|receive-delivery-empty")
+    }
+    if ([uint64] $receiveDeliverySummary.singleSegmentOperationCount -gt
+            [uint64] $receiveDeliverySummary.operationCount -or
+        [uint64] $receiveDeliverySummary.completedOperationCount -gt
+            [uint64] $receiveDeliverySummary.operationCount -or
+        [uint64] $receiveDeliverySummary.batchedReceiveCreditOperationCount -gt
+            [uint64] $receiveDeliverySummary.operationCount -or
+        [uint64] $receiveDeliverySummary.safetyOverrideCount -gt
+            [uint64] $receiveDeliverySummary.operationCount -or
+        [uint64] $receiveDeliverySummary.fallbackCount -gt
+            [uint64] $receiveDeliverySummary.operationCount) {
+        [void] $joinFailures.Add("$rowKey|receive-delivery-counts")
+    }
+    if ([bool] $receiveDeliverySnapshot.hasForcedValue) {
+        if ([string] $receiveDeliverySnapshot.selectionSource -ne 'Forced' -or
+            [string] $receiveDeliverySnapshot.selectedValue -ne
+                [string] $receiveDeliverySnapshot.forcedValue -or
+            [string] $receiveDeliverySnapshot.appliedValue -ne
+                [string] $receiveDeliverySnapshot.forcedValue) {
+            [void] $joinFailures.Add(
+                "$rowKey|receive-delivery-forced-identity")
+        }
+    }
+    elseif ([string] $receiveDeliverySnapshot.mode -eq 'Shadow') {
+        if (-not [bool] $receiveDeliverySnapshot.hasShadowRecommendation -or
+            [string] $receiveDeliverySnapshot.selectedValue -ne
+                [string] $receiveDeliverySnapshot.shadowRecommendation -or
+            [string] $receiveDeliverySnapshot.appliedValue -ne
+                'LegacyCurrent') {
+            [void] $joinFailures.Add(
+                "$rowKey|receive-delivery-shadow-identity")
+        }
+    }
+    elseif ([string] $receiveDeliverySnapshot.selectedValue -ne
+            'LegacyCurrent' -or
+        [string] $receiveDeliverySnapshot.appliedValue -ne
+            'LegacyCurrent') {
+        [void] $joinFailures.Add(
+            "$rowKey|receive-delivery-legacy-identity")
     }
 
     if ([bool] $epoch.postServiceBoundary.actorObservationPublished -and
@@ -1193,6 +1332,194 @@ foreach ($epochRowKey in $packetFlushCadenceSummaryByEpoch.Keys) {
     }
 }
 
+$receiveDeliverySourceIndex = 0
+$receiveDeliverySourceRowOffset = 0
+foreach ($line in [System.IO.File]::ReadLines(
+        $resolvedReceiveDeliveryQuantumObservationPath)) {
+    if ([string]::IsNullOrWhiteSpace($line)) {
+        continue
+    }
+
+    if (-not (
+            $line |
+                Test-Json `
+                    -SchemaFile $receiveDeliveryQuantumSchemaPath `
+                    -ErrorAction Stop)) {
+        throw (
+            "Receive-delivery quantum raw observation failed schema " +
+            "validation at row " +
+            "$($receiveDeliveryQuantumObservationRowCount + 1).")
+    }
+
+    $record = $line | ConvertFrom-Json -Depth 100
+    $sourceKey = Resolve-SourceKey `
+        -Counts $SourceReceiveDeliveryQuantumObservationRowCount `
+        -Index ([ref] $receiveDeliverySourceIndex) `
+        -Offset ([ref] $receiveDeliverySourceRowOffset)
+    $scopedConnectionKey =
+        "$sourceKey|$([string] $record.connectionKey)"
+    $sequence = [uint64] $record.observation.operationSequence
+    $operationKey = "$scopedConnectionKey|$sequence"
+    $receiveDeliveryQuantumObservationRowCount++
+    $receiveDeliverySourceRowOffset++
+
+    if (-not $seenReceiveDeliveryQuantumKeys.Add($operationKey)) {
+        [void] $duplicateReceiveDeliveryQuantumKeys.Add($operationKey)
+    }
+    if ($lastReceiveDeliveryQuantumSequenceByConnection.ContainsKey(
+            $scopedConnectionKey) -and
+        $sequence -le [uint64] (
+            $lastReceiveDeliveryQuantumSequenceByConnection[
+                $scopedConnectionKey])) {
+        [void] $outOfOrderReceiveDeliveryQuantumKeys.Add($operationKey)
+    }
+    $lastReceiveDeliveryQuantumSequenceByConnection[
+        $scopedConnectionKey] = $sequence
+
+    if (-not $expectedReceiveDeliveryQuantumKeys.Remove($operationKey)) {
+        [void] $orphanReceiveDeliveryQuantumKeys.Add($operationKey)
+        continue
+    }
+
+    $epochRowKey =
+        [string] $receiveDeliveryQuantumEpochByOperationKey[$operationKey]
+    if (-not $receiveDeliveryQuantumAggregateByEpoch.ContainsKey(
+            $epochRowKey)) {
+        $receiveDeliveryQuantumAggregateByEpoch[$epochRowKey] =
+            [ordered]@{
+                OperationCount = [uint64]0
+                SingleSegmentOperationCount = [uint64]0
+                CompletedOperationCount = [uint64]0
+                BatchedReceiveCreditOperationCount = [uint64]0
+                SafetyOverrideCount = [uint64]0
+                FallbackCount = [uint64]0
+                DeliveredBytes = [uint64]0
+                SourceSegmentsRead = [uint64]0
+                MaximumRequestedBufferLength = [uint64]0
+                MaximumDeliveredBytes = [uint64]0
+                MaximumSourceSegmentsRead = [uint64]0
+            }
+    }
+
+    $aggregate = $receiveDeliveryQuantumAggregateByEpoch[$epochRowKey]
+    $aggregate.OperationCount =
+        [uint64] $aggregate.OperationCount + 1
+    if ([string] $record.observation.decision.appliedValue -eq
+        'SingleSegment') {
+        $aggregate.SingleSegmentOperationCount =
+            [uint64] $aggregate.SingleSegmentOperationCount + 1
+    }
+    if ([bool] $record.observation.completed) {
+        $aggregate.CompletedOperationCount =
+            [uint64] $aggregate.CompletedOperationCount + 1
+    }
+    if ([bool] $record.observation.batchedReceiveCredit) {
+        $aggregate.BatchedReceiveCreditOperationCount =
+            [uint64] $aggregate.BatchedReceiveCreditOperationCount + 1
+    }
+    if ([string] $record.observation.decision.safetyOverride -ne 'None') {
+        $aggregate.SafetyOverrideCount =
+            [uint64] $aggregate.SafetyOverrideCount + 1
+    }
+    if ([bool] $record.observation.decision.fallbackApplied) {
+        $aggregate.FallbackCount =
+            [uint64] $aggregate.FallbackCount + 1
+    }
+    $aggregate.DeliveredBytes =
+        [uint64] $aggregate.DeliveredBytes +
+            [uint64] $record.observation.deliveredBytes
+    $aggregate.SourceSegmentsRead =
+        [uint64] $aggregate.SourceSegmentsRead +
+            [uint64] $record.observation.sourceSegmentsRead
+    $requestedBufferLength =
+        [uint64] $record.observation.decision.requestedBufferLength
+    if ($requestedBufferLength -gt
+        [uint64] $aggregate.MaximumRequestedBufferLength) {
+        $aggregate.MaximumRequestedBufferLength = $requestedBufferLength
+    }
+    $deliveredBytes = [uint64] $record.observation.deliveredBytes
+    if ($deliveredBytes -gt [uint64] $aggregate.MaximumDeliveredBytes) {
+        $aggregate.MaximumDeliveredBytes = $deliveredBytes
+    }
+    $sourceSegmentsRead = [uint64] $record.observation.sourceSegmentsRead
+    if ($sourceSegmentsRead -gt
+        [uint64] $aggregate.MaximumSourceSegmentsRead) {
+        $aggregate.MaximumSourceSegmentsRead = $sourceSegmentsRead
+    }
+
+    $decision = $record.observation.decision
+    if ([bool] $decision.hasForcedValue) {
+        if ([string] $decision.selectedValue -ne
+                [string] $decision.forcedValue -or
+            ([string] $decision.safetyOverride -eq 'None' -and
+                [string] $decision.appliedValue -ne
+                    [string] $decision.forcedValue)) {
+            [void] $joinFailures.Add(
+                "$operationKey|receive-delivery-forced-decision")
+        }
+    }
+    elseif ([string] $decision.mode -eq 'Shadow' -and
+        ([string] $decision.selectedValue -ne
+            [string] $decision.shadowRecommendation -or
+        [string] $decision.appliedValue -ne 'LegacyCurrent')) {
+        [void] $joinFailures.Add(
+            "$operationKey|receive-delivery-shadow-decision")
+    }
+}
+
+$sourceReceiveDeliveryQuantumObservationRowTotal =
+    ($SourceReceiveDeliveryQuantumObservationRowCount |
+        Measure-Object -Sum).Sum
+if ($null -ne $SourceReceiveDeliveryQuantumObservationRowCount -and
+    $sourceReceiveDeliveryQuantumObservationRowTotal -ne
+        $receiveDeliveryQuantumObservationRowCount) {
+    throw (
+        "Receive-delivery quantum source row counts do not match retained " +
+        "rows: sources=$sourceReceiveDeliveryQuantumObservationRowTotal, " +
+        "rows=$receiveDeliveryQuantumObservationRowCount.")
+}
+
+foreach ($epochRowKey in $receiveDeliveryQuantumSummaryByEpoch.Keys) {
+    $expected = $receiveDeliveryQuantumSummaryByEpoch[$epochRowKey]
+    $actual = if ($receiveDeliveryQuantumAggregateByEpoch.ContainsKey(
+            $epochRowKey)) {
+        $receiveDeliveryQuantumAggregateByEpoch[$epochRowKey]
+    }
+    else {
+        [ordered]@{
+            OperationCount = [uint64]0
+            SingleSegmentOperationCount = [uint64]0
+            CompletedOperationCount = [uint64]0
+            BatchedReceiveCreditOperationCount = [uint64]0
+            SafetyOverrideCount = [uint64]0
+            FallbackCount = [uint64]0
+            DeliveredBytes = [uint64]0
+            SourceSegmentsRead = [uint64]0
+            MaximumRequestedBufferLength = [uint64]0
+            MaximumDeliveredBytes = [uint64]0
+            MaximumSourceSegmentsRead = [uint64]0
+        }
+    }
+    foreach ($name in @(
+        'OperationCount',
+        'SingleSegmentOperationCount',
+        'CompletedOperationCount',
+        'BatchedReceiveCreditOperationCount',
+        'SafetyOverrideCount',
+        'FallbackCount',
+        'DeliveredBytes',
+        'SourceSegmentsRead',
+        'MaximumRequestedBufferLength',
+        'MaximumDeliveredBytes',
+        'MaximumSourceSegmentsRead'
+    )) {
+        if ([uint64] $expected.$name -ne [uint64] $actual.$name) {
+            [void] $joinFailures.Add(
+                "$epochRowKey|receive-delivery-raw-aggregate-$name")
+        }
+    }
+}
+
 foreach ($actorEpochRowKey in $actorEpochSummaryByRowKey.Keys) {
     $summary = $actorEpochSummaryByRowKey[$actorEpochRowKey]
     $actualObservationCount = if (
@@ -1345,9 +1672,13 @@ $valid =
     $outOfOrderPacketFlushCadenceKeys.Count -eq 0 -and
     $orphanPacketFlushCadenceKeys.Count -eq 0 -and
     $expectedPacketFlushCadenceKeys.Count -eq 0 -and
+    $duplicateReceiveDeliveryQuantumKeys.Count -eq 0 -and
+    $outOfOrderReceiveDeliveryQuantumKeys.Count -eq 0 -and
+    $orphanReceiveDeliveryQuantumKeys.Count -eq 0 -and
+    $expectedReceiveDeliveryQuantumKeys.Count -eq 0 -and
     $joinFailures.Count -eq 0 -and
     $multiAxisRows.Count -eq 0 -and
-    $axisRecordCount -eq ($rowCount * 7)
+    $axisRecordCount -eq ($rowCount * 8)
 if (-not $valid) {
     throw (
         "Unified adaptive-runtime raw evidence failed semantic validation: " +
@@ -1372,12 +1703,20 @@ if (-not $valid) {
             $orphanPacketFlushCadenceKeys.Count), " +
         "packetFlushMissing=$(
             $expectedPacketFlushCadenceKeys.Count), " +
+        "receiveDeliveryDuplicates=$(
+            $duplicateReceiveDeliveryQuantumKeys.Count), " +
+        "receiveDeliveryOutOfOrder=$(
+            $outOfOrderReceiveDeliveryQuantumKeys.Count), " +
+        "receiveDeliveryOrphans=$(
+            $orphanReceiveDeliveryQuantumKeys.Count), " +
+        "receiveDeliveryMissing=$(
+            $expectedReceiveDeliveryQuantumKeys.Count), " +
         "joinFailures=$($joinFailures.Count), multiAxis=$($multiAxisRows.Count), " +
-        "axisRecords=$axisRecordCount, expectedAxisRecords=$($rowCount * 7).")
+        "axisRecords=$axisRecordCount, expectedAxisRecords=$($rowCount * 8).")
 }
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-validation-v10'
+    schemaVersion = 'adaptive-runtime-unified-raw-validation-v11'
     valid = $true
     rawEpochRowCount = $rowCount
     axisRecordCount = $axisRecordCount
@@ -1393,6 +1732,10 @@ if (-not $valid) {
         $packetFlushCadenceEpochRowCount
     packetFlushCadenceObservationRowCount =
         $packetFlushCadenceObservationRowCount
+    receiveDeliveryQuantumEpochRowCount =
+        $receiveDeliveryQuantumEpochRowCount
+    receiveDeliveryQuantumObservationRowCount =
+        $receiveDeliveryQuantumObservationRowCount
     duplicateKeyCount = $duplicateKeys.Count
     outOfOrderKeyCount = $outOfOrderKeys.Count
     duplicateActorKeyCount = $duplicateActorKeys.Count
@@ -1415,6 +1758,14 @@ if (-not $valid) {
         $orphanPacketFlushCadenceKeys.Count
     missingPacketFlushCadenceKeyCount =
         $expectedPacketFlushCadenceKeys.Count
+    duplicateReceiveDeliveryQuantumKeyCount =
+        $duplicateReceiveDeliveryQuantumKeys.Count
+    outOfOrderReceiveDeliveryQuantumKeyCount =
+        $outOfOrderReceiveDeliveryQuantumKeys.Count
+    orphanReceiveDeliveryQuantumKeyCount =
+        $orphanReceiveDeliveryQuantumKeys.Count
+    missingReceiveDeliveryQuantumKeyCount =
+        $expectedReceiveDeliveryQuantumKeys.Count
     joinFailureCount = $joinFailures.Count
     multiAxisVariationCount = $multiAxisRows.Count
 } | ConvertTo-Json -Depth 20

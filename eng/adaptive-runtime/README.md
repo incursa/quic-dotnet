@@ -78,17 +78,19 @@ buffer raw rows:
 The exporter reads `QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON=`,
 `QUIC_ACTOR_SERVICE_OBSERVATION_JSON=`,
 `QUIC_ADAPTIVE_BACKPRESSURE_EVIDENCE_JSON=`, and
-`QUIC_PACKET_FLUSH_CADENCE_EVIDENCE_JSON=` records, validates unified raw
-v9, actor raw v4, backpressure raw v1, and packet-flush raw v1, and writes
-four append-only raw JSONL streams, semantic validation, and a checksum
-manifest v10. Semantic
+`QUIC_PACKET_FLUSH_CADENCE_EVIDENCE_JSON=`, and
+`QUIC_RECEIVE_DELIVERY_QUANTUM_EVIDENCE_JSON=` records, validates unified raw
+v10, actor raw v4, backpressure raw v1, packet-flush raw v1, and
+receive-delivery raw v1, and writes five append-only raw JSONL streams,
+semantic validation, and a checksum manifest v11. Semantic
 validation requires matching
 connection-observation, receive-credit, post-service boundary, and Stage 1
 epoch keys; monotonic unique connection epochs; exactly four Stage 1 axis
 records plus one `buffer_copy_coalescing` and one `adaptive_backpressure`
-record plus one `packet_flush_cadence` record per row; no more than one
+record plus one `packet_flush_cadence` and one `receive_delivery_quantum`
+record per row; no more than one
 non-legacy applied axis across receive credit, Stage 1, buffer coalescing,
-backpressure, and packet flush;
+backpressure, packet flush, and receive delivery;
 configured buffer identity and bounded aggregate consistency; and exact
 source-scoped `connectionKey + serviceSequence` coverage for every inclusive
 actor summary range; and exact raw-to-epoch contender observation count,
@@ -107,7 +109,10 @@ opportunity rows use the same source-scoped operation join and recompute
 eligible, delayed, prompt, safety, fallback, maximum-payload, and maximum-queue
 aggregates. Distinct epoch and sample counts prevent sample-scoped admission
 or packet-opportunity records from being treated as epoch-independent
-outcomes. A pending count is never relabeled
+outcomes. Productive receive-delivery rows use the same exact source-scoped
+operation join and recompute single-segment, completion, batched-credit,
+safety, fallback, delivered-byte, source-segment, and bounded-maximum
+aggregates. A pending count is never relabeled
 continuation-ready unless its
 closed state is `ReadyAfterCooperativeYield`. Connection keys are scoped to
 their hashed source log because

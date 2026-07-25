@@ -556,6 +556,35 @@ public sealed class REQ_QUIC_CRT_0191
         Assert.Empty(postedWrites);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ListenerOptionCopyPreservesBackpressureForceAndEvidence()
+    {
+        RecordingBackpressureSink sink = new();
+        QuicServerConnectionOptions selectedOptions = new();
+        QuicServerConnectionOptions returnedOptions = new()
+        {
+            ForcedAdaptiveBackpressurePolicyValue =
+                QuicAdaptiveBackpressurePolicyValue.EarlyDelay,
+            AdaptiveBackpressureObservationMode =
+                QuicAdaptiveBackpressureObservationMode.Shadow,
+            AdaptiveBackpressureEvidenceSink = sink,
+        };
+
+        QuicListenerHost.ApplyReturnedOptions(
+            selectedOptions,
+            returnedOptions);
+
+        Assert.Equal(
+            QuicAdaptiveBackpressurePolicyValue.EarlyDelay,
+            selectedOptions.ForcedAdaptiveBackpressurePolicyValue);
+        Assert.Equal(
+            QuicAdaptiveBackpressureObservationMode.Shadow,
+            selectedOptions.AdaptiveBackpressureObservationMode);
+        Assert.Same(sink, selectedOptions.AdaptiveBackpressureEvidenceSink);
+    }
+
     private static QuicConnectionRuntime CreateRuntimeWithPostedWrites(
         out Queue<PostedStreamWrite> postedWrites,
         out RecordingBackpressureSink sink,

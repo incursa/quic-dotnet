@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.local/schemas/adaptive-runtime-receive-delivery-quantum-epoch-v1.schema.json",
+  "title": "Adaptive Runtime Receive Delivery Quantum Epoch V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "axisId",
+    "epochContractVersion",
+    "policySnapshot",
+    "hasObservation",
+    "firstOperationSequence",
+    "lastOperationSequence",
+    "operationCount",
+    "singleSegmentOperationCount",
+    "completedOperationCount",
+    "batchedReceiveCreditOperationCount",
+    "safetyOverrideCount",
+    "fallbackCount",
+    "deliveredBytes",
+    "sourceSegmentsRead",
+    "maximumRequestedBufferLength",
+    "maximumDeliveredBytes",
+    "maximumSourceSegmentsRead",
+    "validity"
+  ],
+  "properties": {
+    "axisId": { "const": "receive_delivery_quantum" },
+    "epochContractVersion": { "const": "quic-receive-delivery-quantum-epoch-v1" },
+    "hasObservation": { "type": "boolean" },
+    "policySnapshot": {
+      "type": "object",
+      "required": [
+        "snapshotVersion",
+        "mode",
+        "hasForcedValue",
+        "forcedValue",
+        "hasShadowRecommendation",
+        "shadowRecommendation",
+        "selectedValue",
+        "appliedValue",
+        "selectionSource",
+        "reasonCode",
+        "safetyOverride",
+        "decisionBoundary",
+        "latchLifetime",
+        "fallbackApplied"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "snapshotVersion": { "const": "quic-receive-delivery-quantum-policy-snapshot-v1" },
+        "mode": { "enum": ["Disabled", "ObserveOnly", "Shadow"] },
+        "hasForcedValue": { "type": "boolean" },
+        "forcedValue": { "enum": ["LegacyCurrent", "SingleSegment"] },
+        "hasShadowRecommendation": { "type": "boolean" },
+        "shadowRecommendation": { "enum": ["LegacyCurrent", "SingleSegment"] },
+        "selectedValue": { "enum": ["LegacyCurrent", "SingleSegment"] },
+        "appliedValue": { "enum": ["LegacyCurrent", "SingleSegment"] },
+        "selectionSource": { "enum": ["LegacyCurrent", "Forced", "ShadowRule", "SafetyOverride"] },
+        "reasonCode": {
+          "enum": [
+            "LegacyCurrent",
+            "ObserveOnly",
+            "ForcedSingleSegment",
+            "ShadowSingleSegment"
+          ]
+        },
+        "safetyOverride": { "const": "None" },
+        "decisionBoundary": { "const": "ProductiveApplicationRead" },
+        "latchLifetime": { "const": "ApplicationReadCall" },
+        "fallbackApplied": { "const": false }
+      }
+    },
+    "firstOperationSequence": { "type": "integer", "minimum": 0 },
+    "lastOperationSequence": { "type": "integer", "minimum": 0 },
+    "operationCount": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+    "singleSegmentOperationCount": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+    "completedOperationCount": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+    "batchedReceiveCreditOperationCount": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+    "safetyOverrideCount": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+    "fallbackCount": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+    "deliveredBytes": { "type": "integer", "minimum": 0 },
+    "sourceSegmentsRead": { "type": "integer", "minimum": 0 },
+    "maximumRequestedBufferLength": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+    "maximumDeliveredBytes": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+    "maximumSourceSegmentsRead": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+    "validity": { "type": "string", "minLength": 4, "maxLength": 256 }
+  }
+}

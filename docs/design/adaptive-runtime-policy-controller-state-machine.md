@@ -6,7 +6,7 @@ title: "Adaptive Runtime Controller State Machine"
 
 Status: receive-credit, all four Stage 1 send-path axes,
 `buffer_copy_coalescing`, `adaptive_backpressure`, and
-`packet_flush_cadence`
+`packet_flush_cadence`, and `receive_delivery_quantum`
 force/observe/shadow runtimes implemented;
 measurement and broader campaign verification frozen; actor and fairness
 axes remain blocked on reviewed safe mechanisms; active policy blocked
@@ -120,6 +120,20 @@ lifecycle, congestion, pacing, flow control, packet size and protection,
 recovery, cancellation, terminal state, and ownership remain authoritative
 under forcing. Observe-only applies legacy, and shadow recommends `prompt`
 while applying legacy.
+
+The implemented `receive_delivery_quantum` selector resolves
+`legacy_current` or `single_segment` at the existing productive
+application-read copy loop after cancellation, terminal, and zero-buffer
+handling. `legacy_current` preserves copying from every contiguous source
+segment that fits the caller buffer. `single_segment` stops after the first
+productive source segment and returns a legal short read. The latch covers one
+application read call. `receive_credit_publication` remains
+`legacy_current`, and the existing batched-credit choice passes through
+unchanged. Ordering, buffer ownership/release, FIN, reset, close,
+cancellation, disposal, flow-control progress, congestion, pacing, recovery,
+packet limits, and terminal behavior remain authoritative under forcing.
+Observe-only applies legacy, shadow recommends `single_segment` while
+applying legacy, and invalid or lifecycle input falls back to legacy.
 
 ## States
 

@@ -22,6 +22,9 @@ param(
     [ValidateSet("", "legacy_current", "prompt", "observe_only", "shadow")]
     [string] $AdaptiveRuntimePacketFlushCadencePolicy = "",
 
+    [ValidateSet("", "legacy_current", "single_segment", "observe_only", "shadow")]
+    [string] $AdaptiveRuntimeReceiveDeliveryQuantumPolicy = "",
+
     [switch] $RawQuicDebugLogging,
 
     [string] $OutputPath,
@@ -475,6 +478,7 @@ $adaptiveRuntimeEnvironmentRequested =
     -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy) -or
     -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy) -or
     -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimePacketFlushCadencePolicy) -or
+    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveDeliveryQuantumPolicy) -or
     $RawQuicDebugLogging
 if ($adaptiveRuntimeEnvironmentRequested) {
     $implementationManifestPath = Join-Path $stageRoot "implementations/quic-dotnet-raw-dev.yaml"
@@ -494,6 +498,9 @@ if ($adaptiveRuntimeEnvironmentRequested) {
     }
     if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimePacketFlushCadencePolicy)) {
         $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_PACKET_FLUSH_CADENCE_POLICY: $AdaptiveRuntimePacketFlushCadencePolicy"
+    }
+    if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveDeliveryQuantumPolicy)) {
+        $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_DELIVERY_QUANTUM_POLICY: $AdaptiveRuntimeReceiveDeliveryQuantumPolicy"
     }
     if ($RawQuicDebugLogging) {
         $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG: 1"

@@ -488,6 +488,35 @@ public sealed class REQ_QUIC_CRT_0192
         }
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ListenerOptionCopyPreservesPacketFlushForceAndEvidence()
+    {
+        RecordingPacketFlushSink sink = new();
+        QuicServerConnectionOptions selectedOptions = new();
+        QuicServerConnectionOptions returnedOptions = new()
+        {
+            ForcedPacketFlushCadencePolicyValue =
+                QuicPacketFlushCadencePolicyValue.Prompt,
+            PacketFlushCadenceObservationMode =
+                QuicPacketFlushCadenceObservationMode.Shadow,
+            PacketFlushCadenceEvidenceSink = sink,
+        };
+
+        QuicListenerHost.ApplyReturnedOptions(
+            selectedOptions,
+            returnedOptions);
+
+        Assert.Equal(
+            QuicPacketFlushCadencePolicyValue.Prompt,
+            selectedOptions.ForcedPacketFlushCadencePolicyValue);
+        Assert.Equal(
+            QuicPacketFlushCadenceObservationMode.Shadow,
+            selectedOptions.PacketFlushCadenceObservationMode);
+        Assert.Same(sink, selectedOptions.PacketFlushCadenceEvidenceSink);
+    }
+
     private static QuicConnectionRuntime CreateRuntime(
         QuicPacketFlushCadencePolicyValue? forcedValue,
         QuicPacketFlushCadenceObservationMode observationMode,

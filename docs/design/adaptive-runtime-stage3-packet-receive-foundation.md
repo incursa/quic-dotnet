@@ -4,8 +4,8 @@ title: "Adaptive Runtime Stage 3 Packet and Receive Foundation"
 
 # Adaptive Runtime Stage 3 Packet and Receive Foundation
 
-Status: `packet_flush_cadence` implementation-ready; measurement and active
-behavior frozen; `receive_delivery_quantum` next
+Status: both ordinary Stage 3 axes implementation-ready; measurement and
+active behavior frozen
 
 This document is the trace home for the ordinary Stage 3 axes in
 [`adaptive-runtime-policy-axis-roadmap.md`](adaptive-runtime-policy-axis-roadmap.md).
@@ -54,11 +54,41 @@ Trace chain:
 
 Axis ID: `receive_delivery_quantum`
 
-This axis remains an inventory item. Its implementation must preserve
-`receive_credit_publication=legacy_current` and identify one bounded delivery
-or wake unit that does not change receive-buffer ownership, FIN/reset/close
-ordering, cancellation/disposal, flow-control progress, or terminal drain.
-No policy value, force seam, or active behavior is claimed yet.
+Closed values:
+
+- `legacy_current` preserves the existing loop over every contiguous receive
+  buffer segment that fits the caller-provided buffer.
+- `single_segment` returns a legal short read after copying from at most one
+  existing contiguous source segment.
+
+The decision occurs at a productive application read after cancellation,
+terminal, and zero-buffer handling and at the existing data-copy loop. It is
+latched for one application read call. Disabled and unforced operation calls
+the legacy overload exactly. Observe-only records legacy behavior. Shadow
+recommends `single_segment` while applying `legacy_current`. Internal forcing
+supports both closed values, and force-legacy rollback restores the full
+existing contiguous-copy loop.
+
+Forced mode bypasses selection only. `receive_credit_publication` remains
+`legacy_current`; the existing batched-credit decision passes through
+unchanged. Receive ordering, buffer ownership and release, FIN, reset, close,
+cancellation, disposal, flow-control progress, congestion, pacing, recovery,
+packet limits, and terminal behavior remain authoritative. Missing, stale,
+saturated, contradictory, invalid, out-of-domain, and lifecycle state falls
+back to `legacy_current`.
+
+Only productive reads produce sample-scoped records. The deterministic raw
+join key is source-log identity, connection key, and operation sequence. Every
+unified epoch retains the configured snapshot, inclusive operation range,
+counts, delivered bytes, source-segment counts, completion and receive-credit
+attribution, bounded maxima, safety/fallback counts, and validity.
+
+Trace chain:
+
+- `REQ-QUIC-CRT-0193`
+- `ARC-QUIC-CRT-0074`
+- `WI-QUIC-CRT-0075`
+- `VER-QUIC-CRT-0076`
 
 ## Frozen State
 

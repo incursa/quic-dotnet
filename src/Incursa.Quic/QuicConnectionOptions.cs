@@ -234,4 +234,17 @@ public abstract class QuicConnectionOptions
 
     internal IQuicPacketFlushCadenceEvidenceSink?
         PacketFlushCadenceEvidenceSink { get; set; }
+
+    // CONTEXT: Internal-only Stage 3 receive-delivery control. The
+    // conservative value may return bytes from at most one existing receive
+    // segment per productive application read without changing receive credit
+    // selection, ordering, ownership, or terminal behavior.
+    internal QuicReceiveDeliveryQuantumPolicyValue?
+        ForcedReceiveDeliveryQuantumPolicyValue { get; set; }
+
+    internal QuicReceiveDeliveryQuantumObservationMode
+        ReceiveDeliveryQuantumObservationMode { get; set; }
+
+    internal IQuicReceiveDeliveryQuantumEvidenceSink?
+        ReceiveDeliveryQuantumEvidenceSink { get; set; }
 }

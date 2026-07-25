@@ -275,6 +275,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY", builderScript);
         Assert.Contains("AdaptiveRuntimePacketFlushCadencePolicy", builderScript);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_PACKET_FLUSH_CADENCE_POLICY", builderScript);
+        Assert.Contains("AdaptiveRuntimeReceiveDeliveryQuantumPolicy", builderScript);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_DELIVERY_QUANTUM_POLICY", builderScript);
         Assert.Contains("AdaptiveRuntimeApplicationSendTurnPolicy", builderScript);
         Assert.Contains("RawQuicDebugLogging", builderScript);
         Assert.Contains("IncursaRawQuicServer ignored failed inbound establishment", rawQuicServer);
@@ -292,7 +294,7 @@ public sealed class ProtocolLabPackageTemplateTests
             "QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=adaptive-runtime-epoch-raw-v2",
             rawQuicServer);
         Assert.Contains(
-            "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_CONTRACT=adaptive-runtime-unified-epoch-raw-v9",
+            "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_CONTRACT=adaptive-runtime-unified-epoch-raw-v10",
             rawQuicServer);
         Assert.Contains(
             "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON=",
@@ -326,6 +328,12 @@ public sealed class ProtocolLabPackageTemplateTests
             rawQuicServer);
         Assert.Contains(
             "QUIC_PACKET_FLUSH_CADENCE_EVIDENCE_JSON=",
+            rawQuicServer);
+        Assert.Contains(
+            "QUIC_RECEIVE_DELIVERY_QUANTUM_EVIDENCE_CONTRACT=quic-receive-delivery-quantum-raw-v1",
+            rawQuicServer);
+        Assert.Contains(
+            "QUIC_RECEIVE_DELIVERY_QUANTUM_EVIDENCE_JSON=",
             rawQuicServer);
         Assert.Contains(
             "QUIC_BUFFER_EVIDENCE_FAILURE_JSON=",
@@ -363,6 +371,13 @@ public sealed class ProtocolLabPackageTemplateTests
             runScript);
         Assert.Contains(
             "AdaptiveRuntimePacketFlushCadencePolicy is supported only for the RawQuic package target.",
+            runScript);
+        Assert.Contains("AdaptiveRuntimeReceiveDeliveryQuantumPolicy", runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeReceiveDeliveryQuantumPolicy = $AdaptiveRuntimeReceiveDeliveryQuantumPolicy",
+            runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeReceiveDeliveryQuantumPolicy is supported only for the RawQuic package target.",
             runScript);
         Assert.Contains(
             "\"conservative\", \"observe_only\", \"shadow\"",

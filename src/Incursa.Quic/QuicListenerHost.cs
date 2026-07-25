@@ -2444,6 +2444,24 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             returnedOptions.ForcedBufferCopyPolicyValue;
         selectedOptions.BufferCopyEvidenceSink =
             returnedOptions.BufferCopyEvidenceSink;
+        selectedOptions.AdaptiveBackpressureObservationMode =
+            returnedOptions.AdaptiveBackpressureObservationMode;
+        selectedOptions.ForcedAdaptiveBackpressurePolicyValue =
+            returnedOptions.ForcedAdaptiveBackpressurePolicyValue;
+        selectedOptions.AdaptiveBackpressureEvidenceSink =
+            returnedOptions.AdaptiveBackpressureEvidenceSink;
+        selectedOptions.PacketFlushCadenceObservationMode =
+            returnedOptions.PacketFlushCadenceObservationMode;
+        selectedOptions.ForcedPacketFlushCadencePolicyValue =
+            returnedOptions.ForcedPacketFlushCadencePolicyValue;
+        selectedOptions.PacketFlushCadenceEvidenceSink =
+            returnedOptions.PacketFlushCadenceEvidenceSink;
+        selectedOptions.ReceiveDeliveryQuantumObservationMode =
+            returnedOptions.ReceiveDeliveryQuantumObservationMode;
+        selectedOptions.ForcedReceiveDeliveryQuantumPolicyValue =
+            returnedOptions.ForcedReceiveDeliveryQuantumPolicyValue;
+        selectedOptions.ReceiveDeliveryQuantumEvidenceSink =
+            returnedOptions.ReceiveDeliveryQuantumEvidenceSink;
 
         QuicReceiveWindowSizes returnedWindowSizes = returnedOptions.InitialReceiveWindowSizes;
         selectedOptions.InitialReceiveWindowSizes = new QuicReceiveWindowSizes

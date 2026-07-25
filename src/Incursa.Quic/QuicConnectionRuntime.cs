@@ -77,6 +77,8 @@ internal sealed partial class QuicConnectionRuntime :
     private const int UnconfiguredAdaptiveBackpressureObservationMode = -1;
     private const int UnconfiguredPacketFlushCadencePolicyValue = -1;
     private const int UnconfiguredPacketFlushCadenceObservationMode = -1;
+    private const int UnconfiguredReceiveDeliveryQuantumPolicyValue = -1;
+    private const int UnconfiguredReceiveDeliveryQuantumObservationMode = -1;
     private const int UnconfiguredQueuedSendBurstPolicyMode = -1;
     private const int UnconfiguredQueuedSendBurstObservationMode = -1;
     private const int UnconfiguredOversizedWriteAdmissionPolicyMode = -1;
@@ -127,6 +129,10 @@ internal sealed partial class QuicConnectionRuntime :
         UnconfiguredPacketFlushCadencePolicyValue;
     private int packetFlushCadenceObservationMode =
         UnconfiguredPacketFlushCadenceObservationMode;
+    private int receiveDeliveryQuantumPolicyValue =
+        UnconfiguredReceiveDeliveryQuantumPolicyValue;
+    private int receiveDeliveryQuantumObservationMode =
+        UnconfiguredReceiveDeliveryQuantumObservationMode;
     private int queuedSendBurstPolicyMode = UnconfiguredQueuedSendBurstPolicyMode;
     private int queuedSendBurstObservationMode = UnconfiguredQueuedSendBurstObservationMode;
     private int oversizedWriteAdmissionPolicyMode =
@@ -166,6 +172,9 @@ internal sealed partial class QuicConnectionRuntime :
     private long packetFlushCadenceObservationSequence;
     private IQuicPacketFlushCadenceEvidenceSink?
         packetFlushCadenceEvidenceSink;
+    private long receiveDeliveryQuantumObservationSequence;
+    private IQuicReceiveDeliveryQuantumEvidenceSink?
+        receiveDeliveryQuantumEvidenceSink;
     private IQuicQueuedSendBurstEvidenceSink? queuedSendBurstEvidenceSink;
     private IQuicOversizedWriteAdmissionEvidenceSink? oversizedWriteAdmissionEvidenceSink;
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
@@ -1483,6 +1492,12 @@ internal sealed partial class QuicConnectionRuntime :
         QuicPacketFlushCadencePolicyValue?
             forcedPacketFlushCadencePolicyValue =
                 options.ForcedPacketFlushCadencePolicyValue;
+        QuicReceiveDeliveryQuantumObservationMode
+            requestedReceiveDeliveryQuantumObservationMode =
+                options.ReceiveDeliveryQuantumObservationMode;
+        QuicReceiveDeliveryQuantumPolicyValue?
+            forcedReceiveDeliveryQuantumPolicyValue =
+                options.ForcedReceiveDeliveryQuantumPolicyValue;
         if (requestedApplicationSendTurnObservationMode is < QuicApplicationSendTurnObservationMode.Disabled
             or > QuicApplicationSendTurnObservationMode.Shadow)
         {
@@ -1606,6 +1621,17 @@ internal sealed partial class QuicConnectionRuntime :
             QuicPacketFlushCadencePolicy.ValidateValue(
                 requestedPacketFlushCadencePolicyValue);
         }
+        QuicReceiveDeliveryQuantumPolicy.ValidateObservationMode(
+            requestedReceiveDeliveryQuantumObservationMode);
+        bool receiveDeliveryQuantumObservationEnabled =
+            requestedReceiveDeliveryQuantumObservationMode
+                != QuicReceiveDeliveryQuantumObservationMode.Disabled;
+        if (forcedReceiveDeliveryQuantumPolicyValue
+            is { } requestedReceiveDeliveryQuantumPolicyValue)
+        {
+            QuicReceiveDeliveryQuantumPolicy.ValidateValue(
+                requestedReceiveDeliveryQuantumPolicyValue);
+        }
         if (!applicationSendTurnObservationEnabled && options.ApplicationSendTurnEvidenceSink is not null)
         {
             throw new InvalidOperationException(
@@ -1708,6 +1734,20 @@ internal sealed partial class QuicConnectionRuntime :
         {
             throw new InvalidOperationException(
                 "Packet-flush cadence observe-only and shadow modes require an evidence sink.");
+        }
+
+        if (!receiveDeliveryQuantumObservationEnabled
+            && options.ReceiveDeliveryQuantumEvidenceSink is not null)
+        {
+            throw new InvalidOperationException(
+                "Receive-delivery quantum evidence export requires observe-only or shadow mode.");
+        }
+
+        if (receiveDeliveryQuantumObservationEnabled
+            && options.ReceiveDeliveryQuantumEvidenceSink is null)
+        {
+            throw new InvalidOperationException(
+                "Receive-delivery quantum observe-only and shadow modes require an evidence sink.");
         }
 
         bool applicationSendTurnTreatmentSelected =
@@ -1921,6 +1961,9 @@ internal sealed partial class QuicConnectionRuntime :
         bool packetFlushCadenceTreatmentSelected =
             forcedPacketFlushCadencePolicyValue
                 is QuicPacketFlushCadencePolicyValue.Prompt;
+        bool receiveDeliveryQuantumTreatmentSelected =
+            forcedReceiveDeliveryQuantumPolicyValue
+                is QuicReceiveDeliveryQuantumPolicyValue.SingleSegment;
         int behaviorDistinctTreatmentCount =
             (applicationSendTurnTreatmentSelected ? 1 : 0)
             + (applicationSendBatchTreatmentSelected ? 1 : 0)
@@ -1928,7 +1971,8 @@ internal sealed partial class QuicConnectionRuntime :
             + (oversizedWriteAdmissionTreatmentSelected ? 1 : 0)
             + (bufferCopyTreatmentSelected ? 1 : 0)
             + (adaptiveBackpressureTreatmentSelected ? 1 : 0)
-            + (packetFlushCadenceTreatmentSelected ? 1 : 0);
+            + (packetFlushCadenceTreatmentSelected ? 1 : 0)
+            + (receiveDeliveryQuantumTreatmentSelected ? 1 : 0);
         if (behaviorDistinctTreatmentCount > 1)
         {
             throw new InvalidOperationException(
@@ -1941,6 +1985,13 @@ internal sealed partial class QuicConnectionRuntime :
         {
             throw new InvalidOperationException(
                 "Packet-flush cadence policy requires the legacy_current receive-credit policy.");
+        }
+
+        if (receiveDeliveryQuantumTreatmentSelected
+            && forcedMode is not QuicReceiveCreditPolicyMode.LegacyCurrent)
+        {
+            throw new InvalidOperationException(
+                "Receive-delivery quantum policy requires the legacy_current receive-credit policy.");
         }
 
         if (applicationSendTurnObservationEnabled)
@@ -1992,6 +2043,13 @@ internal sealed partial class QuicConnectionRuntime :
             ConfigurePacketFlushCadenceObservation(
                 requestedPacketFlushCadenceObservationMode,
                 options.PacketFlushCadenceEvidenceSink!);
+        }
+
+        if (receiveDeliveryQuantumObservationEnabled)
+        {
+            ConfigureReceiveDeliveryQuantumObservation(
+                requestedReceiveDeliveryQuantumObservationMode,
+                options.ReceiveDeliveryQuantumEvidenceSink!);
         }
 
         if (options.AdaptiveRuntimeShadowEnabled)
@@ -2054,6 +2112,13 @@ internal sealed partial class QuicConnectionRuntime :
             {
                 ConfigurePacketFlushCadencePolicyValue(
                     shadowPacketFlushCadencePolicyValue);
+            }
+
+            if (forcedReceiveDeliveryQuantumPolicyValue
+                is { } shadowReceiveDeliveryQuantumPolicyValue)
+            {
+                ConfigureReceiveDeliveryQuantumPolicyValue(
+                    shadowReceiveDeliveryQuantumPolicyValue);
             }
 
             if (applicationSendTurnObservationEnabled)
@@ -2143,6 +2208,13 @@ internal sealed partial class QuicConnectionRuntime :
         {
             ConfigurePacketFlushCadencePolicyValue(
                 configuredPacketFlushCadencePolicyValue);
+        }
+
+        if (forcedReceiveDeliveryQuantumPolicyValue
+            is { } configuredReceiveDeliveryQuantumPolicyValue)
+        {
+            ConfigureReceiveDeliveryQuantumPolicyValue(
+                configuredReceiveDeliveryQuantumPolicyValue);
         }
 
         if (applicationSendTurnObservationEnabled)
@@ -2294,6 +2366,21 @@ internal sealed partial class QuicConnectionRuntime :
         }
     }
 
+    internal void ConfigureReceiveDeliveryQuantumPolicyValue(
+        QuicReceiveDeliveryQuantumPolicyValue value)
+    {
+        QuicReceiveDeliveryQuantumPolicy.ValidateValue(value);
+        if (Interlocked.CompareExchange(
+                ref receiveDeliveryQuantumPolicyValue,
+                (int)value,
+                UnconfiguredReceiveDeliveryQuantumPolicyValue)
+            != UnconfiguredReceiveDeliveryQuantumPolicyValue)
+        {
+            throw new InvalidOperationException(
+                "The receive-delivery quantum policy value has already been configured.");
+        }
+    }
+
     private void ConfigureApplicationSendTurnObservation(
         QuicApplicationSendTurnObservationMode mode,
         IQuicApplicationSendTurnEvidenceSink sink)
@@ -2407,6 +2494,23 @@ internal sealed partial class QuicConnectionRuntime :
         }
 
         packetFlushCadenceEvidenceSink = sink;
+    }
+
+    private void ConfigureReceiveDeliveryQuantumObservation(
+        QuicReceiveDeliveryQuantumObservationMode mode,
+        IQuicReceiveDeliveryQuantumEvidenceSink sink)
+    {
+        if (Interlocked.CompareExchange(
+                ref receiveDeliveryQuantumObservationMode,
+                (int)mode,
+                UnconfiguredReceiveDeliveryQuantumObservationMode)
+            != UnconfiguredReceiveDeliveryQuantumObservationMode)
+        {
+            throw new InvalidOperationException(
+                "The receive-delivery quantum observation mode has already been configured.");
+        }
+
+        receiveDeliveryQuantumEvidenceSink = sink;
     }
 
     private void ConfigureQueuedSendBurstObservation(
@@ -3630,6 +3734,111 @@ internal sealed partial class QuicConnectionRuntime :
         {
             // Packet-flush evidence is diagnostic-only. A failed sink cannot
             // delay, emit, reject, or otherwise affect protocol work.
+        }
+    }
+
+    internal bool ReceiveDeliveryQuantumObservationEnabled =>
+        (Volatile.Read(ref receiveDeliveryQuantumObservationMode)
+            is (int)QuicReceiveDeliveryQuantumObservationMode.ObserveOnly
+                or (int)QuicReceiveDeliveryQuantumObservationMode.Shadow)
+        && receiveDeliveryQuantumEvidenceSink is not null;
+
+    internal bool ReceiveDeliveryQuantumDecisionEnabled =>
+        Volatile.Read(ref receiveDeliveryQuantumPolicyValue)
+            != UnconfiguredReceiveDeliveryQuantumPolicyValue
+        || Volatile.Read(ref receiveDeliveryQuantumObservationMode)
+            is (int)QuicReceiveDeliveryQuantumObservationMode.ObserveOnly
+                or (int)QuicReceiveDeliveryQuantumObservationMode.Shadow;
+
+    internal QuicReceiveDeliveryQuantumConfiguredPolicySnapshot
+        CaptureConfiguredReceiveDeliveryQuantumPolicySnapshot()
+    {
+        int configuredMode = Volatile.Read(
+            ref receiveDeliveryQuantumObservationMode);
+        QuicReceiveDeliveryQuantumObservationMode mode =
+            configuredMode switch
+            {
+                (int)QuicReceiveDeliveryQuantumObservationMode.ObserveOnly =>
+                    QuicReceiveDeliveryQuantumObservationMode.ObserveOnly,
+                (int)QuicReceiveDeliveryQuantumObservationMode.Shadow =>
+                    QuicReceiveDeliveryQuantumObservationMode.Shadow,
+                _ => QuicReceiveDeliveryQuantumObservationMode.Disabled,
+            };
+        int configuredValue = Volatile.Read(
+            ref receiveDeliveryQuantumPolicyValue);
+        QuicReceiveDeliveryQuantumPolicyValue? forcedValue =
+            configuredValue switch
+            {
+                (int)QuicReceiveDeliveryQuantumPolicyValue.LegacyCurrent =>
+                    QuicReceiveDeliveryQuantumPolicyValue.LegacyCurrent,
+                (int)QuicReceiveDeliveryQuantumPolicyValue.SingleSegment =>
+                    QuicReceiveDeliveryQuantumPolicyValue.SingleSegment,
+                _ => null,
+            };
+        return QuicReceiveDeliveryQuantumPolicy.CreateConfiguredSnapshot(
+            mode,
+            forcedValue);
+    }
+
+    internal QuicReceiveDeliveryQuantumPolicyDecision
+        ResolveReceiveDeliveryQuantumPolicyDecision(
+            int requestedBufferLength,
+            QuicReceiveDeliveryQuantumValidity validity =
+                QuicReceiveDeliveryQuantumValidity.None)
+    {
+        QuicReceiveDeliveryQuantumConfiguredPolicySnapshot configured =
+            CaptureConfiguredReceiveDeliveryQuantumPolicySnapshot();
+        QuicReceiveDeliveryQuantumPolicyValue? forcedValue =
+            configured.HasForcedValue
+                ? configured.ForcedValue
+                : null;
+        QuicAdaptiveRuntimeLifecycle lifecycle =
+            CaptureAdaptiveRuntimeLifecycleFlags();
+        bool lifecycleGuard =
+            (lifecycle
+                & (QuicAdaptiveRuntimeLifecycle.Terminal
+                    | QuicAdaptiveRuntimeLifecycle.Disposed)) != 0;
+        return QuicReceiveDeliveryQuantumPolicy.Evaluate(
+            configured.Mode,
+            forcedValue,
+            requestedBufferLength,
+            lifecycleGuard,
+            validity);
+    }
+
+    internal void TryPublishReceiveDeliveryQuantumObservation(
+        ulong streamId,
+        in QuicReceiveDeliveryQuantumPolicyDecision decision,
+        int deliveredBytes,
+        int sourceSegmentsRead,
+        bool completed,
+        bool batchedReceiveCredit)
+    {
+        IQuicReceiveDeliveryQuantumEvidenceSink? sink =
+            receiveDeliveryQuantumEvidenceSink;
+        if (sink is null || !ReceiveDeliveryQuantumObservationEnabled)
+        {
+            return;
+        }
+
+        long operationSequence = Interlocked.Increment(
+            ref receiveDeliveryQuantumObservationSequence);
+        QuicReceiveDeliveryQuantumObservation observation = new(
+            operationSequence,
+            streamId,
+            decision,
+            deliveredBytes <= 0 ? 0U : (uint)deliveredBytes,
+            sourceSegmentsRead <= 0 ? 0U : (uint)sourceSegmentsRead,
+            completed,
+            batchedReceiveCredit);
+        try
+        {
+            _ = sink.TryPublish(in observation);
+        }
+        catch (Exception)
+        {
+            // Receive-delivery evidence is diagnostic-only. A failed sink
+            // cannot change bytes, credit, ownership, completion, or progress.
         }
     }
 

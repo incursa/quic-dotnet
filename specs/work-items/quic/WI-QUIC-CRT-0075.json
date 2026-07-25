@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0075",
+  "artifact_type": "work_item",
+  "status": "in_progress",
+  "title": "Implement the bounded application receive delivery quantum axis",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Implement REQ-QUIC-CRT-0193 as a closed legacy_current and single_segment seam at the existing productive application-read copy loop with forcing, observe-only, shadow, safety fallback, unified evidence, exact raw joins, and force-legacy rollback while measurement and active behavior remain frozen.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE3-PACKET-RECEIVE",
+    "ARC-QUIC-CRT-0074",
+    "VER-QUIC-CRT-0076"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0074"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0076"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0193"
+  ],
+  "planned_changes": "Add closed policy enums and deterministic evaluation; preserve the original disabled read loop; add forcing, observe-only, shadow, one-read-call latching, and authoritative fallback at the productive application-read copy boundary; propagate internal options; add bounded read-operation and epoch evidence; extend unified evidence and raw to v10 and the manifest to v11; retain sample-scoped read rows in a separate append-only stream with exact joins and aggregate recomputation; add deterministic mechanism, guard, fallback, schema, package, semantic-validator, terminal, cancellation, ownership, credit, and rollback tests; and synchronize matrix, seam, observation, controller, Stage 3, schema, and evidence documents.",
+  "verification_plan": "Build the affected runtime, test project, and raw host in Release. Run REQ-QUIC-CRT-0193 and unified REQ-QUIC-CRT-0183. Verify every value and mode, force-legacy rollback, one-segment versus all-contiguous delivery, decision and latch boundaries, receive-credit legacy enforcement, lifecycle and invalid-input fallback, adjacent-axis rejection, configured empty epochs, schemas, exact sample-to-epoch joins, aggregate recomputation, packaging, FIN, reset, cancellation, disposal, close, terminal, flow-control, and ownership behavior. Do not run performance, campaigns, transforms, ML, CI, or active behavior.",
+  "out_of_scope": [
+    "Performance acceptance or threshold tuning",
+    "A new wake scheduler, timer, receive-credit policy, buffer owner, or terminal-drain mechanism",
+    "Changing ordering, FIN, reset, close, cancellation, flow-control, congestion, pacing, recovery, packet, or ownership authority",
+    "Campaign, dataset, normalization, curation, split, or ML execution",
+    "CI changes, push, active_internal, or production activation"
+  ]
+}

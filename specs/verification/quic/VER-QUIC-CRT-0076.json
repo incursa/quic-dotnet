@@ -1,0 +1,72 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0076",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Bounded application receive delivery quantum verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE3-PACKET-RECEIVE",
+    "ARC-QUIC-CRT-0074",
+    "WI-QUIC-CRT-0075"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0193"
+  ],
+  "scope": "Verify independently forceable legacy_current and single_segment receive_delivery_quantum values, exact one-read-call semantics, bounded observation and unified provenance, exact sample-scoped raw joins, authoritative safety fallback, terminal and cancellation behavior, unchanged receive-credit authority, and force-legacy rollback without making a performance or active-behavior claim.",
+  "verification_method": "Canonical SpecTrace validation, deterministic requirement-home tests, schema and semantic validation, and focused stream-state, application-read, terminal, cancellation, package, flow-control, and ownership correctness tests.",
+  "preconditions": [
+    "Stage 0 through packet_flush_cadence remain preserved.",
+    "receive_credit_publication and every adjacent applied policy remain legacy_current.",
+    "The stopped 55,658-epoch single-axis transform remains diagnostic_incomplete and untouched.",
+    "Performance measurement, campaigns, transforms, ML, CI work, push, active_internal, and production activation remain unauthorized."
+  ],
+  "procedure": [
+    "Validate the Stage 3 specification, architecture, work item, and verification artifacts against the canonical model and reciprocal links.",
+    "Build the affected runtime, test project, and raw host in Release before testing.",
+    "Verify closed legacy_current and single_segment values plus invalid closed-set rejection.",
+    "Verify disabled, observe-only, shadow, forced-legacy, and forced-single-segment modes with all identities, source, reason, safety, latch, fallback, and version fields distinct.",
+    "Verify legacy_current drains every contiguous receive source segment that fits and single_segment stops after the first productive source segment.",
+    "Verify the decision occurs after cancellation, terminal, and zero-buffer checks and is latched for one application read call.",
+    "Verify receive_credit_publication remains legacy_current and the batched-credit decision is unchanged.",
+    "Verify lifecycle, missing, stale, saturated, contradictory, invalid, and out-of-domain inputs fall back to legacy_current even under single_segment forcing.",
+    "Verify simultaneous behavior-distinct forcing of any adjacent adaptive axis is rejected.",
+    "Verify force-legacy rollback restores the full existing contiguous-copy loop and preserves ordering, FIN, reset, close, cancellation, disposal, flow-control, congestion, pacing, recovery, packet, terminal, and ownership authority.",
+    "Verify the configured policy snapshot remains in a unified epoch when no productive read is observed.",
+    "Verify receive observation, epoch, raw, unified evidence v10, unified raw v10, and manifest v11 schemas.",
+    "Verify receive rows remain sample-scoped and join by exact source, connection key, and operation sequence.",
+    "Verify missing, duplicate, orphan, and out-of-order raw reads fail semantic validation and attributable aggregates are recomputed.",
+    "Run focused package, stream-state, application-read, FIN, reset, cancellation, disposal, close, terminal, flow-control, and ownership tests.",
+    "Confirm no performance, campaign, transform, ML, CI, push, active_internal, or production action occurred."
+  ],
+  "expected_result": "receive_delivery_quantum is observable, shadowable, independently forceable, unified-row represented, guarded, and force-legacy rollback tested; single_segment changes only the number of existing contiguous source segments contributing to one legal application read; sample and epoch evidence remains exactly attributable; and no active or performance decision is introduced.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0193.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0183.cs",
+    "src/Incursa.Quic/QuicReceiveDeliveryQuantumPolicy.cs",
+    "src/Incursa.Quic/QuicReceiveDeliveryQuantumEpochAccumulator.cs",
+    "src/Incursa.Quic/QuicConnectionOptions.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "src/Incursa.Quic/QuicStream.cs",
+    "src/Incursa.Quic/QuicAdaptiveRuntimeUnifiedEpochEvidence.cs",
+    "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
+    "eng/protocol-lab/New-QuicDotNetProtocolLabPackage.ps1",
+    "eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1",
+    "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeUnifiedRawEvidence.ps1",
+    "schemas/adaptive-runtime-receive-delivery-quantum-observation-v1.schema.json",
+    "schemas/adaptive-runtime-receive-delivery-quantum-epoch-v1.schema.json",
+    "schemas/adaptive-runtime-receive-delivery-quantum-raw-v1.schema.json",
+    "schemas/adaptive-runtime-unified-epoch-evidence-v10.schema.json",
+    "schemas/adaptive-runtime-unified-epoch-raw-v10.schema.json",
+    "schemas/adaptive-runtime-unified-raw-export-manifest-v11.schema.json",
+    "docs/design/adaptive-runtime-policy-axis-implementation-matrix.md",
+    "docs/design/adaptive-runtime-policy-controller-state-machine.md",
+    "docs/design/adaptive-runtime-policy-observation-schema.md",
+    "docs/design/adaptive-runtime-policy-seam-inventory.md",
+    "docs/design/adaptive-runtime-stage3-packet-receive-foundation.md"
+  ],
+  "status_summary": "Focused implementation verification is clean: the runtime seam, listener callback propagation, unified v10 evidence, raw v1 productive-read stream, schemas, exact joins, 17 axis cases, 92 affected adaptive/package cases, and 61 receive ordering, lifecycle, cancellation, terminal, ownership, and flow-credit cases pass in Release. All four Stage 3 SpecTrace artifacts pass the canonical model and reciprocal trace checks. Measurement and active behavior remain frozen."
+}
