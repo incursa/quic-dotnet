@@ -181,6 +181,33 @@ path and is never relabeled as shadow epoch evidence. Every catalog entry
 remains seam-local, versioned,
 `activationAuthorized = false`, and non-authoritative for runtime behavior.
 
+## Experiment-control contract suite
+
+The v1 experiment-control contract suite under
+`eng/adaptive-runtime/experiment-control/` supersedes the measurement-only
+policy catalog for new experiment planning. Its architecture is defined in
+`docs/design/adaptive-runtime-experiment-control-architecture.md`, and its
+eight strict schemas live under `schemas/`.
+
+`adaptive-runtime-policy-catalog-v1.schema.json`,
+`New-AdaptiveRuntimePolicyCatalog.ps1`, their fixtures, and retained evidence
+remain valid and unchanged. The existing generator is a historical
+compatibility producer; it is not a current capability resolver and must not
+be used to authorize an executable experiment cell. No migration, relabeling,
+or evidence rewrite is implied by the new suite.
+
+Validate the canonical catalogs and the complete valid/invalid fixture corpus
+without compiling or executing a plan:
+
+```powershell
+./eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1
+```
+
+The validator performs schema, reference, duplicate, authorization,
+canonical-serialization, and content-hash checks only. It does not build a
+compiled execution manifest, run a campaign or transform, authorize
+performance acceptance, or enable `active_internal`.
+
 Build the deterministic raw -> normalized -> curated -> split chain from
 validated local results and epoch rows:
 

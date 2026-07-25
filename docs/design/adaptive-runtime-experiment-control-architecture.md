@@ -143,8 +143,10 @@ depends on it.
    guards.
 6. The axis-specific mechanism event records the mechanism behavior that
    actually ran.
-7. `effective_behavior_id` is deterministically derived from the declared
-   context variables, experimental factors, and the applied value.
+7. `effective_behavior_id` is deterministically derived from the
+   axis-specific mechanism event under the versioned effective-behavior
+   catalog. Declared context variables and experimental factors may
+   disambiguate a catalog rule, but measured outcomes never participate.
 8. Bounded per-epoch counts summarize eligible, blocked, applied, and observed
    rows for the epoch.
 
@@ -258,16 +260,16 @@ expanded.
 deterministic validator entrypoint. The expected canonical instance paths for
 the first slice are shown below.
 
-| Schema | Expected canonical instance path | Validator path |
+| Schema | Canonical instance or focused fixture path | Validator path |
 | --- | --- | --- |
 | `schemas/adaptive-runtime-policy-axis-contract-v1.schema.json` | `eng/adaptive-runtime/experiment-control/adaptive-runtime-policy-axis-contracts-v1.json` | `eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1` |
 | `schemas/adaptive-runtime-effective-behavior-catalog-v1.schema.json` | `eng/adaptive-runtime/experiment-control/adaptive-runtime-effective-behavior-catalog-v1.json` | `eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1` |
 | `schemas/adaptive-runtime-policy-relationship-graph-v1.schema.json` | `eng/adaptive-runtime/experiment-control/adaptive-runtime-policy-relationship-graph-v1.json` | `eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1` |
 | `schemas/adaptive-runtime-combination-constraint-catalog-v1.schema.json` | `eng/adaptive-runtime/experiment-control/adaptive-runtime-combination-constraint-catalog-v1.json` | `eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1` |
 | `schemas/adaptive-runtime-experiment-family-catalog-v1.schema.json` | `eng/adaptive-runtime/experiment-control/adaptive-runtime-experiment-family-catalog-v1.json` | `eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1` |
-| `schemas/adaptive-runtime-experiment-plan-v1.schema.json` | `eng/adaptive-runtime/experiment-control/adaptive-runtime-experiment-plan-v1.json` | `eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1` |
-| `schemas/adaptive-runtime-experiment-plan-validation-v1.schema.json` | `eng/adaptive-runtime/experiment-control/adaptive-runtime-experiment-plan-validation-v1.json` | `eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1` |
-| `schemas/adaptive-runtime-compiled-execution-manifest-v1.schema.json` | `eng/adaptive-runtime/experiment-control/adaptive-runtime-compiled-execution-manifest-v1.json` | `eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1` |
+| `schemas/adaptive-runtime-experiment-plan-v1.schema.json` | `tests/fixtures/adaptive-runtime-experiment-control/valid/experiment-plan.*.valid.example.json` | `eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1` |
+| `schemas/adaptive-runtime-experiment-plan-validation-v1.schema.json` | `tests/fixtures/adaptive-runtime-experiment-control/valid/experiment-plan-validation.valid.example.json` | `eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1` |
+| `schemas/adaptive-runtime-compiled-execution-manifest-v1.schema.json` | `tests/fixtures/adaptive-runtime-experiment-control/valid/compiled-execution-manifest.valid.example.json` | `eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1` |
 
 The validator must reject unknown fields, stale references, unsupported
 values, blocked axes, malformed hashes, and fixed/varied overlap. It must
@@ -276,16 +278,23 @@ document's own `content_sha256` field.
 
 Deterministic array handling is strict:
 
-- arrays with semantic order keep that order;
-- set-like arrays use a documented deterministic sort; and
+- `treatment_order`, `treatments`, `planned_cells`, `validation_errors`,
+  `validation_warnings`, `execution_order`, and `executable_cells` preserve
+  their declared order;
+- every other array in this suite is set-like and is sorted by the ordinal
+  bytes of each item's recursively canonical JSON representation;
 - duplicate definitions or edges fail validation.
 
 ## Hashing
 
 The canonical hash rule in `REQ-QUIC-CRT-0199` is simple and non-negotiable:
-hash canonical UTF-8 JSON, lowercase SHA-256, and exclude the document's own
-`content_sha256` field from the hash input. The hash is part of the document
-contract, not a post-hoc label.
+recursively order object properties by ordinal property name, apply the array
+ordering rule above, serialize compact canonical UTF-8 JSON without a byte
+order mark, exclude only the root document's own `content_sha256` field from
+the hash input, compute SHA-256 over those exact bytes, and emit lowercase
+hexadecimal. A referenced document's `content_sha256` remains in the input.
+The validator must recompute the same digest exactly. The hash is part of the
+document contract, not a post-hoc label.
 
 This rule applies to the experiment-control schemas and to the canonical
 instances that the validator produces. It does not let a later build step

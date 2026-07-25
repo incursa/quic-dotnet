@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0090",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Build the adaptive-runtime experiment-control foundation",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Implement REQ-QUIC-CRT-0198 through REQ-QUIC-CRT-0201 as architecture, eight schemas, five minimal canonical instances, valid and invalid fixtures, deterministic schema/reference/hash validation, catalog v1 compatibility documentation, and focused trace proof.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0089",
+    "VER-QUIC-CRT-0091"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0089"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0091"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0198",
+    "REQ-QUIC-CRT-0199",
+    "REQ-QUIC-CRT-0200",
+    "REQ-QUIC-CRT-0201"
+  ],
+  "planned_changes": "Record the canonical concept and ownership architecture; add the eight strict self-contained schemas; add versioned batch-formation, buffer-coalescing, send-turn-equivalence, relationship, constraint, and send-composition instances; preserve the v1 catalog schema, generator, fixtures, and evidence; add schema-valid and deterministically invalid fixture suites; add canonical content hashing and focused reference/semantic validation; add focused CRT requirement-home proof and exact validation commands.",
+  "verification_plan": "Parse and validate all eight schemas, validate every canonical instance and valid fixture, prove every invalid fixture fails with the expected sorted code, prove unknown fields fail, repeat canonical serialization and hashing and compare exact bytes and lowercase digests, build and test only the affected xUnit project, validate canonical SpecTrace JSON and reciprocal links, and run git diff --check. Do not run BenchmarkDotNet, performance or ProtocolLab campaigns, dataset transforms, normalization, curation, splits, ML, complete Release, CI, or push.",
+  "out_of_scope": [
+    "Generic plan validation or compilation",
+    "Compiled execution-manifest generation",
+    "Runtime instrumentation or operation-correlation changes",
+    "Effective-behavior materialization",
+    "Analytical projection or dataset work",
+    "Performance measurement, active_internal, or production activation",
+    "CI changes or push"
+  ]
+}

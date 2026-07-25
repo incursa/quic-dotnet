@@ -1,0 +1,62 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0091",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Adaptive-runtime experiment-control foundation verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0089",
+    "WI-QUIC-CRT-0090"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0198",
+    "REQ-QUIC-CRT-0199",
+    "REQ-QUIC-CRT-0200",
+    "REQ-QUIC-CRT-0201"
+  ],
+  "scope": "Verify the architecture, schemas, canonical instances, compatibility decision, fixtures, reference resolution, canonical serialization, and hashing for the experiment-control checkpoint without implementing or executing a plan compiler, runtime change, behavior materializer, analytics, or performance work.",
+  "verification_method": "Canonical SpecTrace validation, PowerShell JSON Schema and semantic validation, deterministic repeated canonicalization and SHA-256 checks, focused requirement-home tests, a narrow test-project build, and diff validation.",
+  "preconditions": [
+    "The primary dirty ACK-profile slice remains preserved in its original worktree.",
+    "The checkpoint runs from isolated source commit 2c234bc92ed67fb7aa49f1e5ea6271b11c918ac8.",
+    "Every authorization field remains false and current runtime one-axis capability remains unchanged.",
+    "Performance measurement, campaigns, transforms, ML, CI, push, active_internal, and production activation remain unauthorized."
+  ],
+  "procedure": [
+    "Validate the specification, architecture, work item, and verification documents against the canonical SpecTrace model and reciprocal links.",
+    "Parse and validate all eight new JSON Schemas.",
+    "Validate all five canonical instance documents and all valid fixtures.",
+    "Require every invalid fixture to fail with its stable expected error code.",
+    "Prove unknown fields, illegal and unsupported values, bad authorization, blocked or preparation-only execution, duplicates, unknown and stale references, missing predicate references, fixed/varied overlap, and malformed hashes fail.",
+    "Canonicalize the same documents repeatedly and require byte-identical UTF-8 output.",
+    "Hash the same canonical bytes repeatedly and require identical lowercase SHA-256.",
+    "Run the focused REQ-QUIC-CRT-0198 through REQ-QUIC-CRT-0201 requirement-home tests.",
+    "Build only the affected test project and run git diff --check.",
+    "Confirm the old v1 catalog schema, generator, fixtures, and retained evidence remain unchanged.",
+    "Confirm no performance, campaign, transform, ML, CI, push, active_internal, or production action occurred."
+  ],
+  "expected_result": "The experiment-control architecture is canonical; all eight schemas and five initial instance documents validate; every valid fixture passes and every invalid fixture fails deterministically; repeated canonical bytes and hashes match; the historical v1 catalog remains valid and explicitly compatibility-only; trace links are complete; and no runtime or active behavior changes.",
+  "evidence": [
+    "docs/design/adaptive-runtime-experiment-control-architecture.md",
+    "schemas/adaptive-runtime-policy-axis-contract-v1.schema.json",
+    "schemas/adaptive-runtime-effective-behavior-catalog-v1.schema.json",
+    "schemas/adaptive-runtime-policy-relationship-graph-v1.schema.json",
+    "schemas/adaptive-runtime-combination-constraint-catalog-v1.schema.json",
+    "schemas/adaptive-runtime-experiment-family-catalog-v1.schema.json",
+    "schemas/adaptive-runtime-experiment-plan-v1.schema.json",
+    "schemas/adaptive-runtime-experiment-plan-validation-v1.schema.json",
+    "schemas/adaptive-runtime-compiled-execution-manifest-v1.schema.json",
+    "eng/adaptive-runtime/experiment-control",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1",
+    "tests/fixtures/adaptive-runtime-experiment-control",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0198.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0199.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0200.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0201.cs",
+    "docs/testing/adaptive-runtime-experiment-control-foundation-evidence-2026-07-24.md"
+  ],
+  "status_summary": "The focused validator passes all eight schemas, five canonical documents, twelve valid fixtures, and fifteen deterministically invalid fixtures with zero code mismatches. Repeated validator output, canonical serialization, and SHA-256 recomputation are byte-identical. The affected Release test project builds with zero warnings and errors, and the four focused requirement-home tests pass. The four new SpecTrace artifacts validate directly against the repository model with reciprocal links; repository-wide core validation remains blocked by 2,693 baseline-wide schema and unresolved-reference errors beginning in unchanged API and RFC artifacts. The historical policy-catalog v1 schema and producer remain unchanged. No performance, campaign, transform, ML, CI, push, active_internal, or production action occurred."
+}
