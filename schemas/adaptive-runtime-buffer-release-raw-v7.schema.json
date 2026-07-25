@@ -89,6 +89,18 @@
         },
         "disposalStarted": { "type": "boolean" },
         "validity": { "type": ["string", "integer"] },
+        "decisionEpochSequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "releaseEpochSequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "decisionInstanceSequence": {
+          "type": "integer",
+          "minimum": 0
+        },
         "observationContractVersion": {
           "const": "quic-buffer-release-observation-v7"
         },

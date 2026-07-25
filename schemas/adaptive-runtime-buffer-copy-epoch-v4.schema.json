@@ -73,6 +73,13 @@
     "totalRequestedCapacityBytes": { "$ref": "#/$defs/unsignedInteger" },
     "totalRetainedCapacityBytes": { "$ref": "#/$defs/unsignedInteger" },
     "maximumRetainedCapacityBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "exactCombinedPrefixOperationCount": { "$ref": "#/$defs/unsignedInteger" },
+    "exactCombinedPrefixAppliedBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "twoSourceCapOperationCount": { "$ref": "#/$defs/unsignedInteger" },
+    "twoSourceCapAppliedBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "structurallyInactiveCoalescingOperationCount": { "$ref": "#/$defs/unsignedInteger" },
+    "clampedCoalescingOperationCount": { "$ref": "#/$defs/unsignedInteger" },
+    "unclassifiableCoalescingOperationCount": { "$ref": "#/$defs/unsignedInteger" },
     "validity": { "type": ["string", "integer"] },
     "epochContractVersion": { "const": "quic-buffer-copy-epoch-v4" }
   },

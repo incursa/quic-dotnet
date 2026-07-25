@@ -2927,6 +2927,18 @@ internal sealed partial class QuicConnectionRuntime :
         return true;
     }
 
+    private ulong GetNextAdaptiveRuntimeEvidenceEpochSequence()
+    {
+        if (Volatile.Read(ref adaptiveRuntimeObservationConfigurationState)
+                != AdaptiveRuntimeObservationEnabled
+            || adaptiveRuntimeObservationEpochSequence == ulong.MaxValue)
+        {
+            return 0;
+        }
+
+        return adaptiveRuntimeObservationEpochSequence + 1;
+    }
+
     internal void EnableAdaptiveRuntimeShadow()
     {
         if (Interlocked.CompareExchange(
@@ -4156,7 +4168,8 @@ internal sealed partial class QuicConnectionRuntime :
         int sourceSegmentCount,
         int requestedCapacityBytes,
         int retainedCapacityBytes,
-        bool trackTerminalRelease = false)
+        bool trackTerminalRelease = false,
+        bool ownerRented = false)
     {
         QuicBufferCopyConfiguredPolicySnapshot configured =
             CaptureConfiguredBufferCopyPolicySnapshot();
@@ -4188,7 +4201,8 @@ internal sealed partial class QuicConnectionRuntime :
             requestedCapacityBytes,
             retainedCapacityBytes,
             in decision,
-            trackTerminalRelease);
+            trackTerminalRelease,
+            ownerRented);
     }
 
     internal QuicBufferCopyLifetimeToken TryPublishBufferCopyObservation(
@@ -4204,7 +4218,8 @@ internal sealed partial class QuicConnectionRuntime :
         int requestedCapacityBytes,
         int retainedCapacityBytes,
         in QuicBufferCopyPolicyDecision decision,
-        bool trackTerminalRelease = false)
+        bool trackTerminalRelease = false,
+        bool ownerRented = false)
     {
         IQuicBufferCopyEvidenceSink? sink = bufferCopyEvidenceSink;
         if (sink is null || !BufferCopyObservationEnabled)
@@ -4260,6 +4275,20 @@ internal sealed partial class QuicConnectionRuntime :
         ulong operationSequence =
             unchecked((ulong)Interlocked.Increment(
                 ref bufferCopyObservationSequence));
+        ulong decisionEpochSequence =
+            GetNextAdaptiveRuntimeEvidenceEpochSequence();
+        QuicBufferCopyCoalescingOperationEvidence coalescingEvidence =
+            QuicBufferCopyPolicy.CreateOperationEvidence(
+                decisionEpochSequence,
+                operationSequence,
+                operationSequence,
+                path,
+                in decision,
+                legalSourceSegmentCountValue,
+                sourceSegmentCountValue,
+                legalLogicalBytesValue,
+                logicalBytesValue,
+                ownerRented);
         long constructionTicks = clock.Ticks;
         QuicBufferCopyObservation observation = new(
             operationSequence,
@@ -4294,7 +4323,8 @@ internal sealed partial class QuicConnectionRuntime :
             decision.FallbackApplied,
             Phase,
             IsDisposed,
-            validity);
+            validity,
+            coalescingEvidence);
         bool published = false;
         try
         {
@@ -4312,7 +4342,9 @@ internal sealed partial class QuicConnectionRuntime :
                 operationSequence,
                 path,
                 constructionTicks,
-                retainedCapacityBytesValue)
+                retainedCapacityBytesValue,
+                decisionEpochSequence,
+                operationSequence)
             : default;
     }
 
@@ -4390,7 +4422,10 @@ internal sealed partial class QuicConnectionRuntime :
             ConvertTicksToMicros(elapsedTicks),
             Phase,
             IsDisposed,
-            validity);
+            validity,
+            token.DecisionEpochSequence,
+            GetNextAdaptiveRuntimeEvidenceEpochSequence(),
+            token.DecisionInstanceSequence);
         try
         {
             _ = sink.TryPublish(in observation);

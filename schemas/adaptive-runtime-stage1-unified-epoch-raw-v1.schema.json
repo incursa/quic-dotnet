@@ -239,7 +239,34 @@
         "emittedDatagrams": { "$ref": "#/$defs/nullableUnsignedInteger" },
         "admittedFragments": { "$ref": "#/$defs/nullableUnsignedInteger" },
         "continuationCount": { "$ref": "#/$defs/nullableUnsignedInteger" },
-        "completedOperations": { "$ref": "#/$defs/unsignedInteger" }
+        "completedOperations": { "$ref": "#/$defs/unsignedInteger" },
+        "batchBehaviorCounts": { "$ref": "#/$defs/batchBehaviorCounts" }
+      }
+    },
+    "batchBehaviorCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "legalEligiblePrefixOperationCount",
+        "legalEligiblePrefixAppliedBytes",
+        "singleEligiblePrefixOperationCount",
+        "singleEligiblePrefixAppliedBytes",
+        "structurallyInactiveOperationCount",
+        "clampedOperationCount",
+        "unclassifiableOperationCount",
+        "totalLegalWriteBytes",
+        "totalAppliedWriteBytes"
+      ],
+      "properties": {
+        "legalEligiblePrefixOperationCount": { "$ref": "#/$defs/unsignedInteger" },
+        "legalEligiblePrefixAppliedBytes": { "$ref": "#/$defs/unsignedInteger" },
+        "singleEligiblePrefixOperationCount": { "$ref": "#/$defs/unsignedInteger" },
+        "singleEligiblePrefixAppliedBytes": { "$ref": "#/$defs/unsignedInteger" },
+        "structurallyInactiveOperationCount": { "$ref": "#/$defs/unsignedInteger" },
+        "clampedOperationCount": { "$ref": "#/$defs/unsignedInteger" },
+        "unclassifiableOperationCount": { "$ref": "#/$defs/unsignedInteger" },
+        "totalLegalWriteBytes": { "$ref": "#/$defs/unsignedInteger" },
+        "totalAppliedWriteBytes": { "$ref": "#/$defs/unsignedInteger" }
       }
     },
     "axisRecord": {

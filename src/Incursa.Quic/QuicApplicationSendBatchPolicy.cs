@@ -92,6 +92,7 @@ internal readonly record struct QuicApplicationSendBatchEvidence(
     QuicApplicationSendBatchObservationMode Mode,
     QuicApplicationSendBatchObservation Observation,
     QuicAdaptiveRuntimeStage1AxisDecision Decision,
+    QuicApplicationSendBatchOperationEvidence OperationEvidence,
     QuicApplicationSendPlanKind PlanKind,
     int AppliedWriteCount,
     bool HasMoreQueuedData,
@@ -123,7 +124,74 @@ internal static class QuicApplicationSendBatchPolicy
     internal const string CurrentReasonVersion =
         "adaptive-runtime-application-send-batch-reasons-v1";
     internal const string CurrentProvenanceVersion =
-        "adaptive-runtime-application-send-batch-provenance-v1";
+        "adaptive-runtime-application-send-batch-provenance-v2";
+
+    internal static QuicApplicationSendBatchOperationEvidence
+        CreateOperationEvidence(
+            ulong epochSequence,
+            in QuicApplicationSendBatchObservation observation,
+            in QuicAdaptiveRuntimeStage1AxisDecision decision,
+            in QuicApplicationSendPlan plan)
+    {
+        QuicAdaptiveRuntimeOperationEligibilityResult eligibilityResult =
+            QuicAdaptiveRuntimeOperationEligibilityResult.Eligible;
+        QuicAdaptiveRuntimeOperationEligibilityReason eligibilityReason =
+            QuicAdaptiveRuntimeOperationEligibilityReason.Eligible;
+
+        if (decision.SafetyOverrideApplied)
+        {
+            eligibilityResult =
+                QuicAdaptiveRuntimeOperationEligibilityResult.Clamped;
+            eligibilityReason = decision.SafetyOverrideReason switch
+            {
+                QuicAdaptiveRuntimeStage1SafetyOverrideReason.Terminal
+                    or QuicAdaptiveRuntimeStage1SafetyOverrideReason.Disposal =>
+                    QuicAdaptiveRuntimeOperationEligibilityReason.LifecycleGuard,
+                QuicAdaptiveRuntimeStage1SafetyOverrideReason.Resource =>
+                    QuicAdaptiveRuntimeOperationEligibilityReason.ResourceGuard,
+                _ => QuicAdaptiveRuntimeOperationEligibilityReason.SafetyOverride,
+            };
+        }
+        else if (plan.Kind == QuicApplicationSendPlanKind.None)
+        {
+            eligibilityResult =
+                QuicAdaptiveRuntimeOperationEligibilityResult.Ineligible;
+            eligibilityReason =
+                plan.BlockedReason
+                    is QuicSendPolicyBlockedReason.InvalidPayloadBudget
+                        or QuicSendPolicyBlockedReason.InvalidQueuedApplicationSend
+                    ? QuicAdaptiveRuntimeOperationEligibilityReason.InvalidInput
+                    : QuicAdaptiveRuntimeOperationEligibilityReason.ResourceGuard;
+        }
+        else if (plan.EligibleWriteCount <= 1)
+        {
+            eligibilityReason =
+                QuicAdaptiveRuntimeOperationEligibilityReason.StructurallyInactive;
+        }
+
+        QuicApplicationSendBatchMechanismEvent mechanismEvent =
+            GetMechanismEvent(in decision, in plan);
+        if (mechanismEvent == QuicApplicationSendBatchMechanismEvent.Unclassifiable)
+        {
+            eligibilityResult =
+                QuicAdaptiveRuntimeOperationEligibilityResult.Ineligible;
+            eligibilityReason =
+                QuicAdaptiveRuntimeOperationEligibilityReason.UnclassifiableEvidence;
+        }
+
+        return new(
+            epochSequence,
+            observation.PlanSequence,
+            observation.PlanSequence,
+            decision.SelectedValue,
+            eligibilityResult,
+            eligibilityReason,
+            mechanismEvent,
+            ToUnsigned(plan.EligibleWriteCount),
+            ToUnsigned(plan.SelectedWriteCount),
+            ToUnsigned(plan.EligibleWriteBytes),
+            ToUnsigned(plan.SelectedWriteBytes));
+    }
 
     internal static int SelectWriteCount(
         QuicApplicationSendBatchPolicyMode mode,
@@ -140,6 +208,39 @@ internal static class QuicApplicationSendBatchPolicy
             ? 1
             : legalEligibleWriteCount;
     }
+
+    private static QuicApplicationSendBatchMechanismEvent GetMechanismEvent(
+        in QuicAdaptiveRuntimeStage1AxisDecision decision,
+        in QuicApplicationSendPlan plan)
+    {
+        if (plan.Kind == QuicApplicationSendPlanKind.None)
+        {
+            return QuicApplicationSendBatchMechanismEvent.NoPacketPlan;
+        }
+
+        if (plan.SelectedWriteCount <= 0
+            || plan.SelectedWriteCount > plan.EligibleWriteCount
+            || plan.SelectedWriteBytes < 0
+            || plan.SelectedWriteBytes > plan.EligibleWriteBytes)
+        {
+            return QuicApplicationSendBatchMechanismEvent.Unclassifiable;
+        }
+
+        if (plan.SelectedWriteCount == plan.EligibleWriteCount)
+        {
+            return QuicApplicationSendBatchMechanismEvent.LegalEligiblePrefixUsed;
+        }
+
+        return decision.AppliedValue
+                    == QuicAdaptiveRuntimeStage1PolicyValue.SingleEligible
+                && plan.SelectedWriteCount == 1
+                && plan.EligibleWriteCount > 1
+            ? QuicApplicationSendBatchMechanismEvent.SingleEligiblePrefixUsed
+            : QuicApplicationSendBatchMechanismEvent.Unclassifiable;
+    }
+
+    private static uint ToUnsigned(int value)
+        => value <= 0 ? 0U : (uint)value;
 
     internal static void ValidateMode(QuicApplicationSendBatchPolicyMode mode)
     {

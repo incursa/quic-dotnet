@@ -36,6 +36,13 @@ internal readonly record struct QuicBufferCopyEpochSummary(
     ulong TotalRequestedCapacityBytes,
     ulong TotalRetainedCapacityBytes,
     ulong MaximumRetainedCapacityBytes,
+    ulong ExactCombinedPrefixOperationCount,
+    ulong ExactCombinedPrefixAppliedBytes,
+    ulong TwoSourceCapOperationCount,
+    ulong TwoSourceCapAppliedBytes,
+    ulong StructurallyInactiveCoalescingOperationCount,
+    ulong ClampedCoalescingOperationCount,
+    ulong UnclassifiableCoalescingOperationCount,
     QuicBufferCopyValidity Validity)
 {
     internal const string CurrentEpochContractVersion =
@@ -80,6 +87,13 @@ internal sealed class QuicBufferCopyEpochAccumulator :
     private ulong totalRequestedCapacityBytes;
     private ulong totalRetainedCapacityBytes;
     private ulong maximumRetainedCapacityBytes;
+    private ulong exactCombinedPrefixOperationCount;
+    private ulong exactCombinedPrefixAppliedBytes;
+    private ulong twoSourceCapOperationCount;
+    private ulong twoSourceCapAppliedBytes;
+    private ulong structurallyInactiveCoalescingOperationCount;
+    private ulong clampedCoalescingOperationCount;
+    private ulong unclassifiableCoalescingOperationCount;
     private QuicBufferCopyValidity validity;
 
     internal QuicBufferCopyEpochAccumulator()
@@ -148,6 +162,9 @@ internal sealed class QuicBufferCopyEpochAccumulator :
             maximumRetainedCapacityBytes = Math.Max(
                 maximumRetainedCapacityBytes,
                 observation.RetainedCapacityBytes);
+            QuicBufferCopyCoalescingOperationEvidence
+                coalescingEvidence = observation.CoalescingEvidence;
+            AddCoalescingEvidence(in coalescingEvidence);
             validity |= observation.Validity;
         }
 
@@ -191,6 +208,13 @@ internal sealed class QuicBufferCopyEpochAccumulator :
                 totalRequestedCapacityBytes,
                 totalRetainedCapacityBytes,
                 maximumRetainedCapacityBytes,
+                exactCombinedPrefixOperationCount,
+                exactCombinedPrefixAppliedBytes,
+                twoSourceCapOperationCount,
+                twoSourceCapAppliedBytes,
+                structurallyInactiveCoalescingOperationCount,
+                clampedCoalescingOperationCount,
+                unclassifiableCoalescingOperationCount,
                 validity);
             Reset();
             return summary;
@@ -262,6 +286,60 @@ internal sealed class QuicBufferCopyEpochAccumulator :
         }
     }
 
+    private void AddCoalescingEvidence(
+        in QuicBufferCopyCoalescingOperationEvidence evidence)
+    {
+        if (evidence.OperationSequence == 0)
+        {
+            return;
+        }
+
+        switch (evidence.MechanismEvent)
+        {
+            case QuicBufferCopyCoalescingMechanismEvent
+                    .ExactCombinedPrefixRetained:
+                AddSaturating(
+                    ref exactCombinedPrefixOperationCount,
+                    1);
+                AddSaturating(
+                    ref exactCombinedPrefixAppliedBytes,
+                    evidence.AppliedBytes);
+                break;
+            case QuicBufferCopyCoalescingMechanismEvent
+                    .LowerTwoSourceSegmentCapApplied:
+                AddSaturating(ref twoSourceCapOperationCount, 1);
+                AddSaturating(
+                    ref twoSourceCapAppliedBytes,
+                    evidence.AppliedBytes);
+                break;
+            case QuicBufferCopyCoalescingMechanismEvent.Unclassifiable:
+                AddSaturating(
+                    ref unclassifiableCoalescingOperationCount,
+                    1);
+                break;
+            case QuicBufferCopyCoalescingMechanismEvent
+                    .NoCombinedOwnerRented:
+            case QuicBufferCopyCoalescingMechanismEvent.NotAxisMechanism:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(evidence));
+        }
+
+        if (evidence.EligibilityReason
+            == QuicAdaptiveRuntimeOperationEligibilityReason.StructurallyInactive)
+        {
+            AddSaturating(
+                ref structurallyInactiveCoalescingOperationCount,
+                1);
+        }
+
+        if (evidence.EligibilityResult
+            == QuicAdaptiveRuntimeOperationEligibilityResult.Clamped)
+        {
+            AddSaturating(ref clampedCoalescingOperationCount, 1);
+        }
+    }
+
     private void AddSaturating(ref ulong target, ulong value)
     {
         if (ulong.MaxValue - target < value)
@@ -307,6 +385,13 @@ internal sealed class QuicBufferCopyEpochAccumulator :
         totalRequestedCapacityBytes = 0;
         totalRetainedCapacityBytes = 0;
         maximumRetainedCapacityBytes = 0;
+        exactCombinedPrefixOperationCount = 0;
+        exactCombinedPrefixAppliedBytes = 0;
+        twoSourceCapOperationCount = 0;
+        twoSourceCapAppliedBytes = 0;
+        structurallyInactiveCoalescingOperationCount = 0;
+        clampedCoalescingOperationCount = 0;
+        unclassifiableCoalescingOperationCount = 0;
         validity = QuicBufferCopyValidity.None;
     }
 }

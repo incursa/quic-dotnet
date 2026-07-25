@@ -43,7 +43,8 @@ internal readonly record struct QuicAdaptiveRuntimeStage1EpochOutcomes(
     ulong? EmittedDatagrams,
     ulong? AdmittedFragments,
     ulong? ContinuationCount,
-    ulong CompletedOperations);
+    ulong CompletedOperations,
+    QuicApplicationSendBatchBehaviorEpochCounts BatchBehaviorCounts);
 
 internal readonly record struct QuicAdaptiveRuntimeStage1EpochAxisRecord(
     QuicAdaptiveRuntimeStage1AxisDecision Decision,
@@ -168,6 +169,9 @@ internal sealed class QuicAdaptiveRuntimeStage1EvidenceAccumulator :
                 admittedFragments: null,
                 continuationCount: null,
                 completedOperations: 1);
+            QuicApplicationSendBatchOperationEvidence operationEvidence =
+                evidence.OperationEvidence;
+            sendBatch.PublishBatchBehavior(in operationEvidence);
         }
 
         return true;
@@ -398,6 +402,8 @@ internal sealed class QuicAdaptiveRuntimeStage1EvidenceAccumulator :
         private ulong? continuationCount;
         private ulong completedOperations;
         private ulong eventCount;
+        private QuicApplicationSendBatchBehaviorEpochCounts
+            batchBehaviorCounts;
 
         internal void Publish(
             in QuicAdaptiveRuntimeStage1AxisDecision publishedDecision,
@@ -426,6 +432,76 @@ internal sealed class QuicAdaptiveRuntimeStage1EvidenceAccumulator :
             eventCount = SaturatingAdd(eventCount, 1);
         }
 
+        internal void PublishBatchBehavior(
+            in QuicApplicationSendBatchOperationEvidence operation)
+        {
+            ulong legalPrefixCount =
+                batchBehaviorCounts.LegalEligiblePrefixOperationCount;
+            ulong legalPrefixAppliedBytes =
+                batchBehaviorCounts.LegalEligiblePrefixAppliedBytes;
+            ulong singleEligibleCount =
+                batchBehaviorCounts.SingleEligiblePrefixOperationCount;
+            ulong singleEligibleAppliedBytes =
+                batchBehaviorCounts.SingleEligiblePrefixAppliedBytes;
+            ulong inactiveCount =
+                batchBehaviorCounts.StructurallyInactiveOperationCount;
+            ulong clampedCount =
+                batchBehaviorCounts.ClampedOperationCount;
+            ulong unclassifiableCount =
+                batchBehaviorCounts.UnclassifiableOperationCount;
+
+            switch (operation.MechanismEvent)
+            {
+                case QuicApplicationSendBatchMechanismEvent.LegalEligiblePrefixUsed:
+                    legalPrefixCount = SaturatingAdd(legalPrefixCount, 1);
+                    legalPrefixAppliedBytes = SaturatingAdd(
+                        legalPrefixAppliedBytes,
+                        operation.AppliedWriteBytes);
+                    break;
+                case QuicApplicationSendBatchMechanismEvent.SingleEligiblePrefixUsed:
+                    singleEligibleCount = SaturatingAdd(singleEligibleCount, 1);
+                    singleEligibleAppliedBytes = SaturatingAdd(
+                        singleEligibleAppliedBytes,
+                        operation.AppliedWriteBytes);
+                    break;
+                case QuicApplicationSendBatchMechanismEvent.Unclassifiable:
+                    unclassifiableCount =
+                        SaturatingAdd(unclassifiableCount, 1);
+                    break;
+                case QuicApplicationSendBatchMechanismEvent.NoPacketPlan:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(operation));
+            }
+
+            if (operation.EligibilityReason
+                == QuicAdaptiveRuntimeOperationEligibilityReason.StructurallyInactive)
+            {
+                inactiveCount = SaturatingAdd(inactiveCount, 1);
+            }
+
+            if (operation.EligibilityResult
+                == QuicAdaptiveRuntimeOperationEligibilityResult.Clamped)
+            {
+                clampedCount = SaturatingAdd(clampedCount, 1);
+            }
+
+            batchBehaviorCounts = new(
+                legalPrefixCount,
+                legalPrefixAppliedBytes,
+                singleEligibleCount,
+                singleEligibleAppliedBytes,
+                inactiveCount,
+                clampedCount,
+                unclassifiableCount,
+                SaturatingAdd(
+                    batchBehaviorCounts.TotalLegalWriteBytes,
+                    operation.LegalWriteBytes),
+                SaturatingAdd(
+                    batchBehaviorCounts.TotalAppliedWriteBytes,
+                    operation.AppliedWriteBytes));
+        }
+
         internal readonly QuicAdaptiveRuntimeStage1EpochAxisRecord Capture(
             in QuicAdaptiveRuntimeStage1AxisDecision configuredDecision,
             ulong epochIndex,
@@ -445,7 +521,8 @@ internal sealed class QuicAdaptiveRuntimeStage1EvidenceAccumulator :
                 emittedDatagrams,
                 admittedFragments,
                 continuationCount,
-                completedOperations);
+                completedOperations,
+                batchBehaviorCounts);
             return new QuicAdaptiveRuntimeStage1EpochAxisRecord(
                 capturedDecision,
                 observationValues,

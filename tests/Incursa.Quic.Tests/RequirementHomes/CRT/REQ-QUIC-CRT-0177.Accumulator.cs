@@ -236,12 +236,32 @@ public sealed partial class REQ_QUIC_CRT_0177
             EligibleWriteCount = 3,
             EligibleWriteBytes = 1000,
         };
+        QuicApplicationSendPlan sendBatchPlan = new(
+            QuicApplicationSendPlanKind.SingleWrite,
+            SelectedWriteCount: 1,
+            FragmentDataLength: 0,
+            HasMoreQueuedData: true,
+            QuicSendPolicyBlockedReason.None,
+            FirstStreamId: 0,
+            QuicApplicationSendBatchPolicyMode.SingleEligible,
+            EligibleWriteCount: 3,
+            EligibleWriteBytes: 1000,
+            SelectedWriteBytes: 1000);
+        QuicAdaptiveRuntimeStage1AxisDecision sendBatchDecision =
+            CreateDecision(
+                QuicAdaptiveRuntimeStage1Axis.ApplicationSendBatchFormation,
+                QuicAdaptiveRuntimeStage1PolicyValue.SingleEligible);
+        QuicApplicationSendBatchOperationEvidence sendBatchOperationEvidence =
+            QuicApplicationSendBatchPolicy.CreateOperationEvidence(
+                epochSequence: 2,
+                in sendBatchObservation,
+                in sendBatchDecision,
+                in sendBatchPlan);
         QuicApplicationSendBatchEvidence sendBatchEvidence = new(
             QuicApplicationSendBatchObservationMode.ObserveOnly,
             sendBatchObservation,
-            CreateDecision(
-                QuicAdaptiveRuntimeStage1Axis.ApplicationSendBatchFormation,
-                QuicAdaptiveRuntimeStage1PolicyValue.SingleEligible),
+            sendBatchDecision,
+            sendBatchOperationEvidence,
             PlanKind: default,
             AppliedWriteCount: 1,
             HasMoreQueuedData: true,

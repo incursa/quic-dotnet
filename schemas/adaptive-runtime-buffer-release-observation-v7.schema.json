@@ -55,6 +55,9 @@
     },
     "disposalStarted": { "type": "boolean" },
     "validity": { "type": ["string", "integer"] },
+    "decisionEpochSequence": { "$ref": "#/$defs/unsignedInteger" },
+    "releaseEpochSequence": { "$ref": "#/$defs/unsignedInteger" },
+    "decisionInstanceSequence": { "$ref": "#/$defs/unsignedInteger" },
     "observationContractVersion": {
       "const": "quic-buffer-release-observation-v7"
     },

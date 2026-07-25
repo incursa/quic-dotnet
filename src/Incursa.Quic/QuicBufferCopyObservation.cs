@@ -344,6 +344,104 @@ internal static class QuicBufferCopyPolicy
             : legalSourceSegmentCount;
     }
 
+    internal static QuicBufferCopyCoalescingOperationEvidence
+        CreateOperationEvidence(
+            ulong epochSequence,
+            ulong decisionInstanceSequence,
+            ulong operationSequence,
+            QuicBufferCopyPath path,
+            in QuicBufferCopyPolicyDecision decision,
+            uint legalSourceSegmentCount,
+            uint appliedSourceSegmentCount,
+            ulong legalBytes,
+            ulong appliedBytes,
+            bool ownerRented)
+    {
+        QuicAdaptiveRuntimeOperationEligibilityResult eligibilityResult =
+            QuicAdaptiveRuntimeOperationEligibilityResult.Eligible;
+        QuicAdaptiveRuntimeOperationEligibilityReason eligibilityReason =
+            QuicAdaptiveRuntimeOperationEligibilityReason.Eligible;
+        QuicBufferCopyCoalescingMechanismEvent mechanismEvent;
+
+        if (path != QuicBufferCopyPath.CombinedApplicationSend)
+        {
+            eligibilityResult =
+                QuicAdaptiveRuntimeOperationEligibilityResult.Ineligible;
+            eligibilityReason =
+                QuicAdaptiveRuntimeOperationEligibilityReason.NotAxisMechanism;
+            mechanismEvent =
+                QuicBufferCopyCoalescingMechanismEvent.NotAxisMechanism;
+        }
+        else if (!ownerRented)
+        {
+            eligibilityResult =
+                QuicAdaptiveRuntimeOperationEligibilityResult.Ineligible;
+            eligibilityReason =
+                QuicAdaptiveRuntimeOperationEligibilityReason.ResourceGuard;
+            mechanismEvent =
+                QuicBufferCopyCoalescingMechanismEvent.NoCombinedOwnerRented;
+        }
+        else
+        {
+            if (decision.SafetyOverride != QuicBufferCopySafetyOverride.None)
+            {
+                eligibilityResult =
+                    QuicAdaptiveRuntimeOperationEligibilityResult.Clamped;
+                eligibilityReason = decision.SafetyOverride
+                        == QuicBufferCopySafetyOverride.Lifecycle
+                    ? QuicAdaptiveRuntimeOperationEligibilityReason.LifecycleGuard
+                    : QuicAdaptiveRuntimeOperationEligibilityReason.SafetyOverride;
+            }
+            else if (legalSourceSegmentCount <= MemoryConservativeMaximumSourceSegments)
+            {
+                eligibilityReason =
+                    QuicAdaptiveRuntimeOperationEligibilityReason.StructurallyInactive;
+            }
+
+            if (appliedSourceSegmentCount == legalSourceSegmentCount)
+            {
+                mechanismEvent =
+                    QuicBufferCopyCoalescingMechanismEvent
+                        .ExactCombinedPrefixRetained;
+            }
+            else if (decision.AppliedValue
+                        == QuicBufferCopyPolicyValue.MemoryConservative
+                    && legalSourceSegmentCount
+                        > MemoryConservativeMaximumSourceSegments
+                    && appliedSourceSegmentCount
+                        == MemoryConservativeMaximumSourceSegments)
+            {
+                mechanismEvent =
+                    QuicBufferCopyCoalescingMechanismEvent
+                        .LowerTwoSourceSegmentCapApplied;
+            }
+            else
+            {
+                eligibilityResult =
+                    QuicAdaptiveRuntimeOperationEligibilityResult.Ineligible;
+                eligibilityReason =
+                    QuicAdaptiveRuntimeOperationEligibilityReason
+                        .UnclassifiableEvidence;
+                mechanismEvent =
+                    QuicBufferCopyCoalescingMechanismEvent.Unclassifiable;
+            }
+        }
+
+        return new(
+            epochSequence,
+            decisionInstanceSequence,
+            operationSequence,
+            decision.SelectedValue,
+            eligibilityResult,
+            eligibilityReason,
+            mechanismEvent,
+            legalSourceSegmentCount,
+            appliedSourceSegmentCount,
+            legalBytes,
+            appliedBytes,
+            ownerRented);
+    }
+
     private static QuicBufferCopySafetyOverride GetSafetyOverride(
         QuicBufferCopyValidity validity,
         bool lifecycleGuard)
@@ -423,7 +521,8 @@ internal readonly record struct QuicBufferCopyObservation(
     bool FallbackApplied,
     QuicConnectionPhase PhaseAfter,
     bool DisposalStarted,
-    QuicBufferCopyValidity Validity)
+    QuicBufferCopyValidity Validity,
+    QuicBufferCopyCoalescingOperationEvidence CoalescingEvidence = default)
 {
     internal const string AxisId = "buffer_copy_coalescing";
     internal const string CurrentObservationContractVersion =
@@ -455,7 +554,9 @@ internal readonly record struct QuicBufferCopyLifetimeToken(
     ulong OperationSequence,
     QuicBufferCopyPath Path,
     long ConstructionTicks,
-    ulong RetainedCapacityBytes)
+    ulong RetainedCapacityBytes,
+    ulong DecisionEpochSequence = 0,
+    ulong DecisionInstanceSequence = 0)
 {
     internal const string CurrentTokenContractVersion =
         "quic-buffer-copy-lifetime-token-v1";
@@ -475,7 +576,10 @@ internal readonly record struct QuicBufferReleaseObservation(
     ulong LifetimeMicros,
     QuicConnectionPhase PhaseAfter,
     bool DisposalStarted,
-    QuicBufferReleaseValidity Validity)
+    QuicBufferReleaseValidity Validity,
+    ulong DecisionEpochSequence = 0,
+    ulong ReleaseEpochSequence = 0,
+    ulong DecisionInstanceSequence = 0)
 {
     internal const string CurrentObservationContractVersion =
         "quic-buffer-release-observation-v7";

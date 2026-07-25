@@ -193,7 +193,8 @@
         },
         "provenanceVersion": {
           "const": "quic-buffer-copy-provenance-v4"
-        }
+        },
+        "coalescingEvidence": { "type": "object" }
       }
     }
   }

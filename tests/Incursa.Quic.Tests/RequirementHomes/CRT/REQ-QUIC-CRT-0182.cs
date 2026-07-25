@@ -1904,6 +1904,7 @@ public sealed class REQ_QUIC_CRT_0182
             retainedCopy.Remove("mode");
             retainedCopy.Remove("legalLogicalBytes");
             retainedCopy.Remove("legalSourceSegmentCount");
+            retainedCopy.Remove("coalescingEvidence");
             retainedCopy["reasonCode"] = "LegacyCopy";
             retainedCopy["ruleVersion"] =
                 "quic-buffer-copy-observe-only-rule-v1";
@@ -1918,6 +1919,9 @@ public sealed class REQ_QUIC_CRT_0182
                     JsonSerializer.SerializeToNode(release, options));
             retainedRelease["observationContractVersion"] =
                 "quic-buffer-release-observation-v6";
+            retainedRelease.Remove("decisionEpochSequence");
+            retainedRelease.Remove("releaseEpochSequence");
+            retainedRelease.Remove("decisionInstanceSequence");
             retainedRelease["reasonVersion"] =
                 "quic-buffer-release-reason-v6";
             retainedRelease["provenanceVersion"] =

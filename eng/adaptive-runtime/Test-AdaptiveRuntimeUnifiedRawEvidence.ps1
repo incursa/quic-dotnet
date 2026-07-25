@@ -226,6 +226,17 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
     $contractRecord.epoch.evidenceContractVersion =
         'adaptive-runtime-unified-epoch-evidence-v12'
     [void] $contractRecord.epoch.Remove('congestionPacingProfile')
+    foreach ($propertyName in @(
+        'exactCombinedPrefixOperationCount',
+        'exactCombinedPrefixAppliedBytes',
+        'twoSourceCapOperationCount',
+        'twoSourceCapAppliedBytes',
+        'structurallyInactiveCoalescingOperationCount',
+        'clampedCoalescingOperationCount',
+        'unclassifiableCoalescingOperationCount'
+    )) {
+        [void] $contractRecord.epoch.bufferCopy.Remove($propertyName)
+    }
     $v12ProjectionJson =
         $contractRecord | ConvertTo-Json -Depth 100 -Compress
     if (-not (

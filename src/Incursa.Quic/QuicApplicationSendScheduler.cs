@@ -20,7 +20,8 @@ internal readonly record struct QuicApplicationSendPlan(
     ulong FirstStreamId,
     QuicApplicationSendBatchPolicyMode BatchPolicyMode,
     int EligibleWriteCount,
-    int EligibleWriteBytes)
+    int EligibleWriteBytes,
+    int SelectedWriteBytes)
 {
     internal static QuicApplicationSendPlan None(
         QuicSendPolicyBlockedReason blockedReason,
@@ -35,7 +36,8 @@ internal readonly record struct QuicApplicationSendPlan(
             FirstStreamId: 0,
             batchPolicyMode,
             EligibleWriteCount: 0,
-            EligibleWriteBytes: 0);
+            EligibleWriteBytes: 0,
+            SelectedWriteBytes: 0);
 }
 
 internal static class QuicApplicationSendScheduler
@@ -218,7 +220,8 @@ internal static class QuicApplicationSendScheduler
                 firstStreamFrame.StreamId.Value,
                 batchPolicyMode,
                 EligibleWriteCount: 1,
-                EligibleWriteBytes: firstQueuedWrite.StreamPayloadLength);
+                EligibleWriteBytes: firstQueuedWrite.StreamPayloadLength,
+                SelectedWriteBytes: fragmentDataLength);
         }
 
         int eligibleWriteBytes;
@@ -247,7 +250,10 @@ internal static class QuicApplicationSendScheduler
             firstStreamFrame.StreamId.Value,
             batchPolicyMode,
             eligibleWriteCount,
-            eligibleWriteBytes);
+            eligibleWriteBytes,
+            selectedWriteCount == eligibleWriteCount
+                ? eligibleWriteBytes
+                : firstQueuedWrite.StreamPayloadLength);
     }
 
     private static int GetSingleEligibleWrite(

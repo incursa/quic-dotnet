@@ -1949,7 +1949,8 @@ internal sealed partial class QuicConnectionRuntime
                             retainedCapacityBytes:
                                 combinedPayloadOwner.Length,
                             in combinedBufferPolicyDecision,
-                            trackTerminalRelease: true)
+                            trackTerminalRelease: true,
+                            ownerRented: true)
                         : TryPublishBufferCopyObservation(
                             QuicBufferCopyPath.CombinedApplicationSend,
                             QuicBufferCopyOperation.Combine,
@@ -1961,7 +1962,8 @@ internal sealed partial class QuicConnectionRuntime
                             requestedCapacityBytes: combinedPayloadLength,
                             retainedCapacityBytes:
                                 combinedPayloadOwner.Length,
-                            trackTerminalRelease: true);
+                            trackTerminalRelease: true,
+                            ownerRented: true);
 
                     combinedPayload = combinedPayloadOwner.AsMemory(0, combinedPayloadLength);
                     if (QuicApplicationSendQueue.TryGetOnlyDistinctStreamId(selectedWrites, out ulong onlyStreamId))
@@ -2682,10 +2684,17 @@ internal sealed partial class QuicConnectionRuntime
                 hasForcedValue,
                 forcedValue,
                 in plan);
+        QuicApplicationSendBatchOperationEvidence operationEvidence =
+            QuicApplicationSendBatchPolicy.CreateOperationEvidence(
+                GetNextAdaptiveRuntimeEvidenceEpochSequence(),
+                in observation,
+                in decision,
+                in plan);
         QuicApplicationSendBatchEvidence evidence = new(
             observationMode,
             observation,
             decision,
+            operationEvidence,
             plan.Kind,
             plan.SelectedWriteCount,
             plan.HasMoreQueuedData,

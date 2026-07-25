@@ -143,7 +143,8 @@
       "const": "quic-buffer-copy-policy-snapshot-v1"
     },
     "reasonVersion": { "const": "quic-buffer-copy-reason-v2" },
-    "provenanceVersion": { "const": "quic-buffer-copy-provenance-v4" }
+    "provenanceVersion": { "const": "quic-buffer-copy-provenance-v4" },
+    "coalescingEvidence": { "type": "object" }
   },
   "$defs": {
     "unsignedInteger": {
