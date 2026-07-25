@@ -3601,3 +3601,75 @@ deleted, overwritten, or relabeled. The next actor checkpoint is a distinct
 exact continuation-ready signal and reviewed cooperative-yield ownership.
 Complete runnable intervals and fairness outcomes remain open. Active behavior
 remains unauthorized.
+
+## Stage 2 Continuation Assessment And Implementation-Freeze Matrix
+
+Local implementation commit `4da502d9` closes the current behavior-neutral
+continuation-assessment prerequisite without making `actor_work_quantum`
+forceable or changing shard scheduling. It also adds
+[`../design/adaptive-runtime-policy-axis-implementation-matrix.md`](../design/adaptive-runtime-policy-axis-implementation-matrix.md)
+as the checkpoint companion to the unchanged approved roadmap.
+
+`REQ-QUIC-CRT-0189` introduces the closed per-producer states
+`NotAssessed`, `Drained`, `Scheduled`, `Blocked`,
+`ReadyAfterCooperativeYield`, and `Invalid` for application-send,
+flow-control, and stream-capacity follow-on work. State and bounded
+remaining-count consistency is mandatory. No current producer emits
+`ReadyAfterCooperativeYield`; that value is reserved for a later reviewed
+cooperative-yield boundary. An unvisited producer remains `NotAssessed`, and
+pending work is not silently relabeled runnable or continuation-ready.
+
+Actor observation and provenance advance to v5, actor epoch aggregation
+advances to v5, actor raw advances to v4, unified evidence and raw advance to
+v6, and the append-only export manifest advances to v7. Earlier schemas remain
+unchanged. The raw-to-epoch validator recomputes complete assessment coverage,
+per-producer state counts, and maximum remaining counts and rejects
+contradictory state/count pairs or aggregate mismatches.
+
+The retained verification sequence is:
+
+| Invocation | Result | Classification and disposition |
+| --- | --- | --- |
+| Initial `dotnet build Incursa.Quic.slnx -c Release --no-restore --nologo` | Six compile errors: five instance/static helper errors and one invalid integer-range comparison; zero warnings | `diagnostic_only`; implementation defects were corrected before any test evidence was accepted. |
+| First mechanism-test attempt using the test runner's unsupported exact `Name=...` filter form | Zero tests selected | `diagnostic_only`; no pass was inferred. The filter was corrected to supported fully-qualified-name matching. |
+| Corrected mechanism band | Four passed, zero failed, zero skipped in 440 milliseconds | `accepted`; state/count construction, completeness, invalidity, and reserved ready-after-yield semantics are covered. |
+| Interim and final solution Release builds during schema, host, validator, and negative-test integration | Final build: zero warnings and zero errors in 45.20 seconds | `accepted`; the complete continuation-assessment evidence spine compiled. |
+| Focused actor, unified-export, package, and direct-measurement band | 48 passed, zero failed, zero skipped in 23 seconds | `accepted`; includes producer capture, exact aggregates, schema versions, joins, mismatch rejection, and retained host/package contracts. |
+| Broader Stage 2 requirement-home, compact-layout, and direct-measurement band | 74 passed, zero failed, zero skipped in 14 seconds | `accepted`; actor ownership, terminal accounting, retained compact layout, and adjacent behavior remain correct. |
+| `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --nologo` after commit `4da502d9` | Zero warnings and zero errors in 63.98 seconds | `accepted`; focused post-commit build-before-test gate. |
+| `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build --no-restore --nologo --filter "FullyQualifiedName~Incursa.Quic.Tests.RequirementHomes.CRT.REQ_QUIC_CRT_0181\|FullyQualifiedName~Incursa.Quic.Tests.RequirementHomes.CRT.REQ_QUIC_CRT_0183"` | 19 passed, zero failed, zero skipped in 12 seconds | `accepted`; the directly affected actor and unified-export requirement homes pass from the committed implementation. |
+| Direct PowerShell AST and JSON parsing | Four edited PowerShell scripts parsed with zero AST errors; six new schemas parsed as JSON | `accepted`; focused script and contract syntax evidence. |
+| Focused SpecTrace model validation | `SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY`, `ARC-QUIC-CRT-0067`, `WI-QUIC-CRT-0068`, and `VER-QUIC-CRT-0069` each returned `True` | `accepted`; reciprocal `REQ-QUIC-CRT-0189` trace, schema, implementation, test, and evidence references are present. |
+
+No active build, test, campaign, or dataset transform remained after the
+checkpoint. The observed `dotnet` processes were reusable MSBuild nodes, and
+the observed PowerShell processes belonged to the Codex host and monitoring
+path. No process was terminated.
+
+No campaign axis varied. Receive credit and all four implemented Stage 1 axes
+remain applied as `legacy_current`. Stage 2 axes remain behaviorally legacy:
+`actor_work_quantum` has an observation foundation but is not shadowable or
+forceable; `ready_stream_fairness` and `adaptive_backpressure` have no axis
+seam; and `buffer_copy_coalescing` remains observation-only. Unified-schema
+row counts, classifications, inclusions, and exclusions are unchanged because
+this checkpoint generated zero campaign rows.
+
+The exact `actor_work_quantum` blocker is now explicit: no reviewed
+cooperative-yield point owns an exactly resumable work unit. A distinct forced
+value would currently be behaviorally fake or could split transition/effect
+ownership. Under the implementation-breadth anti-drift rule, the next work
+must deliver the independent `ready_stream_fairness` force seam or, if it
+shares the same unsafe boundary, record that dependency and move to
+`buffer_copy_coalescing`. No further actor observation-only checkpoint is
+authorized first.
+
+The stopped
+`application-send-turn-neutrality-download-20260724-r002` transform remains
+`diagnostic_incomplete`. Its 55,658 raw epochs, five cell results, hashes,
+classifications, and partial dataset output were not restarted, deleted,
+overwritten, relabeled, or used for threshold or model derivation.
+
+No BenchmarkDotNet run, performance number, ProtocolLab deployment, large
+campaign, dataset transform, normalized/curated/split dataset, ML analysis,
+CI work, push, or active behavior occurred. Performance measurement and
+`active_internal` remain unauthorized.
