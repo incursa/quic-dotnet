@@ -412,6 +412,26 @@ foreach ($path in Get-ChildItem (Join-Path $fixtureRoot 'valid') -Filter '*.json
         Write-AdaptiveRuntimeCanonicalDocument $projection1 (
             Join-Path $fixtureRoot "expected\projection\$($path.BaseName).projection.json")
     }
+    else {
+        $expectedMaterializationPath = Join-Path $fixtureRoot (
+            "expected\materialization\$($path.BaseName).materialization.json")
+        $expectedProjectionPath = Join-Path $fixtureRoot (
+            "expected\projection\$($path.BaseName).projection.json")
+        if (-not (Test-Path -LiteralPath $expectedMaterializationPath) -or
+            -not (Test-Path -LiteralPath $expectedProjectionPath)) {
+            $failures.Add("$($path.Name):expected_output_missing")
+            continue
+        }
+        $expectedMaterializationBytes =
+            [System.IO.File]::ReadAllText($expectedMaterializationPath)
+        $expectedProjectionBytes =
+            [System.IO.File]::ReadAllText($expectedProjectionPath)
+        if ($materializationBytes1 -cne $expectedMaterializationBytes -or
+            $projectionBytes1 -cne $expectedProjectionBytes) {
+            $failures.Add("$($path.Name):expected_output_drift")
+            continue
+        }
+    }
     $validCount++
 }
 
