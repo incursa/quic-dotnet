@@ -4332,3 +4332,125 @@ force-legacy rollback tested. The next axis is Stage 5
 architecture and must not be activated merely to mark it complete.
 Performance measurement, active behavior, CI work, push, and
 measurement-freeze release remain unauthorized.
+
+## Stage 5 Congestion and Pacing Profile Safety-Seam Checkpoint
+
+Recorded: 2026-07-24.
+
+Active axis: `congestion_pacing_profile`.
+
+Adjacent applied axes: `receive_credit_publication`, all four Stage 1 axes,
+both implementation-ready Stage 2 axes, both Stage 3 axes, and both Stage 4
+axes remain `legacy_current`. No campaign axis varied.
+
+Recovery and worktree disposition:
+
+- the starting clean checkpoint was `b8595830` (`Record datagram batch
+  transport checkpoint evidence`);
+- the branch was `main`, ahead of `origin/main` by 102 commits before this
+  slice;
+- no adaptive transform, campaign, build, or test process was active at
+  recovery;
+- the stopped 55,658-epoch single-axis transform and every raw, hash,
+  classification, and partial artifact remain untouched and classified
+  `diagnostic_incomplete`;
+- the user-approved roadmap remains unchanged; and
+- CI was ignored, no performance command ran, no dataset row was generated,
+  and no push was attempted.
+
+Capability delivered:
+
+- stable axis ID `congestion_pacing_profile`;
+- closed `legacy_current` and `cubic` values wrapping only the retained
+  NewReno and already-implemented private CUBIC controllers;
+- no fabricated conservative alias, no new congestion or pacing algorithm,
+  and no safety or performance preference claim;
+- exact connection-construction boundary and connection-lifetime latch;
+- path migration and recovery reset reinitialize the same selected controller
+  without profile reselection;
+- disabled, observe-only, research-only shadow, forced legacy, and forced
+  CUBIC operation with forced, recommended, selected, applied, controller,
+  source, reason, safety, fallback, validity, boundary, latch, and versions
+  distinct;
+- shadow recommendation remains `legacy_current`, so no active candidate rule
+  exists;
+- missing, stale, saturated, contradictory, invalid, out-of-domain, and
+  lifecycle state overrides forced CUBIC to NewReno;
+- congestion window, bytes in flight, pacing, loss, PTO, ECN,
+  anti-amplification, recovery, flow control, packet, ownership, cancellation,
+  disposal, close, shutdown, queue, and buffer authority remains unchanged;
+- the retained direct CUBIC construction path remains compatible with default
+  adaptive-runtime configuration;
+- connection-local configuration matching, one behavior-distinct-axis
+  enforcement, throwing-sink neutrality, and force-legacy rollback;
+- unified evidence v13, unified raw v13, export manifest v14, deterministic
+  v12/v11/v10 projections, and 11 axis records per epoch;
+- internal client, listener, raw-host, package-builder, and runner force and
+  shadow wiring without building a package or running a campaign;
+- a separate network-safety review; and
+- a future one-axis ProtocolLab campaign contract that remains execution
+  frozen.
+
+Correctness commands and accepted results:
+
+| Command or check | Result |
+| --- | --- |
+| `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --nologo -m:1` | zero warnings and zero errors; final implementation build completed in 73.43 seconds under concurrent local build contention |
+| `dotnet build eng/protocol-lab/servers/IncursaRawQuicServer/IncursaRawQuicServer.csproj -c Release --no-restore --nologo -m:1` | zero warnings and zero errors; final build completed in 5.26 seconds |
+| focused `REQ-QUIC-CRT-0196`, retained `REQ-QUIC-CRT-0156`, unified `REQ-QUIC-CRT-0183`, package, RFC 9000 path reset, send ownership, lifecycle timer, accept cancellation, and write cancellation band | 129 passed, zero failed, zero skipped in 27 seconds |
+| final profile plus package rerun after receive-credit provenance correction | 49 passed, zero failed, zero skipped in 11 seconds |
+| deterministic unified exporter fixture | 7 passed, zero failed; validates profile identity and 11 axis records |
+| PowerShell AST parse | exporter, validator, package builder, and runner parsed with zero errors |
+| JSON parse | unified evidence v13, raw v13, and manifest v14 schemas parsed cleanly |
+| direct canonical SpecTrace model validation | four of four focused Stage 5 artifacts returned `True` |
+| focused reciprocal trace validation | `REQ-QUIC-CRT-0196 -> ARC-QUIC-CRT-0083 -> WI-QUIC-CRT-0084 -> VER-QUIC-CRT-0085` is reciprocal |
+| normative requirement check | `REQ-QUIC-CRT-0196` contains exactly one uppercase normative modal |
+| `git diff --check` and cached diff check | clean after removing three extra schema EOF blank lines |
+
+Retained diagnostic results:
+
+- the initial source build exposed three S3358 nested-conditional analyzer
+  failures in the policy and runtime branch shape; explicit branches corrected
+  them without changing the rule;
+- the first requirement-home build retained three CS0051 failures because
+  public theory methods exposed internal enums; the test rows now use bounded
+  byte values and the final axis home passes;
+- the first PowerShell parser invocation passed an invalid reference because
+  of command quoting; the corrected direct AST parse reports zero errors;
+- the first generated schema patch did not match CRLF context and made no
+  change; the retry used an exact reviewable patch and all partial work was
+  preserved;
+- a no-build verification was started while the preceding test build still
+  owned the output assembly, so it retained three stale-assembly fixture
+  failures in the v12 schema, exporter, and package assertions; after the
+  build completed, the exact v13 fixtures passed without deleting or
+  relabeling the failed run; and
+- cached diff validation reported one trailing blank line in each new schema;
+  the three formatting defects were corrected before commit.
+
+Evidence counts:
+
+- implemented unified axis records per epoch: 11;
+- focused profile-axis cases: 22;
+- final affected correctness band: 129 passed;
+- final profile and package rerun: 49 passed;
+- retained stale-assembly diagnostic failures: 3;
+- performance rows: 0;
+- new campaign raw, normalized, curated, split, or analysis rows: 0;
+- dataset inclusions and exclusions: unchanged;
+- campaigns and ProtocolLab deployments: 0;
+- BenchmarkDotNet invocations: 0; and
+- ML or threshold derivations: 0.
+
+Local implementation commit: `fb2fd75a` (`Implement congestion pacing profile
+safety seam`). Nothing was pushed.
+
+Stage 5 disposition: `congestion_pacing_profile` has its separate
+requirements, architecture, force seam, safety review, observation contract,
+deterministic correctness tests, unified provenance, rollback proof, and
+future campaign contract. It is observable, research-shadowable,
+independently forceable, and connection-lifetime latched. CUBIC remains a
+research candidate with no safety, performance, active_internal, or
+production acceptance. The next independent Stage 5 preparation axis is
+`ack_behavior_profile`. Performance measurement, active behavior, CI work,
+push, and measurement-freeze release remain unauthorized.

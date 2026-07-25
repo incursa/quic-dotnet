@@ -57,5 +57,5 @@
     "docs/protocol-lab/adaptive-runtime-congestion-pacing-profile-campaign.md",
     "docs/design/adaptive-runtime-policy-axis-implementation-matrix.md"
   ],
-  "status_summary": "Focused Release builds and deterministic tests passed. No performance, campaign, dataset, ML, CI, push, active_internal, or production action occurred."
+  "status_summary": "The final Release test-project and raw-host builds completed with zero warnings and zero errors. The focused profile, retained CUBIC, unified exporter, package, path-reset, ownership, lifecycle, and cancellation band passed 129 of 129 cases, including 22 REQ-QUIC-CRT-0196 cases. Four focused SpecTrace artifacts validate against the canonical model with reciprocal links and one normative modal; four changed PowerShell scripts and three new JSON schemas parse cleanly. No performance, campaign, dataset, ML, CI, push, active_internal, or production action occurred."
 }
