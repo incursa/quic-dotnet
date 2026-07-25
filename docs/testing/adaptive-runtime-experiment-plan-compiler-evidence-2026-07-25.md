@@ -140,7 +140,7 @@ used:
 dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore
 ```
 
-Result: 0 warnings, 0 errors in 60.65 seconds.
+Result: 0 warnings, 0 errors in 59.45 seconds.
 
 Focused requirement-home tests:
 
@@ -158,7 +158,7 @@ No complete Release suite or performance test ran.
 ## Real dry-run manifest
 
 The manifest was created only after source commit
-`841dfd747df64a53cc34dfc60fee2455ed34226d` was clean and the focused build
+`2ce2d806fdaed8433e67d7f45c31ae541c374f55` was clean and the focused build
 succeeded.
 
 Artifact:
@@ -170,12 +170,12 @@ Proof:
 | --- | --- |
 | plan SHA-256 | `928762c81b37c3a3a026223c83a5b89e0478c68bb88aa152d82c648f43d461b1` |
 | validation SHA-256 | `45bd451a433fc4f130d96fec6e7ad189de8f4a33311156589e26d547c8729a0c` |
-| manifest SHA-256 | `88a60d2d443d3f1cd32a484ea12dca543f2999c37cf2c43b63b9f5a683324ac7` |
+| manifest SHA-256 | `6dd5f4741f1ae9e1a4565d4e74f5095f40c093c95e9c1aebc6086d5767aef3e5` |
 | binary | `tests/Incursa.Quic.Tests/bin/Release/net10.0/Incursa.Quic.Tests.dll` |
-| binary SHA-256 | `07e7a8a999f92a20a8491afe4a667f680b0ecdc7bce315816d79d9d5018c9cc7` |
+| binary SHA-256 | `0a3c167ddd9ca2eb7f7996f889aab1d08971a9206f7b9908c7829aaaaf78fead` |
 | runner | `Compile-AdaptiveRuntimeExperimentPlan.ps1` |
 | runner version | `1.0.0-dry-run` |
-| runner SHA-256 | `8baad55ab4bb2683aca877f403848760e732b3c954ceb23da02e1c3ec9c8e3c0` |
+| runner SHA-256 | `d2e41d6601765cee6c41a8849e86ebaccce8ebb586f59e8f324ca9d669703346` |
 | host fingerprint | `host.0080d5b929520780449ad8cd` |
 | VM ID | `78848434-7C6C-4836-B04B-845540F2B138` |
 | internal forced-mode capability | `available` |
