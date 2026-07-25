@@ -12,6 +12,13 @@
     ],
     "catalog": "canonical"
   },
+  "actuation-missing-forced-value.plan.json": {
+    "error_codes": [
+      "axis_not_forceable",
+      "experiment_type_axis_count_invalid"
+    ],
+    "catalog": "canonical"
+  },
   "illegal-combination.plan.json": {
     "error_codes": [
       "cross_axis_constraint_violation"

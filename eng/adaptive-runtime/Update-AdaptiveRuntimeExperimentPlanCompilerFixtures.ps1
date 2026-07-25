@@ -289,6 +289,10 @@ $clone.treatments[1].candidate_value = 'illegal_value'
 $clone.treatments[1].forced_value = 'illegal_value'
 Add-InvalidPlan 'illegal-policy-value' $clone @('unknown_policy_value')
 
+$clone = Copy-JsonValue $plans['batch-actuation']
+$clone.treatments[1].PSObject.Properties.Remove('forced_value')
+Add-InvalidPlan 'actuation-missing-forced-value' $clone @('axis_not_forceable','experiment_type_axis_count_invalid')
+
 $clone = Copy-JsonValue $plans['interaction']
 $clone.varied_axis_ids = @('application_send_batch_formation','application_send_turn_planning')
 $clone.fixed_axis_ids = @('buffer_copy_coalescing')

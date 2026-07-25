@@ -84,7 +84,7 @@ Result:
 - 7 valid or structurally valid plan fixtures;
 - 5 warning or verification-classified plan fixtures;
 - 12 exact warning-code proofs;
-- 20 invalid plans;
+- 21 invalid plans;
 - 5 invalid manifests;
 - 1 invalid validation result;
 - 0 mismatches or failures;
@@ -103,7 +103,8 @@ structural inactivity, unproven distinctness, actuation-preserved equivalence,
 and isolated-equivalence deduplication.
 
 The invalid corpus covers unknown and blocked axes, Stage 5 preparation-only
-execution, illegal values and combinations, unreachable activation, invalid
+execution, illegal values and combinations, missing forced actuation,
+unreachable activation, invalid
 fixed adjacent values, isolated axis-count violations, an axis outside an
 interaction family, missing feedback history, false performance comparison of
 equivalent cells, plan and manifest hash mismatches, validation hash mismatch,

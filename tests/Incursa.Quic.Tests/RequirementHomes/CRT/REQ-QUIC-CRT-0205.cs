@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_CRT_0205
         Assert.True(root.GetProperty("valid").GetBoolean());
         Assert.Equal(7, root.GetProperty("valid_plan_count").GetInt32());
         Assert.Equal(5, root.GetProperty("warning_plan_count").GetInt32());
-        Assert.Equal(20, root.GetProperty("invalid_plan_count").GetInt32());
+        Assert.Equal(21, root.GetProperty("invalid_plan_count").GetInt32());
         Assert.Equal(6, root.GetProperty("invalid_manifest_or_validation_count").GetInt32());
         Assert.True(root.GetProperty("canonical_serialization_byte_equivalent").GetBoolean());
         Assert.True(root.GetProperty("repeated_hashes_identical").GetBoolean());

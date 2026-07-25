@@ -94,6 +94,36 @@ function Get-ExpectedBehaviorId {
     return $null
 }
 
+function Get-DocumentReferences {
+    param(
+        [AllowNull()][object] $Value,
+        [int] $Depth = 0
+    )
+
+    $references = [System.Collections.Generic.List[object]]::new()
+    if ($null -eq $Value -or $Value -is [string] -or $Value -is [ValueType]) {
+        return @()
+    }
+    if ($Value -is [System.Collections.IEnumerable] -and
+        -not ($Value -is [System.Collections.IDictionary])) {
+        foreach ($item in @($Value)) {
+            foreach ($reference in @(Get-DocumentReferences $item ($Depth + 1))) { $references.Add($reference) }
+        }
+        return @($references)
+    }
+
+    $names = @($Value.PSObject.Properties.Name)
+    if ($Depth -gt 0 -and @('document_id','schema_version','document_version','content_sha256' |
+        Where-Object { $names -notcontains $_ }).Count -eq 0) {
+        $references.Add($Value)
+        return @($references)
+    }
+    foreach ($property in $Value.PSObject.Properties) {
+        foreach ($reference in @(Get-DocumentReferences $property.Value ($Depth + 1))) { $references.Add($reference) }
+    }
+    return @($references)
+}
+
 $plan = Read-AdaptiveRuntimeJsonDocument -Path $PlanPath
 $catalogs = [ordered]@{}
 $documentMap = @{}
@@ -114,6 +144,22 @@ $axisCatalog = $catalogs.axis
 $behaviorCatalog = $catalogs.behavior
 $constraintCatalog = $catalogs.constraint
 $familyCatalog = $catalogs.family
+
+foreach ($catalog in $catalogs.Values) {
+    foreach ($reference in @(Get-DocumentReferences $catalog)) {
+        $referenceId = [string]$reference.document_id
+        if (-not $documentMap.ContainsKey($referenceId)) {
+            Add-PlanError 'unknown_contract_reference' "Catalog reference '$referenceId' is unknown." $referenceId
+            continue
+        }
+        $target = $documentMap[$referenceId]
+        if ($reference.schema_version -ne $target.schema_version -or
+            [int]$reference.document_version -ne [int]$target.document_version -or
+            $reference.content_sha256 -ne $target.content_sha256) {
+            Add-PlanError 'stale_contract_reference' "Catalog reference '$referenceId' is stale." $referenceId
+        }
+    }
+}
 
 $knownTopLevelFields = @(
     'schema_version','document_id','document_version','content_sha256','trace_references',
@@ -246,6 +292,12 @@ switch ([string]$plan.experiment_type) {
     }
 }
 
+$canonicalPredicateIds = @(
+    $axisCatalog.axis_contracts.canonical_predicates.predicate_id
+    $familyCatalog.experiment_families.predicate_refs
+    $constraintCatalog.combination_constraints.predicate_refs
+) | ForEach-Object { [string]$_ } | Sort-Object -Unique
+$declaredPlanPredicateIds = @(Get-StringArray $plan.required_predicate_refs)
 $declaredCapabilityIds = @(Get-StringArray @($plan.expected_capabilities | ForEach-Object capability_id))
 $allAxisIds = @($fixedAxisIds + $variedAxisIds | Sort-Object -Unique)
 $axisById = @{}
@@ -283,14 +335,18 @@ foreach ($axisId in $allAxisIds) {
                 Add-PlanError 'expected_capability_missing' "Axis '$axisId' requires expected capability '$capabilityId'." $axisId
             }
         }
+        foreach ($predicateRef in @(
+            $readiness.activation_predicate_refs
+            $readiness.behavior_distinctness_predicate_refs
+        )) {
+            if ($canonicalPredicateIds -notcontains [string]$predicateRef -or
+                $declaredPlanPredicateIds -notcontains [string]$predicateRef) {
+                Add-PlanError 'missing_canonical_predicate_reference' "Axis '$axisId' requires predicate '$predicateRef'." $axisId
+            }
+        }
     }
 }
 
-$canonicalPredicateIds = @(
-    $axisCatalog.axis_contracts.canonical_predicates.predicate_id
-    $familyCatalog.experiment_families.predicate_refs
-    $constraintCatalog.combination_constraints.predicate_refs
-) | ForEach-Object { [string]$_ } | Sort-Object -Unique
 foreach ($predicateRef in @($plan.required_predicate_refs)) {
     if ($canonicalPredicateIds -notcontains [string]$predicateRef) {
         Add-PlanError 'missing_canonical_predicate_reference' "Predicate '$predicateRef' is not owned by the loaded catalogs." $predicateRef
@@ -298,6 +354,7 @@ foreach ($predicateRef in @($plan.required_predicate_refs)) {
 }
 
 $treatmentMap = @{}
+$forcedAxisIds = [System.Collections.Generic.List[string]]::new()
 foreach ($treatment in @($plan.treatments)) {
     $treatmentId = [string]$treatment.treatment_id
     if ($treatmentMap.ContainsKey($treatmentId)) {
@@ -308,18 +365,35 @@ foreach ($treatment in @($plan.treatments)) {
     $axisId = [string]$treatment.axis_id
     if (-not $axisById.ContainsKey($axisId)) { continue }
     $contract = $axisById[$axisId]
+    $forcedValue = Get-AdaptiveRuntimeJsonProperty $treatment 'forced_value'
+    if ($null -ne $forcedValue) { $forcedAxisIds.Add($axisId) }
     foreach ($valueName in @('configured_value','candidate_value','forced_value')) {
         $value = Get-AdaptiveRuntimeJsonProperty $treatment $valueName
         if ($null -ne $value -and (Get-StringArray $contract.policy_values) -notcontains [string]$value) {
             Add-PlanError 'unknown_policy_value' "Value '$value' is not legal for axis '$axisId'." $treatmentId
         }
     }
+    if ($treatment.configured_value -ne 'legacy_current' -and
+        ($null -eq $forcedValue -or $forcedValue -ne $treatment.candidate_value)) {
+        Add-PlanError 'axis_not_forceable' "Non-legacy treatment '$treatmentId' must declare its exact forced candidate." $treatmentId
+    }
+}
+$forcedAxisIds = @($forcedAxisIds | Sort-Object -Unique)
+if ($plan.experiment_type -eq 'actuation_validation' -and
+    ($forcedAxisIds.Count -ne 1 -or $forcedAxisIds[0] -ne $variedAxisIds[0])) {
+    Add-PlanError 'experiment_type_axis_count_invalid' 'Actuation validation requires forced values on exactly its one varied axis.'
+}
+foreach ($forcedAxisId in $forcedAxisIds) {
+    if ($variedAxisIds -notcontains $forcedAxisId) {
+        Add-PlanError 'fixed_axis_not_legacy_current' "Forced axis '$forcedAxisId' is not declared varied." $forcedAxisId
+    }
 }
 
 $matchingConstraint = @($constraintCatalog.combination_constraints | Where-Object {
     $_.family_id -eq $plan.family_id -and
     (Get-StringArray $_.experiment_types) -contains $plan.experiment_type -and
-    (Test-SameStringSet (Get-StringArray $_.varied_axis_ids) $variedAxisIds)
+    (Test-SameStringSet (Get-StringArray $_.varied_axis_ids) $variedAxisIds) -and
+    (Test-SameStringSet (Get-StringArray $_.fixed_axis_ids) $fixedAxisIds)
 }) | Select-Object -First 1
 if ($plan.experiment_type -eq 'interaction_screen') {
     if ($null -eq $matchingConstraint -or $matchingConstraint.legality -ne 'legal') {
