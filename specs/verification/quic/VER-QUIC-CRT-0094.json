@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0094",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "Deterministic experiment-plan compiler and dry-run manifest verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -49,5 +49,5 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0205.cs",
     "docs/testing/adaptive-runtime-experiment-plan-compiler-evidence-2026-07-25.md"
   ],
-  "status_summary": "Pending focused verification and the post-build dry-run manifest proof."
+  "status_summary": "The foundation validator passes 8 schemas, 5 canonical documents, 12 valid fixtures, and 15 invalid fixtures. The compiler harness passes 7 valid plans, 5 warning plans, 20 invalid plans, and 6 invalid validation or manifest links with deterministic bytes, hashes, classifications, counts, and closed codes. The focused Release build succeeds with 0 warnings and errors, 4 requirement-home tests pass, and the real dry-run manifest links source commit 841dfd747df64a53cc34dfc60fee2455ed34226d, the built test binary, runner, host, resolved capabilities, and two deterministic executable cells. No performance, campaign, transform, CI, push, active_internal, or production action occurred."
 }

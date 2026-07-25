@@ -208,6 +208,45 @@ canonical-serialization, and content-hash checks only. It does not build a
 compiled execution manifest, run a campaign or transform, authorize
 performance acceptance, or enable `active_internal`.
 
+Validate and compile one immutable source plan into a deterministic
+plan-validation result:
+
+```powershell
+./eng/adaptive-runtime/Compile-AdaptiveRuntimeExperimentPlan.ps1 `
+  -PlanPath ./tests/fixtures/adaptive-runtime-experiment-plan-compiler/valid/batch-actuation.plan.json `
+  -OutputPath ./.artifacts/adaptive-runtime/batch-actuation.validation.json
+```
+
+Run the complete focused compiler corpus, including valid, warning,
+verification-only, inactive, capability-pending, blocked, preparation-only,
+invalid-plan, invalid-validation, and invalid-manifest cases:
+
+```powershell
+./eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentPlanCompiler.ps1
+```
+
+The compiler reports planning eligibility and expected behavior only. It does
+not report runtime operation eligibility or materialize actual behavior.
+Current send-composition interaction cells remain capability-pending.
+
+After the plan and validation are committed, the worktree is clean, and a
+focused build succeeds, create a dry-run manifest by supplying the exact
+binary, runner version, and resolved capabilities:
+
+```powershell
+./eng/adaptive-runtime/New-AdaptiveRuntimeCompiledExecutionManifest.ps1 `
+  -PlanPath <committed-plan.json> `
+  -ValidationPath <committed-validation.json> `
+  -BinaryPath <focused-build-binary> `
+  -RunnerPath ./eng/adaptive-runtime/Compile-AdaptiveRuntimeExperimentPlan.ps1 `
+  -RunnerVersion 1.0.0-dry-run `
+  -ResolvedCapability adaptive_runtime_internal_forced_mode=available `
+  -OutputPath <dry-run-manifest.json>
+```
+
+Manifest creation hashes and records provenance. It does not execute a
+benchmark, campaign, policy cell, transform, or runtime mechanism.
+
 Build the deterministic raw -> normalized -> curated -> split chain from
 validated local results and epoch rows:
 

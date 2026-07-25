@@ -346,10 +346,16 @@ The checkpoint trace allocation is:
 | Architecture | `ARC-QUIC-CRT-0089` | Canonical architecture home for `REQ-QUIC-CRT-0198` through `REQ-QUIC-CRT-0201` |
 | Work item | `WI-QUIC-CRT-0090` | Canonical implementation work-item home for the first experiment-control slice |
 | Verification | `VER-QUIC-CRT-0091` | Canonical deterministic validation home for the schema and fixture set |
+| Architecture | `ARC-QUIC-CRT-0092` | Deterministic validator, compiler, equivalence, hashing, and dry-run manifest architecture |
+| Work item | `WI-QUIC-CRT-0093` | Compiler and dry-run manifest implementation |
+| Verification | `VER-QUIC-CRT-0094` | Compiler fixtures, hash proofs, focused build, and dry-run manifest proof |
 
 These homes are paired with the requirement set in
-`SPEC-QUIC-CRT-EXPERIMENT-CONTROL`. The later compiler should use them as the
-stable trace anchors, but this document does not implement that compiler.
+`SPEC-QUIC-CRT-EXPERIMENT-CONTROL`. The foundation requirements remain
+`REQ-QUIC-CRT-0198` through `REQ-QUIC-CRT-0201`; the compiler checkpoint uses
+`REQ-QUIC-CRT-0202` through `REQ-QUIC-CRT-0205`. The focused compiler design is
+recorded in
+[`adaptive-runtime-experiment-plan-compiler.md`](adaptive-runtime-experiment-plan-compiler.md).
 
 ## Risks
 
@@ -367,16 +373,18 @@ stable trace anchors, but this document does not implement that compiler.
 
 ## Open Questions
 
-These are compiler-only questions for a later slice, not changes required by
-this checkpoint:
+The compiler checkpoint resolves the prior planning questions as follows:
 
-- How should the compiler encode `interaction_screen` cells when the runtime
-  capability is still limited to one behavior-distinct axis?
-- Should the compiled execution manifest carry one effective-behavior ID per
-  applied value or a bounded fan-out list keyed by the declared context
-  variables?
-- Should the later compiler introduce a manifest-specific hash domain
-  separator, or keep the current canonical UTF-8 JSON hash rule across all
-  artifacts?
-- How should preparation-valid but execution-blocked plans be surfaced to the
-  user without making them look invalid?
+- interaction cells remain plan-valid and `capability_pending`;
+- expected behaviors are a bounded class list, while actual fan-out remains
+  raw evidence and later materialization;
+- plan, validation, and manifest documents retain the reviewed canonical JSON
+  hashing rule and reject cross-role hash substitution by exact references;
+  and
+- preparation-only axes are structurally representable but compile as
+  `invalid`, while first-slice deferred feedback/profile cells remain
+  structurally inactive.
+
+The remaining questions concern runtime operation correlation, actual
+mechanism-event evidence, and effective-behavior materialization. They are
+outside this checkpoint.
