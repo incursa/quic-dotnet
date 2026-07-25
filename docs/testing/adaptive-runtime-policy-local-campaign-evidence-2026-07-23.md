@@ -3673,3 +3673,93 @@ No BenchmarkDotNet run, performance number, ProtocolLab deployment, large
 campaign, dataset transform, normalized/curated/split dataset, ML analysis,
 CI work, push, or active behavior occurred. Performance measurement and
 `active_internal` remain unauthorized.
+## 2026-07-24 Buffer Copy Coalescing Implementation Checkpoint
+
+Classification: `accepted` implementation and focused correctness checkpoint;
+not performance, campaign, policy-acceptance, threshold, dataset, or ML
+evidence.
+
+Active axis: `buffer_copy_coalescing`.
+
+Adjacent applied axes: `receive_credit_publication`,
+`application_send_turn_planning`, `application_send_batch_formation`,
+`queued_send_burst_budget`, and `oversized_write_admission_quantum` remain
+`legacy_current`. No campaign axis varied.
+
+Process and recovery disposition:
+
+- no adaptive campaign, normalization, transform, build, or test process was
+  active before the slice;
+- the retained 55,658-epoch send-turn-only transform remains
+  `diagnostic_incomplete`, unchanged, and was not restarted;
+- clean prerequisite checkpoints `4da502d9` and `d358f501` remain preserved;
+  and
+- CI was ignored and no push was attempted.
+
+Capability delivered:
+
+- closed values `legacy_current` and `memory_conservative`;
+- exact decision boundary after the Stage 1 legal combined-send prefix and
+  before combined-owner rent/fill;
+- lower-only two-source-segment conservative cap;
+- disabled, observe-only, shadow, forced legacy, and forced conservative
+  operation;
+- distinct configured, forced, recommended, selected, applied, source,
+  reason, safety, fallback, and buffer-lifetime latch state;
+- invalid, missing, stale, saturated, contradictory, out-of-domain, and
+  lifecycle fallback to the exact legacy prefix;
+- rejection of simultaneous behavior-distinct receive-credit or Stage 1
+  forcing;
+- force-legacy rollback;
+- buffer observation, epoch, and raw v4; unified evidence and raw v7; export
+  manifest v8; and
+- permanent raw-host configuration and semantic validation with five
+  implemented axis records per unified row.
+
+Correctness commands and accepted results:
+
+| Command or check | Result |
+| --- | --- |
+| `dotnet build src/Incursa.Quic/Incursa.Quic.csproj -c Release --no-restore --nologo` | zero warnings, zero errors |
+| `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --nologo` | zero warnings, zero errors |
+| `dotnet build eng/protocol-lab/servers/IncursaRawQuicServer/IncursaRawQuicServer.csproj -c Release --no-restore --nologo` | zero warnings, zero errors |
+| `dotnet test ... --filter "FullyQualifiedName~REQ_QUIC_CRT_0190"` | 18 passed, zero failed, zero skipped |
+| `dotnet test ... --filter "FullyQualifiedName~REQ_QUIC_CRT_0190\|FullyQualifiedName~REQ_QUIC_CRT_0183\|FullyQualifiedName~REQ_QUIC_CRT_0182\|FullyQualifiedName~ProtocolLabPackageTemplateTests"` | 86 passed, zero failed, zero skipped |
+| `dotnet test ... --filter "FullyQualifiedName~REQ_QUIC_CRT_0175\|FullyQualifiedName~REQ_QUIC_CRT_0176\|FullyQualifiedName~REQ_QUIC_CRT_0177\|FullyQualifiedName~REQ_QUIC_CRT_0178\|FullyQualifiedName~REQ_QUIC_CRT_0179\|FullyQualifiedName~REQ_QUIC_CRT_0180"` | 164 passed, zero failed, zero skipped |
+| PowerShell AST parse for the five changed adaptive-runtime scripts | zero parse errors |
+| JSON parse for six new schemas | six of six clean |
+| direct `model/model.schema.json` validation | four of four Stage 2 SpecTrace homes returned `True` |
+| `git diff --check` | clean |
+
+Retained diagnostic results:
+
+- the first core build reported one S3358 nested-conditional analyzer error;
+- the first two test builds exposed an internal enum through a public xUnit
+  theory and used a nonexistent receive-credit enum member;
+- the first retained-schema reruns exposed missing v2 reason and reason-version
+  rewrites in the compatibility fixture;
+- the first raw-host source assertions still named the Stage 1-only
+  single-axis message after the guard broadened to Stage 2; and
+- one empty-object schema probe correctly failed the required-property check
+  after all schema JSON parsed successfully.
+
+Each diagnostic was corrected without deleting, relabeling, or overwriting the
+failed result. No runtime or performance evidence was produced by those
+commands.
+
+Evidence counts:
+
+- performance rows: 0;
+- new raw, normalized, curated, split, or analysis rows: 0;
+- dataset inclusions: unchanged;
+- dataset exclusions and retained negatives: unchanged;
+- campaigns: 0; and
+- BenchmarkDotNet invocations: 0.
+
+Local implementation commit: `df8ee570` (`Implement bounded buffer coalescing
+axis`). Nothing was pushed.
+
+Next implementation decision: review the conservative application-visible
+contract for `adaptive_backpressure`. `actor_work_quantum` and
+`ready_stream_fairness` retain their exact safety blockers. Performance
+measurement and `active_internal` remain unauthorized.
