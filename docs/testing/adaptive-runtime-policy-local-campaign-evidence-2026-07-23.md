@@ -3874,3 +3874,114 @@ the exact bounded-runnable/fairness-outcome blocker. Under the breadth-first
 rule, the next independent axis is Stage 3 `packet_flush_cadence`.
 Performance measurement, active behavior, CI work, and push remain
 unauthorized.
+
+## Stage 3 Packet Flush Cadence Implementation Checkpoint
+
+Recorded 2026-07-24. This is an implementation and focused-correctness
+checkpoint, not policy-acceptance or performance evidence.
+
+Active axis: `packet_flush_cadence`.
+
+Adjacent applied axes: `receive_credit_publication`,
+`application_send_turn_planning`, `application_send_batch_formation`,
+`queued_send_burst_budget`, `oversized_write_admission_quantum`,
+`buffer_copy_coalescing`, and `adaptive_backpressure` remain
+`legacy_current`. No campaign axis varied.
+
+Process and recovery disposition:
+
+- no adaptive campaign, normalization, transform, build, or test process was
+  active before this slice;
+- the retained 55,658-epoch send-turn-only transform remains
+  `diagnostic_incomplete`, unchanged, and was not restarted;
+- clean prerequisite commits `25fa33cc` and `2bd8a79a` remain preserved;
+- the user-approved policy-axis roadmap remains unchanged; and
+- CI was ignored, no performance command ran, and no push was attempted.
+
+Capability delivered:
+
+- closed values `legacy_current` and `prompt`;
+- exact decision boundary after stream reservation and payload construction
+  and before the existing optional small-write delay or packet protection;
+- one logical-write packet-opportunity latch;
+- `legacy_current` retains the existing one-millisecond delay for eligible
+  application writes smaller than 32 bytes;
+- `prompt` removes only that optional delay and uses the unchanged direct-send
+  packet-protection and accounting path;
+- disabled, observe-only, shadow, forced legacy, and forced prompt operation;
+- distinct forced, recommended, selected, applied, source, reason, safety,
+  fallback, validity, latch, and version state;
+- missing, stale, saturated, contradictory, invalid, out-of-domain,
+  lifecycle, retransmission, and address-validation fallback to
+  `legacy_current`;
+- authoritative retransmission, address-validation and anti-amplification,
+  lifecycle, congestion, pacing, flow-control, packet-size/protection,
+  recovery, cancellation, terminal, and ownership guards;
+- independently tested force-legacy rollback and throwing-sink neutrality;
+- packet-flush observation, epoch, and raw v1; unified evidence and raw v9;
+  export manifest v10; and
+- a separate append-only sample stream with exact source-scoped
+  `connectionKey + operationSequence` membership and distinct epoch/sample
+  counts.
+
+Correctness commands and accepted results:
+
+| Command or check | Result |
+| --- | --- |
+| `dotnet build src/Incursa.Quic/Incursa.Quic.csproj -c Release --no-restore --nologo` | zero warnings, zero errors in 1.19 seconds |
+| `dotnet build eng/protocol-lab/servers/IncursaRawQuicServer/IncursaRawQuicServer.csproj -c Release --no-restore --nologo` | zero warnings, zero errors in 4.59 seconds |
+| `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --nologo` | zero warnings, zero errors in 47.60 seconds |
+| `dotnet test ... --filter "FullyQualifiedName~REQ_QUIC_CRT_0192"` | 19 passed, zero failed, zero skipped in 1 second |
+| affected unified, prior-axis, package, FIN, cancellation, and application-send-delay band | 136 passed, zero failed, zero skipped in 29 seconds |
+| final `REQ-QUIC-CRT-0192` plus unified `REQ-QUIC-CRT-0183` rerun after whitespace-only validator cleanup | 26 passed, zero failed, zero skipped in 12 seconds |
+| PowerShell AST parse | five changed adaptive-runtime and package scripts parsed with zero errors |
+| JSON parse | six schemas and four SpecTrace artifacts parsed cleanly |
+| direct canonical SpecTrace model validation | four of four Stage 3 artifacts returned `True` |
+| focused ID uniqueness and reciprocal trace validation | `REQ-QUIC-CRT-0192 -> ARC-QUIC-CRT-0071 -> WI-QUIC-CRT-0072 -> VER-QUIC-CRT-0073` is unique and reciprocal |
+| `git diff --check` and cached diff check | clean |
+
+Retained diagnostic results:
+
+- the first implementation build exposed a local
+  `retransmissionPending` name collision with the retained oversized-write
+  branch; the failure was preserved and the oversized local was given a
+  distinct name;
+- the first schema test called a private helper overload; the compile failure
+  was preserved and the public PowerShell-command helper is used;
+- the first invalid-join fixture omitted its packet raw member and therefore
+  correctly produced both missing packet evidence and aggregate mismatch; the
+  diagnostic was preserved and the fixture now isolates its intended join
+  failure;
+- two ad hoc PowerShell validation commands used an invalid pipeline directly
+  after `foreach`; both parser failures were preserved and the collected-array
+  form completed cleanly;
+- the first package-script AST check exposed an invalid multiline `if`
+  expression; the diagnostic was preserved and the condition is now a parsed
+  named boolean; and
+- the first cached diff check found three new schema files with a blank line
+  at EOF; the check stopped the commit, the whitespace was removed, and the
+  cached check then passed.
+
+Evidence counts:
+
+- implemented unified axis records per epoch: 7;
+- focused axis tests: 19 passed;
+- affected correctness band: 136 passed;
+- final unified/axis rerun: 26 passed;
+- performance rows: 0;
+- new raw, normalized, curated, split, or analysis rows: 0;
+- dataset inclusions: unchanged;
+- dataset exclusions and retained negatives: unchanged;
+- campaigns and ProtocolLab deployments: 0;
+- BenchmarkDotNet invocations: 0; and
+- ML or threshold derivations: 0.
+
+Local implementation commit: `c676795b` (`Implement packet flush cadence
+policy axis`). Nothing was pushed.
+
+Stage 3 disposition: `packet_flush_cadence` is implementation-ready,
+observable, shadowable, independently forceable, unified-row represented, and
+force-legacy rollback tested. The next independent axis is
+`receive_delivery_quantum`, with `receive_credit_publication` fixed at
+`legacy_current`. Performance measurement, active behavior, CI work, and push
+remain unauthorized.
