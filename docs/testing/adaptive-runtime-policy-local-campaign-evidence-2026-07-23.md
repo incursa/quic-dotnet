@@ -3985,3 +3985,129 @@ force-legacy rollback tested. The next independent axis is
 `receive_delivery_quantum`, with `receive_credit_publication` fixed at
 `legacy_current`. Performance measurement, active behavior, CI work, and push
 remain unauthorized.
+
+## Stage 3 Receive Delivery Quantum Implementation Checkpoint
+
+Recorded: 2026-07-24.
+
+Active axis: `receive_delivery_quantum`.
+
+Adjacent applied axes: `receive_credit_publication`, all four Stage 1 axes,
+`buffer_copy_coalescing`, `adaptive_backpressure`, and
+`packet_flush_cadence` remain `legacy_current`. No campaign axis varied.
+
+Recovery and worktree disposition:
+
+- the starting clean checkpoint was `b4133379` (`Record packet flush cadence
+  checkpoint evidence`);
+- the branch was `main`, ahead of `origin/main` by 96 commits before this
+  slice;
+- the inspected active `dotnet` processes were reusable MSBuild nodes; no
+  adaptive transform, campaign, test, or build command remained active;
+- the stopped 55,658-epoch single-axis transform and every raw/hash/partial
+  artifact remain untouched and classified `diagnostic_incomplete`;
+- the uncommitted slice was a coherent receive-delivery policy, application
+  read seam, unified v10 contract, raw exporter/validator, raw-host wiring,
+  focused test, schema, documentation, and trace continuation; and
+- the user-approved roadmap remains unchanged. CI was ignored, no performance
+  command ran, and no push was attempted.
+
+Capability delivered:
+
+- stable axis ID `receive_delivery_quantum`;
+- closed values `legacy_current` and `single_segment`;
+- exact boundary at a productive application read after cancellation,
+  terminal, and zero-buffer handling and at the existing contiguous receive
+  data-copy loop;
+- one application-read-call latch;
+- disabled/unforced operation retains the legacy overload and full existing
+  contiguous-copy loop;
+- `single_segment` returns a legal short read after copying from at most one
+  existing contiguous source segment;
+- observe-only, shadow, forced legacy, and forced single-segment operation,
+  with forced, recommended, selected, applied, source, reason, safety,
+  fallback, validity, latch, and version state distinct;
+- missing, stale, saturated, contradictory, invalid, out-of-domain, and
+  lifecycle fallback to `legacy_current`;
+- forced `single_segment` requires explicit
+  `receive_credit_publication=legacy_current`;
+- ordering, receive credit, buffer ownership/release, FIN, reset, close,
+  cancellation, disposal, flow-control progress, congestion, pacing,
+  recovery, packet limits, and terminal behavior remain authoritative;
+- independently tested force-legacy rollback and throwing-sink neutrality;
+- receive observation, epoch, and raw v1; unified evidence/raw v10; export
+  manifest v11; and
+- separate append-only productive-read rows with exact source-scoped
+  `connectionKey + operationSequence` membership, aggregate recomputation,
+  and distinct epoch/sample counts.
+
+The focused server-path review also found that listener callback option copy
+stopped after `buffer_copy_coalescing`. The accepted
+`adaptive_backpressure` and `packet_flush_cadence` option fields, plus the new
+receive-delivery fields, therefore would not have reached the selected server
+options. `QuicListenerHost.ApplyReturnedOptions` now copies all three closed
+force/mode/sink triples, and requirement-home tests preserve that correction.
+No policy behavior was activated.
+
+Correctness commands and accepted results:
+
+| Command or check | Result |
+| --- | --- |
+| `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --nologo` | zero warnings, zero errors in 56.04 seconds |
+| `dotnet build eng/protocol-lab/servers/IncursaRawQuicServer/IncursaRawQuicServer.csproj -c Release --no-restore --nologo` | zero warnings, zero errors in 4.84 seconds |
+| `dotnet test ... --filter "FullyQualifiedName~REQ_QUIC_CRT_0193"` | 16 passed before the listener propagation assertion was added; the final affected band includes all 17 axis cases |
+| `dotnet test ... --filter "FullyQualifiedName~REQ_QUIC_CRT_0191\|FullyQualifiedName~REQ_QUIC_CRT_0192\|FullyQualifiedName~REQ_QUIC_CRT_0193\|FullyQualifiedName~REQ_QUIC_CRT_0183\|FullyQualifiedName~ProtocolLabPackageTemplateTests"` | 92 passed, zero failed, zero skipped in 26 seconds |
+| focused `QuicStreamReadLifecycleTests`, `QuicStreamReceiveBufferTests`, RFC 9000 ordering, receive-credit, and blocked-credit homes | 61 passed, zero failed, zero skipped in 7 seconds |
+| PowerShell AST parse | four changed exporter/package scripts parsed with zero errors |
+| JSON parse | six schemas and four SpecTrace artifacts parsed cleanly |
+| direct canonical SpecTrace model validation | four of four Stage 3 artifacts returned `True` |
+| focused reciprocal trace validation | `REQ-QUIC-CRT-0193 -> ARC-QUIC-CRT-0074 -> WI-QUIC-CRT-0075 -> VER-QUIC-CRT-0076` is reciprocal |
+| unified exporter fixture | one unified epoch, eight axis records, one receive-delivery epoch member, one exactly joined receive-delivery sample |
+| `git diff --check` and cached diff check | clean |
+
+Retained diagnostic results:
+
+- the first implementation build exposed analyzer rule S3358 in a nested
+  policy conditional; the branch was rewritten without weakening the rule;
+- the first test build referenced a nonexistent stream-frame codec name; it
+  was corrected to the retained `QuicFrameCodec` API;
+- two unfinished attached-stream integration fixtures did not complete; their
+  exact test processes were inspected and stopped recoverably, and the
+  deterministic runtime/state mechanism test replaced the invalid fixture;
+- the first schema-test build omitted the two `System.Text.Json` using
+  directives; the five compile errors remain classified `diagnostic_only` and
+  the subsequent build is clean;
+- the first unified v10 fixture run correctly rejected the receive summary
+  because the generated schema omitted its serialized `axisId`; both unified
+  schemas now require the exact `receive_delivery_quantum` identity and the
+  rerun passed 7 of 7;
+- the first direct Stage 3 specification validation rejected an empty
+  `open_questions` array; the artifact now retains the explicit later-review
+  question and all four focused artifacts validate; and
+- the listener option-copy audit exposed the accepted backpressure and
+  packet-flush propagation gap described above; the gap is fixed and covered,
+  not hidden or relabeled.
+
+Evidence counts:
+
+- implemented unified axis records per epoch: 8;
+- focused receive-axis cases: 17;
+- affected adaptive/unified/package band: 92 passed;
+- focused receive ordering/lifecycle/flow-credit band: 61 passed;
+- unified schema fixture rows: 1;
+- exactly joined receive-delivery sample rows: 1;
+- performance rows: 0;
+- new campaign raw, normalized, curated, split, or analysis rows: 0;
+- dataset inclusions and exclusions: unchanged;
+- campaigns and ProtocolLab deployments: 0;
+- BenchmarkDotNet invocations: 0; and
+- ML or threshold derivations: 0.
+
+Local implementation commit: `971c3c46` (`Implement receive delivery quantum
+policy axis`). Nothing was pushed.
+
+Stage 3 disposition: both ordinary Stage 3 axes are implementation-ready,
+observable, shadowable, independently forceable, unified-row represented, and
+force-legacy rollback tested. The next independent axis is Stage 4
+`connection_shard_placement`. Performance measurement, active behavior, CI
+work, and push remain unauthorized.
