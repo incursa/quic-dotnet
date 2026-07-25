@@ -342,7 +342,7 @@ public sealed class REQ_QUIC_CRT_0183
             string unifiedSchema = Path.Combine(
                 repoRoot,
                 "schemas",
-                "adaptive-runtime-unified-epoch-evidence-v10.schema.json");
+                "adaptive-runtime-unified-epoch-evidence-v11.schema.json");
             string command =
                 $"$boundaryValid = Get-Content -LiteralPath "
                 + $"{AdaptiveRuntimePolicyScriptTestSupport.QuotePowerShellLiteral(boundaryPath)} "
@@ -411,6 +411,8 @@ public sealed class REQ_QUIC_CRT_0183
             CreatePacketFlushCadenceObservation();
         QuicReceiveDeliveryQuantumObservation receiveDeliveryQuantum =
             CreateReceiveDeliveryQuantumObservation();
+        QuicConnectionShardPlacementDecision placement =
+            CreateConnectionShardPlacementDecision();
         QuicAdaptiveRuntimeConnectionObservation connection =
             CreateConnectionObservation(epochSequence: 1);
         QuicReceiveCreditPolicySnapshot receiveCredit =
@@ -422,6 +424,7 @@ public sealed class REQ_QUIC_CRT_0183
         Assert.True(accumulator.TryPublish(in adaptiveBackpressure));
         Assert.True(accumulator.TryPublish(in packetFlushCadence));
         Assert.True(accumulator.TryPublish(in receiveDeliveryQuantum));
+        Assert.True(accumulator.TryPublish(in placement));
         Assert.True(accumulator.TryPublish(
             in connection,
             in receiveCredit,
@@ -446,7 +449,7 @@ public sealed class REQ_QUIC_CRT_0183
                 new
                 {
                     schemaVersion =
-                        "adaptive-runtime-unified-epoch-raw-v10",
+                        "adaptive-runtime-unified-epoch-raw-v11",
                     connectionKey = "connection-0001",
                     epoch = evidence,
                 },
@@ -523,7 +526,7 @@ public sealed class REQ_QUIC_CRT_0183
                 1,
                 summary.RootElement.GetProperty("rowCount").GetInt32());
             Assert.Equal(
-                8,
+                9,
                 summary.RootElement.GetProperty("axisRecordCount").GetInt32());
             Assert.Equal(
                 1,
@@ -805,7 +808,7 @@ public sealed class REQ_QUIC_CRT_0183
                             new
                             {
                                 schemaVersion =
-                                    "adaptive-runtime-unified-epoch-raw-v10",
+                                    "adaptive-runtime-unified-epoch-raw-v11",
                                 connectionKey = "connection-0001",
                                 epoch = mismatchedEvidence,
                             },
@@ -857,7 +860,7 @@ public sealed class REQ_QUIC_CRT_0183
                             new
                             {
                                 schemaVersion =
-                                    "adaptive-runtime-unified-epoch-raw-v10",
+                                    "adaptive-runtime-unified-epoch-raw-v11",
                                 connectionKey = "connection-0001",
                                 epoch = mismatchedAcceptedWorkEvidence,
                             },
@@ -909,7 +912,7 @@ public sealed class REQ_QUIC_CRT_0183
                             new
                             {
                                 schemaVersion =
-                                    "adaptive-runtime-unified-epoch-raw-v10",
+                                    "adaptive-runtime-unified-epoch-raw-v11",
                                 connectionKey = "connection-0001",
                                 epoch = mismatchedContinuationEvidence,
                             },
@@ -1163,6 +1166,17 @@ public sealed class REQ_QUIC_CRT_0183
             Completed: false,
             BatchedReceiveCredit: false);
     }
+
+    private static QuicConnectionShardPlacementDecision
+        CreateConnectionShardPlacementDecision()
+        => QuicConnectionShardPlacementPolicy.Evaluate(
+            QuicConnectionShardPlacementObservationMode.ObserveOnly,
+            forcedValue: null,
+            connectionHandleValue: 1,
+            shardCount: 4,
+            legacyShardActiveConnections: 0,
+            alternateShardActiveConnections: 0,
+            lifecycleGuard: false);
 
     private sealed class RecordingPostServiceSink :
         IQuicAdaptiveRuntimeShadowEpochSink,

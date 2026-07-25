@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-unified-epoch-evidence-v11.schema.json",
+  "title": "Adaptive Runtime Unified Epoch Evidence v11",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "connectionObservation",
+    "receiveCreditSnapshot",
+    "postServiceBoundary",
+    "stage1",
+    "actorService",
+    "bufferCopy",
+    "adaptiveBackpressure",
+    "packetFlushCadence",
+    "receiveDeliveryQuantum",
+    "connectionShardPlacement",
+    "evidenceContractVersion",
+    "connectionEpochSequence"
+  ],
+  "properties": {
+    "connectionObservation": {
+      "type": "object"
+    },
+    "receiveCreditSnapshot": {
+      "type": "object"
+    },
+    "postServiceBoundary": {
+      "type": "object"
+    },
+    "stage1": {
+      "type": "object"
+    },
+    "actorService": {
+      "type": "object"
+    },
+    "bufferCopy": {
+      "type": "object"
+    },
+    "adaptiveBackpressure": {
+      "type": "object"
+    },
+    "packetFlushCadence": {
+      "type": "object"
+    },
+    "receiveDeliveryQuantum": {
+      "type": "object"
+    },
+    "connectionShardPlacement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision",
+        "hasDecision",
+        "eventCount"
+      ],
+      "properties": {
+        "decision": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "hasForcedValue",
+            "forcedValue",
+            "hasShadowRecommendation",
+            "shadowRecommendation",
+            "selectedValue",
+            "appliedValue",
+            "selectionSource",
+            "reasonCode",
+            "safetyOverride",
+            "decisionBoundary",
+            "latchLifetime",
+            "fallbackApplied",
+            "connectionHandleValue",
+            "shardCount",
+            "legacyShardIndex",
+            "alternateShardIndex",
+            "legacyShardActiveConnections",
+            "alternateShardActiveConnections",
+            "appliedShardIndex",
+            "validity",
+            "axisId",
+            "observationContractVersion",
+            "snapshotVersion",
+            "ruleVersion",
+            "reasonVersion",
+            "provenanceVersion"
+          ],
+          "properties": {
+            "mode": {
+              "enum": ["Disabled", "ObserveOnly", "Shadow"]
+            },
+            "hasForcedValue": { "type": "boolean" },
+            "forcedValue": {
+              "enum": [
+                "LegacyCurrent",
+                "BoundedPowerOfTwoChoices"
+              ]
+            },
+            "hasShadowRecommendation": { "type": "boolean" },
+            "shadowRecommendation": {
+              "enum": [
+                "LegacyCurrent",
+                "BoundedPowerOfTwoChoices"
+              ]
+            },
+            "selectedValue": {
+              "enum": [
+                "LegacyCurrent",
+                "BoundedPowerOfTwoChoices"
+              ]
+            },
+            "appliedValue": {
+              "enum": [
+                "LegacyCurrent",
+                "BoundedPowerOfTwoChoices"
+              ]
+            },
+            "selectionSource": {
+              "enum": [
+                "LegacyCurrent",
+                "Forced",
+                "ShadowRule",
+                "SafetyOverride"
+              ]
+            },
+            "reasonCode": {
+              "enum": [
+                "LegacyCurrent",
+                "ObserveOnly",
+                "ForcedBoundedPowerOfTwoChoices",
+                "ShadowBoundedPowerOfTwoChoices",
+                "LegacyModuloApplied",
+                "LowerActiveCountApplied",
+                "LegacyTieBreakApplied",
+                "SingleShardFallback",
+                "MissingInput",
+                "StaleInput",
+                "ArithmeticSaturated",
+                "Contradictory",
+                "OutOfDomain",
+                "InvalidInput",
+                "LifecycleGuard"
+              ]
+            },
+            "safetyOverride": {
+              "enum": [
+                "None",
+                "InvalidObservation",
+                "Lifecycle",
+                "SingleShard"
+              ]
+            },
+            "decisionBoundary": {
+              "const": "ConnectionRegistration"
+            },
+            "latchLifetime": {
+              "const": "ConnectionLifetime"
+            },
+            "fallbackApplied": { "type": "boolean" },
+            "connectionHandleValue": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "shardCount": { "type": "integer" },
+            "legacyShardIndex": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "alternateShardIndex": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "legacyShardActiveConnections": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "alternateShardActiveConnections": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "appliedShardIndex": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "validity": { "type": ["string", "integer"] },
+            "axisId": {
+              "const": "connection_shard_placement"
+            },
+            "observationContractVersion": {
+              "const": "quic-connection-shard-placement-observation-v1"
+            },
+            "snapshotVersion": {
+              "const": "quic-connection-shard-placement-policy-snapshot-v1"
+            },
+            "ruleVersion": {
+              "const": "quic-connection-shard-placement-bounded-choice-rule-v1"
+            },
+            "reasonVersion": {
+              "const": "quic-connection-shard-placement-reason-v1"
+            },
+            "provenanceVersion": {
+              "const": "quic-connection-shard-placement-provenance-v1"
+            }
+          }
+        },
+        "hasDecision": { "type": "boolean" },
+        "eventCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "evidenceContractVersion": {
+      "const": "adaptive-runtime-unified-epoch-evidence-v11"
+    },
+    "connectionEpochSequence": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

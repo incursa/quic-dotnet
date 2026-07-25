@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0077",
+  "artifact_type": "architecture",
+  "status": "proposed",
+  "title": "Bounded immutable connection shard placement seam",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0194 with one O(1) connection-registration decision that preserves route and shard ownership for the connection lifetime.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE4-PLACEMENT-PLATFORM",
+    "WI-QUIC-CRT-0078",
+    "VER-QUIC-CRT-0079"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0194"
+  ],
+  "key_components": [
+    "QuicConnectionShardPlacementPolicy",
+    "QuicConnectionRuntimeHost registration and active-count accounting",
+    "QuicConnectionRuntimeRoute immutable placement decision",
+    "QuicConnectionRuntime late evidence-sink attachment",
+    "QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator",
+    "IncursaRawQuicServer internal force and shadow wiring",
+    "Unified raw exporter and semantic validator"
+  ],
+  "design_summary": "legacy_current retains handle modulo shard count. bounded_power_of_two_choices uses the legacy shard and one deterministic mixed-handle alternate, reads exactly two active-connection counters, selects the lower count, and uses legacy as the tie break. Registration increments only the applied shard and rolls back on route or runtime ownership failure. Unregister decrements exactly that route. The route stores the decision and GetShardIndex returns the registered route, so later load changes cannot migrate it. Observe-only applies legacy; shadow recommends bounded choice while applying legacy. A late per-connection sink receives the already-latched decision.",
+  "data_and_state_considerations": "The host owns one fixed int counter per configured shard and uses Interlocked or Volatile operations without a global lock, dictionary scan, stream scan, allocation per decision, topology query, runtime model, or threshold. Unified evidence carries one lifetime decision in every epoch; the semantic validator requires a nonzero handle, valid applied index, one event, and stable identity across a source-scoped connection.",
+  "edge_cases_and_constraints": [
+    "Missing, stale, saturated, contradictory, invalid, out-of-domain, lifecycle, or single-shard state falls back to legacy_current even when bounded choice is forced.",
+    "Failed duplicate handle or runtime registration rolls back active-count and route state.",
+    "Evidence sink failure is behavior-neutral and cannot change the route.",
+    "Shutdown clears route, runtime ownership, and active-count state after shard shutdown begins.",
+    "Migration, topology-aware affinity, least-recent-pressure selection, and unbounded least-connections scans are not implemented.",
+    "All adjacent applied axes remain legacy_current during a placement counterfactual.",
+    "No active_internal or production selection is present."
+  ],
+  "alternatives_considered": [
+    "A full least-connections scan was rejected because placement must remain O(1) or bounded-choice.",
+    "Round-robin was not used as the distinct conservative value because sequential handle modulo already supplies the retained even-distribution behavior.",
+    "Queue age, service EWMA, timer lateness, and CPU topology were deferred rather than starting another long observation project.",
+    "Mid-connection migration was rejected as a separate ownership architecture."
+  ],
+  "risks": [
+    "Concurrent counter samples are momentary and may race; every selected shard remains valid and accounting converges through exact registration rollback and unregister.",
+    "Handle-derived candidates may have topology-specific behavior; no performance or transfer claim is made.",
+    "A load-aware value may be neutral or harmful; measurement remains frozen."
+  ],
+  "open_questions": [
+    "Should later evidence justify additional closed placement values after the implementation freeze and measurement release?"
+  ]
+}

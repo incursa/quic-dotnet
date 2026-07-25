@@ -100,7 +100,12 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         int maximumVersionNegotiationResponsesPerRemoteAddress = int.MaxValue,
         int runtimeShardCount = 1,
         Func<ReadOnlyMemory<byte>, SocketAddress, int>? datagramSender = null,
-        Func<IQuicApplicationSendTurnPlanner>? applicationSendTurnPlannerFactory = null)
+        Func<IQuicApplicationSendTurnPlanner>? applicationSendTurnPlannerFactory = null,
+        QuicConnectionShardPlacementObservationMode
+            connectionShardPlacementObservationMode =
+                QuicConnectionShardPlacementObservationMode.Disabled,
+        QuicConnectionShardPlacementPolicyValue?
+            forcedConnectionShardPlacementPolicyValue = null)
     {
         ArgumentNullException.ThrowIfNull(listenEndPoint);
         ArgumentNullException.ThrowIfNull(applicationProtocols);
@@ -131,7 +136,13 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         this.tlsKeyLogSecretObserver = tlsKeyLogSecretObserver;
         this.addressValidationTokenProtector = addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
         this.maximumVersionNegotiationResponsesPerRemoteAddress = maximumVersionNegotiationResponsesPerRemoteAddress;
-        endpoint = new QuicConnectionRuntimeEndpoint(runtimeShardCount, suppressHostedTimerEffectObjects: true);
+        endpoint = new QuicConnectionRuntimeEndpoint(
+            runtimeShardCount,
+            suppressHostedTimerEffectObjects: true,
+            placementObservationMode:
+                connectionShardPlacementObservationMode,
+            forcedPlacementValue:
+                forcedConnectionShardPlacementPolicyValue);
         acceptQueue = Channel.CreateBounded<object>(new BoundedChannelOptions(listenBacklog)
         {
             SingleReader = false,
@@ -2462,6 +2473,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             returnedOptions.ForcedReceiveDeliveryQuantumPolicyValue;
         selectedOptions.ReceiveDeliveryQuantumEvidenceSink =
             returnedOptions.ReceiveDeliveryQuantumEvidenceSink;
+        selectedOptions.ConnectionShardPlacementEvidenceSink =
+            returnedOptions.ConnectionShardPlacementEvidenceSink;
 
         QuicReceiveWindowSizes returnedWindowSizes = returnedOptions.InitialReceiveWindowSizes;
         selectedOptions.InitialReceiveWindowSizes = new QuicReceiveWindowSizes

@@ -144,7 +144,7 @@ the post-service boundary without relabeling retained version 1 rows. The
 local runner accepts both versions so existing append-only evidence remains
 readable.
 
-[`../../schemas/adaptive-runtime-unified-epoch-evidence-v10.schema.json`](../../schemas/adaptive-runtime-unified-epoch-evidence-v10.schema.json)
+[`../../schemas/adaptive-runtime-unified-epoch-evidence-v11.schema.json`](../../schemas/adaptive-runtime-unified-epoch-evidence-v11.schema.json)
 defines the internal joined record. The accumulator rejects a mismatched,
 duplicate, out-of-order, or nonpositive connection-observation,
 receive-credit, and boundary join before resetting Stage 1, actor, buffer, or
@@ -152,29 +152,38 @@ backpressure, packet-flush, or receive-delivery state. Successful capture seals 
 epoch key. Permanent run, host, binary, workload, checksum, classification,
 and raw-file provenance remains a harness/export responsibility and is not
 invented by this connection-local record.
-The retained v1 through v9 joined schemas remain immutable. Version 10 retains
+The retained v1 through v10 joined schemas remain immutable. Version 10 retains
 actor v5, buffer v4, `adaptive_backpressure`, and `packet_flush_cadence`,
 adds the configured `receive_delivery_quantum` snapshot plus bounded
 productive-read outcomes, and continues to carry the
 configured `buffer_copy_coalescing` snapshot plus bounded legal/applied
 outcomes even when no applicable operation occurs.
+Version 11 adds one `connection_shard_placement` lifetime record. It contains
+the exact handle, shard count, legacy and alternate candidate indices and
+active counts, applied shard, closed identities, reason, safety, validity,
+boundary, latch, and versions. `hasDecision=false` is an explicit missing
+fallback and is invalid for an exported runtime connection epoch.
 
 The raw QUIC host configures that same accumulator as the receive-credit,
 four Stage 1, actor-service, buffer-copy, adaptive-backpressure,
-packet-flush, and receive-delivery evidence
+packet-flush, receive-delivery, and connection-placement evidence
 sink whenever an
 adaptive execution is requested. It emits
-`adaptive-runtime-unified-epoch-raw-v10` under one connection key while
+`adaptive-runtime-unified-epoch-raw-v11` under one connection key while
 retaining the prior receive-credit and Stage 1 compatibility records. The
 append-only
 [`../../eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1`](../../eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1)
 exporter validates
-[`../../schemas/adaptive-runtime-unified-epoch-raw-v10.schema.json`](../../schemas/adaptive-runtime-unified-epoch-raw-v10.schema.json),
-exact monotonic join keys, exactly four Stage 1 records plus one buffer-axis
-one backpressure-axis, one packet-flush-axis, and one receive-delivery-axis
+[`../../schemas/adaptive-runtime-unified-epoch-raw-v11.schema.json`](../../schemas/adaptive-runtime-unified-epoch-raw-v11.schema.json)
+as a versioned placement delta composed with a complete v10 base projection,
+exact monotonic join keys, exactly four Stage 1 records plus one buffer-axis,
+one backpressure-axis, one packet-flush-axis, one receive-delivery-axis, and
+one connection-placement-axis
 record per row, and at most
 one non-legacy applied axis across receive credit, Stage 1, buffer coalescing,
-backpressure, packet flush, and receive delivery.
+backpressure, packet flush, receive delivery, and connection placement. The
+placement record must have one nonzero handle, one valid applied shard index,
+and the same lifetime identity in every source-scoped connection epoch.
 Connection keys are scoped to their hashed source
 log during multi-process export because each process restarts its local
 counter. The same host also emits every actor dispatch as
@@ -194,7 +203,7 @@ Those records are sample-scoped and join by exact
 `source + connectionKey + operationSequence` membership in the inclusive
 backpressure epoch range. The validator recomputes operation, delayed,
 safety-override, fallback, and maximum queue/capacity aggregates from the raw
-members. Manifest v11 retains separate actor, buffer, and backpressure raw
+members. Manifest v12 retains separate actor, buffer, and backpressure raw
 contract identities, distinct backpressure epoch and sample counts, source
 hashes, validation output, and any
 bounded-channel export failure records. An actor or unified export failure
@@ -207,7 +216,7 @@ Those records are sample-scoped and join by exact
 `source + connectionKey + operationSequence` membership in the inclusive
 packet-flush epoch range. The validator recomputes eligible, delayed, prompt,
 safety-override, fallback, maximum-payload, and maximum-queue aggregates from
-the raw members. Manifest v11 retains the packet stream contract, artifact,
+the raw members. Manifest v12 retains the packet stream contract, artifact,
 epoch count, sample count, and exact validation counts separately from the
 other streams.
 
@@ -217,7 +226,7 @@ Those records remain sample-scoped and join by exact
 `source + connectionKey + operationSequence` membership in the inclusive
 receive-delivery epoch range. The validator recomputes operation,
 single-segment, completion, batched-credit, safety, fallback, delivered-byte,
-source-segment, and bounded-maximum aggregates. Manifest v11 retains the
+source-segment, and bounded-maximum aggregates. Manifest v12 retains the
 receive stream contract, artifact, epoch count, sample count, and exact
 validation counts separately from the other streams. A configured epoch with
 no productive read retains the policy snapshot and a zeroed range.

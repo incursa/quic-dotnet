@@ -1,0 +1,69 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0079",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Bounded immutable connection shard placement verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE4-PLACEMENT-PLATFORM",
+    "ARC-QUIC-CRT-0077",
+    "WI-QUIC-CRT-0078"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0194"
+  ],
+  "scope": "Verify independently forceable legacy_current and bounded_power_of_two_choices placement, one connection-registration boundary, immutable lifetime routing, bounded active-count observations, exact rollback accounting, unified provenance, authoritative safety fallback, shutdown and disposal behavior, and force-legacy rollback without making a performance or active-behavior claim.",
+  "verification_method": "Canonical SpecTrace validation, deterministic requirement-home tests, composed v10-base plus v11-placement schema validation, semantic latch validation, and focused host, listener, endpoint, registration, disposal, shutdown, package, and unified-evidence correctness tests.",
+  "preconditions": [
+    "Stage 0 through Stage 3 remain preserved.",
+    "Every adjacent applied policy remains legacy_current.",
+    "The stopped 55,658-epoch single-axis transform remains diagnostic_incomplete and untouched.",
+    "Performance measurement, campaigns, transforms, ML, CI work, push, active_internal, and production activation remain unauthorized."
+  ],
+  "procedure": [
+    "Validate the Stage 4 specification, architecture, work item, and verification artifacts against the canonical model and reciprocal links.",
+    "Build the affected runtime, test project, and raw host in Release before testing.",
+    "Verify closed legacy_current and bounded_power_of_two_choices values plus invalid closed-set rejection.",
+    "Verify disabled, observe-only, shadow, forced-legacy, and forced-bounded-choice identities, reasons, safety, boundary, latch, fallback, and versions.",
+    "Verify legacy_current uses exact handle modulo and bounded choice compares exactly two distinct candidates with the legacy tie break.",
+    "Verify the route remains immutable after registration while active counts change.",
+    "Verify duplicate registration, runtime ownership failure, unregister, disposal, and shutdown preserve route and counter correctness.",
+    "Verify missing, stale, saturated, contradictory, invalid, out-of-domain, lifecycle, and single-shard state fall back under forcing.",
+    "Verify a late sink receives the immutable decision and a throwing sink cannot affect registration or routing.",
+    "Verify unified evidence v11, unified raw v11, and manifest v12 schemas compose with the complete v10 base projection.",
+    "Verify every exported epoch contains one placement record with a nonzero handle, valid shard index, and stable connection-lifetime identity.",
+    "Verify simultaneous behavior-distinct campaign forcing remains rejected and all adjacent axes apply legacy_current.",
+    "Run focused host/listener sharding, endpoint registration, package, cancellation, disposal, shutdown, and unified tests.",
+    "Confirm no performance, campaign, transform, ML, CI, push, active_internal, or production action occurred."
+  ],
+  "expected_result": "connection_shard_placement is observable, shadowable, independently forceable, unified-row represented, guarded, immutable for the connection lifetime, and force-legacy rollback tested; active-count accounting remains correct across failure and unregister; and no migration, performance, or active decision is introduced.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0194.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0183.cs",
+    "tests/Incursa.Quic.Tests/QuicConnectionRuntimeHostShardingPolicyTests.cs",
+    "tests/Incursa.Quic.Tests/QuicListenerRuntimeShardingTests.cs",
+    "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs",
+    "src/Incursa.Quic/QuicConnectionShardPlacementPolicy.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeHostEventModels.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionOptions.cs",
+    "src/Incursa.Quic/QuicListenerOptions.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicAdaptiveRuntimeUnifiedEpochEvidence.cs",
+    "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
+    "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeUnifiedRawEvidence.ps1",
+    "schemas/adaptive-runtime-unified-epoch-evidence-v11.schema.json",
+    "schemas/adaptive-runtime-unified-epoch-raw-v11.schema.json",
+    "schemas/adaptive-runtime-unified-raw-export-manifest-v12.schema.json",
+    "docs/design/adaptive-runtime-policy-axis-implementation-matrix.md",
+    "docs/design/adaptive-runtime-policy-controller-state-machine.md",
+    "docs/design/adaptive-runtime-policy-observation-schema.md",
+    "docs/design/adaptive-runtime-policy-seam-inventory.md"
+  ],
+  "status_summary": "Implementation and focused verification are in progress. Measurement and active behavior remain frozen."
+}

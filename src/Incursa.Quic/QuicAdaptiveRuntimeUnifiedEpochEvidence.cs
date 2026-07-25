@@ -5,6 +5,11 @@ using System.Diagnostics;
 
 namespace Incursa.Quic;
 
+internal readonly record struct QuicConnectionShardPlacementEpochSummary(
+    QuicConnectionShardPlacementDecision Decision,
+    bool HasDecision,
+    ulong EventCount);
+
 internal readonly record struct QuicAdaptiveRuntimeUnifiedEpochEvidence(
     QuicAdaptiveRuntimeConnectionObservation ConnectionObservation,
     QuicReceiveCreditPolicySnapshot ReceiveCreditSnapshot,
@@ -14,10 +19,11 @@ internal readonly record struct QuicAdaptiveRuntimeUnifiedEpochEvidence(
     QuicBufferCopyEpochSummary BufferCopy,
     QuicAdaptiveBackpressureEpochSummary AdaptiveBackpressure,
     QuicPacketFlushCadenceEpochSummary PacketFlushCadence,
-    QuicReceiveDeliveryQuantumEpochSummary ReceiveDeliveryQuantum)
+    QuicReceiveDeliveryQuantumEpochSummary ReceiveDeliveryQuantum,
+    QuicConnectionShardPlacementEpochSummary ConnectionShardPlacement)
 {
     internal const string CurrentEvidenceContractVersion =
-        "adaptive-runtime-unified-epoch-evidence-v10";
+        "adaptive-runtime-unified-epoch-evidence-v11";
 
     public string EvidenceContractVersion =>
         CurrentEvidenceContractVersion;
@@ -45,7 +51,8 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
     IQuicBufferCopyEvidenceSink,
     IQuicAdaptiveBackpressureEvidenceSink,
     IQuicPacketFlushCadenceEvidenceSink,
-    IQuicReceiveDeliveryQuantumEvidenceSink
+    IQuicReceiveDeliveryQuantumEvidenceSink,
+    IQuicConnectionShardPlacementEvidenceSink
 {
     private const ulong MicrosPerSecond = 1_000_000UL;
     private readonly object gate = new();
@@ -62,6 +69,9 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
     private bool hasEpochOrigin;
     private long epochOriginTicks;
     private ulong lastEpochSequence;
+    private QuicConnectionShardPlacementDecision
+        connectionShardPlacementDecision;
+    private bool hasConnectionShardPlacementDecision;
 
     internal QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator(
         in QuicAdaptiveRuntimeStage1PolicySnapshot configuredStage1Policy,
@@ -243,6 +253,30 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
     }
 
     public bool TryPublish(
+        in QuicConnectionShardPlacementDecision decision)
+    {
+        lock (gate)
+        {
+            if (!string.Equals(
+                    decision.AxisId,
+                    QuicConnectionShardPlacementPolicy.AxisId,
+                    StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            if (hasConnectionShardPlacementDecision)
+            {
+                return connectionShardPlacementDecision.Equals(decision);
+            }
+
+            connectionShardPlacementDecision = decision;
+            hasConnectionShardPlacementDecision = true;
+            return true;
+        }
+    }
+
+    public bool TryPublish(
         in QuicAdaptiveRuntimeConnectionObservation observation,
         in QuicReceiveCreditPolicySnapshot snapshot,
         in QuicAdaptiveRuntimePostServiceBoundary boundary)
@@ -292,6 +326,8 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
                 packetFlushCadence.CaptureAndReset();
             QuicReceiveDeliveryQuantumEpochSummary receiveDeliveryEvidence =
                 receiveDeliveryQuantum.CaptureAndReset();
+            QuicConnectionShardPlacementEpochSummary placementEvidence =
+                CaptureConnectionShardPlacement();
             QuicAdaptiveRuntimeUnifiedEpochEvidence unified = new(
                 observation,
                 snapshot,
@@ -301,11 +337,36 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
                 bufferCopyEvidence,
                 adaptiveBackpressureEvidence,
                 packetFlushCadenceEvidence,
-                receiveDeliveryEvidence);
+                receiveDeliveryEvidence,
+                placementEvidence);
 
             lastEpochSequence = epochSequence;
             return sink.TryPublish(in unified);
         }
+    }
+
+    private QuicConnectionShardPlacementEpochSummary
+        CaptureConnectionShardPlacement()
+    {
+        if (hasConnectionShardPlacementDecision)
+        {
+            return new(
+                connectionShardPlacementDecision,
+                HasDecision: true,
+                EventCount: 1);
+        }
+
+        QuicConnectionShardPlacementDecision missing =
+            QuicConnectionShardPlacementPolicy.Evaluate(
+                QuicConnectionShardPlacementObservationMode.Disabled,
+                forcedValue: null,
+                connectionHandleValue: 0,
+                shardCount: 0,
+                legacyShardActiveConnections: 0,
+                alternateShardActiveConnections: 0,
+                lifecycleGuard: false,
+                QuicConnectionShardPlacementValidity.MissingRequiredInput);
+        return new(missing, HasDecision: false, EventCount: 0);
     }
 
     private static ulong ConvertTicksToMicros(long ticks)

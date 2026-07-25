@@ -169,6 +169,12 @@ internal static class QuicClientConnectionOptionsValidator
             MaxInboundBidirectionalStreams = source.MaxInboundBidirectionalStreams,
             MaxInboundUnidirectionalStreams = source.MaxInboundUnidirectionalStreams,
             StreamCapacityCallback = source.StreamCapacityCallback,
+            ConnectionShardPlacementObservationMode =
+                source.ConnectionShardPlacementObservationMode,
+            ForcedConnectionShardPlacementPolicyValue =
+                source.ForcedConnectionShardPlacementPolicyValue,
+            ConnectionShardPlacementEvidenceSink =
+                source.ConnectionShardPlacementEvidenceSink,
             ResumptionTicket = source.ResumptionTicket,
             InitialReceiveWindowSizes = new QuicReceiveWindowSizes
             {

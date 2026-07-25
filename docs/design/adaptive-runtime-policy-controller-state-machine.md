@@ -6,7 +6,8 @@ title: "Adaptive Runtime Controller State Machine"
 
 Status: receive-credit, all four Stage 1 send-path axes,
 `buffer_copy_coalescing`, `adaptive_backpressure`, and
-`packet_flush_cadence`, and `receive_delivery_quantum`
+`packet_flush_cadence`, `receive_delivery_quantum`, and
+`connection_shard_placement`
 force/observe/shadow runtimes implemented;
 measurement and broader campaign verification frozen; actor and fairness
 axes remain blocked on reviewed safe mechanisms; active policy blocked
@@ -134,6 +135,22 @@ cancellation, disposal, flow-control progress, congestion, pacing, recovery,
 packet limits, and terminal behavior remain authoritative under forcing.
 Observe-only applies legacy, shadow recommends `single_segment` while
 applying legacy, and invalid or lifecycle input falls back to legacy.
+
+The implemented `connection_shard_placement` selector resolves
+`legacy_current` or `bounded_power_of_two_choices` exactly once during
+connection registration. `legacy_current` retains sequential-handle modulo
+shard-count assignment. The bounded choice compares that legacy shard with
+one deterministic distinct alternate, reads only those two active-connection
+counters, chooses the lower count, and uses the legacy shard as the tie break.
+The route stores the applied shard and decision for the connection lifetime;
+later load changes cannot migrate it. Failed route or runtime ownership
+registration rolls back the selected counter, and unregister decrements the
+stored route. Valid shard ownership, lifecycle, endpoint and packet routing,
+timers, shutdown, congestion, pacing, recovery, flow control, packet, queue,
+and buffer limits remain authoritative. Observe-only applies legacy; shadow
+records the bounded choice while applying legacy; invalid, missing, stale,
+saturated, contradictory, out-of-domain, lifecycle, and single-shard state
+falls back to legacy even under forcing.
 
 ## States
 

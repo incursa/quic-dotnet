@@ -17,6 +17,11 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
     private readonly ConcurrentDictionary<QuicConnectionHandle, QuicConnectionRuntimeRoute> routes = new();
     private readonly ConcurrentDictionary<QuicConnectionRuntime, QuicConnectionHandle> runtimeOwnership =
         new(ReferenceEqualityComparer.Instance);
+    private readonly int[] activeConnectionsPerShard;
+    private readonly QuicConnectionShardPlacementObservationMode
+        placementObservationMode;
+    private readonly QuicConnectionShardPlacementPolicyValue?
+        forcedPlacementValue;
     private readonly QuicConnectionRuntimeShard[] shards;
 
     private long nextHandleValue;
@@ -30,15 +35,29 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
     public QuicConnectionRuntimeHost(
         int shardCount,
         IMonotonicClock? clock = null,
-        bool suppressHostedTimerEffectObjects = false)
+        bool suppressHostedTimerEffectObjects = false,
+        QuicConnectionShardPlacementObservationMode
+            placementObservationMode =
+                QuicConnectionShardPlacementObservationMode.Disabled,
+        QuicConnectionShardPlacementPolicyValue? forcedPlacementValue = null)
     {
         if (shardCount <= 0)
         {
             throw new ArgumentOutOfRangeException(nameof(shardCount));
         }
 
+        QuicConnectionShardPlacementPolicy.ValidateObservationMode(
+            placementObservationMode);
+        if (forcedPlacementValue is { } forced)
+        {
+            QuicConnectionShardPlacementPolicy.ValidateValue(forced);
+        }
+
+        this.placementObservationMode = placementObservationMode;
+        this.forcedPlacementValue = forcedPlacementValue;
         IMonotonicClock sharedClock = clock ?? new MonotonicClock();
         shards = new QuicConnectionRuntimeShard[shardCount];
+        activeConnectionsPerShard = new int[shardCount];
         for (int index = 0; index < shards.Length; index++)
         {
             shards[index] = new QuicConnectionRuntimeShard(
@@ -69,7 +88,39 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
     /// </summary>
     public int GetShardIndex(QuicConnectionHandle handle)
     {
+        if (routes.TryGetValue(handle, out QuicConnectionRuntimeRoute route))
+        {
+            return route.ShardIndex;
+        }
+
         return SelectShardIndex(handle, ShardCount);
+    }
+
+    internal int GetActiveConnectionCount(int shardIndex)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(shardIndex);
+        if (shardIndex >= ShardCount)
+        {
+            throw new ArgumentOutOfRangeException(nameof(shardIndex));
+        }
+
+        return Math.Max(
+            0,
+            Volatile.Read(ref activeConnectionsPerShard[shardIndex]));
+    }
+
+    internal bool TryGetPlacementDecision(
+        QuicConnectionHandle handle,
+        out QuicConnectionShardPlacementDecision decision)
+    {
+        if (routes.TryGetValue(handle, out QuicConnectionRuntimeRoute route))
+        {
+            decision = route.PlacementDecision;
+            return true;
+        }
+
+        decision = default;
+        return false;
     }
 
     /// <summary>
@@ -94,9 +145,60 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
             return false;
         }
 
-        int shardIndex = GetShardIndex(handle);
-        if (!routes.TryAdd(handle, new QuicConnectionRuntimeRoute(shardIndex, runtime)))
+        QuicConnectionShardPlacementDecision candidateIndexes =
+            QuicConnectionShardPlacementPolicy.Evaluate(
+                placementObservationMode,
+                forcedPlacementValue,
+                handle.Value,
+                ShardCount,
+                legacyShardActiveConnections: 0,
+                alternateShardActiveConnections: 0,
+                lifecycleGuard: false);
+        int legacyActive = Volatile.Read(
+            ref activeConnectionsPerShard[
+                candidateIndexes.LegacyShardIndex]);
+        int alternateActive = Volatile.Read(
+            ref activeConnectionsPerShard[
+                candidateIndexes.AlternateShardIndex]);
+        QuicConnectionShardPlacementDecision placement =
+            QuicConnectionShardPlacementPolicy.Evaluate(
+                placementObservationMode,
+                forcedPlacementValue,
+                handle.Value,
+                ShardCount,
+                legacyActive,
+                alternateActive,
+                lifecycleGuard: false);
+        int shardIndex = placement.AppliedShardIndex;
+        if (!runtime.TrySetConnectionShardPlacementDecision(in placement))
         {
+            runtimeOwnership.TryRemove(runtime, out _);
+            return false;
+        }
+
+        Interlocked.Increment(ref activeConnectionsPerShard[shardIndex]);
+        if (!routes.TryAdd(
+                handle,
+                new QuicConnectionRuntimeRoute(
+                    shardIndex,
+                    runtime,
+                    placement)))
+        {
+            Interlocked.Decrement(
+                ref activeConnectionsPerShard[shardIndex]);
+            runtime.TryClearUnconfirmedConnectionShardPlacementDecision(
+                in placement);
+            runtimeOwnership.TryRemove(runtime, out _);
+            return false;
+        }
+
+        if (!runtime.TryConfirmConnectionShardPlacementDecision(in placement))
+        {
+            routes.TryRemove(handle, out _);
+            Interlocked.Decrement(
+                ref activeConnectionsPerShard[shardIndex]);
+            runtime.TryClearUnconfirmedConnectionShardPlacementDecision(
+                in placement);
             runtimeOwnership.TryRemove(runtime, out _);
             return false;
         }
@@ -119,6 +221,8 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
             return false;
         }
 
+        Interlocked.Decrement(
+            ref activeConnectionsPerShard[route.ShardIndex]);
         runtimeOwnership.TryRemove(route.Runtime, out _);
         return true;
     }
@@ -334,6 +438,7 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
 
         routes.Clear();
         runtimeOwnership.Clear();
+        Array.Clear(activeConnectionsPerShard);
 
         Task? processing = processingTask;
         if (processing is not null)

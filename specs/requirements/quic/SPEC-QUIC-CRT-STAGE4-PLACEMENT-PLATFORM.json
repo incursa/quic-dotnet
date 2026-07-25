@@ -1,0 +1,68 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-CRT-STAGE4-PLACEMENT-PLATFORM",
+  "artifact_type": "specification",
+  "title": "Stage 4 placement and platform policy seams",
+  "domain": "quic",
+  "capability": "adaptive-runtime-stage4-placement-platform",
+  "status": "proposed",
+  "owner": "quic-maintainers",
+  "tags": [
+    "adaptive-runtime",
+    "placement",
+    "platform",
+    "forceable-internal"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE3-PACKET-RECEIVE",
+    "ARC-QUIC-CRT-0077",
+    "WI-QUIC-CRT-0078",
+    "VER-QUIC-CRT-0079"
+  ],
+  "purpose": "Define connection-start placement and platform-capability seams while keeping route ownership, endpoint I/O, buffer ownership, lifecycle, and deterministic fallback authoritative.",
+  "scope": "This checkpoint specifies connection_shard_placement with closed legacy_current and bounded_power_of_two_choices values, disabled, observe-only, shadow, forcing, immutable connection-lifetime latching, bounded active-count observations, unified evidence, rollback, and deterministic correctness proof. application_datagram_batch_transport remains the next independent Stage 4 axis. Performance measurement and active behavior remain unauthorized.",
+  "context": "The retained host assigns a sequential connection handle by modulo shard count. The conservative implementation compares that legacy shard with one deterministic alternate and may choose only the lower active-connection count. It does not migrate established connections or use topology, workload, host, peer, URL, payload, or application identity.",
+  "open_questions": [
+    "Which application_datagram_batch_transport capability set can be forced honestly across the supported operating systems without claiming unsupported batching?"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-QUIC-CRT-0194",
+      "title": "Force bounded connection-start shard placement without weakening route ownership",
+      "statement": "The runtime MUST expose the connection_shard_placement axis with the closed legacy_current and bounded_power_of_two_choices values; preserve sequential-handle modulo shard-count assignment under legacy_current; make bounded_power_of_two_choices compare the legacy shard with exactly one deterministic distinct alternate using bounded active-connection counts and select the lower count with the legacy shard as the deterministic tie break; decide exactly once during successful connection registration and latch the applied shard for the connection lifetime; support disabled, observe-only, shadow, forced-legacy, and forced-bounded-choice operation with forced, recommended, selected, and applied identities distinct; make valid shard bounds, unique runtime and handle ownership, route insertion, failed-registration rollback, unregister accounting, lifecycle, shutdown, endpoint routing, timer ownership, packet routing, cancellation, disposal, recovery, congestion, pacing, flow control, packet size, queue, and buffer limits authoritative under every forced value; handle missing, stale, saturated, contradictory, invalid, out-of-domain, lifecycle, and single-shard input with bounded reasons and legacy fallback; publish the immutable connection-start decision into every unified epoch with exact connection identity and reject a changed latch; reject simultaneous behavior-distinct campaign forcing of adjacent axes; independently prove force-legacy rollback; exclude scenario, workload, payload constants, requested concurrency, peer, URL, host, and application identity from controller inputs; and keep migration, active_internal, and production selection unavailable.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0077"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0078"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0079"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-axis-roadmap.md",
+          "docs/design/adaptive-runtime-policy-axis-implementation-matrix.md",
+          "docs/design/adaptive-runtime-policy-controller-state-machine.md",
+          "docs/design/adaptive-runtime-policy-observation-schema.md",
+          "docs/design/adaptive-runtime-policy-seam-inventory.md",
+          "src/Incursa.Quic/QuicConnectionShardPlacementPolicy.cs",
+          "src/Incursa.Quic/QuicConnectionRuntimeHost.cs",
+          "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+          "src/Incursa.Quic/QuicAdaptiveRuntimeUnifiedEpochEvidence.cs",
+          "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
+          "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeUnifiedRawEvidence.ps1",
+          "schemas/adaptive-runtime-unified-epoch-evidence-v11.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-raw-v11.schema.json",
+          "schemas/adaptive-runtime-unified-raw-export-manifest-v12.schema.json",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0194.cs"
+        ]
+      },
+      "notes": [
+        "bounded_power_of_two_choices is a reviewed mechanism value, not a performance-derived claim.",
+        "Connection migration, topology-aware placement, measurement, active_internal, and production activation remain outside this requirement."
+      ]
+    }
+  ]
+}

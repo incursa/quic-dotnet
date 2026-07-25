@@ -56,7 +56,11 @@ public sealed class QuicListener : IAsyncDisposable
             diagnosticsSinkFactory: diagnosticsSinkFactory,
             tlsKeyLogSecretObserver: tlsKeyLogSecretObserver,
             runtimeShardCount: SelectDefaultRuntimeShardCount(Environment.ProcessorCount),
-            applicationSendTurnPlannerFactory: applicationSendTurnPlannerFactory);
+            applicationSendTurnPlannerFactory: applicationSendTurnPlannerFactory,
+            connectionShardPlacementObservationMode:
+                options.ConnectionShardPlacementObservationMode,
+            forcedConnectionShardPlacementPolicyValue:
+                options.ForcedConnectionShardPlacementPolicyValue);
 
         try
         {

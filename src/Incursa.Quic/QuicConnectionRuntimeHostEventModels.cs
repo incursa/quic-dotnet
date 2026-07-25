@@ -12,7 +12,8 @@ namespace Incursa.Quic;
 // second route lookup.
 internal readonly record struct QuicConnectionRuntimeRoute(
     int ShardIndex,
-    QuicConnectionRuntime Runtime);
+    QuicConnectionRuntime Runtime,
+    QuicConnectionShardPlacementDecision PlacementDecision);
 
 internal enum QuicConnectionRuntimeShardWorkItemKind
 {

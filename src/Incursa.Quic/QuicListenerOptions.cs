@@ -43,6 +43,14 @@ public sealed class QuicListenerOptions
     /// </summary>
     public Func<QuicConnection, SslClientHelloInfo, CancellationToken, ValueTask<QuicServerConnectionOptions>> ConnectionOptionsCallback { get; set; } = null!;
 
+    // CONTEXT: Internal-only Stage 4 connection-start policy controls. The
+    // selected shard remains immutable for the connection lifetime.
+    internal QuicConnectionShardPlacementObservationMode
+        ConnectionShardPlacementObservationMode { get; set; }
+
+    internal QuicConnectionShardPlacementPolicyValue?
+        ForcedConnectionShardPlacementPolicyValue { get; set; }
+
     internal void Validate(string argumentName)
     {
         if (ListenEndPoint is null)
@@ -73,6 +81,13 @@ public sealed class QuicListenerOptions
         if (ListenBacklog == 0)
         {
             ListenBacklog = DefaultListenBacklog;
+        }
+
+        QuicConnectionShardPlacementPolicy.ValidateObservationMode(
+            ConnectionShardPlacementObservationMode);
+        if (ForcedConnectionShardPlacementPolicyValue is { } forced)
+        {
+            QuicConnectionShardPlacementPolicy.ValidateValue(forced);
         }
     }
 }

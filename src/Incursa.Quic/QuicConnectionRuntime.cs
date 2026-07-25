@@ -175,6 +175,13 @@ internal sealed partial class QuicConnectionRuntime :
     private long receiveDeliveryQuantumObservationSequence;
     private IQuicReceiveDeliveryQuantumEvidenceSink?
         receiveDeliveryQuantumEvidenceSink;
+    private readonly object connectionShardPlacementEvidenceGate = new();
+    private QuicConnectionShardPlacementDecision
+        connectionShardPlacementDecision;
+    private bool hasConnectionShardPlacementDecision;
+    private bool connectionShardPlacementDecisionPublished;
+    private IQuicConnectionShardPlacementEvidenceSink?
+        connectionShardPlacementEvidenceSink;
     private IQuicQueuedSendBurstEvidenceSink? queuedSendBurstEvidenceSink;
     private IQuicOversizedWriteAdmissionEvidenceSink? oversizedWriteAdmissionEvidenceSink;
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
@@ -2154,6 +2161,11 @@ internal sealed partial class QuicConnectionRuntime :
                 options.AdaptiveRuntimeShadowEpochSink);
 
             EnableAdaptiveRuntimeShadow();
+            if (options.ConnectionShardPlacementEvidenceSink is { } shadowPlacementSink)
+            {
+                ConfigureConnectionShardPlacementEvidenceSink(shadowPlacementSink);
+            }
+
             return;
         }
 
@@ -2257,6 +2269,11 @@ internal sealed partial class QuicConnectionRuntime :
                 options.AdaptiveRuntimeShadowEpochInterval,
                 options.AdaptiveRuntimeShadowEpochSink);
             EnableAdaptiveRuntimeEpochExport();
+        }
+
+        if (options.ConnectionShardPlacementEvidenceSink is { } placementSink)
+        {
+            ConfigureConnectionShardPlacementEvidenceSink(placementSink);
         }
     }
 
@@ -2511,6 +2528,94 @@ internal sealed partial class QuicConnectionRuntime :
         }
 
         receiveDeliveryQuantumEvidenceSink = sink;
+    }
+
+    internal bool TrySetConnectionShardPlacementDecision(
+        in QuicConnectionShardPlacementDecision decision)
+    {
+        lock (connectionShardPlacementEvidenceGate)
+        {
+            if (hasConnectionShardPlacementDecision)
+            {
+                return false;
+            }
+
+            connectionShardPlacementDecision = decision;
+            hasConnectionShardPlacementDecision = true;
+            return true;
+        }
+    }
+
+    internal bool TryConfirmConnectionShardPlacementDecision(
+        in QuicConnectionShardPlacementDecision decision)
+    {
+        lock (connectionShardPlacementEvidenceGate)
+        {
+            if (!hasConnectionShardPlacementDecision
+                || !connectionShardPlacementDecision.Equals(decision))
+            {
+                return false;
+            }
+
+            TryPublishConnectionShardPlacementDecision();
+            return true;
+        }
+    }
+
+    internal bool TryClearUnconfirmedConnectionShardPlacementDecision(
+        in QuicConnectionShardPlacementDecision decision)
+    {
+        lock (connectionShardPlacementEvidenceGate)
+        {
+            if (!hasConnectionShardPlacementDecision
+                || connectionShardPlacementDecisionPublished
+                || !connectionShardPlacementDecision.Equals(decision))
+            {
+                return false;
+            }
+
+            connectionShardPlacementDecision = default;
+            hasConnectionShardPlacementDecision = false;
+            return true;
+        }
+    }
+
+    private void ConfigureConnectionShardPlacementEvidenceSink(
+        IQuicConnectionShardPlacementEvidenceSink sink)
+    {
+        ArgumentNullException.ThrowIfNull(sink);
+        lock (connectionShardPlacementEvidenceGate)
+        {
+            if (connectionShardPlacementEvidenceSink is not null)
+            {
+                throw new InvalidOperationException(
+                    "The connection shard placement evidence sink has already been configured.");
+            }
+
+            connectionShardPlacementEvidenceSink = sink;
+            TryPublishConnectionShardPlacementDecision();
+        }
+    }
+
+    private void TryPublishConnectionShardPlacementDecision()
+    {
+        if (!hasConnectionShardPlacementDecision
+            || connectionShardPlacementDecisionPublished
+            || connectionShardPlacementEvidenceSink is not { } sink)
+        {
+            return;
+        }
+
+        try
+        {
+            connectionShardPlacementDecisionPublished =
+                sink.TryPublish(in connectionShardPlacementDecision);
+        }
+        catch (Exception)
+        {
+            // Evidence export is behavior-neutral. A failing sink cannot
+            // invalidate or change the already-latched route.
+        }
     }
 
     private void ConfigureQueuedSendBurstObservation(

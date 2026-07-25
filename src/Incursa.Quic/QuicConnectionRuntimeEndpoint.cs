@@ -30,7 +30,11 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         int shardCount,
         IMonotonicClock? clock = null,
         int maximumStatelessResetEmissionsPerRemoteAddress = 1,
-        bool suppressHostedTimerEffectObjects = false)
+        bool suppressHostedTimerEffectObjects = false,
+        QuicConnectionShardPlacementObservationMode
+            placementObservationMode =
+                QuicConnectionShardPlacementObservationMode.Disabled,
+        QuicConnectionShardPlacementPolicyValue? forcedPlacementValue = null)
     {
         if (shardCount <= 0)
         {
@@ -46,7 +50,9 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         host = new QuicConnectionRuntimeHost(
             shardCount,
             this.clock,
-            suppressHostedTimerEffectObjects);
+            suppressHostedTimerEffectObjects,
+            placementObservationMode,
+            forcedPlacementValue);
         this.maximumStatelessResetEmissionsPerRemoteAddress = maximumStatelessResetEmissionsPerRemoteAddress;
     }
 

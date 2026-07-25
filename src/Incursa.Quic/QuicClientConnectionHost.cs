@@ -76,7 +76,13 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             remoteEndPoint.Port,
             localEndPoint.Port);
 
-        endpoint = new QuicConnectionRuntimeEndpoint(1, suppressHostedTimerEffectObjects: true);
+        endpoint = new QuicConnectionRuntimeEndpoint(
+            1,
+            suppressHostedTimerEffectObjects: true,
+            placementObservationMode:
+                settings.Options.ConnectionShardPlacementObservationMode,
+            forcedPlacementValue:
+                settings.Options.ForcedConnectionShardPlacementPolicyValue);
         IQuicDiagnosticsSink? diagnosticsSink = diagnosticsSinkFactory?.Invoke();
         QuicAdaptiveApplicationDatagramBatchPolicy applicationDatagramBatchPolicy = new();
         runtime = tlsKeyLogSecretObserver is null

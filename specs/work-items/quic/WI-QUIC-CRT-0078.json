@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0078",
+  "artifact_type": "work_item",
+  "status": "in_progress",
+  "title": "Implement bounded immutable connection shard placement",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Implement REQ-QUIC-CRT-0194 as a closed legacy_current and bounded_power_of_two_choices seam at connection registration with forcing, observe-only, shadow, safety fallback, immutable lifetime latching, unified evidence, and force-legacy rollback while measurement and active behavior remain frozen.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE4-PLACEMENT-PLATFORM",
+    "ARC-QUIC-CRT-0077",
+    "VER-QUIC-CRT-0079"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0077"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0079"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0194"
+  ],
+  "planned_changes": "Add closed policy enums and deterministic bounded-choice evaluation; preserve the original modulo rule; add host and raw-server forcing, observe-only, shadow, connection-lifetime latching, exact registration rollback and unregister accounting; publish the immutable decision through late per-connection sink attachment; extend unified evidence and raw to v11 and the manifest to v12 using v10 base projection plus a placement delta; add deterministic policy, guard, fallback, route, counter, sink-failure, schema, semantic-latch, package, disposal, shutdown, and rollback tests; and synchronize matrix, seam, observation, controller, Stage 4, and evidence documents.",
+  "verification_plan": "Build the affected runtime, test project, and raw host in Release. Run REQ-QUIC-CRT-0194, unified REQ-QUIC-CRT-0183, host and listener sharding, package, endpoint registration, disposal, and shutdown tests. Verify every value and mode, force-legacy rollback, two-candidate lower-count choice, legacy tie break, immutable routes, failed-registration rollback, unregister counts, lifecycle and invalid-input fallback, late and throwing sinks, unified schema composition, valid indices, stable placement identity across epochs, and no adjacent forced behavior. Do not run performance, campaigns, transforms, ML, CI, or active behavior.",
+  "out_of_scope": [
+    "Performance acceptance, topology tuning, or additional placement thresholds",
+    "Mid-connection migration or changes to timers, packet routing, endpoint I/O, congestion, pacing, recovery, flow control, queues, or buffer ownership",
+    "application_datagram_batch_transport implementation",
+    "Campaign, dataset, normalization, curation, split, or ML execution",
+    "CI changes, push, active_internal, or production activation"
+  ]
+}

@@ -247,4 +247,16 @@ public abstract class QuicConnectionOptions
 
     internal IQuicReceiveDeliveryQuantumEvidenceSink?
         ReceiveDeliveryQuantumEvidenceSink { get; set; }
+
+    // CONTEXT: Placement is latched by the endpoint before server connection
+    // options are returned. The per-connection sink is attached afterward and
+    // receives that immutable decision without changing shard ownership.
+    internal IQuicConnectionShardPlacementEvidenceSink?
+        ConnectionShardPlacementEvidenceSink { get; set; }
+
+    internal QuicConnectionShardPlacementObservationMode
+        ConnectionShardPlacementObservationMode { get; set; }
+
+    internal QuicConnectionShardPlacementPolicyValue?
+        ForcedConnectionShardPlacementPolicyValue { get; set; }
 }

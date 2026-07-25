@@ -34,7 +34,9 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v10.schema.json'
+$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v11.schema.json'
+$legacySchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v10.schema.json'
+$evidenceDeltaSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-evidence-v11.schema.json'
 $actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v4.schema.json'
 $adaptiveBackpressureSchemaPath =
     Join-Path $RepositoryRoot 'schemas\adaptive-runtime-backpressure-raw-v1.schema.json'
@@ -76,6 +78,7 @@ $lastActorSequenceByConnection = @{}
 $lastAdaptiveBackpressureSequenceByConnection = @{}
 $lastPacketFlushCadenceSequenceByConnection = @{}
 $lastReceiveDeliveryQuantumSequenceByConnection = @{}
+$placementByConnection = @{}
 $actorEpochSummaryByRowKey = @{}
 $actorEpochRowByActorKey = @{}
 $actorContenderCountByEpoch = @{}
@@ -201,6 +204,32 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
         throw "Unified adaptive-runtime raw epoch failed schema validation at row $($rowCount + 1)."
     }
 
+    $contractRecord = $line | ConvertFrom-Json -AsHashtable -Depth 100
+    $epochDeltaJson =
+        $contractRecord.epoch | ConvertTo-Json -Depth 100 -Compress
+    if (-not (
+            $epochDeltaJson |
+                Test-Json `
+                    -SchemaFile $evidenceDeltaSchemaPath `
+                    -ErrorAction Stop)) {
+        throw "Unified adaptive-runtime placement delta failed schema validation at row $($rowCount + 1)."
+    }
+
+    $contractRecord.schemaVersion =
+        'adaptive-runtime-unified-epoch-raw-v10'
+    $contractRecord.epoch.evidenceContractVersion =
+        'adaptive-runtime-unified-epoch-evidence-v10'
+    [void] $contractRecord.epoch.Remove('connectionShardPlacement')
+    $legacyProjectionJson =
+        $contractRecord | ConvertTo-Json -Depth 100 -Compress
+    if (-not (
+            $legacyProjectionJson |
+                Test-Json `
+                    -SchemaFile $legacySchemaPath `
+                    -ErrorAction Stop)) {
+        throw "Unified adaptive-runtime v10 base projection failed schema validation at row $($rowCount + 1)."
+    }
+
     $record = $line | ConvertFrom-Json -Depth 100
     $epoch = $record.epoch
     $connectionKey = [string] $record.connectionKey
@@ -244,7 +273,7 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
         $epoch.stage1.queuedSendBurstBudget,
         $epoch.stage1.oversizedWriteAdmissionQuantum
     )
-    $axisRecordCount += $stage1Records.Count + 4
+    $axisRecordCount += $stage1Records.Count + 5
     $nonLegacyApplied = @($stage1Records | Where-Object {
         [string] $_.decision.appliedValue -ne 'LegacyCurrent'
     }).Count
@@ -272,6 +301,34 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
     if ([string] $receiveDeliverySnapshot.appliedValue -ne 'LegacyCurrent') {
         $nonLegacyApplied++
     }
+    $placementSummary = $epoch.connectionShardPlacement
+    $placementDecision = $placementSummary.decision
+    if (-not [bool] $placementSummary.hasDecision -or
+        [uint64] $placementSummary.eventCount -ne 1 -or
+        [uint64] $placementDecision.connectionHandleValue -eq 0 -or
+        [int] $placementDecision.shardCount -le 0 -or
+        [int] $placementDecision.appliedShardIndex -lt 0 -or
+        [int] $placementDecision.appliedShardIndex -ge
+            [int] $placementDecision.shardCount) {
+        [void] $joinFailures.Add("$rowKey|connection-shard-placement")
+    }
+    if ([string] $placementDecision.appliedValue -ne 'LegacyCurrent') {
+        $nonLegacyApplied++
+    }
+    $placementIdentity = @(
+        [uint64] $placementDecision.connectionHandleValue,
+        [int] $placementDecision.appliedShardIndex,
+        [string] $placementDecision.appliedValue,
+        [string] $placementDecision.selectionSource,
+        [string] $placementDecision.reasonCode
+    ) -join '|'
+    if ($placementByConnection.ContainsKey($scopedConnectionKey) -and
+        [string] $placementByConnection[$scopedConnectionKey] -ne
+            $placementIdentity) {
+        [void] $joinFailures.Add(
+            "$rowKey|connection-shard-placement-latch")
+    }
+    $placementByConnection[$scopedConnectionKey] = $placementIdentity
     if ($nonLegacyApplied -gt 1) {
         [void] $multiAxisRows.Add($rowKey)
     }
@@ -1678,7 +1735,7 @@ $valid =
     $expectedReceiveDeliveryQuantumKeys.Count -eq 0 -and
     $joinFailures.Count -eq 0 -and
     $multiAxisRows.Count -eq 0 -and
-    $axisRecordCount -eq ($rowCount * 8)
+    $axisRecordCount -eq ($rowCount * 9)
 if (-not $valid) {
     throw (
         "Unified adaptive-runtime raw evidence failed semantic validation: " +
@@ -1712,11 +1769,11 @@ if (-not $valid) {
         "receiveDeliveryMissing=$(
             $expectedReceiveDeliveryQuantumKeys.Count), " +
         "joinFailures=$($joinFailures.Count), multiAxis=$($multiAxisRows.Count), " +
-        "axisRecords=$axisRecordCount, expectedAxisRecords=$($rowCount * 8).")
+        "axisRecords=$axisRecordCount, expectedAxisRecords=$($rowCount * 9).")
 }
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-validation-v11'
+    schemaVersion = 'adaptive-runtime-unified-raw-validation-v12'
     valid = $true
     rawEpochRowCount = $rowCount
     axisRecordCount = $axisRecordCount
