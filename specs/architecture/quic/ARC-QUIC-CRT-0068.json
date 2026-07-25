@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0068",
+  "artifact_type": "architecture",
+  "status": "proposed",
+  "title": "Wait-only adaptive backpressure admission seam",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0191 with an independently forceable conservative admission delay that cannot reject work, wait for external progress, weaken hard limits, or own protocol state.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY",
+    "WI-QUIC-CRT-0069",
+    "VER-QUIC-CRT-0070"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0191"
+  ],
+  "key_components": [
+    "QuicAdaptiveBackpressurePolicy",
+    "QuicAdaptiveBackpressureEpochAccumulator",
+    "QuicConnectionRuntime application-admission latch",
+    "QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator",
+    "IncursaRawQuicServer adaptive-backpressure force and evidence wiring",
+    "Unified raw exporter and semantic validator"
+  ],
+  "design_summary": "The closed values are legacy_current and early_delay. The decision is evaluated once for a new application write before stream reservation or owner admission. legacy_current continues directly. early_delay may post one immediate continuation only when the maintained application-send queue reports an earlier admitted operation. The continuation reenters the same admission using a one-time completion-source latch, so it cannot delay twice or wait for an ACK, credit, peer, congestion, pacing, socket, or recovery event. Cancellation, disposal, terminal removal, failed posting, hard limits, ownership, and existing completion paths remain authoritative. Observation is optional and guarded; shadow recommends early_delay while applying legacy_current. The configured snapshot remains in every unified epoch, while individual admissions remain sample-scoped and join by source, connection key, and operation sequence.",
+  "data_and_state_considerations": "The disabled and unforced fast path does not capture a queue snapshot or create an evidence record. Enabled decisions read maintained queue operation count and retained capacity in O(1) time without scanning streams or queues. One completion-source bit records that the admission was evaluated and resets with the existing completion-source lifetime. A posted continuation carries the existing request identity and buffers without taking protocol ownership. Observation, rule, snapshot, reason, provenance, epoch, raw wrapper, unified evidence, unified raw, and manifest contracts are independently versioned. Sample-scoped operation rows and epoch summaries have distinct retained counts and exact inclusive-range validation.",
+  "edge_cases_and_constraints": [
+    "Missing, stale, saturated, contradictory, invalid, or out-of-domain input falls back to legacy_current even when early_delay is forced.",
+    "Lifecycle or unavailable-continuation guards fall back to legacy_current and preserve the existing failure or terminal completion.",
+    "Cancellation or disposal after posting removes or completes the admission; the stale continuation is a no-op.",
+    "Forced mode bypasses selection only and cannot bypass queue, buffer, stream, flow-control, congestion, pacing, recovery, ownership, or terminal guards.",
+    "Only one behavior-distinct adaptive axis may be forced; every adjacent applied axis remains legacy_current.",
+    "Scenario names, workload identity, payload constants, concurrency, peers, URLs, hosts, and application identity are not controller inputs.",
+    "No active_internal or production selection is present."
+  ],
+  "alternatives_considered": [
+    "Rejecting or failing admissions was rejected because it changes application-visible semantics and progress.",
+    "Waiting for retained bytes to fall, network credit, ACKs, pacing, or recovery was rejected because it can create unbounded or cyclic progress dependencies.",
+    "A tuned queue or byte threshold was rejected because measurement is frozen and the conservative implementation must not encode a performance-derived rule.",
+    "Per-admission tasks, timers, dictionaries, and queue scans were rejected in favor of the existing dispatcher and completion-source lifetime."
+  ],
+  "risks": [
+    "An incorrectly reusable latch could delay one admission repeatedly; deterministic tests require exactly one posted turn.",
+    "A continuation posted after cancellation could resurrect removed work; request lookup and completion status make it a no-op.",
+    "Raw operation records could be mistaken for epoch outcomes; the exporter retains a separate stream and validates exact membership and distinct counts.",
+    "The value may be neutral or harmful; no performance claim or activation is authorized before the measurement freeze is separately released."
+  ],
+  "open_questions": [
+    "Does early_delay merit later shadow-only or active-internal review after the implementation and measurement freezes are separately released?"
+  ]
+}

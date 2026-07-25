@@ -1,18 +1,19 @@
 # Adaptive Runtime Stage 2 Actor And Memory Foundation
 
 Status: actor observation foundation in progress;
-`buffer_copy_coalescing` is internally forceable; no Stage 2 policy is active
+`buffer_copy_coalescing` and `adaptive_backpressure` are internally
+forceable; no Stage 2 policy is active
 
 ## Purpose
 
 This document defines the first Stage 2 slice from the approved adaptive
 runtime policy-axis roadmap. It establishes bounded actor-service evidence and
-the gates that must be satisfied before `actor_work_quantum`,
-`ready_stream_fairness`, `buffer_copy_coalescing`, or
-`adaptive_backpressure` can become forceable policy axes.
+the gates for `actor_work_quantum` and `ready_stream_fairness`, plus the
+implemented force seams for `buffer_copy_coalescing` and
+`adaptive_backpressure`.
 
-The Stage 1 send-path axes and `buffer_copy_coalescing` remain implemented and
-independently forceable. A
+The Stage 1 send-path axes, `buffer_copy_coalescing`, and
+`adaptive_backpressure` remain implemented and independently forceable. A
 campaign may still vary only one axis, receive-credit publication remains
 `legacy_current`, and every adjacent applied policy remains
 `legacy_current`. The buffer seam does not authorize a tuned threshold,
@@ -421,10 +422,24 @@ the authoritative pool return. Terminal-release correlation for every other
 observed owner, copy-scope retained age, and pool outstanding remain explicit
 gaps.
 
-`adaptive_backpressure` remains conservative-only and separately reviewable.
-It may eventually lower an admission cap below an authoritative hard bound.
-It may never raise a hard bound or delay progress, recovery, credit,
-cancellation, disposal, or terminal work.
+`adaptive_backpressure` is now implemented as the separately reviewed
+wait-only `early_delay` seam under `REQ-QUIC-CRT-0191`. Its exact boundary is
+one new application admission before stream reservation or owner admission.
+When an earlier admitted application-send operation remains queued, the
+forced conservative value may post one immediate continuation and defer the
+new admission for at most one dispatcher/actor turn. It is evaluated only
+once, never waits for network progress, never rejects or creates a policy
+failure, never raises a hard bound, and never changes an already-admitted
+owner. Cancellation, disposal, terminal state, stale continuation removal,
+flow-control, congestion, pacing, recovery, hard limits, and exactly-once
+completion remain authoritative.
+
+Observation/epoch/raw v1 keeps forced, shadow-recommended, selected, and
+applied values distinct with bounded validity, reason, safety, latch, and
+version fields. Unified evidence/raw v8 keeps the configured axis record in
+every epoch. Sample-scoped admission rows join by exact source-scoped
+`connectionKey + operationSequence` membership in the inclusive epoch range;
+they are not relabeled as epoch-independent outcomes.
 
 ## Verification
 
@@ -496,8 +511,11 @@ outside correctness CI.
 4. Design and force `actor_work_quantum` only after the safety gate.
 5. Preserve the forceable `buffer_copy_coalescing` seam and its exact
    force-legacy rollback while measurement remains frozen.
-6. Review conservative-only `adaptive_backpressure` application-visible
-   behavior.
+6. Preserve the forceable `adaptive_backpressure` wait-only seam and its
+   force-legacy rollback while measurement remains frozen.
+7. Advance to the independent Stage 3 `packet_flush_cadence` safe-boundary
+   inventory; do not add more Stage 2 observation-only checkpoints unless
+   they directly remove the recorded actor or fairness safety blocker.
 
 No large adaptive dataset transform or ML analysis begins before these
 architecture foundations are complete. No active behavior is authorized.

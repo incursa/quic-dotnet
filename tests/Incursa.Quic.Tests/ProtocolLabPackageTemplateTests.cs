@@ -290,7 +290,7 @@ public sealed class ProtocolLabPackageTemplateTests
             "QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=adaptive-runtime-epoch-raw-v2",
             rawQuicServer);
         Assert.Contains(
-            "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_CONTRACT=adaptive-runtime-unified-epoch-raw-v7",
+            "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_CONTRACT=adaptive-runtime-unified-epoch-raw-v8",
             rawQuicServer);
         Assert.Contains(
             "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON=",
@@ -312,6 +312,12 @@ public sealed class ProtocolLabPackageTemplateTests
             rawQuicServer);
         Assert.Contains(
             "QUIC_BUFFER_RELEASE_EVIDENCE_JSON=",
+            rawQuicServer);
+        Assert.Contains(
+            "QUIC_ADAPTIVE_BACKPRESSURE_EVIDENCE_CONTRACT=quic-adaptive-backpressure-raw-v1",
+            rawQuicServer);
+        Assert.Contains(
+            "QUIC_ADAPTIVE_BACKPRESSURE_EVIDENCE_JSON=",
             rawQuicServer);
         Assert.Contains(
             "QUIC_BUFFER_EVIDENCE_FAILURE_JSON=",

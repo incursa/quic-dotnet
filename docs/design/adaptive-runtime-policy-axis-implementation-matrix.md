@@ -30,7 +30,7 @@ axis remains inactive unless a later explicit review authorizes
 | `actor_work_quantum` | 2 | current connection-work-item dispatch to completion | none yet | foundation | no | no | actor-service epoch and continuation-assessment foundation | actor transition/effect ownership, exactly resumable work, progress, repost correctness, cross-connection service | no | continuation assessment focused proof clean | no reviewed cooperative-yield boundary owns an exactly resumable unit; a distinct forced value would currently be behaviorally fake or could split transition/effect ownership | `19f69274`, `36c5bad6`, `11bb8496`, `90aaf93b`, `4da502d9` |
 | `ready_stream_fairness` | 2 | current planner/queue priority plus stable-sequence order and same-stream serialization | none yet | partial | no | no | no axis record yet; bounded actor and send-path inputs are available | no same-stream reordering, priority authority, FIN/reset/cancellation, flow-control and recovery progress, bounded runnable inspection | no | inventory blocked safely | the current planner selects a priority/sequence prefix; a one-write treatment would silently vary `application_send_batch_formation`, while rotation needs a reviewed bounded runnable set and starvation/fairness outcome rather than an unbounded stream scan | none |
 | `buffer_copy_coalescing` | 2 | exact existing combined-send prefix construction | `memory_conservative`, lower-only two-source-segment cap | yes | yes | yes | yes; configured snapshot plus legal/applied operation and fixed epoch fields | Stage 1 legal prefix, priority/order, FIN/reset/cancellation, flow control, stream capacity, packet size, congestion, pacing, anti-amplification, recovery, packet protection, owner transfer/return, terminal cleanup | yes | 18 axis tests, 86 buffer/unified tests, and 164 adjacent Stage 1 tests clean | no implementation blocker; measurement remains frozen | `df8ee570` |
-| `adaptive_backpressure` | 2 | existing authoritative hard admission and resource bounds | none yet | partial | no | no | no axis record yet | hard queue/buffer/stream/flow-control limits, progress, cancellation/disposal, application-visible admission semantics | no | not started | conservative early admission behavior requires explicit application-visible contract review before a force seam | none |
+| `adaptive_backpressure` | 2 | immediate admission under existing authoritative hard limits | `early_delay`, at most one additional dispatcher turn when an earlier application-send admission remains queued | yes | yes | yes | yes; configured snapshot plus sample-scoped admission records and fixed epoch summary | hard queue/buffer/stream/flow-control limits, lifecycle, progress, continuation availability, cancellation/disposal/terminal removal, ownership and exactly-once completion | yes | 20 axis tests plus unified raw schema and exact sample-to-epoch join tests clean | no implementation blocker; measurement remains frozen | current local implementation checkpoint |
 | `packet_flush_cadence` | 3 | current correctness-driven prompt/coalescing points | none yet | partial | no | no | no axis record yet | ACK/recovery/retransmission progress, congestion, pacing, anti-amplification, packet-size/protection, owned deadline cancellation | no | seam discovery required | no safe forceable flush-deadline owner or bounded operation latch has been established | none |
 | `receive_delivery_quantum` | 3 | current receive delivery and application wake behavior | none yet | partial | no | no | no axis record yet | `receive_credit_publication` fixed at `legacy_current`, buffer ownership, FIN/reset/close, cancellation/disposal, flow-control progress | no | seam discovery required | receive-delivery notification, wake, batching, and ownership boundaries have not been unified into a bounded force seam | none |
 | `connection_shard_placement` | 4 | current connection-to-shard placement | none yet | partial | no | no | no axis record yet | immutable connection-start decision, valid shard ownership, lifecycle, fallback when capability/telemetry is absent | no | not started | needs a closed connection-start strategy set, capability fingerprint, and deterministic fallback | none |
@@ -50,11 +50,18 @@ fairness treatment. `buffer_copy_coalescing` is the first implementation-ready
 Stage 2 axis: it makes a lower-only decision after Stage 1 has produced the
 legal prefix and cannot widen or reorder that prefix.
 
-The next independent Stage 2 implementation decision is
-`adaptive_backpressure`. It may proceed only inside an explicitly reviewed
-conservative application-visible contract. No additional actor or fairness
-observation-only checkpoint is authorized before a forceable seam or exact
-safety disposition is delivered.
+`adaptive_backpressure` now has the reviewed wait-only `early_delay` seam:
+one additional dispatcher turn at new application admission only when an
+earlier application-send admission remains queued. It cannot reject, fail,
+raise a hard limit, wait for network progress, or change ownership after
+admission. The actor and ready-stream axes retain their exact safety blockers;
+neither may be represented by fabricated values or additional unbounded
+observation work.
+
+The next independent implementation decision is Stage 3
+`packet_flush_cadence`. It begins with a bounded safe-boundary inventory and
+must either deliver a forceable cadence seam within two prerequisite
+checkpoints or retain the exact progress/ownership blocker and advance.
 
 ## Frozen Operational State
 

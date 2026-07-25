@@ -17,10 +17,13 @@
     "SPEC-QUIC-CRT-STAGE1-SEND-PATH",
     "ARC-QUIC-CRT-0067",
     "WI-QUIC-CRT-0068",
-    "VER-QUIC-CRT-0069"
+    "VER-QUIC-CRT-0069",
+    "ARC-QUIC-CRT-0068",
+    "WI-QUIC-CRT-0069",
+    "VER-QUIC-CRT-0070"
   ],
-  "purpose": "Define bounded versioned actor service observations and deliver the independently forceable lower-only buffer_copy_coalescing seam without authorizing actor scheduling, fairness, backpressure, or active behavior.",
-  "scope": "This specification covers behavior-neutral per-connection actor service and selected send-side and receive-side buffer-copy observations, bounded epoch aggregation, a versioned post-service Stage 1 and Stage 2 join boundary, append-only permanent raw export, explicit missing-state handling, schema and semantic validation, the safety gates required before actor_work_quantum, and the legacy_current plus memory_conservative buffer_copy_coalescing seam. It does not define a forceable actor policy, scalar work-unit threshold, ready-stream fairness mechanism, backpressure policy, active_internal behavior, or production activation.",
+  "purpose": "Define bounded versioned actor service observations and deliver independently forceable lower-only buffer_copy_coalescing and wait-only adaptive_backpressure seams without authorizing actor scheduling, fairness, active behavior, or performance-derived selection.",
+  "scope": "This specification covers behavior-neutral per-connection actor service and selected send-side and receive-side buffer-copy observations, bounded epoch aggregation, a versioned post-service Stage 1 and Stage 2 join boundary, append-only permanent raw export, explicit missing-state handling, schema and semantic validation, the safety gates required before actor_work_quantum, the legacy_current plus memory_conservative buffer_copy_coalescing seam, and the legacy_current plus one-dispatcher-turn early_delay adaptive_backpressure seam. It does not define a forceable actor policy, scalar work-unit threshold, ready-stream fairness mechanism, threshold-tuned backpressure, active_internal behavior, or production activation.",
   "context": "The shard already exposes aggregate queue-delay, service-time, wake, packet-run, and follow-on metrics, but it does not expose a versioned connection-attributable evidence contract or an exactly-once repost seam. Stage 2 must preserve the current drain loop and record honest primitives before proposing a quantum.",
   "open_questions": [
     "Which cooperative transition and effect boundaries can yield while preserving timer priority, recovery, terminal drain, and buffer ownership?",
@@ -359,6 +362,46 @@
       "notes": [
         "The fixed cap of two is the smallest distinct coalesced construction and is a reviewed conservative mechanism value, not a performance-derived threshold.",
         "The buffer policy may shorten but never widen the Stage 1 legal prefix; application_send_batch_formation remains selected and applied independently.",
+        "Measurement, threshold tuning, active_internal, and production activation remain outside this requirement."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0191",
+      "title": "Force bounded wait-only adaptive backpressure without weakening progress",
+      "statement": "The runtime MUST expose the adaptive_backpressure axis with the closed legacy_current and early_delay values; preserve immediate application admission under existing authoritative hard limits for legacy_current; implement early_delay as at most one immediately posted dispatcher or actor turn before a new application admission only when an earlier admitted application-send operation remains queued; evaluate the decision once before stream reservation or owner admission and latch it for that admission only; support disabled, observe-only, shadow, forced-legacy, and forced-early-delay operation with forced, recommended, selected, and applied identities kept distinct; never reject or fail an admission as policy behavior, raise a hard limit, wait for acknowledgment, credit, peer, network, congestion, pacing, socket, or recovery progress, or change already-admitted ownership; make cancellation, disposal, terminal removal, lifecycle, invalid observation, continuation availability, hard queue, buffer, stream and flow-control limits, congestion, pacing, recovery, ownership, and exactly-once completion authoritative under every forced value; make a stale or removed posted continuation a no-op and use the existing failure completion if posting fails; record versioned sample-scoped admission observations and configured unified-epoch provenance with exact source-scoped connection and operation-sequence joins, explicit missing, stale, saturated, contradictory, invalid, and out-of-domain state, bounded reasons and safety overrides, and distinct epoch and sample counts; reject simultaneous behavior-distinct forcing of adjacent axes; independently prove force-legacy rollback; and keep active_internal and production selection unavailable.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0068"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0069"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0070"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-axis-roadmap.md",
+          "docs/design/adaptive-runtime-policy-axis-implementation-matrix.md",
+          "docs/design/adaptive-runtime-policy-controller-state-machine.md",
+          "docs/design/adaptive-runtime-policy-observation-schema.md",
+          "docs/design/adaptive-runtime-policy-seam-inventory.md",
+          "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md",
+          "src/Incursa.Quic/QuicAdaptiveBackpressurePolicy.cs",
+          "src/Incursa.Quic/QuicAdaptiveBackpressureEpochAccumulator.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+          "src/Incursa.Quic/QuicAdaptiveRuntimeUnifiedEpochEvidence.cs",
+          "schemas/adaptive-runtime-backpressure-observation-v1.schema.json",
+          "schemas/adaptive-runtime-backpressure-epoch-v1.schema.json",
+          "schemas/adaptive-runtime-backpressure-raw-v1.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-evidence-v8.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-raw-v8.schema.json",
+          "schemas/adaptive-runtime-unified-raw-export-manifest-v9.schema.json",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0191.cs"
+        ]
+      },
+      "notes": [
+        "early_delay is a reviewed conservative mechanism value, not a performance-derived threshold or a promise of improvement.",
+        "The continuation is posted immediately and the policy is evaluated once, so the axis cannot wait for external progress or self-reinforce.",
         "Measurement, threshold tuning, active_internal, and production activation remain outside this requirement."
       ]
     }

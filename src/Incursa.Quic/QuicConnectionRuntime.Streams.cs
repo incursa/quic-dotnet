@@ -97,6 +97,14 @@ internal sealed partial class QuicConnectionRuntime
         long RequestId,
         QuicConnectionRuntime.StreamActionRequestCompletionSource Completion);
 
+    private readonly record struct PendingAdaptiveBackpressureContinuation(
+        long RequestId,
+        QuicConnectionRuntime.StreamActionRequestCompletionSource Completion,
+        QuicConnectionStreamActionKind ActionKind,
+        ulong StreamId,
+        ReadOnlyMemory<byte> StreamData,
+        ReadOnlyMemory<byte> StreamDataSuffix);
+
     private bool HandleStreamAction(
         QuicConnectionStreamActionEvent streamActionEvent,
         long nowTicks,
@@ -490,42 +498,94 @@ internal sealed partial class QuicConnectionRuntime
         ref QuicConnectionEffectAccumulator effects)
     {
         PendingOversizedWriteContinuation? pendingContinuation = null;
+        PendingAdaptiveBackpressureContinuation?
+            pendingBackpressureContinuation = null;
         bool stateChanged = false;
         lock (pendingStreamActionRequestsGate)
         {
-            int admittedChunkCount = 0;
-            int chunkQuantum = GetOversizedWriteChunkQuantum(requestId);
-            do
-            {
-                bool continueOversizedWrite = false;
-                stateChanged |= HandleWriteStreamActionLocked(
-                    nowTicks,
+            if (AdaptiveBackpressureDecisionEnabled
+                && pendingStreamActionRequests.TryGetValue(
                     requestId,
-                    streamId,
-                    streamData,
-                    streamDataSuffix,
-                    finishWrites,
-                    ref effects,
-                    ref continueOversizedWrite);
-                if (!continueOversizedWrite)
+                    out QuicConnectionRuntime
+                        .StreamActionRequestCompletionSource? admissionCompletion)
+                && admissionCompletion
+                    .TryMarkAdaptiveBackpressureAdmissionEvaluated())
+            {
+                QuicRetentionSnapshot retention =
+                    applicationSendQueue.CaptureRetentionSnapshot();
+                QuicAdaptiveBackpressurePolicyDecision
+                    backpressureDecision =
+                        ResolveAdaptiveBackpressurePolicyDecision(
+                            retention.RetainedBufferCount > int.MaxValue
+                                ? int.MaxValue
+                                : (int)retention.RetainedBufferCount,
+                            retention.RetainedByteCount,
+                            continuationAvailable:
+                                streamWriteDispatcher is not null
+                                || !IsDisposed);
+                TryPublishAdaptiveBackpressureObservation(
+                    requestId,
+                    in backpressureDecision);
+                if (backpressureDecision.DelayApplied)
                 {
-                    break;
-                }
-
-                if (++admittedChunkCount >= chunkQuantum)
-                {
-                    if (pendingStreamActionRequests.TryGetValue(
-                            requestId,
-                            out QuicConnectionRuntime.StreamActionRequestCompletionSource? completion)
-                        && completion.HasPendingOversizedStreamData)
-                    {
-                        pendingContinuation = new PendingOversizedWriteContinuation(requestId, completion);
-                    }
-
-                    break;
+                    pendingBackpressureContinuation = new(
+                        requestId,
+                        admissionCompletion,
+                        finishWrites
+                            ? QuicConnectionStreamActionKind.Finish
+                            : QuicConnectionStreamActionKind.Write,
+                        streamId,
+                        streamData,
+                        streamDataSuffix);
+                    stateChanged = true;
                 }
             }
-            while (true);
+
+            if (!pendingBackpressureContinuation.HasValue)
+            {
+                int admittedChunkCount = 0;
+                int chunkQuantum = GetOversizedWriteChunkQuantum(requestId);
+                do
+                {
+                    bool continueOversizedWrite = false;
+                    stateChanged |= HandleWriteStreamActionLocked(
+                        nowTicks,
+                        requestId,
+                        streamId,
+                        streamData,
+                        streamDataSuffix,
+                        finishWrites,
+                        ref effects,
+                        ref continueOversizedWrite);
+                    if (!continueOversizedWrite)
+                    {
+                        break;
+                    }
+
+                    if (++admittedChunkCount >= chunkQuantum)
+                    {
+                        if (pendingStreamActionRequests.TryGetValue(
+                                requestId,
+                                out QuicConnectionRuntime.StreamActionRequestCompletionSource? completion)
+                            && completion.HasPendingOversizedStreamData)
+                        {
+                            pendingContinuation =
+                                new PendingOversizedWriteContinuation(
+                                    requestId,
+                                    completion);
+                        }
+
+                        break;
+                    }
+                }
+                while (true);
+            }
+        }
+
+        if (pendingBackpressureContinuation.HasValue)
+        {
+            PostAdaptiveBackpressureContinuation(
+                pendingBackpressureContinuation.Value);
         }
 
         if (pendingContinuation.HasValue)
@@ -534,6 +594,50 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return stateChanged;
+    }
+
+    private void PostAdaptiveBackpressureContinuation(
+        PendingAdaptiveBackpressureContinuation continuation)
+    {
+        Func<long, QuicConnectionStreamActionKind, ulong,
+            ReadOnlyMemory<byte>, ReadOnlyMemory<byte>, bool>? dispatcher =
+                streamWriteDispatcher;
+        Exception? exception = null;
+        bool posted = false;
+        try
+        {
+            posted = dispatcher?.Invoke(
+                continuation.RequestId,
+                continuation.ActionKind,
+                continuation.StreamId,
+                continuation.StreamData,
+                continuation.StreamDataSuffix)
+                ?? TryPostLocalApiEvent(
+                    new QuicConnectionStreamActionEvent(
+                        clock.Ticks,
+                        continuation.RequestId,
+                        continuation.ActionKind,
+                        StreamId: continuation.StreamId,
+                        StreamData: continuation.StreamData,
+                        StreamDataSuffix:
+                            continuation.StreamDataSuffix));
+        }
+        catch (Exception caughtException)
+        {
+            exception = caughtException;
+        }
+
+        if (posted
+            || !TryRemovePendingStreamActionRequest(
+                continuation.RequestId,
+                continuation.Completion))
+        {
+            return;
+        }
+
+        continuation.Completion.TrySetException(
+            exception ?? new InvalidOperationException(
+                "The connection runtime could not queue the adaptive-backpressure continuation."));
     }
 
     private static int GetOversizedWriteChunkQuantum(

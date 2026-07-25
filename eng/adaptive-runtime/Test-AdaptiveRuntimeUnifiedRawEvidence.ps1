@@ -9,9 +9,14 @@ param(
     [Parameter(Mandatory = $true)]
     [string] $ActorObservationPath,
 
+    [Parameter(Mandatory = $true)]
+    [string] $AdaptiveBackpressureObservationPath,
+
     [int[]] $SourceRowCount,
 
     [int[]] $SourceActorObservationRowCount,
+
+    [int[]] $SourceAdaptiveBackpressureObservationRowCount,
 
     [string] $RepositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 )
@@ -19,15 +24,26 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v7.schema.json'
+$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v8.schema.json'
 $actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v4.schema.json'
+$adaptiveBackpressureSchemaPath =
+    Join-Path $RepositoryRoot 'schemas\adaptive-runtime-backpressure-raw-v1.schema.json'
 $resolvedRawEpochPath = (Resolve-Path -LiteralPath $RawEpochPath).Path
 $resolvedActorObservationPath = (Resolve-Path -LiteralPath $ActorObservationPath).Path
+$resolvedAdaptiveBackpressureObservationPath =
+    (Resolve-Path -LiteralPath $AdaptiveBackpressureObservationPath).Path
 $seenKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $expectedActorKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $seenActorKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+$expectedAdaptiveBackpressureKeys =
+    [System.Collections.Generic.HashSet[string]]::new(
+        [StringComparer]::Ordinal)
+$seenAdaptiveBackpressureKeys =
+    [System.Collections.Generic.HashSet[string]]::new(
+        [StringComparer]::Ordinal)
 $lastSequenceByConnection = @{}
 $lastActorSequenceByConnection = @{}
+$lastAdaptiveBackpressureSequenceByConnection = @{}
 $actorEpochSummaryByRowKey = @{}
 $actorEpochRowByActorKey = @{}
 $actorContenderCountByEpoch = @{}
@@ -38,18 +54,29 @@ $actorAcceptedWorkTotalByEpoch = @{}
 $actorAcceptedWorkMaximumByEpoch = @{}
 $actorAcceptedWorkRemainingTurnsByEpoch = @{}
 $actorContinuationByEpoch = @{}
+$adaptiveBackpressureEpochByOperationKey = @{}
+$adaptiveBackpressureSummaryByEpoch = @{}
+$adaptiveBackpressureAggregateByEpoch = @{}
 $joinFailures = [System.Collections.Generic.List[string]]::new()
 $duplicateKeys = [System.Collections.Generic.List[string]]::new()
 $outOfOrderKeys = [System.Collections.Generic.List[string]]::new()
 $duplicateActorKeys = [System.Collections.Generic.List[string]]::new()
 $outOfOrderActorKeys = [System.Collections.Generic.List[string]]::new()
 $orphanActorKeys = [System.Collections.Generic.List[string]]::new()
+$duplicateAdaptiveBackpressureKeys =
+    [System.Collections.Generic.List[string]]::new()
+$outOfOrderAdaptiveBackpressureKeys =
+    [System.Collections.Generic.List[string]]::new()
+$orphanAdaptiveBackpressureKeys =
+    [System.Collections.Generic.List[string]]::new()
 $multiAxisRows = [System.Collections.Generic.List[string]]::new()
 $rowCount = 0
 $axisRecordCount = 0
 $actorEpochRowCount = 0
 $actorObservationRowCount = 0
 $bufferObservationRowCount = 0
+$adaptiveBackpressureEpochRowCount = 0
+$adaptiveBackpressureObservationRowCount = 0
 $sourceIndex = 0
 $sourceRowOffset = 0
 
@@ -163,7 +190,7 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
         $epoch.stage1.queuedSendBurstBudget,
         $epoch.stage1.oversizedWriteAdmissionQuantum
     )
-    $axisRecordCount += $stage1Records.Count + 1
+    $axisRecordCount += $stage1Records.Count + 2
     $nonLegacyApplied = @($stage1Records | Where-Object {
         [string] $_.decision.appliedValue -ne 'LegacyCurrent'
     }).Count
@@ -174,6 +201,11 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
     $bufferSummary = $epoch.bufferCopy
     $bufferSnapshot = $bufferSummary.policySnapshot
     if ([string] $bufferSnapshot.appliedValue -ne 'LegacyCurrent') {
+        $nonLegacyApplied++
+    }
+    $backpressureSummary = $epoch.adaptiveBackpressure
+    $backpressureSnapshot = $backpressureSummary.policySnapshot
+    if ([string] $backpressureSnapshot.appliedValue -ne 'LegacyCurrent') {
         $nonLegacyApplied++
     }
     if ($nonLegacyApplied -gt 1) {
@@ -348,6 +380,99 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
     elseif ([string] $bufferSnapshot.selectedValue -ne 'LegacyCurrent' -or
         [string] $bufferSnapshot.appliedValue -ne 'LegacyCurrent') {
         [void] $joinFailures.Add("$rowKey|buffer-legacy-identity")
+    }
+
+    if ([bool] $backpressureSummary.hasObservation) {
+        $adaptiveBackpressureEpochRowCount++
+        $backpressureFirst =
+            [uint64] $backpressureSummary.firstOperationSequence
+        $backpressureLast =
+            [uint64] $backpressureSummary.lastOperationSequence
+        $backpressureCount =
+            [uint64] $backpressureSummary.operationCount
+        if ($backpressureCount -eq 0 -or
+            $backpressureFirst -eq 0 -or
+            $backpressureLast -lt $backpressureFirst -or
+            $backpressureCount -ne
+                (($backpressureLast - $backpressureFirst) + 1)) {
+            [void] $joinFailures.Add("$rowKey|backpressure-range")
+        }
+        else {
+            $adaptiveBackpressureSummaryByEpoch[$rowKey] =
+                [ordered]@{
+                    OperationCount = $backpressureCount
+                    DelayAppliedCount =
+                        [uint64] $backpressureSummary.delayAppliedCount
+                    SafetyOverrideCount =
+                        [uint64] $backpressureSummary.safetyOverrideCount
+                    FallbackCount =
+                        [uint64] $backpressureSummary.fallbackCount
+                    MaximumQueuedOperationCount =
+                        [uint64] $backpressureSummary.maximumQueuedOperationCount
+                    MaximumRetainedCapacityBytes =
+                        [uint64] $backpressureSummary.maximumRetainedCapacityBytes
+                }
+            for ($backpressureSequence = $backpressureFirst;
+                $backpressureSequence -le $backpressureLast;
+                $backpressureSequence++) {
+                $backpressureKey =
+                    "$scopedConnectionKey|$backpressureSequence"
+                [void] $expectedAdaptiveBackpressureKeys.Add(
+                    $backpressureKey)
+                if ($adaptiveBackpressureEpochByOperationKey.ContainsKey(
+                        $backpressureKey)) {
+                    [void] $joinFailures.Add(
+                        "$rowKey|backpressure-range-overlap")
+                }
+                else {
+                    $adaptiveBackpressureEpochByOperationKey[
+                        $backpressureKey] = $rowKey
+                }
+                if ($backpressureSequence -eq [uint64]::MaxValue) {
+                    break
+                }
+            }
+        }
+    }
+    elseif ([uint64] $backpressureSummary.operationCount -ne 0 -or
+        [uint64] $backpressureSummary.firstOperationSequence -ne 0 -or
+        [uint64] $backpressureSummary.lastOperationSequence -ne 0) {
+        [void] $joinFailures.Add("$rowKey|backpressure-empty")
+    }
+    if ([uint64] $backpressureSummary.delayAppliedCount -gt
+            [uint64] $backpressureSummary.operationCount -or
+        [uint64] $backpressureSummary.safetyOverrideCount -gt
+            [uint64] $backpressureSummary.operationCount -or
+        [uint64] $backpressureSummary.fallbackCount -gt
+            [uint64] $backpressureSummary.operationCount) {
+        [void] $joinFailures.Add("$rowKey|backpressure-counts")
+    }
+    if ([bool] $backpressureSnapshot.hasForcedValue) {
+        if ([string] $backpressureSnapshot.selectionSource -ne 'Forced' -or
+            [string] $backpressureSnapshot.selectedValue -ne
+                [string] $backpressureSnapshot.forcedValue -or
+            [string] $backpressureSnapshot.appliedValue -ne
+                [string] $backpressureSnapshot.forcedValue) {
+            [void] $joinFailures.Add(
+                "$rowKey|backpressure-forced-identity")
+        }
+    }
+    elseif ([string] $backpressureSnapshot.mode -eq 'Shadow') {
+        if (-not [bool] $backpressureSnapshot.hasShadowRecommendation -or
+            [string] $backpressureSnapshot.selectedValue -ne
+                [string] $backpressureSnapshot.shadowRecommendation -or
+            [string] $backpressureSnapshot.appliedValue -ne
+                'LegacyCurrent') {
+            [void] $joinFailures.Add(
+                "$rowKey|backpressure-shadow-identity")
+        }
+    }
+    elseif ([string] $backpressureSnapshot.selectedValue -ne
+            'LegacyCurrent' -or
+        [string] $backpressureSnapshot.appliedValue -ne
+            'LegacyCurrent') {
+        [void] $joinFailures.Add(
+            "$rowKey|backpressure-legacy-identity")
     }
 
     if ([bool] $epoch.postServiceBoundary.actorObservationPublished -and
@@ -641,6 +766,146 @@ if ($null -ne $SourceActorObservationRowCount -and
         "rows=$actorObservationRowCount.")
 }
 
+$adaptiveBackpressureSourceIndex = 0
+$adaptiveBackpressureSourceRowOffset = 0
+foreach ($line in [System.IO.File]::ReadLines(
+        $resolvedAdaptiveBackpressureObservationPath)) {
+    if ([string]::IsNullOrWhiteSpace($line)) {
+        continue
+    }
+
+    if (-not (
+            $line |
+                Test-Json `
+                    -SchemaFile $adaptiveBackpressureSchemaPath `
+                    -ErrorAction Stop)) {
+        throw (
+            "Adaptive-backpressure raw observation failed schema " +
+            "validation at row " +
+            "$($adaptiveBackpressureObservationRowCount + 1).")
+    }
+
+    $record = $line | ConvertFrom-Json -Depth 100
+    $sourceKey = Resolve-SourceKey `
+        -Counts $SourceAdaptiveBackpressureObservationRowCount `
+        -Index ([ref] $adaptiveBackpressureSourceIndex) `
+        -Offset ([ref] $adaptiveBackpressureSourceRowOffset)
+    $scopedConnectionKey =
+        "$sourceKey|$([string] $record.connectionKey)"
+    $sequence = [uint64] $record.observation.operationSequence
+    $operationKey = "$scopedConnectionKey|$sequence"
+    $adaptiveBackpressureObservationRowCount++
+    $adaptiveBackpressureSourceRowOffset++
+
+    if (-not $seenAdaptiveBackpressureKeys.Add($operationKey)) {
+        [void] $duplicateAdaptiveBackpressureKeys.Add($operationKey)
+    }
+    if ($lastAdaptiveBackpressureSequenceByConnection.ContainsKey(
+            $scopedConnectionKey) -and
+        $sequence -le [uint64] (
+            $lastAdaptiveBackpressureSequenceByConnection[
+                $scopedConnectionKey])) {
+        [void] $outOfOrderAdaptiveBackpressureKeys.Add($operationKey)
+    }
+    $lastAdaptiveBackpressureSequenceByConnection[
+        $scopedConnectionKey] = $sequence
+
+    if (-not $expectedAdaptiveBackpressureKeys.Remove($operationKey)) {
+        [void] $orphanAdaptiveBackpressureKeys.Add($operationKey)
+        continue
+    }
+
+    $epochRowKey =
+        [string] $adaptiveBackpressureEpochByOperationKey[$operationKey]
+    if (-not $adaptiveBackpressureAggregateByEpoch.ContainsKey(
+            $epochRowKey)) {
+        $adaptiveBackpressureAggregateByEpoch[$epochRowKey] =
+            [ordered]@{
+                OperationCount = [uint64]0
+                DelayAppliedCount = [uint64]0
+                SafetyOverrideCount = [uint64]0
+                FallbackCount = [uint64]0
+                MaximumQueuedOperationCount = [uint64]0
+                MaximumRetainedCapacityBytes = [uint64]0
+            }
+    }
+
+    $aggregate =
+        $adaptiveBackpressureAggregateByEpoch[$epochRowKey]
+    $aggregate.OperationCount =
+        [uint64] $aggregate.OperationCount + 1
+    if ([bool] $record.observation.delayApplied) {
+        $aggregate.DelayAppliedCount =
+            [uint64] $aggregate.DelayAppliedCount + 1
+    }
+    if ([string] $record.observation.safetyOverride -ne 'None') {
+        $aggregate.SafetyOverrideCount =
+            [uint64] $aggregate.SafetyOverrideCount + 1
+    }
+    if ([bool] $record.observation.fallbackApplied) {
+        $aggregate.FallbackCount =
+            [uint64] $aggregate.FallbackCount + 1
+    }
+    $queuedOperationCount =
+        [uint64] $record.observation.queuedOperationCount
+    if ($queuedOperationCount -gt
+        [uint64] $aggregate.MaximumQueuedOperationCount) {
+        $aggregate.MaximumQueuedOperationCount = $queuedOperationCount
+    }
+    $retainedCapacityBytes =
+        [uint64] $record.observation.retainedCapacityBytes
+    if ($retainedCapacityBytes -gt
+        [uint64] $aggregate.MaximumRetainedCapacityBytes) {
+        $aggregate.MaximumRetainedCapacityBytes =
+            $retainedCapacityBytes
+    }
+}
+
+if ($null -ne $SourceAdaptiveBackpressureObservationRowCount -and
+    ($SourceAdaptiveBackpressureObservationRowCount |
+        Measure-Object -Sum).Sum -ne
+        $adaptiveBackpressureObservationRowCount) {
+    throw (
+        "Adaptive-backpressure source row counts do not match retained " +
+        "rows: sources=$((
+            $SourceAdaptiveBackpressureObservationRowCount |
+                Measure-Object -Sum).Sum), " +
+        "rows=$adaptiveBackpressureObservationRowCount.")
+}
+
+foreach ($epochRowKey in $adaptiveBackpressureSummaryByEpoch.Keys) {
+    $expected = $adaptiveBackpressureSummaryByEpoch[$epochRowKey]
+    $actual = if ($adaptiveBackpressureAggregateByEpoch.ContainsKey(
+            $epochRowKey)) {
+        $adaptiveBackpressureAggregateByEpoch[$epochRowKey]
+    }
+    else {
+        [ordered]@{
+            OperationCount = [uint64]0
+            DelayAppliedCount = [uint64]0
+            SafetyOverrideCount = [uint64]0
+            FallbackCount = [uint64]0
+            MaximumQueuedOperationCount = [uint64]0
+            MaximumRetainedCapacityBytes = [uint64]0
+        }
+    }
+    if ([uint64] $expected.OperationCount -ne
+            [uint64] $actual.OperationCount -or
+        [uint64] $expected.DelayAppliedCount -ne
+            [uint64] $actual.DelayAppliedCount -or
+        [uint64] $expected.SafetyOverrideCount -ne
+            [uint64] $actual.SafetyOverrideCount -or
+        [uint64] $expected.FallbackCount -ne
+            [uint64] $actual.FallbackCount -or
+        [uint64] $expected.MaximumQueuedOperationCount -ne
+            [uint64] $actual.MaximumQueuedOperationCount -or
+        [uint64] $expected.MaximumRetainedCapacityBytes -ne
+            [uint64] $actual.MaximumRetainedCapacityBytes) {
+        [void] $joinFailures.Add(
+            "$epochRowKey|backpressure-raw-aggregate")
+    }
+}
+
 foreach ($actorEpochRowKey in $actorEpochSummaryByRowKey.Keys) {
     $summary = $actorEpochSummaryByRowKey[$actorEpochRowKey]
     $actualObservationCount = if (
@@ -785,9 +1050,13 @@ $valid =
     $outOfOrderActorKeys.Count -eq 0 -and
     $orphanActorKeys.Count -eq 0 -and
     $expectedActorKeys.Count -eq 0 -and
+    $duplicateAdaptiveBackpressureKeys.Count -eq 0 -and
+    $outOfOrderAdaptiveBackpressureKeys.Count -eq 0 -and
+    $orphanAdaptiveBackpressureKeys.Count -eq 0 -and
+    $expectedAdaptiveBackpressureKeys.Count -eq 0 -and
     $joinFailures.Count -eq 0 -and
     $multiAxisRows.Count -eq 0 -and
-    $axisRecordCount -eq ($rowCount * 5)
+    $axisRecordCount -eq ($rowCount * 6)
 if (-not $valid) {
     throw (
         "Unified adaptive-runtime raw evidence failed semantic validation: " +
@@ -796,12 +1065,20 @@ if (-not $valid) {
         "actorOutOfOrder=$($outOfOrderActorKeys.Count), " +
         "actorOrphans=$($orphanActorKeys.Count), " +
         "actorMissing=$($expectedActorKeys.Count), " +
+        "backpressureDuplicates=$(
+            $duplicateAdaptiveBackpressureKeys.Count), " +
+        "backpressureOutOfOrder=$(
+            $outOfOrderAdaptiveBackpressureKeys.Count), " +
+        "backpressureOrphans=$(
+            $orphanAdaptiveBackpressureKeys.Count), " +
+        "backpressureMissing=$(
+            $expectedAdaptiveBackpressureKeys.Count), " +
         "joinFailures=$($joinFailures.Count), multiAxis=$($multiAxisRows.Count), " +
-        "axisRecords=$axisRecordCount, expectedAxisRecords=$($rowCount * 5).")
+        "axisRecords=$axisRecordCount, expectedAxisRecords=$($rowCount * 6).")
 }
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-validation-v8'
+    schemaVersion = 'adaptive-runtime-unified-raw-validation-v9'
     valid = $true
     rawEpochRowCount = $rowCount
     axisRecordCount = $axisRecordCount
@@ -809,12 +1086,24 @@ if (-not $valid) {
     actorEpochRowCount = $actorEpochRowCount
     actorObservationRowCount = $actorObservationRowCount
     bufferObservationRowCount = $bufferObservationRowCount
+    adaptiveBackpressureEpochRowCount =
+        $adaptiveBackpressureEpochRowCount
+    adaptiveBackpressureObservationRowCount =
+        $adaptiveBackpressureObservationRowCount
     duplicateKeyCount = $duplicateKeys.Count
     outOfOrderKeyCount = $outOfOrderKeys.Count
     duplicateActorKeyCount = $duplicateActorKeys.Count
     outOfOrderActorKeyCount = $outOfOrderActorKeys.Count
     orphanActorKeyCount = $orphanActorKeys.Count
     missingActorKeyCount = $expectedActorKeys.Count
+    duplicateAdaptiveBackpressureKeyCount =
+        $duplicateAdaptiveBackpressureKeys.Count
+    outOfOrderAdaptiveBackpressureKeyCount =
+        $outOfOrderAdaptiveBackpressureKeys.Count
+    orphanAdaptiveBackpressureKeyCount =
+        $orphanAdaptiveBackpressureKeys.Count
+    missingAdaptiveBackpressureKeyCount =
+        $expectedAdaptiveBackpressureKeys.Count
     joinFailureCount = $joinFailures.Count
     multiAxisVariationCount = $multiAxisRows.Count
 } | ConvertTo-Json -Depth 20

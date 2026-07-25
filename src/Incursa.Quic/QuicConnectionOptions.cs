@@ -210,4 +210,16 @@ public abstract class QuicConnectionOptions
     internal QuicBufferCopyObservationMode BufferCopyObservationMode { get; set; }
 
     internal IQuicBufferCopyEvidenceSink? BufferCopyEvidenceSink { get; set; }
+
+    // CONTEXT: Internal-only Stage 2 application-admission control. The
+    // conservative value may add one bounded dispatcher-turn wait but cannot
+    // reject work, raise a hard bound, or wait for network progress.
+    internal QuicAdaptiveBackpressurePolicyValue?
+        ForcedAdaptiveBackpressurePolicyValue { get; set; }
+
+    internal QuicAdaptiveBackpressureObservationMode
+        AdaptiveBackpressureObservationMode { get; set; }
+
+    internal IQuicAdaptiveBackpressureEvidenceSink?
+        AdaptiveBackpressureEvidenceSink { get; set; }
 }

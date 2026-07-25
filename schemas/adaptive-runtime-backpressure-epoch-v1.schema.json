@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-backpressure-epoch-v1.schema.json",
+  "title": "Adaptive Runtime Backpressure Epoch Summary v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policySnapshot",
+    "hasObservation",
+    "firstOperationSequence",
+    "lastOperationSequence",
+    "operationCount",
+    "delayAppliedCount",
+    "safetyOverrideCount",
+    "fallbackCount",
+    "maximumQueuedOperationCount",
+    "maximumRetainedCapacityBytes",
+    "validity",
+    "epochContractVersion"
+  ],
+  "properties": {
+    "policySnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "hasForcedValue",
+        "forcedValue",
+        "hasShadowRecommendation",
+        "shadowRecommendation",
+        "selectedValue",
+        "appliedValue",
+        "selectionSource",
+        "reasonCode",
+        "safetyOverride",
+        "decisionBoundary",
+        "latchLifetime",
+        "fallbackApplied",
+        "snapshotVersion"
+      ],
+      "properties": {
+        "mode": {
+          "enum": ["Disabled", "ObserveOnly", "Shadow"]
+        },
+        "hasForcedValue": { "type": "boolean" },
+        "forcedValue": {
+          "enum": ["LegacyCurrent", "EarlyDelay"]
+        },
+        "hasShadowRecommendation": { "type": "boolean" },
+        "shadowRecommendation": {
+          "enum": ["LegacyCurrent", "EarlyDelay"]
+        },
+        "selectedValue": {
+          "enum": ["LegacyCurrent", "EarlyDelay"]
+        },
+        "appliedValue": {
+          "enum": ["LegacyCurrent", "EarlyDelay"]
+        },
+        "selectionSource": {
+          "enum": ["LegacyCurrent", "Forced", "ShadowRule", "SafetyOverride"]
+        },
+        "reasonCode": {
+          "enum": [
+            "LegacyCurrent",
+            "ObserveOnly",
+            "Forced",
+            "ShadowEarlyDelay"
+          ]
+        },
+        "safetyOverride": { "const": "None" },
+        "decisionBoundary": {
+          "const": "NewApplicationAdmission"
+        },
+        "latchLifetime": {
+          "const": "ApplicationAdmission"
+        },
+        "fallbackApplied": { "const": false },
+        "snapshotVersion": {
+          "const": "quic-adaptive-backpressure-policy-snapshot-v1"
+        }
+      }
+    },
+    "hasObservation": { "type": "boolean" },
+    "firstOperationSequence": { "$ref": "#/$defs/unsignedInteger" },
+    "lastOperationSequence": { "$ref": "#/$defs/unsignedInteger" },
+    "operationCount": { "$ref": "#/$defs/unsignedInteger" },
+    "delayAppliedCount": { "$ref": "#/$defs/unsignedInteger" },
+    "safetyOverrideCount": { "$ref": "#/$defs/unsignedInteger" },
+    "fallbackCount": { "$ref": "#/$defs/unsignedInteger" },
+    "maximumQueuedOperationCount": {
+      "$ref": "#/$defs/unsignedInteger"
+    },
+    "maximumRetainedCapacityBytes": {
+      "$ref": "#/$defs/unsignedInteger"
+    },
+    "validity": { "type": ["string", "integer"] },
+    "epochContractVersion": {
+      "const": "quic-adaptive-backpressure-epoch-v1"
+    }
+  },
+  "$defs": {
+    "unsignedInteger": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

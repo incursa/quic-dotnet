@@ -1,0 +1,71 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0070",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Wait-only adaptive backpressure verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY",
+    "ARC-QUIC-CRT-0068",
+    "WI-QUIC-CRT-0069"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0191"
+  ],
+  "scope": "Verify the independently forceable legacy_current and early_delay adaptive_backpressure values, wait-only one-admission semantics, bounded observation and unified provenance, exact sample-scoped raw joins, safety fallback, cancellation and terminal authority, and force-legacy rollback without making a performance or active-behavior claim.",
+  "verification_method": "Canonical SpecTrace validation, deterministic requirement-home tests, schema and semantic validation, and focused application-send admission, queue, flow-control, cancellation, disposal, terminal, and ownership correctness tests.",
+  "preconditions": [
+    "Stage 0, all four Stage 1 axes, and buffer_copy_coalescing remain preserved.",
+    "receive_credit_publication and every adjacent applied policy remain legacy_current.",
+    "The stopped 55,658-row single-axis transform remains diagnostic_incomplete and untouched.",
+    "Performance measurement, campaigns, transforms, ML, CI work, push, active_internal, and production activation remain unauthorized."
+  ],
+  "procedure": [
+    "Validate SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY, ARC-QUIC-CRT-0068, WI-QUIC-CRT-0069, and VER-QUIC-CRT-0070 against the canonical model and reciprocal trace links.",
+    "Build the affected runtime, test project, and raw host in Release before testing.",
+    "Verify the closed legacy_current and early_delay values plus invalid closed-set rejection.",
+    "Verify disabled, observe-only, shadow, forced-legacy, and forced-early-delay modes with forced, recommended, selected, applied, source, reason, safety, latch, fallback, and version fields kept distinct.",
+    "Verify legacy_current never adds a wait and early_delay adds exactly one dispatcher or actor turn only when an earlier admitted application-send operation remains queued.",
+    "Verify the decision is evaluated once before stream reservation or owner admission and cannot wait for an external progress event or delay twice.",
+    "Verify missing, stale, saturated, contradictory, invalid, and out-of-domain input falls back to legacy_current even when early_delay is forced.",
+    "Verify lifecycle and unavailable-continuation safety overrides preserve the existing terminal or failure completion.",
+    "Verify cancellation after posting wins, a stale continuation is a no-op, and no admission is resurrected.",
+    "Verify simultaneous behavior-distinct forcing of any adjacent adaptive axis is rejected.",
+    "Verify force-legacy rollback preserves immediate admission, hard limits, queue order, ownership, completion, flow control, congestion, pacing, recovery, cancellation, disposal, reset, FIN, close, and shutdown authority.",
+    "Verify the configured policy snapshot remains in a unified epoch even when no admission is observed.",
+    "Verify observation, epoch, raw, unified evidence v8, unified raw v8, and manifest v9 schemas.",
+    "Verify sample-scoped backpressure rows are retained separately and join by exact source-scoped connection key and operation sequence to one inclusive epoch range.",
+    "Verify missing, duplicate, orphan, and out-of-order raw operation records fail semantic validation and exact operation, delay, safety, fallback, queue, and capacity aggregates are recomputed from members.",
+    "Verify distinct epoch and sample counts prevent admission records from being mislabeled as epoch-independent outcomes.",
+    "Run focused existing application-send queue, flow-control, cancellation, disposal, terminal, and ownership tests.",
+    "Confirm no performance, campaign, transform, ML, CI, push, active_internal, or production action occurred."
+  ],
+  "expected_result": "adaptive_backpressure is observable, shadowable, independently forceable, unified-row represented, guarded, and force-legacy rollback tested; early_delay can add only one immediately posted turn and cannot reject, wait for external progress, weaken authoritative limits, change ownership, or override cancellation and terminal behavior; sample and epoch evidence remains exactly attributable; and no active or performance decision is introduced.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0191.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0183.cs",
+    "src/Incursa.Quic/QuicAdaptiveBackpressurePolicy.cs",
+    "src/Incursa.Quic/QuicAdaptiveBackpressureEpochAccumulator.cs",
+    "src/Incursa.Quic/QuicConnectionOptions.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicAdaptiveRuntimeUnifiedEpochEvidence.cs",
+    "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
+    "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeUnifiedRawEvidence.ps1",
+    "schemas/adaptive-runtime-backpressure-observation-v1.schema.json",
+    "schemas/adaptive-runtime-backpressure-epoch-v1.schema.json",
+    "schemas/adaptive-runtime-backpressure-raw-v1.schema.json",
+    "schemas/adaptive-runtime-unified-epoch-evidence-v8.schema.json",
+    "schemas/adaptive-runtime-unified-epoch-raw-v8.schema.json",
+    "schemas/adaptive-runtime-unified-raw-export-manifest-v9.schema.json",
+    "docs/design/adaptive-runtime-policy-axis-implementation-matrix.md",
+    "docs/design/adaptive-runtime-policy-controller-state-machine.md",
+    "docs/design/adaptive-runtime-policy-observation-schema.md",
+    "docs/design/adaptive-runtime-policy-seam-inventory.md",
+    "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md"
+  ],
+  "status_summary": "Focused implementation verification is clean: the runtime seam, unified v8 evidence, raw v1 sample stream, schemas, exact joins, 20 axis cases, and the 141-case affected correctness band pass in Release. The four changed or new SpecTrace artifacts pass the canonical model, ID uniqueness, and reciprocal trace checks; the repo-wide canonical validator remains blocked by 2,698 pre-existing corpus errors. Measurement and active behavior remain frozen."
+}

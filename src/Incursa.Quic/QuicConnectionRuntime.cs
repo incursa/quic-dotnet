@@ -73,6 +73,8 @@ internal sealed partial class QuicConnectionRuntime :
     private const int UnconfiguredActorServiceObservationMode = -1;
     private const int UnconfiguredBufferCopyPolicyValue = -1;
     private const int UnconfiguredBufferCopyObservationMode = -1;
+    private const int UnconfiguredAdaptiveBackpressurePolicyValue = -1;
+    private const int UnconfiguredAdaptiveBackpressureObservationMode = -1;
     private const int UnconfiguredQueuedSendBurstPolicyMode = -1;
     private const int UnconfiguredQueuedSendBurstObservationMode = -1;
     private const int UnconfiguredOversizedWriteAdmissionPolicyMode = -1;
@@ -115,6 +117,10 @@ internal sealed partial class QuicConnectionRuntime :
     private int actorServiceObservationMode = UnconfiguredActorServiceObservationMode;
     private int bufferCopyPolicyValue = UnconfiguredBufferCopyPolicyValue;
     private int bufferCopyObservationMode = UnconfiguredBufferCopyObservationMode;
+    private int adaptiveBackpressurePolicyValue =
+        UnconfiguredAdaptiveBackpressurePolicyValue;
+    private int adaptiveBackpressureObservationMode =
+        UnconfiguredAdaptiveBackpressureObservationMode;
     private int queuedSendBurstPolicyMode = UnconfiguredQueuedSendBurstPolicyMode;
     private int queuedSendBurstObservationMode = UnconfiguredQueuedSendBurstObservationMode;
     private int oversizedWriteAdmissionPolicyMode =
@@ -148,6 +154,9 @@ internal sealed partial class QuicConnectionRuntime :
     private IQuicBufferReleaseEvidenceSink? bufferReleaseEvidenceSink;
     private long bufferCopyObservationSequence;
     private long bufferReleaseObservationSequence;
+    private long adaptiveBackpressureObservationSequence;
+    private IQuicAdaptiveBackpressureEvidenceSink?
+        adaptiveBackpressureEvidenceSink;
     private IQuicQueuedSendBurstEvidenceSink? queuedSendBurstEvidenceSink;
     private IQuicOversizedWriteAdmissionEvidenceSink? oversizedWriteAdmissionEvidenceSink;
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
@@ -323,6 +332,7 @@ internal sealed partial class QuicConnectionRuntime :
         private int oversizedWriteContinuationPosts;
         private int completed;
         private bool queuedForWriteRetry;
+        private bool adaptiveBackpressureAdmissionEvaluated;
         private bool hasOversizedWriteAdmissionResolution;
         private bool oversizedWrite;
 
@@ -359,6 +369,7 @@ internal sealed partial class QuicConnectionRuntime :
             oversizedWriteContinuationPosts = 0;
             completed = 0;
             queuedForWriteRetry = false;
+            adaptiveBackpressureAdmissionEvaluated = false;
             hasOversizedWriteAdmissionResolution = false;
             oversizedWrite = false;
             ownedStreamDataReleaseReason =
@@ -590,6 +601,20 @@ internal sealed partial class QuicConnectionRuntime :
             queuedForWriteRetry = false;
             return true;
         }
+
+        internal bool TryMarkAdaptiveBackpressureAdmissionEvaluated()
+        {
+            if (adaptiveBackpressureAdmissionEvaluated)
+            {
+                return false;
+            }
+
+            adaptiveBackpressureAdmissionEvaluated = true;
+            return true;
+        }
+
+        internal bool AdaptiveBackpressureAdmissionEvaluated =>
+            adaptiveBackpressureAdmissionEvaluated;
 
         internal void TrySetResult()
         {
@@ -1437,6 +1462,12 @@ internal sealed partial class QuicConnectionRuntime :
             options.BufferCopyObservationMode;
         QuicBufferCopyPolicyValue? forcedBufferCopyPolicyValue =
             options.ForcedBufferCopyPolicyValue;
+        QuicAdaptiveBackpressureObservationMode
+            requestedAdaptiveBackpressureObservationMode =
+                options.AdaptiveBackpressureObservationMode;
+        QuicAdaptiveBackpressurePolicyValue?
+            forcedAdaptiveBackpressurePolicyValue =
+                options.ForcedAdaptiveBackpressurePolicyValue;
         if (requestedApplicationSendTurnObservationMode is < QuicApplicationSendTurnObservationMode.Disabled
             or > QuicApplicationSendTurnObservationMode.Shadow)
         {
@@ -1538,6 +1569,17 @@ internal sealed partial class QuicConnectionRuntime :
         {
             QuicBufferCopyPolicy.ValidateValue(requestedBufferPolicyValue);
         }
+        QuicAdaptiveBackpressurePolicy.ValidateObservationMode(
+            requestedAdaptiveBackpressureObservationMode);
+        bool adaptiveBackpressureObservationEnabled =
+            requestedAdaptiveBackpressureObservationMode
+                != QuicAdaptiveBackpressureObservationMode.Disabled;
+        if (forcedAdaptiveBackpressurePolicyValue
+            is { } requestedAdaptiveBackpressurePolicyValue)
+        {
+            QuicAdaptiveBackpressurePolicy.ValidateValue(
+                requestedAdaptiveBackpressurePolicyValue);
+        }
         if (!applicationSendTurnObservationEnabled && options.ApplicationSendTurnEvidenceSink is not null)
         {
             throw new InvalidOperationException(
@@ -1612,6 +1654,20 @@ internal sealed partial class QuicConnectionRuntime :
         {
             throw new InvalidOperationException(
                 "Buffer-copy observe-only and shadow modes require an evidence sink.");
+        }
+
+        if (!adaptiveBackpressureObservationEnabled
+            && options.AdaptiveBackpressureEvidenceSink is not null)
+        {
+            throw new InvalidOperationException(
+                "Adaptive-backpressure evidence export requires observe-only or shadow mode.");
+        }
+
+        if (adaptiveBackpressureObservationEnabled
+            && options.AdaptiveBackpressureEvidenceSink is null)
+        {
+            throw new InvalidOperationException(
+                "Adaptive-backpressure observe-only and shadow modes require an evidence sink.");
         }
 
         bool applicationSendTurnTreatmentSelected =
@@ -1766,6 +1822,62 @@ internal sealed partial class QuicConnectionRuntime :
             }
         }
 
+        bool adaptiveBackpressureTreatmentSelected =
+            forcedAdaptiveBackpressurePolicyValue
+                is QuicAdaptiveBackpressurePolicyValue.EarlyDelay;
+        if (adaptiveBackpressureTreatmentSelected)
+        {
+            if (forcedMode is not null
+                and not QuicReceiveCreditPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Adaptive-backpressure policy requires the legacy_current receive-credit policy.");
+            }
+
+            if (forcedApplicationSendTurnMode is not null
+                and not QuicApplicationSendTurnPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Adaptive-backpressure policy requires the legacy_current application-send turn policy.");
+            }
+
+            if (forcedApplicationSendBatchMode is not null
+                and not QuicApplicationSendBatchPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Adaptive-backpressure policy requires the legacy_current application-send batch policy.");
+            }
+
+            if (forcedQueuedSendBurstMode is not null
+                and not QuicQueuedSendBurstPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Adaptive-backpressure policy requires the legacy_current queued-send burst policy.");
+            }
+
+            if (forcedOversizedWriteAdmissionMode is not null
+                and not QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Adaptive-backpressure policy requires the legacy_current oversized-write admission policy.");
+            }
+
+            if (forcedBufferCopyPolicyValue is not null
+                and not QuicBufferCopyPolicyValue.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Adaptive-backpressure policy requires the legacy_current buffer-copy policy.");
+            }
+        }
+
+        if (bufferCopyTreatmentSelected
+            && forcedAdaptiveBackpressurePolicyValue is not null
+                and not QuicAdaptiveBackpressurePolicyValue.LegacyCurrent)
+        {
+            throw new InvalidOperationException(
+                "Buffer-copy policy requires the legacy_current adaptive-backpressure policy.");
+        }
+
         if (applicationSendTurnObservationEnabled)
         {
             if (options.ApplicationSendTurnEvidenceSink is null)
@@ -1801,6 +1913,13 @@ internal sealed partial class QuicConnectionRuntime :
             ConfigureBufferCopyObservation(
                 requestedBufferCopyObservationMode,
                 options.BufferCopyEvidenceSink!);
+        }
+
+        if (adaptiveBackpressureObservationEnabled)
+        {
+            ConfigureAdaptiveBackpressureObservation(
+                requestedAdaptiveBackpressureObservationMode,
+                options.AdaptiveBackpressureEvidenceSink!);
         }
 
         if (options.AdaptiveRuntimeShadowEnabled)
@@ -1849,6 +1968,13 @@ internal sealed partial class QuicConnectionRuntime :
             if (forcedBufferCopyPolicyValue is { } shadowBufferPolicyValue)
             {
                 ConfigureBufferCopyPolicyValue(shadowBufferPolicyValue);
+            }
+
+            if (forcedAdaptiveBackpressurePolicyValue
+                is { } shadowAdaptiveBackpressurePolicyValue)
+            {
+                ConfigureAdaptiveBackpressurePolicyValue(
+                    shadowAdaptiveBackpressurePolicyValue);
             }
 
             if (applicationSendTurnObservationEnabled)
@@ -1924,6 +2050,13 @@ internal sealed partial class QuicConnectionRuntime :
         if (forcedBufferCopyPolicyValue is { } configuredBufferPolicyValue)
         {
             ConfigureBufferCopyPolicyValue(configuredBufferPolicyValue);
+        }
+
+        if (forcedAdaptiveBackpressurePolicyValue
+            is { } configuredAdaptiveBackpressurePolicyValue)
+        {
+            ConfigureAdaptiveBackpressurePolicyValue(
+                configuredAdaptiveBackpressurePolicyValue);
         }
 
         if (applicationSendTurnObservationEnabled)
@@ -2045,6 +2178,21 @@ internal sealed partial class QuicConnectionRuntime :
         }
     }
 
+    internal void ConfigureAdaptiveBackpressurePolicyValue(
+        QuicAdaptiveBackpressurePolicyValue value)
+    {
+        QuicAdaptiveBackpressurePolicy.ValidateValue(value);
+        if (Interlocked.CompareExchange(
+                ref adaptiveBackpressurePolicyValue,
+                (int)value,
+                UnconfiguredAdaptiveBackpressurePolicyValue)
+            != UnconfiguredAdaptiveBackpressurePolicyValue)
+        {
+            throw new InvalidOperationException(
+                "The adaptive-backpressure policy value has already been configured.");
+        }
+    }
+
     private void ConfigureApplicationSendTurnObservation(
         QuicApplicationSendTurnObservationMode mode,
         IQuicApplicationSendTurnEvidenceSink sink)
@@ -2124,6 +2272,23 @@ internal sealed partial class QuicConnectionRuntime :
         sendRuntime.ConfigureBufferCopyOperationObserver(this);
         streamRegistry.Bookkeeping.ConfigureBufferCopyOperationObserver(this);
         applicationSendQueue.ConfigureBufferCopyOperationObserver(this);
+    }
+
+    private void ConfigureAdaptiveBackpressureObservation(
+        QuicAdaptiveBackpressureObservationMode mode,
+        IQuicAdaptiveBackpressureEvidenceSink sink)
+    {
+        if (Interlocked.CompareExchange(
+                ref adaptiveBackpressureObservationMode,
+                (int)mode,
+                UnconfiguredAdaptiveBackpressureObservationMode)
+            != UnconfiguredAdaptiveBackpressureObservationMode)
+        {
+            throw new InvalidOperationException(
+                "The adaptive-backpressure observation mode has already been configured.");
+        }
+
+        adaptiveBackpressureEvidenceSink = sink;
     }
 
     private void ConfigureQueuedSendBurstObservation(
@@ -2494,6 +2659,35 @@ internal sealed partial class QuicConnectionRuntime :
             }
 
             return removed;
+        }
+    }
+
+    private bool TryRemovePendingStreamActionRequest(
+        long requestId,
+        StreamActionRequestCompletionSource expectedCompletion)
+    {
+        lock (pendingStreamActionRequestsGate)
+        {
+            if (!pendingStreamActionRequests.TryGetValue(
+                    requestId,
+                    out StreamActionRequestCompletionSource? currentCompletion)
+                || !ReferenceEquals(
+                    currentCompletion,
+                    expectedCompletion)
+                || !pendingStreamActionRequests.Remove(requestId))
+            {
+                return false;
+            }
+
+            if (expectedCompletion.TryClearQueuedForWriteRetry())
+            {
+                _ = pendingStreamWriteRetryRequests.Remove(
+                    requestId,
+                    out _,
+                    out _);
+            }
+
+            return true;
         }
     }
 
@@ -3063,6 +3257,132 @@ internal sealed partial class QuicConnectionRuntime :
             legalSourceSegmentCount,
             validity,
             lifecycleGuard);
+    }
+
+    internal bool AdaptiveBackpressureObservationEnabled =>
+        (Volatile.Read(ref adaptiveBackpressureObservationMode)
+            is (int)QuicAdaptiveBackpressureObservationMode.ObserveOnly
+                or (int)QuicAdaptiveBackpressureObservationMode.Shadow)
+        && adaptiveBackpressureEvidenceSink is not null;
+
+    internal bool AdaptiveBackpressureDecisionEnabled =>
+        Volatile.Read(ref adaptiveBackpressurePolicyValue)
+            != UnconfiguredAdaptiveBackpressurePolicyValue
+        || Volatile.Read(ref adaptiveBackpressureObservationMode)
+            is (int)QuicAdaptiveBackpressureObservationMode.ObserveOnly
+                or (int)QuicAdaptiveBackpressureObservationMode.Shadow;
+
+    internal QuicAdaptiveBackpressureConfiguredPolicySnapshot
+        CaptureConfiguredAdaptiveBackpressurePolicySnapshot()
+    {
+        int configuredMode = Volatile.Read(
+            ref adaptiveBackpressureObservationMode);
+        QuicAdaptiveBackpressureObservationMode mode =
+            configuredMode switch
+            {
+                (int)QuicAdaptiveBackpressureObservationMode
+                    .ObserveOnly =>
+                        QuicAdaptiveBackpressureObservationMode
+                            .ObserveOnly,
+                (int)QuicAdaptiveBackpressureObservationMode.Shadow =>
+                    QuicAdaptiveBackpressureObservationMode.Shadow,
+                _ => QuicAdaptiveBackpressureObservationMode.Disabled,
+            };
+        int configuredValue = Volatile.Read(
+            ref adaptiveBackpressurePolicyValue);
+        QuicAdaptiveBackpressurePolicyValue? forcedValue =
+            configuredValue switch
+            {
+                (int)QuicAdaptiveBackpressurePolicyValue.LegacyCurrent =>
+                    QuicAdaptiveBackpressurePolicyValue.LegacyCurrent,
+                (int)QuicAdaptiveBackpressurePolicyValue.EarlyDelay =>
+                    QuicAdaptiveBackpressurePolicyValue.EarlyDelay,
+                _ => null,
+            };
+        return QuicAdaptiveBackpressurePolicy.CreateConfiguredSnapshot(
+            mode,
+            forcedValue);
+    }
+
+    internal QuicAdaptiveBackpressurePolicyDecision
+        ResolveAdaptiveBackpressurePolicyDecision(
+            int queuedOperationCount,
+            long retainedCapacityBytes,
+            bool continuationAvailable = true,
+            bool admissionAlreadyEvaluated = false,
+            QuicAdaptiveBackpressureValidity validity =
+                QuicAdaptiveBackpressureValidity.None)
+    {
+        QuicAdaptiveBackpressureConfiguredPolicySnapshot configured =
+            CaptureConfiguredAdaptiveBackpressurePolicySnapshot();
+        QuicAdaptiveBackpressurePolicyValue? forcedValue =
+            configured.HasForcedValue
+                ? configured.ForcedValue
+                : null;
+        QuicAdaptiveRuntimeLifecycle lifecycle =
+            CaptureAdaptiveRuntimeLifecycleFlags();
+        bool lifecycleGuard =
+            (lifecycle
+                & (QuicAdaptiveRuntimeLifecycle.Terminal
+                    | QuicAdaptiveRuntimeLifecycle.Disposed)) != 0;
+        return QuicAdaptiveBackpressurePolicy.Evaluate(
+            configured.Mode,
+            forcedValue,
+            queuedOperationCount,
+            retainedCapacityBytes,
+            validity,
+            lifecycleGuard,
+            continuationAvailable,
+            admissionAlreadyEvaluated);
+    }
+
+    private void TryPublishAdaptiveBackpressureObservation(
+        long requestId,
+        in QuicAdaptiveBackpressurePolicyDecision decision)
+    {
+        IQuicAdaptiveBackpressureEvidenceSink? sink =
+            adaptiveBackpressureEvidenceSink;
+        if (sink is null || !AdaptiveBackpressureObservationEnabled)
+        {
+            return;
+        }
+
+        ulong operationSequence =
+            unchecked((ulong)Interlocked.Increment(
+                ref adaptiveBackpressureObservationSequence));
+        QuicAdaptiveBackpressureObservation observation = new(
+            operationSequence,
+            requestId,
+            decision.Mode,
+            decision.HasForcedValue
+                ? decision.ForcedValue
+                : null,
+            decision.HasShadowRecommendation
+                ? decision.ShadowRecommendation
+                : null,
+            decision.SelectedValue,
+            decision.AppliedValue,
+            decision.SelectionSource,
+            decision.ReasonCode,
+            decision.SafetyOverride,
+            decision.DecisionBoundary,
+            decision.LatchLifetime,
+            decision.FallbackApplied,
+            decision.DelayApplied,
+            decision.QueuedOperationCount,
+            decision.RetainedCapacityBytes,
+            Phase,
+            IsDisposed,
+            decision.Validity);
+        try
+        {
+            _ = sink.TryPublish(in observation);
+        }
+        catch (Exception)
+        {
+            // Admission evidence is diagnostic-only. A failed sink cannot
+            // reject work, change completion, or affect runtime progress.
+        }
     }
 
     internal QuicBufferCopyLifetimeToken TryPublishBufferCopyObservation(

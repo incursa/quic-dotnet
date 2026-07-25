@@ -44,6 +44,8 @@ var oversizedWriteAdmissionPolicy = ResolveOversizedWriteAdmissionPolicy(
     Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_OVERSIZED_WRITE_ADMISSION_POLICY"));
 var bufferCopyPolicy = ResolveBufferCopyPolicy(
     Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_BUFFER_COPY_POLICY"));
+var adaptiveBackpressurePolicy = ResolveAdaptiveBackpressurePolicy(
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADAPTIVE_BACKPRESSURE_POLICY"));
 var stage1AxisSelected =
     applicationSendTurnPolicy.ForcedMode is not null
     || applicationSendTurnPolicy.ObservationMode != QuicApplicationSendTurnObservationMode.Disabled
@@ -62,16 +64,23 @@ var bufferCopyAxisSelected =
     bufferCopyPolicy.ForcedValue is not null
     || bufferCopyPolicy.ObservationMode
         != QuicBufferCopyObservationMode.Disabled;
+var adaptiveBackpressureAxisSelected =
+    adaptiveBackpressurePolicy.ForcedValue is not null
+    || adaptiveBackpressurePolicy.ObservationMode
+        != QuicAdaptiveBackpressureObservationMode.Disabled;
 var forcedAdaptiveAxisCount =
     forcedStage1AxisCount
-    + (bufferCopyPolicy.ForcedValue is null ? 0 : 1);
+    + (bufferCopyPolicy.ForcedValue is null ? 0 : 1)
+    + (adaptiveBackpressurePolicy.ForcedValue is null ? 0 : 1);
 if (forcedAdaptiveAxisCount > 1)
 {
     throw new InvalidOperationException(
         "Only one adaptive-runtime policy axis can be forced by a raw QUIC host process.");
 }
 
-if ((stage1AxisSelected || bufferCopyAxisSelected)
+if ((stage1AxisSelected
+        || bufferCopyAxisSelected
+        || adaptiveBackpressureAxisSelected)
     && adaptiveRuntimePolicy.ForcedMode is not null
         and not QuicReceiveCreditPolicyMode.LegacyCurrent)
 {
@@ -83,7 +92,8 @@ var adaptiveInstrumentationEnabled =
     adaptiveRuntimePolicy.ForcedMode is not null
     || adaptiveRuntimePolicy.ShadowEnabled
     || stage1AxisSelected
-    || bufferCopyAxisSelected;
+    || bufferCopyAxisSelected
+    || adaptiveBackpressureAxisSelected;
 var sendTurnObservationMode = adaptiveInstrumentationEnabled
     ? EnableUnifiedSendTurnObservation(applicationSendTurnPolicy.ObservationMode)
     : applicationSendTurnPolicy.ObservationMode;
@@ -100,6 +110,11 @@ var bufferObservationMode = adaptiveInstrumentationEnabled
     ? EnableUnifiedBufferCopyObservation(
         bufferCopyPolicy.ObservationMode)
     : bufferCopyPolicy.ObservationMode;
+var adaptiveBackpressureObservationMode =
+    adaptiveInstrumentationEnabled
+        ? EnableUnifiedAdaptiveBackpressureObservation(
+            adaptiveBackpressurePolicy.ObservationMode)
+        : adaptiveBackpressurePolicy.ObservationMode;
 QuicAdaptiveRuntimeStage1PolicySnapshot? configuredStage1Policy =
     adaptiveInstrumentationEnabled
         ? QuicAdaptiveRuntimeStage1ConfiguredPolicy.Create(
@@ -118,10 +133,18 @@ QuicBufferCopyConfiguredPolicySnapshot? configuredBufferCopyPolicy =
             bufferObservationMode,
             bufferCopyPolicy.ForcedValue)
         : null;
+QuicAdaptiveBackpressureConfiguredPolicySnapshot?
+    configuredAdaptiveBackpressurePolicy =
+        adaptiveInstrumentationEnabled
+            ? QuicAdaptiveBackpressurePolicy.CreateConfiguredSnapshot(
+                adaptiveBackpressureObservationMode,
+                adaptiveBackpressurePolicy.ForcedValue)
+            : null;
 var epochPublisher = adaptiveInstrumentationEnabled
     ? new AdaptiveRuntimeEpochPublisher(
         configuredStage1Policy,
-        configuredBufferCopyPolicy)
+        configuredBufferCopyPolicy,
+        configuredAdaptiveBackpressurePolicy)
     : null;
 var echoResponses = string.Equals(payloadDirection, "bidirectional", StringComparison.OrdinalIgnoreCase);
 var downloadPayload = string.Equals(payloadDirection, "server-to-client", StringComparison.OrdinalIgnoreCase)
@@ -178,7 +201,9 @@ var listenerOptions = new QuicListenerOptions
                 UnidirectionalStream = RawQuicReceiveWindowBytes,
             },
             ForcedReceiveCreditPolicyMode =
-                stage1AxisSelected || bufferCopyAxisSelected
+                stage1AxisSelected
+                    || bufferCopyAxisSelected
+                    || adaptiveBackpressureAxisSelected
                 ? QuicReceiveCreditPolicyMode.LegacyCurrent
                 : adaptiveRuntimePolicy.ForcedMode,
             ForcedApplicationSendTurnPolicyMode = applicationSendTurnPolicy.ForcedMode,
@@ -230,6 +255,15 @@ var listenerOptions = new QuicListenerOptions
                     != QuicBufferCopyObservationMode.Disabled
                 ? connectionSinks?.BufferCopyEvidenceSink
                 : null,
+            ForcedAdaptiveBackpressurePolicyValue =
+                adaptiveBackpressurePolicy.ForcedValue,
+            AdaptiveBackpressureObservationMode =
+                adaptiveBackpressureObservationMode,
+            AdaptiveBackpressureEvidenceSink =
+                adaptiveBackpressureObservationMode
+                    != QuicAdaptiveBackpressureObservationMode.Disabled
+                ? connectionSinks?.AdaptiveBackpressureEvidenceSink
+                : null,
             ServerAuthenticationOptions = new SslServerAuthenticationOptions
             {
                 ServerCertificate = certificate,
@@ -254,14 +288,16 @@ Console.WriteLine($"QUIC_APPLICATION_SEND_TURN_POLICY={applicationSendTurnPolicy
 Console.WriteLine($"QUIC_APPLICATION_SEND_BATCH_POLICY={applicationSendBatchPolicy.Name}");
 Console.WriteLine($"QUIC_QUEUED_SEND_BURST_POLICY={queuedSendBurstPolicy.Name}");
 Console.WriteLine($"QUIC_OVERSIZED_WRITE_ADMISSION_POLICY={oversizedWriteAdmissionPolicy.Name}");
+Console.WriteLine($"QUIC_ADAPTIVE_BACKPRESSURE_POLICY={adaptiveBackpressurePolicy.Name}");
 if (adaptiveInstrumentationEnabled)
 {
     Console.WriteLine("QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=adaptive-runtime-epoch-raw-v2");
-    Console.WriteLine("QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_CONTRACT=adaptive-runtime-unified-epoch-raw-v7");
+    Console.WriteLine("QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_CONTRACT=adaptive-runtime-unified-epoch-raw-v8");
     Console.WriteLine("QUIC_ACTOR_SERVICE_EVIDENCE_CONTRACT=quic-actor-service-epoch-v5");
     Console.WriteLine("QUIC_BUFFER_COPY_EVIDENCE_CONTRACT=quic-buffer-copy-epoch-v4");
     Console.WriteLine("QUIC_BUFFER_COPY_OPERATION_EVIDENCE_CONTRACT=quic-buffer-copy-raw-v4");
     Console.WriteLine("QUIC_BUFFER_RELEASE_EVIDENCE_CONTRACT=quic-buffer-release-raw-v7");
+    Console.WriteLine("QUIC_ADAPTIVE_BACKPRESSURE_EVIDENCE_CONTRACT=quic-adaptive-backpressure-raw-v1");
 }
 if (applicationSendTurnPolicy.ForcedMode is not null)
 {
@@ -504,6 +540,39 @@ static (
     };
 }
 
+static (
+    string Name,
+    QuicAdaptiveBackpressurePolicyValue? ForcedValue,
+    QuicAdaptiveBackpressureObservationMode ObservationMode)
+    ResolveAdaptiveBackpressurePolicy(string? value)
+{
+    return value?.Trim().ToLowerInvariant() switch
+    {
+        null or "" => (
+            "unset",
+            null,
+            QuicAdaptiveBackpressureObservationMode.Disabled),
+        "legacy_current" => (
+            "legacy_current",
+            QuicAdaptiveBackpressurePolicyValue.LegacyCurrent,
+            QuicAdaptiveBackpressureObservationMode.Disabled),
+        "early_delay" => (
+            "early_delay",
+            QuicAdaptiveBackpressurePolicyValue.EarlyDelay,
+            QuicAdaptiveBackpressureObservationMode.Disabled),
+        "observe_only" => (
+            "observe_only",
+            null,
+            QuicAdaptiveBackpressureObservationMode.ObserveOnly),
+        "shadow" => (
+            "shadow",
+            null,
+            QuicAdaptiveBackpressureObservationMode.Shadow),
+        _ => throw new InvalidOperationException(
+            "PROTOCOL_LAB_INCURSA_RAW_QUIC_ADAPTIVE_BACKPRESSURE_POLICY must be unset, legacy_current, early_delay, observe_only, or shadow."),
+    };
+}
+
 static QuicApplicationSendTurnObservationMode EnableUnifiedSendTurnObservation(
     QuicApplicationSendTurnObservationMode mode)
     => mode == QuicApplicationSendTurnObservationMode.Disabled
@@ -532,6 +601,13 @@ static QuicBufferCopyObservationMode EnableUnifiedBufferCopyObservation(
     QuicBufferCopyObservationMode mode)
     => mode == QuicBufferCopyObservationMode.Disabled
         ? QuicBufferCopyObservationMode.Shadow
+        : mode;
+
+static QuicAdaptiveBackpressureObservationMode
+    EnableUnifiedAdaptiveBackpressureObservation(
+        QuicAdaptiveBackpressureObservationMode mode)
+    => mode == QuicAdaptiveBackpressureObservationMode.Disabled
+        ? QuicAdaptiveBackpressureObservationMode.Shadow
         : mode;
 
 static async Task HandleConnectionAsync(QuicConnection connection, int connectionIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool capacitySummaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes, int? boundedFinalEchoBytes)
@@ -888,9 +964,13 @@ internal sealed class AdaptiveRuntimeEpochPublisher
     private const string BufferCopyOutputPrefix = "QUIC_BUFFER_COPY_OPERATION_EVIDENCE_JSON=";
     private const string BufferReleaseOutputPrefix = "QUIC_BUFFER_RELEASE_EVIDENCE_JSON=";
     private const string BufferEvidenceFailureOutputPrefix = "QUIC_BUFFER_EVIDENCE_FAILURE_JSON=";
+    private const string AdaptiveBackpressureOutputPrefix =
+        "QUIC_ADAPTIVE_BACKPRESSURE_EVIDENCE_JSON=";
     private readonly QuicAdaptiveRuntimeStage1PolicySnapshot? configuredStage1Policy;
     private readonly QuicBufferCopyConfiguredPolicySnapshot?
         configuredBufferCopyPolicy;
+    private readonly QuicAdaptiveBackpressureConfiguredPolicySnapshot?
+        configuredAdaptiveBackpressurePolicy;
     private readonly Channel<AdaptiveRuntimeEpochRecord> epochs = Channel.CreateBounded<AdaptiveRuntimeEpochRecord>(
         new BoundedChannelOptions(4096)
         {
@@ -932,16 +1012,23 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         CreateEvidenceChannel<BufferCopyEvidenceRecord>();
     private readonly Channel<BufferReleaseEvidenceRecord> bufferReleases =
         CreateEvidenceChannel<BufferReleaseEvidenceRecord>();
+    private readonly Channel<AdaptiveBackpressureEvidenceRecord>
+        adaptiveBackpressureObservations =
+            CreateEvidenceChannel<AdaptiveBackpressureEvidenceRecord>();
     private long nextConnectionKey;
 
     internal AdaptiveRuntimeEpochPublisher(
         QuicAdaptiveRuntimeStage1PolicySnapshot? configuredStage1Policy,
         QuicBufferCopyConfiguredPolicySnapshot?
-            configuredBufferCopyPolicy)
+            configuredBufferCopyPolicy,
+        QuicAdaptiveBackpressureConfiguredPolicySnapshot?
+            configuredAdaptiveBackpressurePolicy)
     {
         this.configuredStage1Policy = configuredStage1Policy;
         this.configuredBufferCopyPolicy =
             configuredBufferCopyPolicy;
+        this.configuredAdaptiveBackpressurePolicy =
+            configuredAdaptiveBackpressurePolicy;
         _ = WriteEpochsAsync();
         _ = WriteApplicationSendTurnProvenanceAsync();
         _ = WriteApplicationSendTurnEvidenceAsync();
@@ -953,6 +1040,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         _ = WriteActorServiceObservationsAsync();
         _ = WriteBufferCopiesAsync();
         _ = WriteBufferReleasesAsync();
+        _ = WriteAdaptiveBackpressureObservationsAsync();
     }
 
     internal ConnectionSinks CreateConnectionSinks()
@@ -965,7 +1053,10 @@ internal sealed class AdaptiveRuntimeEpochPublisher
                     "Unified adaptive-runtime evidence requires a configured Stage 1 policy snapshot."),
             configuredBufferCopyPolicy
                 ?? throw new InvalidOperationException(
-                    "Unified adaptive-runtime evidence requires a configured buffer-copy policy snapshot."));
+                    "Unified adaptive-runtime evidence requires a configured buffer-copy policy snapshot."),
+            configuredAdaptiveBackpressurePolicy
+                ?? throw new InvalidOperationException(
+                    "Unified adaptive-runtime evidence requires a configured adaptive-backpressure policy snapshot."));
         return sink.CreateSinks();
     }
 
@@ -1164,6 +1255,28 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         }
     }
 
+    private async Task WriteAdaptiveBackpressureObservationsAsync()
+    {
+        try
+        {
+            await foreach (AdaptiveBackpressureEvidenceRecord observation
+                in adaptiveBackpressureObservations.Reader.ReadAllAsync())
+            {
+                Console.WriteLine(
+                    AdaptiveBackpressureOutputPrefix
+                    + JsonSerializer.Serialize(
+                        observation,
+                        AdaptiveRuntimeEpochJsonContext.Default
+                            .AdaptiveBackpressureEvidenceRecord));
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(
+                $"IncursaRawQuicServer adaptive-backpressure evidence writer stopped: {ex.Message}");
+        }
+    }
+
     private sealed class ConnectionSink :
         IQuicApplicationSendTurnPolicyProvenanceSink,
         IQuicApplicationSendTurnEvidenceSink,
@@ -1173,6 +1286,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         IQuicActorServiceEvidenceSink,
         IQuicBufferCopyEvidenceSink,
         IQuicBufferReleaseEvidenceSink,
+        IQuicAdaptiveBackpressureEvidenceSink,
         IQuicAdaptiveRuntimeUnifiedEpochEvidenceSink
     {
         private readonly AdaptiveRuntimeEpochPublisher owner;
@@ -1185,19 +1299,23 @@ internal sealed class AdaptiveRuntimeEpochPublisher
             string connectionKey,
             QuicAdaptiveRuntimeStage1PolicySnapshot configuredStage1Policy,
             QuicBufferCopyConfiguredPolicySnapshot
-                configuredBufferCopyPolicy)
+                configuredBufferCopyPolicy,
+            QuicAdaptiveBackpressureConfiguredPolicySnapshot
+                configuredAdaptiveBackpressurePolicy)
         {
             this.owner = owner;
             this.connectionKey = connectionKey;
             unifiedAccumulator = new(
                 in configuredStage1Policy,
                 in configuredBufferCopyPolicy,
+                in configuredAdaptiveBackpressurePolicy,
                 this);
         }
 
         internal ConnectionSinks CreateSinks()
             => new(
                 unifiedAccumulator,
+                this,
                 this,
                 this,
                 this,
@@ -1223,7 +1341,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
                     evidence.Stage1));
             bool unifiedPublished = owner.unifiedEpochs.Writer.TryWrite(
                 new UnifiedAdaptiveRuntimeEpochRecord(
-                    "adaptive-runtime-unified-epoch-raw-v7",
+                    "adaptive-runtime-unified-epoch-raw-v8",
                     connectionKey,
                     evidence));
             if (!rawPublished || !stage1Published || !unifiedPublished)
@@ -1353,6 +1471,20 @@ internal sealed class AdaptiveRuntimeEpochPublisher
 
             return published;
         }
+
+        public bool TryPublish(
+            in QuicAdaptiveBackpressureObservation observation)
+        {
+            bool accumulated =
+                unifiedAccumulator.TryPublish(in observation);
+            bool rawPublished =
+                owner.adaptiveBackpressureObservations.Writer.TryWrite(
+                    new AdaptiveBackpressureEvidenceRecord(
+                        "quic-adaptive-backpressure-raw-v1",
+                        connectionKey,
+                        observation));
+            return accumulated && rawPublished;
+        }
     }
 
     private void TryReportUnifiedEpochExportFailure(
@@ -1445,7 +1577,9 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         IQuicQueuedSendBurstEvidenceSink QueuedSendBurstEvidenceSink,
         IQuicOversizedWriteAdmissionEvidenceSink OversizedWriteAdmissionEvidenceSink,
         IQuicActorServiceEvidenceSink ActorServiceEvidenceSink,
-        IQuicBufferCopyEvidenceSink BufferCopyEvidenceSink);
+        IQuicBufferCopyEvidenceSink BufferCopyEvidenceSink,
+        IQuicAdaptiveBackpressureEvidenceSink
+            AdaptiveBackpressureEvidenceSink);
 }
 
 internal readonly record struct AdaptiveRuntimeEpochRecord(
@@ -1523,6 +1657,11 @@ internal readonly record struct BufferCopyEvidenceRecord(
     string ConnectionKey,
     QuicBufferCopyObservation Observation);
 
+internal readonly record struct AdaptiveBackpressureEvidenceRecord(
+    string SchemaVersion,
+    string ConnectionKey,
+    QuicAdaptiveBackpressureObservation Observation);
+
 internal readonly record struct BufferEvidenceExportFailureRecord(
     string SchemaVersion,
     string ConnectionKey,
@@ -1543,6 +1682,7 @@ internal readonly record struct BufferEvidenceExportFailureRecord(
 [System.Text.Json.Serialization.JsonSerializable(typeof(ActorServiceEvidenceExportFailureRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(BufferCopyEvidenceRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(BufferReleaseEvidenceRecord))]
+[System.Text.Json.Serialization.JsonSerializable(typeof(AdaptiveBackpressureEvidenceRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(BufferEvidenceExportFailureRecord))]
 [System.Text.Json.Serialization.JsonSourceGenerationOptions(
     PropertyNamingPolicy = System.Text.Json.Serialization.JsonKnownNamingPolicy.CamelCase,

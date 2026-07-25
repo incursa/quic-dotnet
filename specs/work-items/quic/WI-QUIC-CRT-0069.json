@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0069",
+  "artifact_type": "work_item",
+  "status": "in_progress",
+  "title": "Implement the wait-only adaptive backpressure axis",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Implement REQ-QUIC-CRT-0191 as a closed legacy_current and early_delay application-admission seam with force, observe-only, shadow, safety fallback, unified evidence, exact raw joins, and force-legacy rollback while measurement and active behavior remain frozen.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY",
+    "ARC-QUIC-CRT-0068",
+    "VER-QUIC-CRT-0070"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0068"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0070"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0191"
+  ],
+  "planned_changes": "Add the closed policy enums and deterministic evaluator; add one-time application-admission latching and one immediately posted continuation; propagate internal listener and connection options; keep disabled, observe-only, shadow, forced-legacy, and forced-early-delay identities distinct; keep safety guards authoritative; add bounded operation and epoch evidence; extend unified evidence/raw to v8 and its export manifest to v9; preserve sample-scoped admission records in a separate append-only stream with exact source, connection, and operation-sequence joins; add deterministic mechanism, fallback, adjacent-axis, cancellation, schema, semantic-validator, and rollback tests; and synchronize the matrix, seam, observation, controller, Stage 2, schema, and evidence documents.",
+  "verification_plan": "Build the narrow affected projects in Release. Run REQ-QUIC-CRT-0191 and the unified REQ-QUIC-CRT-0183 home. Verify every forced value, shadow non-application, exactly one delayed turn, no-backlog behavior, force-legacy rollback, lifecycle and continuation guards, missing, stale, saturated, contradictory, invalid, and out-of-domain fallback, cancellation after posting, invalid configuration, adjacent-axis rejection, configured empty epochs, schemas, exact sample-to-epoch joins, aggregate recomputation, and raw manifest counts. Run focused application-send queue, flow-control, cancellation, disposal, terminal, and ownership homes. Do not run performance, campaigns, transforms, ML, CI, or active behavior.",
+  "out_of_scope": [
+    "Performance acceptance or threshold tuning",
+    "Rejection, synchronous failure, or a public backpressure API",
+    "Waiting for ACK, credit, peer, network, congestion, pacing, socket, or recovery progress",
+    "Raising or replacing hard queue, buffer, stream, flow-control, packet, congestion, pacing, recovery, or ownership limits",
+    "Campaign, dataset, normalization, curation, split, or ML execution",
+    "CI changes, push, active_internal, or production activation"
+  ]
+}

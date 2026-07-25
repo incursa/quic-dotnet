@@ -1081,7 +1081,8 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
                     'adaptive-runtime-unified-epoch-raw-v3',
                     'adaptive-runtime-unified-epoch-raw-v4',
                     'adaptive-runtime-unified-epoch-raw-v5',
-                    'adaptive-runtime-unified-epoch-raw-v7')) {
+                    'adaptive-runtime-unified-epoch-raw-v7',
+                    'adaptive-runtime-unified-epoch-raw-v8')) {
                 $contractFailures.Add(
                     "$sampleId`: unified adaptive-runtime epoch contract was not reported.")
             }

@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-backpressure-observation-v1.schema.json",
+  "title": "Adaptive Runtime Backpressure Observation v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "operationSequence",
+    "requestId",
+    "mode",
+    "forcedValue",
+    "shadowRecommendation",
+    "selectedValue",
+    "appliedValue",
+    "selectionSource",
+    "reasonCode",
+    "safetyOverride",
+    "decisionBoundary",
+    "latchLifetime",
+    "fallbackApplied",
+    "delayApplied",
+    "queuedOperationCount",
+    "retainedCapacityBytes",
+    "phaseAfter",
+    "disposalStarted",
+    "validity",
+    "policyAxisId",
+    "observationContractVersion",
+    "ruleVersion",
+    "snapshotVersion",
+    "reasonVersion",
+    "provenanceVersion"
+  ],
+  "properties": {
+    "operationSequence": { "type": "integer", "minimum": 1 },
+    "requestId": { "type": "integer", "minimum": 1 },
+    "mode": {
+      "enum": ["Disabled", "ObserveOnly", "Shadow"]
+    },
+    "forcedValue": {
+      "type": ["string", "null"],
+      "enum": ["LegacyCurrent", "EarlyDelay", null]
+    },
+    "shadowRecommendation": {
+      "type": ["string", "null"],
+      "enum": ["LegacyCurrent", "EarlyDelay", null]
+    },
+    "selectedValue": {
+      "enum": ["LegacyCurrent", "EarlyDelay"]
+    },
+    "appliedValue": {
+      "enum": ["LegacyCurrent", "EarlyDelay"]
+    },
+    "selectionSource": {
+      "enum": ["LegacyCurrent", "Forced", "ShadowRule", "SafetyOverride"]
+    },
+    "reasonCode": {
+      "enum": [
+        "LegacyCurrent",
+        "ObserveOnly",
+        "Forced",
+        "ShadowEarlyDelay",
+        "NoBacklog",
+        "DelayAlreadyApplied",
+        "MissingInput",
+        "StaleInput",
+        "ArithmeticSaturated",
+        "Contradictory",
+        "OutOfDomain",
+        "InvalidInput",
+        "LifecycleGuard",
+        "ContinuationUnavailable"
+      ]
+    },
+    "safetyOverride": {
+      "enum": [
+        "None",
+        "InvalidObservation",
+        "Lifecycle",
+        "ContinuationUnavailable"
+      ]
+    },
+    "decisionBoundary": {
+      "const": "NewApplicationAdmission"
+    },
+    "latchLifetime": {
+      "const": "ApplicationAdmission"
+    },
+    "fallbackApplied": { "type": "boolean" },
+    "delayApplied": { "type": "boolean" },
+    "queuedOperationCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "retainedCapacityBytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "phaseAfter": { "type": ["string", "integer"] },
+    "disposalStarted": { "type": "boolean" },
+    "validity": { "type": ["string", "integer"] },
+    "policyAxisId": { "const": "adaptive_backpressure" },
+    "observationContractVersion": {
+      "const": "quic-adaptive-backpressure-observation-v1"
+    },
+    "ruleVersion": {
+      "const": "quic-adaptive-backpressure-early-delay-rule-v1"
+    },
+    "snapshotVersion": {
+      "const": "quic-adaptive-backpressure-policy-snapshot-v1"
+    },
+    "reasonVersion": {
+      "const": "quic-adaptive-backpressure-reason-v1"
+    },
+    "provenanceVersion": {
+      "const": "quic-adaptive-backpressure-provenance-v1"
+    }
+  }
+}

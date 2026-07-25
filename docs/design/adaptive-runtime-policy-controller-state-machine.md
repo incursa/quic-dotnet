@@ -4,8 +4,9 @@ title: "Adaptive Runtime Controller State Machine"
 
 # Adaptive Runtime Controller State Machine
 
-Status: receive-credit, all four Stage 1 send-path axes, and
-`buffer_copy_coalescing` force/observe/shadow runtimes implemented;
+Status: receive-credit, all four Stage 1 send-path axes,
+`buffer_copy_coalescing`, and `adaptive_backpressure`
+force/observe/shadow runtimes implemented;
 measurement and broader campaign verification frozen; actor and fairness
 axes remain blocked on reviewed safe mechanisms; active policy blocked
 
@@ -88,6 +89,22 @@ congestion, pacing, anti-amplification, recovery, packet protection, ownership,
 or terminal release. Shadow recommends while applying legacy; invalid,
 missing, stale, saturated, contradictory, out-of-domain, or lifecycle state
 falls back to legacy even under forcing.
+
+The implemented `adaptive_backpressure` selector resolves `legacy_current`
+or `early_delay` exactly once for a new application admission before stream
+reservation or owner admission. `legacy_current` continues immediately.
+`early_delay` posts one continuation and adds at most one dispatcher/actor
+turn only when a previously admitted application-send operation remains
+queued. The continuation is posted immediately and the policy is not
+reevaluated, so it never waits for an ACK, credit, congestion, pacing, socket,
+or peer event. It cannot reject the operation, raise a hard limit, change
+already-admitted ownership, or create a policy failure. Cancellation,
+disposal, terminal state, invalid or contradictory observations, unavailable
+continuation posting, and existing queue, buffer, stream, flow-control,
+congestion, pacing, recovery, and ownership guards remain authoritative even
+when `early_delay` is forced. A removed or completed admission makes the
+posted continuation a no-op. Shadow recommends `early_delay` while applying
+`legacy_current`; the latch expires after that one application admission.
 
 ## States
 

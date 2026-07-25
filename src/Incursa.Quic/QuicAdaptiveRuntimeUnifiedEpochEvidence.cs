@@ -11,10 +11,11 @@ internal readonly record struct QuicAdaptiveRuntimeUnifiedEpochEvidence(
     QuicAdaptiveRuntimePostServiceBoundary PostServiceBoundary,
     QuicAdaptiveRuntimeStage1EpochEvidence Stage1,
     QuicActorServiceEpochSummary ActorService,
-    QuicBufferCopyEpochSummary BufferCopy)
+    QuicBufferCopyEpochSummary BufferCopy,
+    QuicAdaptiveBackpressureEpochSummary AdaptiveBackpressure)
 {
     internal const string CurrentEvidenceContractVersion =
-        "adaptive-runtime-unified-epoch-evidence-v7";
+        "adaptive-runtime-unified-epoch-evidence-v8";
 
     public string EvidenceContractVersion =>
         CurrentEvidenceContractVersion;
@@ -39,13 +40,16 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
     IQuicQueuedSendBurstEvidenceSink,
     IQuicOversizedWriteAdmissionEvidenceSink,
     IQuicActorServiceEvidenceSink,
-    IQuicBufferCopyEvidenceSink
+    IQuicBufferCopyEvidenceSink,
+    IQuicAdaptiveBackpressureEvidenceSink
 {
     private const ulong MicrosPerSecond = 1_000_000UL;
     private readonly object gate = new();
     private readonly QuicAdaptiveRuntimeStage1EvidenceAccumulator stage1;
     private readonly QuicActorServiceEpochAccumulator actorService = new();
     private readonly QuicBufferCopyEpochAccumulator bufferCopy;
+    private readonly QuicAdaptiveBackpressureEpochAccumulator
+        adaptiveBackpressure;
     private readonly IQuicAdaptiveRuntimeUnifiedEpochEvidenceSink sink;
     private bool hasEpochOrigin;
     private long epochOriginTicks;
@@ -59,6 +63,9 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
             QuicBufferCopyPolicy.CreateConfiguredSnapshot(
                 QuicBufferCopyObservationMode.Disabled,
                 forcedValue: null),
+            QuicAdaptiveBackpressurePolicy.CreateConfiguredSnapshot(
+                QuicAdaptiveBackpressureObservationMode.Disabled,
+                forcedValue: null),
             sink)
     {
     }
@@ -67,10 +74,28 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
         in QuicAdaptiveRuntimeStage1PolicySnapshot configuredStage1Policy,
         in QuicBufferCopyConfiguredPolicySnapshot configuredBufferCopyPolicy,
         IQuicAdaptiveRuntimeUnifiedEpochEvidenceSink sink)
+        : this(
+            in configuredStage1Policy,
+            in configuredBufferCopyPolicy,
+            QuicAdaptiveBackpressurePolicy.CreateConfiguredSnapshot(
+                QuicAdaptiveBackpressureObservationMode.Disabled,
+                forcedValue: null),
+            sink)
+    {
+    }
+
+    internal QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator(
+        in QuicAdaptiveRuntimeStage1PolicySnapshot configuredStage1Policy,
+        in QuicBufferCopyConfiguredPolicySnapshot configuredBufferCopyPolicy,
+        in QuicAdaptiveBackpressureConfiguredPolicySnapshot
+            configuredAdaptiveBackpressurePolicy,
+        IQuicAdaptiveRuntimeUnifiedEpochEvidenceSink sink)
     {
         ArgumentNullException.ThrowIfNull(sink);
         stage1 = new(in configuredStage1Policy);
         bufferCopy = new(in configuredBufferCopyPolicy);
+        adaptiveBackpressure =
+            new(in configuredAdaptiveBackpressurePolicy);
         this.sink = sink;
     }
 
@@ -123,6 +148,15 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
     }
 
     public bool TryPublish(
+        in QuicAdaptiveBackpressureObservation observation)
+    {
+        lock (gate)
+        {
+            return adaptiveBackpressure.TryPublish(in observation);
+        }
+    }
+
+    public bool TryPublish(
         in QuicAdaptiveRuntimeConnectionObservation observation,
         in QuicReceiveCreditPolicySnapshot snapshot,
         in QuicAdaptiveRuntimePostServiceBoundary boundary)
@@ -165,13 +199,17 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
                 actorService.CaptureAndReset();
             QuicBufferCopyEpochSummary bufferCopyEvidence =
                 bufferCopy.CaptureAndReset();
+            QuicAdaptiveBackpressureEpochSummary
+                adaptiveBackpressureEvidence =
+                    adaptiveBackpressure.CaptureAndReset();
             QuicAdaptiveRuntimeUnifiedEpochEvidence unified = new(
                 observation,
                 snapshot,
                 boundary,
                 stage1Evidence,
                 actorServiceEvidence,
-                bufferCopyEvidence);
+                bufferCopyEvidence,
+                adaptiveBackpressureEvidence);
 
             lastEpochSequence = epochSequence;
             return sink.TryPublish(in unified);

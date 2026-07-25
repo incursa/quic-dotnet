@@ -144,31 +144,34 @@ the post-service boundary without relabeling retained version 1 rows. The
 local runner accepts both versions so existing append-only evidence remains
 readable.
 
-[`../../schemas/adaptive-runtime-unified-epoch-evidence-v7.schema.json`](../../schemas/adaptive-runtime-unified-epoch-evidence-v7.schema.json)
+[`../../schemas/adaptive-runtime-unified-epoch-evidence-v8.schema.json`](../../schemas/adaptive-runtime-unified-epoch-evidence-v8.schema.json)
 defines the internal joined record. The accumulator rejects a mismatched,
 duplicate, out-of-order, or nonpositive connection-observation,
-receive-credit, and boundary join before resetting Stage 1, actor, or buffer
-state. Successful capture seals all three summaries under the same connection
+receive-credit, and boundary join before resetting Stage 1, actor, buffer, or
+backpressure state. Successful capture seals all summaries under the same connection
 epoch key. Permanent run, host, binary, workload, checksum, classification,
 and raw-file provenance remains a harness/export responsibility and is not
 invented by this connection-local record.
-The retained v1 through v6 joined schemas remain immutable. Version 7 retains
-actor v5 and advances the buffer summary to v4 so every epoch carries the
+The retained v1 through v7 joined schemas remain immutable. Version 8 retains
+actor v5 and buffer v4, adds the configured `adaptive_backpressure` snapshot
+plus bounded admission outcomes, and continues to carry the
 configured `buffer_copy_coalescing` snapshot plus bounded legal/applied
 outcomes even when no applicable operation occurs.
 
 The raw QUIC host configures that same accumulator as the receive-credit,
-four Stage 1, actor-service, and buffer-copy evidence sink whenever an
+four Stage 1, actor-service, buffer-copy, and adaptive-backpressure evidence
+sink whenever an
 adaptive execution is requested. It emits
-`adaptive-runtime-unified-epoch-raw-v7` under one connection key while
+`adaptive-runtime-unified-epoch-raw-v8` under one connection key while
 retaining the prior receive-credit and Stage 1 compatibility records. The
 append-only
 [`../../eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1`](../../eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1)
 exporter validates
-[`../../schemas/adaptive-runtime-unified-epoch-raw-v7.schema.json`](../../schemas/adaptive-runtime-unified-epoch-raw-v7.schema.json),
+[`../../schemas/adaptive-runtime-unified-epoch-raw-v8.schema.json`](../../schemas/adaptive-runtime-unified-epoch-raw-v8.schema.json),
 exact monotonic join keys, exactly four Stage 1 records plus one buffer-axis
-record per row, and at most one non-legacy applied axis across receive credit,
-Stage 1, and buffer coalescing. Connection keys are scoped to their hashed source
+and one backpressure-axis record per row, and at most one non-legacy applied
+axis across receive credit, Stage 1, buffer coalescing, and backpressure.
+Connection keys are scoped to their hashed source
 log during multi-process export because each process restarts its local
 counter. The same host also emits every actor dispatch as
 [`../../schemas/adaptive-runtime-actor-service-raw-v4.schema.json`](../../schemas/adaptive-runtime-actor-service-raw-v4.schema.json).
@@ -180,9 +183,16 @@ requires each raw contender value and validity state to agree and requires
 each epoch's contender observation count, maximum, and count-above-one turns
 plus accepted-work coverage, total, maximum, and positive-turn count to equal
 its raw member records. It also validates every continuation state/count pair
-and exact complete, per-state, and maximum-remaining aggregates. Manifest v8
-retains the separate actor and buffer raw contract identities,
-stream, source hashes, epoch and dispatch counts, validation output, and any
+and exact complete, per-state, and maximum-remaining aggregates. The host also
+emits every adaptive-backpressure admission as
+[`../../schemas/adaptive-runtime-backpressure-raw-v1.schema.json`](../../schemas/adaptive-runtime-backpressure-raw-v1.schema.json).
+Those records are sample-scoped and join by exact
+`source + connectionKey + operationSequence` membership in the inclusive
+backpressure epoch range. The validator recomputes operation, delayed,
+safety-override, fallback, and maximum queue/capacity aggregates from the raw
+members. Manifest v9 retains separate actor, buffer, and backpressure raw
+contract identities, distinct backpressure epoch and sample counts, source
+hashes, validation output, and any
 bounded-channel export failure records. An actor or unified export failure
 produces `invalid_contract`; it is never silently treated as a complete
 dataset.
@@ -226,6 +236,34 @@ retained-capacity totals and maxima.
 It performs no queue, dictionary, or stream scan. The disabled runtime path
 does not construct a record, and a rejecting or throwing sink cannot change
 copy, ownership, release, or progress behavior.
+
+## Stage 2 Adaptive Backpressure V1
+
+The `adaptive_backpressure` axis uses
+[`../../schemas/adaptive-runtime-backpressure-observation-v1.schema.json`](../../schemas/adaptive-runtime-backpressure-observation-v1.schema.json),
+[`../../schemas/adaptive-runtime-backpressure-epoch-v1.schema.json`](../../schemas/adaptive-runtime-backpressure-epoch-v1.schema.json),
+and the raw wrapper above. The closed values are `legacy_current` and
+`early_delay`. The decision boundary is one new application admission before
+stream reservation or owner admission, and the latch lifetime is that
+admission only.
+
+Each sample records operation and request sequence, observation mode, forced,
+shadow-recommended, selected, and applied values, selection source, bounded
+reason and safety override, delay and fallback state, maintained queued
+operation count and retained capacity, lifecycle, validity, and observation,
+rule, snapshot, reason, and provenance versions. Missing, stale, saturated,
+contradictory, invalid, and out-of-domain input remains explicit. The epoch
+summary keeps the configured snapshot even without an admission and otherwise
+retains an inclusive operation range, operation/delay/safety/fallback counts,
+and bounded maxima.
+
+`early_delay` may add only one immediately posted dispatcher/actor turn when
+an earlier admitted application-send operation remains queued. It never waits
+for a peer or resource event and never rejects, raises a hard bound, changes
+admitted ownership, or creates a policy error. Forced mode bypasses selection
+only; lifecycle, continuation, progress, cancellation, disposal, terminal,
+flow-control, congestion, pacing, recovery, hard-bound, and ownership guards
+remain authoritative.
 
 ## Epoch Envelope
 

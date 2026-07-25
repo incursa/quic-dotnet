@@ -21,14 +21,19 @@ $prefix = 'QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON='
 $failurePrefix = 'QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_FAILURE_JSON='
 $actorPrefix = 'QUIC_ACTOR_SERVICE_OBSERVATION_JSON='
 $actorFailurePrefix = 'QUIC_ACTOR_SERVICE_OBSERVATION_FAILURE_JSON='
-$rawSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v7.schema.json'
+$adaptiveBackpressurePrefix =
+    'QUIC_ADAPTIVE_BACKPRESSURE_EVIDENCE_JSON='
+$rawSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v8.schema.json'
 $actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v4.schema.json'
 $actorFailureSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-export-failure-v1.schema.json'
-$manifestSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-raw-export-manifest-v8.schema.json'
+$adaptiveBackpressureSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-backpressure-raw-v1.schema.json'
+$manifestSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-raw-export-manifest-v9.schema.json'
 $validatorPath = Join-Path $RepositoryRoot 'eng\adaptive-runtime\Test-AdaptiveRuntimeUnifiedRawEvidence.ps1'
 $resolvedOutputDirectory = Resolve-AdaptiveRuntimePath -Path $OutputDirectory
 $rawEpochPath = Join-Path $resolvedOutputDirectory 'adaptive-runtime-unified-raw-epochs.jsonl'
 $actorObservationPath = Join-Path $resolvedOutputDirectory 'adaptive-runtime-actor-service-observations.jsonl'
+$adaptiveBackpressureObservationPath =
+    Join-Path $resolvedOutputDirectory 'adaptive-runtime-backpressure-observations.jsonl'
 $validationPath = Join-Path $resolvedOutputDirectory 'raw-validation-summary.json'
 $manifestPath = Join-Path $resolvedOutputDirectory 'raw-export-manifest.json'
 $failurePath = Join-Path $resolvedOutputDirectory 'raw-export-failures.jsonl'
@@ -36,6 +41,7 @@ $failurePath = Join-Path $resolvedOutputDirectory 'raw-export-failures.jsonl'
 foreach ($path in @(
     $rawEpochPath,
     $actorObservationPath,
+    $adaptiveBackpressureObservationPath,
     $validationPath,
     $manifestPath,
     $failurePath
@@ -47,12 +53,16 @@ foreach ($path in @(
 
 $records = [System.Collections.Generic.List[string]]::new()
 $actorObservations = [System.Collections.Generic.List[string]]::new()
+$adaptiveBackpressureObservations =
+    [System.Collections.Generic.List[string]]::new()
 $failures = [System.Collections.Generic.List[string]]::new()
 $sources = [System.Collections.Generic.List[object]]::new()
 foreach ($sourcePath in @($HostLogPath | Sort-Object)) {
     $resolvedSourcePath = (Resolve-Path -LiteralPath $sourcePath).Path
     $sourceRowCount = 0
     $sourceActorObservationCount = 0
+    $sourceAdaptiveBackpressureEpochCount = 0
+    $sourceAdaptiveBackpressureObservationCount = 0
     $sourceActorFailureCount = 0
     $sourceFailureCount = 0
     foreach ($line in [System.IO.File]::ReadLines($resolvedSourcePath)) {
@@ -64,6 +74,10 @@ foreach ($sourcePath in @($HostLogPath | Sort-Object)) {
 
             [void] $records.Add($json)
             $sourceRowCount++
+            $parsedRecord = $json | ConvertFrom-Json -Depth 100
+            if ([bool] $parsedRecord.epoch.adaptiveBackpressure.hasObservation) {
+                $sourceAdaptiveBackpressureEpochCount++
+            }
         }
         elseif ($line.StartsWith($actorPrefix, [StringComparison]::Ordinal)) {
             $json = $line.Substring($actorPrefix.Length)
@@ -73,6 +87,21 @@ foreach ($sourcePath in @($HostLogPath | Sort-Object)) {
 
             [void] $actorObservations.Add($json)
             $sourceActorObservationCount++
+        }
+        elseif ($line.StartsWith(
+                $adaptiveBackpressurePrefix,
+                [StringComparison]::Ordinal)) {
+            $json = $line.Substring($adaptiveBackpressurePrefix.Length)
+            if (-not (
+                    $json |
+                        Test-Json `
+                            -SchemaFile $adaptiveBackpressureSchemaPath `
+                            -ErrorAction Stop)) {
+                throw "Adaptive-backpressure raw observation from '$resolvedSourcePath' failed schema validation."
+            }
+
+            [void] $adaptiveBackpressureObservations.Add($json)
+            $sourceAdaptiveBackpressureObservationCount++
         }
         elseif ($line.StartsWith($actorFailurePrefix, [StringComparison]::Ordinal)) {
             $json = $line.Substring($actorFailurePrefix.Length)
@@ -94,6 +123,10 @@ foreach ($sourcePath in @($HostLogPath | Sort-Object)) {
         sha256 = Get-FileSha256Hex -Path $resolvedSourcePath
         rowCount = $sourceRowCount
         actorObservationRowCount = $sourceActorObservationCount
+        adaptiveBackpressureEpochRowCount =
+            $sourceAdaptiveBackpressureEpochCount
+        adaptiveBackpressureObservationRowCount =
+            $sourceAdaptiveBackpressureObservationCount
         actorExportFailureCount = $sourceActorFailureCount
         exportFailureCount = $sourceFailureCount
     })
@@ -112,6 +145,10 @@ New-Item -ItemType Directory -Path $resolvedOutputDirectory -Force | Out-Null
     $actorObservationPath,
     $actorObservations,
     [System.Text.UTF8Encoding]::new($false))
+[System.IO.File]::WriteAllLines(
+    $adaptiveBackpressureObservationPath,
+    $adaptiveBackpressureObservations,
+    [System.Text.UTF8Encoding]::new($false))
 if ($failures.Count -ne 0) {
     [System.IO.File]::WriteAllLines(
         $failurePath,
@@ -122,9 +159,16 @@ if ($failures.Count -ne 0) {
 $validationJson = & $validatorPath `
     -RawEpochPath $rawEpochPath `
     -ActorObservationPath $actorObservationPath `
+    -AdaptiveBackpressureObservationPath `
+        $adaptiveBackpressureObservationPath `
     -SourceRowCount @($sources | ForEach-Object { [int] $_.rowCount }) `
     -SourceActorObservationRowCount @(
         $sources | ForEach-Object { [int] $_.actorObservationRowCount }) `
+    -SourceAdaptiveBackpressureObservationRowCount @(
+        $sources |
+            ForEach-Object {
+                [int] $_.adaptiveBackpressureObservationRowCount
+            }) `
     -RepositoryRoot $RepositoryRoot
 if (-not $?) {
     throw "Unified adaptive-runtime raw evidence validation failed.`n$validationJson"
@@ -150,6 +194,14 @@ $artifactRecords = [System.Collections.Generic.List[object]]::new()
     bytes = (Get-Item -LiteralPath $actorObservationPath).Length
 })
 [void] $artifactRecords.Add([ordered]@{
+    role = 'adaptive_backpressure_observations'
+    path = $adaptiveBackpressureObservationPath
+    sha256 =
+        Get-FileSha256Hex -Path $adaptiveBackpressureObservationPath
+    bytes =
+        (Get-Item -LiteralPath $adaptiveBackpressureObservationPath).Length
+})
+[void] $artifactRecords.Add([ordered]@{
     role = 'validation_summary'
     path = $validationPath
     sha256 = Get-FileSha256Hex -Path $validationPath
@@ -165,12 +217,14 @@ if ($failures.Count -ne 0) {
 }
 
 $manifest = [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-export-manifest-v8'
+    schemaVersion = 'adaptive-runtime-unified-raw-export-manifest-v9'
     createdUtc = (Get-Date).ToUniversalTime().ToString('o')
-    rawEpochSchemaVersion = 'adaptive-runtime-unified-epoch-raw-v7'
+    rawEpochSchemaVersion = 'adaptive-runtime-unified-epoch-raw-v8'
     actorRawObservationSchemaVersion =
         'adaptive-runtime-actor-service-raw-v4'
     bufferRawObservationSchemaVersion = 'quic-buffer-copy-raw-v4'
+    adaptiveBackpressureRawObservationSchemaVersion =
+        'quic-adaptive-backpressure-raw-v1'
     classification = if ($failures.Count -eq 0) {
         'accepted'
     }
@@ -185,6 +239,10 @@ $manifest = [ordered]@{
         [int] $validationDocument.actorObservationRowCount
     bufferObservationRowCount =
         [int] $validationDocument.bufferObservationRowCount
+    adaptiveBackpressureEpochRowCount =
+        [int] $validationDocument.adaptiveBackpressureEpochRowCount
+    adaptiveBackpressureObservationRowCount =
+        [int] $validationDocument.adaptiveBackpressureObservationRowCount
     actorExportFailureCount = [int] (
         @(
             $sources |
@@ -203,18 +261,24 @@ $manifest = [ordered]@{
     -OutputPath $manifestPath)
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-export-result-v8'
+    schemaVersion = 'adaptive-runtime-unified-raw-export-result-v9'
     rowCount = $manifest.rowCount
     axisRecordCount = $manifest.axisRecordCount
     connectionCount = $manifest.connectionCount
     actorEpochRowCount = $manifest.actorEpochRowCount
     actorObservationRowCount = $manifest.actorObservationRowCount
     bufferObservationRowCount = $manifest.bufferObservationRowCount
+    adaptiveBackpressureEpochRowCount =
+        $manifest.adaptiveBackpressureEpochRowCount
+    adaptiveBackpressureObservationRowCount =
+        $manifest.adaptiveBackpressureObservationRowCount
     actorExportFailureCount = $manifest.actorExportFailureCount
     exportFailureCount = $manifest.exportFailureCount
     classification = $manifest.classification
     rawEpochPath = $rawEpochPath
     actorObservationPath = $actorObservationPath
+    adaptiveBackpressureObservationPath =
+        $adaptiveBackpressureObservationPath
     validationPath = $validationPath
     manifestPath = $manifestPath
 } | ConvertTo-Json -Depth 100

@@ -75,14 +75,17 @@ buffer raw rows:
   -OutputDirectory ./.artifacts/adaptive-runtime/unified-raw-export
 ```
 
-The exporter reads `QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON=` and
-`QUIC_ACTOR_SERVICE_OBSERVATION_JSON=` records, validates unified raw v7 and
-actor raw v4, and writes two append-only raw JSONL streams, semantic
-validation, and a checksum manifest v8. Semantic validation requires matching
+The exporter reads `QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON=`,
+`QUIC_ACTOR_SERVICE_OBSERVATION_JSON=`, and
+`QUIC_ADAPTIVE_BACKPRESSURE_EVIDENCE_JSON=` records, validates unified raw
+v8, actor raw v4, and backpressure raw v1, and writes three append-only raw
+JSONL streams, semantic validation, and a checksum manifest v9. Semantic
+validation requires matching
 connection-observation, receive-credit, post-service boundary, and Stage 1
 epoch keys; monotonic unique connection epochs; exactly four Stage 1 axis
-records plus one `buffer_copy_coalescing` record per row; no more than one
-non-legacy applied axis across receive credit, Stage 1, and buffer coalescing;
+records plus one `buffer_copy_coalescing` and one `adaptive_backpressure`
+record per row; no more than one non-legacy applied axis across receive
+credit, Stage 1, buffer coalescing, and backpressure;
 configured buffer identity and bounded aggregate consistency; and exact
 source-scoped `connectionKey + serviceSequence` coverage for every inclusive
 actor summary range; and exact raw-to-epoch contender observation count,
@@ -93,7 +96,13 @@ duplicate, orphan, and out-of-order actor records are rejected. Connection
 Continuation assessment state and remaining-count pairs are validated per
 producer, and complete, drained, scheduled, blocked, ready-after-yield, and
 maximum-remaining epoch aggregates must match their raw dispatch members
-exactly. A pending count is never relabeled continuation-ready unless its
+exactly. Backpressure admission rows remain sample-scoped and must join by
+exact source-scoped `connectionKey + operationSequence` membership in the
+inclusive epoch range; operation, delayed, safety, fallback, and maximum
+queue/capacity aggregates are recomputed from those raw members. Distinct
+epoch and sample counts prevent a sample-scoped admission record from being
+treated as an epoch-independent outcome. A pending count is never relabeled
+continuation-ready unless its
 closed state is `ReadyAfterCooperativeYield`. Connection keys are scoped to
 their hashed source log because
 separate host processes restart their connection counters. Supply
