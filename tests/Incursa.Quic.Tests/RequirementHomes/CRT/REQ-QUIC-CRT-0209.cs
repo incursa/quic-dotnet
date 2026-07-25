@@ -21,12 +21,12 @@ public sealed class REQ_QUIC_CRT_0209
             "adaptive-runtime-experiment-runtime-evidence");
         Assert.Equal(16, Directory.GetFiles(Path.Combine(fixtureRoot, "valid"), "*.json").Length);
         Assert.Equal(4, Directory.GetFiles(Path.Combine(fixtureRoot, "warning"), "*.json").Length);
-        Assert.Equal(20, Directory.GetFiles(Path.Combine(fixtureRoot, "invalid"), "*.json").Length);
+        Assert.Equal(21, Directory.GetFiles(Path.Combine(fixtureRoot, "invalid"), "*.json").Length);
 
         using JsonDocument expectations = JsonDocument.Parse(
             File.ReadAllText(Path.Combine(fixtureRoot, "expectations.json")));
         Assert.Equal(
-            20,
+            21,
             expectations.RootElement.GetProperty("invalid").EnumerateObject().Count());
         Assert.Equal(
             4,

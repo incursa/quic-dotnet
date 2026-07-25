@@ -21,6 +21,7 @@
     "wrong_epoch_attribution.fixture.json": "wrong_epoch_attribution",
     "broad_endpoint_event_relabel.fixture.json": "broad_endpoint_not_axis_mechanism",
     "mutually_exclusive_behavior_collision.fixture.json": "mutually_exclusive_behavior_collision",
+    "duplicate_operation_correlation.fixture.json": "duplicate_operation_correlation",
     "unsupported_behavior_id.fixture.json": "unsupported_behavior_id",
     "stale_behavior_catalog_version.fixture.json": "stale_behavior_catalog_version",
     "aggregate_operation_count_mismatch.fixture.json": "aggregate_operation_count_mismatch",

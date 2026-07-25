@@ -174,7 +174,7 @@ The fixture corpus contains:
 | --- | ---: |
 | valid | 16 |
 | warning/retained | 4 |
-| expected invalid | 20 |
+| expected invalid | 21 |
 | expected materializations | 16 |
 | expected projections | 16 |
 
@@ -183,7 +183,8 @@ cross-axis, exact join, multiple-behavior, aggregate, projection, and retained
 negative cases. Warning fixtures retain multiple behavior, inactive, fallback,
 and verification-only classifications.
 
-The 20 closed invalid results cover missing/duplicate decisions, wrong axis,
+The 21 closed invalid results cover missing/duplicate decisions and
+operations, wrong axis,
 wrong epoch, broad endpoint relabeling, mutually exclusive collisions,
 unsupported behavior, stale catalog, aggregate operation/byte mismatch,
 missing checksum, invalid result/epoch join, duplicate epoch identity, shadow
@@ -228,7 +229,7 @@ dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj `
 # 166 passed, 0 failed, 0 skipped
 
 pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentRuntimeEvidence.ps1
-# 3 schemas; 16 valid; 4 warning; 20 invalid; 16 deterministic rebuilds
+# 3 schemas; 16 valid; 4 warning; 21 invalid; 16 deterministic rebuilds
 
 pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1 -RepositoryRoot .
 # 8 schemas; 5 canonical documents; 12 valid; 15 invalid; clean

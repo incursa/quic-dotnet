@@ -343,6 +343,10 @@ $invalidBuilders = [ordered]@{
         $copy.effective_behavior_id = 'behavior.application_send_batch_formation.legacy_current.prefix'
         $d.operations = @($d.operations[0], $copy)
     }
+    'duplicate_operation_correlation.fixture.json' = {
+        param($d)
+        $d.operations = @($d.operations[0], (Copy-Document $d.operations[0]))
+    }
     'unsupported_behavior_id.fixture.json' = {
         param($d) $d.operations[0].effective_behavior_id = 'behavior.unsupported'
     }
@@ -414,6 +418,7 @@ $expectations = [ordered]@{
         'wrong_epoch_attribution.fixture.json' = 'wrong_epoch_attribution'
         'broad_endpoint_event_relabel.fixture.json' = 'broad_endpoint_not_axis_mechanism'
         'mutually_exclusive_behavior_collision.fixture.json' = 'mutually_exclusive_behavior_collision'
+        'duplicate_operation_correlation.fixture.json' = 'duplicate_operation_correlation'
         'unsupported_behavior_id.fixture.json' = 'unsupported_behavior_id'
         'stale_behavior_catalog_version.fixture.json' = 'stale_behavior_catalog_version'
         'aggregate_operation_count_mismatch.fixture.json' = 'aggregate_operation_count_mismatch'

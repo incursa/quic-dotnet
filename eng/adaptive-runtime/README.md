@@ -598,7 +598,7 @@ pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentRuntime
 
 The command validates the three strict operation/materialization/projection
 schemas, resolves the effective-behavior catalog by exact hash, recomputes
-aggregates, proves deterministic canonical bytes and hashes, and checks 20
+aggregates, proves deterministic canonical bytes and hashes, and checks 21
 expected-invalid closed codes. It supports only
 `application_send_batch_formation` and `buffer_copy_coalescing`; it is not a
 campaign runner and authorizes neither measurement nor active behavior.
