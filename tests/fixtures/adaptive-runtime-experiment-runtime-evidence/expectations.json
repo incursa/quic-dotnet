@@ -1,0 +1,39 @@
+{
+  "valid": {},
+  "warning": {
+    "multiple_behaviors_same_epoch.warning.fixture.json": [
+      "multiple_effective_behaviors_in_epoch"
+    ],
+    "inactive_operation_retained.warning.fixture.json": [
+      "inactive_operation_retained"
+    ],
+    "fallback_operation_retained.warning.fixture.json": [
+      "fallback_operation_retained"
+    ],
+    "verification_only_equivalent_cell_retained.warning.fixture.json": [
+      "verification_only_equivalent_cell_retained"
+    ]
+  },
+  "invalid": {
+    "missing_decision_correlation.fixture.json": "missing_decision_correlation",
+    "duplicate_decision_instance.fixture.json": "duplicate_decision_instance",
+    "wrong_axis_attribution.fixture.json": "wrong_axis_attribution",
+    "wrong_epoch_attribution.fixture.json": "wrong_epoch_attribution",
+    "broad_endpoint_event_relabel.fixture.json": "broad_endpoint_not_axis_mechanism",
+    "mutually_exclusive_behavior_collision.fixture.json": "mutually_exclusive_behavior_collision",
+    "unsupported_behavior_id.fixture.json": "unsupported_behavior_id",
+    "stale_behavior_catalog_version.fixture.json": "stale_behavior_catalog_version",
+    "aggregate_operation_count_mismatch.fixture.json": "aggregate_operation_count_mismatch",
+    "aggregate_byte_mismatch.fixture.json": "aggregate_byte_mismatch",
+    "missing_checksum.fixture.json": "missing_checksum",
+    "invalid_result_to_epoch_join.fixture.json": "invalid_result_to_epoch_join",
+    "duplicate_epoch_identity.fixture.json": "duplicate_epoch_identity",
+    "shadow_recommendation_changing_applied_behavior.fixture.json": "shadow_recommendation_changed_applied_behavior",
+    "forced_candidate_bypassing_operation_eligibility.fixture.json": "forced_candidate_bypassed_operation_eligibility",
+    "missing_terminal_release_evidence.fixture.json": "missing_terminal_release_evidence",
+    "duplicate_owner_release.fixture.json": "duplicate_owner_release",
+    "missing_retained_classification.fixture.json": "missing_retained_classification",
+    "unclassifiable_mechanism_silently_assigned_behavior.fixture.json": "unclassifiable_mechanism_assigned_behavior",
+    "unknown_field.fixture.json": "unknown_field"
+  }
+}
