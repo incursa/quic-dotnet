@@ -160,3 +160,11 @@ Shadow mode is ready for an active-policy review only when:
 - rollback to `legacy_current` is proven before activation.
 
 Clearing this gate permits a review, not production activation.
+
+For the two-axis runtime-evidence slice, shadow neutrality has a stronger
+mechanism check: the shadow recommendation may populate the pre-safety
+candidate but the applied value and derived mechanism must remain the legacy
+mechanism. The focused batch and buffer requirement-home tests prove this
+directly. A shadow row whose recommendation changes applied behavior is
+rejected as `shadow_recommendation_changed_applied_behavior`; it cannot be
+retained as a valid treatment.

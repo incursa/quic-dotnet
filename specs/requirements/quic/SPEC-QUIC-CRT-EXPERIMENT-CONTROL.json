@@ -264,6 +264,120 @@
         "The focused fixture harness is not a benchmark or campaign runner.",
         "Runtime evidence and operation correlation remain reserved for the next checkpoint."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0206",
+      "title": "Correlate two-axis candidates, eligibility, operations, and mechanisms",
+      "statement": "For application_send_batch_formation and buffer_copy_coalescing only, the runtime MUST preserve configured, forced, shadow-recommended, candidate, operation-eligibility, applied, and mechanism-event semantics as distinct fixed-field evidence; treat candidate_value as pre-safety; assign bounded connection-local epoch, decision-instance, and operation identities; preserve the batch plan join into a combined-buffer operation and the buffer operation join into exactly one terminal release; record legal and applied counts and bytes; retain inactive, clamped, fallback, invalid, negative, and unclassifiable outcomes; make broad endpoint observations ineligible as axis mechanism evidence; keep every lifecycle, recovery, congestion, pacing, flow-control, queue, ownership, cancellation, disposal, and terminal guard authoritative under forcing; keep shadow recommendations behavior-neutral; and add no hot-path dictionaries, boxing, unbounded retention, service location, runtime model loading, online learning, production activation, or performance authorization.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0095"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0096"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0097"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0206.cs"
+        ],
+        "upstream_refs": [
+          "src/Incursa.Quic/QuicAdaptiveRuntimeOperationEvidence.cs",
+          "src/Incursa.Quic/QuicApplicationSendBatchPolicy.cs",
+          "src/Incursa.Quic/QuicBufferCopyObservation.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs"
+        ]
+      },
+      "notes": [
+        "Decision-instance and operation identities may share the same monotonic value when one seam decision owns exactly one operation, but they remain separate evidence fields.",
+        "This requirement does not release the send-composition interaction capability or authorize simultaneous behavior-distinct forcing."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0207",
+      "title": "Materialize effective behavior and recompute bounded aggregates",
+      "statement": "The experiment-control evidence tooling MUST resolve the reviewed effective-behavior catalog by document identity, version, and content hash; derive effective_behavior_id only from axis-specific candidate, eligibility, applied-value, and mechanism-event evidence; reject ambiguous, conflicting, stale, wrong-axis, broad-endpoint, missing-correlation, duplicate-correlation, unsupported-behavior, and unclassifiable-assignment inputs with closed deterministic errors; allow multiple behavior IDs in one epoch when different operations prove different mechanisms; prohibit mutually exclusive behavior IDs on one operation; preserve source evidence references; and deterministically recompute bounded per-epoch operation, byte, fallback, error, inactive, and unclassifiable aggregates exactly from retained source rows.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0095"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0096"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0097"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0207.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentRuntimeEvidence.ps1",
+          "schemas/adaptive-runtime-operation-evidence-v1.schema.json",
+          "schemas/adaptive-runtime-effective-behavior-materialization-v1.schema.json",
+          "tests/fixtures/adaptive-runtime-experiment-runtime-evidence"
+        ]
+      },
+      "notes": [
+        "Effective behavior is never inferred from throughput, latency, CPU, allocations, or another performance result.",
+        "Materialization is deterministic, idempotent, correctness-only infrastructure."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0208",
+      "title": "Rebuild the two-axis analytical projection from immutable evidence",
+      "statement": "The repository MUST provide a deterministic logical projection rebuilt from immutable plan, validation, compiled-manifest, checksummed raw-operation, release, materialized-behavior, result, and artifact inventory fixtures; uniquely identify connection epochs by run, connection key, and epoch sequence; uniquely identify axis decision summaries by epoch and axis; uniquely identify behavior aggregates by epoch, axis, catalog version, and behavior ID; deterministically join operations to decisions, epochs, results, releases, and checksums; retain invalid, failed, negative, inactive, clamped, fallback, excluded, and diagnostic classifications append-only; reject missing checksums, duplicate epoch identities, wrong epochs, invalid result joins, missing retained classifications, and release mismatches; and keep the projection rebuildable without making a mutable database the evidence authority.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0095"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0096"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0097"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0208.cs"
+        ],
+        "upstream_refs": [
+          "schemas/adaptive-runtime-experiment-evidence-projection-v1.schema.json",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentRuntimeEvidence.ps1",
+          "tests/fixtures/adaptive-runtime-experiment-runtime-evidence"
+        ]
+      },
+      "notes": [
+        "The logical projection does not select a long-term database technology.",
+        "No new performance dataset is generated to populate the projection."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0209",
+      "title": "Prove and stop the first runtime evidence vertical slice",
+      "statement": "The repository MUST retain focused positive, inactive, clamped, fallback, interaction, multiple-behavior, aggregate, projection, invalid-attribution, release, checksum, and retained-negative fixtures for the two-axis slice; require valid materialization and projection output to be byte-identical and hash-identical on repeated runs; require every invalid fixture to emit its expected closed error; run focused seam, ownership, aggregate, validator, schema, compiler-regression, and SpecTrace checks; produce a review package covering architecture, ownership, experiment types, plan-versus-operation eligibility, hashing, both mechanisms, correlation, derivation, aggregation, fixtures, projection, trace, commits, remaining axes, blockers, Stage 5, and next action; and stop without performance measurement, campaigns, transforms, threshold tuning, model training, analytical projection from live performance data, CI changes, push, active_internal, production activation, or migration of another axis.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0095"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0096"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0097"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0209.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentRuntimeEvidence.ps1",
+          "docs/testing/adaptive-runtime-experiment-runtime-evidence-2026-07-25.md"
+        ]
+      },
+      "notes": [
+        "Measurement remains frozen after this checkpoint.",
+        "The next action requires a separate reviewed prompt."
+      ]
     }
   ]
 }

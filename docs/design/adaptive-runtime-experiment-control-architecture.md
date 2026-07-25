@@ -385,6 +385,22 @@ The compiler checkpoint resolves the prior planning questions as follows:
   `invalid`, while first-slice deferred feedback/profile cells remain
   structurally inactive.
 
-The remaining questions concern runtime operation correlation, actual
-mechanism-event evidence, and effective-behavior materialization. They are
-outside this checkpoint.
+The first runtime/evidence vertical slice now closes those questions for
+`application_send_batch_formation` and `buffer_copy_coalescing` only:
+
+- fixed-field seam evidence preserves pre-safety candidate, independent
+  operation eligibility, applied value, axis-specific mechanism event, legal
+  and applied work, and bounded decision/operation/epoch correlation;
+- buffer construction identity is carried to exactly-once terminal release;
+- the deterministic materializer resolves the catalog by identity, version,
+  and hash and rejects broad endpoint, wrong-axis, ambiguous, stale, or
+  unclassifiable attribution;
+- fixed epoch aggregates permit several behavior IDs across different
+  operations and retain per-behavior counts and work bytes; and
+- the logical projection rebuilds from immutable checksummed fixtures.
+
+This closure is trace-owned by `REQ-QUIC-CRT-0206` through
+`REQ-QUIC-CRT-0209` and reviewed in
+`docs/testing/adaptive-runtime-experiment-runtime-evidence-2026-07-25.md`.
+Other axes, live campaign retention, interaction execution, measurement, and
+activation remain outside this checkpoint.

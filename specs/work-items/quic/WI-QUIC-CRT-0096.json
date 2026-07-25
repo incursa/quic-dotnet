@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0096",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Complete the first two-axis runtime evidence vertical slice",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Implement REQ-QUIC-CRT-0206 through REQ-QUIC-CRT-0209 as bounded seam-local operation evidence, deterministic effective-behavior materialization, exact aggregate recomputation, rebuildable projection, fixtures, and review evidence.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0095",
+    "VER-QUIC-CRT-0097"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0095"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0097"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0206",
+    "REQ-QUIC-CRT-0207",
+    "REQ-QUIC-CRT-0208",
+    "REQ-QUIC-CRT-0209"
+  ],
+  "planned_changes": "Add fixed-field candidate, eligibility, decision, operation, epoch, mechanism, work, and release correlation to the existing batch and buffer evidence; add fixed epoch counters; narrowly correct catalog candidate compatibility without changing expected plan behavior; add deterministic PowerShell materialization, aggregate, and projection validation; add strict schemas and focused valid, warning, and expected-invalid fixtures; synchronize architecture, matrix, evidence/provenance, shadow, rollback, trace, and ledger documents.",
+  "verification_plan": "Build only the affected library and test project; run focused batch, buffer, release, unified-evidence, and new requirement-home tests; validate all three new schemas; materialize and project every valid fixture twice; require every invalid fixture to emit its expected closed code; recompute counts, bytes, joins, releases, checksums, canonical bytes, and hashes; re-run foundation and compiler validators; validate touched SpecTrace artifacts; and run git diff --check. Do not run benchmarks, campaigns, large matrices, transforms, CI, activation, or push.",
+  "out_of_scope": [
+    "Runtime changes for any axis other than application_send_batch_formation and buffer_copy_coalescing",
+    "Generic multi-axis interaction execution",
+    "Unbounded per-operation persistence",
+    "Performance measurement or analytical comparison",
+    "Threshold tuning, model training, production-rule derivation, or online learning",
+    "CI changes, active_internal, production activation, or push"
+  ]
+}

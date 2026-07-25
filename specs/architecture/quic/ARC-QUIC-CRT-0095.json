@@ -1,0 +1,63 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0095",
+  "artifact_type": "architecture",
+  "status": "proposed",
+  "title": "Two-axis operation-correlated effective-behavior evidence",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0206 through REQ-QUIC-CRT-0209 by closing the correctness-only evidence chain for application_send_batch_formation and buffer_copy_coalescing without releasing measurement, interaction execution, active_internal, or production behavior.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0089",
+    "ARC-QUIC-CRT-0092",
+    "WI-QUIC-CRT-0096",
+    "VER-QUIC-CRT-0097"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0206",
+    "REQ-QUIC-CRT-0207",
+    "REQ-QUIC-CRT-0208",
+    "REQ-QUIC-CRT-0209"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicAdaptiveRuntimeOperationEvidence.cs",
+    "src/Incursa.Quic/QuicApplicationSendBatchPolicy.cs",
+    "src/Incursa.Quic/QuicBufferCopyObservation.cs",
+    "src/Incursa.Quic/QuicAdaptiveRuntimeStage1EvidenceAccumulator.cs",
+    "src/Incursa.Quic/QuicBufferCopyEpochAccumulator.cs",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentRuntimeEvidence.ps1",
+    "schemas/adaptive-runtime-operation-evidence-v1.schema.json",
+    "schemas/adaptive-runtime-effective-behavior-materialization-v1.schema.json",
+    "schemas/adaptive-runtime-experiment-evidence-projection-v1.schema.json",
+    "tests/fixtures/adaptive-runtime-experiment-runtime-evidence"
+  ],
+  "design_summary": "Each seam emits immutable fixed-field evidence for configured, forced, shadow-recommended, pre-safety candidate, operation eligibility, applied value, mechanism event, legal and applied work, and bounded correlation. Batch decisions latch to one packet plan; buffer decisions latch through the combined owner lifetime and exactly one terminal release. A deterministic PowerShell materializer resolves the reviewed behavior catalog and maps only axis-specific mechanism events to effective behavior IDs. It emits bounded per-epoch aggregates and a rebuildable logical projection whose authority remains the immutable checksummed artifact chain.",
+  "data_and_state_considerations": "Connection-local numeric epoch, decision-instance, operation, upstream-plan, and release identities avoid per-operation strings and allocations in the runtime. Operation rows may be retained only by an explicitly bounded diagnostic sink; fixed counters are the normal epoch evidence. Offline documents use canonical UTF-8 JSON and SHA-256 with the root content_sha256 excluded. Invalid, inactive, clamped, fallback, negative, excluded, and diagnostic rows remain append-only inputs to materialization and projection.",
+  "edge_cases_and_constraints": [
+    "A shadow recommendation is a candidate fact and never changes the applied mechanism.",
+    "A forced candidate may be clamped or rejected and never bypasses operation eligibility or an authoritative transport guard.",
+    "A broad buffer-copy or endpoint event is not buffer_copy_coalescing mechanism evidence.",
+    "One epoch may contain several effective behavior IDs when different operations prove different mechanisms.",
+    "One operation cannot receive mutually exclusive behavior IDs.",
+    "Unclassifiable evidence is retained as invalid and is never assigned a guessed behavior.",
+    "The send-composition interaction remains capability-pending and the current one-behavior-distinct-axis runtime guard remains unchanged."
+  ],
+  "alternatives_considered": [
+    "Infer behavior from applied value alone. Rejected because inactive and clamped operations can execute a different mechanism than the candidate label suggests.",
+    "Infer behavior from throughput, latency, CPU, or allocation totals. Rejected because those are performance outcomes, not mechanism evidence.",
+    "Persist every operation without bounds. Rejected because runtime retention must remain bounded and allocation-conscious.",
+    "Select a database as the evidence authority. Rejected because the projection must rebuild from immutable checksummed artifacts."
+  ],
+  "risks": [
+    "Publishing at a planning boundary can overstate a committed mechanism unless no-plan and unclassifiable states remain explicit.",
+    "Buffer release can occur in a later epoch, so decision epoch and release epoch must remain distinct.",
+    "Catalog drift can silently relabel behavior unless identity, version, and hash are checked together.",
+    "A cross-axis fixture can be mistaken for newly executable interaction capability unless the capability-pending boundary remains explicit."
+  ],
+  "open_questions": [
+    "Which bounded sampled-operation retention rate, if any, should be approved for later live campaigns?",
+    "Which capability proof would separately release send-composition interaction execution?",
+    "Which remaining implemented axis should receive the next reviewed evidence migration?"
+  ]
+}

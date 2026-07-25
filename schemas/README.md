@@ -75,6 +75,9 @@ repository-config tooling.
 - [`adaptive-runtime-buffer-release-raw-v5.schema.json`](adaptive-runtime-buffer-release-raw-v5.schema.json)
 - [`adaptive-runtime-buffer-release-raw-v6.schema.json`](adaptive-runtime-buffer-release-raw-v6.schema.json)
 - [`adaptive-runtime-buffer-evidence-export-failure-v1.schema.json`](adaptive-runtime-buffer-evidence-export-failure-v1.schema.json)
+- [`adaptive-runtime-operation-evidence-v1.schema.json`](adaptive-runtime-operation-evidence-v1.schema.json)
+- [`adaptive-runtime-effective-behavior-materialization-v1.schema.json`](adaptive-runtime-effective-behavior-materialization-v1.schema.json)
+- [`adaptive-runtime-experiment-evidence-projection-v1.schema.json`](adaptive-runtime-experiment-evidence-projection-v1.schema.json)
 
 ## Notes
 

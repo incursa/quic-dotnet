@@ -601,3 +601,23 @@ connection-epoch objects or exports. Shadow capture may use an internal
 campaign sink, but must not add connection or stream identity as
 `System.Diagnostics.Metrics` tags. Neutrality requires same-binary disabled vs
 enabled evidence as described in the shadow verification plan.
+
+## Two-Axis Operation-Correlated Evidence
+
+The first experiment-control runtime slice adds fixed evidence only at
+`application_send_batch_formation` and `buffer_copy_coalescing`. Existing
+seam-specific `SelectedValue` remains the generic pre-safety
+`candidate_value`; `AppliedValue` remains separate. Each opportunity records
+an eligibility result and closed reason before the mechanism event.
+
+Batch evidence binds one packet-plan sequence to the legal/applied write count
+and bytes. Buffer evidence binds a combined-send decision and operation to the
+actual owner-rent outcome and carries the same identity through terminal
+release, with decision and release epochs kept distinct. Broad buffer-copy
+paths are explicitly not coalescing evidence.
+
+Normal runtime evidence remains fixed counters and bounded aggregates. The
+offline schema `adaptive-runtime-operation-evidence-v1` represents diagnostic
+rows; it does not require unbounded live retention. Effective behavior is
+derived only from the closed mechanism events documented in the catalog,
+never from endpoint or performance observations.

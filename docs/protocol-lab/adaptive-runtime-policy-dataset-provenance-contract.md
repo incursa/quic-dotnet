@@ -206,3 +206,11 @@ addressable by ID and checksum. A correction creates a new dataset version and
 records `supersedes`; it does not edit prior rows. Evidence roots from the July
 2026 experiments remain source references even when later permanent campaigns
 supersede their schema.
+
+The correctness-only two-axis projection follows the same authority chain:
+immutable plan -> immutable compiled manifest -> checksummed operation
+evidence -> validated materialization -> rebuildable projection. The
+projection is not the sole authority and does not delete invalid, negative,
+inactive, clamped, fallback, excluded, or diagnostic rows. Its metric
+observations are marked `correctness_only`; no performance dataset was created
+for the July 25 runtime-evidence checkpoint.

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0097",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Two-axis operation evidence and materialization verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0095",
+    "WI-QUIC-CRT-0096"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0206",
+    "REQ-QUIC-CRT-0207",
+    "REQ-QUIC-CRT-0208",
+    "REQ-QUIC-CRT-0209"
+  ],
+  "scope": "Verify candidate, eligibility, applied-value, mechanism, operation, epoch, release, effective-behavior, aggregate, checksum, and projection semantics for application_send_batch_formation and buffer_copy_coalescing only, under a complete measurement and activation freeze.",
+  "verification_method": "Focused Release builds and xUnit requirement-home tests; strict JSON Schema validation; deterministic PowerShell materialization and projection from immutable fixtures; expected-failing closed-code validation; aggregate and checksum recomputation; repeated canonical-byte and SHA-256 comparison; regression validation of the experiment-control foundation and plan compiler; direct SpecTrace model validation; and diff validation.",
+  "preconditions": [
+    "The plan compiler checkpoint at aa3b2c74 validates cleanly.",
+    "The primary dirty Stage 5 slice remains preserved outside this linked worktree.",
+    "The current one-behavior-distinct-axis guard remains unchanged.",
+    "Measurement, campaigns, transforms, CI, push, active_internal, and production activation remain unauthorized."
+  ],
+  "procedure": [
+    "Prove candidate values are pre-safety and operation eligibility is recorded independently.",
+    "Prove forced candidates are clamped or rejected by authoritative guards and shadow recommendations do not change applied mechanisms.",
+    "Prove batch behavior derives only from legal/applied packet-plan prefix evidence and buffer behavior only from combined-send construction evidence.",
+    "Reject broad endpoint events, wrong-axis rows, wrong epochs, missing or duplicate decisions, conflicting behaviors, unsupported IDs, stale catalog refs, and silent unclassifiable assignments.",
+    "Prove buffer operation identity joins to exactly one terminal release and reject missing or duplicate release evidence.",
+    "Recompute per-epoch behavior operation counts, bytes, fallback, error, inactive, and unclassifiable counts exactly.",
+    "Prove multiple effective behavior IDs may exist in one epoch for different operations.",
+    "Rebuild the logical projection twice and require byte-identical canonical output, identical hashes, exact artifact joins, and retention of invalid and negative rows.",
+    "Re-run foundation and compiler validators, focused requirement-home tests, touched SpecTrace validation, and git diff --check.",
+    "Confirm no performance, campaign, transform, CI, push, activation, threshold, or model action occurred."
+  ],
+  "expected_result": "Both axes emit truthful bounded operation-correlated mechanism evidence; effective behavior and aggregates materialize deterministically from that evidence; invalid attribution and release defects fail with stable codes; the projection rebuilds from immutable checksummed fixtures while retaining negative classifications; focused tests and trace validation pass; and measurement and activation remain frozen.",
+  "evidence": [
+    "src/Incursa.Quic/QuicAdaptiveRuntimeOperationEvidence.cs",
+    "src/Incursa.Quic/QuicApplicationSendBatchPolicy.cs",
+    "src/Incursa.Quic/QuicBufferCopyObservation.cs",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentRuntimeEvidence.ps1",
+    "tests/fixtures/adaptive-runtime-experiment-runtime-evidence",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0206.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0207.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0208.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0209.cs",
+    "docs/testing/adaptive-runtime-experiment-runtime-evidence-2026-07-25.md"
+  ],
+  "status_summary": "Passed on 2026-07-25: Incursa.Quic and Incursa.Quic.Tests focused Release builds completed with 0 warnings and 0 errors; 166 focused batch, buffer, ownership, unified, and REQ-0206-through-0209 tests passed; the runtime-evidence validator accepted 16 valid and 4 warning fixtures, rejected 20 invalid fixtures with exact closed codes, and reproduced 16 materializations and projections byte-for-byte; the foundation validator remained clean at 8 schemas, 5 canonical documents, 12 valid fixtures, and 15 invalid fixtures; the compiler validator remained clean at 7 valid, 5 warning, 21 invalid plans, and 6 invalid manifest/validation links; and all four touched SpecTrace artifacts passed direct model validation. No benchmark, performance or ProtocolLab campaign, large matrix, transform, CI change, push, active_internal, or production activation occurred."
+}

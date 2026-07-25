@@ -579,3 +579,26 @@ policy applied across the captured epochs; mixed A/B cells keep that field
 Canonical schema examples live under
 `tests/fixtures/adaptive-runtime-policy/`. Their identities and hashes are
 illustrative and are not campaign evidence.
+
+## Experiment Runtime Evidence
+
+The first correctness-only runtime/evidence slice is validated with:
+
+```powershell
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentRuntimeEvidence.ps1
+```
+
+To regenerate the deterministic fixture corpus and checked-in expected
+materialization/projection documents:
+
+```powershell
+pwsh -NoProfile -File eng/adaptive-runtime/Update-AdaptiveRuntimeExperimentRuntimeEvidenceFixtures.ps1
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentRuntimeEvidence.ps1 -UpdateExpectedOutputs
+```
+
+The command validates the three strict operation/materialization/projection
+schemas, resolves the effective-behavior catalog by exact hash, recomputes
+aggregates, proves deterministic canonical bytes and hashes, and checks 20
+expected-invalid closed codes. It supports only
+`application_send_batch_formation` and `buffer_copy_coalescing`; it is not a
+campaign runner and authorizes neither measurement nor active behavior.

@@ -178,3 +178,11 @@ rule version for a later threshold-only retry.
 
 Production implementation remains blocked until these criteria are reviewed
 and the trace-first prerequisite is complete.
+
+The first operation-correlated slice adds two rollback prerequisites for batch
+formation and buffer coalescing: a forced candidate that is ineligible must
+not remain applied, and every materialized combined-owner operation must join
+to exactly one terminal release. Inactive, clamped, fallback, invalid, and
+negative rows remain retained. These correctness proofs do not clear a
+performance-acceptance, interaction-execution, `active_internal`, or
+production-activation gate.

@@ -1788,6 +1788,13 @@ The following must not be guessed during implementation:
 
 ## Recommended Next Review Decision
 
+The July 25, 2026 correctness checkpoint completed the first
+operation-correlated evidence/materialization/projection vertical slice for
+`application_send_batch_formation` and `buffer_copy_coalescing`. It did not
+release measurement, interaction execution, or activation. The review package
+is `docs/testing/adaptive-runtime-experiment-runtime-evidence-2026-07-25.md`;
+any additional axis migration remains a separate reviewed action.
+
 After the current receive-credit correctness and multi-host evidence work is
 closed, review this order:
 
