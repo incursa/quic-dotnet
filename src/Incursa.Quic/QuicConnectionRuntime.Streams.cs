@@ -2166,6 +2166,44 @@ internal sealed partial class QuicConnectionRuntime
                                 : applicationSendTurnBurstLimitHits + 1;
                     }
                 }
+
+                if (RuntimeWorkItemFlushMeasurementEnabled)
+                {
+                    int remainingCount = applicationSendQueue.Count;
+                    QuicActorContinuationAssessmentState continuationState =
+                        remainingCount == 0
+                            ? QuicActorContinuationAssessmentState.Drained
+                            : outcome switch
+                            {
+                                QuicApplicationSendRecoveryFlushOutcome
+                                    .BurstLimitReached
+                                    or QuicApplicationSendRecoveryFlushOutcome
+                                        .PlannerDeferred
+                                    when pendingApplicationSendDelayDueTicks
+                                        .HasValue
+                                        => QuicActorContinuationAssessmentState
+                                            .Scheduled,
+                                QuicApplicationSendRecoveryFlushOutcome
+                                    .BudgetBlocked
+                                    or QuicApplicationSendRecoveryFlushOutcome
+                                        .RetransmissionPending
+                                    or QuicApplicationSendRecoveryFlushOutcome
+                                        .FlushBlocked
+                                        => QuicActorContinuationAssessmentState
+                                            .Blocked,
+                                _ => QuicActorContinuationAssessmentState
+                                    .Invalid,
+                            };
+                    RecordApplicationSendContinuationAssessment(
+                        continuationState,
+                        remainingCount);
+                }
+            }
+            else if (RuntimeWorkItemFlushMeasurementEnabled)
+            {
+                RecordApplicationSendContinuationAssessment(
+                    QuicActorContinuationAssessmentState.Drained,
+                    remainingCount: 0);
             }
         }
         finally
@@ -2951,6 +2989,11 @@ internal sealed partial class QuicConnectionRuntime
                 }
 
                 runtimeWorkItemFlushedFlowControlUpdates += Math.Max(0, countBefore - countAfter);
+                RecordFlowControlContinuationAssessment(
+                    countAfter == 0
+                        ? QuicActorContinuationAssessmentState.Drained
+                        : QuicActorContinuationAssessmentState.Blocked,
+                    countAfter);
             }
         }
     }
@@ -3806,9 +3849,16 @@ internal sealed partial class QuicConnectionRuntime
         {
             if (measureFlushes)
             {
+                int countAfter =
+                    pendingPeerStreamCapacityReleaseStreamIds.Count;
                 runtimeWorkItemFlushedStreamCapacityReleases += Math.Max(
                     0,
-                    countBefore - pendingPeerStreamCapacityReleaseStreamIds.Count);
+                    countBefore - countAfter);
+                RecordStreamCapacityContinuationAssessment(
+                    countAfter == 0
+                        ? QuicActorContinuationAssessmentState.Drained
+                        : QuicActorContinuationAssessmentState.Blocked,
+                    countAfter);
             }
         }
     }

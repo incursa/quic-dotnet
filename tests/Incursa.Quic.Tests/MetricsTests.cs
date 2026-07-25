@@ -1128,6 +1128,7 @@ public class MetricsTests
 
     [Fact]
     [Requirement("REQ-QUIC-CRT-0155")]
+    [Requirement("REQ-QUIC-CRT-0189")]
     public async Task RuntimeFollowOnFlushMeasurementCoversDirectFlowControlFlush()
     {
         using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
@@ -1144,15 +1145,25 @@ public class MetricsTests
         runtime.TakeRuntimeWorkItemFlushMeasurement(
             out int applicationSendCount,
             out int flowControlCount,
-            out int streamCapacityCount);
+            out int streamCapacityCount,
+            out QuicActorContinuationAssessment continuation);
 
         Assert.Equal(0, applicationSendCount);
         Assert.Equal(2, flowControlCount);
         Assert.Equal(0, streamCapacityCount);
+        Assert.Equal(
+            QuicActorContinuationAssessmentState.Drained,
+            continuation.FlowControlState);
+        Assert.Equal(0U, continuation.FlowControlRemainingCount);
+        Assert.Equal(
+            QuicActorContinuationAssessmentState.NotAssessed,
+            continuation.ApplicationSendState);
+        Assert.Null(continuation.ApplicationSendRemainingCount);
     }
 
     [Fact]
     [Requirement("REQ-QUIC-CRT-0155")]
+    [Requirement("REQ-QUIC-CRT-0189")]
     public async Task RuntimeFollowOnFlushMeasurementCoversDirectStreamCapacityFlush()
     {
         using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
@@ -1173,11 +1184,20 @@ public class MetricsTests
         runtime.TakeRuntimeWorkItemFlushMeasurement(
             out int applicationSendCount,
             out int flowControlCount,
-            out int streamCapacityCount);
+            out int streamCapacityCount,
+            out QuicActorContinuationAssessment continuation);
 
         Assert.Equal(0, applicationSendCount);
         Assert.Equal(0, flowControlCount);
         Assert.Equal(1, streamCapacityCount);
+        Assert.Equal(
+            QuicActorContinuationAssessmentState.Drained,
+            continuation.StreamCapacityState);
+        Assert.Equal(0U, continuation.StreamCapacityRemainingCount);
+        Assert.Equal(
+            QuicActorContinuationAssessmentState.NotAssessed,
+            continuation.ApplicationSendState);
+        Assert.Null(continuation.ApplicationSendRemainingCount);
     }
 
     [Fact]

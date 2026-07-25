@@ -47,10 +47,29 @@ internal readonly record struct QuicActorServiceEpochSummary(
     ulong AcceptedConnectionWorkObservationCount = 0,
     ulong TotalAcceptedConnectionWorkItemsAfterCurrent = 0,
     ulong MaximumAcceptedConnectionWorkItemsAfterCurrent = 0,
-    ulong TurnsWithAcceptedConnectionWorkRemaining = 0)
+    ulong TurnsWithAcceptedConnectionWorkRemaining = 0,
+    ulong CompleteContinuationAssessmentTurnCount = 0,
+    ulong ApplicationSendContinuationObservationCount = 0,
+    ulong ApplicationSendContinuationDrainedTurnCount = 0,
+    ulong ApplicationSendContinuationScheduledTurnCount = 0,
+    ulong ApplicationSendContinuationBlockedTurnCount = 0,
+    ulong ApplicationSendContinuationReadyTurnCount = 0,
+    ulong MaximumApplicationSendContinuationRemainingCount = 0,
+    ulong FlowControlContinuationObservationCount = 0,
+    ulong FlowControlContinuationDrainedTurnCount = 0,
+    ulong FlowControlContinuationScheduledTurnCount = 0,
+    ulong FlowControlContinuationBlockedTurnCount = 0,
+    ulong FlowControlContinuationReadyTurnCount = 0,
+    ulong MaximumFlowControlContinuationRemainingCount = 0,
+    ulong StreamCapacityContinuationObservationCount = 0,
+    ulong StreamCapacityContinuationDrainedTurnCount = 0,
+    ulong StreamCapacityContinuationScheduledTurnCount = 0,
+    ulong StreamCapacityContinuationBlockedTurnCount = 0,
+    ulong StreamCapacityContinuationReadyTurnCount = 0,
+    ulong MaximumStreamCapacityContinuationRemainingCount = 0)
 {
     internal const string CurrentEpochContractVersion =
-        "quic-actor-service-epoch-v4";
+        "quic-actor-service-epoch-v5";
 
     public string EpochContractVersion => CurrentEpochContractVersion;
 }
@@ -106,6 +125,25 @@ internal sealed class QuicActorServiceEpochAccumulator :
     private ulong totalAcceptedConnectionWorkItemsAfterCurrent;
     private ulong maximumAcceptedConnectionWorkItemsAfterCurrent;
     private ulong turnsWithAcceptedConnectionWorkRemaining;
+    private ulong completeContinuationAssessmentTurnCount;
+    private ulong applicationSendContinuationObservationCount;
+    private ulong applicationSendContinuationDrainedTurnCount;
+    private ulong applicationSendContinuationScheduledTurnCount;
+    private ulong applicationSendContinuationBlockedTurnCount;
+    private ulong applicationSendContinuationReadyTurnCount;
+    private ulong maximumApplicationSendContinuationRemainingCount;
+    private ulong flowControlContinuationObservationCount;
+    private ulong flowControlContinuationDrainedTurnCount;
+    private ulong flowControlContinuationScheduledTurnCount;
+    private ulong flowControlContinuationBlockedTurnCount;
+    private ulong flowControlContinuationReadyTurnCount;
+    private ulong maximumFlowControlContinuationRemainingCount;
+    private ulong streamCapacityContinuationObservationCount;
+    private ulong streamCapacityContinuationDrainedTurnCount;
+    private ulong streamCapacityContinuationScheduledTurnCount;
+    private ulong streamCapacityContinuationBlockedTurnCount;
+    private ulong streamCapacityContinuationReadyTurnCount;
+    private ulong maximumStreamCapacityContinuationRemainingCount;
 
     public bool TryPublish(in QuicActorServiceObservation observation)
     {
@@ -244,6 +282,43 @@ internal sealed class QuicActorServiceEpochAccumulator :
                 }
             }
 
+            QuicActorContinuationAssessment continuation =
+                observation.ContinuationAssessment;
+            if (continuation.IsComplete)
+            {
+                AddSaturating(
+                    ref completeContinuationAssessmentTurnCount,
+                    1);
+            }
+
+            ObserveContinuationProducer(
+                continuation.ApplicationSendState,
+                continuation.ApplicationSendRemainingCount,
+                ref applicationSendContinuationObservationCount,
+                ref applicationSendContinuationDrainedTurnCount,
+                ref applicationSendContinuationScheduledTurnCount,
+                ref applicationSendContinuationBlockedTurnCount,
+                ref applicationSendContinuationReadyTurnCount,
+                ref maximumApplicationSendContinuationRemainingCount);
+            ObserveContinuationProducer(
+                continuation.FlowControlState,
+                continuation.FlowControlRemainingCount,
+                ref flowControlContinuationObservationCount,
+                ref flowControlContinuationDrainedTurnCount,
+                ref flowControlContinuationScheduledTurnCount,
+                ref flowControlContinuationBlockedTurnCount,
+                ref flowControlContinuationReadyTurnCount,
+                ref maximumFlowControlContinuationRemainingCount);
+            ObserveContinuationProducer(
+                continuation.StreamCapacityState,
+                continuation.StreamCapacityRemainingCount,
+                ref streamCapacityContinuationObservationCount,
+                ref streamCapacityContinuationDrainedTurnCount,
+                ref streamCapacityContinuationScheduledTurnCount,
+                ref streamCapacityContinuationBlockedTurnCount,
+                ref streamCapacityContinuationReadyTurnCount,
+                ref maximumStreamCapacityContinuationRemainingCount);
+
             validity |= observation.Validity;
         }
 
@@ -298,7 +373,26 @@ internal sealed class QuicActorServiceEpochAccumulator :
                 acceptedConnectionWorkObservationCount,
                 totalAcceptedConnectionWorkItemsAfterCurrent,
                 maximumAcceptedConnectionWorkItemsAfterCurrent,
-                turnsWithAcceptedConnectionWorkRemaining);
+                turnsWithAcceptedConnectionWorkRemaining,
+                completeContinuationAssessmentTurnCount,
+                applicationSendContinuationObservationCount,
+                applicationSendContinuationDrainedTurnCount,
+                applicationSendContinuationScheduledTurnCount,
+                applicationSendContinuationBlockedTurnCount,
+                applicationSendContinuationReadyTurnCount,
+                maximumApplicationSendContinuationRemainingCount,
+                flowControlContinuationObservationCount,
+                flowControlContinuationDrainedTurnCount,
+                flowControlContinuationScheduledTurnCount,
+                flowControlContinuationBlockedTurnCount,
+                flowControlContinuationReadyTurnCount,
+                maximumFlowControlContinuationRemainingCount,
+                streamCapacityContinuationObservationCount,
+                streamCapacityContinuationDrainedTurnCount,
+                streamCapacityContinuationScheduledTurnCount,
+                streamCapacityContinuationBlockedTurnCount,
+                streamCapacityContinuationReadyTurnCount,
+                maximumStreamCapacityContinuationRemainingCount);
             Reset();
             return summary;
         }
@@ -408,5 +502,66 @@ internal sealed class QuicActorServiceEpochAccumulator :
         totalAcceptedConnectionWorkItemsAfterCurrent = 0;
         maximumAcceptedConnectionWorkItemsAfterCurrent = 0;
         turnsWithAcceptedConnectionWorkRemaining = 0;
+        completeContinuationAssessmentTurnCount = 0;
+        applicationSendContinuationObservationCount = 0;
+        applicationSendContinuationDrainedTurnCount = 0;
+        applicationSendContinuationScheduledTurnCount = 0;
+        applicationSendContinuationBlockedTurnCount = 0;
+        applicationSendContinuationReadyTurnCount = 0;
+        maximumApplicationSendContinuationRemainingCount = 0;
+        flowControlContinuationObservationCount = 0;
+        flowControlContinuationDrainedTurnCount = 0;
+        flowControlContinuationScheduledTurnCount = 0;
+        flowControlContinuationBlockedTurnCount = 0;
+        flowControlContinuationReadyTurnCount = 0;
+        maximumFlowControlContinuationRemainingCount = 0;
+        streamCapacityContinuationObservationCount = 0;
+        streamCapacityContinuationDrainedTurnCount = 0;
+        streamCapacityContinuationScheduledTurnCount = 0;
+        streamCapacityContinuationBlockedTurnCount = 0;
+        streamCapacityContinuationReadyTurnCount = 0;
+        maximumStreamCapacityContinuationRemainingCount = 0;
+    }
+
+    private void ObserveContinuationProducer(
+        QuicActorContinuationAssessmentState state,
+        uint? remainingCount,
+        ref ulong observationCount,
+        ref ulong drainedTurnCount,
+        ref ulong scheduledTurnCount,
+        ref ulong blockedTurnCount,
+        ref ulong readyTurnCount,
+        ref ulong maximumRemainingCount)
+    {
+        if (!QuicActorContinuationAssessment.IsConsistent(
+                state,
+                remainingCount)
+            || state is (
+                QuicActorContinuationAssessmentState.NotAssessed
+                or QuicActorContinuationAssessmentState.Invalid))
+        {
+            return;
+        }
+
+        AddSaturating(ref observationCount, 1);
+        maximumRemainingCount = Math.Max(
+            maximumRemainingCount,
+            remainingCount.GetValueOrDefault());
+        switch (state)
+        {
+            case QuicActorContinuationAssessmentState.Drained:
+                AddSaturating(ref drainedTurnCount, 1);
+                break;
+            case QuicActorContinuationAssessmentState.Scheduled:
+                AddSaturating(ref scheduledTurnCount, 1);
+                break;
+            case QuicActorContinuationAssessmentState.Blocked:
+                AddSaturating(ref blockedTurnCount, 1);
+                break;
+            case QuicActorContinuationAssessmentState
+                    .ReadyAfterCooperativeYield:
+                AddSaturating(ref readyTurnCount, 1);
+                break;
+        }
     }
 }

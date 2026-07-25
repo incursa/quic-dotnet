@@ -286,6 +286,46 @@
         "The exact value covers already accepted connection dispatches only; it does not enumerate or claim readiness of internal protocol queues.",
         "The continuation repost gate remains disconnected and actor_work_quantum remains legacy_current and non-forceable."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0189",
+      "title": "Record exact per-producer continuation assessment",
+      "statement": "The runtime MUST record after each observed dispatch a versioned fixed-field assessment for application-send, flow-control-credit, and stream-capacity internal producers using the closed not_assessed, drained, scheduled, blocked, ready_after_cooperative_yield, and invalid states with null remaining count for not_assessed or invalid, zero for drained, and a positive bounded count for scheduled, blocked, or ready_after_cooperative_yield; mark incomplete or invalid state explicitly; aggregate complete coverage and per-producer observation, drained, scheduled, blocked, ready, and maximum-remaining counts; validate every state/count pair and aggregate against exact source-scoped raw dispatch membership; preserve existing timer, congestion, pacing, recovery, flow-control, terminal, cancellation, disposal, ownership, retry, queue-order, and legacy scheduling authority; reserve ready_after_cooperative_yield for a separately reviewed safe yield that owns exactly resumable work; and keep the assessment behavior-neutral, disconnected from the repost gate, unavailable as a controller input, and distinct from accepted backlog, pending depth, runnable state, starvation, fairness, and active policy behavior.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0067"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0068"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0069"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md",
+          "src/Incursa.Quic/QuicActorWorkFoundation.cs",
+          "src/Incursa.Quic/QuicActorServiceObservation.cs",
+          "src/Incursa.Quic/QuicActorServiceEpochAccumulator.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+          "src/Incursa.Quic/QuicConnectionRuntimeShard.cs",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeActorServiceEvidence.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeUnifiedRawEvidence.ps1",
+          "schemas/adaptive-runtime-actor-service-observation-v5.schema.json",
+          "schemas/adaptive-runtime-actor-service-epoch-v5.schema.json",
+          "schemas/adaptive-runtime-actor-service-raw-v4.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-evidence-v6.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-raw-v6.schema.json",
+          "schemas/adaptive-runtime-unified-raw-export-manifest-v7.schema.json",
+          "tests/Incursa.Quic.Tests/MetricsTests.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0181.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0183.cs"
+        ]
+      },
+      "notes": [
+        "No current runtime path emits ready_after_cooperative_yield; scheduled and blocked work remain non-runnable observations.",
+        "The generation-token repost gate remains disconnected and actor_work_quantum remains legacy_current and non-forceable."
+      ]
     }
   ]
 }

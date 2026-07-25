@@ -1080,7 +1080,8 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
                 $unifiedContract.Groups[1].Value -notin @(
                     'adaptive-runtime-unified-epoch-raw-v3',
                     'adaptive-runtime-unified-epoch-raw-v4',
-                    'adaptive-runtime-unified-epoch-raw-v5')) {
+                    'adaptive-runtime-unified-epoch-raw-v5',
+                    'adaptive-runtime-unified-epoch-raw-v6')) {
                 $contractFailures.Add(
                     "$sampleId`: unified adaptive-runtime epoch contract was not reported.")
             }

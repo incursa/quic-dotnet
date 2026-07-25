@@ -12,6 +12,7 @@ public sealed class REQ_QUIC_CRT_0181
 {
     [Fact]
     [Requirement("REQ-QUIC-CRT-0188")]
+    [Requirement("REQ-QUIC-CRT-0189")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task ObserveOnlyShardServiceProducesBoundedConnectionEvidence()
@@ -271,6 +272,7 @@ public sealed class REQ_QUIC_CRT_0181
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-CRT-0189")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task ConsecutiveServiceRecordsConnectionLocalGapWithoutRunnableClaim()
@@ -326,6 +328,7 @@ public sealed class REQ_QUIC_CRT_0181
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-CRT-0189")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task ScheduledTimerRecordsExactDeadlineLateness()
@@ -372,6 +375,7 @@ public sealed class REQ_QUIC_CRT_0181
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-CRT-0189")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void EpochAccumulatorRetainsClosedKindsWakeChangesAndFollowOns()
@@ -387,7 +391,14 @@ public sealed class REQ_QUIC_CRT_0181
             applicationSendFollowOnCount: 3,
             interServiceGapMicros: 10,
             serviceContenderCountAtStart: 2,
-            acceptedConnectionWorkItemsAfterCurrent: 1);
+            acceptedConnectionWorkItemsAfterCurrent: 1,
+            continuationAssessment: new(
+                QuicActorContinuationAssessmentState.Scheduled,
+                ApplicationSendRemainingCount: 3,
+                QuicActorContinuationAssessmentState.Blocked,
+                FlowControlRemainingCount: 2,
+                QuicActorContinuationAssessmentState.Drained,
+                StreamCapacityRemainingCount: 0));
         QuicActorServiceObservation second = CreateObservation(
             serviceSequence: 6,
             wakeSequence: 3,
@@ -399,7 +410,15 @@ public sealed class REQ_QUIC_CRT_0181
             interServiceGapMicros: 20,
             deadlineLatenessMicros: 5,
             serviceContenderCountAtStart: 1,
-            acceptedConnectionWorkItemsAfterCurrent: 0);
+            acceptedConnectionWorkItemsAfterCurrent: 0,
+            continuationAssessment: new(
+                QuicActorContinuationAssessmentState.Drained,
+                ApplicationSendRemainingCount: 0,
+                QuicActorContinuationAssessmentState
+                    .ReadyAfterCooperativeYield,
+                FlowControlRemainingCount: 1,
+                QuicActorContinuationAssessmentState.NotAssessed,
+                StreamCapacityRemainingCount: null));
 
         Assert.True(accumulator.TryPublish(in first));
         Assert.True(accumulator.TryPublish(in second));
@@ -436,6 +455,46 @@ public sealed class REQ_QUIC_CRT_0181
         Assert.Equal(
             1UL,
             summary.TurnsWithAcceptedConnectionWorkRemaining);
+        Assert.Equal(1UL, summary.CompleteContinuationAssessmentTurnCount);
+        Assert.Equal(
+            2UL,
+            summary.ApplicationSendContinuationObservationCount);
+        Assert.Equal(
+            1UL,
+            summary.ApplicationSendContinuationDrainedTurnCount);
+        Assert.Equal(
+            1UL,
+            summary.ApplicationSendContinuationScheduledTurnCount);
+        Assert.Equal(
+            0UL,
+            summary.ApplicationSendContinuationBlockedTurnCount);
+        Assert.Equal(
+            0UL,
+            summary.ApplicationSendContinuationReadyTurnCount);
+        Assert.Equal(
+            3UL,
+            summary.MaximumApplicationSendContinuationRemainingCount);
+        Assert.Equal(
+            2UL,
+            summary.FlowControlContinuationObservationCount);
+        Assert.Equal(
+            1UL,
+            summary.FlowControlContinuationBlockedTurnCount);
+        Assert.Equal(
+            1UL,
+            summary.FlowControlContinuationReadyTurnCount);
+        Assert.Equal(
+            2UL,
+            summary.MaximumFlowControlContinuationRemainingCount);
+        Assert.Equal(
+            1UL,
+            summary.StreamCapacityContinuationObservationCount);
+        Assert.Equal(
+            1UL,
+            summary.StreamCapacityContinuationDrainedTurnCount);
+        Assert.Equal(
+            0UL,
+            summary.StreamCapacityContinuationReadyTurnCount);
         Assert.True(
             (summary.Validity
                 & QuicActorServiceValidity.MissingQueueDelay) != 0);
@@ -482,6 +541,41 @@ public sealed class REQ_QUIC_CRT_0181
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-CRT-0189")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ContinuationAssessmentRejectsPendingReadyRelabels()
+    {
+        Assert.True(
+            QuicActorContinuationAssessment.IsConsistent(
+                QuicActorContinuationAssessmentState.NotAssessed,
+                remainingCount: null));
+        Assert.False(
+            QuicActorContinuationAssessment.IsConsistent(
+                QuicActorContinuationAssessmentState.NotAssessed,
+                remainingCount: 1));
+        Assert.True(
+            QuicActorContinuationAssessment.IsConsistent(
+                QuicActorContinuationAssessmentState.Drained,
+                remainingCount: 0));
+        Assert.False(
+            QuicActorContinuationAssessment.IsConsistent(
+                QuicActorContinuationAssessmentState.Drained,
+                remainingCount: 1));
+        Assert.False(
+            QuicActorContinuationAssessment.IsConsistent(
+                QuicActorContinuationAssessmentState
+                    .ReadyAfterCooperativeYield,
+                remainingCount: 0));
+        Assert.True(
+            QuicActorContinuationAssessment.IsConsistent(
+                QuicActorContinuationAssessmentState
+                    .ReadyAfterCooperativeYield,
+                remainingCount: 1));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0189")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ObservationAndEpochSummaryPassSchemaAndSemanticValidation()
@@ -578,6 +672,49 @@ public sealed class REQ_QUIC_CRT_0181
                 "exposes accepted connection work from invalid accounting",
                 invalid.Output,
                 StringComparison.Ordinal);
+
+            QuicActorServiceObservation invalidContinuationObservation =
+                observation with
+                {
+                    ContinuationAssessment = new(
+                        QuicActorContinuationAssessmentState
+                            .ReadyAfterCooperativeYield,
+                        ApplicationSendRemainingCount: 0,
+                        QuicActorContinuationAssessmentState.Drained,
+                        FlowControlRemainingCount: 0,
+                        QuicActorContinuationAssessmentState.Drained,
+                        StreamCapacityRemainingCount: 0),
+                };
+            QuicActorServiceEpochAccumulator
+                invalidContinuationAccumulator = new();
+            Assert.True(
+                invalidContinuationAccumulator.TryPublish(
+                    in invalidContinuationObservation));
+            QuicActorServiceEpochSummary invalidContinuationSummary =
+                invalidContinuationAccumulator.CaptureAndReset();
+            File.WriteAllText(
+                observationPath,
+                JsonSerializer.Serialize(
+                    invalidContinuationObservation,
+                    options));
+            File.WriteAllText(
+                epochPath,
+                JsonSerializer.Serialize(
+                    invalidContinuationSummary,
+                    options));
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult
+                invalidContinuation =
+                    AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                        "eng/adaptive-runtime/Test-AdaptiveRuntimeActorServiceEvidence.ps1",
+                        "-ObservationPath",
+                        observationPath,
+                        "-EpochSummaryPath",
+                        epochPath);
+            Assert.NotEqual(0, invalidContinuation.ExitCode);
+            Assert.Contains(
+                "contradictory ApplicationSend continuation state",
+                invalidContinuation.Output,
+                StringComparison.Ordinal);
         }
         finally
         {
@@ -596,7 +733,8 @@ public sealed class REQ_QUIC_CRT_0181
         ulong? interServiceGapMicros = null,
         ulong? deadlineLatenessMicros = null,
         ulong? serviceContenderCountAtStart = 1,
-        ulong? acceptedConnectionWorkItemsAfterCurrent = 0)
+        ulong? acceptedConnectionWorkItemsAfterCurrent = 0,
+        QuicActorContinuationAssessment? continuationAssessment = null)
     {
         QuicActorServiceValidity validity =
             QuicActorServiceValidity.MissingRunnableConnectionCount
@@ -644,7 +782,15 @@ public sealed class REQ_QUIC_CRT_0181
             interServiceGapMicros,
             deadlineLatenessMicros,
             serviceContenderCountAtStart,
-            acceptedConnectionWorkItemsAfterCurrent);
+            acceptedConnectionWorkItemsAfterCurrent,
+            continuationAssessment
+                ?? new(
+                    QuicActorContinuationAssessmentState.Drained,
+                    ApplicationSendRemainingCount: 0,
+                    QuicActorContinuationAssessmentState.Drained,
+                    FlowControlRemainingCount: 0,
+                    QuicActorContinuationAssessmentState.Drained,
+                    StreamCapacityRemainingCount: 0));
     }
 
     private sealed class ThrowingSink : IQuicActorServiceEvidenceSink

@@ -2795,6 +2795,15 @@ internal sealed partial class QuicConnectionRuntime :
     private int runtimeWorkItemFlushedApplicationSends;
     private int runtimeWorkItemFlushedFlowControlUpdates;
     private int runtimeWorkItemFlushedStreamCapacityReleases;
+    private QuicActorContinuationAssessmentState
+        runtimeWorkItemApplicationSendContinuationState;
+    private uint? runtimeWorkItemApplicationSendRemainingCount;
+    private QuicActorContinuationAssessmentState
+        runtimeWorkItemFlowControlContinuationState;
+    private uint? runtimeWorkItemFlowControlRemainingCount;
+    private QuicActorContinuationAssessmentState
+        runtimeWorkItemStreamCapacityContinuationState;
+    private uint? runtimeWorkItemStreamCapacityRemainingCount;
     private bool runtimeWorkItemFlushMeasurementEnabled;
 
     internal bool BeginRuntimeWorkItemFlushMeasurement(
@@ -2811,6 +2820,15 @@ internal sealed partial class QuicConnectionRuntime :
         runtimeWorkItemFlushedApplicationSends = 0;
         runtimeWorkItemFlushedFlowControlUpdates = 0;
         runtimeWorkItemFlushedStreamCapacityReleases = 0;
+        runtimeWorkItemApplicationSendContinuationState =
+            QuicActorContinuationAssessmentState.NotAssessed;
+        runtimeWorkItemApplicationSendRemainingCount = null;
+        runtimeWorkItemFlowControlContinuationState =
+            QuicActorContinuationAssessmentState.NotAssessed;
+        runtimeWorkItemFlowControlRemainingCount = null;
+        runtimeWorkItemStreamCapacityContinuationState =
+            QuicActorContinuationAssessmentState.NotAssessed;
+        runtimeWorkItemStreamCapacityRemainingCount = null;
         return true;
     }
 
@@ -3175,14 +3193,97 @@ internal sealed partial class QuicConnectionRuntime :
         out int applicationSendCount,
         out int flowControlCount,
         out int streamCapacityCount)
+        => TakeRuntimeWorkItemFlushMeasurement(
+            out applicationSendCount,
+            out flowControlCount,
+            out streamCapacityCount,
+            out _);
+
+    internal void TakeRuntimeWorkItemFlushMeasurement(
+        out int applicationSendCount,
+        out int flowControlCount,
+        out int streamCapacityCount,
+        out QuicActorContinuationAssessment continuationAssessment)
     {
         applicationSendCount = runtimeWorkItemFlushedApplicationSends;
         flowControlCount = runtimeWorkItemFlushedFlowControlUpdates;
         streamCapacityCount = runtimeWorkItemFlushedStreamCapacityReleases;
+        continuationAssessment = new(
+            runtimeWorkItemApplicationSendContinuationState,
+            runtimeWorkItemApplicationSendRemainingCount,
+            runtimeWorkItemFlowControlContinuationState,
+            runtimeWorkItemFlowControlRemainingCount,
+            runtimeWorkItemStreamCapacityContinuationState,
+            runtimeWorkItemStreamCapacityRemainingCount);
         runtimeWorkItemFlushedApplicationSends = 0;
         runtimeWorkItemFlushedFlowControlUpdates = 0;
         runtimeWorkItemFlushedStreamCapacityReleases = 0;
+        runtimeWorkItemApplicationSendContinuationState =
+            QuicActorContinuationAssessmentState.NotAssessed;
+        runtimeWorkItemApplicationSendRemainingCount = null;
+        runtimeWorkItemFlowControlContinuationState =
+            QuicActorContinuationAssessmentState.NotAssessed;
+        runtimeWorkItemFlowControlRemainingCount = null;
+        runtimeWorkItemStreamCapacityContinuationState =
+            QuicActorContinuationAssessmentState.NotAssessed;
+        runtimeWorkItemStreamCapacityRemainingCount = null;
         runtimeWorkItemFlushMeasurementEnabled = false;
+    }
+
+    private void RecordApplicationSendContinuationAssessment(
+        QuicActorContinuationAssessmentState state,
+        int remainingCount)
+        => RecordContinuationAssessment(
+            state,
+            remainingCount,
+            ref runtimeWorkItemApplicationSendContinuationState,
+            ref runtimeWorkItemApplicationSendRemainingCount);
+
+    private void RecordFlowControlContinuationAssessment(
+        QuicActorContinuationAssessmentState state,
+        int remainingCount)
+        => RecordContinuationAssessment(
+            state,
+            remainingCount,
+            ref runtimeWorkItemFlowControlContinuationState,
+            ref runtimeWorkItemFlowControlRemainingCount);
+
+    private void RecordStreamCapacityContinuationAssessment(
+        QuicActorContinuationAssessmentState state,
+        int remainingCount)
+        => RecordContinuationAssessment(
+            state,
+            remainingCount,
+            ref runtimeWorkItemStreamCapacityContinuationState,
+            ref runtimeWorkItemStreamCapacityRemainingCount);
+
+    private static void RecordContinuationAssessment(
+        QuicActorContinuationAssessmentState state,
+        int remainingCount,
+        ref QuicActorContinuationAssessmentState destinationState,
+        ref uint? destinationRemainingCount)
+    {
+        if (remainingCount < 0)
+        {
+            destinationState =
+                QuicActorContinuationAssessmentState.Invalid;
+            destinationRemainingCount = null;
+            return;
+        }
+
+        uint boundedRemainingCount = (uint)remainingCount;
+        if (!QuicActorContinuationAssessment.IsConsistent(
+                state,
+                boundedRemainingCount))
+        {
+            destinationState =
+                QuicActorContinuationAssessmentState.Invalid;
+            destinationRemainingCount = null;
+            return;
+        }
+
+        destinationState = state;
+        destinationRemainingCount = boundedRemainingCount;
     }
 
     internal bool HasProcessingTask => processingTask is not null;

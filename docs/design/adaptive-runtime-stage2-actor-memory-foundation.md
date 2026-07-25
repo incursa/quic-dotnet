@@ -15,6 +15,9 @@ campaign may still vary only one axis, receive-credit publication remains
 `legacy_current`, and every adjacent applied policy remains
 `legacy_current`. Stage 2 observation does not authorize a new treatment,
 threshold, controller input, `active_internal` mode, or production behavior.
+The checkpoint status of every roadmap axis is maintained in
+[`adaptive-runtime-policy-axis-implementation-matrix.md`](adaptive-runtime-policy-axis-implementation-matrix.md);
+that matrix does not replace or weaken the approved roadmap.
 
 ## Existing Actor Seam
 
@@ -58,8 +61,8 @@ configuration error. Sink return values and exceptions are diagnostic-only
 and cannot affect transition, effect, timer, ownership, or disposal behavior.
 
 The current observation contract is
-`quic-actor-service-observation-v4`. The provenance contract is
-`quic-actor-service-provenance-v4`. Retained v1 through v3 observation and
+`quic-actor-service-observation-v5`. The provenance contract is
+`quic-actor-service-provenance-v5`. Retained v1 through v4 observation and
 provenance contracts remain immutable.
 
 One observation describes one shard dispatch of one connection work item and
@@ -178,6 +181,41 @@ and contender-accounting completion. Transition interiors, effect iteration,
 ACK lookahead pairs, datagram handoff, recovery, terminal work, and ownership
 release are non-preemptible until separately designed.
 
+## Exact Internal Continuation Assessment
+
+Actor observation v5 adds
+`quic-actor-continuation-assessment-v1`. The fixed connection-local record
+assesses application-send, flow-control-credit, and stream-capacity follow-on
+producers independently. Each producer has one closed state:
+
+- `NotAssessed`: this dispatch did not run the producer;
+- `Drained`: the producer ran and no internal items remain;
+- `Scheduled`: items remain, but an existing owned deadline rather than an
+  immediate continuation owns later progress;
+- `Blocked`: items remain but an authoritative congestion, pacing, recovery,
+  flow-control, path, terminal, or ownership guard prevents immediate work;
+- `ReadyAfterCooperativeYield`: a reviewed preemptible operation yielded at a
+  safe boundary with exact immediately resumable work; or
+- `Invalid`: exact state cannot be established.
+
+`NotAssessed` and `Invalid` require a null remaining count. `Drained` requires
+zero. `Scheduled`, `Blocked`, and `ReadyAfterCooperativeYield` require a
+positive bounded remaining count. Contradictory pairs fail validation.
+Incomplete and invalid assessment remain explicit validity flags.
+
+The legacy runtime currently emits `Drained`, `Scheduled`, `Blocked`, or
+`NotAssessed` as applicable. No production path emits
+`ReadyAfterCooperativeYield`. That value is reserved for a later reviewed
+cooperative checkpoint, so a queued item, accepted dispatch, or blocked item
+cannot be silently relabeled continuation-ready.
+
+The v5 epoch summary retains complete-assessment coverage and per-producer
+observation, drained, scheduled, blocked, ready-after-yield, and maximum
+remaining counts. Raw export recomputes these fields from exact
+`source + connectionKey + serviceSequence` membership. The assessment changes
+no timer ownership, retry rule, queue order, scheduling, or policy application
+and remains disconnected from the repost gate.
+
 ## Exactly-Once Continuation Repost Primitive
 
 `QuicActorContinuationRepostGate` is a connection-local behavior-neutral
@@ -224,7 +262,7 @@ backlog does not satisfy that continuation-ready contract.
 ## Epoch Aggregation
 
 `QuicActorServiceEpochAccumulator` consumes observation records and produces
-`quic-actor-service-epoch-v4` summaries. Retained v1 through v3 summaries
+`quic-actor-service-epoch-v5` summaries. Retained v1 through v4 summaries
 remain immutable. Version 4 retains only bounded scalar state:
 
 - first and last service sequence;
@@ -240,6 +278,9 @@ remain immutable. Version 4 retains only bounded scalar state:
   turns whose count was greater than one;
 - accepted-connection-work observation count, total, maximum, and turns with
   a positive after-current value;
+- complete continuation-assessment turns plus per-producer observation,
+  drained, scheduled, blocked, ready-after-yield, and maximum-remaining
+  counts;
 - maximum pending work-item count after dequeue;
 - total effects;
 - three follow-on totals; and
@@ -268,13 +309,13 @@ receive-credit snapshot, and boundary. The deterministic join requires equal
 connection epoch sequence and epoch end tick. A mismatched, duplicate,
 out-of-order, or nonpositive epoch is rejected before any accumulator resets.
 The joined record is
-`adaptive-runtime-unified-epoch-evidence-v5`; retained v1 through v4 rows
+`adaptive-runtime-unified-epoch-evidence-v6`; retained v1 through v5 rows
 remain immutable.
 
 The raw QUIC harness now configures the same unified accumulator as every
 relevant connection-local evidence sink whenever an adaptive execution is
 requested. It writes one
-`adaptive-runtime-unified-epoch-raw-v5` wrapper per sealed epoch while
+`adaptive-runtime-unified-epoch-raw-v6` wrapper per sealed epoch while
 retaining the earlier receive-credit and Stage 1 compatibility streams.
 The append-only exporter retains source hashes, raw rows, validation summary,
 and manifest; checks exact monotonic joins and one varied axis; and preserves
@@ -282,7 +323,7 @@ bounded-channel failures as explicit `invalid_contract` evidence. Command,
 binary, host, workload, classification, and checksum inventory remain the
 campaign runner's provenance layer and are not accepted from runtime inputs.
 
-## Explicitly Missing V4 Inputs
+## Explicitly Missing V5 Inputs
 
 The shard cannot yet provide the following honestly at connection scope:
 
@@ -298,6 +339,9 @@ useful-work quantum. The posted-or-servicing contender count is not relabeled
 as runnable state, continuous runnable time, starvation, or fairness.
 Accepted connection work after the current dispatch is not relabeled as an
 internal continuation-ready or runnable signal.
+Likewise, `Scheduled` and `Blocked` continuation assessments do not establish
+runnable work. Only `ReadyAfterCooperativeYield` may do so, and the current
+runtime emits no such state.
 
 The shard deadline scheduler already owns the exact scheduled due tick. The
 timer work item now retains that tick in an existing inactive storage slot and
@@ -442,9 +486,9 @@ outside correctness CI.
 1. Complete runnable-state, complete-shard coverage, and fairness observations
    without relabeling inbox depth or inter-service gap as continuous runnable
    connection state.
-2. Extend the exact accepted-dispatch backlog with distinct
-   continuation-ready signals and reviewed cooperative yield sites for every
-   preemptible internal kind.
+2. Add a reviewed cooperative yield site that can truthfully produce
+   `ReadyAfterCooperativeYield`; the accepted-dispatch backlog and v1
+   continuation assessment cannot substitute for that proof.
 3. Integrate the proven generation-token repost gate only after timer,
    recovery, cancellation, disposal, terminal, and ownership tests exist.
 4. Design and force `actor_work_quantum` only after the safety gate.

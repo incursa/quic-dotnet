@@ -738,6 +738,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         var applicationSendFollowOnCount = 0;
         var flowControlFollowOnCount = 0;
         var streamCapacityFollowOnCount = 0;
+        QuicActorContinuationAssessment continuationAssessment = default;
         bool transitionCompleted = false;
         ulong? actorServiceSequence = null;
         bool actorObservationPublished = false;
@@ -956,7 +957,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 runtime!.TakeRuntimeWorkItemFlushMeasurement(
                     out applicationSendFollowOnCount,
                     out flowControlFollowOnCount,
-                    out streamCapacityFollowOnCount);
+                    out streamCapacityFollowOnCount,
+                    out continuationAssessment);
                 QuicMetrics.RecordRuntimeFollowOnFlushItems(
                     shardIndex,
                     in workItem,
@@ -1042,6 +1044,20 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     CaptureAcceptedConnectionWorkItemsAfterCurrent(
                         runtime,
                         ref validity);
+                if (!continuationAssessment.IsComplete)
+                {
+                    validity |=
+                        QuicActorServiceValidity
+                            .IncompleteContinuationAssessment;
+                }
+
+                if (continuationAssessment.HasInvalidState)
+                {
+                    validity |=
+                        QuicActorServiceValidity
+                            .ContinuationAssessmentInvalid;
+                }
+
                 actorServiceSequence =
                     runtime.GetNextActorServiceObservationSequence();
                 QuicActorServiceObservation observation = new(
@@ -1074,7 +1090,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     interServiceGapMicros,
                     deadlineLatenessMicros,
                     serviceContenderCountAtStart,
-                    acceptedConnectionWorkItemsAfterCurrent);
+                    acceptedConnectionWorkItemsAfterCurrent,
+                    continuationAssessment);
                 actorObservationPublished =
                     runtime.TryPublishActorServiceObservation(in observation);
             }

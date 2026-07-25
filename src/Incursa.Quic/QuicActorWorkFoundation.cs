@@ -33,6 +33,83 @@ internal readonly record struct QuicActorUsefulWorkVector(
             observation.QueueDelayMicros);
 }
 
+internal enum QuicActorContinuationAssessmentState : byte
+{
+    NotAssessed = 0,
+    Drained = 1,
+    Scheduled = 2,
+    Blocked = 3,
+    ReadyAfterCooperativeYield = 4,
+    Invalid = 5,
+}
+
+/// <summary>
+/// Preserves exact per-producer continuation state after one actor dispatch.
+/// Pending counts are not runnable or continuation-ready unless the matching
+/// state explicitly says <see cref="QuicActorContinuationAssessmentState.ReadyAfterCooperativeYield"/>.
+/// </summary>
+internal readonly record struct QuicActorContinuationAssessment(
+    QuicActorContinuationAssessmentState ApplicationSendState,
+    uint? ApplicationSendRemainingCount,
+    QuicActorContinuationAssessmentState FlowControlState,
+    uint? FlowControlRemainingCount,
+    QuicActorContinuationAssessmentState StreamCapacityState,
+    uint? StreamCapacityRemainingCount)
+{
+    internal const string CurrentContractVersion =
+        "quic-actor-continuation-assessment-v1";
+
+    internal bool IsComplete =>
+        IsAssessed(ApplicationSendState)
+        && IsAssessed(FlowControlState)
+        && IsAssessed(StreamCapacityState);
+
+    internal bool HasReadyContinuation =>
+        ApplicationSendState
+            == QuicActorContinuationAssessmentState
+                .ReadyAfterCooperativeYield
+        || FlowControlState
+            == QuicActorContinuationAssessmentState
+                .ReadyAfterCooperativeYield
+        || StreamCapacityState
+            == QuicActorContinuationAssessmentState
+                .ReadyAfterCooperativeYield;
+
+    internal bool HasInvalidState =>
+        ApplicationSendState
+            == QuicActorContinuationAssessmentState.Invalid
+        || FlowControlState
+            == QuicActorContinuationAssessmentState.Invalid
+        || StreamCapacityState
+            == QuicActorContinuationAssessmentState.Invalid;
+
+    public string ContractVersion => CurrentContractVersion;
+
+    internal static bool IsConsistent(
+        QuicActorContinuationAssessmentState state,
+        uint? remainingCount)
+        => state switch
+        {
+            QuicActorContinuationAssessmentState.NotAssessed
+                or QuicActorContinuationAssessmentState.Invalid
+                => !remainingCount.HasValue,
+            QuicActorContinuationAssessmentState.Drained
+                => remainingCount == 0,
+            QuicActorContinuationAssessmentState.Scheduled
+                or QuicActorContinuationAssessmentState.Blocked
+                or QuicActorContinuationAssessmentState
+                    .ReadyAfterCooperativeYield
+                => remainingCount is > 0,
+            _ => false,
+        };
+
+    private static bool IsAssessed(
+        QuicActorContinuationAssessmentState state)
+        => state is not (
+            QuicActorContinuationAssessmentState.NotAssessed
+            or QuicActorContinuationAssessmentState.Invalid);
+}
+
 internal enum QuicActorContinuationRepostState : byte
 {
     Idle = 0,

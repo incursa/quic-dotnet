@@ -292,7 +292,7 @@ public sealed class REQ_QUIC_CRT_0183
             string unifiedSchema = Path.Combine(
                 repoRoot,
                 "schemas",
-                "adaptive-runtime-unified-epoch-evidence-v5.schema.json");
+                "adaptive-runtime-unified-epoch-evidence-v6.schema.json");
             string command =
                 $"$boundaryValid = Get-Content -LiteralPath "
                 + $"{AdaptiveRuntimePolicyScriptTestSupport.QuotePowerShellLiteral(boundaryPath)} "
@@ -318,6 +318,7 @@ public sealed class REQ_QUIC_CRT_0183
     [Fact]
     [Requirement("REQ-QUIC-CRT-0184")]
     [Requirement("REQ-QUIC-CRT-0188")]
+    [Requirement("REQ-QUIC-CRT-0189")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void PermanentUnifiedRawExporterPreservesJoinedRowsAndManifest()
@@ -361,7 +362,7 @@ public sealed class REQ_QUIC_CRT_0183
                 new
                 {
                     schemaVersion =
-                        "adaptive-runtime-unified-epoch-raw-v5",
+                        "adaptive-runtime-unified-epoch-raw-v6",
                     connectionKey = "connection-0001",
                     epoch = evidence,
                 },
@@ -370,7 +371,7 @@ public sealed class REQ_QUIC_CRT_0183
                 new
                 {
                     schemaVersion =
-                        "adaptive-runtime-actor-service-raw-v3",
+                        "adaptive-runtime-actor-service-raw-v4",
                     connectionKey = "connection-0001",
                     observation = actor,
                 },
@@ -576,7 +577,7 @@ public sealed class REQ_QUIC_CRT_0183
                             new
                             {
                                 schemaVersion =
-                                    "adaptive-runtime-unified-epoch-raw-v5",
+                                    "adaptive-runtime-unified-epoch-raw-v6",
                                 connectionKey = "connection-0001",
                                 epoch = mismatchedEvidence,
                             },
@@ -622,7 +623,7 @@ public sealed class REQ_QUIC_CRT_0183
                             new
                             {
                                 schemaVersion =
-                                    "adaptive-runtime-unified-epoch-raw-v5",
+                                    "adaptive-runtime-unified-epoch-raw-v6",
                                 connectionKey = "connection-0001",
                                 epoch = mismatchedAcceptedWorkEvidence,
                             },
@@ -644,6 +645,52 @@ public sealed class REQ_QUIC_CRT_0183
             Assert.Contains(
                 "joinFailures=1",
                 mismatchedAcceptedWork.Output,
+                StringComparison.Ordinal);
+
+            QuicAdaptiveRuntimeUnifiedEpochEvidence
+                mismatchedContinuationEvidence =
+                    evidence with
+                    {
+                        ActorService = evidence.ActorService with
+                        {
+                            ApplicationSendContinuationReadyTurnCount = 1,
+                            MaximumApplicationSendContinuationRemainingCount =
+                                1,
+                        },
+                    };
+            string mismatchedContinuationHostLogPath = Path.Combine(
+                temporaryDirectory,
+                "mismatched-continuation-host.log");
+            File.WriteAllLines(
+                mismatchedContinuationHostLogPath,
+                [
+                    "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON="
+                        + JsonSerializer.Serialize(
+                            new
+                            {
+                                schemaVersion =
+                                    "adaptive-runtime-unified-epoch-raw-v6",
+                                connectionKey = "connection-0001",
+                                epoch = mismatchedContinuationEvidence,
+                            },
+                            jsonOptions),
+                    "QUIC_ACTOR_SERVICE_OBSERVATION_JSON="
+                        + actorRawJson,
+                ]);
+            AdaptiveRuntimePolicyScriptTestSupport.ProcessResult
+                mismatchedContinuation =
+                    AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(
+                        "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+                        "-HostLogPath",
+                        mismatchedContinuationHostLogPath,
+                        "-OutputDirectory",
+                        Path.Combine(
+                            temporaryDirectory,
+                            "mismatched-continuation-export"));
+            Assert.NotEqual(0, mismatchedContinuation.ExitCode);
+            Assert.Contains(
+                "joinFailures=1",
+                mismatchedContinuation.Output,
                 StringComparison.Ordinal);
 
             AdaptiveRuntimePolicyScriptTestSupport.ProcessResult second =
@@ -760,7 +807,14 @@ public sealed class REQ_QUIC_CRT_0183
             DisposalStarted: false,
             QuicActorServiceValidity.None,
             ServiceContenderCountAtStart: 1,
-            AcceptedConnectionWorkItemsAfterCurrent: 0);
+            AcceptedConnectionWorkItemsAfterCurrent: 0,
+            ContinuationAssessment: new(
+                QuicActorContinuationAssessmentState.Drained,
+                ApplicationSendRemainingCount: 0,
+                QuicActorContinuationAssessmentState.Drained,
+                FlowControlRemainingCount: 0,
+                QuicActorContinuationAssessmentState.Drained,
+                StreamCapacityRemainingCount: 0));
 
     private static QuicBufferCopyObservation CreateBufferObservation()
         => new(

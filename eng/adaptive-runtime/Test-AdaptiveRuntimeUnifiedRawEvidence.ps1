@@ -19,8 +19,8 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v5.schema.json'
-$actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v3.schema.json'
+$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v6.schema.json'
+$actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v4.schema.json'
 $resolvedRawEpochPath = (Resolve-Path -LiteralPath $RawEpochPath).Path
 $resolvedActorObservationPath = (Resolve-Path -LiteralPath $ActorObservationPath).Path
 $seenKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
@@ -37,6 +37,7 @@ $actorAcceptedWorkCountByEpoch = @{}
 $actorAcceptedWorkTotalByEpoch = @{}
 $actorAcceptedWorkMaximumByEpoch = @{}
 $actorAcceptedWorkRemainingTurnsByEpoch = @{}
+$actorContinuationByEpoch = @{}
 $joinFailures = [System.Collections.Generic.List[string]]::new()
 $duplicateKeys = [System.Collections.Generic.List[string]]::new()
 $outOfOrderKeys = [System.Collections.Generic.List[string]]::new()
@@ -200,6 +201,32 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
                     [uint64] $actorSummary.maximumAcceptedConnectionWorkItemsAfterCurrent
                 acceptedWorkRemainingTurns =
                     [uint64] $actorSummary.turnsWithAcceptedConnectionWorkRemaining
+                completeContinuationAssessmentTurnCount =
+                    [uint64] $actorSummary.completeContinuationAssessmentTurnCount
+                applicationSendContinuation = [ordered]@{
+                    Observation = [uint64] $actorSummary.applicationSendContinuationObservationCount
+                    Drained = [uint64] $actorSummary.applicationSendContinuationDrainedTurnCount
+                    Scheduled = [uint64] $actorSummary.applicationSendContinuationScheduledTurnCount
+                    Blocked = [uint64] $actorSummary.applicationSendContinuationBlockedTurnCount
+                    Ready = [uint64] $actorSummary.applicationSendContinuationReadyTurnCount
+                    Maximum = [uint64] $actorSummary.maximumApplicationSendContinuationRemainingCount
+                }
+                flowControlContinuation = [ordered]@{
+                    Observation = [uint64] $actorSummary.flowControlContinuationObservationCount
+                    Drained = [uint64] $actorSummary.flowControlContinuationDrainedTurnCount
+                    Scheduled = [uint64] $actorSummary.flowControlContinuationScheduledTurnCount
+                    Blocked = [uint64] $actorSummary.flowControlContinuationBlockedTurnCount
+                    Ready = [uint64] $actorSummary.flowControlContinuationReadyTurnCount
+                    Maximum = [uint64] $actorSummary.maximumFlowControlContinuationRemainingCount
+                }
+                streamCapacityContinuation = [ordered]@{
+                    Observation = [uint64] $actorSummary.streamCapacityContinuationObservationCount
+                    Drained = [uint64] $actorSummary.streamCapacityContinuationDrainedTurnCount
+                    Scheduled = [uint64] $actorSummary.streamCapacityContinuationScheduledTurnCount
+                    Blocked = [uint64] $actorSummary.streamCapacityContinuationBlockedTurnCount
+                    Ready = [uint64] $actorSummary.streamCapacityContinuationReadyTurnCount
+                    Maximum = [uint64] $actorSummary.maximumStreamCapacityContinuationRemainingCount
+                }
             }
             for ($actorSequence = $first;
                 $actorSequence -le $last;
@@ -391,6 +418,147 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedActorObservationPath)) {
                     $actorEpochRowKey] + 1
         }
     }
+
+    $continuation = $record.observation.continuationAssessment
+    $continuationDescriptors = @(
+        [ordered]@{
+            Name = 'ApplicationSend'
+            State = [string] $continuation.applicationSendState
+            Count = $continuation.applicationSendRemainingCount
+        },
+        [ordered]@{
+            Name = 'FlowControl'
+            State = [string] $continuation.flowControlState
+            Count = $continuation.flowControlRemainingCount
+        },
+        [ordered]@{
+            Name = 'StreamCapacity'
+            State = [string] $continuation.streamCapacityState
+            Count = $continuation.streamCapacityRemainingCount
+        }
+    )
+    $completeContinuationAssessment = $true
+    $hasInvalidContinuationAssessment = $false
+    $actorEpochRowKey = if (
+        $actorEpochRowByActorKey.ContainsKey($rowKey)) {
+        [string] $actorEpochRowByActorKey[$rowKey]
+    }
+    else {
+        $null
+    }
+    if ($null -ne $actorEpochRowKey -and
+        -not $actorContinuationByEpoch.ContainsKey(
+            $actorEpochRowKey)) {
+        $actorContinuationByEpoch[$actorEpochRowKey] =
+            [ordered]@{
+                Complete = [uint64]0
+                ApplicationSend = [ordered]@{
+                    Observation = [uint64]0
+                    Drained = [uint64]0
+                    Scheduled = [uint64]0
+                    Blocked = [uint64]0
+                    Ready = [uint64]0
+                    Maximum = [uint64]0
+                }
+                FlowControl = [ordered]@{
+                    Observation = [uint64]0
+                    Drained = [uint64]0
+                    Scheduled = [uint64]0
+                    Blocked = [uint64]0
+                    Ready = [uint64]0
+                    Maximum = [uint64]0
+                }
+                StreamCapacity = [ordered]@{
+                    Observation = [uint64]0
+                    Drained = [uint64]0
+                    Scheduled = [uint64]0
+                    Blocked = [uint64]0
+                    Ready = [uint64]0
+                    Maximum = [uint64]0
+                }
+            }
+    }
+    foreach ($descriptor in $continuationDescriptors) {
+        $state = [string] $descriptor.State
+        $hasCount = $null -ne $descriptor.Count
+        $remainingCount = if ($hasCount) {
+            [uint64] $descriptor.Count
+        }
+        else {
+            [uint64]0
+        }
+        $consistent = switch ($state) {
+            'NotAssessed' { -not $hasCount }
+            'Invalid' { -not $hasCount }
+            'Drained' { $hasCount -and $remainingCount -eq 0 }
+            'Scheduled' { $hasCount -and $remainingCount -gt 0 }
+            'Blocked' { $hasCount -and $remainingCount -gt 0 }
+            'ReadyAfterCooperativeYield' {
+                $hasCount -and $remainingCount -gt 0
+            }
+            default { $false }
+        }
+        if (-not $consistent) {
+            [void] $joinFailures.Add(
+                "$rowKey|actor-$($descriptor.Name)-continuation-validity")
+        }
+
+        if ($state -in @('NotAssessed', 'Invalid')) {
+            $completeContinuationAssessment = $false
+            if ($state -eq 'Invalid') {
+                $hasInvalidContinuationAssessment = $true
+            }
+            continue
+        }
+        if (-not $consistent -or $null -eq $actorEpochRowKey) {
+            continue
+        }
+
+        $aggregate =
+            $actorContinuationByEpoch[$actorEpochRowKey][
+                $descriptor.Name]
+        $aggregate.Observation =
+            [uint64] $aggregate.Observation + 1
+        if ($remainingCount -gt [uint64] $aggregate.Maximum) {
+            $aggregate.Maximum = $remainingCount
+        }
+        switch ($state) {
+            'Drained' {
+                $aggregate.Drained = [uint64] $aggregate.Drained + 1
+            }
+            'Scheduled' {
+                $aggregate.Scheduled =
+                    [uint64] $aggregate.Scheduled + 1
+            }
+            'Blocked' {
+                $aggregate.Blocked = [uint64] $aggregate.Blocked + 1
+            }
+            'ReadyAfterCooperativeYield' {
+                $aggregate.Ready = [uint64] $aggregate.Ready + 1
+            }
+        }
+    }
+    if ($completeContinuationAssessment -and
+        $null -ne $actorEpochRowKey) {
+        $actorContinuationByEpoch[$actorEpochRowKey].Complete =
+            [uint64] $actorContinuationByEpoch[
+                $actorEpochRowKey].Complete + 1
+    }
+    $incompleteContinuationFlag = Test-ActorValidityFlag `
+        -Value $record.observation.validity `
+        -Name 'IncompleteContinuationAssessment' `
+        -Mask (1L -shl 11)
+    $invalidContinuationFlag = Test-ActorValidityFlag `
+        -Value $record.observation.validity `
+        -Name 'ContinuationAssessmentInvalid' `
+        -Mask (1L -shl 12)
+    if ($incompleteContinuationFlag -eq
+            $completeContinuationAssessment -or
+        $invalidContinuationFlag -ne
+            $hasInvalidContinuationAssessment) {
+        [void] $joinFailures.Add(
+            "$rowKey|actor-continuation-validity")
+    }
 }
 
 if ($null -ne $SourceActorObservationRowCount -and
@@ -474,6 +642,69 @@ foreach ($actorEpochRowKey in $actorEpochSummaryByRowKey.Keys) {
         [void] $joinFailures.Add(
             "$actorEpochRowKey|actor-accepted-connection-work-aggregate")
     }
+
+    $actualContinuation = if (
+        $actorContinuationByEpoch.ContainsKey($actorEpochRowKey)) {
+        $actorContinuationByEpoch[$actorEpochRowKey]
+    }
+    else {
+        [ordered]@{
+            Complete = [uint64]0
+            ApplicationSend = [ordered]@{
+                Observation = [uint64]0
+                Drained = [uint64]0
+                Scheduled = [uint64]0
+                Blocked = [uint64]0
+                Ready = [uint64]0
+                Maximum = [uint64]0
+            }
+            FlowControl = [ordered]@{
+                Observation = [uint64]0
+                Drained = [uint64]0
+                Scheduled = [uint64]0
+                Blocked = [uint64]0
+                Ready = [uint64]0
+                Maximum = [uint64]0
+            }
+            StreamCapacity = [ordered]@{
+                Observation = [uint64]0
+                Drained = [uint64]0
+                Scheduled = [uint64]0
+                Blocked = [uint64]0
+                Ready = [uint64]0
+                Maximum = [uint64]0
+            }
+        }
+    }
+    if ([uint64] $summary.completeContinuationAssessmentTurnCount -ne
+        [uint64] $actualContinuation.Complete) {
+        [void] $joinFailures.Add(
+            "$actorEpochRowKey|actor-continuation-complete-aggregate")
+    }
+    foreach ($name in @(
+            'ApplicationSend',
+            'FlowControl',
+            'StreamCapacity')) {
+        $expectedProperty =
+            "$($name.Substring(0, 1).ToLowerInvariant())$($name.Substring(1))Continuation"
+        $expected = $summary.$expectedProperty
+        $actual = $actualContinuation[$name]
+        if ([uint64] $expected.Observation -ne
+                [uint64] $actual.Observation -or
+            [uint64] $expected.Drained -ne
+                [uint64] $actual.Drained -or
+            [uint64] $expected.Scheduled -ne
+                [uint64] $actual.Scheduled -or
+            [uint64] $expected.Blocked -ne
+                [uint64] $actual.Blocked -or
+            [uint64] $expected.Ready -ne
+                [uint64] $actual.Ready -or
+            [uint64] $expected.Maximum -ne
+                [uint64] $actual.Maximum) {
+            [void] $joinFailures.Add(
+                "$actorEpochRowKey|actor-$name-continuation-aggregate")
+        }
+    }
 }
 
 $valid =
@@ -499,7 +730,7 @@ if (-not $valid) {
 }
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-validation-v6'
+    schemaVersion = 'adaptive-runtime-unified-raw-validation-v7'
     valid = $true
     rawEpochRowCount = $rowCount
     axisRecordCount = $axisRecordCount

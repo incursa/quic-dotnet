@@ -57,6 +57,8 @@ internal enum QuicActorServiceValidity : ushort
     MissingServiceContenderCount = 1 << 8,
     ServiceContenderStateInvalid = 1 << 9,
     MissingAcceptedConnectionWorkItemsAfterCurrent = 1 << 10,
+    IncompleteContinuationAssessment = 1 << 11,
+    ContinuationAssessmentInvalid = 1 << 12,
 }
 
 internal readonly record struct QuicActorServiceObservation(
@@ -81,12 +83,13 @@ internal readonly record struct QuicActorServiceObservation(
     ulong? InterServiceGapMicros = null,
     ulong? DeadlineLatenessMicros = null,
     ulong? ServiceContenderCountAtStart = null,
-    ulong? AcceptedConnectionWorkItemsAfterCurrent = null)
+    ulong? AcceptedConnectionWorkItemsAfterCurrent = null,
+    QuicActorContinuationAssessment ContinuationAssessment = default)
 {
     internal const string CurrentObservationContractVersion =
-        "quic-actor-service-observation-v4";
+        "quic-actor-service-observation-v5";
     internal const string CurrentProvenanceVersion =
-        "quic-actor-service-provenance-v4";
+        "quic-actor-service-provenance-v5";
 
     public string ObservationContractVersion =>
         CurrentObservationContractVersion;

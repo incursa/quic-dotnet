@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-actor-service-observation-v5.schema.json",
+  "title": "Adaptive Runtime Actor Service Observation v5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "serviceSequence",
+    "shardIndex",
+    "wakeSequence",
+    "wakePosition",
+    "wakeCompletion",
+    "wakeSource",
+    "workKind",
+    "disposition",
+    "queueDelayMicros",
+    "serviceTimeMicros",
+    "pendingWorkItemsAfterDequeue",
+    "effectCount",
+    "applicationSendFollowOnCount",
+    "flowControlFollowOnCount",
+    "streamCapacityFollowOnCount",
+    "phaseAfter",
+    "disposalStarted",
+    "validity",
+    "interServiceGapMicros",
+    "deadlineLatenessMicros",
+    "serviceContenderCountAtStart",
+    "acceptedConnectionWorkItemsAfterCurrent",
+    "continuationAssessment",
+    "observationContractVersion",
+    "provenanceVersion"
+  ],
+  "properties": {
+    "serviceSequence": { "$ref": "#/$defs/positiveInteger" },
+    "shardIndex": { "$ref": "#/$defs/unsignedInteger" },
+    "wakeSequence": { "$ref": "#/$defs/positiveInteger" },
+    "wakePosition": { "$ref": "#/$defs/positiveInteger" },
+    "wakeCompletion": {
+      "enum": ["ConsumerStart", "Synchronous", "Asynchronous"]
+    },
+    "wakeSource": {
+      "enum": ["ConsumerStart", "Inbox", "Deadline"]
+    },
+    "workKind": {
+      "enum": [
+        "ConnectionEvent",
+        "Timer",
+        "PacketReceived",
+        "StreamCapacityRelease",
+        "FlowControlCreditUpdate",
+        "StreamOpen",
+        "StreamWrite"
+      ]
+    },
+    "disposition": {
+      "enum": [
+        "Completed",
+        "SkippedDisposed",
+        "SkippedIndependentConsumer",
+        "Faulted"
+      ]
+    },
+    "queueDelayMicros": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "serviceTimeMicros": { "$ref": "#/$defs/unsignedInteger" },
+    "pendingWorkItemsAfterDequeue": {
+      "$ref": "#/$defs/unsignedInteger"
+    },
+    "effectCount": { "$ref": "#/$defs/unsignedInteger" },
+    "applicationSendFollowOnCount": {
+      "$ref": "#/$defs/unsignedInteger"
+    },
+    "flowControlFollowOnCount": {
+      "$ref": "#/$defs/unsignedInteger"
+    },
+    "streamCapacityFollowOnCount": {
+      "$ref": "#/$defs/unsignedInteger"
+    },
+    "phaseAfter": {
+      "enum": ["Establishing", "Active", "Closing", "Draining", "Discarded"]
+    },
+    "disposalStarted": { "type": "boolean" },
+    "validity": { "type": ["string", "integer"] },
+    "interServiceGapMicros": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "deadlineLatenessMicros": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "serviceContenderCountAtStart": {
+      "type": ["integer", "null"],
+      "minimum": 1
+    },
+    "acceptedConnectionWorkItemsAfterCurrent": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "continuationAssessment": {
+      "$ref": "#/$defs/continuationAssessment"
+    },
+    "observationContractVersion": {
+      "const": "quic-actor-service-observation-v5"
+    },
+    "provenanceVersion": {
+      "const": "quic-actor-service-provenance-v5"
+    }
+  },
+  "$defs": {
+    "unsignedInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "continuationState": {
+      "enum": [
+        "NotAssessed",
+        "Drained",
+        "Scheduled",
+        "Blocked",
+        "ReadyAfterCooperativeYield",
+        "Invalid"
+      ]
+    },
+    "continuationAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicationSendState",
+        "applicationSendRemainingCount",
+        "flowControlState",
+        "flowControlRemainingCount",
+        "streamCapacityState",
+        "streamCapacityRemainingCount",
+        "contractVersion"
+      ],
+      "properties": {
+        "applicationSendState": {
+          "$ref": "#/$defs/continuationState"
+        },
+        "applicationSendRemainingCount": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "flowControlState": {
+          "$ref": "#/$defs/continuationState"
+        },
+        "flowControlRemainingCount": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "streamCapacityState": {
+          "$ref": "#/$defs/continuationState"
+        },
+        "streamCapacityRemainingCount": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "contractVersion": {
+          "const": "quic-actor-continuation-assessment-v1"
+        }
+      }
+    }
+  }
+}

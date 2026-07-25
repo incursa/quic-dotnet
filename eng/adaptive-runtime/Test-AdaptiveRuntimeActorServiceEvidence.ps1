@@ -17,9 +17,9 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $observationSchemaPath = Join-Path $RepositoryRoot `
-    'schemas\adaptive-runtime-actor-service-observation-v4.schema.json'
+    'schemas\adaptive-runtime-actor-service-observation-v5.schema.json'
 $epochSchemaPath = Join-Path $RepositoryRoot `
-    'schemas\adaptive-runtime-actor-service-epoch-v4.schema.json'
+    'schemas\adaptive-runtime-actor-service-epoch-v5.schema.json'
 $failures = [System.Collections.Generic.List[string]]::new()
 $observations = [System.Collections.Generic.List[object]]::new()
 
@@ -84,6 +84,33 @@ $acceptedWorkObservationCount = [ulong]0
 $totalAcceptedWorkItemsAfterCurrent = [ulong]0
 $maximumAcceptedWorkItemsAfterCurrent = [ulong]0
 $turnsWithAcceptedWorkRemaining = [ulong]0
+$completeContinuationAssessmentTurnCount = [ulong]0
+$continuationAggregates = [ordered]@{
+    ApplicationSend = [ordered]@{
+        Observation = [ulong]0
+        Drained = [ulong]0
+        Scheduled = [ulong]0
+        Blocked = [ulong]0
+        Ready = [ulong]0
+        Maximum = [ulong]0
+    }
+    FlowControl = [ordered]@{
+        Observation = [ulong]0
+        Drained = [ulong]0
+        Scheduled = [ulong]0
+        Blocked = [ulong]0
+        Ready = [ulong]0
+        Maximum = [ulong]0
+    }
+    StreamCapacity = [ordered]@{
+        Observation = [ulong]0
+        Drained = [ulong]0
+        Scheduled = [ulong]0
+        Blocked = [ulong]0
+        Ready = [ulong]0
+        Maximum = [ulong]0
+    }
+}
 foreach ($observation in $observations) {
     $serviceSequence = [ulong] $observation.serviceSequence
     $wakeSequence = [ulong] $observation.wakeSequence
@@ -200,6 +227,101 @@ foreach ($observation in $observations) {
         if ($acceptedWork -gt 0) {
             $turnsWithAcceptedWorkRemaining++
         }
+    }
+
+    $continuation = $observation.continuationAssessment
+    $continuationDescriptors = @(
+        [ordered]@{
+            Name = 'ApplicationSend'
+            State = [string] $continuation.applicationSendState
+            Count = $continuation.applicationSendRemainingCount
+        },
+        [ordered]@{
+            Name = 'FlowControl'
+            State = [string] $continuation.flowControlState
+            Count = $continuation.flowControlRemainingCount
+        },
+        [ordered]@{
+            Name = 'StreamCapacity'
+            State = [string] $continuation.streamCapacityState
+            Count = $continuation.streamCapacityRemainingCount
+        }
+    )
+    $completeContinuationAssessment = $true
+    $hasInvalidContinuationAssessment = $false
+    foreach ($descriptor in $continuationDescriptors) {
+        $state = [string] $descriptor.State
+        $hasCount = $null -ne $descriptor.Count
+        $remainingCount = if ($hasCount) {
+            [ulong] $descriptor.Count
+        }
+        else {
+            [ulong]0
+        }
+        $consistent = switch ($state) {
+            'NotAssessed' { -not $hasCount }
+            'Invalid' { -not $hasCount }
+            'Drained' { $hasCount -and $remainingCount -eq 0 }
+            'Scheduled' { $hasCount -and $remainingCount -gt 0 }
+            'Blocked' { $hasCount -and $remainingCount -gt 0 }
+            'ReadyAfterCooperativeYield' {
+                $hasCount -and $remainingCount -gt 0
+            }
+            default { $false }
+        }
+        if (-not $consistent) {
+            $failures.Add(
+                "Actor observation '$serviceSequence' has contradictory $($descriptor.Name) continuation state.")
+        }
+
+        if ($state -in @('NotAssessed', 'Invalid')) {
+            $completeContinuationAssessment = $false
+            if ($state -eq 'Invalid') {
+                $hasInvalidContinuationAssessment = $true
+            }
+            continue
+        }
+
+        if (-not $consistent) {
+            continue
+        }
+
+        $aggregate = $continuationAggregates[$descriptor.Name]
+        $aggregate.Observation =
+            [ulong] $aggregate.Observation + 1
+        $aggregate.Maximum = [Math]::Max(
+            [ulong] $aggregate.Maximum,
+            $remainingCount)
+        switch ($state) {
+            'Drained' { $aggregate.Drained = [ulong] $aggregate.Drained + 1 }
+            'Scheduled' { $aggregate.Scheduled = [ulong] $aggregate.Scheduled + 1 }
+            'Blocked' { $aggregate.Blocked = [ulong] $aggregate.Blocked + 1 }
+            'ReadyAfterCooperativeYield' {
+                $aggregate.Ready = [ulong] $aggregate.Ready + 1
+            }
+        }
+    }
+    if ($completeContinuationAssessment) {
+        $completeContinuationAssessmentTurnCount++
+    }
+
+    $incompleteContinuationFlag = Test-ActorValidityFlag `
+        -Value $observation.validity `
+        -Name 'IncompleteContinuationAssessment' `
+        -Mask (1L -shl 11)
+    $invalidContinuationFlag = Test-ActorValidityFlag `
+        -Value $observation.validity `
+        -Name 'ContinuationAssessmentInvalid' `
+        -Mask (1L -shl 12)
+    if ($incompleteContinuationFlag -eq
+        $completeContinuationAssessment) {
+        $failures.Add(
+            "Actor observation '$serviceSequence' has contradictory continuation completeness validity.")
+    }
+    if ($invalidContinuationFlag -ne
+        $hasInvalidContinuationAssessment) {
+        $failures.Add(
+            "Actor observation '$serviceSequence' has contradictory invalid continuation validity.")
     }
 }
 
@@ -352,9 +474,39 @@ if ($epochAcceptedWorkObservationCount -ne
         'Accepted connection work aggregation does not match raw observations.')
 }
 
+if ([ulong] $epoch.completeContinuationAssessmentTurnCount -ne
+    $completeContinuationAssessmentTurnCount) {
+    $failures.Add(
+        'Complete continuation-assessment count does not match raw observations.')
+}
+foreach ($name in $continuationAggregates.Keys) {
+    $aggregate = $continuationAggregates[$name]
+    $observationProperty = "$($name.Substring(0, 1).ToLowerInvariant())$($name.Substring(1))ContinuationObservationCount"
+    $drainedProperty = "$($name.Substring(0, 1).ToLowerInvariant())$($name.Substring(1))ContinuationDrainedTurnCount"
+    $scheduledProperty = "$($name.Substring(0, 1).ToLowerInvariant())$($name.Substring(1))ContinuationScheduledTurnCount"
+    $blockedProperty = "$($name.Substring(0, 1).ToLowerInvariant())$($name.Substring(1))ContinuationBlockedTurnCount"
+    $readyProperty = "$($name.Substring(0, 1).ToLowerInvariant())$($name.Substring(1))ContinuationReadyTurnCount"
+    $maximumProperty = "maximum$($name)ContinuationRemainingCount"
+    if ([ulong] $epoch.$observationProperty -ne
+            [ulong] $aggregate.Observation -or
+        [ulong] $epoch.$drainedProperty -ne
+            [ulong] $aggregate.Drained -or
+        [ulong] $epoch.$scheduledProperty -ne
+            [ulong] $aggregate.Scheduled -or
+        [ulong] $epoch.$blockedProperty -ne
+            [ulong] $aggregate.Blocked -or
+        [ulong] $epoch.$readyProperty -ne
+            [ulong] $aggregate.Ready -or
+        [ulong] $epoch.$maximumProperty -ne
+            [ulong] $aggregate.Maximum) {
+        $failures.Add(
+            "$name continuation aggregation does not match raw observations.")
+    }
+}
+
 $result = [ordered]@{
     schemaVersion =
-        'adaptive-runtime-actor-service-evidence-validation-v4'
+        'adaptive-runtime-actor-service-evidence-validation-v5'
     valid = $failures.Count -eq 0
     observationRowCount = $observations.Count
     actorTurnCount = $turnCount
