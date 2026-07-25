@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY",
   "artifact_type": "specification",
-  "title": "Stage 2 actor and memory observation foundation",
+  "title": "Stage 2 actor observation and bounded buffer coalescing",
   "domain": "quic",
   "capability": "adaptive-runtime-stage2-actor-memory",
   "status": "proposed",
@@ -11,7 +11,7 @@
     "adaptive-runtime",
     "actor",
     "memory",
-    "observation-only"
+    "forceable-internal"
   ],
   "related_artifacts": [
     "SPEC-QUIC-CRT-STAGE1-SEND-PATH",
@@ -19,8 +19,8 @@
     "WI-QUIC-CRT-0068",
     "VER-QUIC-CRT-0069"
   ],
-  "purpose": "Define bounded versioned actor service and buffer-copy observations before any actor-work, fairness, buffer, or backpressure policy becomes forceable.",
-  "scope": "This specification covers behavior-neutral per-connection actor service and selected send-side and receive-side buffer-copy observations, bounded epoch aggregation, a versioned post-service Stage 1 and Stage 2 join boundary, append-only permanent raw export, explicit missing-state handling, schema and semantic validation, and the safety gates required before actor_work_quantum or buffer_copy_coalescing. It does not define a forceable actor policy, scalar work-unit threshold, distinct conservative buffer implementation, backpressure policy, active_internal behavior, or production activation.",
+  "purpose": "Define bounded versioned actor service observations and deliver the independently forceable lower-only buffer_copy_coalescing seam without authorizing actor scheduling, fairness, backpressure, or active behavior.",
+  "scope": "This specification covers behavior-neutral per-connection actor service and selected send-side and receive-side buffer-copy observations, bounded epoch aggregation, a versioned post-service Stage 1 and Stage 2 join boundary, append-only permanent raw export, explicit missing-state handling, schema and semantic validation, the safety gates required before actor_work_quantum, and the legacy_current plus memory_conservative buffer_copy_coalescing seam. It does not define a forceable actor policy, scalar work-unit threshold, ready-stream fairness mechanism, backpressure policy, active_internal behavior, or production activation.",
   "context": "The shard already exposes aggregate queue-delay, service-time, wake, packet-run, and follow-on metrics, but it does not expose a versioned connection-attributable evidence contract or an exactly-once repost seam. Stage 2 must preserve the current drain loop and record honest primitives before proposing a quantum.",
   "open_questions": [
     "Which cooperative transition and effect boundaries can yield while preserving timer priority, recovery, terminal drain, and buffer ownership?",
@@ -122,7 +122,7 @@
     {
       "id": "REQ-QUIC-CRT-0184",
       "title": "Export append-only unified Stage 1 and Stage 2 raw evidence",
-      "statement": "The permanent raw QUIC evidence host MUST configure one connection-local accumulator as the receive-credit, all four Stage 1, actor-service, and buffer-copy evidence sink for every adaptive execution; emit one versioned unified epoch under one connection key only after an exact post-service join; emit every actor dispatch as a separate versioned sample-scoped raw record; preserve retained receive-credit and Stage 1 compatibility records without relabeling; validate unique monotonic connection epoch keys, exact observation, snapshot, boundary, Stage 1, actor-summary, and buffer joins, exact source-scoped connection-key and service-sequence coverage between actor raw records and each summarized actor range, exactly four Stage 1 axis records, and no more than one non-legacy applied axis per row; retain append-only source hashes, raw rows, validation counts, manifests, and export-failure records; classify any missing, duplicate, orphan, out-of-order, or failed actor export and any unified export failure as invalid_contract; and preserve legacy_current adjacent policy application and behavior-neutral evidence failure handling.",
+      "statement": "The permanent raw QUIC evidence host MUST configure one connection-local accumulator as the receive-credit, all four Stage 1, actor-service, and buffer-copy evidence sink for every adaptive execution; emit one versioned unified epoch under one connection key only after an exact post-service join; emit every actor dispatch as a separate versioned sample-scoped raw record; preserve retained receive-credit and Stage 1 compatibility records without relabeling; validate unique monotonic connection epoch keys, exact observation, snapshot, boundary, Stage 1, actor-summary, and buffer joins, exact source-scoped connection-key and service-sequence coverage between actor raw records and each summarized actor range, exactly four Stage 1 axis records plus one configured buffer axis record, and no more than one non-legacy applied axis per row; retain append-only source hashes, raw rows, validation counts, manifests, and export-failure records; classify any missing, duplicate, orphan, out-of-order, or failed actor export and any unified export failure as invalid_contract; and preserve legacy_current adjacent policy application and behavior-neutral evidence failure handling.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-CRT-0067"
@@ -325,6 +325,41 @@
       "notes": [
         "No current runtime path emits ready_after_cooperative_yield; scheduled and blocked work remain non-runnable observations.",
         "The generation-token repost gate remains disconnected and actor_work_quantum remains legacy_current and non-forceable."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0190",
+      "title": "Force bounded buffer coalescing without widening a legal packet plan",
+      "statement": "The runtime MUST expose the buffer_copy_coalescing axis with the closed legacy_current and memory_conservative values; preserve the exact legacy combined-application-send construction for legacy_current; implement memory_conservative as a lower-only cap of two source segments after the Stage 1 planner has produced an already legal packet plan and before the combined owner is rented; support disabled, observe-only, shadow, forced-legacy, and forced-memory-conservative operation with forced, recommended, selected, and applied identities kept distinct; latch the decision through the resulting buffer lifetime; fall back to legacy_current with bounded missing, stale, saturated, contradictory, invalid, out-of-domain, lifecycle, and ownership reasons; keep Stage 1 selection, priority, same-stream order, application bytes, FIN, reset, cancellation, disposal, flow control, stream capacity, packet size, congestion, pacing, anti-amplification, recovery, packet protection, exactly-once owner transfer, and terminal release authoritative under every forced value; emit versioned operation and unified-epoch policy provenance with exact legal and applied segment counts; reject simultaneous behavior-distinct forcing of any adjacent axis; independently prove force-legacy rollback; and keep active_internal and production selection unavailable.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0067"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0068"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0069"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-axis-roadmap.md",
+          "docs/design/adaptive-runtime-stage2-buffer-ownership-copy-inventory.md",
+          "src/Incursa.Quic/QuicBufferCopyObservation.cs",
+          "src/Incursa.Quic/QuicBufferCopyEpochAccumulator.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+          "schemas/adaptive-runtime-buffer-copy-observation-v4.schema.json",
+          "schemas/adaptive-runtime-buffer-copy-epoch-v4.schema.json",
+          "schemas/adaptive-runtime-buffer-copy-raw-v4.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-evidence-v7.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-raw-v7.schema.json",
+          "schemas/adaptive-runtime-unified-raw-export-manifest-v8.schema.json",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0190.cs"
+        ]
+      },
+      "notes": [
+        "The fixed cap of two is the smallest distinct coalesced construction and is a reviewed conservative mechanism value, not a performance-derived threshold.",
+        "The buffer policy may shorten but never widen the Stage 1 legal prefix; application_send_batch_formation remains selected and applied independently.",
+        "Measurement, threshold tuning, active_internal, and production activation remain outside this requirement."
       ]
     }
   ]

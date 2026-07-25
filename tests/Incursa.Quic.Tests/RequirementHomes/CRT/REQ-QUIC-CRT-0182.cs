@@ -1901,8 +1901,16 @@ public sealed class REQ_QUIC_CRT_0182
                     JsonSerializer.SerializeToNode(copy, options));
             retainedCopy["observationContractVersion"] =
                 "quic-buffer-copy-observation-v2";
+            retainedCopy.Remove("mode");
+            retainedCopy.Remove("legalLogicalBytes");
+            retainedCopy.Remove("legalSourceSegmentCount");
+            retainedCopy["reasonCode"] = "LegacyCopy";
+            retainedCopy["ruleVersion"] =
+                "quic-buffer-copy-observe-only-rule-v1";
             retainedCopy["snapshotVersion"] =
                 "quic-buffer-copy-snapshot-v2";
+            retainedCopy["reasonVersion"] =
+                "quic-buffer-copy-reason-v1";
             retainedCopy["provenanceVersion"] =
                 "quic-buffer-copy-provenance-v2";
             JsonObject retainedRelease =
@@ -1921,7 +1929,7 @@ public sealed class REQ_QUIC_CRT_0182
                         new
                         {
                             schemaVersion =
-                                "quic-buffer-copy-raw-v3",
+                                "quic-buffer-copy-raw-v4",
                             connectionKey = "connection-0001",
                             observation = copy,
                         },

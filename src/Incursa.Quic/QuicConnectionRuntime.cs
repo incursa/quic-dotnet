@@ -71,6 +71,7 @@ internal sealed partial class QuicConnectionRuntime :
     private const int UnconfiguredApplicationSendBatchPolicyMode = -1;
     private const int UnconfiguredApplicationSendBatchObservationMode = -1;
     private const int UnconfiguredActorServiceObservationMode = -1;
+    private const int UnconfiguredBufferCopyPolicyValue = -1;
     private const int UnconfiguredBufferCopyObservationMode = -1;
     private const int UnconfiguredQueuedSendBurstPolicyMode = -1;
     private const int UnconfiguredQueuedSendBurstObservationMode = -1;
@@ -112,6 +113,7 @@ internal sealed partial class QuicConnectionRuntime :
     private int applicationSendBatchPolicyMode = UnconfiguredApplicationSendBatchPolicyMode;
     private int applicationSendBatchObservationMode = UnconfiguredApplicationSendBatchObservationMode;
     private int actorServiceObservationMode = UnconfiguredActorServiceObservationMode;
+    private int bufferCopyPolicyValue = UnconfiguredBufferCopyPolicyValue;
     private int bufferCopyObservationMode = UnconfiguredBufferCopyObservationMode;
     private int queuedSendBurstPolicyMode = UnconfiguredQueuedSendBurstPolicyMode;
     private int queuedSendBurstObservationMode = UnconfiguredQueuedSendBurstObservationMode;
@@ -1433,6 +1435,8 @@ internal sealed partial class QuicConnectionRuntime :
             options.ActorServiceObservationMode;
         QuicBufferCopyObservationMode requestedBufferCopyObservationMode =
             options.BufferCopyObservationMode;
+        QuicBufferCopyPolicyValue? forcedBufferCopyPolicyValue =
+            options.ForcedBufferCopyPolicyValue;
         if (requestedApplicationSendTurnObservationMode is < QuicApplicationSendTurnObservationMode.Disabled
             or > QuicApplicationSendTurnObservationMode.Shadow)
         {
@@ -1520,7 +1524,7 @@ internal sealed partial class QuicConnectionRuntime :
                 != QuicActorServiceObservationMode.Disabled;
         if (requestedBufferCopyObservationMode
                 is < QuicBufferCopyObservationMode.Disabled
-                or > QuicBufferCopyObservationMode.ObserveOnly)
+                or > QuicBufferCopyObservationMode.Shadow)
         {
             throw new ArgumentOutOfRangeException(
                 nameof(options),
@@ -1530,6 +1534,10 @@ internal sealed partial class QuicConnectionRuntime :
         bool bufferCopyObservationEnabled =
             requestedBufferCopyObservationMode
                 != QuicBufferCopyObservationMode.Disabled;
+        if (forcedBufferCopyPolicyValue is { } requestedBufferPolicyValue)
+        {
+            QuicBufferCopyPolicy.ValidateValue(requestedBufferPolicyValue);
+        }
         if (!applicationSendTurnObservationEnabled && options.ApplicationSendTurnEvidenceSink is not null)
         {
             throw new InvalidOperationException(
@@ -1596,14 +1604,14 @@ internal sealed partial class QuicConnectionRuntime :
             && options.BufferCopyEvidenceSink is not null)
         {
             throw new InvalidOperationException(
-                "Buffer-copy evidence export requires observe-only mode.");
+                "Buffer-copy evidence export requires observe-only or shadow mode.");
         }
 
         if (bufferCopyObservationEnabled
             && options.BufferCopyEvidenceSink is null)
         {
             throw new InvalidOperationException(
-                "Buffer-copy observe-only mode requires an evidence sink.");
+                "Buffer-copy observe-only and shadow modes require an evidence sink.");
         }
 
         bool applicationSendTurnTreatmentSelected =
@@ -1717,6 +1725,47 @@ internal sealed partial class QuicConnectionRuntime :
             }
         }
 
+        bool bufferCopyTreatmentSelected =
+            forcedBufferCopyPolicyValue
+                is QuicBufferCopyPolicyValue.MemoryConservative;
+        if (bufferCopyTreatmentSelected)
+        {
+            if (forcedMode is not null
+                and not QuicReceiveCreditPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Buffer-copy policy requires the legacy_current receive-credit policy.");
+            }
+
+            if (forcedApplicationSendTurnMode is not null
+                and not QuicApplicationSendTurnPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Buffer-copy policy requires the legacy_current application-send turn policy.");
+            }
+
+            if (forcedApplicationSendBatchMode is not null
+                and not QuicApplicationSendBatchPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Buffer-copy policy requires the legacy_current application-send batch policy.");
+            }
+
+            if (forcedQueuedSendBurstMode is not null
+                and not QuicQueuedSendBurstPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Buffer-copy policy requires the legacy_current queued-send burst policy.");
+            }
+
+            if (forcedOversizedWriteAdmissionMode is not null
+                and not QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent)
+            {
+                throw new InvalidOperationException(
+                    "Buffer-copy policy requires the legacy_current oversized-write admission policy.");
+            }
+        }
+
         if (applicationSendTurnObservationEnabled)
         {
             if (options.ApplicationSendTurnEvidenceSink is null)
@@ -1797,6 +1846,11 @@ internal sealed partial class QuicConnectionRuntime :
                 ConfigureOversizedWriteAdmissionPolicyMode(oversizedWriteAdmissionMode);
             }
 
+            if (forcedBufferCopyPolicyValue is { } shadowBufferPolicyValue)
+            {
+                ConfigureBufferCopyPolicyValue(shadowBufferPolicyValue);
+            }
+
             if (applicationSendTurnObservationEnabled)
             {
                 ConfigureApplicationSendTurnObservation(
@@ -1865,6 +1919,11 @@ internal sealed partial class QuicConnectionRuntime :
         {
             ConfigureOversizedWriteAdmissionPolicyMode(
                 forcedOversizedWriteAdmissionMode.Value);
+        }
+
+        if (forcedBufferCopyPolicyValue is { } configuredBufferPolicyValue)
+        {
+            ConfigureBufferCopyPolicyValue(configuredBufferPolicyValue);
         }
 
         if (applicationSendTurnObservationEnabled)
@@ -1968,6 +2027,21 @@ internal sealed partial class QuicConnectionRuntime :
         {
             throw new InvalidOperationException(
                 "The queued-send burst policy mode has already been configured.");
+        }
+    }
+
+    internal void ConfigureBufferCopyPolicyValue(
+        QuicBufferCopyPolicyValue value)
+    {
+        QuicBufferCopyPolicy.ValidateValue(value);
+        if (Interlocked.CompareExchange(
+                ref bufferCopyPolicyValue,
+                (int)value,
+                UnconfiguredBufferCopyPolicyValue)
+            != UnconfiguredBufferCopyPolicyValue)
+        {
+            throw new InvalidOperationException(
+                "The buffer-copy policy value has already been configured.");
         }
     }
 
@@ -2934,9 +3008,62 @@ internal sealed partial class QuicConnectionRuntime :
     }
 
     internal bool BufferCopyObservationEnabled =>
-        Volatile.Read(ref bufferCopyObservationMode)
-            == (int)QuicBufferCopyObservationMode.ObserveOnly
+        (Volatile.Read(ref bufferCopyObservationMode)
+            is (int)QuicBufferCopyObservationMode.ObserveOnly
+                or (int)QuicBufferCopyObservationMode.Shadow)
         && bufferCopyEvidenceSink is not null;
+
+    internal QuicBufferCopyConfiguredPolicySnapshot
+        CaptureConfiguredBufferCopyPolicySnapshot()
+    {
+        int configuredMode = Volatile.Read(
+            ref bufferCopyObservationMode);
+        QuicBufferCopyObservationMode mode = configuredMode switch
+        {
+            (int)QuicBufferCopyObservationMode.ObserveOnly =>
+                QuicBufferCopyObservationMode.ObserveOnly,
+            (int)QuicBufferCopyObservationMode.Shadow =>
+                QuicBufferCopyObservationMode.Shadow,
+            _ => QuicBufferCopyObservationMode.Disabled,
+        };
+        int configuredValue = Volatile.Read(ref bufferCopyPolicyValue);
+        QuicBufferCopyPolicyValue? forcedValue = configuredValue switch
+        {
+            (int)QuicBufferCopyPolicyValue.LegacyCurrent =>
+                QuicBufferCopyPolicyValue.LegacyCurrent,
+            (int)QuicBufferCopyPolicyValue.MemoryConservative =>
+                QuicBufferCopyPolicyValue.MemoryConservative,
+            _ => null,
+        };
+        return QuicBufferCopyPolicy.CreateConfiguredSnapshot(
+            mode,
+            forcedValue);
+    }
+
+    internal QuicBufferCopyPolicyDecision ResolveBufferCopyPolicyDecision(
+        int legalSourceSegmentCount,
+        QuicBufferCopyValidity validity =
+            QuicBufferCopyValidity.None)
+    {
+        QuicBufferCopyConfiguredPolicySnapshot configured =
+            CaptureConfiguredBufferCopyPolicySnapshot();
+        QuicBufferCopyPolicyValue? forcedValue =
+            configured.HasForcedValue
+                ? configured.ForcedValue
+                : null;
+        QuicAdaptiveRuntimeLifecycle lifecycle =
+            CaptureAdaptiveRuntimeLifecycleFlags();
+        bool lifecycleGuard =
+            (lifecycle
+                & (QuicAdaptiveRuntimeLifecycle.Terminal
+                    | QuicAdaptiveRuntimeLifecycle.Disposed)) != 0;
+        return QuicBufferCopyPolicy.Evaluate(
+            configured.Mode,
+            forcedValue,
+            legalSourceSegmentCount,
+            validity,
+            lifecycleGuard);
+    }
 
     internal QuicBufferCopyLifetimeToken TryPublishBufferCopyObservation(
         QuicBufferCopyPath path,
@@ -2948,6 +3075,54 @@ internal sealed partial class QuicConnectionRuntime :
         int sourceSegmentCount,
         int requestedCapacityBytes,
         int retainedCapacityBytes,
+        bool trackTerminalRelease = false)
+    {
+        QuicBufferCopyConfiguredPolicySnapshot configured =
+            CaptureConfiguredBufferCopyPolicySnapshot();
+        QuicBufferCopyPolicyDecision decision = new(
+            configured.Mode,
+            configured.HasForcedValue,
+            configured.ForcedValue,
+            configured.HasShadowRecommendation,
+            configured.ShadowRecommendation,
+            QuicBufferCopyPolicyValue.LegacyCurrent,
+            QuicBufferCopyPolicyValue.LegacyCurrent,
+            QuicBufferCopySelectionSource.LegacyCurrent,
+            QuicBufferCopyReasonCode.NotApplicable,
+            QuicBufferCopySafetyOverride.None,
+            QuicBufferCopyLatchLifetime.BufferLifetime,
+            FallbackApplied: false,
+            LegalSourceSegmentCount: sourceSegmentCount,
+            AppliedSourceSegmentCount: sourceSegmentCount);
+        return TryPublishBufferCopyObservation(
+            path,
+            operation,
+            decisionBoundary,
+            joinOperationSequence,
+            legalLogicalBytes: logicalBytes,
+            logicalBytes,
+            copiedBytes,
+            legalSourceSegmentCount: sourceSegmentCount,
+            sourceSegmentCount,
+            requestedCapacityBytes,
+            retainedCapacityBytes,
+            in decision,
+            trackTerminalRelease);
+    }
+
+    internal QuicBufferCopyLifetimeToken TryPublishBufferCopyObservation(
+        QuicBufferCopyPath path,
+        QuicBufferCopyOperation operation,
+        QuicBufferCopyDecisionBoundary decisionBoundary,
+        long? joinOperationSequence,
+        int legalLogicalBytes,
+        int logicalBytes,
+        int copiedBytes,
+        int legalSourceSegmentCount,
+        int sourceSegmentCount,
+        int requestedCapacityBytes,
+        int retainedCapacityBytes,
+        in QuicBufferCopyPolicyDecision decision,
         bool trackTerminalRelease = false)
     {
         IQuicBufferCopyEvidenceSink? sink = bufferCopyEvidenceSink;
@@ -2970,11 +3145,17 @@ internal sealed partial class QuicConnectionRuntime :
         ulong logicalBytesValue = ToUInt64Saturating(
             logicalBytes,
             ref validity);
+        ulong legalLogicalBytesValue = ToUInt64Saturating(
+            legalLogicalBytes,
+            ref validity);
         ulong copiedBytesValue = ToUInt64Saturating(
             copiedBytes,
             ref validity);
         uint sourceSegmentCountValue = ToUInt32Saturating(
             sourceSegmentCount,
+            ref validity);
+        uint legalSourceSegmentCountValue = ToUInt32Saturating(
+            legalSourceSegmentCount,
             ref validity);
         ulong requestedCapacityBytesValue = ToUInt64Saturating(
             requestedCapacityBytes,
@@ -2984,7 +3165,13 @@ internal sealed partial class QuicConnectionRuntime :
             ref validity);
         if (copiedBytesValue > retainedCapacityBytesValue
             || requestedCapacityBytesValue > retainedCapacityBytesValue
-            || (logicalBytesValue > 0 && sourceSegmentCountValue == 0))
+            || logicalBytesValue > legalLogicalBytesValue
+            || sourceSegmentCountValue > legalSourceSegmentCountValue
+            || (logicalBytesValue > 0 && sourceSegmentCountValue == 0)
+            || decision.LegalSourceSegmentCount
+                != legalSourceSegmentCount
+            || decision.AppliedSourceSegmentCount
+                != sourceSegmentCount)
         {
             validity |= QuicBufferCopyValidity.Contradictory;
         }
@@ -2995,27 +3182,35 @@ internal sealed partial class QuicConnectionRuntime :
         long constructionTicks = clock.Ticks;
         QuicBufferCopyObservation observation = new(
             operationSequence,
+            decision.Mode,
             path,
             operation,
             decisionBoundary,
             joinOperationSequence,
+            legalLogicalBytesValue,
             logicalBytesValue,
             copiedBytesValue,
+            legalSourceSegmentCountValue,
             sourceSegmentCountValue,
             DestinationSegmentCount: 1,
             requestedCapacityBytesValue,
             retainedCapacityBytesValue,
-            ForcedValue: null,
-            ShadowRecommendation: null,
-            QuicBufferCopyPolicyValue.LegacyCurrent,
-            QuicBufferCopyPolicyValue.LegacyCurrent,
-            QuicBufferCopySelectionSource.LegacyCurrent,
-            operation == QuicBufferCopyOperation.ReuseAndCopy
+            decision.HasForcedValue
+                ? decision.ForcedValue
+                : null,
+            decision.HasShadowRecommendation
+                ? decision.ShadowRecommendation
+                : null,
+            decision.SelectedValue,
+            decision.AppliedValue,
+            decision.SelectionSource,
+            decision.ReasonCode == QuicBufferCopyReasonCode.NotApplicable
+                && operation == QuicBufferCopyOperation.ReuseAndCopy
                 ? QuicBufferCopyReasonCode.ExistingCapacityReused
-                : QuicBufferCopyReasonCode.LegacyCopy,
-            QuicBufferCopySafetyOverride.None,
-            QuicBufferCopyLatchLifetime.BufferLifetime,
-            FallbackApplied: false,
+                : decision.ReasonCode,
+            decision.SafetyOverride,
+            decision.LatchLifetime,
+            decision.FallbackApplied,
             Phase,
             IsDisposed,
             validity);

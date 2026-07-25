@@ -1,6 +1,7 @@
 # Adaptive Runtime Stage 2 Actor And Memory Foundation
 
-Status: observation foundation in progress; no actor or memory policy is active
+Status: actor observation foundation in progress;
+`buffer_copy_coalescing` is internally forceable; no Stage 2 policy is active
 
 ## Purpose
 
@@ -10,11 +11,12 @@ the gates that must be satisfied before `actor_work_quantum`,
 `ready_stream_fairness`, `buffer_copy_coalescing`, or
 `adaptive_backpressure` can become forceable policy axes.
 
-The Stage 1 send-path axes remain implemented and independently forceable. A
+The Stage 1 send-path axes and `buffer_copy_coalescing` remain implemented and
+independently forceable. A
 campaign may still vary only one axis, receive-credit publication remains
 `legacy_current`, and every adjacent applied policy remains
-`legacy_current`. Stage 2 observation does not authorize a new treatment,
-threshold, controller input, `active_internal` mode, or production behavior.
+`legacy_current`. The buffer seam does not authorize a tuned threshold,
+controller input, `active_internal` mode, or production behavior.
 The checkpoint status of every roadmap axis is maintained in
 [`adaptive-runtime-policy-axis-implementation-matrix.md`](adaptive-runtime-policy-axis-implementation-matrix.md);
 that matrix does not replace or weaken the approved roadmap.
@@ -309,13 +311,14 @@ receive-credit snapshot, and boundary. The deterministic join requires equal
 connection epoch sequence and epoch end tick. A mismatched, duplicate,
 out-of-order, or nonpositive epoch is rejected before any accumulator resets.
 The joined record is
-`adaptive-runtime-unified-epoch-evidence-v6`; retained v1 through v5 rows
-remain immutable.
+`adaptive-runtime-unified-epoch-evidence-v7`; retained v1 through v6 rows
+remain immutable. Version 7 retains actor v5 and adds the configured
+`buffer_copy_coalescing` snapshot plus v4 legal/applied buffer outcomes.
 
 The raw QUIC harness now configures the same unified accumulator as every
 relevant connection-local evidence sink whenever an adaptive execution is
 requested. It writes one
-`adaptive-runtime-unified-epoch-raw-v6` wrapper per sealed epoch while
+`adaptive-runtime-unified-epoch-raw-v7` wrapper per sealed epoch while
 retaining the earlier receive-credit and Stage 1 compatibility streams.
 The append-only exporter retains source hashes, raw rows, validation summary,
 and manifest; checks exact monotonic joins and one varied axis; and preserves
@@ -399,19 +402,18 @@ priority-inversion guards are reviewed.
 
 ## Buffer And Backpressure Boundary
 
-This slice does not select a copy, segment, coalescing, retention, or
-backpressure strategy. The next inventory must map every owner, rent, copy,
-segment, crypto reference, socket reference, completion, cancellation, and
-return path before `buffer_copy_coalescing` is forceable.
+This foundation does not select actor work, ready-stream fairness, retention,
+or backpressure behavior. The reviewed buffer inventory maps every managed
+owner used by the first combined-send coalescing seam.
 
 That implementation inventory is now recorded in
 [`adaptive-runtime-stage2-buffer-ownership-copy-inventory.md`](adaptive-runtime-stage2-buffer-ownership-copy-inventory.md).
-It confirms that only `legacy_current` is presently a real policy value and
-defines the bounded observation and maintained-retention work required before
-a conservative value can be implemented honestly. The observation-only slice
-records five existing send-side copy and retention paths, owned path-migration
+It now defines `legacy_current` and the lower-only
+`memory_conservative` two-source-segment cap at the post-Stage 1 combined-send
+boundary under `REQ-QUIC-CRT-0190`. The broader observation foundation records
+existing send-side copy and retention paths, owned path-migration
 retransmission clones, and receive-segment construction or capacity reuse
-under `REQ-QUIC-CRT-0182`. The first `REQ-QUIC-CRT-0185` checkpoints now carry
+under `REQ-QUIC-CRT-0182`. The `REQ-QUIC-CRT-0185` checkpoints carry
 compact lifetime tokens through receive-segment partial reads and
 flow-control retry request ownership. They record exact delivery/reset and
 replacement/downstream-copy/completion/cancellation/terminal releases after
@@ -492,8 +494,8 @@ outside correctness CI.
 3. Integrate the proven generation-token repost gate only after timer,
    recovery, cancellation, disposal, terminal, and ownership tests exist.
 4. Design and force `actor_work_quantum` only after the safety gate.
-5. Design and force `buffer_copy_coalescing` only after a distinct
-   conservative implementation and ownership tests.
+5. Preserve the forceable `buffer_copy_coalescing` seam and its exact
+   force-legacy rollback while measurement remains frozen.
 6. Review conservative-only `adaptive_backpressure` application-visible
    behavior.
 

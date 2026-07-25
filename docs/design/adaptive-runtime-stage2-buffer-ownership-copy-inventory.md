@@ -6,15 +6,16 @@ title: "Adaptive Runtime Stage 2 Buffer Ownership And Copy Inventory"
 
 Status: reviewed implementation inventory; eight closed managed construction
 paths, including protected-packet endpoint handoff, are correlated;
-`buffer_copy_coalescing` remains `legacy_current` and non-forceable
+`buffer_copy_coalescing` has a forceable lower-only combined-send seam;
+measurement and active behavior remain unauthorized
 
-This inventory maps the current data lifetime before a buffer policy is
-introduced. It complements
+This inventory maps the current data lifetime and the one reviewed
+combined-send policy boundary. It complements
 [`adaptive-runtime-stage2-actor-memory-foundation.md`](adaptive-runtime-stage2-actor-memory-foundation.md)
 and the `buffer_copy_coalescing` section of
 [`adaptive-runtime-policy-axis-roadmap.md`](adaptive-runtime-policy-axis-roadmap.md).
-It does not authorize a new copy strategy, change an owner, or treat an
-existing platform batching mechanism as a connection policy.
+It does not authorize active selection, change an owner, or treat an existing
+platform batching mechanism as a connection policy.
 
 ## Current Ownership Chains
 
@@ -64,18 +65,18 @@ existing ownership transitions. Remaining Stage 2 observation work must use
 maintained state or another already bounded snapshot. It must not add an
 unbounded scan to the actor or packet hot path.
 
-## Proposed Observation Contract
+## Implemented Observation And Policy Contract
 
-The current behavior-neutral v3 contract extends retained v1 and v2 contracts
-with closed protected-packet construction and endpoint-handoff values. It emits
-and accumulates a compact copy operation with:
+The v4 contract extends retained v1 through v3 contracts with a configured
+policy snapshot and legal-versus-applied outcomes. It emits and accumulates a
+compact copy operation with:
 
-- `quic-buffer-copy-observation-v3`;
+- `quic-buffer-copy-observation-v4`;
 - monotonic connection-local operation sequence;
 - one closed path ID from the inventory above;
 - one closed operation and decision-boundary value;
-- logical byte count and copied byte count;
-- source segment count and destination segment count;
+- legal and applied logical byte count plus copied byte count;
+- legal and applied source segment count plus destination segment count;
 - requested capacity and actual retained capacity;
 - a path-derived current ownership class without object identity;
 - whether the path reused, copied, formatted, combined, retained, cloned, or
@@ -222,10 +223,11 @@ Delivery order is:
 6. retransmission clones and transfers; and
 7. endpoint datagram owners and supported platform staging.
 
-Each path is checkpointed independently. Until all currently observed owners
-carry the token through every success, failure, cancellation, reset, loss,
-shutdown, and disposal path, `buffer_copy_coalescing` remains
-`legacy_current` and non-forceable.
+Each correlated managed path remains checkpointed independently. The forceable
+seam applies only after Stage 1 has selected a legal combined-send prefix and
+before that combined owner is rented. `legacy_current` preserves the prefix;
+`memory_conservative` lowers a prefix greater than two to two segments. It
+does not change any other construction path or relax its ownership proof.
 
 The receive-segment checkpoint implements the first item in that order.
 New pooled receive owners carry one compact token through partial reads and
@@ -233,7 +235,7 @@ emit exactly one `Delivered` release after the authoritative return; reset or
 stream reset emits exactly one `Reset` release. Capacity reuse does not create
 a second token. Construction and release are retained as separate raw records
 joined by `connectionKey + operationSequence`; current schemas are
-`adaptive-runtime-buffer-copy-raw-v3` and
+`adaptive-runtime-buffer-copy-raw-v4` and
 `adaptive-runtime-buffer-release-raw-v7`. Earlier copy and release contracts
 remain
 immutable compatibility contracts for their earlier closed path sets. A bounded
@@ -291,7 +293,8 @@ shared hosted batch emits one construction for its one shared array and
 attaches that token only to the final owning update. The shard returns the
 array after synchronous observer processing and then emits `Completed` or
 `Failed`; pending suppression cleanup emits `Canceled`. Release
-observation/raw v7 and construction/epoch/raw v3 add this closed path, while
-unified epoch evidence/raw v2 carry the v3 epoch summary. Socket-send metrics
-remain separate outcomes, Linux unmanaged `sendmmsg` staging remains explicit,
-and `buffer_copy_coalescing` remains non-forceable.
+observation/raw v7 and construction/epoch/raw v3 add this closed path. Buffer
+observation/epoch/raw v4 and unified evidence/raw v7 add the forceable
+coalescing identities and legal/applied counts while retained versions remain
+immutable. Socket-send metrics remain separate outcomes and Linux unmanaged
+`sendmmsg` staging remains an explicit separate Stage 4 concern.

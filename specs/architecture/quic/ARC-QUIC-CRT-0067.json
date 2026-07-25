@@ -3,10 +3,10 @@
   "artifact_id": "ARC-QUIC-CRT-0067",
   "artifact_type": "architecture",
   "status": "proposed",
-  "title": "Stage 2 actor service observation architecture",
+  "title": "Stage 2 actor observation and bounded buffer coalescing architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Add bounded connection-local actor service evidence and a versioned post-service Stage 1 and Stage 2 join without installing a work-quantum policy or changing shard scheduling.",
+  "purpose": "Add bounded connection-local actor service evidence, a versioned post-service Stage 1 and Stage 2 join, and one lower-only forceable buffer coalescing seam without installing a work-quantum policy or changing shard scheduling.",
   "related_artifacts": [
     "SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY",
     "ARC-QUIC-CRT-0066",
@@ -22,7 +22,8 @@
     "REQ-QUIC-CRT-0186",
     "REQ-QUIC-CRT-0187",
     "REQ-QUIC-CRT-0188",
-    "REQ-QUIC-CRT-0189"
+    "REQ-QUIC-CRT-0189",
+    "REQ-QUIC-CRT-0190"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicActorServiceObservation.cs",
@@ -100,10 +101,16 @@
     "schemas/adaptive-runtime-unified-epoch-evidence-v6.schema.json",
     "schemas/adaptive-runtime-unified-epoch-raw-v6.schema.json",
     "schemas/adaptive-runtime-unified-raw-export-manifest-v7.schema.json",
+    "schemas/adaptive-runtime-buffer-copy-observation-v4.schema.json",
+    "schemas/adaptive-runtime-buffer-copy-epoch-v4.schema.json",
+    "schemas/adaptive-runtime-buffer-copy-raw-v4.schema.json",
+    "schemas/adaptive-runtime-unified-epoch-evidence-v7.schema.json",
+    "schemas/adaptive-runtime-unified-epoch-raw-v7.schema.json",
+    "schemas/adaptive-runtime-unified-raw-export-manifest-v8.schema.json",
     "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md",
     "docs/design/adaptive-runtime-stage2-buffer-ownership-copy-inventory.md"
   ],
-  "design_summary": "A connection can independently opt into actor-service and buffer-copy ObserveOnly sinks. The existing shard records a compact immutable actor value after each complete transition and effect dispatch. Actor v5 captures exact posted-or-servicing shard contender count, exact already-accepted connection work after the current dispatch before current accounting completes, and closed per-producer continuation assessments. Assessment v1 distinguishes not assessed, drained, scheduled, blocked, ready after cooperative yield, and invalid with exact bounded remaining counts; no current runtime path emits ready after yield, so queued or blocked work cannot be relabeled runnable. The only reviewed cooperative boundary is after complete transition, effect handoff, resource release, post-service publication, and contender completion; those interiors remain non-preemptible. A versioned useful-work vector preserves dispatch kind, effects, follow-ons, duration, and queue delay as unlike components without inventing a scalar. A separate connection-local repost gate packs a monotonic generation and closed state into one atomic value; idle requests create one enqueue owner, requests during service coalesce, completion creates at most one new token, stale tokens cannot act, and failed posts or shutdown stop the gate. The gate does not enqueue, preempt, execute, or own protocol work and remains disconnected until a reviewed producer truthfully emits ready-after-yield state. Existing ownership boundaries record legacy_current retry copies, oversized raw queue copies, formatted payloads, combined payloads, sent-plaintext retention, owned path-migration retransmission clones, receive-segment insertion or capacity reuse, and pooled protected-packet construction with explicit ownership and validity. Fixed-field buffer v3 and actor v5 accumulators build bounded summaries while retained schemas remain immutable. Compact non-identity lifetime tokens move with each observed owner through authoritative success, failure, cancellation, reset, loss, retransmission, endpoint handoff, terminal cleanup, and disposal. An eligible epoch callback occurs only after effect dispatch, follow-on measurement, actor publication, and work-item or connection-event resource release. One guarded accumulator seals the four Stage 1 axis records, actor summary, and buffer summary only when connection observation, receive-credit snapshot, and boundary keys match monotonically. The raw host emits unified v6 plus retained compatibility streams and actor raw v4. The append-only exporter validates exact source-scoped actor membership, contender, accepted-work, and continuation aggregation, exact unified joins, unique ordering, four Stage 1 records, and one varied axis; retains checksums and counts; and makes bounded-channel, contradictory, invalid, missing, duplicate, orphan, or out-of-order evidence invalid_contract. The legacy shard drain and ownership paths remain the only applied behavior.",
+  "design_summary": "A connection can independently opt into actor-service observation and buffer-copy disabled, observe-only, or shadow evidence. The existing shard records a compact immutable actor value after each complete transition and effect dispatch. Actor v5 captures exact posted-or-servicing shard contender count, exact already-accepted connection work after the current dispatch before current accounting completes, and closed per-producer continuation assessments. Assessment v1 distinguishes not assessed, drained, scheduled, blocked, ready after cooperative yield, and invalid with exact bounded remaining counts; no current runtime path emits ready after yield, so queued or blocked work cannot be relabeled runnable. The only reviewed cooperative boundary is after complete transition, effect handoff, resource release, post-service publication, and contender completion; those interiors remain non-preemptible. A versioned useful-work vector preserves dispatch kind, effects, follow-ons, duration, and queue delay as unlike components without inventing a scalar. A separate connection-local repost gate packs a monotonic generation and closed state into one atomic value and remains disconnected from scheduling. Existing ownership boundaries record retry copies, oversized raw queue copies, formatted payloads, combined payloads, sent-plaintext retention, owned path-migration retransmission clones, receive-segment insertion or capacity reuse, and pooled protected-packet construction with explicit ownership and validity. Buffer_copy_coalescing resolves only after the Stage 1 planner has produced an already legal prefix. legacy_current preserves that prefix; memory_conservative lowers only a combined prefix greater than two to two source segments. The buffer decision cannot reorder, widen, admit, protect, release, or execute work. It is latched with the combined owner through its existing exactly-once terminal lifetime, and invalid or unsafe decisions fall back to legacy_current. Compact non-identity lifetime tokens move with each observed owner through authoritative success, failure, cancellation, reset, loss, retransmission, endpoint handoff, terminal cleanup, and disposal. Fixed-field accumulators retain configured, forced, recommended, selected, applied, reason, fallback, and legal-versus-applied segment provenance even when no copy operation occurs in an epoch. One guarded accumulator seals the four Stage 1 axis records, actor summary, and buffer summary only when connection observation, receive-credit snapshot, and boundary keys match monotonically. Adjacent behavior-distinct forcing is rejected, and active_internal remains unavailable.",
   "data_and_state_considerations": "The observations, useful-work vector, continuation assessment, repost token, repost gate, lifetime token, and accumulators use enums, immutable record structs, fixed scalar fields, one packed connection-local atomic state, and connection-local accumulator locks. They introduce no object identity, per-packet dependency injection, dictionary, model, global lock, or unbounded state. Scheduled timer work retains its due tick in an inactive work-item storage slot, preserving the 144-byte work-item layout. Connection-local inter-service gap uses one atomic previous-service timestamp and is never relabeled as continuous runnable time. Service-contender and accepted-dispatch backlog values reuse exact O(1) accounting; the latter subtracts the in-service item before its accounting completion and does not enumerate queues. Per-producer continuation state is captured only while the existing flush-measurement scope is active; unvisited producers remain not assessed, existing deadlines remain scheduled, authoritative guards remain blocked, and ready-after-yield is reserved for a future reviewed yield. The application-send queue, sent-packet store, and retransmission queue maintain total retained count, capacity, and oldest time at existing ownership transitions. Exact buffer release is implemented for all eight closed managed construction paths. Missing runnable-connection count, oldest shard item age, reviewed scalar useful-work units, a cooperative-yield producer, Linux unmanaged staging correlation, independently verified kernel-send outcome, retained age outside completed lifetimes, and pool outstanding state remain explicit. Wake grouping is complete only when the run manifest proves full-shard observation coverage.",
   "edge_cases_and_constraints": [
     "Observation may measure existing follow-on counts but cannot limit or defer them.",
@@ -114,14 +121,18 @@
     "The actor repost gate is an unconnected ownership primitive; accepted-dispatch backlog cannot drive it, and it cannot change scheduling until a reviewed caller supplies exact internal continuation-ready work and enqueues each returned generation exactly once.",
     "Scheduled and blocked continuation assessments cannot drive the repost gate; only a separately reviewed safe yield may emit ready_after_cooperative_yield.",
     "Actor_work_quantum remains legacy_current and non-forceable until cooperative checkpoints and exactly-once repost are separately designed and verified.",
-    "Buffer_copy_coalescing remains legacy_current and non-forceable until a distinct conservative implementation and exact terminal-release correlation are separately designed and verified.",
+    "Buffer_copy_coalescing is limited to legacy_current and the two-source-segment memory_conservative cap at the post-Stage 1 combined-send boundary; all other buffer paths remain non-policy operations.",
+    "The first forceable buffer value is limited to a two-source-segment cap on an already legal combined-send plan; it cannot select a new write, alter order, or bypass any existing owner or transport guard.",
     "Active_internal and production activation remain unauthorized."
   ],
   "alternatives_considered": [
     "Use existing aggregate metrics as the dataset contract. Rejected because they are not connection-attributable, versioned, or deterministically joinable.",
     "Treat each dequeued event as one equal work unit. Rejected because packet, API, timer, effect, and follow-on costs differ materially.",
     "Add a quantum while instrumenting the loop. Rejected because no exactly-once repost or reviewed preemption seam exists.",
-    "Insert the actor summary into the former Stage 1 pre-service epoch callback. Rejected because that callback occurred before complete actor service and would shift or truncate attribution."
+    "Insert the actor summary into the former Stage 1 pre-service epoch callback. Rejected because that callback occurred before complete actor service and would shift or truncate attribution.",
+    "Call the existing pooled copy memory_conservative without changing behavior. Rejected because an alias would fabricate counterfactual coverage.",
+    "Avoid the combined owner by selecting one write. Rejected because that would silently vary application_send_batch_formation instead of the buffer axis.",
+    "Introduce scatter/gather packet protection in the first buffer value. Rejected because it would widen ownership and crypto interfaces beyond the minimum force seam."
   ],
   "risks": [
     "Observation overhead can perturb hot shard paths; disabled-path and later manual or nightly allocation checks remain required.",

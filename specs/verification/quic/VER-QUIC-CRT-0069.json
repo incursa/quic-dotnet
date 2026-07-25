@@ -3,7 +3,7 @@
   "artifact_id": "VER-QUIC-CRT-0069",
   "artifact_type": "verification",
   "status": "planned",
-  "title": "Stage 2 actor service observation verification",
+  "title": "Stage 2 actor observation and bounded buffer coalescing verification",
   "owner": "quic-maintainers",
   "domain": "quic",
   "related_artifacts": [
@@ -21,9 +21,10 @@
     "REQ-QUIC-CRT-0186",
     "REQ-QUIC-CRT-0187",
     "REQ-QUIC-CRT-0188",
-    "REQ-QUIC-CRT-0189"
+    "REQ-QUIC-CRT-0189",
+    "REQ-QUIC-CRT-0190"
   ],
-  "scope": "Verify behavior-neutral actor-service and selected send-side buffer-copy observation, bounded epoch aggregation, versioned post-service publication, Stage 1 and Stage 2 joins, append-only raw export, explicit missing state, sink isolation, legacy identity, and preservation of shard scheduling and ownership. Do not verify or authorize a forceable quantum, distinct buffer strategy, fairness rule, backpressure rule, performance claim, or active behavior.",
+  "scope": "Verify behavior-neutral actor-service observation plus the independently forceable legacy_current and two-source-segment memory_conservative buffer_copy_coalescing values, bounded epoch aggregation, versioned post-service publication, Stage 1 and Stage 2 joins, explicit missing state, sink isolation, force-legacy rollback, safety fallback, and preservation of shard scheduling and ownership. Do not verify or authorize a forceable actor quantum, fairness rule, backpressure rule, performance claim, active_internal, or production behavior.",
   "verification_method": "Canonical SpecTrace validation, deterministic requirement-home tests, schema and semantic validation, and focused existing shard, deadline, application-send queue, ownership, stream-capacity, flow-control, metrics, cancellation, disposal, retransmission, and terminal correctness tests.",
   "preconditions": [
     "The unified four-axis Stage 1 smoke and append-only materialization checkpoint remain preserved.",
@@ -48,14 +49,19 @@
     "Verify observation and epoch JSON against their schemas and semantic count and sequence rules.",
     "Verify a throwing sink cannot interrupt actor progress or ownership release.",
     "Verify buffer-copy records remain selected and applied legacy_current with null force and shadow identity, one buffer-lifetime latch, and explicit missing terminal-release, retained-age, and pool-outstanding state.",
+    "Verify buffer_copy_coalescing supports disabled, observe-only, shadow, forced legacy_current, and forced memory_conservative modes with distinct forced, recommended, selected, and applied identities.",
+    "Verify memory_conservative lowers only an already legal combined-send prefix greater than two to exactly two source segments, never widens or reorders Stage 1 selection, and latches through the resulting owner lifetime.",
+    "Verify invalid, missing, stale, saturated, contradictory, out-of-domain, lifecycle, and ownership state falls back to legacy_current with bounded reason and safety codes even under forcing.",
+    "Verify simultaneous behavior-distinct forcing of buffer_copy_coalescing and any adjacent receive-credit or Stage 1 axis is rejected before runtime work begins.",
+    "Verify force-legacy rollback preserves the exact prior selected write count, construction, owner transfer, loss/retransmission behavior, terminal release, cancellation, disposal, reset, FIN, shutdown, congestion, pacing, and flow-control authority.",
     "Verify fixed-field buffer-copy aggregation across retry, oversized raw queue, formatted payload, combined send, and sent-plaintext retention paths.",
-    "Verify the v3 closed buffer contract, fixed epoch counters, protected-packet construction and hosted endpoint transfer, owned path-migration retransmission-clone producer, and new or capacity-reusing receive-segment producer while retained v1 and v2 schemas remain unchanged.",
+    "Verify the v4 closed buffer contract, configured snapshot, legal/applied counters, protected-packet construction and hosted endpoint transfer, owned path-migration retransmission-clone producer, and new or capacity-reusing receive-segment producer while retained v1 through v3 schemas remain unchanged.",
     "Verify hosted-shard epoch publication occurs after actor observation and work-item resource release, while independent-consumer publication occurs after connection-event resource release.",
     "Verify post-service boundary version, execution source, disposition, actor-publication state, release completion, and explicit missing or fault validity.",
     "Verify connection-observation, receive-credit, boundary, Stage 1, actor, and buffer summaries seal under one monotonic connection epoch key and invalid joins are rejected before accumulator reset.",
     "Verify post-service boundary and unified internal evidence JSON against their versioned schemas.",
     "Verify the raw host configures one accumulator for receive-credit, all four Stage 1, actor-service, and buffer-copy evidence on every adaptive execution.",
-    "Verify append-only unified raw export retains exact connection keys, four Stage 1 records, actor and buffer summaries, every sample-scoped actor dispatch, source hashes, validation counts, and a schema-valid manifest.",
+    "Verify append-only unified raw export retains exact connection keys, four Stage 1 records plus the configured buffer axis record, actor and buffer summaries, every sample-scoped actor dispatch, source hashes, validation counts, and a schema-valid manifest.",
     "Verify every actor raw record joins by exact source-scoped connection key and service sequence to one summarized epoch range, while missing, duplicate, orphan, out-of-order, and bounded-channel-failed actor records are rejected and retained explicitly.",
     "Verify duplicate, out-of-order, mismatched-join, multi-axis, and bounded-channel export failures cannot be accepted as complete evidence.",
     "Verify compact buffer lifetime tokens carry no object identity, move with the existing owner, distinguish clones, and are consumed once at authoritative terminal return boundaries.",
@@ -67,12 +73,13 @@
     "Run the existing shard, deadline, work-item layout, receive-buffer ownership, stream-capacity, flow-control, and metrics correctness band.",
     "Keep runnable connection count, oldest shard item age, continuous runnable time, starvation, and scalar useful work units explicitly missing until their reviewed seams exist; require scheduled timer work to retain exact deadline provenance."
   ],
-  "expected_result": "Actor-service and selected send-side buffer-copy evidence is versioned, bounded, connection-attributable, schema-valid, semantically validated, and behavior-neutral; missing inputs remain explicit; legacy shard drain, copy, timer, recovery, terminal, progress, and ownership behavior remains authoritative; and no forceable or active Stage 2 policy is introduced.",
+  "expected_result": "Actor-service evidence remains versioned, bounded, connection-attributable, schema-valid, semantically validated, and behavior-neutral; buffer_copy_coalescing provides independently forceable legacy_current and lower-only memory_conservative values with shadow non-application, safety fallback, exact lifetime latching, unified provenance, and force-legacy rollback; legacy shard drain, Stage 1 selection, timer, recovery, terminal, progress, and ownership behavior remain authoritative; and no active Stage 2 policy is introduced.",
   "evidence": [
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0181.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0182.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0183.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0186.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0190.cs",
     "tests/Incursa.Quic.Tests/MetricsTests.cs",
     "tests/Incursa.Quic.Tests/QuicConnectionRuntimeShardWorkItemLayoutTests.cs",
     "tests/Incursa.Quic.Tests/QuicConnectionRuntimeShardReceiveBufferOwnershipTests.cs",
@@ -149,8 +156,14 @@
     "schemas/adaptive-runtime-unified-epoch-evidence-v6.schema.json",
     "schemas/adaptive-runtime-unified-epoch-raw-v6.schema.json",
     "schemas/adaptive-runtime-unified-raw-export-manifest-v7.schema.json",
+    "schemas/adaptive-runtime-buffer-copy-observation-v4.schema.json",
+    "schemas/adaptive-runtime-buffer-copy-epoch-v4.schema.json",
+    "schemas/adaptive-runtime-buffer-copy-raw-v4.schema.json",
+    "schemas/adaptive-runtime-unified-epoch-evidence-v7.schema.json",
+    "schemas/adaptive-runtime-unified-epoch-raw-v7.schema.json",
+    "schemas/adaptive-runtime-unified-raw-export-manifest-v8.schema.json",
     "docs/design/adaptive-runtime-stage2-actor-memory-foundation.md",
     "docs/design/adaptive-runtime-stage2-buffer-ownership-copy-inventory.md"
   ],
-  "status_summary": "In progress. Independent observe-only actor-service and buffer-copy contracts, bounded accumulators, schemas, validators, and deterministic tests are implemented. Actor observation and epoch v5 retain scheduled timer lateness, connection-local inter-service gap, exact posted-or-servicing contender count at service start, exact already-accepted connection work items after the current dispatch, and closed per-producer continuation assessment with explicit missing, invalid, and saturated state. Scheduled and blocked remaining work is not relabeled internal continuation-ready, runnable, starved, or fair; no current runtime path emits ready-after-cooperative-yield. The only reviewed cooperative boundary remains after a complete transition, effect handoff, resource release, post-service publication, and contender completion; those interiors remain non-preemptible. Unified evidence and raw advance to v6, actor raw to v4, and the exporter manifest to v7 while retained versions remain immutable. Exact raw membership validates contender, accepted-work, and continuation epoch aggregates. The useful-work vector and generation-token repost gate remain behavior-neutral and disconnected from shard scheduling. Buffer v3 managed-owner correlation, terminal releases, and exact construction-release joins remain preserved. Missing, contradictory, invalid, duplicate, orphan, out-of-order, and bounded-channel-failed actor records remain invalid_contract. Runnable intervals, oldest shard item age, reviewed scalar work units, a cooperative yield producer and owner, complete fairness outcomes, a distinct conservative buffer value, and every forceable Stage 2 policy remain open. No active behavior is authorized."
+  "status_summary": "In progress. Actor observation and epoch v5 retain scheduled timer lateness, connection-local inter-service gap, exact posted-or-servicing contender count, accepted work after the current dispatch, and closed per-producer continuation assessment. No current runtime path emits ready-after-cooperative-yield, so actor_work_quantum remains safely non-forceable. Buffer observation, epoch, and raw v4 implement the closed legacy_current and memory_conservative coalescing values with disabled, observe-only, shadow, forcing, lower-only validation, safety fallback, exact lifetime latch, force-legacy rollback, and configured unified provenance. Unified evidence/raw v7 and manifest v8 retain the buffer axis alongside four Stage 1 axes; exact raw membership and semantic validation preserve one-varied-axis and append-only failure rules. Retained schemas and managed-owner terminal joins remain immutable. Ready-stream fairness, actor quantum, adaptive backpressure, measurement, active_internal, and production behavior remain unauthorized."
 }

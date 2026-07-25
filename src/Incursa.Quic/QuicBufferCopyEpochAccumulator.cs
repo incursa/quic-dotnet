@@ -4,6 +4,7 @@
 namespace Incursa.Quic;
 
 internal readonly record struct QuicBufferCopyEpochSummary(
+    QuicBufferCopyConfiguredPolicySnapshot PolicySnapshot,
     bool HasObservation,
     ulong FirstOperationSequence,
     ulong LastOperationSequence,
@@ -23,16 +24,22 @@ internal readonly record struct QuicBufferCopyEpochSummary(
     ulong RetainCount,
     ulong CloneCount,
     ulong ProtectCount,
+    ulong MemoryConservativeOperationCount,
+    ulong SafetyOverrideOperationCount,
+    ulong FallbackOperationCount,
+    ulong TotalLegalLogicalBytes,
     ulong TotalLogicalBytes,
     ulong TotalCopiedBytes,
     ulong MaximumCopiedBytes,
+    ulong TotalLegalSourceSegments,
+    ulong TotalAppliedSourceSegments,
     ulong TotalRequestedCapacityBytes,
     ulong TotalRetainedCapacityBytes,
     ulong MaximumRetainedCapacityBytes,
     QuicBufferCopyValidity Validity)
 {
     internal const string CurrentEpochContractVersion =
-        "quic-buffer-copy-epoch-v3";
+        "quic-buffer-copy-epoch-v4";
 
     public string EpochContractVersion => CurrentEpochContractVersion;
 }
@@ -41,6 +48,7 @@ internal sealed class QuicBufferCopyEpochAccumulator :
     IQuicBufferCopyEvidenceSink
 {
     private readonly object gate = new();
+    private readonly QuicBufferCopyConfiguredPolicySnapshot policySnapshot;
     private bool hasObservation;
     private ulong firstOperationSequence;
     private ulong lastOperationSequence;
@@ -60,13 +68,32 @@ internal sealed class QuicBufferCopyEpochAccumulator :
     private ulong retainCount;
     private ulong cloneCount;
     private ulong protectCount;
+    private ulong memoryConservativeOperationCount;
+    private ulong safetyOverrideOperationCount;
+    private ulong fallbackOperationCount;
+    private ulong totalLegalLogicalBytes;
     private ulong totalLogicalBytes;
     private ulong totalCopiedBytes;
     private ulong maximumCopiedBytes;
+    private ulong totalLegalSourceSegments;
+    private ulong totalAppliedSourceSegments;
     private ulong totalRequestedCapacityBytes;
     private ulong totalRetainedCapacityBytes;
     private ulong maximumRetainedCapacityBytes;
     private QuicBufferCopyValidity validity;
+
+    internal QuicBufferCopyEpochAccumulator()
+        : this(QuicBufferCopyPolicy.CreateConfiguredSnapshot(
+            QuicBufferCopyObservationMode.Disabled,
+            forcedValue: null))
+    {
+    }
+
+    internal QuicBufferCopyEpochAccumulator(
+        in QuicBufferCopyConfiguredPolicySnapshot policySnapshot)
+    {
+        this.policySnapshot = policySnapshot;
+    }
 
     public bool TryPublish(in QuicBufferCopyObservation observation)
     {
@@ -82,11 +109,36 @@ internal sealed class QuicBufferCopyEpochAccumulator :
             AddSaturating(ref operationCount, 1);
             AddPath(observation.Path);
             AddOperation(observation.Operation);
+            if (observation.AppliedValue
+                == QuicBufferCopyPolicyValue.MemoryConservative)
+            {
+                AddSaturating(
+                    ref memoryConservativeOperationCount,
+                    1);
+            }
+            if (observation.SafetyOverride
+                != QuicBufferCopySafetyOverride.None)
+            {
+                AddSaturating(ref safetyOverrideOperationCount, 1);
+            }
+            if (observation.FallbackApplied)
+            {
+                AddSaturating(ref fallbackOperationCount, 1);
+            }
+            AddSaturating(
+                ref totalLegalLogicalBytes,
+                observation.LegalLogicalBytes);
             AddSaturating(ref totalLogicalBytes, observation.LogicalBytes);
             AddSaturating(ref totalCopiedBytes, observation.CopiedBytes);
             maximumCopiedBytes = Math.Max(
                 maximumCopiedBytes,
                 observation.CopiedBytes);
+            AddSaturating(
+                ref totalLegalSourceSegments,
+                observation.LegalSourceSegmentCount);
+            AddSaturating(
+                ref totalAppliedSourceSegments,
+                observation.SourceSegmentCount);
             AddSaturating(
                 ref totalRequestedCapacityBytes,
                 observation.RequestedCapacityBytes);
@@ -107,6 +159,7 @@ internal sealed class QuicBufferCopyEpochAccumulator :
         lock (gate)
         {
             QuicBufferCopyEpochSummary summary = new(
+                policySnapshot,
                 hasObservation,
                 firstOperationSequence,
                 lastOperationSequence,
@@ -126,9 +179,15 @@ internal sealed class QuicBufferCopyEpochAccumulator :
                 retainCount,
                 cloneCount,
                 protectCount,
+                memoryConservativeOperationCount,
+                safetyOverrideOperationCount,
+                fallbackOperationCount,
+                totalLegalLogicalBytes,
                 totalLogicalBytes,
                 totalCopiedBytes,
                 maximumCopiedBytes,
+                totalLegalSourceSegments,
+                totalAppliedSourceSegments,
                 totalRequestedCapacityBytes,
                 totalRetainedCapacityBytes,
                 maximumRetainedCapacityBytes,
@@ -236,9 +295,15 @@ internal sealed class QuicBufferCopyEpochAccumulator :
         retainCount = 0;
         cloneCount = 0;
         protectCount = 0;
+        memoryConservativeOperationCount = 0;
+        safetyOverrideOperationCount = 0;
+        fallbackOperationCount = 0;
+        totalLegalLogicalBytes = 0;
         totalLogicalBytes = 0;
         totalCopiedBytes = 0;
         maximumCopiedBytes = 0;
+        totalLegalSourceSegments = 0;
+        totalAppliedSourceSegments = 0;
         totalRequestedCapacityBytes = 0;
         totalRetainedCapacityBytes = 0;
         maximumRetainedCapacityBytes = 0;

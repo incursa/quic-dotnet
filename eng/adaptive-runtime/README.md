@@ -76,12 +76,14 @@ buffer raw rows:
 ```
 
 The exporter reads `QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON=` and
-`QUIC_ACTOR_SERVICE_OBSERVATION_JSON=` records, validates unified raw v6 and
+`QUIC_ACTOR_SERVICE_OBSERVATION_JSON=` records, validates unified raw v7 and
 actor raw v4, and writes two append-only raw JSONL streams, semantic
-validation, and a checksum manifest v7. Semantic validation requires matching
+validation, and a checksum manifest v8. Semantic validation requires matching
 connection-observation, receive-credit, post-service boundary, and Stage 1
 epoch keys; monotonic unique connection epochs; exactly four Stage 1 axis
-records per row; no more than one non-legacy applied axis; and exact
+records plus one `buffer_copy_coalescing` record per row; no more than one
+non-legacy applied axis across receive credit, Stage 1, and buffer coalescing;
+configured buffer identity and bounded aggregate consistency; and exact
 source-scoped `connectionKey + serviceSequence` coverage for every inclusive
 actor summary range; and exact raw-to-epoch contender observation count,
 maximum, and count-above-one aggregation plus accepted-connection-work

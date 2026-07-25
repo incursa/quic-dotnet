@@ -1531,6 +1531,9 @@ internal sealed partial class QuicConnectionRuntime
         PendingApplicationSendRequest[]? queuedWrites = null;
         byte[]? combinedPayloadOwner = null;
         ReadOnlySpan<PendingApplicationSendRequest> selectedWrites = default;
+        QuicBufferCopyPolicyDecision combinedBufferPolicyDecision = default;
+        int legalCombinedPayloadLength = 0;
+        bool hasCombinedBufferPolicyDecision = false;
         bool hasOnlyQueuedWrite = applicationSendQueue.TryGetOnlyQueuedWrite(out onlyQueuedWrite);
         bool formattedRawQueuedWrite = false;
         QuicApplicationSendBatchPolicyMode batchPolicyMode =
@@ -1704,7 +1707,23 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
-                selectedWrites = sortedQueuedWrites[..sendPlan.SelectedWriteCount];
+                int appliedSelectedWriteCount =
+                    sendPlan.SelectedWriteCount;
+                if (sendPlan.SelectedWriteCount > 1)
+                {
+                    combinedBufferPolicyDecision =
+                        ResolveBufferCopyPolicyDecision(
+                            sendPlan.SelectedWriteCount);
+                    appliedSelectedWriteCount =
+                        combinedBufferPolicyDecision
+                            .AppliedSourceSegmentCount;
+                    legalCombinedPayloadLength =
+                        sendPlan.EligibleWriteBytes;
+                    hasCombinedBufferPolicyDecision = true;
+                }
+
+                selectedWrites =
+                    sortedQueuedWrites[..appliedSelectedWriteCount];
 
                 if (sendPlan.Kind == QuicApplicationSendPlanKind.Fragment)
                 {
@@ -1777,12 +1796,36 @@ internal sealed partial class QuicConnectionRuntime
                         copyOffset += queuedWrite.StreamPayloadLength;
                     }
 
+                    long? batchPlanJoinSequence =
+                        applicationSendBatchPlanSequence
+                            is > 0 and <= long.MaxValue
+                            ? (long)applicationSendBatchPlanSequence
+                            : null;
                     combinedPayloadLifetimeToken =
-                        TryPublishBufferCopyObservation(
+                        hasCombinedBufferPolicyDecision
+                        ? TryPublishBufferCopyObservation(
                             QuicBufferCopyPath.CombinedApplicationSend,
                             QuicBufferCopyOperation.Combine,
                             QuicBufferCopyDecisionBoundary.PacketPlan,
-                            joinOperationSequence: null,
+                            batchPlanJoinSequence,
+                            legalLogicalBytes:
+                                legalCombinedPayloadLength,
+                            logicalBytes: combinedPayloadLength,
+                            copiedBytes: combinedPayloadLength,
+                            legalSourceSegmentCount:
+                                combinedBufferPolicyDecision
+                                    .LegalSourceSegmentCount,
+                            sourceSegmentCount: selectedWrites.Length,
+                            requestedCapacityBytes: combinedPayloadLength,
+                            retainedCapacityBytes:
+                                combinedPayloadOwner.Length,
+                            in combinedBufferPolicyDecision,
+                            trackTerminalRelease: true)
+                        : TryPublishBufferCopyObservation(
+                            QuicBufferCopyPath.CombinedApplicationSend,
+                            QuicBufferCopyOperation.Combine,
+                            QuicBufferCopyDecisionBoundary.PacketPlan,
+                            batchPlanJoinSequence,
                             logicalBytes: combinedPayloadLength,
                             copiedBytes: combinedPayloadLength,
                             sourceSegmentCount: selectedWrites.Length,

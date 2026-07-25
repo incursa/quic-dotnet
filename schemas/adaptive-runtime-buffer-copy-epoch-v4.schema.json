@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-buffer-copy-epoch-v4.schema.json",
+  "title": "Adaptive Runtime Buffer Copy Epoch Summary v4",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policySnapshot",
+    "hasObservation",
+    "firstOperationSequence",
+    "lastOperationSequence",
+    "operationCount",
+    "applicationWriteRequestCount",
+    "oversizedRawQueueCount",
+    "formattedStreamPayloadCount",
+    "combinedApplicationSendCount",
+    "sentPacketPlaintextRetentionCount",
+    "retransmissionCloneCount",
+    "receiveSegmentCount",
+    "outboundPacketProtectionCount",
+    "copyCount",
+    "reuseAndCopyCount",
+    "formatCount",
+    "combineCount",
+    "retainCount",
+    "cloneCount",
+    "protectCount",
+    "memoryConservativeOperationCount",
+    "safetyOverrideOperationCount",
+    "fallbackOperationCount",
+    "totalLegalLogicalBytes",
+    "totalLogicalBytes",
+    "totalCopiedBytes",
+    "maximumCopiedBytes",
+    "totalLegalSourceSegments",
+    "totalAppliedSourceSegments",
+    "totalRequestedCapacityBytes",
+    "totalRetainedCapacityBytes",
+    "maximumRetainedCapacityBytes",
+    "validity",
+    "epochContractVersion"
+  ],
+  "properties": {
+    "policySnapshot": { "$ref": "#/$defs/policySnapshot" },
+    "hasObservation": { "type": "boolean" },
+    "firstOperationSequence": { "$ref": "#/$defs/unsignedInteger" },
+    "lastOperationSequence": { "$ref": "#/$defs/unsignedInteger" },
+    "operationCount": { "$ref": "#/$defs/unsignedInteger" },
+    "applicationWriteRequestCount": { "$ref": "#/$defs/unsignedInteger" },
+    "oversizedRawQueueCount": { "$ref": "#/$defs/unsignedInteger" },
+    "formattedStreamPayloadCount": { "$ref": "#/$defs/unsignedInteger" },
+    "combinedApplicationSendCount": { "$ref": "#/$defs/unsignedInteger" },
+    "sentPacketPlaintextRetentionCount": { "$ref": "#/$defs/unsignedInteger" },
+    "retransmissionCloneCount": { "$ref": "#/$defs/unsignedInteger" },
+    "receiveSegmentCount": { "$ref": "#/$defs/unsignedInteger" },
+    "outboundPacketProtectionCount": { "$ref": "#/$defs/unsignedInteger" },
+    "copyCount": { "$ref": "#/$defs/unsignedInteger" },
+    "reuseAndCopyCount": { "$ref": "#/$defs/unsignedInteger" },
+    "formatCount": { "$ref": "#/$defs/unsignedInteger" },
+    "combineCount": { "$ref": "#/$defs/unsignedInteger" },
+    "retainCount": { "$ref": "#/$defs/unsignedInteger" },
+    "cloneCount": { "$ref": "#/$defs/unsignedInteger" },
+    "protectCount": { "$ref": "#/$defs/unsignedInteger" },
+    "memoryConservativeOperationCount": { "$ref": "#/$defs/unsignedInteger" },
+    "safetyOverrideOperationCount": { "$ref": "#/$defs/unsignedInteger" },
+    "fallbackOperationCount": { "$ref": "#/$defs/unsignedInteger" },
+    "totalLegalLogicalBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "totalLogicalBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "totalCopiedBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "maximumCopiedBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "totalLegalSourceSegments": { "$ref": "#/$defs/unsignedInteger" },
+    "totalAppliedSourceSegments": { "$ref": "#/$defs/unsignedInteger" },
+    "totalRequestedCapacityBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "totalRetainedCapacityBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "maximumRetainedCapacityBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "validity": { "type": ["string", "integer"] },
+    "epochContractVersion": { "const": "quic-buffer-copy-epoch-v4" }
+  },
+  "$defs": {
+    "unsignedInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "policySnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "hasForcedValue",
+        "forcedValue",
+        "hasShadowRecommendation",
+        "shadowRecommendation",
+        "selectedValue",
+        "appliedValue",
+        "selectionSource",
+        "reasonCode",
+        "safetyOverride",
+        "latchLifetime",
+        "fallbackApplied",
+        "snapshotVersion"
+      ],
+      "properties": {
+        "mode": {
+          "enum": ["Disabled", "ObserveOnly", "Shadow"]
+        },
+        "hasForcedValue": { "type": "boolean" },
+        "forcedValue": {
+          "enum": ["LegacyCurrent", "MemoryConservative"]
+        },
+        "hasShadowRecommendation": { "type": "boolean" },
+        "shadowRecommendation": {
+          "enum": ["LegacyCurrent", "MemoryConservative"]
+        },
+        "selectedValue": {
+          "enum": ["LegacyCurrent", "MemoryConservative"]
+        },
+        "appliedValue": {
+          "enum": ["LegacyCurrent", "MemoryConservative"]
+        },
+        "selectionSource": {
+          "enum": ["LegacyCurrent", "Forced", "ShadowRule", "SafetyOverride"]
+        },
+        "reasonCode": {
+          "enum": [
+            "LegacyCopy",
+            "ObserveOnly",
+            "Forced",
+            "ShadowMemoryConservative"
+          ]
+        },
+        "safetyOverride": { "const": "None" },
+        "latchLifetime": { "const": "BufferLifetime" },
+        "fallbackApplied": { "const": false },
+        "snapshotVersion": {
+          "const": "quic-buffer-copy-policy-snapshot-v1"
+        }
+      }
+    }
+  }
+}

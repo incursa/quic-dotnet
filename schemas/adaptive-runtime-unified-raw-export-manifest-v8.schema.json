@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-unified-raw-export-manifest-v8.schema.json",
+  "title": "Adaptive Runtime Unified Raw Export Manifest v8",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "createdUtc",
+    "rawEpochSchemaVersion",
+    "actorRawObservationSchemaVersion",
+    "bufferRawObservationSchemaVersion",
+    "classification",
+    "rowCount",
+    "axisRecordCount",
+    "connectionCount",
+    "actorEpochRowCount",
+    "actorObservationRowCount",
+    "bufferObservationRowCount",
+    "actorExportFailureCount",
+    "exportFailureCount",
+    "sources",
+    "artifacts"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "adaptive-runtime-unified-raw-export-manifest-v8"
+    },
+    "createdUtc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rawEpochSchemaVersion": {
+      "const": "adaptive-runtime-unified-epoch-raw-v7"
+    },
+    "actorRawObservationSchemaVersion": {
+      "const": "adaptive-runtime-actor-service-raw-v4"
+    },
+    "bufferRawObservationSchemaVersion": {
+      "const": "quic-buffer-copy-raw-v4"
+    },
+    "classification": {
+      "enum": [
+        "accepted",
+        "invalid_contract"
+      ]
+    },
+    "rowCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "axisRecordCount": {
+      "type": "integer",
+      "minimum": 5
+    },
+    "connectionCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "actorEpochRowCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "actorObservationRowCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "bufferObservationRowCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "actorExportFailureCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "exportFailureCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "sha256",
+          "rowCount",
+          "actorObservationRowCount",
+          "actorExportFailureCount",
+          "exportFailureCount"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "rowCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "actorObservationRowCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "actorExportFailureCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "exportFailureCount": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "role",
+          "path",
+          "sha256",
+          "bytes"
+        ],
+        "properties": {
+          "role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}

@@ -292,7 +292,7 @@ public sealed class REQ_QUIC_CRT_0183
             string unifiedSchema = Path.Combine(
                 repoRoot,
                 "schemas",
-                "adaptive-runtime-unified-epoch-evidence-v6.schema.json");
+                "adaptive-runtime-unified-epoch-evidence-v7.schema.json");
             string command =
                 $"$boundaryValid = Get-Content -LiteralPath "
                 + $"{AdaptiveRuntimePolicyScriptTestSupport.QuotePowerShellLiteral(boundaryPath)} "
@@ -362,7 +362,7 @@ public sealed class REQ_QUIC_CRT_0183
                 new
                 {
                     schemaVersion =
-                        "adaptive-runtime-unified-epoch-raw-v6",
+                        "adaptive-runtime-unified-epoch-raw-v7",
                     connectionKey = "connection-0001",
                     epoch = evidence,
                 },
@@ -406,7 +406,7 @@ public sealed class REQ_QUIC_CRT_0183
                 1,
                 summary.RootElement.GetProperty("rowCount").GetInt32());
             Assert.Equal(
-                4,
+                5,
                 summary.RootElement.GetProperty("axisRecordCount").GetInt32());
             Assert.Equal(
                 1,
@@ -577,7 +577,7 @@ public sealed class REQ_QUIC_CRT_0183
                             new
                             {
                                 schemaVersion =
-                                    "adaptive-runtime-unified-epoch-raw-v6",
+                                    "adaptive-runtime-unified-epoch-raw-v7",
                                 connectionKey = "connection-0001",
                                 epoch = mismatchedEvidence,
                             },
@@ -623,7 +623,7 @@ public sealed class REQ_QUIC_CRT_0183
                             new
                             {
                                 schemaVersion =
-                                    "adaptive-runtime-unified-epoch-raw-v6",
+                                    "adaptive-runtime-unified-epoch-raw-v7",
                                 connectionKey = "connection-0001",
                                 epoch = mismatchedAcceptedWorkEvidence,
                             },
@@ -669,7 +669,7 @@ public sealed class REQ_QUIC_CRT_0183
                             new
                             {
                                 schemaVersion =
-                                    "adaptive-runtime-unified-epoch-raw-v6",
+                                    "adaptive-runtime-unified-epoch-raw-v7",
                                 connectionKey = "connection-0001",
                                 epoch = mismatchedContinuationEvidence,
                             },
@@ -819,12 +819,15 @@ public sealed class REQ_QUIC_CRT_0183
     private static QuicBufferCopyObservation CreateBufferObservation()
         => new(
             OperationSequence: 1,
+            QuicBufferCopyObservationMode.ObserveOnly,
             QuicBufferCopyPath.ApplicationWriteRequest,
             QuicBufferCopyOperation.Copy,
             QuicBufferCopyDecisionBoundary.StreamWriteRetry,
             JoinOperationSequence: 1,
+            LegalLogicalBytes: 8,
             LogicalBytes: 8,
             CopiedBytes: 8,
+            LegalSourceSegmentCount: 1,
             SourceSegmentCount: 1,
             DestinationSegmentCount: 1,
             RequestedCapacityBytes: 8,

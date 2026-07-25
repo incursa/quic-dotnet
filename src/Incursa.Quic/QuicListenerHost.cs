@@ -2440,6 +2440,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             returnedOptions.ActorServiceEvidenceSink;
         selectedOptions.BufferCopyObservationMode =
             returnedOptions.BufferCopyObservationMode;
+        selectedOptions.ForcedBufferCopyPolicyValue =
+            returnedOptions.ForcedBufferCopyPolicyValue;
         selectedOptions.BufferCopyEvidenceSink =
             returnedOptions.BufferCopyEvidenceSink;
 

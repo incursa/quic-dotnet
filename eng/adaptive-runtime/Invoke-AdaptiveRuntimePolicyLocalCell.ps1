@@ -1081,7 +1081,7 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
                     'adaptive-runtime-unified-epoch-raw-v3',
                     'adaptive-runtime-unified-epoch-raw-v4',
                     'adaptive-runtime-unified-epoch-raw-v5',
-                    'adaptive-runtime-unified-epoch-raw-v6')) {
+                    'adaptive-runtime-unified-epoch-raw-v7')) {
                 $contractFailures.Add(
                     "$sampleId`: unified adaptive-runtime epoch contract was not reported.")
             }
@@ -1178,7 +1178,7 @@ for ($index = 0; $index -lt $sequence.Count; $index++) {
         if ($expectsUnifiedEpochs) {
             if (-not $bufferCopyContract.Success -or
                 $bufferCopyContract.Groups[1].Value -ne
-                    'quic-buffer-copy-raw-v3') {
+                    'quic-buffer-copy-raw-v4') {
                 $contractFailures.Add(
                     "$sampleId`: buffer-copy operation contract was not reported.")
             }

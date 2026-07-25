@@ -21,12 +21,16 @@ $copyRawSchemaPaths = @{
         'schemas\adaptive-runtime-buffer-copy-raw-v2.schema.json'
     'quic-buffer-copy-raw-v3' = Join-Path $RepositoryRoot `
         'schemas\adaptive-runtime-buffer-copy-raw-v3.schema.json'
+    'quic-buffer-copy-raw-v4' = Join-Path $RepositoryRoot `
+        'schemas\adaptive-runtime-buffer-copy-raw-v4.schema.json'
 }
 $copyObservationSchemaPaths = @{
     'quic-buffer-copy-observation-v2' = Join-Path $RepositoryRoot `
         'schemas\adaptive-runtime-buffer-copy-observation-v2.schema.json'
     'quic-buffer-copy-observation-v3' = Join-Path $RepositoryRoot `
         'schemas\adaptive-runtime-buffer-copy-observation-v3.schema.json'
+    'quic-buffer-copy-observation-v4' = Join-Path $RepositoryRoot `
+        'schemas\adaptive-runtime-buffer-copy-observation-v4.schema.json'
 }
 $releaseRawSchemaPaths = @{
     'quic-buffer-release-raw-v1' = Join-Path $RepositoryRoot `

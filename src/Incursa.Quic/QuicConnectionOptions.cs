@@ -201,8 +201,12 @@ public abstract class QuicConnectionOptions
 
     internal IQuicActorServiceEvidenceSink? ActorServiceEvidenceSink { get; set; }
 
-    // CONTEXT: Buffer-copy evidence is observe-only until the ownership
-    // inventory yields a distinct conservative implementation.
+    // CONTEXT: Internal-only Stage 2 buffer construction control. The
+    // conservative value may only shorten an already legal combined prefix.
+    internal QuicBufferCopyPolicyValue? ForcedBufferCopyPolicyValue { get; set; }
+
+    // CONTEXT: Buffer-copy evidence may observe or shadow the conservative
+    // coalescing cap without changing the default construction path.
     internal QuicBufferCopyObservationMode BufferCopyObservationMode { get; set; }
 
     internal IQuicBufferCopyEvidenceSink? BufferCopyEvidenceSink { get; set; }

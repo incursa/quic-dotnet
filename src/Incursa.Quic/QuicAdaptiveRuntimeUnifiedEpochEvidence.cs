@@ -14,7 +14,7 @@ internal readonly record struct QuicAdaptiveRuntimeUnifiedEpochEvidence(
     QuicBufferCopyEpochSummary BufferCopy)
 {
     internal const string CurrentEvidenceContractVersion =
-        "adaptive-runtime-unified-epoch-evidence-v6";
+        "adaptive-runtime-unified-epoch-evidence-v7";
 
     public string EvidenceContractVersion =>
         CurrentEvidenceContractVersion;
@@ -45,7 +45,7 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
     private readonly object gate = new();
     private readonly QuicAdaptiveRuntimeStage1EvidenceAccumulator stage1;
     private readonly QuicActorServiceEpochAccumulator actorService = new();
-    private readonly QuicBufferCopyEpochAccumulator bufferCopy = new();
+    private readonly QuicBufferCopyEpochAccumulator bufferCopy;
     private readonly IQuicAdaptiveRuntimeUnifiedEpochEvidenceSink sink;
     private bool hasEpochOrigin;
     private long epochOriginTicks;
@@ -54,9 +54,23 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
     internal QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator(
         in QuicAdaptiveRuntimeStage1PolicySnapshot configuredStage1Policy,
         IQuicAdaptiveRuntimeUnifiedEpochEvidenceSink sink)
+        : this(
+            in configuredStage1Policy,
+            QuicBufferCopyPolicy.CreateConfiguredSnapshot(
+                QuicBufferCopyObservationMode.Disabled,
+                forcedValue: null),
+            sink)
+    {
+    }
+
+    internal QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator(
+        in QuicAdaptiveRuntimeStage1PolicySnapshot configuredStage1Policy,
+        in QuicBufferCopyConfiguredPolicySnapshot configuredBufferCopyPolicy,
+        IQuicAdaptiveRuntimeUnifiedEpochEvidenceSink sink)
     {
         ArgumentNullException.ThrowIfNull(sink);
         stage1 = new(in configuredStage1Policy);
+        bufferCopy = new(in configuredBufferCopyPolicy);
         this.sink = sink;
     }
 

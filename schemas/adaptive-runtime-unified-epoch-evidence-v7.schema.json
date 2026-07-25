@@ -1,0 +1,323 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-unified-epoch-evidence-v7.schema.json",
+  "title": "Adaptive Runtime Unified Epoch Evidence v7",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "connectionObservation",
+    "receiveCreditSnapshot",
+    "postServiceBoundary",
+    "stage1",
+    "actorService",
+    "bufferCopy",
+    "evidenceContractVersion",
+    "connectionEpochSequence"
+  ],
+  "properties": {
+    "connectionObservation": {
+      "type": "object",
+      "required": [
+        "connectionEpochSequence",
+        "epochStartTicks",
+        "epochEndTicks",
+        "activeDurationMicros",
+        "observationContractVersion",
+        "policyRuleVersion"
+      ],
+      "properties": {
+        "connectionEpochSequence": { "type": "integer", "minimum": 1 },
+        "epochStartTicks": { "type": "integer" },
+        "epochEndTicks": { "type": "integer" },
+        "activeDurationMicros": { "type": "integer", "minimum": 0 },
+        "observationContractVersion": {
+          "const": "adaptive-runtime-connection-observation-v1"
+        },
+        "policyRuleVersion": { "const": "receive-credit-legacy-v1" }
+      }
+    },
+    "receiveCreditSnapshot": {
+      "type": "object",
+      "required": [
+        "snapshotVersion",
+        "ruleVersion",
+        "epochSequence",
+        "appliedPolicy",
+        "proposedPolicy",
+        "reason"
+      ],
+      "properties": {
+        "snapshotVersion": { "type": "integer", "minimum": 1 },
+        "ruleVersion": { "type": "string", "minLength": 1 },
+        "epochSequence": { "type": "integer", "minimum": 1 },
+        "appliedPolicy": { "type": ["string", "integer"] },
+        "proposedPolicy": { "type": ["string", "integer"] },
+        "reason": { "type": ["string", "integer"] }
+      }
+    },
+    "postServiceBoundary": {
+      "type": "object",
+      "required": [
+        "connectionEpochSequence",
+        "epochEndTicks",
+        "source",
+        "disposition",
+        "actorServiceSequence",
+        "actorObservationPublished",
+        "resourceReleaseCompleted",
+        "validity",
+        "boundaryContractVersion"
+      ],
+      "properties": {
+        "connectionEpochSequence": { "type": "integer", "minimum": 1 },
+        "epochEndTicks": { "type": "integer" },
+        "source": { "type": ["string", "integer"] },
+        "disposition": { "type": ["string", "integer"] },
+        "actorServiceSequence": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        },
+        "actorObservationPublished": { "type": "boolean" },
+        "resourceReleaseCompleted": { "type": "boolean" },
+        "validity": { "type": ["string", "integer"] },
+        "boundaryContractVersion": {
+          "const": "adaptive-runtime-post-service-boundary-v1"
+        }
+      }
+    },
+    "stage1": {
+      "type": "object",
+      "required": [
+        "epochIndex",
+        "epochStartOffsetMicros",
+        "epochDurationMicros",
+        "policySnapshot",
+        "applicationSendTurnPlanning",
+        "applicationSendBatchFormation",
+        "queuedSendBurstBudget",
+        "oversizedWriteAdmissionQuantum"
+      ],
+      "properties": {
+        "epochIndex": { "type": "integer", "minimum": 1 },
+        "epochStartOffsetMicros": { "type": "integer", "minimum": 0 },
+        "epochDurationMicros": { "type": "integer", "minimum": 1 },
+        "policySnapshot": { "type": "object" },
+        "applicationSendTurnPlanning": { "type": "object" },
+        "applicationSendBatchFormation": { "type": "object" },
+        "queuedSendBurstBudget": { "type": "object" },
+        "oversizedWriteAdmissionQuantum": { "type": "object" }
+      }
+    },
+    "actorService": {
+      "type": "object",
+      "required": [
+        "hasObservation",
+        "firstServiceSequence",
+        "lastServiceSequence",
+        "actorTurnCount",
+        "timerCount",
+        "interServiceGapObservationCount",
+        "deadlineLatenessObservationCount",
+        "serviceContenderObservationCount",
+        "maximumServiceContenderCount",
+        "contendedTurnCount",
+        "acceptedConnectionWorkObservationCount",
+        "totalAcceptedConnectionWorkItemsAfterCurrent",
+        "maximumAcceptedConnectionWorkItemsAfterCurrent",
+        "turnsWithAcceptedConnectionWorkRemaining",
+        "completeContinuationAssessmentTurnCount",
+        "applicationSendContinuationObservationCount",
+        "applicationSendContinuationDrainedTurnCount",
+        "applicationSendContinuationScheduledTurnCount",
+        "applicationSendContinuationBlockedTurnCount",
+        "applicationSendContinuationReadyTurnCount",
+        "maximumApplicationSendContinuationRemainingCount",
+        "flowControlContinuationObservationCount",
+        "flowControlContinuationDrainedTurnCount",
+        "flowControlContinuationScheduledTurnCount",
+        "flowControlContinuationBlockedTurnCount",
+        "flowControlContinuationReadyTurnCount",
+        "maximumFlowControlContinuationRemainingCount",
+        "streamCapacityContinuationObservationCount",
+        "streamCapacityContinuationDrainedTurnCount",
+        "streamCapacityContinuationScheduledTurnCount",
+        "streamCapacityContinuationBlockedTurnCount",
+        "streamCapacityContinuationReadyTurnCount",
+        "maximumStreamCapacityContinuationRemainingCount",
+        "validity",
+        "epochContractVersion"
+      ],
+      "properties": {
+        "hasObservation": { "type": "boolean" },
+        "firstServiceSequence": { "type": "integer", "minimum": 0 },
+        "lastServiceSequence": { "type": "integer", "minimum": 0 },
+        "actorTurnCount": { "type": "integer", "minimum": 0 },
+        "timerCount": { "type": "integer", "minimum": 0 },
+        "interServiceGapObservationCount": { "type": "integer", "minimum": 0 },
+        "deadlineLatenessObservationCount": { "type": "integer", "minimum": 0 },
+        "serviceContenderObservationCount": { "type": "integer", "minimum": 0 },
+        "maximumServiceContenderCount": { "type": "integer", "minimum": 0 },
+        "contendedTurnCount": { "type": "integer", "minimum": 0 },
+        "acceptedConnectionWorkObservationCount": { "type": "integer", "minimum": 0 },
+        "totalAcceptedConnectionWorkItemsAfterCurrent": { "type": "integer", "minimum": 0 },
+        "maximumAcceptedConnectionWorkItemsAfterCurrent": { "type": "integer", "minimum": 0 },
+        "turnsWithAcceptedConnectionWorkRemaining": { "type": "integer", "minimum": 0 },
+        "completeContinuationAssessmentTurnCount": { "type": "integer", "minimum": 0 },
+        "applicationSendContinuationObservationCount": { "type": "integer", "minimum": 0 },
+        "applicationSendContinuationDrainedTurnCount": { "type": "integer", "minimum": 0 },
+        "applicationSendContinuationScheduledTurnCount": { "type": "integer", "minimum": 0 },
+        "applicationSendContinuationBlockedTurnCount": { "type": "integer", "minimum": 0 },
+        "applicationSendContinuationReadyTurnCount": { "type": "integer", "minimum": 0 },
+        "maximumApplicationSendContinuationRemainingCount": { "type": "integer", "minimum": 0 },
+        "flowControlContinuationObservationCount": { "type": "integer", "minimum": 0 },
+        "flowControlContinuationDrainedTurnCount": { "type": "integer", "minimum": 0 },
+        "flowControlContinuationScheduledTurnCount": { "type": "integer", "minimum": 0 },
+        "flowControlContinuationBlockedTurnCount": { "type": "integer", "minimum": 0 },
+        "flowControlContinuationReadyTurnCount": { "type": "integer", "minimum": 0 },
+        "maximumFlowControlContinuationRemainingCount": { "type": "integer", "minimum": 0 },
+        "streamCapacityContinuationObservationCount": { "type": "integer", "minimum": 0 },
+        "streamCapacityContinuationDrainedTurnCount": { "type": "integer", "minimum": 0 },
+        "streamCapacityContinuationScheduledTurnCount": { "type": "integer", "minimum": 0 },
+        "streamCapacityContinuationBlockedTurnCount": { "type": "integer", "minimum": 0 },
+        "streamCapacityContinuationReadyTurnCount": { "type": "integer", "minimum": 0 },
+        "maximumStreamCapacityContinuationRemainingCount": { "type": "integer", "minimum": 0 },
+        "validity": { "type": ["string", "integer"] },
+        "epochContractVersion": { "const": "quic-actor-service-epoch-v5" }
+      }
+    },
+    "bufferCopy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policySnapshot",
+        "hasObservation",
+        "firstOperationSequence",
+        "lastOperationSequence",
+        "operationCount",
+        "applicationWriteRequestCount",
+        "oversizedRawQueueCount",
+        "formattedStreamPayloadCount",
+        "combinedApplicationSendCount",
+        "sentPacketPlaintextRetentionCount",
+        "retransmissionCloneCount",
+        "receiveSegmentCount",
+        "outboundPacketProtectionCount",
+        "copyCount",
+        "reuseAndCopyCount",
+        "formatCount",
+        "combineCount",
+        "retainCount",
+        "cloneCount",
+        "protectCount",
+        "memoryConservativeOperationCount",
+        "safetyOverrideOperationCount",
+        "fallbackOperationCount",
+        "totalLegalLogicalBytes",
+        "totalLogicalBytes",
+        "totalCopiedBytes",
+        "maximumCopiedBytes",
+        "totalLegalSourceSegments",
+        "totalAppliedSourceSegments",
+        "totalRequestedCapacityBytes",
+        "totalRetainedCapacityBytes",
+        "maximumRetainedCapacityBytes",
+        "validity",
+        "epochContractVersion"
+      ],
+      "properties": {
+        "policySnapshot": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "hasForcedValue",
+            "forcedValue",
+            "hasShadowRecommendation",
+            "shadowRecommendation",
+            "selectedValue",
+            "appliedValue",
+            "selectionSource",
+            "reasonCode",
+            "safetyOverride",
+            "latchLifetime",
+            "fallbackApplied",
+            "snapshotVersion"
+          ],
+          "properties": {
+            "mode": {
+              "enum": ["Disabled", "ObserveOnly", "Shadow"]
+            },
+            "hasForcedValue": { "type": "boolean" },
+            "forcedValue": {
+              "enum": ["LegacyCurrent", "MemoryConservative"]
+            },
+            "hasShadowRecommendation": { "type": "boolean" },
+            "shadowRecommendation": {
+              "enum": ["LegacyCurrent", "MemoryConservative"]
+            },
+            "selectedValue": {
+              "enum": ["LegacyCurrent", "MemoryConservative"]
+            },
+            "appliedValue": {
+              "enum": ["LegacyCurrent", "MemoryConservative"]
+            },
+            "selectionSource": {
+              "enum": ["LegacyCurrent", "Forced", "ShadowRule", "SafetyOverride"]
+            },
+            "reasonCode": {
+              "enum": [
+                "LegacyCopy",
+                "ObserveOnly",
+                "Forced",
+                "ShadowMemoryConservative"
+              ]
+            },
+            "safetyOverride": { "const": "None" },
+            "latchLifetime": { "const": "BufferLifetime" },
+            "fallbackApplied": { "const": false },
+            "snapshotVersion": {
+              "const": "quic-buffer-copy-policy-snapshot-v1"
+            }
+          }
+        },
+        "hasObservation": { "type": "boolean" },
+        "firstOperationSequence": { "type": "integer", "minimum": 0 },
+        "lastOperationSequence": { "type": "integer", "minimum": 0 },
+        "operationCount": { "type": "integer", "minimum": 0 },
+        "applicationWriteRequestCount": { "type": "integer", "minimum": 0 },
+        "oversizedRawQueueCount": { "type": "integer", "minimum": 0 },
+        "formattedStreamPayloadCount": { "type": "integer", "minimum": 0 },
+        "combinedApplicationSendCount": { "type": "integer", "minimum": 0 },
+        "sentPacketPlaintextRetentionCount": { "type": "integer", "minimum": 0 },
+        "retransmissionCloneCount": { "type": "integer", "minimum": 0 },
+        "receiveSegmentCount": { "type": "integer", "minimum": 0 },
+        "outboundPacketProtectionCount": { "type": "integer", "minimum": 0 },
+        "copyCount": { "type": "integer", "minimum": 0 },
+        "reuseAndCopyCount": { "type": "integer", "minimum": 0 },
+        "formatCount": { "type": "integer", "minimum": 0 },
+        "combineCount": { "type": "integer", "minimum": 0 },
+        "retainCount": { "type": "integer", "minimum": 0 },
+        "cloneCount": { "type": "integer", "minimum": 0 },
+        "protectCount": { "type": "integer", "minimum": 0 },
+        "memoryConservativeOperationCount": { "type": "integer", "minimum": 0 },
+        "safetyOverrideOperationCount": { "type": "integer", "minimum": 0 },
+        "fallbackOperationCount": { "type": "integer", "minimum": 0 },
+        "totalLegalLogicalBytes": { "type": "integer", "minimum": 0 },
+        "totalLogicalBytes": { "type": "integer", "minimum": 0 },
+        "totalCopiedBytes": { "type": "integer", "minimum": 0 },
+        "maximumCopiedBytes": { "type": "integer", "minimum": 0 },
+        "totalLegalSourceSegments": { "type": "integer", "minimum": 0 },
+        "totalAppliedSourceSegments": { "type": "integer", "minimum": 0 },
+        "totalRequestedCapacityBytes": { "type": "integer", "minimum": 0 },
+        "totalRetainedCapacityBytes": { "type": "integer", "minimum": 0 },
+        "maximumRetainedCapacityBytes": { "type": "integer", "minimum": 0 },
+        "validity": { "type": ["string", "integer"] },
+        "epochContractVersion": { "const": "quic-buffer-copy-epoch-v4" }
+      }
+    },
+    "evidenceContractVersion": {
+      "const": "adaptive-runtime-unified-epoch-evidence-v7"
+    },
+    "connectionEpochSequence": { "type": "integer", "minimum": 1 }
+  }
+}

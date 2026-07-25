@@ -241,7 +241,7 @@ public sealed class REQ_QUIC_CRT_0176
             source,
             StringComparison.Ordinal);
         Assert.Contains(
-            "Only one Stage 1 adaptive-runtime policy axis can be forced",
+            "Only one adaptive-runtime policy axis can be forced",
             source,
             StringComparison.Ordinal);
         Assert.Contains(

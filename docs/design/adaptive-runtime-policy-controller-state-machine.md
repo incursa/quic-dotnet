@@ -4,12 +4,10 @@ title: "Adaptive Runtime Controller State Machine"
 
 # Adaptive Runtime Controller State Machine
 
-Status: receive-credit, application-send turn, application-send batch,
-queued-send burst, and oversized-write admission force/observe/shadow runtimes
-implemented; send-turn raw-host export and permanent-runner epoch joins
-implemented; one local send-turn shadow cell and one retained-negative
-observation-neutrality cell executed; unified four-axis export and broader
-campaign verification remain open; active policy blocked
+Status: receive-credit, all four Stage 1 send-path axes, and
+`buffer_copy_coalescing` force/observe/shadow runtimes implemented;
+measurement and broader campaign verification frozen; actor and fairness
+axes remain blocked on reviewed safe mechanisms; active policy blocked
 
 The controller is a deterministic connection-local selector evaluated only at
 actor-safe boundaries. It publishes a compact immutable policy snapshot. It
@@ -78,6 +76,19 @@ pacing, flow-control, packet, queue, and buffer guards remain authoritative.
 The decision is carried unchanged until the logical write completes, is
 canceled, is disposed, reaches terminal state, or fails.
 
+The implemented `buffer_copy_coalescing` selector resolves `legacy_current`
+or `memory_conservative` after Stage 1 has produced an already legal combined
+send prefix and before the combined owner is rented and filled.
+`legacy_current` preserves the exact prefix. `memory_conservative` is a
+lower-only cap of two source segments, the smallest distinct coalesced
+construction, and is not a performance-derived threshold. The decision
+cannot widen or reorder the prefix or bypass priority, same-stream order,
+FIN/reset/cancellation, flow control, stream capacity, packet size,
+congestion, pacing, anti-amplification, recovery, packet protection, ownership,
+or terminal release. Shadow recommends while applying legacy; invalid,
+missing, stale, saturated, contradictory, out-of-domain, or lifecycle state
+falls back to legacy even under forcing.
+
 ## States
 
 | State | Meaning | Applied policy in `active_internal` |
@@ -137,6 +148,9 @@ one snapshot and latch only the axes relevant to the admitted operation.
   ownership behavior for its lifetime.
 - A packet plan latches only until packet construction either commits or is
   abandoned without externally visible state.
+- A buffer-coalescing decision latches from the post-Stage 1 combined-send
+  boundary through the resulting owner's existing exactly-once terminal
+  lifetime.
 - A receive-credit read may use the current safe publication value, but
   pending credit is never discarded on a transition and required progress
   always bypasses batching.

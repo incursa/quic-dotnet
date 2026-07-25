@@ -19,7 +19,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v6.schema.json'
+$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v7.schema.json'
 $actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v4.schema.json'
 $resolvedRawEpochPath = (Resolve-Path -LiteralPath $RawEpochPath).Path
 $resolvedActorObservationPath = (Resolve-Path -LiteralPath $ActorObservationPath).Path
@@ -163,12 +163,17 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
         $epoch.stage1.queuedSendBurstBudget,
         $epoch.stage1.oversizedWriteAdmissionQuantum
     )
-    $axisRecordCount += $stage1Records.Count
+    $axisRecordCount += $stage1Records.Count + 1
     $nonLegacyApplied = @($stage1Records | Where-Object {
         [string] $_.decision.appliedValue -ne 'LegacyCurrent'
     }).Count
     if ([string] $epoch.receiveCreditSnapshot.appliedPolicy -notin
         @('LegacyCurrent', 'legacy_current')) {
+        $nonLegacyApplied++
+    }
+    $bufferSummary = $epoch.bufferCopy
+    $bufferSnapshot = $bufferSummary.policySnapshot
+    if ([string] $bufferSnapshot.appliedValue -ne 'LegacyCurrent') {
         $nonLegacyApplied++
     }
     if ($nonLegacyApplied -gt 1) {
@@ -275,8 +280,74 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
         [void] $joinFailures.Add(
             "$rowKey|actor-accepted-connection-work-count")
     }
-    if ([bool] $epoch.bufferCopy.hasObservation) {
+    if ([bool] $bufferSummary.hasObservation) {
         $bufferObservationRowCount++
+    }
+    $bufferOperationCount = [uint64] $bufferSummary.operationCount
+    $bufferPathCount =
+        [uint64] $bufferSummary.applicationWriteRequestCount +
+        [uint64] $bufferSummary.oversizedRawQueueCount +
+        [uint64] $bufferSummary.formattedStreamPayloadCount +
+        [uint64] $bufferSummary.combinedApplicationSendCount +
+        [uint64] $bufferSummary.sentPacketPlaintextRetentionCount +
+        [uint64] $bufferSummary.retransmissionCloneCount +
+        [uint64] $bufferSummary.receiveSegmentCount +
+        [uint64] $bufferSummary.outboundPacketProtectionCount
+    $bufferKindCount =
+        [uint64] $bufferSummary.copyCount +
+        [uint64] $bufferSummary.reuseAndCopyCount +
+        [uint64] $bufferSummary.formatCount +
+        [uint64] $bufferSummary.combineCount +
+        [uint64] $bufferSummary.retainCount +
+        [uint64] $bufferSummary.cloneCount +
+        [uint64] $bufferSummary.protectCount
+    if ($bufferPathCount -ne $bufferOperationCount -or
+        $bufferKindCount -ne $bufferOperationCount -or
+        [uint64] $bufferSummary.totalAppliedSourceSegments -gt
+            [uint64] $bufferSummary.totalLegalSourceSegments -or
+        [uint64] $bufferSummary.totalLogicalBytes -gt
+            [uint64] $bufferSummary.totalLegalLogicalBytes -or
+        [uint64] $bufferSummary.memoryConservativeOperationCount -gt
+            $bufferOperationCount -or
+        [uint64] $bufferSummary.safetyOverrideOperationCount -gt
+            $bufferOperationCount -or
+        [uint64] $bufferSummary.fallbackOperationCount -gt
+            $bufferOperationCount) {
+        [void] $joinFailures.Add("$rowKey|buffer-aggregate")
+    }
+    if ([bool] $bufferSummary.hasObservation) {
+        if ($bufferOperationCount -eq 0 -or
+            [uint64] $bufferSummary.firstOperationSequence -eq 0 -or
+            [uint64] $bufferSummary.lastOperationSequence -lt
+                [uint64] $bufferSummary.firstOperationSequence) {
+            [void] $joinFailures.Add("$rowKey|buffer-range")
+        }
+    }
+    elseif ($bufferOperationCount -ne 0 -or
+        [uint64] $bufferSummary.firstOperationSequence -ne 0 -or
+        [uint64] $bufferSummary.lastOperationSequence -ne 0) {
+        [void] $joinFailures.Add("$rowKey|buffer-empty")
+    }
+    if ([bool] $bufferSnapshot.hasForcedValue) {
+        if ([string] $bufferSnapshot.selectionSource -ne 'Forced' -or
+            [string] $bufferSnapshot.selectedValue -ne
+                [string] $bufferSnapshot.forcedValue -or
+            [string] $bufferSnapshot.appliedValue -ne
+                [string] $bufferSnapshot.forcedValue) {
+            [void] $joinFailures.Add("$rowKey|buffer-forced-identity")
+        }
+    }
+    elseif ([string] $bufferSnapshot.mode -eq 'Shadow') {
+        if (-not [bool] $bufferSnapshot.hasShadowRecommendation -or
+            [string] $bufferSnapshot.selectedValue -ne
+                [string] $bufferSnapshot.shadowRecommendation -or
+            [string] $bufferSnapshot.appliedValue -ne 'LegacyCurrent') {
+            [void] $joinFailures.Add("$rowKey|buffer-shadow-identity")
+        }
+    }
+    elseif ([string] $bufferSnapshot.selectedValue -ne 'LegacyCurrent' -or
+        [string] $bufferSnapshot.appliedValue -ne 'LegacyCurrent') {
+        [void] $joinFailures.Add("$rowKey|buffer-legacy-identity")
     }
 
     if ([bool] $epoch.postServiceBoundary.actorObservationPublished -and
@@ -716,7 +787,7 @@ $valid =
     $expectedActorKeys.Count -eq 0 -and
     $joinFailures.Count -eq 0 -and
     $multiAxisRows.Count -eq 0 -and
-    $axisRecordCount -eq ($rowCount * 4)
+    $axisRecordCount -eq ($rowCount * 5)
 if (-not $valid) {
     throw (
         "Unified adaptive-runtime raw evidence failed semantic validation: " +
@@ -726,11 +797,11 @@ if (-not $valid) {
         "actorOrphans=$($orphanActorKeys.Count), " +
         "actorMissing=$($expectedActorKeys.Count), " +
         "joinFailures=$($joinFailures.Count), multiAxis=$($multiAxisRows.Count), " +
-        "axisRecords=$axisRecordCount, expectedAxisRecords=$($rowCount * 4).")
+        "axisRecords=$axisRecordCount, expectedAxisRecords=$($rowCount * 5).")
 }
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-validation-v7'
+    schemaVersion = 'adaptive-runtime-unified-raw-validation-v8'
     valid = $true
     rawEpochRowCount = $rowCount
     axisRecordCount = $axisRecordCount

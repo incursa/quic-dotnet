@@ -7,6 +7,7 @@ internal enum QuicBufferCopyObservationMode : byte
 {
     Disabled = 0,
     ObserveOnly = 1,
+    Shadow = 2,
 }
 
 internal enum QuicBufferCopyPath : byte
@@ -46,22 +47,39 @@ internal enum QuicBufferCopyDecisionBoundary : byte
 internal enum QuicBufferCopyPolicyValue : byte
 {
     LegacyCurrent = 0,
+    MemoryConservative = 1,
 }
 
 internal enum QuicBufferCopySelectionSource : byte
 {
     LegacyCurrent = 0,
+    Forced = 1,
+    ShadowRule = 2,
+    SafetyOverride = 3,
 }
 
 internal enum QuicBufferCopyReasonCode : byte
 {
     LegacyCopy = 0,
     ExistingCapacityReused = 1,
+    ObserveOnly = 2,
+    Forced = 3,
+    ShadowMemoryConservative = 4,
+    MissingInput = 5,
+    StaleInput = 6,
+    ArithmeticSaturated = 7,
+    Contradictory = 8,
+    OutOfDomain = 9,
+    InvalidInput = 10,
+    LifecycleGuard = 11,
+    NotApplicable = 12,
 }
 
 internal enum QuicBufferCopySafetyOverride : byte
 {
     None = 0,
+    InvalidObservation = 1,
+    Lifecycle = 2,
 }
 
 internal enum QuicBufferCopyLatchLifetime : byte
@@ -105,16 +123,291 @@ internal enum QuicBufferCopyValidity : ushort
     ArithmeticSaturated = 1 << 3,
     Contradictory = 1 << 4,
     OutOfDomain = 1 << 5,
+    StaleRequiredInput = 1 << 6,
+    InvalidInput = 1 << 7,
+}
+
+internal readonly record struct QuicBufferCopyConfiguredPolicySnapshot(
+    QuicBufferCopyObservationMode Mode,
+    bool HasForcedValue,
+    QuicBufferCopyPolicyValue ForcedValue,
+    bool HasShadowRecommendation,
+    QuicBufferCopyPolicyValue ShadowRecommendation,
+    QuicBufferCopyPolicyValue SelectedValue,
+    QuicBufferCopyPolicyValue AppliedValue,
+    QuicBufferCopySelectionSource SelectionSource,
+    QuicBufferCopyReasonCode ReasonCode,
+    QuicBufferCopySafetyOverride SafetyOverride,
+    QuicBufferCopyLatchLifetime LatchLifetime,
+    bool FallbackApplied)
+{
+    internal const string CurrentSnapshotVersion =
+        "quic-buffer-copy-policy-snapshot-v1";
+
+    public string SnapshotVersion => CurrentSnapshotVersion;
+}
+
+internal readonly record struct QuicBufferCopyPolicyDecision(
+    QuicBufferCopyObservationMode Mode,
+    bool HasForcedValue,
+    QuicBufferCopyPolicyValue ForcedValue,
+    bool HasShadowRecommendation,
+    QuicBufferCopyPolicyValue ShadowRecommendation,
+    QuicBufferCopyPolicyValue SelectedValue,
+    QuicBufferCopyPolicyValue AppliedValue,
+    QuicBufferCopySelectionSource SelectionSource,
+    QuicBufferCopyReasonCode ReasonCode,
+    QuicBufferCopySafetyOverride SafetyOverride,
+    QuicBufferCopyLatchLifetime LatchLifetime,
+    bool FallbackApplied,
+    int LegalSourceSegmentCount,
+    int AppliedSourceSegmentCount);
+
+internal static class QuicBufferCopyPolicy
+{
+    internal const int MinimumCombinedSourceSegments = 2;
+    internal const int MemoryConservativeMaximumSourceSegments =
+        MinimumCombinedSourceSegments;
+    internal const string CurrentRuleVersion =
+        "quic-buffer-copy-memory-conservative-rule-v1";
+    internal const string CurrentReasonVersion =
+        "quic-buffer-copy-reason-v2";
+    internal const string CurrentProvenanceVersion =
+        "quic-buffer-copy-provenance-v4";
+
+    internal static void ValidateValue(QuicBufferCopyPolicyValue value)
+    {
+        if (value is < QuicBufferCopyPolicyValue.LegacyCurrent
+            or > QuicBufferCopyPolicyValue.MemoryConservative)
+        {
+            throw new ArgumentOutOfRangeException(nameof(value));
+        }
+    }
+
+    internal static void ValidateObservationMode(
+        QuicBufferCopyObservationMode mode)
+    {
+        if (mode is < QuicBufferCopyObservationMode.Disabled
+            or > QuicBufferCopyObservationMode.Shadow)
+        {
+            throw new ArgumentOutOfRangeException(nameof(mode));
+        }
+    }
+
+    internal static QuicBufferCopyConfiguredPolicySnapshot CreateConfiguredSnapshot(
+        QuicBufferCopyObservationMode mode,
+        QuicBufferCopyPolicyValue? forcedValue)
+    {
+        ValidateObservationMode(mode);
+        if (forcedValue is { } forced)
+        {
+            ValidateValue(forced);
+            bool hasShadowRecommendation =
+                mode == QuicBufferCopyObservationMode.Shadow;
+            return new(
+                mode,
+                HasForcedValue: true,
+                forced,
+                hasShadowRecommendation,
+                ShadowRecommendation: hasShadowRecommendation
+                    ? QuicBufferCopyPolicyValue.MemoryConservative
+                    : QuicBufferCopyPolicyValue.LegacyCurrent,
+                SelectedValue: forced,
+                AppliedValue: forced,
+                QuicBufferCopySelectionSource.Forced,
+                QuicBufferCopyReasonCode.Forced,
+                QuicBufferCopySafetyOverride.None,
+                QuicBufferCopyLatchLifetime.BufferLifetime,
+                FallbackApplied: false);
+        }
+
+        if (mode == QuicBufferCopyObservationMode.Shadow)
+        {
+            return new(
+                mode,
+                HasForcedValue: false,
+                ForcedValue: QuicBufferCopyPolicyValue.LegacyCurrent,
+                HasShadowRecommendation: true,
+                ShadowRecommendation:
+                    QuicBufferCopyPolicyValue.MemoryConservative,
+                SelectedValue: QuicBufferCopyPolicyValue.MemoryConservative,
+                AppliedValue: QuicBufferCopyPolicyValue.LegacyCurrent,
+                QuicBufferCopySelectionSource.ShadowRule,
+                QuicBufferCopyReasonCode.ShadowMemoryConservative,
+                QuicBufferCopySafetyOverride.None,
+                QuicBufferCopyLatchLifetime.BufferLifetime,
+                FallbackApplied: false);
+        }
+
+        return new(
+            mode,
+            HasForcedValue: false,
+            ForcedValue: QuicBufferCopyPolicyValue.LegacyCurrent,
+            HasShadowRecommendation: false,
+            ShadowRecommendation: QuicBufferCopyPolicyValue.LegacyCurrent,
+            SelectedValue: QuicBufferCopyPolicyValue.LegacyCurrent,
+            AppliedValue: QuicBufferCopyPolicyValue.LegacyCurrent,
+            QuicBufferCopySelectionSource.LegacyCurrent,
+            mode == QuicBufferCopyObservationMode.ObserveOnly
+                ? QuicBufferCopyReasonCode.ObserveOnly
+                : QuicBufferCopyReasonCode.LegacyCopy,
+            QuicBufferCopySafetyOverride.None,
+            QuicBufferCopyLatchLifetime.BufferLifetime,
+            FallbackApplied: false);
+    }
+
+    internal static QuicBufferCopyPolicyDecision Evaluate(
+        QuicBufferCopyObservationMode mode,
+        QuicBufferCopyPolicyValue? forcedValue,
+        int legalSourceSegmentCount,
+        QuicBufferCopyValidity validity,
+        bool lifecycleGuard)
+    {
+        QuicBufferCopyConfiguredPolicySnapshot configured =
+            CreateConfiguredSnapshot(mode, forcedValue);
+        bool invalidSourceSegmentCount =
+            legalSourceSegmentCount < MinimumCombinedSourceSegments;
+        QuicBufferCopySafetyOverride safetyOverride =
+            invalidSourceSegmentCount
+                ? QuicBufferCopySafetyOverride.InvalidObservation
+                : GetSafetyOverride(validity, lifecycleGuard);
+        bool fallbackApplied =
+            safetyOverride != QuicBufferCopySafetyOverride.None;
+        QuicBufferCopyPolicyValue appliedValue = fallbackApplied
+            ? QuicBufferCopyPolicyValue.LegacyCurrent
+            : configured.AppliedValue;
+        QuicBufferCopySelectionSource selectionSource = fallbackApplied
+            ? QuicBufferCopySelectionSource.SafetyOverride
+            : configured.SelectionSource;
+        QuicBufferCopyReasonCode reasonCode = configured.ReasonCode;
+        if (invalidSourceSegmentCount)
+        {
+            reasonCode =
+                GetInvalidSourceSegmentCountReason(legalSourceSegmentCount);
+        }
+        else if (fallbackApplied)
+        {
+            reasonCode = GetFallbackReason(validity, lifecycleGuard);
+        }
+        int appliedSourceSegmentCount = invalidSourceSegmentCount
+            ? Math.Max(0, legalSourceSegmentCount)
+            : SelectSourceSegmentCount(
+                appliedValue,
+                legalSourceSegmentCount);
+
+        return new(
+            mode,
+            configured.HasForcedValue,
+            configured.ForcedValue,
+            configured.HasShadowRecommendation,
+            configured.ShadowRecommendation,
+            configured.SelectedValue,
+            appliedValue,
+            selectionSource,
+            reasonCode,
+            safetyOverride,
+            configured.LatchLifetime,
+            fallbackApplied,
+            legalSourceSegmentCount,
+            appliedSourceSegmentCount);
+    }
+
+    private static QuicBufferCopyReasonCode GetInvalidSourceSegmentCountReason(
+        int legalSourceSegmentCount)
+    {
+        if (legalSourceSegmentCount == 0)
+        {
+            return QuicBufferCopyReasonCode.MissingInput;
+        }
+
+        return legalSourceSegmentCount < 0
+            ? QuicBufferCopyReasonCode.OutOfDomain
+            : QuicBufferCopyReasonCode.Contradictory;
+    }
+
+    internal static int SelectSourceSegmentCount(
+        QuicBufferCopyPolicyValue value,
+        int legalSourceSegmentCount)
+    {
+        ValidateValue(value);
+        if (legalSourceSegmentCount < MinimumCombinedSourceSegments)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(legalSourceSegmentCount),
+                "A combined-send buffer policy requires at least two legal source segments.");
+        }
+
+        return value == QuicBufferCopyPolicyValue.MemoryConservative
+            ? Math.Min(
+                MemoryConservativeMaximumSourceSegments,
+                legalSourceSegmentCount)
+            : legalSourceSegmentCount;
+    }
+
+    private static QuicBufferCopySafetyOverride GetSafetyOverride(
+        QuicBufferCopyValidity validity,
+        bool lifecycleGuard)
+    {
+        if (lifecycleGuard)
+        {
+            return QuicBufferCopySafetyOverride.Lifecycle;
+        }
+
+        const QuicBufferCopyValidity invalidMask =
+            QuicBufferCopyValidity.ArithmeticSaturated
+            | QuicBufferCopyValidity.Contradictory
+            | QuicBufferCopyValidity.OutOfDomain
+            | QuicBufferCopyValidity.StaleRequiredInput
+            | QuicBufferCopyValidity.InvalidInput;
+        return (validity & invalidMask) != 0
+            ? QuicBufferCopySafetyOverride.InvalidObservation
+            : QuicBufferCopySafetyOverride.None;
+    }
+
+    private static QuicBufferCopyReasonCode GetFallbackReason(
+        QuicBufferCopyValidity validity,
+        bool lifecycleGuard)
+    {
+        if (lifecycleGuard)
+        {
+            return QuicBufferCopyReasonCode.LifecycleGuard;
+        }
+
+        if ((validity & QuicBufferCopyValidity.StaleRequiredInput) != 0)
+        {
+            return QuicBufferCopyReasonCode.StaleInput;
+        }
+
+        if ((validity & QuicBufferCopyValidity.ArithmeticSaturated) != 0)
+        {
+            return QuicBufferCopyReasonCode.ArithmeticSaturated;
+        }
+
+        if ((validity & QuicBufferCopyValidity.Contradictory) != 0)
+        {
+            return QuicBufferCopyReasonCode.Contradictory;
+        }
+
+        if ((validity & QuicBufferCopyValidity.OutOfDomain) != 0)
+        {
+            return QuicBufferCopyReasonCode.OutOfDomain;
+        }
+
+        return QuicBufferCopyReasonCode.InvalidInput;
+    }
 }
 
 internal readonly record struct QuicBufferCopyObservation(
     ulong OperationSequence,
+    QuicBufferCopyObservationMode Mode,
     QuicBufferCopyPath Path,
     QuicBufferCopyOperation Operation,
     QuicBufferCopyDecisionBoundary DecisionBoundary,
     long? JoinOperationSequence,
+    ulong LegalLogicalBytes,
     ulong LogicalBytes,
     ulong CopiedBytes,
+    uint LegalSourceSegmentCount,
     uint SourceSegmentCount,
     uint DestinationSegmentCount,
     ulong RequestedCapacityBytes,
@@ -134,15 +427,15 @@ internal readonly record struct QuicBufferCopyObservation(
 {
     internal const string AxisId = "buffer_copy_coalescing";
     internal const string CurrentObservationContractVersion =
-        "quic-buffer-copy-observation-v3";
+        "quic-buffer-copy-observation-v4";
     internal const string CurrentRuleVersion =
-        "quic-buffer-copy-observe-only-rule-v1";
+        QuicBufferCopyPolicy.CurrentRuleVersion;
     internal const string CurrentSnapshotVersion =
-        "quic-buffer-copy-snapshot-v3";
+        QuicBufferCopyConfiguredPolicySnapshot.CurrentSnapshotVersion;
     internal const string CurrentReasonVersion =
-        "quic-buffer-copy-reason-v1";
+        QuicBufferCopyPolicy.CurrentReasonVersion;
     internal const string CurrentProvenanceVersion =
-        "quic-buffer-copy-provenance-v3";
+        QuicBufferCopyPolicy.CurrentProvenanceVersion;
 
     public string PolicyAxisId => AxisId;
 

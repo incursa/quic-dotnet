@@ -284,13 +284,13 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("\"observe_only\"", rawQuicServer);
         Assert.Contains("\"shadow\"", rawQuicServer);
         Assert.Contains(
-            "Only one Stage 1 adaptive-runtime policy axis can be forced by a raw QUIC host process.",
+            "Only one adaptive-runtime policy axis can be forced by a raw QUIC host process.",
             rawQuicServer);
         Assert.Contains(
             "QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=adaptive-runtime-epoch-raw-v2",
             rawQuicServer);
         Assert.Contains(
-            "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_CONTRACT=adaptive-runtime-unified-epoch-raw-v6",
+            "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_CONTRACT=adaptive-runtime-unified-epoch-raw-v7",
             rawQuicServer);
         Assert.Contains(
             "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON=",
@@ -299,7 +299,10 @@ public sealed class ProtocolLabPackageTemplateTests
             "QUIC_ACTOR_SERVICE_EVIDENCE_CONTRACT=quic-actor-service-epoch-v5",
             rawQuicServer);
         Assert.Contains(
-            "QUIC_BUFFER_COPY_OPERATION_EVIDENCE_CONTRACT=quic-buffer-copy-raw-v3",
+            "QUIC_BUFFER_COPY_EVIDENCE_CONTRACT=quic-buffer-copy-epoch-v4",
+            rawQuicServer);
+        Assert.Contains(
+            "QUIC_BUFFER_COPY_OPERATION_EVIDENCE_CONTRACT=quic-buffer-copy-raw-v4",
             rawQuicServer);
         Assert.Contains(
             "QUIC_BUFFER_COPY_OPERATION_EVIDENCE_JSON=",
