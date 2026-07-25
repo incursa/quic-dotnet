@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-policy-relationship-graph-v1.schema.json",
+  "title": "Adaptive Runtime Policy Relationship Graph v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "trace_references",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "directed_edges",
+    "nominated_hyperedges"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "adaptive-runtime-policy-relationship-graph-v1"
+    },
+    "document_id": { "type": "string", "minLength": 1 },
+    "document_version": { "type": "integer", "const": 1 },
+    "content_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "trace_references": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_ids", "architecture_ids", "work_item_ids", "verification_ids"],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "REQ-QUIC-CRT-0198",
+              "REQ-QUIC-CRT-0199",
+              "REQ-QUIC-CRT-0200",
+              "REQ-QUIC-CRT-0201"
+            ]
+          }
+        },
+        "architecture_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "const": "ARC-QUIC-CRT-0089" }
+        },
+        "work_item_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "const": "WI-QUIC-CRT-0090" }
+        },
+        "verification_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "const": "VER-QUIC-CRT-0091" }
+        }
+      }
+    },
+    "active_behavior_authorization": { "type": "boolean", "const": false },
+    "performance_acceptance_authorization": { "type": "boolean", "const": false },
+    "directed_edges": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/directedEdge" }
+    },
+    "nominated_hyperedges": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/hyperedge" }
+    }
+  },
+  "$defs": {
+    "relationshipType": {
+      "type": "string",
+      "enum": [
+        "directed_dependency",
+        "equivalence",
+        "compatibility",
+        "conflict",
+        "promotion_guard"
+      ]
+    },
+    "behaviorRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["effective_behavior_id", "axis_id", "candidate_value"],
+      "properties": {
+        "effective_behavior_id": { "type": "string", "minLength": 1 },
+        "axis_id": { "type": "string", "minLength": 1 },
+        "candidate_value": { "type": "string", "minLength": 1 }
+      }
+    },
+    "directedEdge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "edge_id",
+        "source_effective_behavior_id",
+        "target_effective_behavior_id",
+        "relationship_type",
+        "notes"
+      ],
+      "properties": {
+        "edge_id": { "type": "string", "minLength": 1 },
+        "source_effective_behavior_id": { "type": "string", "minLength": 1 },
+        "target_effective_behavior_id": { "type": "string", "minLength": 1 },
+        "relationship_type": { "$ref": "#/$defs/relationshipType" },
+        "notes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "hyperedge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hyperedge_id",
+        "member_effective_behavior_ids",
+        "relationship_type",
+        "notes"
+      ],
+      "properties": {
+        "hyperedge_id": { "type": "string", "minLength": 1 },
+        "member_effective_behavior_ids": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "relationship_type": { "$ref": "#/$defs/relationshipType" },
+        "notes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

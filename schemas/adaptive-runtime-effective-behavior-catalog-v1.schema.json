@@ -1,0 +1,258 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-effective-behavior-catalog-v1.schema.json",
+  "title": "Adaptive Runtime Effective Behavior Catalog v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "trace_references",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "effective_behaviors",
+    "epoch_count_contract"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "adaptive-runtime-effective-behavior-catalog-v1"
+    },
+    "document_id": { "type": "string", "minLength": 1 },
+    "document_version": { "type": "integer", "const": 1 },
+    "content_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "trace_references": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_ids", "architecture_ids", "work_item_ids", "verification_ids"],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "REQ-QUIC-CRT-0198",
+              "REQ-QUIC-CRT-0199",
+              "REQ-QUIC-CRT-0200",
+              "REQ-QUIC-CRT-0201"
+            ]
+          }
+        },
+        "architecture_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "const": "ARC-QUIC-CRT-0089" }
+        },
+        "work_item_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "const": "WI-QUIC-CRT-0090" }
+        },
+        "verification_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "const": "VER-QUIC-CRT-0091" }
+        }
+      }
+    },
+    "active_behavior_authorization": { "type": "boolean", "const": false },
+    "performance_acceptance_authorization": { "type": "boolean", "const": false },
+    "epoch_count_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_effective_behaviors_per_epoch", "max_effective_behaviors_per_applied_value"],
+      "properties": {
+        "max_effective_behaviors_per_epoch": { "type": "integer", "minimum": 1 },
+        "max_effective_behaviors_per_applied_value": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "effective_behaviors": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/effectiveBehavior" }
+    }
+  },
+  "$defs": {
+    "axisId": {
+      "type": "string",
+      "enum": [
+        "application_send_batch_formation",
+        "buffer_copy_coalescing",
+        "application_send_turn_planning"
+      ]
+    },
+    "policyValue": {
+      "type": "string",
+      "enum": [
+        "legacy_current",
+        "single_eligible",
+        "memory_conservative",
+        "conservative"
+      ]
+    },
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document_id", "schema_version", "document_version", "content_sha256"],
+      "properties": {
+        "document_id": { "type": "string", "minLength": 1 },
+        "schema_version": { "type": "string", "minLength": 1 },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "mechanismEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mechanism_event_id", "description"],
+      "properties": {
+        "mechanism_event_id": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 }
+      }
+    },
+    "operationScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operation_kind", "boundary", "latch"],
+      "properties": {
+        "operation_kind": {
+          "type": "string",
+          "enum": ["packet_plan", "combined_send", "send_turn"]
+        },
+        "boundary": { "type": "string", "minLength": 1 },
+        "latch": { "type": "string", "minLength": 1 }
+      }
+    },
+    "epochContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maximum_effective_behaviors_per_epoch", "maximum_effective_behaviors_per_applied_value"],
+      "properties": {
+        "maximum_effective_behaviors_per_epoch": { "type": "integer", "minimum": 1 },
+        "maximum_effective_behaviors_per_applied_value": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "effectiveBehavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "effective_behavior_id",
+        "axis_id",
+        "source_policy_values",
+        "candidate_values",
+        "mechanism_events",
+        "operation_scope",
+        "possible_multiple_behaviors",
+        "epoch_contract",
+        "deterministic_derivation",
+        "trace_references"
+      ],
+      "properties": {
+        "effective_behavior_id": { "type": "string", "minLength": 1 },
+        "axis_id": { "$ref": "#/$defs/axisId" },
+        "source_policy_values": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/policyValue" }
+        },
+        "candidate_values": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/policyValue" }
+        },
+        "mechanism_events": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/mechanismEvent" }
+        },
+        "operation_scope": { "$ref": "#/$defs/operationScope" },
+        "possible_multiple_behaviors": { "type": "boolean" },
+        "epoch_contract": { "$ref": "#/$defs/epochContract" },
+        "deterministic_derivation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mechanism_event_binding", "scope_binding", "hash_stable"],
+          "properties": {
+            "mechanism_event_binding": {
+              "type": "string",
+              "enum": ["closed", "deterministic"]
+            },
+            "scope_binding": {
+              "type": "string",
+              "enum": ["closed", "deterministic"]
+            },
+            "hash_stable": { "type": "boolean", "const": true },
+            "notes": { "type": "string" }
+          }
+        },
+        "source_document_refs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/documentRef" }
+        },
+        "trace_references": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["requirement_ids", "architecture_ids", "work_item_ids", "verification_ids"],
+          "properties": {
+            "requirement_ids": {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "REQ-QUIC-CRT-0198",
+                  "REQ-QUIC-CRT-0199",
+                  "REQ-QUIC-CRT-0200",
+                  "REQ-QUIC-CRT-0201"
+                ]
+              }
+            },
+            "architecture_ids": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 1,
+              "uniqueItems": true,
+              "items": { "type": "string", "const": "ARC-QUIC-CRT-0089" }
+            },
+            "work_item_ids": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 1,
+              "uniqueItems": true,
+              "items": { "type": "string", "const": "WI-QUIC-CRT-0090" }
+            },
+            "verification_ids": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 1,
+              "uniqueItems": true,
+              "items": { "type": "string", "const": "VER-QUIC-CRT-0091" }
+            }
+          }
+        },
+        "notes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

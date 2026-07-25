@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-experiment-plan-validation-v1.schema.json",
+  "title": "Adaptive Runtime Experiment Plan Validation v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "trace_references",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "validation_id",
+    "validated_plan_ref",
+    "validation_classification",
+    "validation_errors",
+    "validation_warnings",
+    "equivalence_groups",
+    "expanded_planned_cells"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "adaptive-runtime-experiment-plan-validation-v1"
+    },
+    "document_id": { "type": "string", "minLength": 1 },
+    "document_version": { "type": "integer", "const": 1 },
+    "content_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "trace_references": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_ids", "architecture_ids", "work_item_ids", "verification_ids"],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "REQ-QUIC-CRT-0198",
+              "REQ-QUIC-CRT-0199",
+              "REQ-QUIC-CRT-0200",
+              "REQ-QUIC-CRT-0201"
+            ]
+          }
+        },
+        "architecture_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "const": "ARC-QUIC-CRT-0089" }
+        },
+        "work_item_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "const": "WI-QUIC-CRT-0090" }
+        },
+        "verification_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "const": "VER-QUIC-CRT-0091" }
+        }
+      }
+    },
+    "active_behavior_authorization": { "type": "boolean", "const": false },
+    "performance_acceptance_authorization": { "type": "boolean", "const": false },
+    "validation_id": { "type": "string", "minLength": 1 },
+    "validated_plan_ref": { "$ref": "#/$defs/documentRef" },
+    "validation_classification": {
+      "type": "string",
+      "enum": ["valid", "warning", "error"]
+    },
+    "validation_errors": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/validationError" }
+    },
+    "validation_warnings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/validationWarning" }
+    },
+    "equivalence_groups": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/equivalenceGroup" }
+    },
+    "expanded_planned_cells": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/expandedPlannedCell" }
+    },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document_id", "schema_version", "document_version", "content_sha256"],
+      "properties": {
+        "document_id": { "type": "string", "minLength": 1 },
+        "schema_version": { "type": "string", "minLength": 1 },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "validationError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["error_code", "message"],
+      "properties": {
+        "error_code": {
+          "type": "string",
+          "enum": [
+            "unknown_field",
+            "duplicate_definition",
+            "duplicate_edge",
+            "unknown_reference",
+            "stale_reference",
+            "illegal_value",
+            "unsupported_value",
+            "blocked_axis_executable",
+            "preparation_only_axis_executable",
+            "forbidden_authorization",
+            "malformed_hash",
+            "missing_predicate_reference",
+            "fixed_varied_overlap",
+            "duplicate_axis_definition",
+            "illegal_policy_value",
+            "unknown_contract_reference",
+            "stale_version_reference",
+            "stage5_preparation_only_executable",
+            "active_behavior_authorization_true",
+            "performance_acceptance_authorization_true",
+            "invalid_relationship_type",
+            "duplicate_relationship_edge",
+            "missing_canonical_predicate_reference",
+            "fixed_varied_axis_overlap",
+            "unsupported_experiment_type"
+          ]
+        },
+        "message": { "type": "string", "minLength": 1 },
+        "target_ref": { "type": "string" }
+      }
+    },
+    "validationWarning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["warning_code", "message"],
+      "properties": {
+        "warning_code": {
+          "type": "string",
+          "enum": [
+            "equivalence_collapsed",
+            "promotion_deferred",
+            "current_combination_blocked",
+            "verification_only",
+            "compatibility_only"
+          ]
+        },
+        "message": { "type": "string", "minLength": 1 },
+        "target_ref": { "type": "string" }
+      }
+    },
+    "equivalenceGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["equivalence_group_id", "member_cell_ids", "equivalence_state"],
+      "properties": {
+        "equivalence_group_id": { "type": "string", "minLength": 1 },
+        "member_cell_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "equivalence_state": {
+          "type": "string",
+          "enum": ["equivalent", "collapsed", "verification_only"]
+        },
+        "notes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "expandedPlannedCell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cell_id",
+        "cell_order",
+        "axis_ids",
+        "treatment_ids",
+        "executable",
+        "execution_state"
+      ],
+      "properties": {
+        "cell_id": { "type": "string", "minLength": 1 },
+        "cell_order": { "type": "integer", "minimum": 0 },
+        "axis_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "application_send_batch_formation",
+              "buffer_copy_coalescing",
+              "application_send_turn_planning"
+            ]
+          }
+        },
+        "treatment_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "executable": { "type": "boolean" },
+        "execution_state": {
+          "type": "string",
+          "enum": ["valid", "blocked", "deferred"]
+        },
+        "notes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}
