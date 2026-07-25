@@ -4111,3 +4111,105 @@ observable, shadowable, independently forceable, unified-row represented, and
 force-legacy rollback tested. The next independent axis is Stage 4
 `connection_shard_placement`. Performance measurement, active behavior, CI
 work, and push remain unauthorized.
+
+## Stage 4 Connection Shard Placement Implementation Checkpoint
+
+Recorded: 2026-07-24.
+
+Active axis: `connection_shard_placement`.
+
+Adjacent applied axes: `receive_credit_publication`, all four Stage 1 axes,
+both implementation-ready Stage 2 axes, and both Stage 3 axes remain
+`legacy_current`. No campaign axis varied.
+
+Recovery and worktree disposition:
+
+- the starting clean checkpoint was `9d2d67f4` (`Record receive delivery
+  quantum checkpoint evidence`);
+- the branch was `main`, ahead of `origin/main` by 98 commits before this
+  slice;
+- no adaptive transform, campaign, build, or test command was active at
+  recovery; only reusable idle build nodes were present;
+- the stopped 55,658-epoch single-axis transform and every raw, hash,
+  classification, and partial artifact remain untouched and classified
+  `diagnostic_incomplete`;
+- the user-approved roadmap remains unchanged; and
+- CI was ignored, no performance command ran, no dataset row was generated,
+  and no push was attempted.
+
+Capability delivered:
+
+- stable axis ID `connection_shard_placement`;
+- closed values `legacy_current` and `bounded_power_of_two_choices`;
+- exact decision boundary at connection registration and one immutable
+  connection-lifetime route latch;
+- `legacy_current` retains sequential connection-handle modulo shard count;
+- the conservative value compares exactly the legacy candidate with one
+  deterministic alternate, chooses the lower active-connection count, and
+  uses the legacy candidate for ties;
+- disabled, observe-only, shadow, forced legacy, and forced bounded-choice
+  operation, with forced, recommended, selected, applied, source, reason,
+  safety, fallback, validity, latch, and version state kept distinct;
+- missing, stale, saturated, contradictory, invalid, out-of-domain,
+  lifecycle, and single-shard fallback to `legacy_current`;
+- forced selection cannot bypass valid shard bounds, unique handle and runtime
+  ownership, registration rollback, unregister accounting, lifecycle,
+  shutdown, endpoint routing, timer routing, packet routing, congestion,
+  pacing, recovery, flow-control, packet, queue, or buffer authority;
+- exact active-count rollback on duplicate handle, runtime ownership, route
+  registration, disposal, unregister, and shutdown paths;
+- late evidence attachment for the server callback path, behavior-neutral
+  throwing sinks, and invalid-configuration retry without sink capture;
+- unified epoch evidence v11, unified raw v11, and export manifest v12;
+- one immutable placement decision repeated in each source-scoped connection
+  epoch, with stable-latch and valid-index semantic validation; and
+- raw-host and permanent package force/observe/shadow wiring with the existing
+  one-behavior-distinct-axis guard.
+
+Correctness commands and accepted results:
+
+| Command or check | Result |
+| --- | --- |
+| `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --filter FullyQualifiedName~REQ_QUIC_CRT_0194 --no-restore --nologo` | 19 passed, zero failed, zero skipped in 150 milliseconds; the command also built the affected Release projects |
+| focused `REQ-QUIC-CRT-0194`, unified `REQ-QUIC-CRT-0183`, host sharding, listener sharding, and package band | 73 passed, zero failed, zero skipped in 27 seconds |
+| `dotnet build eng/protocol-lab/servers/IncursaRawQuicServer/IncursaRawQuicServer.csproj -c Release --no-restore --nologo` | zero warnings, zero errors in 1.68 seconds |
+| PowerShell AST parse | four changed exporter, validator, package, and runner scripts parsed with zero errors |
+| JSON parse | three schemas and four SpecTrace artifacts parsed cleanly |
+| direct canonical SpecTrace model validation | four of four Stage 4 artifacts returned `True` |
+| focused reciprocal trace validation | `REQ-QUIC-CRT-0194 -> ARC-QUIC-CRT-0077 -> WI-QUIC-CRT-0078 -> VER-QUIC-CRT-0079` is reciprocal |
+| `git diff --check` and cached diff check | clean |
+
+Retained diagnostic results:
+
+- the first post-recovery build found a duplicate pattern-variable name in the
+  two successful placement-sink attachment branches and failed with `CS0136`;
+  the names were made branch-specific and the next build and test passed;
+- a focused trace-inspection command used an invalid empty pipeline after a
+  `foreach`; that PowerShell parser failure remains `diagnostic_only`, and the
+  collected-array form completed cleanly; and
+- the final review found that the placement evidence sink was initially
+  captured before adaptive option validation. The capture now occurs only
+  after successful configuration, and a deterministic invalid-then-valid
+  retry test preserves the correction.
+
+Evidence counts:
+
+- implemented unified axis records per epoch: 9;
+- focused placement-axis cases: 19;
+- affected placement, unified, host, listener, and package cases: 73;
+- performance rows: 0;
+- new campaign raw, normalized, curated, split, or analysis rows: 0;
+- dataset inclusions and exclusions: unchanged;
+- campaigns and ProtocolLab deployments: 0;
+- BenchmarkDotNet invocations: 0; and
+- ML or threshold derivations: 0.
+
+Local implementation commit: `f6739bfa` (`Implement connection shard
+placement policy axis`). Nothing was pushed.
+
+Stage 4 disposition: `connection_shard_placement` is implementation-ready,
+observable, shadowable, independently forceable, unified-row represented, and
+force-legacy rollback tested. The next independent axis is
+`application_datagram_batch_transport`, including bounded platform-capability
+and fallback seams. Performance measurement, active behavior, CI work, push,
+and measurement-freeze release remain unauthorized.
