@@ -42,7 +42,7 @@
         "requirement_ids": {
           "type": "array",
           "minItems": 4,
-          "maxItems": 4,
+          "maxItems": 8,
           "uniqueItems": true,
           "items": {
             "type": "string",
@@ -50,30 +50,34 @@
               "REQ-QUIC-CRT-0198",
               "REQ-QUIC-CRT-0199",
               "REQ-QUIC-CRT-0200",
-              "REQ-QUIC-CRT-0201"
+              "REQ-QUIC-CRT-0201",
+              "REQ-QUIC-CRT-0202",
+              "REQ-QUIC-CRT-0203",
+              "REQ-QUIC-CRT-0204",
+              "REQ-QUIC-CRT-0205"
             ]
           }
         },
         "architecture_ids": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 1,
+          "maxItems": 2,
           "uniqueItems": true,
-          "items": { "type": "string", "const": "ARC-QUIC-CRT-0089" }
+          "items": { "type": "string", "enum": ["ARC-QUIC-CRT-0089", "ARC-QUIC-CRT-0092"] }
         },
         "work_item_ids": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 1,
+          "maxItems": 2,
           "uniqueItems": true,
-          "items": { "type": "string", "const": "WI-QUIC-CRT-0090" }
+          "items": { "type": "string", "enum": ["WI-QUIC-CRT-0090", "WI-QUIC-CRT-0093"] }
         },
         "verification_ids": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 1,
+          "maxItems": 2,
           "uniqueItems": true,
-          "items": { "type": "string", "const": "VER-QUIC-CRT-0091" }
+          "items": { "type": "string", "enum": ["VER-QUIC-CRT-0091", "VER-QUIC-CRT-0094"] }
         }
       }
     },
@@ -91,17 +95,48 @@
       "minItems": 1,
       "items": { "$ref": "#/$defs/binaryRef" }
     },
+    "runner_identity": { "$ref": "#/$defs/runnerIdentity" },
+    "host_fingerprint": { "$ref": "#/$defs/hostFingerprint" },
     "host_capabilities": { "$ref": "#/$defs/hostCapabilities" },
     "execution_order": {
       "type": "array",
-      "minItems": 1,
       "uniqueItems": true,
       "items": { "type": "string", "minLength": 1 }
     },
     "executable_cells": {
       "type": "array",
-      "minItems": 1,
       "items": { "$ref": "#/$defs/executableCell" }
+    },
+    "capability_ineligible_cells": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/executableCell" }
+    },
+    "excluded_cells": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/executableCell" }
+    },
+    "execution_order_policy": {
+      "type": "string",
+      "enum": ["deterministic", "randomized"]
+    },
+    "randomization_seed": { "type": "integer", "minimum": 0 },
+    "output_roots": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "retention_rules": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "expected_result_schemas": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
     },
     "post_build_refs": {
       "type": "array",
@@ -148,6 +183,31 @@
         "content_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
       }
     },
+    "runnerIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runner_id", "version", "path", "content_sha256"],
+      "properties": {
+        "runner_id": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1 },
+        "content_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "hostFingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fingerprint_id", "machine_name", "os", "architecture", "processor_count"],
+      "properties": {
+        "fingerprint_id": { "type": "string", "minLength": 1 },
+        "machine_name": { "type": "string", "minLength": 1 },
+        "os": { "type": "string", "minLength": 1 },
+        "architecture": { "type": "string", "minLength": 1 },
+        "processor_count": { "type": "integer", "minimum": 1 },
+        "physical_host_id": { "type": "string", "minLength": 1 },
+        "vm_id": { "type": "string", "minLength": 1 }
+      }
+    },
     "hostCapabilities": {
       "type": "object",
       "additionalProperties": false,
@@ -170,6 +230,24 @@
               "multi_axis_blocked",
               "post_build_refs_present"
             ]
+          }
+        },
+        "resolved_capabilities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["capability_id", "state"],
+            "properties": {
+              "capability_id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
+              },
+              "state": {
+                "type": "string",
+                "enum": ["available", "unavailable", "unknown"]
+              }
+            }
           }
         }
       }
@@ -208,7 +286,14 @@
         },
         "execution_state": {
           "type": "string",
-          "enum": ["executable", "blocked", "deferred"]
+          "enum": [
+            "executable",
+            "capability_ineligible",
+            "excluded",
+            "retained_for_verification",
+            "blocked",
+            "deferred"
+          ]
         },
         "notes": {
           "type": "array",

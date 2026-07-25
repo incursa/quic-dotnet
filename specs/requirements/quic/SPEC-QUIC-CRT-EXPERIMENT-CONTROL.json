@@ -20,7 +20,10 @@
     "SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY",
     "ARC-QUIC-CRT-0089",
     "WI-QUIC-CRT-0090",
-    "VER-QUIC-CRT-0091"
+    "VER-QUIC-CRT-0091",
+    "ARC-QUIC-CRT-0092",
+    "WI-QUIC-CRT-0093",
+    "VER-QUIC-CRT-0094"
   ],
   "purpose": "Define the planning-time architecture, schemas, canonical catalogs, compatibility boundary, fixtures, and deterministic validation needed before an adaptive-runtime experiment plan compiler may be implemented.",
   "scope": "This checkpoint governs experiment-control documents only. It does not compile plans, generate execution manifests, change runtime instrumentation or operation correlation, materialize effective behavior, project analytical data, execute performance measurement, authorize active_internal, or activate production behavior.",
@@ -147,6 +150,119 @@
       "notes": [
         "The focused validator is schema and reference validation only; it is not the reserved generic plan compiler.",
         "No fixture is campaign evidence or authorization to execute measurement."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0202",
+      "title": "Validate experiment plans through deterministic layered eligibility",
+      "statement": "The repository MUST load source plans and the reviewed experiment-control catalogs without mutating either; validate schema, versions, references, architecture readiness, experiment-type rules, family membership, cross-axis constraints, capability expectations, retention, and authorization in a deterministic order; distinguish plan eligibility from runtime operation eligibility; require implemented, forceable, rollback-capable, actuation-proven behavior-distinct axes where the experiment type requires them; keep blocked and preparation-only axes non-executable; reject prohibited runtime-controller inputs; and emit only closed versioned error and warning codes.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0092"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0093"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0094"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0202.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/Compile-AdaptiveRuntimeExperimentPlan.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentPlan.ps1",
+          "schemas/adaptive-runtime-experiment-plan-v1.schema.json",
+          "schemas/adaptive-runtime-experiment-plan-validation-v1.schema.json"
+        ]
+      },
+      "notes": [
+        "A structurally legal interaction may remain capability-pending.",
+        "No invalid plan is silently coerced into executable work."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0203",
+      "title": "Expand configured cells and expected behavior equivalence deterministically",
+      "statement": "The plan compiler MUST deterministically report configured, expected-effective, and potential-execution cell counts; classify executable, structurally inactive, capability-pending, rejected, deduplicated, verification-retained, and behavior-distinctness-unknown cells; derive expected behavior classes from the effective-behavior catalog; preserve semantically meaningful treatment order while normalizing set-like arrays; collapse application_send_turn_planning legacy_current and conservative into one expected legacy_priority_stable_sequence behavior; classify that comparison verification_only; deduplicate expected-equivalent performance-oriented cells unless explicitly retained for verification; and compute canonical plan and validation SHA-256 values with the root self-hash excluded.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0092"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0093"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0094"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0203.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/AdaptiveRuntimeExperimentControl.Common.psm1",
+          "eng/adaptive-runtime/Compile-AdaptiveRuntimeExperimentPlan.ps1",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-effective-behavior-catalog-v1.json"
+        ]
+      },
+      "notes": [
+        "Expected behavior is a planning classification and is not materialized from live runtime evidence here.",
+        "Performance measurements never determine an effective behavior identity."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0204",
+      "title": "Compile post-build dry-run execution manifests",
+      "statement": "After successful plan validation, exact committed-source resolution, a focused build, binary and runner hashing, host fingerprinting, and capability resolution, the repository MUST be able to emit a dry-run compiled execution manifest that links the exact plan and validation hashes; records source commit, binary and runner identities, physical-host and virtual-machine identity when available, resolved capabilities, executable, capability-ineligible, and excluded cells, deterministic or seeded randomized execution order, output roots, retention rules, and expected result schemas; leaves the source plan immutable; rejects stale or interchangeable plan, validation, and manifest hashes; and keeps measurement and active behavior authorization false.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0092"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0093"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0094"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0204.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/New-AdaptiveRuntimeCompiledExecutionManifest.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeCompiledExecutionManifest.ps1",
+          "schemas/adaptive-runtime-compiled-execution-manifest-v1.schema.json"
+        ]
+      },
+      "notes": [
+        "Manifest generation is dry-run infrastructure only and cannot launch a campaign.",
+        "Host resolution never mutates the source plan."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0205",
+      "title": "Prove compiler classifications, hashes, and safety boundaries",
+      "statement": "The repository MUST retain focused valid, warning, verification-only, capability-pending, structurally inactive, blocked, preparation-only, invalid-plan, invalid-validation, and invalid-manifest fixtures; require every valid plan to compile byte-identically on repeated runs; require each invalid fixture to emit its expected closed error; prove experiment-type axis counts, family bounds, fixed-axis legacy values, cross-axis legality, feedback history, transparent profiles, equivalence collapse, warning classification, self-hash exclusion, unordered-array normalization, meaningful-order preservation, meaningful-content hash changes, and plan-validation-manifest hash role separation; produce and validate one real post-build dry-run manifest; and run no performance, campaign, transform, CI, activation, or push action.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0092"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0093"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0094"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0205.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentPlanCompiler.ps1",
+          "tests/fixtures/adaptive-runtime-experiment-plan-compiler",
+          "docs/testing/adaptive-runtime-experiment-plan-compiler-evidence-2026-07-25.md"
+        ]
+      },
+      "notes": [
+        "The focused fixture harness is not a benchmark or campaign runner.",
+        "Runtime evidence and operation correlation remain reserved for the next checkpoint."
       ]
     }
   ]

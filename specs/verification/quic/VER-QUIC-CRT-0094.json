@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0094",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Deterministic experiment-plan compiler and dry-run manifest verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0092",
+    "WI-QUIC-CRT-0093"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0202",
+    "REQ-QUIC-CRT-0203",
+    "REQ-QUIC-CRT-0204",
+    "REQ-QUIC-CRT-0205"
+  ],
+  "scope": "Verify deterministic plan loading, layered validation, eligibility, expansion, expected equivalence, canonical hashing, fixture classifications, and a real post-build dry-run manifest without runtime evidence changes or performance execution.",
+  "verification_method": "Direct SpecTrace model validation, foundation schema/reference validation, deterministic PowerShell compiler fixture validation, focused xUnit requirement-home tests, narrow Release build, real binary and runner hashing, host and capability capture, dry-run manifest validation, repeated-byte and repeated-hash comparison, and diff validation.",
+  "preconditions": [
+    "The preceding experiment-control foundation at bc226c15 validates cleanly.",
+    "The primary dirty Stage 5 slice remains preserved outside the compiler worktree.",
+    "The dry-run manifest is generated only after compiler changes and fixtures are locally committed and the focused build succeeds.",
+    "Measurement, campaigns, transforms, CI, push, active_internal, and production activation remain unauthorized."
+  ],
+  "procedure": [
+    "Validate the extended specification and ARC-QUIC-CRT-0092, WI-QUIC-CRT-0093, and VER-QUIC-CRT-0094 directly against the canonical SpecTrace model.",
+    "Re-run Test-AdaptiveRuntimeExperimentControl.ps1 and require all eight schemas, five canonical documents, twelve foundation-valid fixtures, and fifteen foundation-invalid fixtures to pass.",
+    "Run Test-AdaptiveRuntimeExperimentPlanCompiler.ps1 and require every valid, warning, verification-only, capability-pending, inactive, blocked, preparation-only, invalid-plan, invalid-validation, and invalid-manifest expectation to match.",
+    "Prove actuation, isolated, interaction, feedback, and profile type rules and family bounds.",
+    "Prove the send-turn two-label plan has two configured cells, one expected-effective cell, verification_only classification, and the required collapse warning.",
+    "Prove repeated canonical validation output and hashes are identical, insignificant array reorder is normalized, treatment reorder changes the hash, meaningful value changes alter the hash, and hash roles cannot substitute.",
+    "Build only tests/Incursa.Quic.Tests in Release without running a complete Release suite.",
+    "From clean committed source, hash the focused binary and compiler runner, capture the host fingerprint and resolved capabilities, compile one dry-run manifest, and validate its exact links and false authorizations.",
+    "Run the four focused requirement-home tests and git diff --check.",
+    "Confirm no runtime policy mechanism, performance, campaign, transform, ML, CI, push, active_internal, or production action occurred."
+  ],
+  "expected_result": "All reviewed schemas remain valid; deterministic plan classification, cell expansion, equivalence, and hashing pass; every negative fixture emits its expected closed error; the send-turn false factor is verification-only; the current interaction is capability-pending; one exact-source, binary, runner, host, capability, and cell-linked dry-run manifest validates; trace is complete; and all forbidden actions remain absent.",
+  "evidence": [
+    "eng/adaptive-runtime/Compile-AdaptiveRuntimeExperimentPlan.ps1",
+    "eng/adaptive-runtime/New-AdaptiveRuntimeCompiledExecutionManifest.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentPlanCompiler.ps1",
+    "tests/fixtures/adaptive-runtime-experiment-plan-compiler",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0202.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0203.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0204.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0205.cs",
+    "docs/testing/adaptive-runtime-experiment-plan-compiler-evidence-2026-07-25.md"
+  ],
+  "status_summary": "Pending focused verification and the post-build dry-run manifest proof."
+}

@@ -41,7 +41,7 @@
         "requirement_ids": {
           "type": "array",
           "minItems": 4,
-          "maxItems": 4,
+          "maxItems": 8,
           "uniqueItems": true,
           "items": {
             "type": "string",
@@ -49,30 +49,34 @@
               "REQ-QUIC-CRT-0198",
               "REQ-QUIC-CRT-0199",
               "REQ-QUIC-CRT-0200",
-              "REQ-QUIC-CRT-0201"
+              "REQ-QUIC-CRT-0201",
+              "REQ-QUIC-CRT-0202",
+              "REQ-QUIC-CRT-0203",
+              "REQ-QUIC-CRT-0204",
+              "REQ-QUIC-CRT-0205"
             ]
           }
         },
         "architecture_ids": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 1,
+          "maxItems": 2,
           "uniqueItems": true,
-          "items": { "type": "string", "const": "ARC-QUIC-CRT-0089" }
+          "items": { "type": "string", "enum": ["ARC-QUIC-CRT-0089", "ARC-QUIC-CRT-0092"] }
         },
         "work_item_ids": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 1,
+          "maxItems": 2,
           "uniqueItems": true,
-          "items": { "type": "string", "const": "WI-QUIC-CRT-0090" }
+          "items": { "type": "string", "enum": ["WI-QUIC-CRT-0090", "WI-QUIC-CRT-0093"] }
         },
         "verification_ids": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 1,
+          "maxItems": 2,
           "uniqueItems": true,
-          "items": { "type": "string", "const": "VER-QUIC-CRT-0091" }
+          "items": { "type": "string", "enum": ["VER-QUIC-CRT-0091", "VER-QUIC-CRT-0094"] }
         }
       }
     },
@@ -94,26 +98,25 @@
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "enum": [
-          "application_send_batch_formation",
-          "buffer_copy_coalescing",
-          "application_send_turn_planning"
-        ]
-      }
+      "items": { "$ref": "#/$defs/axisId" }
     },
     "varied_axis_ids": {
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
+      "items": { "$ref": "#/$defs/axisId" }
+    },
+    "fixed_axis_values": {
+      "type": "array",
+      "minItems": 1,
       "items": {
-        "type": "string",
-        "enum": [
-          "application_send_batch_formation",
-          "buffer_copy_coalescing",
-          "application_send_turn_planning"
-        ]
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["axis_id", "configured_value"],
+        "properties": {
+          "axis_id": { "$ref": "#/$defs/axisId" },
+          "configured_value": { "$ref": "#/$defs/policyValue" }
+        }
       }
     },
     "treatment_order": {
@@ -136,6 +139,24 @@
       "type": "string",
       "enum": ["ready", "blocked_by_capability", "deferred"]
     },
+    "expected_capabilities": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/capabilityExpectation" }
+    },
+    "preserve_equivalent_cells_for_verification": { "type": "boolean" },
+    "required_predicate_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "history_controls": { "$ref": "#/$defs/historyControls" },
+    "profile_definition": { "$ref": "#/$defs/profileDefinition" },
+    "execution_order_policy": {
+      "type": "string",
+      "enum": ["deterministic", "randomized"]
+    },
+    "randomization_seed": { "type": "integer", "minimum": 0 },
     "source_document_refs": {
       "type": "array",
       "items": { "$ref": "#/$defs/documentRef" }
@@ -157,6 +178,77 @@
         "content_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
       }
     },
+    "axisId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
+    },
+    "policyValue": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
+    },
+    "capabilityExpectation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability_id", "expectation", "resolution"],
+      "properties": {
+        "capability_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
+        },
+        "expectation": {
+          "type": "string",
+          "enum": ["required", "expected"]
+        },
+        "resolution": {
+          "type": "string",
+          "enum": ["deferred_to_manifest", "pending"]
+        }
+      }
+    },
+    "historyControls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "warmup",
+        "initial_state",
+        "reset_carryover",
+        "ordered_observations",
+        "recovery",
+        "cooldown",
+        "terminal_handling"
+      ],
+      "properties": {
+        "warmup": { "type": "string", "minLength": 1 },
+        "initial_state": { "type": "string", "minLength": 1 },
+        "reset_carryover": {
+          "type": "string",
+          "enum": ["reset_each_cell", "carryover_declared"]
+        },
+        "ordered_observations": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "recovery": { "type": "string", "minLength": 1 },
+        "cooldown": { "type": "string", "minLength": 1 },
+        "terminal_handling": { "type": "string", "minLength": 1 }
+      }
+    },
+    "profileDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile_id", "profile_treatment_ids", "transparent"],
+      "properties": {
+        "profile_id": { "type": "string", "minLength": 1 },
+        "profile_treatment_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "transparent": { "type": "boolean", "const": true }
+      }
+    },
     "treatment": {
       "type": "object",
       "additionalProperties": false,
@@ -164,41 +256,10 @@
       "properties": {
         "treatment_id": { "type": "string", "minLength": 1 },
         "order_index": { "type": "integer", "minimum": 0 },
-        "axis_id": {
-          "type": "string",
-          "enum": [
-            "application_send_batch_formation",
-            "buffer_copy_coalescing",
-            "application_send_turn_planning"
-          ]
-        },
-        "configured_value": {
-          "type": "string",
-          "enum": [
-            "legacy_current",
-            "single_eligible",
-            "memory_conservative",
-            "conservative"
-          ]
-        },
-        "forced_value": {
-          "type": "string",
-          "enum": [
-            "legacy_current",
-            "single_eligible",
-            "memory_conservative",
-            "conservative"
-          ]
-        },
-        "candidate_value": {
-          "type": "string",
-          "enum": [
-            "legacy_current",
-            "single_eligible",
-            "memory_conservative",
-            "conservative"
-          ]
-        },
+        "axis_id": { "$ref": "#/$defs/axisId" },
+        "configured_value": { "$ref": "#/$defs/policyValue" },
+        "forced_value": { "$ref": "#/$defs/policyValue" },
+        "candidate_value": { "$ref": "#/$defs/policyValue" },
         "notes": {
           "type": "array",
           "items": { "type": "string" }
@@ -229,19 +290,17 @@
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "enum": [
-              "application_send_batch_formation",
-              "buffer_copy_coalescing",
-              "application_send_turn_planning"
-            ]
-          }
+          "items": { "$ref": "#/$defs/axisId" }
         },
         "expected_equivalence_group_id": { "type": "string", "minLength": 1 },
         "execution_state": {
           "type": "string",
           "enum": ["planned", "ready", "blocked", "deferred"]
+        },
+        "performance_comparable": { "type": "boolean" },
+        "activation_expectation": {
+          "type": "string",
+          "enum": ["reachable", "structurally_inactive", "unreachable", "unknown"]
         },
         "notes": {
           "type": "array",

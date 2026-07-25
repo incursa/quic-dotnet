@@ -87,12 +87,7 @@
     },
     "policyValue": {
       "type": "string",
-      "enum": [
-        "legacy_current",
-        "single_eligible",
-        "memory_conservative",
-        "conservative"
-      ]
+      "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
     },
     "documentRef": {
       "type": "object",
@@ -195,6 +190,54 @@
           "type": "array",
           "minItems": 1,
           "items": { "$ref": "#/$defs/safetyClamp" }
+        },
+        "readiness": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "forceable",
+            "rollback_proof_status",
+            "actuation_validation_status",
+            "behavior_distinctness_status",
+            "activation_predicate_refs",
+            "behavior_distinctness_predicate_refs",
+            "required_capability_ids"
+          ],
+          "properties": {
+            "forceable": { "type": "boolean" },
+            "rollback_proof_status": {
+              "type": "string",
+              "enum": ["represented", "missing", "not_applicable"]
+            },
+            "actuation_validation_status": {
+              "type": "string",
+              "enum": ["passed", "pending", "blocked", "not_applicable"]
+            },
+            "behavior_distinctness_status": {
+              "type": "string",
+              "enum": ["proven", "expected_equivalent", "unproven", "not_applicable"]
+            },
+            "activation_predicate_refs": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "behavior_distinctness_predicate_refs": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "required_capability_ids": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
+              }
+            }
+          }
         },
         "compatibility_refs": {
           "type": "array",

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0093",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Implement deterministic experiment-plan compilation and dry-run manifests",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Implement REQ-QUIC-CRT-0202 through REQ-QUIC-CRT-0205 as layered plan validation, deterministic cell and equivalence expansion, canonical hashing, dry-run post-build manifest generation, focused fixtures, and trace proof.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0092",
+    "VER-QUIC-CRT-0094"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0092"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0094"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0202",
+    "REQ-QUIC-CRT-0203",
+    "REQ-QUIC-CRT-0204",
+    "REQ-QUIC-CRT-0205"
+  ],
+  "planned_changes": "Extend the reviewed v1 schemas only where compilation requires readiness, capabilities, history, classification, cell counts, and post-build provenance; implement common canonical JSON and hashing; implement plan and manifest validation and generation; add first-slice, feedback, profile, warning, blocked, preparation-only, invalid, and manifest-link fixtures; build a real focused binary; generate one dry-run manifest from clean committed source; add focused requirement-home tests and evidence.",
+  "verification_plan": "Re-run the foundation validator, compile every valid and warning fixture twice, assert exact classifications, counts, warnings, and closed errors, validate static and real manifests, prove canonical and hashing properties, build and run only the focused test project and requirement-home tests, validate touched SpecTrace artifacts directly, and run git diff --check. Do not run performance, campaigns, transforms, CI, activation, or push.",
+  "out_of_scope": [
+    "Runtime operation-correlation instrumentation",
+    "Mechanism evidence or counters",
+    "Live effective-behavior materialization",
+    "Analytical projection or dataset work",
+    "Performance execution or campaign generation",
+    "ML or online learning",
+    "CI changes, active_internal, production activation, or push"
+  ]
+}

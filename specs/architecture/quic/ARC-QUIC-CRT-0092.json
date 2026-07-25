@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0092",
+  "artifact_type": "architecture",
+  "status": "proposed",
+  "title": "Deterministic adaptive-runtime plan compiler and dry-run manifest",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0202 through REQ-QUIC-CRT-0205 by compiling reviewed experiment-control documents into deterministic planning classifications and post-build dry-run manifests without crossing into runtime evidence or performance execution.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0089",
+    "WI-QUIC-CRT-0093",
+    "VER-QUIC-CRT-0094"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0202",
+    "REQ-QUIC-CRT-0203",
+    "REQ-QUIC-CRT-0204",
+    "REQ-QUIC-CRT-0205"
+  ],
+  "key_components": [
+    "eng/adaptive-runtime/AdaptiveRuntimeExperimentControl.Common.psm1",
+    "eng/adaptive-runtime/Compile-AdaptiveRuntimeExperimentPlan.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentPlan.ps1",
+    "eng/adaptive-runtime/New-AdaptiveRuntimeCompiledExecutionManifest.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeCompiledExecutionManifest.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentPlanCompiler.ps1",
+    "tests/fixtures/adaptive-runtime-experiment-plan-compiler"
+  ],
+  "design_summary": "The compiler loads the five canonical authority documents and one immutable source plan, validates hashes and references, applies readiness, experiment-type, family, constraint, capability-expectation, and authorization rules, then expands the plan's ordered configured cells into expected behavior classes and planning-only execution states. Equivalence is derived from effective-behavior identity, never label difference or performance results. A separate post-build step binds a successful validation result to exact committed source, built binary, runner, host, resolved capabilities, and execution order in a dry-run manifest.",
+  "data_and_state_considerations": "Canonical JSON and SHA-256 extend ARC-QUIC-CRT-0089. The root content_sha256 is excluded, properties are ordered deterministically, set-like arrays are sorted by canonical element bytes, and treatment, observation, validation finding, and execution order remain significant. Plan, validation, and manifest hashes occupy distinct reference roles and cannot substitute for one another.",
+  "edge_cases_and_constraints": [
+    "The current send-composition interaction screen is plan-valid but capability-pending because the runtime still permits only one behavior-distinct axis.",
+    "application_send_turn_planning labels collapse to one expected behavior and remain verification-only.",
+    "Feedback-loop and transparent profile documents may validate structurally while first-slice execution remains deferred.",
+    "Blocked and preparation-only fixture catalogs prove rejection without adding production contracts or runtime mechanisms.",
+    "Host capability resolution records unknown and unavailable states without rewriting source-plan expectations.",
+    "No manifest generation path launches a benchmark, ProtocolLab, campaign, transform, or runtime policy action."
+  ],
+  "alternatives_considered": [
+    "Infer cells directly from axis label combinations without planned-cell order. Rejected because the source plan owns concrete cells and intended order.",
+    "Use configured labels as effective behavior identities. Rejected because the reviewed send-turn labels are behavior-equivalent.",
+    "Resolve host capabilities into the source plan. Rejected because the plan is immutable and pre-build.",
+    "Make the current multi-axis interaction executable. Rejected because the runtime capability guard has not changed."
+  ],
+  "risks": [
+    "A catalog reference can be structurally valid but stale unless version and hash are checked together.",
+    "Array-order drift can create unstable hashes or unintended execution order.",
+    "A plan-valid classification can be misread as runtime operation eligibility unless the boundary remains explicit.",
+    "Dry-run provenance can be overstated if generated from a dirty worktree or an unbuilt binary."
+  ],
+  "open_questions": [
+    "Which runtime operation correlation identifiers will bind future mechanism events back to compiled cell IDs?",
+    "Which capability proof will release the send-composition interaction from capability-pending status?",
+    "Which evidence retention expansion is required before effective-behavior materialization is implemented?"
+  ]
+}

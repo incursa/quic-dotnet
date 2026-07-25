@@ -39,7 +39,7 @@
         "requirement_ids": {
           "type": "array",
           "minItems": 4,
-          "maxItems": 4,
+          "maxItems": 8,
           "uniqueItems": true,
           "items": {
             "type": "string",
@@ -47,30 +47,34 @@
               "REQ-QUIC-CRT-0198",
               "REQ-QUIC-CRT-0199",
               "REQ-QUIC-CRT-0200",
-              "REQ-QUIC-CRT-0201"
+              "REQ-QUIC-CRT-0201",
+              "REQ-QUIC-CRT-0202",
+              "REQ-QUIC-CRT-0203",
+              "REQ-QUIC-CRT-0204",
+              "REQ-QUIC-CRT-0205"
             ]
           }
         },
         "architecture_ids": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 1,
+          "maxItems": 2,
           "uniqueItems": true,
-          "items": { "type": "string", "const": "ARC-QUIC-CRT-0089" }
+          "items": { "type": "string", "enum": ["ARC-QUIC-CRT-0089", "ARC-QUIC-CRT-0092"] }
         },
         "work_item_ids": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 1,
+          "maxItems": 2,
           "uniqueItems": true,
-          "items": { "type": "string", "const": "WI-QUIC-CRT-0090" }
+          "items": { "type": "string", "enum": ["WI-QUIC-CRT-0090", "WI-QUIC-CRT-0093"] }
         },
         "verification_ids": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 1,
+          "maxItems": 2,
           "uniqueItems": true,
-          "items": { "type": "string", "const": "VER-QUIC-CRT-0091" }
+          "items": { "type": "string", "enum": ["VER-QUIC-CRT-0091", "VER-QUIC-CRT-0094"] }
         }
       }
     },
@@ -80,7 +84,20 @@
     "validated_plan_ref": { "$ref": "#/$defs/documentRef" },
     "validation_classification": {
       "type": "string",
-      "enum": ["valid", "warning", "error"]
+      "enum": [
+        "valid_actuation",
+        "valid_isolated_counterfactual",
+        "valid_interaction_screen",
+        "valid_feedback_loop",
+        "valid_profile_validation",
+        "verification_only",
+        "capability_pending",
+        "blocked",
+        "invalid",
+        "valid",
+        "warning",
+        "error"
+      ]
     },
     "validation_errors": {
       "type": "array",
@@ -89,6 +106,32 @@
     "validation_warnings": {
       "type": "array",
       "items": { "$ref": "#/$defs/validationWarning" }
+    },
+    "cell_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "configured",
+        "expected_effective",
+        "potential_execution",
+        "structurally_inactive",
+        "capability_pending",
+        "rejected",
+        "deduplicated",
+        "retained_for_verification",
+        "behavior_distinctness_unknown"
+      ],
+      "properties": {
+        "configured": { "type": "integer", "minimum": 0 },
+        "expected_effective": { "type": "integer", "minimum": 0 },
+        "potential_execution": { "type": "integer", "minimum": 0 },
+        "structurally_inactive": { "type": "integer", "minimum": 0 },
+        "capability_pending": { "type": "integer", "minimum": 0 },
+        "rejected": { "type": "integer", "minimum": 0 },
+        "deduplicated": { "type": "integer", "minimum": 0 },
+        "retained_for_verification": { "type": "integer", "minimum": 0 },
+        "behavior_distinctness_unknown": { "type": "integer", "minimum": 0 }
+      }
     },
     "equivalence_groups": {
       "type": "array",
@@ -125,31 +168,56 @@
         "error_code": {
           "type": "string",
           "enum": [
+            "schema_validation_failed",
             "unknown_field",
-            "duplicate_definition",
-            "duplicate_edge",
-            "unknown_reference",
-            "stale_reference",
-            "illegal_value",
-            "unsupported_value",
-            "blocked_axis_executable",
-            "preparation_only_axis_executable",
-            "forbidden_authorization",
-            "malformed_hash",
-            "missing_predicate_reference",
-            "fixed_varied_overlap",
-            "duplicate_axis_definition",
-            "illegal_policy_value",
+            "unknown_axis",
+            "unknown_policy_value",
             "unknown_contract_reference",
-            "stale_version_reference",
-            "stage5_preparation_only_executable",
-            "active_behavior_authorization_true",
-            "performance_acceptance_authorization_true",
-            "invalid_relationship_type",
-            "duplicate_relationship_edge",
-            "missing_canonical_predicate_reference",
+            "stale_contract_reference",
+            "blocked_axis",
+            "preparation_only_axis",
+            "axis_not_implemented",
+            "axis_not_forceable",
+            "rollback_proof_missing",
+            "actuation_proof_missing",
+            "experiment_type_axis_count_invalid",
+            "unsupported_experiment_type",
+            "unsupported_experiment_family",
+            "axis_outside_experiment_family",
+            "cross_axis_constraint_violation",
+            "fixed_axis_not_legacy_current",
             "fixed_varied_axis_overlap",
-            "unsupported_experiment_type"
+            "duplicate_axis_reference",
+            "activation_predicate_unreachable",
+            "missing_canonical_predicate_reference",
+            "feedback_loop_history_missing",
+            "opaque_profile_definition",
+            "expected_capability_missing",
+            "prohibited_runtime_controller_input",
+            "equivalent_cells_performance_comparable",
+            "hash_mismatch",
+            "active_behavior_unauthorized",
+            "performance_acceptance_unauthorized"
+            ,"duplicate_definition"
+            ,"duplicate_edge"
+            ,"unknown_reference"
+            ,"stale_reference"
+            ,"illegal_value"
+            ,"unsupported_value"
+            ,"blocked_axis_executable"
+            ,"preparation_only_axis_executable"
+            ,"forbidden_authorization"
+            ,"malformed_hash"
+            ,"missing_predicate_reference"
+            ,"fixed_varied_overlap"
+            ,"duplicate_axis_definition"
+            ,"illegal_policy_value"
+            ,"stale_version_reference"
+            ,"stage5_preparation_only_executable"
+            ,"active_behavior_authorization_true"
+            ,"performance_acceptance_authorization_true"
+            ,"invalid_relationship_type"
+            ,"duplicate_relationship_edge"
           ]
         },
         "message": { "type": "string", "minLength": 1 },
@@ -164,11 +232,19 @@
         "warning_code": {
           "type": "string",
           "enum": [
-            "equivalence_collapsed",
-            "promotion_deferred",
-            "current_combination_blocked",
-            "verification_only",
-            "compatibility_only"
+            "all_configured_values_collapse_to_one_expected_behavior",
+            "equivalent_cells_deduplicated",
+            "structurally_inactive_cell",
+            "capability_resolution_required",
+            "behavior_distinctness_unproven",
+            "verification_cell_preserved",
+            "measurement_freeze_active",
+            "profile_execution_deferred"
+            ,"equivalence_collapsed"
+            ,"promotion_deferred"
+            ,"current_combination_blocked"
+            ,"verification_only"
+            ,"compatibility_only"
           ]
         },
         "message": { "type": "string", "minLength": 1 },
@@ -189,8 +265,9 @@
         },
         "equivalence_state": {
           "type": "string",
-          "enum": ["equivalent", "collapsed", "verification_only"]
+          "enum": ["distinct", "equivalent", "collapsed", "verification_only", "unknown"]
         },
+        "expected_behavior_key": { "type": "string", "minLength": 1 },
         "notes": {
           "type": "array",
           "items": { "type": "string" }
@@ -217,11 +294,7 @@
           "uniqueItems": true,
           "items": {
             "type": "string",
-            "enum": [
-              "application_send_batch_formation",
-              "buffer_copy_coalescing",
-              "application_send_turn_planning"
-            ]
+            "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
           }
         },
         "treatment_ids": {
@@ -233,7 +306,30 @@
         "executable": { "type": "boolean" },
         "execution_state": {
           "type": "string",
-          "enum": ["valid", "blocked", "deferred"]
+          "enum": [
+            "executable",
+            "structurally_inactive",
+            "capability_pending",
+            "rejected",
+            "deduplicated",
+            "retained_for_verification",
+            "behavior_distinctness_unknown",
+            "blocked",
+            "valid",
+            "deferred"
+          ]
+        },
+        "expected_behavior_class_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "equivalence_group_id": { "type": "string", "minLength": 1 },
+        "reason_codes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
         },
         "notes": {
           "type": "array",
