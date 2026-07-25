@@ -3763,3 +3763,114 @@ Next implementation decision: review the conservative application-visible
 contract for `adaptive_backpressure`. `actor_work_quantum` and
 `ready_stream_fairness` retain their exact safety blockers. Performance
 measurement and `active_internal` remain unauthorized.
+
+## 2026-07-24 Adaptive Backpressure Implementation Checkpoint
+
+Classification: `accepted` implementation and focused correctness checkpoint;
+not performance, campaign, policy-acceptance, threshold, dataset, or ML
+evidence.
+
+Active axis: `adaptive_backpressure`.
+
+Adjacent applied axes: `receive_credit_publication`,
+`application_send_turn_planning`, `application_send_batch_formation`,
+`queued_send_burst_budget`, `oversized_write_admission_quantum`, and
+`buffer_copy_coalescing` remain `legacy_current`. No campaign axis varied.
+
+Process and recovery disposition:
+
+- no adaptive campaign, normalization, transform, build, or test process was
+  active before the slice;
+- the retained 55,658-epoch send-turn-only transform remains
+  `diagnostic_incomplete`, unchanged, and was not restarted;
+- clean prerequisite commits `df8ee570` and `2fd61735` remain preserved;
+- the user-approved policy-axis roadmap remains unchanged; and
+- CI was ignored, no performance command ran, and no push was attempted.
+
+Capability delivered:
+
+- closed values `legacy_current` and `early_delay`;
+- exact decision boundary before stream reservation or owner admission for one
+  new application admission;
+- one-admission latch and at most one immediately posted dispatcher/actor turn
+  when an earlier admitted application-send operation remains queued;
+- no rejection, policy failure, raised hard limit, network-progress wait, or
+  change to already-admitted ownership;
+- disabled, observe-only, shadow, forced legacy, and forced conservative
+  operation;
+- distinct forced, recommended, selected, applied, source, reason, safety,
+  fallback, validity, latch, and version state;
+- missing, stale, saturated, contradictory, invalid, out-of-domain,
+  lifecycle, and continuation-unavailable fallback to `legacy_current`;
+- authoritative cancellation, disposal, terminal, queue, buffer, stream,
+  flow-control, congestion, pacing, recovery, ownership, and exactly-once
+  completion guards;
+- independently tested force-legacy rollback and throwing-sink neutrality;
+- adaptive-backpressure observation, epoch, and raw v1; unified evidence and
+  raw v8; export manifest v9; and
+- a separate append-only sample stream with exact source-scoped
+  `connectionKey + operationSequence` membership and distinct epoch/sample
+  counts.
+
+Correctness commands and accepted results:
+
+| Command or check | Result |
+| --- | --- |
+| `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --nologo` | zero warnings, zero errors; final build completed in 47.10 seconds |
+| `dotnet build eng/protocol-lab/servers/IncursaRawQuicServer/IncursaRawQuicServer.csproj -c Release --nologo` | zero warnings, zero errors in 5.41 seconds |
+| `dotnet test ... --filter "FullyQualifiedName~REQ_QUIC_CRT_0191"` | 20 passed, zero failed, zero skipped in 1 second |
+| affected requirement, host-template, queue, and cancellation band | 141 passed, zero failed, zero skipped in 24 seconds |
+| PowerShell AST parse | three changed adaptive-runtime scripts parsed with zero errors |
+| JSON parse | six schemas and four SpecTrace artifacts parsed cleanly |
+| focused SpecTrace model, uniqueness, and reciprocal trace validation | four of four artifacts passed; `REQ-QUIC-CRT-0191 -> ARC-QUIC-CRT-0068 -> WI-QUIC-CRT-0069 -> VER-QUIC-CRT-0070` is unique and reciprocal |
+| `git diff --check` and cached diff check | clean |
+
+Retained diagnostic results:
+
+- the first implementation build used obsolete retention snapshot property
+  names; the compile failure was preserved and corrected to
+  `RetainedBufferCount` and `RetainedByteCount`;
+- the first test build exposed internal enum values through a public xUnit
+  theory; the compile failure was preserved and the parameters were changed
+  to bytes;
+- the first runtime delay assertion expected only the delayed admission to be
+  observed; the deterministic failure was preserved and the assertion was
+  corrected because unified observation intentionally records both
+  admissions;
+- the first unified-fixture build after adding backpressure raw export lacked
+  the new local observation variable and failed with one `CS0103` after 55.03
+  seconds; the fixture was corrected;
+- the first raw-wrapper test rejected the external relative JSON-schema
+  reference and produced one failure with 23 passes; the raw wrapper now uses
+  an internal definition compatible with PowerShell `Test-Json`;
+- the first direct schema-fixture build lacked `System.Text.Json` imports and
+  failed with six compile errors after 45.01 seconds; the imports were added;
+  and
+- the repository-wide canonical SpecTrace validator retained 2,698 existing
+  corpus/schema/reference errors. The changed four-artifact slice passes the
+  canonical model and focused trace checks; no repo-wide cleanup was
+  attempted or claimed.
+
+Evidence counts:
+
+- implemented unified axis records per epoch: 6;
+- focused axis tests: 20 passed;
+- affected correctness band: 141 passed;
+- performance rows: 0;
+- new raw, normalized, curated, split, or analysis rows: 0;
+- dataset inclusions: unchanged;
+- dataset exclusions and retained negatives: unchanged;
+- campaigns and ProtocolLab deployments: 0;
+- BenchmarkDotNet invocations: 0; and
+- ML or threshold derivations: 0.
+
+Local implementation commit: `25fa33cc` (`Implement bounded adaptive
+backpressure axis`). Nothing was pushed.
+
+Stage 2 disposition: `buffer_copy_coalescing` and `adaptive_backpressure` are
+implementation-ready. `actor_work_quantum` retains the exact
+cooperative-yield/resumable-work blocker, and `ready_stream_fairness` retains
+the exact bounded-runnable/fairness-outcome blocker. Under the breadth-first
+rule, the next independent axis is Stage 3 `packet_flush_cadence`.
+Performance measurement, active behavior, CI work, and push remain
+unauthorized.
