@@ -23,6 +23,41 @@ internal static partial class QuicSocketUdpSegmentation
     internal static bool TryDisable(Socket socket)
         => TryConfigure(socket, segmentSize: 0);
 
+    internal static
+        QuicApplicationDatagramBatchTransportCapabilityStatus
+        ClassifyCapability(
+            Socket socket,
+            bool enabled,
+            bool disabledByCustomSender = false)
+    {
+        ArgumentNullException.ThrowIfNull(socket);
+        if (disabledByCustomSender)
+        {
+            return QuicApplicationDatagramBatchTransportCapabilityStatus
+                .DisabledByCustomSender;
+        }
+
+        if (!OperatingSystem.IsWindows())
+        {
+            return QuicApplicationDatagramBatchTransportCapabilityStatus
+                .UnsupportedPlatform;
+        }
+
+        if (socket.AddressFamily
+            is not (AddressFamily.InterNetwork
+                or AddressFamily.InterNetworkV6))
+        {
+            return QuicApplicationDatagramBatchTransportCapabilityStatus
+                .UnsupportedAddressFamily;
+        }
+
+        return enabled
+            ? QuicApplicationDatagramBatchTransportCapabilityStatus
+                .WindowsUdpSendMessageSize
+            : QuicApplicationDatagramBatchTransportCapabilityStatus
+                .ProbeFailed;
+    }
+
     private static bool TryConfigure(Socket socket, int segmentSize)
     {
         ArgumentNullException.ThrowIfNull(socket);

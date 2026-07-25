@@ -771,7 +771,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 suppressHostedTimerEffectObjects,
                 suppressSendDatagramEffects: suppressHostedTimerEffectObjects
                     && (sendDatagramObserver is not null || sendDatagramBatchObserver is not null),
-                enableApplicationDatagramBatches: sendDatagramBatchObserver is not null);
+                enableApplicationDatagramBatches:
+                    sendDatagramBatchObserver is not null
+                    || runtime.ApplicationDatagramBatchPolicy is not null);
             flushMeasurementStarted =
                 runtime.BeginRuntimeWorkItemFlushMeasurement(
                     observeActorService);

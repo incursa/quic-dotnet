@@ -8,6 +8,49 @@ namespace Incursa.Quic.Tests;
 
 public sealed class QuicSocketUdpSegmentationTests
 {
+    [Fact]
+    public void ClassifyCapability_CustomSenderRemainsAuthoritative()
+    {
+        using Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+        Assert.Equal(
+            QuicApplicationDatagramBatchTransportCapabilityStatus.DisabledByCustomSender,
+            QuicSocketUdpSegmentation.ClassifyCapability(
+                socket,
+                enabled: true,
+                disabledByCustomSender: true));
+    }
+
+    [Fact]
+    public void ClassifyCapability_DisabledProbeUsesBoundedPlatformStatus()
+    {
+        using Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+        QuicApplicationDatagramBatchTransportCapabilityStatus expected =
+            OperatingSystem.IsWindows()
+                ? QuicApplicationDatagramBatchTransportCapabilityStatus.ProbeFailed
+                : QuicApplicationDatagramBatchTransportCapabilityStatus.UnsupportedPlatform;
+
+        Assert.Equal(
+            expected,
+            QuicSocketUdpSegmentation.ClassifyCapability(socket, enabled: false));
+    }
+
+    [Fact]
+    public void ClassifyCapability_EnabledProbeUsesBoundedPlatformStatus()
+    {
+        using Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+        QuicApplicationDatagramBatchTransportCapabilityStatus expected =
+            OperatingSystem.IsWindows()
+                ? QuicApplicationDatagramBatchTransportCapabilityStatus.WindowsUdpSendMessageSize
+                : QuicApplicationDatagramBatchTransportCapabilityStatus.UnsupportedPlatform;
+
+        Assert.Equal(
+            expected,
+            QuicSocketUdpSegmentation.ClassifyCapability(socket, enabled: true));
+    }
+
     [Theory]
     [InlineData(1200)]
     [InlineData(1452)]

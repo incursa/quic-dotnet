@@ -60,6 +60,12 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private readonly ConcurrentDictionary<string, int> versionNegotiationResponseCountsByRemoteAddress = new(StringComparer.Ordinal);
     private readonly int maximumVersionNegotiationResponsesPerRemoteAddress;
     private readonly bool retryBootstrapEnabled;
+    private readonly QuicApplicationDatagramBatchTransportObservationMode
+        applicationDatagramBatchTransportObservationMode;
+    private readonly QuicApplicationDatagramBatchTransportPolicyValue?
+        forcedApplicationDatagramBatchTransportPolicyValue;
+    private readonly QuicApplicationDatagramBatchTransportCapabilityStatus
+        applicationDatagramBatchTransportCapabilityStatus;
     private readonly QuicAddressValidationTokenProtector addressValidationTokenProtector;
     private readonly QuicAddressValidationTokenReplayCache addressValidationTokenReplayCache = new();
     private readonly uint flowLabelSeed = unchecked((uint)RandomNumberGenerator.GetInt32(1, int.MaxValue));
@@ -105,7 +111,13 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             connectionShardPlacementObservationMode =
                 QuicConnectionShardPlacementObservationMode.Disabled,
         QuicConnectionShardPlacementPolicyValue?
-            forcedConnectionShardPlacementPolicyValue = null)
+            forcedConnectionShardPlacementPolicyValue = null,
+        QuicApplicationDatagramBatchTransportObservationMode
+            applicationDatagramBatchTransportObservationMode =
+                QuicApplicationDatagramBatchTransportObservationMode
+                    .Disabled,
+        QuicApplicationDatagramBatchTransportPolicyValue?
+            forcedApplicationDatagramBatchTransportPolicyValue = null)
     {
         ArgumentNullException.ThrowIfNull(listenEndPoint);
         ArgumentNullException.ThrowIfNull(applicationProtocols);
@@ -126,12 +138,26 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             throw new ArgumentOutOfRangeException(nameof(runtimeShardCount));
         }
 
+        QuicApplicationDatagramBatchTransportPolicy
+            .ValidateObservationMode(
+                applicationDatagramBatchTransportObservationMode);
+        if (forcedApplicationDatagramBatchTransportPolicyValue
+            is { } forcedBatchTransport)
+        {
+            QuicApplicationDatagramBatchTransportPolicy.ValidateValue(
+                forcedBatchTransport);
+        }
+
         this.applicationProtocols = [.. applicationProtocols];
         this.connectionOptionsCallback = connectionOptionsCallback;
         this.retryBootstrapEnabled = retryBootstrapEnabled;
         this.diagnosticsSinkFactory = diagnosticsSinkFactory;
         this.datagramSender = datagramSender;
         this.applicationSendTurnPlannerFactory = applicationSendTurnPlannerFactory;
+        this.applicationDatagramBatchTransportObservationMode =
+            applicationDatagramBatchTransportObservationMode;
+        this.forcedApplicationDatagramBatchTransportPolicyValue =
+            forcedApplicationDatagramBatchTransportPolicyValue;
         listenerDiagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSinkFactory?.Invoke());
         this.tlsKeyLogSecretObserver = tlsKeyLogSecretObserver;
         this.addressValidationTokenProtector = addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
@@ -165,6 +191,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         boundSocketEndPoint = (IPEndPoint)socket.LocalEndPoint!;
         windowsUdpSegmentationEnabled = datagramSender is null
             && QuicSocketUdpSegmentation.TryEnable(socket);
+        applicationDatagramBatchTransportCapabilityStatus =
+            QuicSocketUdpSegmentation.ClassifyCapability(
+                socket,
+                windowsUdpSegmentationEnabled,
+                disabledByCustomSender: datagramSender is not null);
     }
 
     internal int RuntimeShardCount => endpoint.ShardCount;
@@ -921,7 +952,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             SendDatagram(
                 state.FlowLabelSeed,
                 sendDatagram,
-                state.GetRemoteSocketAddress(sendDatagram.PathIdentity));
+                state.GetRemoteSocketAddress(sendDatagram.PathIdentity),
+                state.Runtime.ApplicationDatagramBatchPolicy);
             index++;
         }
     }
@@ -983,18 +1015,69 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             {
                 QuicMetrics.RecordDatagramSent(QuicTlsRole.Server, sendDatagram.Datagram.Length);
             }
+
+            RecordApplicationDatagramBatchOutcome(
+                state.Runtime.ApplicationDatagramBatchPolicy,
+                QuicApplicationDatagramBatchTransportOutcomeKind
+                    .SegmentedBatch,
+                datagramCount: sendDatagrams.Length,
+                segmentCount: sendDatagrams.Length,
+                submittedBytes: length,
+                acceptedBytes: length,
+                succeeded: true,
+                partialSend: false,
+                lifecycleGuard: false);
         }
         catch (ObjectDisposedException) when (shutdown.IsCancellationRequested)
         {
+            RecordApplicationDatagramBatchOutcome(
+                state.Runtime.ApplicationDatagramBatchPolicy,
+                QuicApplicationDatagramBatchTransportOutcomeKind
+                    .SegmentedBatch,
+                datagramCount: sendDatagrams.Length,
+                segmentCount: sendDatagrams.Length,
+                submittedBytes: checked(
+                    sendDatagrams.Length
+                        * QuicSocketUdpSegmentation.SegmentSize),
+                acceptedBytes: 0,
+                succeeded: false,
+                partialSend: false,
+                lifecycleGuard: true);
             // Expected during listener shutdown.
         }
         catch (SocketException) when (shutdown.IsCancellationRequested)
         {
+            RecordApplicationDatagramBatchOutcome(
+                state.Runtime.ApplicationDatagramBatchPolicy,
+                QuicApplicationDatagramBatchTransportOutcomeKind
+                    .SegmentedBatch,
+                datagramCount: sendDatagrams.Length,
+                segmentCount: sendDatagrams.Length,
+                submittedBytes: checked(
+                    sendDatagrams.Length
+                        * QuicSocketUdpSegmentation.SegmentSize),
+                acceptedBytes: 0,
+                succeeded: false,
+                partialSend: false,
+                lifecycleGuard: true);
             // Expected during listener shutdown.
         }
         catch (SocketException ex) when (IsPeerPathSendSocketError(ex.SocketErrorCode)
             || IsTransientSendSocketError(ex.SocketErrorCode))
         {
+            RecordApplicationDatagramBatchOutcome(
+                state.Runtime.ApplicationDatagramBatchPolicy,
+                QuicApplicationDatagramBatchTransportOutcomeKind
+                    .SegmentedBatch,
+                datagramCount: sendDatagrams.Length,
+                segmentCount: sendDatagrams.Length,
+                submittedBytes: checked(
+                    sendDatagrams.Length
+                        * QuicSocketUdpSegmentation.SegmentSize),
+                acceptedBytes: 0,
+                succeeded: false,
+                partialSend: false,
+                lifecycleGuard: false);
             RecordUdpSendFailure(ex);
             for (int index = 1; index < sendDatagrams.Length; index++)
             {
@@ -1003,6 +1086,19 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         }
         catch (IOException)
         {
+            RecordApplicationDatagramBatchOutcome(
+                state.Runtime.ApplicationDatagramBatchPolicy,
+                QuicApplicationDatagramBatchTransportOutcomeKind
+                    .SegmentedBatch,
+                datagramCount: sendDatagrams.Length,
+                segmentCount: sendDatagrams.Length,
+                submittedBytes: checked(
+                    sendDatagrams.Length
+                        * QuicSocketUdpSegmentation.SegmentSize),
+                acceptedBytes: 0,
+                succeeded: false,
+                partialSend: true,
+                lifecycleGuard: false);
             foreach (QuicConnectionSendDatagramUpdate _ in sendDatagrams)
             {
                 QuicMetrics.RecordPacketDropped(QuicTlsRole.Server);
@@ -1040,7 +1136,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             return;
         }
 
-        SendDatagram(state.FlowLabelSeed, sendDatagram, state.GetRemoteSocketAddress(sendDatagram.PathIdentity));
+        SendDatagram(
+            state.FlowLabelSeed,
+            sendDatagram,
+            state.GetRemoteSocketAddress(sendDatagram.PathIdentity),
+            state.Runtime.ApplicationDatagramBatchPolicy);
     }
 
     internal void SendDatagram(QuicConnectionSendDatagramEffect sendDatagramEffect)
@@ -1063,7 +1163,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private void SendDatagram(
         uint flowLabelSeed,
         QuicConnectionSendDatagramUpdate sendDatagram,
-        SocketAddress? remoteSocketAddress = null)
+        SocketAddress? remoteSocketAddress = null,
+        IQuicApplicationDatagramBatchPolicy?
+            applicationDatagramBatchPolicy = null)
     {
         try
         {
@@ -1090,6 +1192,17 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     flowLabel,
                     out bytesSent))
                 {
+                    RecordApplicationDatagramBatchOutcome(
+                        applicationDatagramBatchPolicy,
+                        QuicApplicationDatagramBatchTransportOutcomeKind
+                            .OrdinaryDatagram,
+                        datagramCount: 1,
+                        segmentCount: 0,
+                        submittedBytes: sendDatagram.Datagram.Length,
+                        acceptedBytes: 0,
+                        succeeded: false,
+                        partialSend: false,
+                        lifecycleGuard: false);
                     return;
                 }
             }
@@ -1103,33 +1216,129 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
             if (bytesSent != sendDatagram.Datagram.Length)
             {
+                RecordApplicationDatagramBatchOutcome(
+                    applicationDatagramBatchPolicy,
+                    QuicApplicationDatagramBatchTransportOutcomeKind
+                        .OrdinaryDatagram,
+                    datagramCount: 1,
+                    segmentCount: 0,
+                    submittedBytes: sendDatagram.Datagram.Length,
+                    acceptedBytes: Math.Max(0, bytesSent),
+                    succeeded: false,
+                    partialSend: true,
+                    lifecycleGuard: false);
                 QuicMetrics.RecordPacketDropped(QuicTlsRole.Server);
                 return;
             }
 
             QuicMetrics.RecordDatagramSent(QuicTlsRole.Server, bytesSent);
+            RecordApplicationDatagramBatchOutcome(
+                applicationDatagramBatchPolicy,
+                QuicApplicationDatagramBatchTransportOutcomeKind
+                    .OrdinaryDatagram,
+                datagramCount: 1,
+                segmentCount: 0,
+                submittedBytes: sendDatagram.Datagram.Length,
+                acceptedBytes: bytesSent,
+                succeeded: true,
+                partialSend: false,
+                lifecycleGuard: false);
 
         }
         catch (ObjectDisposedException) when (shutdown.IsCancellationRequested)
         {
+            RecordApplicationDatagramBatchOutcome(
+                applicationDatagramBatchPolicy,
+                QuicApplicationDatagramBatchTransportOutcomeKind
+                    .OrdinaryDatagram,
+                datagramCount: 1,
+                segmentCount: 0,
+                submittedBytes: sendDatagram.Datagram.Length,
+                acceptedBytes: 0,
+                succeeded: false,
+                partialSend: false,
+                lifecycleGuard: true);
             // Expected during shutdown.
         }
         catch (SocketException) when (shutdown.IsCancellationRequested)
         {
+            RecordApplicationDatagramBatchOutcome(
+                applicationDatagramBatchPolicy,
+                QuicApplicationDatagramBatchTransportOutcomeKind
+                    .OrdinaryDatagram,
+                datagramCount: 1,
+                segmentCount: 0,
+                submittedBytes: sendDatagram.Datagram.Length,
+                acceptedBytes: 0,
+                succeeded: false,
+                partialSend: false,
+                lifecycleGuard: true);
             // Expected during shutdown.
         }
         catch (SocketException ex) when (IsPeerPathSendSocketError(ex.SocketErrorCode))
         {
+            RecordApplicationDatagramBatchOutcome(
+                applicationDatagramBatchPolicy,
+                QuicApplicationDatagramBatchTransportOutcomeKind
+                    .OrdinaryDatagram,
+                datagramCount: 1,
+                segmentCount: 0,
+                submittedBytes: sendDatagram.Datagram.Length,
+                acceptedBytes: 0,
+                succeeded: false,
+                partialSend: false,
+                lifecycleGuard: false);
             // A shared UDP listener cannot reliably map these ICMP errors back to a live managed
             // connection. Keep the endpoint alive so unrelated sequential accepts can finish.
             RecordUdpSendFailure(ex);
         }
         catch (SocketException ex) when (IsTransientSendSocketError(ex.SocketErrorCode))
         {
+            RecordApplicationDatagramBatchOutcome(
+                applicationDatagramBatchPolicy,
+                QuicApplicationDatagramBatchTransportOutcomeKind
+                    .OrdinaryDatagram,
+                datagramCount: 1,
+                segmentCount: 0,
+                submittedBytes: sendDatagram.Datagram.Length,
+                acceptedBytes: 0,
+                succeeded: false,
+                partialSend: false,
+                lifecycleGuard: false);
             // The runtime already tracks this packet for recovery. Treat transient local UDP
             // pressure as a dropped datagram so PTO can retry without terminating the shard.
             RecordUdpSendFailure(ex);
         }
+    }
+
+    private static void RecordApplicationDatagramBatchOutcome(
+        IQuicApplicationDatagramBatchPolicy? policy,
+        QuicApplicationDatagramBatchTransportOutcomeKind kind,
+        int datagramCount,
+        int segmentCount,
+        int submittedBytes,
+        int acceptedBytes,
+        bool succeeded,
+        bool partialSend,
+        bool lifecycleGuard)
+    {
+        if (policy is null)
+        {
+            return;
+        }
+
+        QuicApplicationDatagramBatchTransportOutcome outcome = new(
+            kind,
+            CapabilityEpoch: 1,
+            SocketCallCount: 1,
+            DatagramCount: (uint)Math.Max(0, datagramCount),
+            SegmentCount: (uint)Math.Max(0, segmentCount),
+            SubmittedBytes: (ulong)Math.Max(0, submittedBytes),
+            AcceptedBytes: (ulong)Math.Max(0, acceptedBytes),
+            succeeded,
+            partialSend,
+            lifecycleGuard);
+        policy.RecordOutcome(in outcome);
     }
 
     private void RecordUdpSendFailure(SocketException exception)
@@ -1402,7 +1611,13 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             && initialDestinationConnectionId.Span.SequenceEqual(retryBootstrapSourceConnectionId.Value.Span);
         bool newTokenValidated = false;
 
-        QuicServerConnectionOptions selectedOptions = new();
+        QuicServerConnectionOptions selectedOptions = new()
+        {
+            ApplicationDatagramBatchTransportObservationMode =
+                applicationDatagramBatchTransportObservationMode,
+            ForcedApplicationDatagramBatchTransportPolicyValue =
+                forcedApplicationDatagramBatchTransportPolicyValue,
+        };
         QuicConnectionRuntime? runtime = null;
         QuicConnection? connection = null;
         QuicConnectionHandle handle = default;
@@ -2285,6 +2500,16 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             InitialPeerBidirectionalSendLimit: 0));
         IQuicDiagnosticsSink? diagnosticsSink = diagnosticsSinkFactory?.Invoke();
 
+        QuicAdaptiveApplicationDatagramBatchPolicy
+            applicationDatagramBatchPolicy = new(
+                applicationDatagramBatchTransportObservationMode,
+                forcedApplicationDatagramBatchTransportPolicyValue,
+                legacyPressurePromotionEnabled: false);
+        QuicApplicationDatagramBatchTransportCapability capability = new(
+            CapabilityEpoch: 1,
+            applicationDatagramBatchTransportCapabilityStatus);
+        applicationDatagramBatchPolicy.ObserveCapability(in capability);
+
         return new QuicConnectionRuntime(
             bookkeeping,
             tlsRole: QuicTlsRole.Server,
@@ -2296,7 +2521,10 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             serverResumptionTicketStore: serverResumptionTicketStore,
             tlsKeyLogSecretObserver: tlsKeyLogSecretObserver,
             maximumInboundDatagramQueueSize: GetEffectiveInboundDatagramQueueSize(options),
-            applicationSendTurnPlanner: applicationSendTurnPlannerFactory?.Invoke());
+            applicationSendTurnPlanner:
+                applicationSendTurnPlannerFactory?.Invoke(),
+            applicationDatagramBatchPolicy:
+                applicationDatagramBatchPolicy);
     }
 
     private static int GetEffectiveInboundDatagramQueueSize(QuicConnectionOptions options)
@@ -2475,6 +2703,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             returnedOptions.ReceiveDeliveryQuantumEvidenceSink;
         selectedOptions.ConnectionShardPlacementEvidenceSink =
             returnedOptions.ConnectionShardPlacementEvidenceSink;
+        selectedOptions.ApplicationDatagramBatchTransportEvidenceSink =
+            returnedOptions.ApplicationDatagramBatchTransportEvidenceSink;
 
         QuicReceiveWindowSizes returnedWindowSizes = returnedOptions.InitialReceiveWindowSizes;
         selectedOptions.InitialReceiveWindowSizes = new QuicReceiveWindowSizes

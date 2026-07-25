@@ -7,7 +7,7 @@ title: "Adaptive Runtime Controller State Machine"
 Status: receive-credit, all four Stage 1 send-path axes,
 `buffer_copy_coalescing`, `adaptive_backpressure`, and
 `packet_flush_cadence`, `receive_delivery_quantum`, and
-`connection_shard_placement`
+`connection_shard_placement`, and `application_datagram_batch_transport`
 force/observe/shadow runtimes implemented;
 measurement and broader campaign verification frozen; actor and fairness
 axes remain blocked on reviewed safe mechanisms; active policy blocked
@@ -151,6 +151,24 @@ and buffer limits remain authoritative. Observe-only applies legacy; shadow
 records the bounded choice while applying legacy; invalid, missing, stale,
 saturated, contradictory, out-of-domain, lifecycle, and single-shard state
 falls back to legacy even under forcing.
+
+The implemented `application_datagram_batch_transport` selector resolves
+`legacy_current`, `segmented_batch`, or `ordinary_datagrams` at each existing
+application-send turn before optional contiguous batch-owner construction.
+`legacy_current` preserves the capable server segmented path and the client
+one-way promotion to ordinary datagrams after the retained sustained
+distinct-stream pressure. `segmented_batch` can build a contiguous batch only
+while the current socket capability epoch reports Windows
+`UDP_SEND_MSG_SIZE`; `ordinary_datagrams` never builds that owner. The
+configured snapshot is connection-lifetime, the client promotion latch is
+one-way, and socket recreation publishes a new monotonic capability epoch.
+Platform, address-family, probe, custom-sender, source-address, ECN,
+packet-size, partial-send, endpoint, ownership, cancellation, disposal,
+shutdown, recovery, congestion, pacing, flow-control, queue, and buffer
+authority remain outside the selector and cannot be bypassed. Observe-only
+applies legacy; shadow recommends ordinary datagrams while applying legacy;
+unsupported capability, invalid observation, or lifecycle state falls back to
+ordinary datagrams even when segmented batching is forced.
 
 ## States
 

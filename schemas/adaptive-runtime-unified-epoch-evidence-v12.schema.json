@@ -1,0 +1,400 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-unified-epoch-evidence-v12.schema.json",
+  "title": "Adaptive Runtime Unified Epoch Evidence v12",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "connectionObservation",
+    "receiveCreditSnapshot",
+    "postServiceBoundary",
+    "stage1",
+    "actorService",
+    "bufferCopy",
+    "adaptiveBackpressure",
+    "packetFlushCadence",
+    "receiveDeliveryQuantum",
+    "connectionShardPlacement",
+    "applicationDatagramBatchTransport",
+    "evidenceContractVersion",
+    "connectionEpochSequence"
+  ],
+  "properties": {
+    "connectionObservation": { "type": "object" },
+    "receiveCreditSnapshot": { "type": "object" },
+    "postServiceBoundary": { "type": "object" },
+    "stage1": { "type": "object" },
+    "actorService": { "type": "object" },
+    "bufferCopy": { "type": "object" },
+    "adaptiveBackpressure": { "type": "object" },
+    "packetFlushCadence": { "type": "object" },
+    "receiveDeliveryQuantum": { "type": "object" },
+    "connectionShardPlacement": { "type": "object" },
+    "applicationDatagramBatchTransport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "configuredSnapshot",
+        "capability",
+        "lastDecision",
+        "hasConfiguredSnapshot",
+        "hasCapability",
+        "hasDecision",
+        "capabilityEventCount",
+        "decisionEventCount",
+        "segmentedDecisionCount",
+        "ordinaryDecisionCount",
+        "socketCallCount",
+        "ordinarySocketCallCount",
+        "segmentedSocketCallCount",
+        "datagramCount",
+        "segmentCount",
+        "submittedBytes",
+        "acceptedBytes",
+        "failedSocketCallCount",
+        "partialSendCount",
+        "lifecycleGuardCount"
+      ],
+      "properties": {
+        "configuredSnapshot": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "hasForcedValue",
+            "forcedValue",
+            "hasShadowRecommendation",
+            "shadowRecommendation",
+            "selectedValue",
+            "appliedValue",
+            "selectionSource",
+            "reasonCode",
+            "safetyOverride",
+            "decisionBoundary",
+            "latchLifetime",
+            "fallbackApplied",
+            "snapshotVersion"
+          ],
+          "properties": {
+            "mode": {
+              "enum": ["Disabled", "ObserveOnly", "Shadow"]
+            },
+            "hasForcedValue": { "type": "boolean" },
+            "forcedValue": {
+              "enum": [
+                "LegacyCurrent",
+                "SegmentedBatch",
+                "OrdinaryDatagrams"
+              ]
+            },
+            "hasShadowRecommendation": { "type": "boolean" },
+            "shadowRecommendation": {
+              "enum": [
+                "LegacyCurrent",
+                "SegmentedBatch",
+                "OrdinaryDatagrams"
+              ]
+            },
+            "selectedValue": {
+              "enum": [
+                "LegacyCurrent",
+                "SegmentedBatch",
+                "OrdinaryDatagrams"
+              ]
+            },
+            "appliedValue": {
+              "enum": [
+                "LegacyCurrent",
+                "SegmentedBatch",
+                "OrdinaryDatagrams"
+              ]
+            },
+            "selectionSource": {
+              "enum": [
+                "LegacyCurrent",
+                "Forced",
+                "ShadowRule",
+                "SafetyOverride"
+              ]
+            },
+            "reasonCode": {
+              "enum": [
+                "LegacySparseBatch",
+                "LegacyPressureTurn",
+                "LegacyPressurePromotion",
+                "LegacyPromotedOrdinary",
+                "ObserveOnly",
+                "ShadowOrdinaryDatagrams",
+                "ForcedSegmentedBatch",
+                "ForcedOrdinaryDatagrams",
+                "ForcedLegacyCurrent",
+                "CapabilityUnavailable",
+                "MissingInput",
+                "StaleInput",
+                "ArithmeticSaturated",
+                "Contradictory",
+                "OutOfDomain",
+                "InvalidInput",
+                "LifecycleGuard"
+              ]
+            },
+            "safetyOverride": {
+              "enum": [
+                "None",
+                "CapabilityUnavailable",
+                "InvalidObservation",
+                "Lifecycle"
+              ]
+            },
+            "decisionBoundary": {
+              "const": "ApplicationSendTurn"
+            },
+            "latchLifetime": {
+              "const": "ConnectionLifetimeOrCapabilityEpoch"
+            },
+            "fallbackApplied": { "type": "boolean" },
+            "snapshotVersion": {
+              "const": "quic-application-datagram-batch-transport-policy-snapshot-v1"
+            }
+          }
+        },
+        "capability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "capabilityEpoch",
+            "status",
+            "isSupported",
+            "capabilityVersion"
+          ],
+          "properties": {
+            "capabilityEpoch": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "status": {
+              "enum": [
+                "Missing",
+                "WindowsUdpSendMessageSize",
+                "UnsupportedPlatform",
+                "UnsupportedAddressFamily",
+                "ProbeFailed",
+                "DisabledByCustomSender"
+              ]
+            },
+            "isSupported": { "type": "boolean" },
+            "capabilityVersion": {
+              "const": "quic-application-datagram-batch-transport-capability-v1"
+            }
+          }
+        },
+        "lastDecision": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "hasForcedValue",
+            "forcedValue",
+            "hasShadowRecommendation",
+            "shadowRecommendation",
+            "selectedValue",
+            "appliedValue",
+            "selectionSource",
+            "reasonCode",
+            "safetyOverride",
+            "decisionBoundary",
+            "latchLifetime",
+            "fallbackApplied",
+            "capability",
+            "distinctQueuedStreamCount",
+            "consecutivePressureTurns",
+            "legacyPromoted",
+            "buildSegmentedBatch",
+            "validity",
+            "axisId",
+            "observationContractVersion",
+            "snapshotVersion",
+            "ruleVersion",
+            "reasonVersion",
+            "provenanceVersion"
+          ],
+          "properties": {
+            "mode": {
+              "enum": ["Disabled", "ObserveOnly", "Shadow"]
+            },
+            "hasForcedValue": { "type": "boolean" },
+            "forcedValue": {
+              "enum": [
+                "LegacyCurrent",
+                "SegmentedBatch",
+                "OrdinaryDatagrams"
+              ]
+            },
+            "hasShadowRecommendation": { "type": "boolean" },
+            "shadowRecommendation": {
+              "enum": [
+                "LegacyCurrent",
+                "SegmentedBatch",
+                "OrdinaryDatagrams"
+              ]
+            },
+            "selectedValue": {
+              "enum": [
+                "LegacyCurrent",
+                "SegmentedBatch",
+                "OrdinaryDatagrams"
+              ]
+            },
+            "appliedValue": {
+              "enum": [
+                "LegacyCurrent",
+                "SegmentedBatch",
+                "OrdinaryDatagrams"
+              ]
+            },
+            "selectionSource": {
+              "enum": [
+                "LegacyCurrent",
+                "Forced",
+                "ShadowRule",
+                "SafetyOverride"
+              ]
+            },
+            "reasonCode": {
+              "enum": [
+                "LegacySparseBatch",
+                "LegacyPressureTurn",
+                "LegacyPressurePromotion",
+                "LegacyPromotedOrdinary",
+                "ObserveOnly",
+                "ShadowOrdinaryDatagrams",
+                "ForcedSegmentedBatch",
+                "ForcedOrdinaryDatagrams",
+                "ForcedLegacyCurrent",
+                "CapabilityUnavailable",
+                "MissingInput",
+                "StaleInput",
+                "ArithmeticSaturated",
+                "Contradictory",
+                "OutOfDomain",
+                "InvalidInput",
+                "LifecycleGuard"
+              ]
+            },
+            "safetyOverride": {
+              "enum": [
+                "None",
+                "CapabilityUnavailable",
+                "InvalidObservation",
+                "Lifecycle"
+              ]
+            },
+            "decisionBoundary": {
+              "const": "ApplicationSendTurn"
+            },
+            "latchLifetime": {
+              "const": "ConnectionLifetimeOrCapabilityEpoch"
+            },
+            "fallbackApplied": { "type": "boolean" },
+            "capability": { "type": "object" },
+            "distinctQueuedStreamCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "consecutivePressureTurns": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "legacyPromoted": { "type": "boolean" },
+            "buildSegmentedBatch": { "type": "boolean" },
+            "validity": { "type": ["string", "integer"] },
+            "axisId": {
+              "const": "application_datagram_batch_transport"
+            },
+            "observationContractVersion": {
+              "const": "quic-application-datagram-batch-transport-observation-v1"
+            },
+            "snapshotVersion": {
+              "const": "quic-application-datagram-batch-transport-policy-snapshot-v1"
+            },
+            "ruleVersion": {
+              "const": "quic-application-datagram-batch-transport-rule-v1"
+            },
+            "reasonVersion": {
+              "const": "quic-application-datagram-batch-transport-reason-v1"
+            },
+            "provenanceVersion": {
+              "const": "quic-application-datagram-batch-transport-provenance-v1"
+            }
+          }
+        },
+        "hasConfiguredSnapshot": { "type": "boolean" },
+        "hasCapability": { "type": "boolean" },
+        "hasDecision": { "type": "boolean" },
+        "capabilityEventCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "decisionEventCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "segmentedDecisionCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ordinaryDecisionCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "socketCallCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ordinarySocketCallCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "segmentedSocketCallCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "datagramCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "segmentCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "submittedBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "acceptedBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failedSocketCallCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "partialSendCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "lifecycleGuardCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "evidenceContractVersion": {
+      "const": "adaptive-runtime-unified-epoch-evidence-v12"
+    },
+    "connectionEpochSequence": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

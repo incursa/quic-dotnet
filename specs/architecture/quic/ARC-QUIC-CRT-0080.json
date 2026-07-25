@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0080",
+  "artifact_type": "architecture",
+  "status": "proposed",
+  "title": "Capability-gated application datagram batch transport seam",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0195 with a connection-local transport selector that preserves the retained send path and cannot bypass socket, endpoint, packet, or ownership safety.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE4-PLACEMENT-PLATFORM",
+    "WI-QUIC-CRT-0081",
+    "VER-QUIC-CRT-0082"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0195"
+  ],
+  "key_components": [
+    "QuicAdaptiveApplicationDatagramBatchPolicy",
+    "QuicSocketUdpSegmentation capability probe and segmented send",
+    "QuicConnectionEndpointHost client socket boundary",
+    "QuicListenerHost server socket boundary",
+    "QuicConnectionRuntime and QuicConnectionRuntimeShard",
+    "QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator",
+    "IncursaRawQuicServer internal force and shadow wiring",
+    "Unified raw exporter and semantic validator"
+  ],
+  "design_summary": "legacy_current preserves two retained paths: the server batches whenever Windows UDP_SEND_MSG_SIZE is available, while the client starts capable and promotes one way to ordinary datagrams after the existing sustained distinct-stream pressure. segmented_batch requests the contiguous owner and one segmented socket call only while the current capability epoch is supported. ordinary_datagrams prevents contiguous construction and uses the unchanged one-datagram socket path. Observe-only applies legacy. Shadow recommends ordinary_datagrams while applying legacy. Forced segmented selection falls back to ordinary when the exact socket capability is unavailable.",
+  "data_and_state_considerations": "The connection-local policy owns only compact enums, a bounded pressure counter, one promotion latch, one capability snapshot, one last decision, and a guarded evidence sink. Socket recreation increments a saturating capability epoch and republishes capability. Unified evidence retains configured identity and latest capability while resetting bounded decision and outcome counters at each connection epoch. The semantic validator requires stable configured identity, nonzero capability epoch, consistent decision and socket-call partitions, accepted bytes no greater than submitted bytes, and at most one behavior-distinct applied axis.",
+  "edge_cases_and_constraints": [
+    "Forced segmented selection cannot bypass unsupported platform, address-family, socket-probe, custom-sender, source-address, lifecycle, packet, ECN, or ownership fallback.",
+    "Partial and failed sends remain failures; evidence cannot relabel them as accepted work.",
+    "A socket rebind creates a new capability epoch; it does not reset the client connection-lifetime promotion latch.",
+    "A throwing evidence sink is behavior-neutral.",
+    "The policy returns a transport proposal and never owns packets, buffers, sockets, endpoint state, or send completion.",
+    "All adjacent applied axes remain legacy_current during a transport counterfactual.",
+    "No active_internal or production selection is present."
+  ],
+  "alternatives_considered": [
+    "Claiming segmented batching on unsupported platforms was rejected; the seam reports explicit capability fallback instead.",
+    "A new cross-platform batching implementation was deferred because it would be a separate platform transport implementation, not an honest force value for the current socket path.",
+    "Scenario, payload, concurrency, peer, host, URL, and application identity were rejected as controller inputs.",
+    "Threshold tuning and online learning were rejected under the measurement freeze."
+  ],
+  "risks": [
+    "The existing Windows UDP segmentation implementation may be neutral or harmful in some regimes; no performance claim is made.",
+    "Capability can change after socket recreation, so decisions and outcomes must retain the exact capability epoch.",
+    "Sample-scoped socket outcomes are aggregated into an epoch summary and must not be treated as independent epoch-level observations."
+  ],
+  "open_questions": [
+    "After implementation freeze and measurement release, which supported platform transports warrant separate closed values?"
+  ]
+}

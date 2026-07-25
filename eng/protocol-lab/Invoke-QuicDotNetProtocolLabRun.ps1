@@ -51,6 +51,9 @@ param(
     [ValidateSet("", "legacy_current", "bounded_power_of_two_choices", "observe_only", "shadow")]
     [string] $AdaptiveRuntimeConnectionShardPlacementPolicy = "",
 
+    [ValidateSet("", "legacy_current", "segmented_batch", "ordinary_datagrams", "observe_only", "shadow")]
+    [string] $AdaptiveRuntimeApplicationDatagramBatchTransportPolicy = "",
+
     [string[]] $RequiredCapability,
 
     [string[]] $PackageReference = @(),
@@ -243,6 +246,11 @@ $connectionShardPlacementPolicySelected =
 if ($connectionShardPlacementPolicySelected -and $PackageTarget -ne "RawQuic") {
     throw "AdaptiveRuntimeConnectionShardPlacementPolicy is supported only for the RawQuic package target."
 }
+$applicationDatagramBatchTransportPolicySelected =
+    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationDatagramBatchTransportPolicy)
+if ($applicationDatagramBatchTransportPolicySelected -and $PackageTarget -ne "RawQuic") {
+    throw "AdaptiveRuntimeApplicationDatagramBatchTransportPolicy is supported only for the RawQuic package target."
+}
 $requiredCapabilityWasSpecified = $PSBoundParameters.ContainsKey("RequiredCapability")
 if ([string]::IsNullOrWhiteSpace($Project)) {
     $Project = $targetConfig.DefaultProject
@@ -408,6 +416,7 @@ if (-not $UsePackageReferenceOnly) {
         AdaptiveRuntimePacketFlushCadencePolicy = $AdaptiveRuntimePacketFlushCadencePolicy
         AdaptiveRuntimeReceiveDeliveryQuantumPolicy = $AdaptiveRuntimeReceiveDeliveryQuantumPolicy
         AdaptiveRuntimeConnectionShardPlacementPolicy = $AdaptiveRuntimeConnectionShardPlacementPolicy
+        AdaptiveRuntimeApplicationDatagramBatchTransportPolicy = $AdaptiveRuntimeApplicationDatagramBatchTransportPolicy
         AllowDirtySource = [bool]$AllowDirtySource
         Force = $true
     }

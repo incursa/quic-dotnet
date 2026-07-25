@@ -27,14 +27,14 @@ $packetFlushCadencePrefix =
     'QUIC_PACKET_FLUSH_CADENCE_EVIDENCE_JSON='
 $receiveDeliveryQuantumPrefix =
     'QUIC_RECEIVE_DELIVERY_QUANTUM_EVIDENCE_JSON='
-$rawSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v11.schema.json'
+$rawSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v12.schema.json'
 $actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v4.schema.json'
 $actorFailureSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-export-failure-v1.schema.json'
 $adaptiveBackpressureSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-backpressure-raw-v1.schema.json'
 $packetFlushCadenceSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-packet-flush-cadence-raw-v1.schema.json'
 $receiveDeliveryQuantumSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-receive-delivery-quantum-raw-v1.schema.json'
-$manifestSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-raw-export-manifest-v12.schema.json'
-$legacyManifestSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-raw-export-manifest-v11.schema.json'
+$manifestSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-raw-export-manifest-v13.schema.json'
+$legacyManifestSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-raw-export-manifest-v12.schema.json'
 $validatorPath = Join-Path $RepositoryRoot 'eng\adaptive-runtime\Test-AdaptiveRuntimeUnifiedRawEvidence.ps1'
 $resolvedOutputDirectory = Resolve-AdaptiveRuntimePath -Path $OutputDirectory
 $rawEpochPath = Join-Path $resolvedOutputDirectory 'adaptive-runtime-unified-raw-epochs.jsonl'
@@ -320,9 +320,9 @@ if ($failures.Count -ne 0) {
 }
 
 $manifest = [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-export-manifest-v12'
+    schemaVersion = 'adaptive-runtime-unified-raw-export-manifest-v13'
     createdUtc = (Get-Date).ToUniversalTime().ToString('o')
-    rawEpochSchemaVersion = 'adaptive-runtime-unified-epoch-raw-v11'
+    rawEpochSchemaVersion = 'adaptive-runtime-unified-epoch-raw-v12'
     actorRawObservationSchemaVersion =
         'adaptive-runtime-actor-service-raw-v4'
     bufferRawObservationSchemaVersion = 'quic-buffer-copy-raw-v4'
@@ -375,9 +375,9 @@ foreach ($entry in $manifest.GetEnumerator()) {
     $legacyManifest[$entry.Key] = $entry.Value
 }
 $legacyManifest.schemaVersion =
-    'adaptive-runtime-unified-raw-export-manifest-v11'
+    'adaptive-runtime-unified-raw-export-manifest-v12'
 $legacyManifest.rawEpochSchemaVersion =
-    'adaptive-runtime-unified-epoch-raw-v10'
+    'adaptive-runtime-unified-epoch-raw-v11'
 $legacyManifestJson =
     $legacyManifest | ConvertTo-Json -Depth 100 -Compress
 if (-not (
@@ -385,7 +385,7 @@ if (-not (
             Test-Json `
                 -SchemaFile $legacyManifestSchemaPath `
                 -ErrorAction Stop)) {
-    throw 'Unified adaptive-runtime v11 manifest base projection failed schema validation.'
+    throw 'Unified adaptive-runtime v12 manifest base projection failed schema validation.'
 }
 
 [void] (Write-ValidatedJsonDocument `
@@ -394,7 +394,7 @@ if (-not (
     -OutputPath $manifestPath)
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-export-result-v12'
+    schemaVersion = 'adaptive-runtime-unified-raw-export-result-v13'
     rowCount = $manifest.rowCount
     axisRecordCount = $manifest.axisRecordCount
     connectionCount = $manifest.connectionCount

@@ -10,6 +10,30 @@ internal readonly record struct QuicConnectionShardPlacementEpochSummary(
     bool HasDecision,
     ulong EventCount);
 
+internal readonly record struct
+    QuicApplicationDatagramBatchTransportEpochSummary(
+        QuicApplicationDatagramBatchTransportConfiguredPolicySnapshot
+            ConfiguredSnapshot,
+        QuicApplicationDatagramBatchTransportCapability Capability,
+        QuicApplicationDatagramBatchTransportDecision LastDecision,
+        bool HasConfiguredSnapshot,
+        bool HasCapability,
+        bool HasDecision,
+        ulong CapabilityEventCount,
+        ulong DecisionEventCount,
+        ulong SegmentedDecisionCount,
+        ulong OrdinaryDecisionCount,
+        ulong SocketCallCount,
+        ulong OrdinarySocketCallCount,
+        ulong SegmentedSocketCallCount,
+        ulong DatagramCount,
+        ulong SegmentCount,
+        ulong SubmittedBytes,
+        ulong AcceptedBytes,
+        ulong FailedSocketCallCount,
+        ulong PartialSendCount,
+        ulong LifecycleGuardCount);
+
 internal readonly record struct QuicAdaptiveRuntimeUnifiedEpochEvidence(
     QuicAdaptiveRuntimeConnectionObservation ConnectionObservation,
     QuicReceiveCreditPolicySnapshot ReceiveCreditSnapshot,
@@ -20,10 +44,12 @@ internal readonly record struct QuicAdaptiveRuntimeUnifiedEpochEvidence(
     QuicAdaptiveBackpressureEpochSummary AdaptiveBackpressure,
     QuicPacketFlushCadenceEpochSummary PacketFlushCadence,
     QuicReceiveDeliveryQuantumEpochSummary ReceiveDeliveryQuantum,
-    QuicConnectionShardPlacementEpochSummary ConnectionShardPlacement)
+    QuicConnectionShardPlacementEpochSummary ConnectionShardPlacement,
+    QuicApplicationDatagramBatchTransportEpochSummary
+        ApplicationDatagramBatchTransport)
 {
     internal const string CurrentEvidenceContractVersion =
-        "adaptive-runtime-unified-epoch-evidence-v11";
+        "adaptive-runtime-unified-epoch-evidence-v12";
 
     public string EvidenceContractVersion =>
         CurrentEvidenceContractVersion;
@@ -52,7 +78,8 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
     IQuicAdaptiveBackpressureEvidenceSink,
     IQuicPacketFlushCadenceEvidenceSink,
     IQuicReceiveDeliveryQuantumEvidenceSink,
-    IQuicConnectionShardPlacementEvidenceSink
+    IQuicConnectionShardPlacementEvidenceSink,
+    IQuicApplicationDatagramBatchTransportEvidenceSink
 {
     private const ulong MicrosPerSecond = 1_000_000UL;
     private readonly object gate = new();
@@ -72,6 +99,30 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
     private QuicConnectionShardPlacementDecision
         connectionShardPlacementDecision;
     private bool hasConnectionShardPlacementDecision;
+    private QuicApplicationDatagramBatchTransportConfiguredPolicySnapshot
+        applicationDatagramBatchTransportConfiguredSnapshot;
+    private QuicApplicationDatagramBatchTransportCapability
+        applicationDatagramBatchTransportCapability;
+    private QuicApplicationDatagramBatchTransportDecision
+        applicationDatagramBatchTransportLastDecision;
+    private bool
+        hasApplicationDatagramBatchTransportConfiguredSnapshot;
+    private bool hasApplicationDatagramBatchTransportCapability;
+    private bool hasApplicationDatagramBatchTransportDecision;
+    private ulong applicationDatagramBatchTransportCapabilityEventCount;
+    private ulong applicationDatagramBatchTransportDecisionEventCount;
+    private ulong applicationDatagramBatchTransportSegmentedDecisionCount;
+    private ulong applicationDatagramBatchTransportOrdinaryDecisionCount;
+    private ulong applicationDatagramBatchTransportSocketCallCount;
+    private ulong applicationDatagramBatchTransportOrdinarySocketCallCount;
+    private ulong applicationDatagramBatchTransportSegmentedSocketCallCount;
+    private ulong applicationDatagramBatchTransportDatagramCount;
+    private ulong applicationDatagramBatchTransportSegmentCount;
+    private ulong applicationDatagramBatchTransportSubmittedBytes;
+    private ulong applicationDatagramBatchTransportAcceptedBytes;
+    private ulong applicationDatagramBatchTransportFailedSocketCallCount;
+    private ulong applicationDatagramBatchTransportPartialSendCount;
+    private ulong applicationDatagramBatchTransportLifecycleGuardCount;
 
     internal QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator(
         in QuicAdaptiveRuntimeStage1PolicySnapshot configuredStage1Policy,
@@ -277,6 +328,156 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
     }
 
     public bool TryPublish(
+        in QuicApplicationDatagramBatchTransportConfiguredPolicySnapshot
+            snapshot)
+    {
+        lock (gate)
+        {
+            if (hasApplicationDatagramBatchTransportConfiguredSnapshot
+                && !applicationDatagramBatchTransportConfiguredSnapshot
+                    .Equals(snapshot))
+            {
+                return false;
+            }
+
+            applicationDatagramBatchTransportConfiguredSnapshot = snapshot;
+            hasApplicationDatagramBatchTransportConfiguredSnapshot = true;
+            return true;
+        }
+    }
+
+    public bool TryPublish(
+        in QuicApplicationDatagramBatchTransportCapability capability)
+    {
+        lock (gate)
+        {
+            if (capability.CapabilityEpoch == 0)
+            {
+                return false;
+            }
+
+            applicationDatagramBatchTransportCapability = capability;
+            hasApplicationDatagramBatchTransportCapability = true;
+            applicationDatagramBatchTransportCapabilityEventCount =
+                SaturatingIncrement(
+                    applicationDatagramBatchTransportCapabilityEventCount);
+            return true;
+        }
+    }
+
+    public bool TryPublish(
+        in QuicApplicationDatagramBatchTransportDecision decision)
+    {
+        lock (gate)
+        {
+            if (!string.Equals(
+                    decision.AxisId,
+                    QuicApplicationDatagramBatchTransportPolicy.AxisId,
+                    StringComparison.Ordinal)
+                || decision.Capability.CapabilityEpoch == 0)
+            {
+                return false;
+            }
+
+            applicationDatagramBatchTransportLastDecision = decision;
+            hasApplicationDatagramBatchTransportDecision = true;
+            applicationDatagramBatchTransportDecisionEventCount =
+                SaturatingIncrement(
+                    applicationDatagramBatchTransportDecisionEventCount);
+            if (decision.BuildSegmentedBatch)
+            {
+                applicationDatagramBatchTransportSegmentedDecisionCount =
+                    SaturatingIncrement(
+                        applicationDatagramBatchTransportSegmentedDecisionCount);
+            }
+            else
+            {
+                applicationDatagramBatchTransportOrdinaryDecisionCount =
+                    SaturatingIncrement(
+                        applicationDatagramBatchTransportOrdinaryDecisionCount);
+            }
+
+            return true;
+        }
+    }
+
+    public bool TryPublish(
+        in QuicApplicationDatagramBatchTransportOutcome outcome)
+    {
+        lock (gate)
+        {
+            if (outcome.CapabilityEpoch == 0
+                || outcome.SocketCallCount == 0
+                || outcome.DatagramCount == 0
+                || outcome.AcceptedBytes > outcome.SubmittedBytes)
+            {
+                return false;
+            }
+
+            applicationDatagramBatchTransportSocketCallCount =
+                SaturatingAdd(
+                    applicationDatagramBatchTransportSocketCallCount,
+                    outcome.SocketCallCount);
+            if (outcome.Kind
+                == QuicApplicationDatagramBatchTransportOutcomeKind
+                    .SegmentedBatch)
+            {
+                applicationDatagramBatchTransportSegmentedSocketCallCount =
+                    SaturatingAdd(
+                        applicationDatagramBatchTransportSegmentedSocketCallCount,
+                        outcome.SocketCallCount);
+            }
+            else
+            {
+                applicationDatagramBatchTransportOrdinarySocketCallCount =
+                    SaturatingAdd(
+                        applicationDatagramBatchTransportOrdinarySocketCallCount,
+                        outcome.SocketCallCount);
+            }
+
+            applicationDatagramBatchTransportDatagramCount =
+                SaturatingAdd(
+                    applicationDatagramBatchTransportDatagramCount,
+                    outcome.DatagramCount);
+            applicationDatagramBatchTransportSegmentCount =
+                SaturatingAdd(
+                    applicationDatagramBatchTransportSegmentCount,
+                    outcome.SegmentCount);
+            applicationDatagramBatchTransportSubmittedBytes =
+                SaturatingAdd(
+                    applicationDatagramBatchTransportSubmittedBytes,
+                    outcome.SubmittedBytes);
+            applicationDatagramBatchTransportAcceptedBytes =
+                SaturatingAdd(
+                    applicationDatagramBatchTransportAcceptedBytes,
+                    outcome.AcceptedBytes);
+            if (!outcome.Succeeded)
+            {
+                applicationDatagramBatchTransportFailedSocketCallCount =
+                    SaturatingAdd(
+                        applicationDatagramBatchTransportFailedSocketCallCount,
+                        outcome.SocketCallCount);
+            }
+
+            if (outcome.PartialSend)
+            {
+                applicationDatagramBatchTransportPartialSendCount =
+                    SaturatingIncrement(
+                        applicationDatagramBatchTransportPartialSendCount);
+            }
+
+            if (outcome.LifecycleGuard)
+            {
+                applicationDatagramBatchTransportLifecycleGuardCount =
+                    SaturatingIncrement(
+                        applicationDatagramBatchTransportLifecycleGuardCount);
+            }
+
+            return true;
+        }
+    }
+
+    public bool TryPublish(
         in QuicAdaptiveRuntimeConnectionObservation observation,
         in QuicReceiveCreditPolicySnapshot snapshot,
         in QuicAdaptiveRuntimePostServiceBoundary boundary)
@@ -328,6 +529,9 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
                 receiveDeliveryQuantum.CaptureAndReset();
             QuicConnectionShardPlacementEpochSummary placementEvidence =
                 CaptureConnectionShardPlacement();
+            QuicApplicationDatagramBatchTransportEpochSummary
+                datagramBatchTransportEvidence =
+                    CaptureApplicationDatagramBatchTransport();
             QuicAdaptiveRuntimeUnifiedEpochEvidence unified = new(
                 observation,
                 snapshot,
@@ -338,7 +542,8 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
                 adaptiveBackpressureEvidence,
                 packetFlushCadenceEvidence,
                 receiveDeliveryEvidence,
-                placementEvidence);
+                placementEvidence,
+                datagramBatchTransportEvidence);
 
             lastEpochSequence = epochSequence;
             return sink.TryPublish(in unified);
@@ -368,6 +573,53 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
                 QuicConnectionShardPlacementValidity.MissingRequiredInput);
         return new(missing, HasDecision: false, EventCount: 0);
     }
+
+    private QuicApplicationDatagramBatchTransportEpochSummary
+        CaptureApplicationDatagramBatchTransport()
+    {
+        QuicApplicationDatagramBatchTransportEpochSummary summary = new(
+            applicationDatagramBatchTransportConfiguredSnapshot,
+            applicationDatagramBatchTransportCapability,
+            applicationDatagramBatchTransportLastDecision,
+            hasApplicationDatagramBatchTransportConfiguredSnapshot,
+            hasApplicationDatagramBatchTransportCapability,
+            hasApplicationDatagramBatchTransportDecision,
+            applicationDatagramBatchTransportCapabilityEventCount,
+            applicationDatagramBatchTransportDecisionEventCount,
+            applicationDatagramBatchTransportSegmentedDecisionCount,
+            applicationDatagramBatchTransportOrdinaryDecisionCount,
+            applicationDatagramBatchTransportSocketCallCount,
+            applicationDatagramBatchTransportOrdinarySocketCallCount,
+            applicationDatagramBatchTransportSegmentedSocketCallCount,
+            applicationDatagramBatchTransportDatagramCount,
+            applicationDatagramBatchTransportSegmentCount,
+            applicationDatagramBatchTransportSubmittedBytes,
+            applicationDatagramBatchTransportAcceptedBytes,
+            applicationDatagramBatchTransportFailedSocketCallCount,
+            applicationDatagramBatchTransportPartialSendCount,
+            applicationDatagramBatchTransportLifecycleGuardCount);
+        applicationDatagramBatchTransportCapabilityEventCount = 0;
+        applicationDatagramBatchTransportDecisionEventCount = 0;
+        applicationDatagramBatchTransportSegmentedDecisionCount = 0;
+        applicationDatagramBatchTransportOrdinaryDecisionCount = 0;
+        applicationDatagramBatchTransportSocketCallCount = 0;
+        applicationDatagramBatchTransportOrdinarySocketCallCount = 0;
+        applicationDatagramBatchTransportSegmentedSocketCallCount = 0;
+        applicationDatagramBatchTransportDatagramCount = 0;
+        applicationDatagramBatchTransportSegmentCount = 0;
+        applicationDatagramBatchTransportSubmittedBytes = 0;
+        applicationDatagramBatchTransportAcceptedBytes = 0;
+        applicationDatagramBatchTransportFailedSocketCallCount = 0;
+        applicationDatagramBatchTransportPartialSendCount = 0;
+        applicationDatagramBatchTransportLifecycleGuardCount = 0;
+        return summary;
+    }
+
+    private static ulong SaturatingIncrement(ulong value) =>
+        value == ulong.MaxValue ? ulong.MaxValue : value + 1;
+
+    private static ulong SaturatingAdd(ulong left, ulong right) =>
+        ulong.MaxValue - left < right ? ulong.MaxValue : left + right;
 
     private static ulong ConvertTicksToMicros(long ticks)
     {

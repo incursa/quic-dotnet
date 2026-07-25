@@ -175,6 +175,12 @@ internal static class QuicClientConnectionOptionsValidator
                 source.ForcedConnectionShardPlacementPolicyValue,
             ConnectionShardPlacementEvidenceSink =
                 source.ConnectionShardPlacementEvidenceSink,
+            ApplicationDatagramBatchTransportObservationMode =
+                source.ApplicationDatagramBatchTransportObservationMode,
+            ForcedApplicationDatagramBatchTransportPolicyValue =
+                source.ForcedApplicationDatagramBatchTransportPolicyValue,
+            ApplicationDatagramBatchTransportEvidenceSink =
+                source.ApplicationDatagramBatchTransportEvidenceSink,
             ResumptionTicket = source.ResumptionTicket,
             InitialReceiveWindowSizes = new QuicReceiveWindowSizes
             {

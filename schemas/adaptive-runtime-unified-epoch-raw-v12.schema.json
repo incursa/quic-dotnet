@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-unified-epoch-raw-v12.schema.json",
+  "title": "Adaptive Runtime Unified Connection Epoch Raw v12",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "connectionKey",
+    "epoch"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "adaptive-runtime-unified-epoch-raw-v12"
+    },
+    "connectionKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "epoch": {
+      "type": "object"
+    }
+  }
+}

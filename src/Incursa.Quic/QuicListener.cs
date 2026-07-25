@@ -60,7 +60,11 @@ public sealed class QuicListener : IAsyncDisposable
             connectionShardPlacementObservationMode:
                 options.ConnectionShardPlacementObservationMode,
             forcedConnectionShardPlacementPolicyValue:
-                options.ForcedConnectionShardPlacementPolicyValue);
+                options.ForcedConnectionShardPlacementPolicyValue,
+            applicationDatagramBatchTransportObservationMode:
+                options.ApplicationDatagramBatchTransportObservationMode,
+            forcedApplicationDatagramBatchTransportPolicyValue:
+                options.ForcedApplicationDatagramBatchTransportPolicyValue);
 
         try
         {

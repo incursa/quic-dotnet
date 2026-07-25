@@ -84,7 +84,12 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             forcedPlacementValue:
                 settings.Options.ForcedConnectionShardPlacementPolicyValue);
         IQuicDiagnosticsSink? diagnosticsSink = diagnosticsSinkFactory?.Invoke();
-        QuicAdaptiveApplicationDatagramBatchPolicy applicationDatagramBatchPolicy = new();
+        QuicAdaptiveApplicationDatagramBatchPolicy
+            applicationDatagramBatchPolicy = new(
+                settings.Options
+                    .ApplicationDatagramBatchTransportObservationMode,
+                settings.Options
+                    .ForcedApplicationDatagramBatchTransportPolicyValue);
         runtime = tlsKeyLogSecretObserver is null
             ? CreateRuntime(settings, diagnosticsSink, applicationDatagramBatchPolicy: applicationDatagramBatchPolicy)
             : CreateRuntime(

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0081",
+  "artifact_type": "work_item",
+  "status": "in_progress",
+  "title": "Implement capability-gated application datagram batch transport",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Implement REQ-QUIC-CRT-0195 as a closed legacy_current, segmented_batch, and ordinary_datagrams seam with connection-local forcing, capability fallback, observe-only, shadow, unified evidence, and force-legacy rollback while measurement and active behavior remain frozen.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE4-PLACEMENT-PLATFORM",
+    "ARC-QUIC-CRT-0080",
+    "VER-QUIC-CRT-0082"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0080"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0082"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0195"
+  ],
+  "planned_changes": "Preserve the client one-way pressure rule and server capable-batching behavior; add closed values, modes, reasons, selection sources, safety overrides, connection-local configuration matching, platform capability epochs, internal client/listener/raw-host force wiring, endpoint outcome attribution, one-axis enforcement, unified evidence v12, raw v12, manifest v13, deterministic v11 and v10 projections, mechanism and rollback tests, and synchronized matrix, seam, observation, controller, Stage 4, and evidence documents.",
+  "verification_plan": "Build the affected runtime, test project, and raw host in Release. Run REQ-QUIC-CRT-0195, retained REQ-QUIC-CRT-0162, unified REQ-QUIC-CRT-0183, socket segmentation, endpoint/listener ownership and terminal tests, and package tests. Verify every closed value and mode, force-legacy rollback, capability and lifecycle override, invalid-input fallback, one-way latch, later capability epoch, server legacy parity, configuration matching, one-axis enforcement, throwing-sink neutrality, schema composition, bounded outcome aggregates, and no active behavior. Do not run performance, campaigns, transforms, ML, CI, or push.",
+  "out_of_scope": [
+    "Performance acceptance, threshold tuning, campaign execution, dataset generation, or ML analysis",
+    "Inventing unsupported Linux or macOS segmented-send implementations",
+    "Changing packet construction, protection, recovery, congestion, pacing, flow control, endpoint ownership, queue, or buffer authority",
+    "CI changes, push, active_internal, or production activation"
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0082",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Capability-gated application datagram batch transport verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE4-PLACEMENT-PLATFORM",
+    "ARC-QUIC-CRT-0080",
+    "WI-QUIC-CRT-0081"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0195"
+  ],
+  "scope": "Verify independently forceable legacy_current, segmented_batch, and ordinary_datagrams transport values, preserved client and server legacy behavior, connection and capability latching, authoritative platform and endpoint fallback, bounded unified provenance, and force-legacy rollback without making a performance or active-behavior claim.",
+  "verification_method": "Canonical SpecTrace validation, deterministic requirement-home tests, composed v11-base plus v12-transport schema validation, semantic configured-latch and aggregate validation, and focused socket, endpoint, listener, ownership, terminal, package, and unified-evidence correctness tests.",
+  "preconditions": [
+    "Stage 0 through the preceding Stage 4 placement seam remain preserved.",
+    "Every adjacent applied policy remains legacy_current.",
+    "The stopped 55,658-epoch single-axis transform remains diagnostic_incomplete and untouched.",
+    "Performance measurement, campaigns, transforms, ML, CI work, push, active_internal, and production activation remain unauthorized."
+  ],
+  "procedure": [
+    "Validate the Stage 4 specification, architecture, work item, and verification artifacts against the canonical model and reciprocal links.",
+    "Build the affected runtime, test project, and raw host in Release before testing.",
+    "Verify closed legacy_current, segmented_batch, and ordinary_datagrams values plus invalid closed-set rejection.",
+    "Verify disabled, observe-only, shadow, forced-legacy, forced-segmented, and forced-ordinary identities, reasons, safety, boundary, latch, fallback, and versions.",
+    "Verify client force-legacy matches the retained one-way pressure sequence and server legacy remains capable-batching without client promotion.",
+    "Verify unsupported platform, address family, probe, custom sender, invalid observation, and lifecycle state override forced segmented selection.",
+    "Verify a later socket capability epoch can restore segmented eligibility without resetting the connection-lifetime client promotion latch.",
+    "Verify configuration mismatch, missing connection-local policy, and simultaneous behavior-distinct forcing are rejected before sink attachment.",
+    "Verify ordinary, segmented, failed, partial, and lifecycle socket outcomes remain distinct and bounded.",
+    "Verify a throwing evidence sink cannot change construction or transport selection.",
+    "Verify unified evidence v12, unified raw v12, and manifest v13 schemas compose with the complete v11 base projection.",
+    "Verify every exported epoch contains stable configured identity, nonzero capability identity, consistent decision and socket-call partitions, valid byte counts, and ten total axis records.",
+    "Run retained batching, socket segmentation, endpoint/listener ownership, cancellation, disposal, shutdown, package, and unified tests.",
+    "Confirm no performance, campaign, transform, ML, CI, push, active_internal, or production action occurred."
+  ],
+  "expected_result": "application_datagram_batch_transport is observable, shadowable, independently forceable, capability-gated, unified-row represented, guarded, and force-legacy rollback tested; retained client and server behavior remains available; unsupported segmented selection falls back to ordinary datagrams; and no performance or active decision is introduced.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0195.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0162.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0183.cs",
+    "tests/Incursa.Quic.Tests/QuicSocketUdpSegmentationTests.cs",
+    "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs",
+    "src/Incursa.Quic/QuicApplicationDatagramBatchPolicy.cs",
+    "src/Incursa.Quic/QuicSocketUdpSegmentation.cs",
+    "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeShard.cs",
+    "src/Incursa.Quic/QuicAdaptiveRuntimeUnifiedEpochEvidence.cs",
+    "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
+    "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeUnifiedRawEvidence.ps1",
+    "schemas/adaptive-runtime-unified-epoch-evidence-v12.schema.json",
+    "schemas/adaptive-runtime-unified-epoch-raw-v12.schema.json",
+    "schemas/adaptive-runtime-unified-raw-export-manifest-v13.schema.json",
+    "docs/design/adaptive-runtime-policy-axis-implementation-matrix.md",
+    "docs/design/adaptive-runtime-policy-controller-state-machine.md",
+    "docs/design/adaptive-runtime-policy-observation-schema.md",
+    "docs/design/adaptive-runtime-policy-seam-inventory.md"
+  ],
+  "status_summary": "Implementation verification is in progress. No performance, campaign, dataset, ML, CI, push, active_internal, or production action is authorized."
+}

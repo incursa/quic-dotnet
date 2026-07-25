@@ -44,6 +44,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
     private CancellationTokenSource? linkedCancellation;
     private CancellationTokenRegistration receiveLoopCancellationRegistration;
     private bool windowsUdpSegmentationEnabled;
+    private ulong applicationDatagramBatchCapabilityEpoch;
     private int disposed;
 
     public QuicConnectionEndpointHost(
@@ -95,6 +96,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
         windowsUdpSegmentationEnabled = applicationDatagramBatchPolicy is not null
             && QuicSocketUdpSegmentation.TryEnable(this.socket);
+        PublishApplicationDatagramBatchCapability();
     }
 
     /// <summary>
@@ -481,6 +483,16 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                         && usePacketInformationSender
                         && OperatingSystem.IsLinux())
                     {
+                        RecordApplicationDatagramBatchOutcome(
+                            QuicApplicationDatagramBatchTransportOutcomeKind
+                                .OrdinaryDatagram,
+                            datagramCount: 1,
+                            segmentCount: 0,
+                            submittedBytes: sendDatagram.Datagram.Length,
+                            acceptedBytes: 0,
+                            succeeded: false,
+                            partialSend: false,
+                            lifecycleGuard: false);
                         return false;
                     }
                 }
@@ -499,24 +511,74 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
                 if (bytesSent != sendDatagram.Datagram.Length)
                 {
+                    RecordApplicationDatagramBatchOutcome(
+                        QuicApplicationDatagramBatchTransportOutcomeKind
+                            .OrdinaryDatagram,
+                        datagramCount: 1,
+                        segmentCount: 0,
+                        submittedBytes: sendDatagram.Datagram.Length,
+                        acceptedBytes: Math.Max(0, bytesSent),
+                        succeeded: false,
+                        partialSend: true,
+                        lifecycleGuard: false);
                     throw new IOException("Failed to send the complete QUIC datagram.");
                 }
 
                 QuicMetrics.RecordDatagramSent(QuicTlsRole.Client, bytesSent);
+                RecordApplicationDatagramBatchOutcome(
+                    QuicApplicationDatagramBatchTransportOutcomeKind
+                        .OrdinaryDatagram,
+                    datagramCount: 1,
+                    segmentCount: 0,
+                    submittedBytes: sendDatagram.Datagram.Length,
+                    acceptedBytes: bytesSent,
+                    succeeded: true,
+                    partialSend: false,
+                    lifecycleGuard: false);
             }
 
             return true;
         }
         catch (ObjectDisposedException) when (shutdown.IsCancellationRequested)
         {
+            RecordApplicationDatagramBatchOutcome(
+                QuicApplicationDatagramBatchTransportOutcomeKind
+                    .OrdinaryDatagram,
+                datagramCount: 1,
+                segmentCount: 0,
+                submittedBytes: sendDatagram.Datagram.Length,
+                acceptedBytes: 0,
+                succeeded: false,
+                partialSend: false,
+                lifecycleGuard: true);
             // Expected during shutdown.
         }
         catch (SocketException) when (shutdown.IsCancellationRequested)
         {
+            RecordApplicationDatagramBatchOutcome(
+                QuicApplicationDatagramBatchTransportOutcomeKind
+                    .OrdinaryDatagram,
+                datagramCount: 1,
+                segmentCount: 0,
+                submittedBytes: sendDatagram.Datagram.Length,
+                acceptedBytes: 0,
+                succeeded: false,
+                partialSend: false,
+                lifecycleGuard: true);
             // Expected during shutdown.
         }
         catch (SocketException ex)
         {
+            RecordApplicationDatagramBatchOutcome(
+                QuicApplicationDatagramBatchTransportOutcomeKind
+                    .OrdinaryDatagram,
+                datagramCount: 1,
+                segmentCount: 0,
+                submittedBytes: sendDatagram.Datagram.Length,
+                acceptedBytes: 0,
+                succeeded: false,
+                partialSend: false,
+                lifecycleGuard: false);
             EmitUdpSendError(ex);
         }
 
@@ -652,25 +714,84 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                 {
                     QuicMetrics.RecordDatagramSent(QuicTlsRole.Client, sendDatagram.Datagram.Length);
                 }
+
+                RecordApplicationDatagramBatchOutcome(
+                    QuicApplicationDatagramBatchTransportOutcomeKind
+                        .SegmentedBatch,
+                    datagramCount: sendDatagrams.Length,
+                    segmentCount: sendDatagrams.Length,
+                    submittedBytes: length,
+                    acceptedBytes: length,
+                    succeeded: true,
+                    partialSend: false,
+                    lifecycleGuard: false);
             }
 
             return true;
         }
         catch (ObjectDisposedException) when (shutdown.IsCancellationRequested)
         {
+            RecordApplicationDatagramBatchOutcome(
+                QuicApplicationDatagramBatchTransportOutcomeKind
+                    .SegmentedBatch,
+                datagramCount: sendDatagrams.Length,
+                segmentCount: sendDatagrams.Length,
+                submittedBytes: checked(
+                    sendDatagrams.Length
+                        * QuicSocketUdpSegmentation.SegmentSize),
+                acceptedBytes: 0,
+                succeeded: false,
+                partialSend: false,
+                lifecycleGuard: true);
             return true;
         }
         catch (SocketException) when (shutdown.IsCancellationRequested)
         {
+            RecordApplicationDatagramBatchOutcome(
+                QuicApplicationDatagramBatchTransportOutcomeKind
+                    .SegmentedBatch,
+                datagramCount: sendDatagrams.Length,
+                segmentCount: sendDatagrams.Length,
+                submittedBytes: checked(
+                    sendDatagrams.Length
+                        * QuicSocketUdpSegmentation.SegmentSize),
+                acceptedBytes: 0,
+                succeeded: false,
+                partialSend: false,
+                lifecycleGuard: true);
             return true;
         }
         catch (SocketException ex)
         {
+            RecordApplicationDatagramBatchOutcome(
+                QuicApplicationDatagramBatchTransportOutcomeKind
+                    .SegmentedBatch,
+                datagramCount: sendDatagrams.Length,
+                segmentCount: sendDatagrams.Length,
+                submittedBytes: checked(
+                    sendDatagrams.Length
+                        * QuicSocketUdpSegmentation.SegmentSize),
+                acceptedBytes: 0,
+                succeeded: false,
+                partialSend: false,
+                lifecycleGuard: false);
             EmitUdpSendError(ex);
             return false;
         }
         catch (IOException)
         {
+            RecordApplicationDatagramBatchOutcome(
+                QuicApplicationDatagramBatchTransportOutcomeKind
+                    .SegmentedBatch,
+                datagramCount: sendDatagrams.Length,
+                segmentCount: sendDatagrams.Length,
+                submittedBytes: checked(
+                    sendDatagrams.Length
+                        * QuicSocketUdpSegmentation.SegmentSize),
+                acceptedBytes: 0,
+                succeeded: false,
+                partialSend: true,
+                lifecycleGuard: false);
             return false;
         }
     }
@@ -739,10 +860,59 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
             windowsUdpSegmentationEnabled = applicationDatagramBatchPolicy is not null
                 && !applicationDatagramBatchPolicy.IsPromoted
                 && QuicSocketUdpSegmentation.TryEnable(socket);
+            PublishApplicationDatagramBatchCapability();
             peerPathIdentity = pathIdentity;
             previousSocket.Dispose();
             return true;
         }
+    }
+
+    private void PublishApplicationDatagramBatchCapability()
+    {
+        if (applicationDatagramBatchPolicy is null)
+        {
+            return;
+        }
+
+        ulong capabilityEpoch =
+            applicationDatagramBatchCapabilityEpoch == ulong.MaxValue
+                ? ulong.MaxValue
+                : ++applicationDatagramBatchCapabilityEpoch;
+        QuicApplicationDatagramBatchTransportCapability capability = new(
+            capabilityEpoch,
+            QuicSocketUdpSegmentation.ClassifyCapability(
+                socket,
+                windowsUdpSegmentationEnabled));
+        applicationDatagramBatchPolicy.ObserveCapability(in capability);
+    }
+
+    private void RecordApplicationDatagramBatchOutcome(
+        QuicApplicationDatagramBatchTransportOutcomeKind kind,
+        int datagramCount,
+        int segmentCount,
+        int submittedBytes,
+        int acceptedBytes,
+        bool succeeded,
+        bool partialSend,
+        bool lifecycleGuard)
+    {
+        if (applicationDatagramBatchPolicy is null)
+        {
+            return;
+        }
+
+        QuicApplicationDatagramBatchTransportOutcome outcome = new(
+            kind,
+            applicationDatagramBatchCapabilityEpoch,
+            SocketCallCount: 1,
+            DatagramCount: (uint)Math.Max(0, datagramCount),
+            SegmentCount: (uint)Math.Max(0, segmentCount),
+            SubmittedBytes: (ulong)Math.Max(0, submittedBytes),
+            AcceptedBytes: (ulong)Math.Max(0, acceptedBytes),
+            succeeded,
+            partialSend,
+            lifecycleGuard);
+        applicationDatagramBatchPolicy.RecordOutcome(in outcome);
     }
 
     private void GetSocketBinding(out Socket currentSocket)

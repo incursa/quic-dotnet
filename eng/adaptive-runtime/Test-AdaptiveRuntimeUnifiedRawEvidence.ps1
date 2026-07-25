@@ -34,9 +34,11 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v11.schema.json'
+$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v12.schema.json'
+$v11SchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v11.schema.json'
 $legacySchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v10.schema.json'
-$evidenceDeltaSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-evidence-v11.schema.json'
+$evidenceDeltaSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-evidence-v12.schema.json'
+$v11EvidenceSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-evidence-v11.schema.json'
 $actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v4.schema.json'
 $adaptiveBackpressureSchemaPath =
     Join-Path $RepositoryRoot 'schemas\adaptive-runtime-backpressure-raw-v1.schema.json'
@@ -79,6 +81,7 @@ $lastAdaptiveBackpressureSequenceByConnection = @{}
 $lastPacketFlushCadenceSequenceByConnection = @{}
 $lastReceiveDeliveryQuantumSequenceByConnection = @{}
 $placementByConnection = @{}
+$datagramTransportByConnection = @{}
 $actorEpochSummaryByRowKey = @{}
 $actorEpochRowByActorKey = @{}
 $actorContenderCountByEpoch = @{}
@@ -212,7 +215,33 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
                 Test-Json `
                     -SchemaFile $evidenceDeltaSchemaPath `
                     -ErrorAction Stop)) {
-        throw "Unified adaptive-runtime placement delta failed schema validation at row $($rowCount + 1)."
+        throw "Unified adaptive-runtime datagram-transport delta failed schema validation at row $($rowCount + 1)."
+    }
+
+    $contractRecord.schemaVersion =
+        'adaptive-runtime-unified-epoch-raw-v11'
+    $contractRecord.epoch.evidenceContractVersion =
+        'adaptive-runtime-unified-epoch-evidence-v11'
+    [void] $contractRecord.epoch.Remove(
+        'applicationDatagramBatchTransport')
+    $v11ProjectionJson =
+        $contractRecord | ConvertTo-Json -Depth 100 -Compress
+    if (-not (
+            $v11ProjectionJson |
+                Test-Json `
+                    -SchemaFile $v11SchemaPath `
+                    -ErrorAction Stop)) {
+        throw "Unified adaptive-runtime v11 raw projection failed schema validation at row $($rowCount + 1)."
+    }
+
+    $v11EpochProjectionJson =
+        $contractRecord.epoch | ConvertTo-Json -Depth 100 -Compress
+    if (-not (
+            $v11EpochProjectionJson |
+                Test-Json `
+                    -SchemaFile $v11EvidenceSchemaPath `
+                    -ErrorAction Stop)) {
+        throw "Unified adaptive-runtime v11 evidence projection failed schema validation at row $($rowCount + 1)."
     }
 
     $contractRecord.schemaVersion =
@@ -273,7 +302,7 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
         $epoch.stage1.queuedSendBurstBudget,
         $epoch.stage1.oversizedWriteAdmissionQuantum
     )
-    $axisRecordCount += $stage1Records.Count + 5
+    $axisRecordCount += $stage1Records.Count + 6
     $nonLegacyApplied = @($stage1Records | Where-Object {
         [string] $_.decision.appliedValue -ne 'LegacyCurrent'
     }).Count
@@ -329,6 +358,68 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
             "$rowKey|connection-shard-placement-latch")
     }
     $placementByConnection[$scopedConnectionKey] = $placementIdentity
+    $datagramTransportSummary =
+        $epoch.applicationDatagramBatchTransport
+    $datagramTransportSnapshot =
+        $datagramTransportSummary.configuredSnapshot
+    $datagramTransportCapability =
+        $datagramTransportSummary.capability
+    $datagramTransportDecision =
+        $datagramTransportSummary.lastDecision
+    $datagramDecisionEventCount =
+        [uint64] $datagramTransportSummary.decisionEventCount
+    $datagramDecisionKindCount =
+        [uint64] $datagramTransportSummary.segmentedDecisionCount +
+        [uint64] $datagramTransportSummary.ordinaryDecisionCount
+    $datagramSocketCallCount =
+        [uint64] $datagramTransportSummary.socketCallCount
+    $datagramSocketCallKindCount =
+        [uint64] $datagramTransportSummary.ordinarySocketCallCount +
+        [uint64] $datagramTransportSummary.segmentedSocketCallCount
+    if (-not [bool] $datagramTransportSummary.hasConfiguredSnapshot -or
+        -not [bool] $datagramTransportSummary.hasCapability -or
+        [uint64] $datagramTransportCapability.capabilityEpoch -eq 0 -or
+        $datagramDecisionEventCount -ne $datagramDecisionKindCount -or
+        ($datagramDecisionEventCount -gt 0 -and
+            -not [bool] $datagramTransportSummary.hasDecision) -or
+        $datagramSocketCallCount -ne $datagramSocketCallKindCount -or
+        [uint64] $datagramTransportSummary.acceptedBytes -gt
+            [uint64] $datagramTransportSummary.submittedBytes -or
+        [uint64] $datagramTransportSummary.failedSocketCallCount -gt
+            $datagramSocketCallCount -or
+        [uint64] $datagramTransportSummary.partialSendCount -gt
+            [uint64] $datagramTransportSummary.failedSocketCallCount) {
+        [void] $joinFailures.Add(
+            "$rowKey|application-datagram-batch-transport")
+    }
+    if ([bool] $datagramTransportSummary.hasDecision -and
+        ([string] $datagramTransportDecision.axisId -ne
+            'application_datagram_batch_transport' -or
+        [uint64] $datagramTransportDecision.capability.capabilityEpoch -eq
+            0)) {
+        [void] $joinFailures.Add(
+            "$rowKey|application-datagram-batch-transport-decision")
+    }
+    if ([string] $datagramTransportSnapshot.appliedValue -ne
+        'LegacyCurrent') {
+        $nonLegacyApplied++
+    }
+    $datagramTransportIdentity = @(
+        [string] $datagramTransportSnapshot.mode,
+        [bool] $datagramTransportSnapshot.hasForcedValue,
+        [string] $datagramTransportSnapshot.forcedValue,
+        [string] $datagramTransportSnapshot.selectedValue,
+        [string] $datagramTransportSnapshot.appliedValue
+    ) -join '|'
+    if ($datagramTransportByConnection.ContainsKey(
+            $scopedConnectionKey) -and
+        [string] $datagramTransportByConnection[
+            $scopedConnectionKey] -ne $datagramTransportIdentity) {
+        [void] $joinFailures.Add(
+            "$rowKey|application-datagram-batch-transport-latch")
+    }
+    $datagramTransportByConnection[$scopedConnectionKey] =
+        $datagramTransportIdentity
     if ($nonLegacyApplied -gt 1) {
         [void] $multiAxisRows.Add($rowKey)
     }
@@ -1735,7 +1826,7 @@ $valid =
     $expectedReceiveDeliveryQuantumKeys.Count -eq 0 -and
     $joinFailures.Count -eq 0 -and
     $multiAxisRows.Count -eq 0 -and
-    $axisRecordCount -eq ($rowCount * 9)
+    $axisRecordCount -eq ($rowCount * 10)
 if (-not $valid) {
     throw (
         "Unified adaptive-runtime raw evidence failed semantic validation: " +
@@ -1769,11 +1860,11 @@ if (-not $valid) {
         "receiveDeliveryMissing=$(
             $expectedReceiveDeliveryQuantumKeys.Count), " +
         "joinFailures=$($joinFailures.Count), multiAxis=$($multiAxisRows.Count), " +
-        "axisRecords=$axisRecordCount, expectedAxisRecords=$($rowCount * 9).")
+        "axisRecords=$axisRecordCount, expectedAxisRecords=$($rowCount * 10).")
 }
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-validation-v12'
+    schemaVersion = 'adaptive-runtime-unified-raw-validation-v13'
     valid = $true
     rawEpochRowCount = $rowCount
     axisRecordCount = $axisRecordCount

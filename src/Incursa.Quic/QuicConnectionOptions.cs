@@ -259,4 +259,13 @@ public abstract class QuicConnectionOptions
 
     internal QuicConnectionShardPlacementPolicyValue?
         ForcedConnectionShardPlacementPolicyValue { get; set; }
+
+    internal QuicApplicationDatagramBatchTransportObservationMode
+        ApplicationDatagramBatchTransportObservationMode { get; set; }
+
+    internal QuicApplicationDatagramBatchTransportPolicyValue?
+        ForcedApplicationDatagramBatchTransportPolicyValue { get; set; }
+
+    internal IQuicApplicationDatagramBatchTransportEvidenceSink?
+        ApplicationDatagramBatchTransportEvidenceSink { get; set; }
 }

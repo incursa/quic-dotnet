@@ -17,14 +17,14 @@
     "SPEC-QUIC-CRT-STAGE3-PACKET-RECEIVE",
     "ARC-QUIC-CRT-0077",
     "WI-QUIC-CRT-0078",
-    "VER-QUIC-CRT-0079"
+    "VER-QUIC-CRT-0079",
+    "ARC-QUIC-CRT-0080",
+    "WI-QUIC-CRT-0081",
+    "VER-QUIC-CRT-0082"
   ],
   "purpose": "Define connection-start placement and platform-capability seams while keeping route ownership, endpoint I/O, buffer ownership, lifecycle, and deterministic fallback authoritative.",
-  "scope": "This checkpoint specifies connection_shard_placement with closed legacy_current and bounded_power_of_two_choices values, disabled, observe-only, shadow, forcing, immutable connection-lifetime latching, bounded active-count observations, unified evidence, rollback, and deterministic correctness proof. application_datagram_batch_transport remains the next independent Stage 4 axis. Performance measurement and active behavior remain unauthorized.",
-  "context": "The retained host assigns a sequential connection handle by modulo shard count. The conservative implementation compares that legacy shard with one deterministic alternate and may choose only the lower active-connection count. It does not migrate established connections or use topology, workload, host, peer, URL, payload, or application identity.",
-  "open_questions": [
-    "Which application_datagram_batch_transport capability set can be forced honestly across the supported operating systems without claiming unsupported batching?"
-  ],
+  "scope": "This checkpoint specifies connection_shard_placement and application_datagram_batch_transport as independent Stage 4 axes. Placement retains immutable connection-start routing. Datagram transport retains the current capability-gated segmented path and one-way client pressure promotion, adds ordinary_datagrams as the conservative value, and makes capability fallback, forcing, observe-only, shadow, unified evidence, and rollback explicit. Performance measurement and active behavior remain unauthorized.",
+  "context": "The retained host assigns a sequential connection handle by modulo shard count. The retained transport uses Windows UDP_SEND_MSG_SIZE only after an exact socket capability probe, with a server path that batches whenever capable and a client path that promotes one way to ordinary sends under sustained distinct-stream pressure. Neither axis uses topology, workload, host, peer, URL, payload constants, requested concurrency, or application identity as controller input.",
   "requirements": [
     {
       "id": "REQ-QUIC-CRT-0194",
@@ -62,6 +62,45 @@
       "notes": [
         "bounded_power_of_two_choices is a reviewed mechanism value, not a performance-derived claim.",
         "Connection migration, topology-aware placement, measurement, active_internal, and production activation remain outside this requirement."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0195",
+      "title": "Force capability-gated application datagram transport without weakening endpoint safety",
+      "statement": "The runtime MUST expose the application_datagram_batch_transport axis with the closed legacy_current, segmented_batch, and ordinary_datagrams values; preserve the current capability-gated server batching and one-way client pressure-promotion behavior under legacy_current; treat ordinary_datagrams as the distinct conservative implementation; support disabled, observe-only, shadow, forced-legacy, forced-segmented, and forced-ordinary operation with forced, recommended, selected, and applied identities distinct; decide at each application-send turn while latching legacy client promotion for the connection lifetime and socket capability for one monotonic capability epoch; make platform, address-family, socket-probe, custom-sender, endpoint, packet-size, segmentation, source-address, ECN, ownership, partial-send, cancellation, disposal, shutdown, recovery, congestion, pacing, flow-control, queue, and buffer guards authoritative under every forced value; fall back to ordinary datagrams for unavailable capability or missing, stale, saturated, contradictory, invalid, out-of-domain, and lifecycle input with bounded reasons; publish configured identity, capability, decisions, socket-call, datagram, segment, submitted-byte, accepted-byte, failure, partial-send, and lifecycle outcomes in every unified epoch; reject simultaneous behavior-distinct forcing and mismatched connection-local configuration; independently prove force-legacy rollback; exclude scenario, workload, payload constants, requested concurrency, peer, URL, host, and application identity from controller inputs; and keep performance selection, active_internal, and production activation unavailable.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0080"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0081"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0082"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-axis-roadmap.md",
+          "docs/design/adaptive-runtime-policy-axis-implementation-matrix.md",
+          "docs/design/adaptive-runtime-policy-controller-state-machine.md",
+          "docs/design/adaptive-runtime-policy-observation-schema.md",
+          "docs/design/adaptive-runtime-policy-seam-inventory.md",
+          "src/Incursa.Quic/QuicApplicationDatagramBatchPolicy.cs",
+          "src/Incursa.Quic/QuicSocketUdpSegmentation.cs",
+          "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+          "src/Incursa.Quic/QuicListenerHost.cs",
+          "src/Incursa.Quic/QuicAdaptiveRuntimeUnifiedEpochEvidence.cs",
+          "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
+          "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeUnifiedRawEvidence.ps1",
+          "schemas/adaptive-runtime-unified-epoch-evidence-v12.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-raw-v12.schema.json",
+          "schemas/adaptive-runtime-unified-raw-export-manifest-v13.schema.json",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0195.cs"
+        ]
+      },
+      "notes": [
+        "segmented_batch is capability-gated and never claims support on a platform, address family, socket, or sender where the probe is unavailable.",
+        "The current pressure threshold is preserved only as legacy behavior and is not tuned or promoted by this requirement."
       ]
     }
   ]

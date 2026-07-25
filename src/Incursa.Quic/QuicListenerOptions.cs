@@ -51,6 +51,12 @@ public sealed class QuicListenerOptions
     internal QuicConnectionShardPlacementPolicyValue?
         ForcedConnectionShardPlacementPolicyValue { get; set; }
 
+    internal QuicApplicationDatagramBatchTransportObservationMode
+        ApplicationDatagramBatchTransportObservationMode { get; set; }
+
+    internal QuicApplicationDatagramBatchTransportPolicyValue?
+        ForcedApplicationDatagramBatchTransportPolicyValue { get; set; }
+
     internal void Validate(string argumentName)
     {
         if (ListenEndPoint is null)
@@ -88,6 +94,16 @@ public sealed class QuicListenerOptions
         if (ForcedConnectionShardPlacementPolicyValue is { } forced)
         {
             QuicConnectionShardPlacementPolicy.ValidateValue(forced);
+        }
+
+        QuicApplicationDatagramBatchTransportPolicy
+            .ValidateObservationMode(
+                ApplicationDatagramBatchTransportObservationMode);
+        if (ForcedApplicationDatagramBatchTransportPolicyValue
+            is { } forcedBatchTransport)
+        {
+            QuicApplicationDatagramBatchTransportPolicy.ValidateValue(
+                forcedBatchTransport);
         }
     }
 }

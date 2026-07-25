@@ -1505,6 +1505,55 @@ internal sealed partial class QuicConnectionRuntime :
         QuicReceiveDeliveryQuantumPolicyValue?
             forcedReceiveDeliveryQuantumPolicyValue =
                 options.ForcedReceiveDeliveryQuantumPolicyValue;
+        QuicApplicationDatagramBatchTransportObservationMode
+            requestedApplicationDatagramBatchTransportObservationMode =
+                options.ApplicationDatagramBatchTransportObservationMode;
+        QuicApplicationDatagramBatchTransportPolicyValue?
+            forcedApplicationDatagramBatchTransportPolicyValue =
+                options.ForcedApplicationDatagramBatchTransportPolicyValue;
+        QuicApplicationDatagramBatchTransportPolicy
+            .ValidateObservationMode(
+                requestedApplicationDatagramBatchTransportObservationMode);
+        if (forcedApplicationDatagramBatchTransportPolicyValue
+            is { } forcedDatagramBatchTransport)
+        {
+            QuicApplicationDatagramBatchTransportPolicy.ValidateValue(
+                forcedDatagramBatchTransport);
+        }
+
+        if (applicationDatagramBatchPolicy is null
+            && (requestedApplicationDatagramBatchTransportObservationMode
+                    != QuicApplicationDatagramBatchTransportObservationMode
+                        .Disabled
+                || forcedApplicationDatagramBatchTransportPolicyValue
+                    is not null
+                || options.ApplicationDatagramBatchTransportEvidenceSink
+                    is not null))
+        {
+            throw new InvalidOperationException(
+                "Application datagram batch transport configuration requires a connection-local policy.");
+        }
+
+        if (applicationDatagramBatchPolicy is { } datagramBatchPolicy)
+        {
+            QuicApplicationDatagramBatchTransportConfiguredPolicySnapshot
+                batchTransportSnapshot =
+                    datagramBatchPolicy.ConfiguredSnapshot;
+            bool forcedValueMatches =
+                forcedApplicationDatagramBatchTransportPolicyValue is null
+                    ? !batchTransportSnapshot.HasForcedValue
+                    : batchTransportSnapshot.HasForcedValue
+                        && batchTransportSnapshot.ForcedValue
+                            == forcedApplicationDatagramBatchTransportPolicyValue;
+            if (batchTransportSnapshot.Mode
+                    != requestedApplicationDatagramBatchTransportObservationMode
+                || !forcedValueMatches)
+            {
+                throw new InvalidOperationException(
+                    "Application datagram batch transport options do not match the connection-local policy.");
+            }
+        }
+
         if (requestedApplicationSendTurnObservationMode is < QuicApplicationSendTurnObservationMode.Disabled
             or > QuicApplicationSendTurnObservationMode.Shadow)
         {
@@ -1971,6 +2020,12 @@ internal sealed partial class QuicConnectionRuntime :
         bool receiveDeliveryQuantumTreatmentSelected =
             forcedReceiveDeliveryQuantumPolicyValue
                 is QuicReceiveDeliveryQuantumPolicyValue.SingleSegment;
+        bool applicationDatagramBatchTransportTreatmentSelected =
+            forcedApplicationDatagramBatchTransportPolicyValue
+                is QuicApplicationDatagramBatchTransportPolicyValue
+                    .SegmentedBatch
+                or QuicApplicationDatagramBatchTransportPolicyValue
+                    .OrdinaryDatagrams;
         int behaviorDistinctTreatmentCount =
             (applicationSendTurnTreatmentSelected ? 1 : 0)
             + (applicationSendBatchTreatmentSelected ? 1 : 0)
@@ -1979,7 +2034,8 @@ internal sealed partial class QuicConnectionRuntime :
             + (bufferCopyTreatmentSelected ? 1 : 0)
             + (adaptiveBackpressureTreatmentSelected ? 1 : 0)
             + (packetFlushCadenceTreatmentSelected ? 1 : 0)
-            + (receiveDeliveryQuantumTreatmentSelected ? 1 : 0);
+            + (receiveDeliveryQuantumTreatmentSelected ? 1 : 0)
+            + (applicationDatagramBatchTransportTreatmentSelected ? 1 : 0);
         if (behaviorDistinctTreatmentCount > 1)
         {
             throw new InvalidOperationException(
@@ -2166,6 +2222,13 @@ internal sealed partial class QuicConnectionRuntime :
                 ConfigureConnectionShardPlacementEvidenceSink(shadowPlacementSink);
             }
 
+            if (options.ApplicationDatagramBatchTransportEvidenceSink
+                is { } shadowDatagramBatchTransportSink)
+            {
+                applicationDatagramBatchPolicy!.ConfigureEvidenceSink(
+                    shadowDatagramBatchTransportSink);
+            }
+
             return;
         }
 
@@ -2274,6 +2337,13 @@ internal sealed partial class QuicConnectionRuntime :
         if (options.ConnectionShardPlacementEvidenceSink is { } placementSink)
         {
             ConfigureConnectionShardPlacementEvidenceSink(placementSink);
+        }
+
+        if (options.ApplicationDatagramBatchTransportEvidenceSink
+            is { } datagramBatchTransportSink)
+        {
+            applicationDatagramBatchPolicy!.ConfigureEvidenceSink(
+                datagramBatchTransportSink);
         }
     }
 
@@ -3350,6 +3420,9 @@ internal sealed partial class QuicConnectionRuntime :
         runtimePressureSnapshotSkippedWorkItems = skippedWorkItems + 1;
         return false;
     }
+
+    internal IQuicApplicationDatagramBatchPolicy?
+        ApplicationDatagramBatchPolicy => applicationDatagramBatchPolicy;
 
     internal int RetainedSentPacketCount => sendRuntime.SentPackets.Count;
 

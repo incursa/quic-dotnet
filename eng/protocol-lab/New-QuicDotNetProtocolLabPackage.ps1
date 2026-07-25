@@ -28,6 +28,9 @@ param(
     [ValidateSet("", "legacy_current", "bounded_power_of_two_choices", "observe_only", "shadow")]
     [string] $AdaptiveRuntimeConnectionShardPlacementPolicy = "",
 
+    [ValidateSet("", "legacy_current", "segmented_batch", "ordinary_datagrams", "observe_only", "shadow")]
+    [string] $AdaptiveRuntimeApplicationDatagramBatchTransportPolicy = "",
+
     [switch] $RawQuicDebugLogging,
 
     [string] $OutputPath,
@@ -483,6 +486,7 @@ $adaptiveRuntimeEnvironmentRequested =
     -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimePacketFlushCadencePolicy) -or
     -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveDeliveryQuantumPolicy) -or
     -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeConnectionShardPlacementPolicy) -or
+    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationDatagramBatchTransportPolicy) -or
     $RawQuicDebugLogging
 if ($adaptiveRuntimeEnvironmentRequested) {
     $implementationManifestPath = Join-Path $stageRoot "implementations/quic-dotnet-raw-dev.yaml"
@@ -508,6 +512,9 @@ if ($adaptiveRuntimeEnvironmentRequested) {
     }
     if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeConnectionShardPlacementPolicy)) {
         $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_CONNECTION_SHARD_PLACEMENT_POLICY: $AdaptiveRuntimeConnectionShardPlacementPolicy"
+    }
+    if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationDatagramBatchTransportPolicy)) {
+        $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_DATAGRAM_BATCH_TRANSPORT_POLICY: $AdaptiveRuntimeApplicationDatagramBatchTransportPolicy"
     }
     if ($RawQuicDebugLogging) {
         $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG: 1"
