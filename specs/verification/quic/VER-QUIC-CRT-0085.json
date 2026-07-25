@@ -1,0 +1,61 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0085",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Congestion and pacing profile safety-seam verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE5-CONGESTION-PACING",
+    "ARC-QUIC-CRT-0083",
+    "WI-QUIC-CRT-0084"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0196"
+  ],
+  "scope": "Verify deterministic connection-start forcing of retained NewReno and existing private CUBIC, immutable lifetime selection, path-reset reconciliation, authoritative fallback, unified provenance, research-only shadow, and force-legacy rollback without making a performance or activation claim.",
+  "verification_method": "Canonical SpecTrace validation, deterministic requirement-home tests, composed v12-base plus v13-profile schema validation, semantic stable-latch validation, and focused recovery, path-reset, package, terminal, cancellation, and unified-evidence correctness tests.",
+  "preconditions": [
+    "Stage 0 through Stage 4 checkpoints remain preserved.",
+    "Every adjacent applied policy remains legacy_current.",
+    "The stopped 55,658-epoch transform remains diagnostic_incomplete and untouched.",
+    "Performance measurement, campaigns, transforms, ML, CI, push, active_internal, and production activation remain unauthorized."
+  ],
+  "procedure": [
+    "Validate the specification, architecture, work item, and verification artifacts against the canonical model and reciprocal links.",
+    "Build the affected runtime, test project, and raw host in Release.",
+    "Verify the exact legacy_current and cubic values and invalid closed-set rejection.",
+    "Verify disabled, observe-only, research-only shadow, forced-legacy, and forced-cubic identity.",
+    "Verify missing, stale, saturated, contradictory, invalid, out-of-domain, and lifecycle fallback to NewReno.",
+    "Verify force-legacy parity with the default runtime and forced CUBIC construction.",
+    "Verify path recovery reset preserves the selected controller while clearing path state.",
+    "Verify mismatched options, missing sinks, and simultaneous behavior-distinct forcing are rejected.",
+    "Verify throwing evidence sinks cannot change the applied controller.",
+    "Verify unified evidence v13, raw v13, manifest v14, and deterministic v12, v11, and v10 projections.",
+    "Run retained CUBIC loss, ECN, recovery, isolation, and reset tests plus focused package and terminal-path tests.",
+    "Confirm no performance, campaign, transform, ML, CI, push, active_internal, or production action occurred."
+  ],
+  "expected_result": "congestion_pacing_profile is observable, research-shadowable, independently forceable, connection-lifetime latched, unified-row represented, guarded, and force-legacy rollback tested; path reset retains the chosen controller; no new algorithm, active rule, performance claim, or production behavior is introduced.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0196.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0156.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0183.cs",
+    "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs",
+    "src/Incursa.Quic/QuicCongestionPacingProfilePolicy.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+    "src/Incursa.Quic/QuicCongestionControlState.cs",
+    "src/Incursa.Quic/QuicAdaptiveRuntimeUnifiedEpochEvidence.cs",
+    "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
+    "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeUnifiedRawEvidence.ps1",
+    "schemas/adaptive-runtime-unified-epoch-evidence-v13.schema.json",
+    "schemas/adaptive-runtime-unified-epoch-raw-v13.schema.json",
+    "schemas/adaptive-runtime-unified-raw-export-manifest-v14.schema.json",
+    "docs/design/adaptive-runtime-congestion-pacing-profile-safety-review.md",
+    "docs/protocol-lab/adaptive-runtime-congestion-pacing-profile-campaign.md",
+    "docs/design/adaptive-runtime-policy-axis-implementation-matrix.md"
+  ],
+  "status_summary": "Focused Release builds and deterministic tests passed. No performance, campaign, dataset, ML, CI, push, active_internal, or production action occurred."
+}

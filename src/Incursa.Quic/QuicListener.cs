@@ -64,7 +64,11 @@ public sealed class QuicListener : IAsyncDisposable
             applicationDatagramBatchTransportObservationMode:
                 options.ApplicationDatagramBatchTransportObservationMode,
             forcedApplicationDatagramBatchTransportPolicyValue:
-                options.ForcedApplicationDatagramBatchTransportPolicyValue);
+                options.ForcedApplicationDatagramBatchTransportPolicyValue,
+            congestionPacingProfileObservationMode:
+                options.CongestionPacingProfileObservationMode,
+            forcedCongestionPacingProfilePolicyValue:
+                options.ForcedCongestionPacingProfilePolicyValue);
 
         try
         {

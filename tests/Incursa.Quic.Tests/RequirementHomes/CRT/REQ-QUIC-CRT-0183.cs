@@ -208,6 +208,7 @@ public sealed class REQ_QUIC_CRT_0183
         Assert.True(accumulator.TryPublish(in packetFlushCadence));
         Assert.True(accumulator.TryPublish(in receiveDeliveryQuantum));
         PublishApplicationDatagramBatchTransportEvidence(accumulator);
+        PublishCongestionPacingProfileEvidence(accumulator);
         Assert.True(accumulator.TryPublish(
             in connection,
             in receiveCredit,
@@ -312,6 +313,7 @@ public sealed class REQ_QUIC_CRT_0183
         Assert.True(accumulator.TryPublish(in buffer));
         Assert.True(accumulator.TryPublish(in adaptiveBackpressure));
         PublishApplicationDatagramBatchTransportEvidence(accumulator);
+        PublishCongestionPacingProfileEvidence(accumulator);
         Assert.True(accumulator.TryPublish(
             in connection,
             in receiveCredit,
@@ -353,7 +355,7 @@ public sealed class REQ_QUIC_CRT_0183
             string unifiedSchema = Path.Combine(
                 repoRoot,
                 "schemas",
-                "adaptive-runtime-unified-epoch-evidence-v12.schema.json");
+                "adaptive-runtime-unified-epoch-evidence-v13.schema.json");
             string command =
                 $"$boundaryValid = Get-Content -LiteralPath "
                 + $"{AdaptiveRuntimePolicyScriptTestSupport.QuotePowerShellLiteral(boundaryPath)} "
@@ -437,6 +439,7 @@ public sealed class REQ_QUIC_CRT_0183
         Assert.True(accumulator.TryPublish(in receiveDeliveryQuantum));
         Assert.True(accumulator.TryPublish(in placement));
         PublishApplicationDatagramBatchTransportEvidence(accumulator);
+        PublishCongestionPacingProfileEvidence(accumulator);
         Assert.True(accumulator.TryPublish(
             in connection,
             in receiveCredit,
@@ -461,7 +464,7 @@ public sealed class REQ_QUIC_CRT_0183
                 new
                 {
                     schemaVersion =
-                        "adaptive-runtime-unified-epoch-raw-v12",
+                        "adaptive-runtime-unified-epoch-raw-v13",
                     connectionKey = "connection-0001",
                     epoch = evidence,
                 },
@@ -538,7 +541,7 @@ public sealed class REQ_QUIC_CRT_0183
                 1,
                 summary.RootElement.GetProperty("rowCount").GetInt32());
             Assert.Equal(
-                10,
+                11,
                 summary.RootElement.GetProperty("axisRecordCount").GetInt32());
             Assert.Equal(
                 1,
@@ -820,7 +823,7 @@ public sealed class REQ_QUIC_CRT_0183
                             new
                             {
                                 schemaVersion =
-                                    "adaptive-runtime-unified-epoch-raw-v12",
+                                    "adaptive-runtime-unified-epoch-raw-v13",
                                 connectionKey = "connection-0001",
                                 epoch = mismatchedEvidence,
                             },
@@ -872,7 +875,7 @@ public sealed class REQ_QUIC_CRT_0183
                             new
                             {
                                 schemaVersion =
-                                    "adaptive-runtime-unified-epoch-raw-v12",
+                                    "adaptive-runtime-unified-epoch-raw-v13",
                                 connectionKey = "connection-0001",
                                 epoch = mismatchedAcceptedWorkEvidence,
                             },
@@ -924,7 +927,7 @@ public sealed class REQ_QUIC_CRT_0183
                             new
                             {
                                 schemaVersion =
-                                    "adaptive-runtime-unified-epoch-raw-v12",
+                                    "adaptive-runtime-unified-epoch-raw-v13",
                                 connectionKey = "connection-0001",
                                 epoch = mismatchedContinuationEvidence,
                             },
@@ -1215,6 +1218,18 @@ public sealed class REQ_QUIC_CRT_0183
             PartialSend: false,
             LifecycleGuard: false);
         policy.RecordOutcome(in outcome);
+    }
+
+    private static void PublishCongestionPacingProfileEvidence(
+        QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator accumulator)
+    {
+        QuicCongestionPacingProfileDecision decision =
+            QuicCongestionPacingProfilePolicy.Evaluate(
+                QuicCongestionPacingProfileObservationMode.ObserveOnly,
+                forcedValue: null,
+                connectionStartSequence: 1,
+                captureTicks: 1);
+        Assert.True(accumulator.TryPublish(in decision));
     }
 
     private sealed class RecordingPostServiceSink :

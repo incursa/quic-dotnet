@@ -172,32 +172,45 @@ aggregated into the connection epoch; they are not relabeled as independent
 epoch observations. A missing configured snapshot, missing capability, zero
 capability epoch, inconsistent decision or socket-call partition, or accepted
 byte count greater than submitted bytes is invalid contract evidence.
+Version 13 adds one `congestion_pacing_profile` record. It repeats the
+immutable connection-start decision, including forced, shadow-recommended,
+selected, and applied values; applied controller; bounded reason, selection
+source, safety override, fallback and validity state; exact decision boundary
+and latch lifetime; initial congestion state; and
+observation/snapshot/rule/reason/provenance versions.
+`connectionStartSequence` is scoped by the existing source and connection key.
+`hasDecision=false` and `eventCount=0` are an explicit missing fallback and
+are invalid for a permanent runtime epoch.
 
 The raw QUIC host configures that same accumulator as the receive-credit,
 four Stage 1, actor-service, buffer-copy, adaptive-backpressure,
-packet-flush, receive-delivery, connection-placement, and
-application-datagram-transport evidence sink whenever an
+packet-flush, receive-delivery, connection-placement,
+application-datagram-transport, and congestion-profile evidence sink whenever an
 adaptive execution is requested. It emits
-`adaptive-runtime-unified-epoch-raw-v12` under one connection key while
+`adaptive-runtime-unified-epoch-raw-v13` under one connection key while
 retaining the prior receive-credit and Stage 1 compatibility records. The
 append-only
 [`../../eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1`](../../eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1)
 exporter validates
-[`../../schemas/adaptive-runtime-unified-epoch-raw-v12.schema.json`](../../schemas/adaptive-runtime-unified-epoch-raw-v12.schema.json)
-as a versioned transport delta composed with a complete v11 placement
-projection and complete v10 base projection,
+[`../../schemas/adaptive-runtime-unified-epoch-raw-v13.schema.json`](../../schemas/adaptive-runtime-unified-epoch-raw-v13.schema.json)
+as a versioned congestion-profile delta composed with a complete v12
+transport projection, complete v11 placement projection, and complete v10
+base projection,
 exact monotonic join keys, exactly four Stage 1 records plus one buffer-axis,
 one backpressure-axis, one packet-flush-axis, one receive-delivery-axis, and
-one connection-placement-axis plus one application-datagram-transport-axis
-record per row, and at most
+one connection-placement-axis, one application-datagram-transport-axis, and
+one congestion-profile-axis record per row, and at most
 one non-legacy applied axis across receive credit, Stage 1, buffer coalescing,
 backpressure, packet flush, receive delivery, connection placement, and
-application datagram transport. The
+application datagram transport, and congestion profile. The
 placement record must have one nonzero handle, one valid applied shard index,
 and the same lifetime identity in every source-scoped connection epoch.
 The transport record must have stable configured identity, a nonzero current
 capability epoch, bounded internally consistent decision and outcome counts,
 and exact forced, selected, and applied identity.
+The congestion-profile record must have one legal construction decision,
+stable connection-lifetime identity, legal initial state, and an applied
+NewReno or CUBIC controller matching the applied closed value.
 Connection keys are scoped to their hashed source
 log during multi-process export because each process restarts its local
 counter. The same host also emits every actor dispatch as
@@ -217,7 +230,7 @@ Those records are sample-scoped and join by exact
 `source + connectionKey + operationSequence` membership in the inclusive
 backpressure epoch range. The validator recomputes operation, delayed,
 safety-override, fallback, and maximum queue/capacity aggregates from the raw
-members. Manifest v13 retains separate actor, buffer, and backpressure raw
+members. Manifest v14 retains separate actor, buffer, and backpressure raw
 contract identities, distinct backpressure epoch and sample counts, source
 hashes, validation output, and any
 bounded-channel export failure records. An actor or unified export failure
@@ -230,7 +243,7 @@ Those records are sample-scoped and join by exact
 `source + connectionKey + operationSequence` membership in the inclusive
 packet-flush epoch range. The validator recomputes eligible, delayed, prompt,
 safety-override, fallback, maximum-payload, and maximum-queue aggregates from
-the raw members. Manifest v13 retains the packet stream contract, artifact,
+the raw members. Manifest v14 retains the packet stream contract, artifact,
 epoch count, sample count, and exact validation counts separately from the
 other streams.
 
@@ -240,7 +253,7 @@ Those records remain sample-scoped and join by exact
 `source + connectionKey + operationSequence` membership in the inclusive
 receive-delivery epoch range. The validator recomputes operation,
 single-segment, completion, batched-credit, safety, fallback, delivered-byte,
-source-segment, and bounded-maximum aggregates. Manifest v13 retains the
+source-segment, and bounded-maximum aggregates. Manifest v14 retains the
 receive stream contract, artifact, epoch count, sample count, and exact
 validation counts separately from the other streams. A configured epoch with
 no productive read retains the policy snapshot and a zeroed range.

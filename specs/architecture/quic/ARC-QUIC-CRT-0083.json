@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0083",
+  "artifact_type": "architecture",
+  "status": "proposed",
+  "title": "Connection-lifetime congestion and pacing profile safety seam",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0196 by wrapping only the retained NewReno and existing private CUBIC controllers in a connection-local immutable force seam.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE5-CONGESTION-PACING",
+    "ARC-QUIC-CRT-0054",
+    "WI-QUIC-CRT-0054",
+    "VER-QUIC-CRT-0054",
+    "WI-QUIC-CRT-0084",
+    "VER-QUIC-CRT-0085"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0196"
+  ],
+  "key_components": [
+    "QuicCongestionPacingProfilePolicy",
+    "QuicConnectionRuntime",
+    "QuicConnectionSendRuntime",
+    "QuicCongestionControlState",
+    "QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator",
+    "IncursaRawQuicServer internal force and shadow wiring",
+    "Unified raw exporter and semantic validator"
+  ],
+  "design_summary": "The closed legacy_current value constructs NewReno and cubic constructs the existing private CUBIC controller. Evaluation occurs once during connection construction and the applied controller is immutable. Observe-only applies legacy. Shadow is research-only and recommends legacy. Invalid or lifecycle input overrides forced CUBIC to NewReno. No congestion or pacing algorithm is added.",
+  "data_and_state_considerations": "The policy owns only compact enums and one immutable decision. Unified evidence repeats that decision in every connection epoch. Path reset clears RTT, ECN, pending-send reservation, and controller state but preserves the selected controller. The semantic validator requires one stable decision, legal initial state, and at most one behavior-distinct applied axis.",
+  "edge_cases_and_constraints": [
+    "Forced CUBIC cannot bypass congestion, pacing, recovery, loss, PTO, ECN, anti-amplification, flow-control, packet, ownership, lifecycle, cancellation, disposal, close, or shutdown authority.",
+    "A path migration resets state for the same controller and never reselects the profile.",
+    "A throwing evidence sink is behavior-neutral.",
+    "All adjacent applied axes remain legacy_current during a counterfactual.",
+    "No active_internal or production selection is present."
+  ],
+  "alternatives_considered": [
+    "A duplicate conservative value mapping to NewReno was rejected as a false behavior distinction.",
+    "A new pacing algorithm and any self-tuning or online-learning rule were rejected.",
+    "Mid-connection controller switching was rejected because it would cross recovery-state ownership and safety boundaries.",
+    "Scenario, workload, payload, concurrency, peer, host, URL, and application identity were rejected as controller inputs."
+  ],
+  "risks": [
+    "The existing private CUBIC controller has not been accepted for production safety or performance.",
+    "Network behavior depends on loss, ECN, RTT, peer, path, and competing-flow regimes; later evidence must preserve those cohorts.",
+    "A profile result cannot be inferred from BenchmarkDotNet or a single-host throughput result."
+  ],
+  "open_questions": [
+    "After implementation freeze and measurement release, does multi-host network-safety evidence justify a non-legacy deterministic shadow rule?"
+  ]
+}

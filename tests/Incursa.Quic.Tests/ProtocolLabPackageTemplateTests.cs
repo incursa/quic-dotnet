@@ -281,6 +281,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_CONNECTION_SHARD_PLACEMENT_POLICY", builderScript);
         Assert.Contains("AdaptiveRuntimeApplicationDatagramBatchTransportPolicy", builderScript);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_DATAGRAM_BATCH_TRANSPORT_POLICY", builderScript);
+        Assert.Contains("AdaptiveRuntimeCongestionPacingProfilePolicy", builderScript);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_CONGESTION_PACING_PROFILE_POLICY", builderScript);
         Assert.Contains("AdaptiveRuntimeApplicationSendTurnPolicy", builderScript);
         Assert.Contains("RawQuicDebugLogging", builderScript);
         Assert.Contains("IncursaRawQuicServer ignored failed inbound establishment", rawQuicServer);
@@ -298,7 +300,7 @@ public sealed class ProtocolLabPackageTemplateTests
             "QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=adaptive-runtime-epoch-raw-v2",
             rawQuicServer);
         Assert.Contains(
-            "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_CONTRACT=adaptive-runtime-unified-epoch-raw-v12",
+            "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_CONTRACT=adaptive-runtime-unified-epoch-raw-v13",
             rawQuicServer);
         Assert.Contains(
             "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON=",
@@ -396,6 +398,13 @@ public sealed class ProtocolLabPackageTemplateTests
             runScript);
         Assert.Contains(
             "AdaptiveRuntimeApplicationDatagramBatchTransportPolicy is supported only for the RawQuic package target.",
+            runScript);
+        Assert.Contains("AdaptiveRuntimeCongestionPacingProfilePolicy", runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeCongestionPacingProfilePolicy = $AdaptiveRuntimeCongestionPacingProfilePolicy",
+            runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeCongestionPacingProfilePolicy is supported only for the RawQuic package target.",
             runScript);
         Assert.Contains(
             "\"conservative\", \"observe_only\", \"shadow\"",

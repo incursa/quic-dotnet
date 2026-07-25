@@ -1,0 +1,32 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0084",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Implement the congestion and pacing profile safety seam",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Implement REQ-QUIC-CRT-0196 as an immutable connection-start legacy_current and cubic force seam with research-only shadow, authoritative fallback, unified v13 evidence, safety review, campaign contract, and force-legacy rollback while measurement and activation remain frozen.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE5-CONGESTION-PACING",
+    "ARC-QUIC-CRT-0083",
+    "VER-QUIC-CRT-0085"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0083"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0085"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0196"
+  ],
+  "planned_changes": "Preserve default NewReno and existing private CUBIC behavior; add closed values, internal client/listener/raw-host forcing, observe-only and research-only shadow, immutable construction decision, bounded safety fallback, one-axis enforcement, diagnostic evidence sink, unified evidence/raw v13, manifest v14, deterministic v12/v11/v10 projections, requirement-home tests, safety review, and a non-executed campaign contract.",
+  "verification_plan": "Build the runtime, test project, and raw host in Release. Verify all closed values and modes, force-legacy rollback, forced CUBIC construction, invalid and lifecycle override, connection-lifetime latch across path reset, configuration matching, one-axis enforcement, throwing-sink neutrality, unified schema composition, package wiring, and retained CUBIC recovery tests. Do not run performance, campaigns, transforms, ML, CI, or push.",
+  "out_of_scope": [
+    "A new congestion or pacing algorithm",
+    "CUBIC safety, performance, active_internal, or production acceptance",
+    "Threshold tuning, campaign execution, dataset generation, or ML analysis",
+    "CI changes or push"
+  ]
+}

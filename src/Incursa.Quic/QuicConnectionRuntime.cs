@@ -96,6 +96,9 @@ internal sealed partial class QuicConnectionRuntime :
     private const int MaximumStreamWriteChunkBytes = 32 * 1024;
     private readonly IMonotonicClock clock;
     private readonly QuicConnectionSendRuntime sendRuntime;
+    private readonly QuicCongestionPacingProfileDecision
+        congestionPacingProfileDecision;
+    private readonly bool legacyDirectCongestionControllerSelection;
     private readonly QuicRecoveryController recoveryController;
     private readonly QuicConnectionStreamRegistry streamRegistry;
     private readonly Channel<ulong> inboundStreamIds;
@@ -1511,6 +1514,12 @@ internal sealed partial class QuicConnectionRuntime :
         QuicApplicationDatagramBatchTransportPolicyValue?
             forcedApplicationDatagramBatchTransportPolicyValue =
                 options.ForcedApplicationDatagramBatchTransportPolicyValue;
+        QuicCongestionPacingProfileObservationMode
+            requestedCongestionPacingProfileObservationMode =
+                options.CongestionPacingProfileObservationMode;
+        QuicCongestionPacingProfilePolicyValue?
+            forcedCongestionPacingProfilePolicyValue =
+                options.ForcedCongestionPacingProfilePolicyValue;
         QuicApplicationDatagramBatchTransportPolicy
             .ValidateObservationMode(
                 requestedApplicationDatagramBatchTransportObservationMode);
@@ -1552,6 +1561,40 @@ internal sealed partial class QuicConnectionRuntime :
                 throw new InvalidOperationException(
                     "Application datagram batch transport options do not match the connection-local policy.");
             }
+        }
+
+        QuicCongestionPacingProfilePolicy.ValidateObservationMode(
+            requestedCongestionPacingProfileObservationMode);
+        if (forcedCongestionPacingProfilePolicyValue
+            is { } requestedCongestionProfile)
+        {
+            QuicCongestionPacingProfilePolicy.ValidateValue(
+                requestedCongestionProfile);
+        }
+
+        QuicCongestionPacingProfileConfiguredPolicySnapshot
+            congestionProfileSnapshot =
+                QuicCongestionPacingProfilePolicy.CreateConfiguredSnapshot(
+                    requestedCongestionPacingProfileObservationMode,
+                    forcedCongestionPacingProfilePolicyValue);
+        bool congestionProfileForcedValueMatches =
+            forcedCongestionPacingProfilePolicyValue is null
+                ? !congestionPacingProfileDecision.HasForcedValue
+                : congestionPacingProfileDecision.HasForcedValue
+                    && congestionPacingProfileDecision.ForcedValue
+                        == forcedCongestionPacingProfilePolicyValue;
+        bool legacyDirectSelectionMatches =
+            legacyDirectCongestionControllerSelection
+            && requestedCongestionPacingProfileObservationMode
+                == QuicCongestionPacingProfileObservationMode.Disabled
+            && forcedCongestionPacingProfilePolicyValue is null;
+        if (!legacyDirectSelectionMatches
+            && (congestionPacingProfileDecision.Mode
+                    != congestionProfileSnapshot.Mode
+                || !congestionProfileForcedValueMatches))
+        {
+            throw new InvalidOperationException(
+                "Congestion-pacing profile options do not match the connection-start decision.");
         }
 
         if (requestedApplicationSendTurnObservationMode is < QuicApplicationSendTurnObservationMode.Disabled
@@ -1688,6 +1731,9 @@ internal sealed partial class QuicConnectionRuntime :
             QuicReceiveDeliveryQuantumPolicy.ValidateValue(
                 requestedReceiveDeliveryQuantumPolicyValue);
         }
+        bool congestionPacingProfileObservationEnabled =
+            requestedCongestionPacingProfileObservationMode
+                != QuicCongestionPacingProfileObservationMode.Disabled;
         if (!applicationSendTurnObservationEnabled && options.ApplicationSendTurnEvidenceSink is not null)
         {
             throw new InvalidOperationException(
@@ -1804,6 +1850,21 @@ internal sealed partial class QuicConnectionRuntime :
         {
             throw new InvalidOperationException(
                 "Receive-delivery quantum observe-only and shadow modes require an evidence sink.");
+        }
+
+        if (congestionPacingProfileObservationEnabled
+            && options.CongestionPacingProfileEvidenceSink is null)
+        {
+            throw new InvalidOperationException(
+                "Congestion-pacing profile observe-only and shadow modes require an evidence sink.");
+        }
+
+        if (!congestionPacingProfileObservationEnabled
+            && forcedCongestionPacingProfilePolicyValue is null
+            && options.CongestionPacingProfileEvidenceSink is not null)
+        {
+            throw new InvalidOperationException(
+                "Congestion-pacing profile evidence export requires observe-only, shadow, or forced mode.");
         }
 
         bool applicationSendTurnTreatmentSelected =
@@ -2026,6 +2087,9 @@ internal sealed partial class QuicConnectionRuntime :
                     .SegmentedBatch
                 or QuicApplicationDatagramBatchTransportPolicyValue
                     .OrdinaryDatagrams;
+        bool congestionPacingProfileTreatmentSelected =
+            forcedCongestionPacingProfilePolicyValue
+                is QuicCongestionPacingProfilePolicyValue.Cubic;
         int behaviorDistinctTreatmentCount =
             (applicationSendTurnTreatmentSelected ? 1 : 0)
             + (applicationSendBatchTreatmentSelected ? 1 : 0)
@@ -2035,7 +2099,8 @@ internal sealed partial class QuicConnectionRuntime :
             + (adaptiveBackpressureTreatmentSelected ? 1 : 0)
             + (packetFlushCadenceTreatmentSelected ? 1 : 0)
             + (receiveDeliveryQuantumTreatmentSelected ? 1 : 0)
-            + (applicationDatagramBatchTransportTreatmentSelected ? 1 : 0);
+            + (applicationDatagramBatchTransportTreatmentSelected ? 1 : 0)
+            + (congestionPacingProfileTreatmentSelected ? 1 : 0);
         if (behaviorDistinctTreatmentCount > 1)
         {
             throw new InvalidOperationException(
@@ -2229,6 +2294,9 @@ internal sealed partial class QuicConnectionRuntime :
                     shadowDatagramBatchTransportSink);
             }
 
+            TryPublishCongestionPacingProfileDecision(
+                options.CongestionPacingProfileEvidenceSink);
+
             return;
         }
 
@@ -2344,6 +2412,28 @@ internal sealed partial class QuicConnectionRuntime :
         {
             applicationDatagramBatchPolicy!.ConfigureEvidenceSink(
                 datagramBatchTransportSink);
+        }
+
+        TryPublishCongestionPacingProfileDecision(
+            options.CongestionPacingProfileEvidenceSink);
+    }
+
+    private void TryPublishCongestionPacingProfileDecision(
+        IQuicCongestionPacingProfileEvidenceSink? sink)
+    {
+        if (sink is null)
+        {
+            return;
+        }
+
+        try
+        {
+            _ = sink.TryPublish(in congestionPacingProfileDecision);
+        }
+        catch (Exception)
+        {
+            // Connection-start policy evidence is diagnostic-only. A failed
+            // sink cannot replace the immutable controller or affect traffic.
         }
     }
 
@@ -3118,17 +3208,53 @@ internal sealed partial class QuicConnectionRuntime :
         bool enableInitialPeerUsableConnectionId = true,
         QuicCongestionControlAlgorithm congestionControlAlgorithm = QuicCongestionControlAlgorithm.NewReno,
         IQuicApplicationSendTurnPlanner? applicationSendTurnPlanner = null,
-        IQuicApplicationDatagramBatchPolicy? applicationDatagramBatchPolicy = null)
+        IQuicApplicationDatagramBatchPolicy? applicationDatagramBatchPolicy = null,
+        QuicCongestionPacingProfileObservationMode
+            congestionPacingProfileObservationMode =
+                QuicCongestionPacingProfileObservationMode.Disabled,
+        QuicCongestionPacingProfilePolicyValue?
+            forcedCongestionPacingProfilePolicyValue = null)
     {
         this.clock = clock ?? new MonotonicClock();
         this.applicationSendTurnPlanner = applicationSendTurnPlanner;
         this.applicationDatagramBatchPolicy = applicationDatagramBatchPolicy;
+        bool profileConfigured =
+            congestionPacingProfileObservationMode
+                != QuicCongestionPacingProfileObservationMode.Disabled
+            || forcedCongestionPacingProfilePolicyValue is not null;
+        legacyDirectCongestionControllerSelection =
+            !profileConfigured
+            && congestionControlAlgorithm
+                == QuicCongestionControlAlgorithm.Cubic;
+        if (profileConfigured
+            && congestionControlAlgorithm
+                != QuicCongestionControlAlgorithm.NewReno)
+        {
+            throw new InvalidOperationException(
+                "The congestion-pacing profile cannot replace an explicitly selected congestion controller.");
+        }
+
+        QuicCongestionPacingProfilePolicyValue? effectiveForcedProfile =
+            forcedCongestionPacingProfilePolicyValue;
+        if (legacyDirectCongestionControllerSelection)
+        {
+            effectiveForcedProfile =
+                QuicCongestionPacingProfilePolicyValue.Cubic;
+        }
+        congestionPacingProfileDecision =
+            QuicCongestionPacingProfilePolicy.Evaluate(
+                congestionPacingProfileObservationMode,
+                effectiveForcedProfile,
+                connectionStartSequence: 1,
+                captureTicks: this.clock.Ticks);
         timeOriginTicks = this.clock.Ticks;
         streamCapacityReleaseEvent = new QuicConnectionStreamActionEvent(
             timeOriginTicks,
             RequestId: 0,
             QuicConnectionStreamActionKind.ReleaseCapacity);
-        sendRuntime = new QuicConnectionSendRuntime(congestionControlAlgorithm: congestionControlAlgorithm);
+        sendRuntime = new QuicConnectionSendRuntime(
+            congestionControlAlgorithm:
+                congestionPacingProfileDecision.AppliedAlgorithm);
         recoveryController = new QuicRecoveryController();
         streamRegistry = new QuicConnectionStreamRegistry(bookkeeping);
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
@@ -4446,6 +4572,10 @@ internal sealed partial class QuicConnectionRuntime :
     internal IMonotonicClock Clock => clock;
 
     internal QuicConnectionSendRuntime SendRuntime => sendRuntime;
+
+    internal QuicCongestionPacingProfileDecision
+        CongestionPacingProfileDecision =>
+            congestionPacingProfileDecision;
 
     internal QuicTransportTlsBridgeState TlsState => tlsState;
 

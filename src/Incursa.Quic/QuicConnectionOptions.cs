@@ -268,4 +268,16 @@ public abstract class QuicConnectionOptions
 
     internal IQuicApplicationDatagramBatchTransportEvidenceSink?
         ApplicationDatagramBatchTransportEvidenceSink { get; set; }
+
+    // CONTEXT: Internal-only Stage 5 connection-start selection. This wraps
+    // only the already-implemented NewReno and CUBIC controllers. The applied
+    // profile is immutable and cannot bypass recovery or pacing authority.
+    internal QuicCongestionPacingProfileObservationMode
+        CongestionPacingProfileObservationMode { get; set; }
+
+    internal QuicCongestionPacingProfilePolicyValue?
+        ForcedCongestionPacingProfilePolicyValue { get; set; }
+
+    internal IQuicCongestionPacingProfileEvidenceSink?
+        CongestionPacingProfileEvidenceSink { get; set; }
 }

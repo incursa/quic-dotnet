@@ -54,6 +54,9 @@ param(
     [ValidateSet("", "legacy_current", "segmented_batch", "ordinary_datagrams", "observe_only", "shadow")]
     [string] $AdaptiveRuntimeApplicationDatagramBatchTransportPolicy = "",
 
+    [ValidateSet("", "legacy_current", "cubic", "observe_only", "shadow")]
+    [string] $AdaptiveRuntimeCongestionPacingProfilePolicy = "",
+
     [string[]] $RequiredCapability,
 
     [string[]] $PackageReference = @(),
@@ -251,6 +254,11 @@ $applicationDatagramBatchTransportPolicySelected =
 if ($applicationDatagramBatchTransportPolicySelected -and $PackageTarget -ne "RawQuic") {
     throw "AdaptiveRuntimeApplicationDatagramBatchTransportPolicy is supported only for the RawQuic package target."
 }
+$congestionPacingProfilePolicySelected =
+    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeCongestionPacingProfilePolicy)
+if ($congestionPacingProfilePolicySelected -and $PackageTarget -ne "RawQuic") {
+    throw "AdaptiveRuntimeCongestionPacingProfilePolicy is supported only for the RawQuic package target."
+}
 $requiredCapabilityWasSpecified = $PSBoundParameters.ContainsKey("RequiredCapability")
 if ([string]::IsNullOrWhiteSpace($Project)) {
     $Project = $targetConfig.DefaultProject
@@ -417,6 +425,7 @@ if (-not $UsePackageReferenceOnly) {
         AdaptiveRuntimeReceiveDeliveryQuantumPolicy = $AdaptiveRuntimeReceiveDeliveryQuantumPolicy
         AdaptiveRuntimeConnectionShardPlacementPolicy = $AdaptiveRuntimeConnectionShardPlacementPolicy
         AdaptiveRuntimeApplicationDatagramBatchTransportPolicy = $AdaptiveRuntimeApplicationDatagramBatchTransportPolicy
+        AdaptiveRuntimeCongestionPacingProfilePolicy = $AdaptiveRuntimeCongestionPacingProfilePolicy
         AllowDirtySource = [bool]$AllowDirtySource
         Force = $true
     }

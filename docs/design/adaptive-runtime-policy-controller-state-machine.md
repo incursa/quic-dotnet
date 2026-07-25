@@ -7,8 +7,9 @@ title: "Adaptive Runtime Controller State Machine"
 Status: receive-credit, all four Stage 1 send-path axes,
 `buffer_copy_coalescing`, `adaptive_backpressure`, and
 `packet_flush_cadence`, `receive_delivery_quantum`, and
-`connection_shard_placement`, and `application_datagram_batch_transport`
-force/observe/shadow runtimes implemented;
+`connection_shard_placement`, `application_datagram_batch_transport`, and the
+separate `congestion_pacing_profile` safety seam have force/observe/shadow
+runtimes implemented;
 measurement and broader campaign verification frozen; actor and fairness
 axes remain blocked on reviewed safe mechanisms; active policy blocked
 
@@ -169,6 +170,19 @@ authority remain outside the selector and cannot be bypassed. Observe-only
 applies legacy; shadow recommends ordinary datagrams while applying legacy;
 unsupported capability, invalid observation, or lifecycle state falls back to
 ordinary datagrams even when segmented batching is forced.
+
+The separate `congestion_pacing_profile` selector resolves
+`legacy_current` to the retained NewReno controller and `cubic` to the
+already-implemented private CUBIC controller exactly once during connection
+construction. The applied controller is immutable for the connection
+lifetime. Path migration and recovery reset reinitialize the selected
+controller's per-path state without profile reselection. Observe-only and
+disabled modes apply legacy. Shadow is research-only and recommends
+`legacy_current`, so there is no unreviewed active rule. Missing, stale,
+saturated, contradictory, invalid, out-of-domain, and lifecycle state
+override forced CUBIC to NewReno. Congestion, pacing, recovery, loss, PTO,
+ECN, anti-amplification, flow-control, packet, ownership, cancellation, and
+terminal authority remain outside the selector.
 
 ## States
 

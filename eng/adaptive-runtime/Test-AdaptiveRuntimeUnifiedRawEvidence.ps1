@@ -34,10 +34,12 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v12.schema.json'
+$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v13.schema.json'
+$v12SchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v12.schema.json'
 $v11SchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v11.schema.json'
 $legacySchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v10.schema.json'
-$evidenceDeltaSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-evidence-v12.schema.json'
+$evidenceDeltaSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-evidence-v13.schema.json'
+$v12EvidenceSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-evidence-v12.schema.json'
 $v11EvidenceSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-evidence-v11.schema.json'
 $actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v4.schema.json'
 $adaptiveBackpressureSchemaPath =
@@ -82,6 +84,7 @@ $lastPacketFlushCadenceSequenceByConnection = @{}
 $lastReceiveDeliveryQuantumSequenceByConnection = @{}
 $placementByConnection = @{}
 $datagramTransportByConnection = @{}
+$congestionProfileByConnection = @{}
 $actorEpochSummaryByRowKey = @{}
 $actorEpochRowByActorKey = @{}
 $actorContenderCountByEpoch = @{}
@@ -215,7 +218,32 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
                 Test-Json `
                     -SchemaFile $evidenceDeltaSchemaPath `
                     -ErrorAction Stop)) {
-        throw "Unified adaptive-runtime datagram-transport delta failed schema validation at row $($rowCount + 1)."
+        throw "Unified adaptive-runtime congestion-profile delta failed schema validation at row $($rowCount + 1)."
+    }
+
+    $contractRecord.schemaVersion =
+        'adaptive-runtime-unified-epoch-raw-v12'
+    $contractRecord.epoch.evidenceContractVersion =
+        'adaptive-runtime-unified-epoch-evidence-v12'
+    [void] $contractRecord.epoch.Remove('congestionPacingProfile')
+    $v12ProjectionJson =
+        $contractRecord | ConvertTo-Json -Depth 100 -Compress
+    if (-not (
+            $v12ProjectionJson |
+                Test-Json `
+                    -SchemaFile $v12SchemaPath `
+                    -ErrorAction Stop)) {
+        throw "Unified adaptive-runtime v12 raw projection failed schema validation at row $($rowCount + 1)."
+    }
+
+    $v12EpochProjectionJson =
+        $contractRecord.epoch | ConvertTo-Json -Depth 100 -Compress
+    if (-not (
+            $v12EpochProjectionJson |
+                Test-Json `
+                    -SchemaFile $v12EvidenceSchemaPath `
+                    -ErrorAction Stop)) {
+        throw "Unified adaptive-runtime v12 evidence projection failed schema validation at row $($rowCount + 1)."
     }
 
     $contractRecord.schemaVersion =
@@ -302,7 +330,7 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
         $epoch.stage1.queuedSendBurstBudget,
         $epoch.stage1.oversizedWriteAdmissionQuantum
     )
-    $axisRecordCount += $stage1Records.Count + 6
+    $axisRecordCount += $stage1Records.Count + 7
     $nonLegacyApplied = @($stage1Records | Where-Object {
         [string] $_.decision.appliedValue -ne 'LegacyCurrent'
     }).Count
@@ -420,6 +448,43 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
     }
     $datagramTransportByConnection[$scopedConnectionKey] =
         $datagramTransportIdentity
+    $congestionProfileSummary = $epoch.congestionPacingProfile
+    $congestionProfileDecision = $congestionProfileSummary.decision
+    if (-not [bool] $congestionProfileSummary.hasDecision -or
+        [uint64] $congestionProfileSummary.eventCount -ne 1 -or
+        [string] $congestionProfileDecision.axisId -ne
+            'congestion_pacing_profile' -or
+        [uint64] $congestionProfileDecision.connectionStartSequence -eq 0 -or
+        [uint64] $congestionProfileDecision.maximumDatagramSizeBytes -lt
+            1200 -or
+        [uint64] $congestionProfileDecision.initialBytesInFlight -ne 0 -or
+        [string] $congestionProfileDecision.appliedAlgorithm -notin
+            @('NewReno', 'Cubic')) {
+        [void] $joinFailures.Add(
+            "$rowKey|congestion-pacing-profile")
+    }
+    if ([string] $congestionProfileDecision.appliedValue -ne
+        'LegacyCurrent') {
+        $nonLegacyApplied++
+    }
+    $congestionProfileIdentity = @(
+        [string] $congestionProfileDecision.mode,
+        [bool] $congestionProfileDecision.hasForcedValue,
+        [string] $congestionProfileDecision.forcedValue,
+        [string] $congestionProfileDecision.selectedValue,
+        [string] $congestionProfileDecision.appliedValue,
+        [string] $congestionProfileDecision.appliedAlgorithm,
+        [uint64] $congestionProfileDecision.connectionStartSequence
+    ) -join '|'
+    if ($congestionProfileByConnection.ContainsKey(
+            $scopedConnectionKey) -and
+        [string] $congestionProfileByConnection[
+            $scopedConnectionKey] -ne $congestionProfileIdentity) {
+        [void] $joinFailures.Add(
+            "$rowKey|congestion-pacing-profile-latch")
+    }
+    $congestionProfileByConnection[$scopedConnectionKey] =
+        $congestionProfileIdentity
     if ($nonLegacyApplied -gt 1) {
         [void] $multiAxisRows.Add($rowKey)
     }
@@ -1826,7 +1891,7 @@ $valid =
     $expectedReceiveDeliveryQuantumKeys.Count -eq 0 -and
     $joinFailures.Count -eq 0 -and
     $multiAxisRows.Count -eq 0 -and
-    $axisRecordCount -eq ($rowCount * 10)
+    $axisRecordCount -eq ($rowCount * 11)
 if (-not $valid) {
     throw (
         "Unified adaptive-runtime raw evidence failed semantic validation: " +
@@ -1860,11 +1925,11 @@ if (-not $valid) {
         "receiveDeliveryMissing=$(
             $expectedReceiveDeliveryQuantumKeys.Count), " +
         "joinFailures=$($joinFailures.Count), multiAxis=$($multiAxisRows.Count), " +
-        "axisRecords=$axisRecordCount, expectedAxisRecords=$($rowCount * 10).")
+        "axisRecords=$axisRecordCount, expectedAxisRecords=$($rowCount * 11).")
 }
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-validation-v13'
+    schemaVersion = 'adaptive-runtime-unified-raw-validation-v14'
     valid = $true
     rawEpochRowCount = $rowCount
     axisRecordCount = $axisRecordCount

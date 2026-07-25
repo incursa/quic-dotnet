@@ -437,7 +437,11 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             selectedCipherSuite: settings.SelectedCipherSuite,
             tlsKeyLogSecretObserver: tlsKeyLogSecretObserver,
             maximumInboundDatagramQueueSize: GetEffectiveInboundDatagramQueueSize(options),
-            applicationDatagramBatchPolicy: applicationDatagramBatchPolicy);
+            applicationDatagramBatchPolicy: applicationDatagramBatchPolicy,
+            congestionPacingProfileObservationMode:
+                options.CongestionPacingProfileObservationMode,
+            forcedCongestionPacingProfilePolicyValue:
+                options.ForcedCongestionPacingProfilePolicyValue);
     }
 
     private static int GetEffectiveInboundDatagramQueueSize(QuicConnectionOptions options)

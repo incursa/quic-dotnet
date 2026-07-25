@@ -57,6 +57,12 @@ public sealed class QuicListenerOptions
     internal QuicApplicationDatagramBatchTransportPolicyValue?
         ForcedApplicationDatagramBatchTransportPolicyValue { get; set; }
 
+    internal QuicCongestionPacingProfileObservationMode
+        CongestionPacingProfileObservationMode { get; set; }
+
+    internal QuicCongestionPacingProfilePolicyValue?
+        ForcedCongestionPacingProfilePolicyValue { get; set; }
+
     internal void Validate(string argumentName)
     {
         if (ListenEndPoint is null)
@@ -104,6 +110,13 @@ public sealed class QuicListenerOptions
         {
             QuicApplicationDatagramBatchTransportPolicy.ValidateValue(
                 forcedBatchTransport);
+        }
+
+        QuicCongestionPacingProfilePolicy.ValidateObservationMode(
+            CongestionPacingProfileObservationMode);
+        if (ForcedCongestionPacingProfilePolicyValue is { } forcedProfile)
+        {
+            QuicCongestionPacingProfilePolicy.ValidateValue(forcedProfile);
         }
     }
 }

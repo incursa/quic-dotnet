@@ -34,6 +34,11 @@ internal readonly record struct
         ulong PartialSendCount,
         ulong LifecycleGuardCount);
 
+internal readonly record struct QuicCongestionPacingProfileEpochSummary(
+    QuicCongestionPacingProfileDecision Decision,
+    bool HasDecision,
+    ulong EventCount);
+
 internal readonly record struct QuicAdaptiveRuntimeUnifiedEpochEvidence(
     QuicAdaptiveRuntimeConnectionObservation ConnectionObservation,
     QuicReceiveCreditPolicySnapshot ReceiveCreditSnapshot,
@@ -46,10 +51,11 @@ internal readonly record struct QuicAdaptiveRuntimeUnifiedEpochEvidence(
     QuicReceiveDeliveryQuantumEpochSummary ReceiveDeliveryQuantum,
     QuicConnectionShardPlacementEpochSummary ConnectionShardPlacement,
     QuicApplicationDatagramBatchTransportEpochSummary
-        ApplicationDatagramBatchTransport)
+        ApplicationDatagramBatchTransport,
+    QuicCongestionPacingProfileEpochSummary CongestionPacingProfile)
 {
     internal const string CurrentEvidenceContractVersion =
-        "adaptive-runtime-unified-epoch-evidence-v12";
+        "adaptive-runtime-unified-epoch-evidence-v13";
 
     public string EvidenceContractVersion =>
         CurrentEvidenceContractVersion;
@@ -79,7 +85,8 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
     IQuicPacketFlushCadenceEvidenceSink,
     IQuicReceiveDeliveryQuantumEvidenceSink,
     IQuicConnectionShardPlacementEvidenceSink,
-    IQuicApplicationDatagramBatchTransportEvidenceSink
+    IQuicApplicationDatagramBatchTransportEvidenceSink,
+    IQuicCongestionPacingProfileEvidenceSink
 {
     private const ulong MicrosPerSecond = 1_000_000UL;
     private readonly object gate = new();
@@ -123,6 +130,9 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
     private ulong applicationDatagramBatchTransportFailedSocketCallCount;
     private ulong applicationDatagramBatchTransportPartialSendCount;
     private ulong applicationDatagramBatchTransportLifecycleGuardCount;
+    private QuicCongestionPacingProfileDecision
+        congestionPacingProfileDecision;
+    private bool hasCongestionPacingProfileDecision;
 
     internal QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator(
         in QuicAdaptiveRuntimeStage1PolicySnapshot configuredStage1Policy,
@@ -478,6 +488,30 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
     }
 
     public bool TryPublish(
+        in QuicCongestionPacingProfileDecision decision)
+    {
+        lock (gate)
+        {
+            if (!string.Equals(
+                    decision.AxisId,
+                    QuicCongestionPacingProfilePolicy.AxisId,
+                    StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            if (hasCongestionPacingProfileDecision)
+            {
+                return congestionPacingProfileDecision.Equals(decision);
+            }
+
+            congestionPacingProfileDecision = decision;
+            hasCongestionPacingProfileDecision = true;
+            return true;
+        }
+    }
+
+    public bool TryPublish(
         in QuicAdaptiveRuntimeConnectionObservation observation,
         in QuicReceiveCreditPolicySnapshot snapshot,
         in QuicAdaptiveRuntimePostServiceBoundary boundary)
@@ -532,6 +566,8 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
             QuicApplicationDatagramBatchTransportEpochSummary
                 datagramBatchTransportEvidence =
                     CaptureApplicationDatagramBatchTransport();
+            QuicCongestionPacingProfileEpochSummary congestionProfileEvidence =
+                CaptureCongestionPacingProfile();
             QuicAdaptiveRuntimeUnifiedEpochEvidence unified = new(
                 observation,
                 snapshot,
@@ -543,7 +579,8 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
                 packetFlushCadenceEvidence,
                 receiveDeliveryEvidence,
                 placementEvidence,
-                datagramBatchTransportEvidence);
+                datagramBatchTransportEvidence,
+                congestionProfileEvidence);
 
             lastEpochSequence = epochSequence;
             return sink.TryPublish(in unified);
@@ -613,6 +650,29 @@ internal sealed class QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator :
         applicationDatagramBatchTransportPartialSendCount = 0;
         applicationDatagramBatchTransportLifecycleGuardCount = 0;
         return summary;
+    }
+
+    private QuicCongestionPacingProfileEpochSummary
+        CaptureCongestionPacingProfile()
+    {
+        if (hasCongestionPacingProfileDecision)
+        {
+            return new(
+                congestionPacingProfileDecision,
+                HasDecision: true,
+                EventCount: 1);
+        }
+
+        QuicCongestionPacingProfileDecision missing =
+            QuicCongestionPacingProfilePolicy.Evaluate(
+                QuicCongestionPacingProfileObservationMode.Disabled,
+                forcedValue: null,
+                connectionStartSequence: 0,
+                captureTicks: 0,
+                validity:
+                    QuicCongestionPacingProfileValidity
+                        .MissingRequiredInput);
+        return new(missing, HasDecision: false, EventCount: 0);
     }
 
     private static ulong SaturatingIncrement(ulong value) =>

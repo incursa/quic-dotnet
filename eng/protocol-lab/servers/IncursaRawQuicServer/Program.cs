@@ -56,6 +56,10 @@ var applicationDatagramBatchTransportPolicy =
     ResolveApplicationDatagramBatchTransportPolicy(
         Environment.GetEnvironmentVariable(
             "PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_DATAGRAM_BATCH_TRANSPORT_POLICY"));
+var congestionPacingProfilePolicy =
+    ResolveCongestionPacingProfilePolicy(
+        Environment.GetEnvironmentVariable(
+            "PROTOCOL_LAB_INCURSA_RAW_QUIC_CONGESTION_PACING_PROFILE_POLICY"));
 var stage1AxisSelected =
     applicationSendTurnPolicy.ForcedMode is not null
     || applicationSendTurnPolicy.ObservationMode != QuicApplicationSendTurnObservationMode.Disabled
@@ -94,12 +98,21 @@ var applicationDatagramBatchTransportAxisSelected =
     applicationDatagramBatchTransportPolicy.ForcedValue is not null
     || applicationDatagramBatchTransportPolicy.ObservationMode
         != QuicApplicationDatagramBatchTransportObservationMode.Disabled;
+var congestionPacingProfileAxisSelected =
+    congestionPacingProfilePolicy.ForcedValue is not null
+    || congestionPacingProfilePolicy.ObservationMode
+        != QuicCongestionPacingProfileObservationMode.Disabled;
 var sendAdaptiveAxisSelected =
     stage1AxisSelected
     || bufferCopyAxisSelected
     || adaptiveBackpressureAxisSelected
     || packetFlushCadenceAxisSelected
     || applicationDatagramBatchTransportAxisSelected;
+var adjacentReceiveCreditMustRemainLegacy =
+    sendAdaptiveAxisSelected
+    || receiveDeliveryQuantumAxisSelected
+    || connectionShardPlacementAxisSelected
+    || congestionPacingProfileAxisSelected;
 var forcedAdaptiveAxisCount =
     forcedStage1AxisCount
     + (bufferCopyPolicy.ForcedValue is null ? 0 : 1)
@@ -108,7 +121,8 @@ var forcedAdaptiveAxisCount =
     + (receiveDeliveryQuantumPolicy.ForcedValue is null ? 0 : 1)
     + (connectionShardPlacementPolicy.ForcedValue is null ? 0 : 1)
     + (applicationDatagramBatchTransportPolicy.ForcedValue
-        is null ? 0 : 1);
+        is null ? 0 : 1)
+    + (congestionPacingProfilePolicy.ForcedValue is null ? 0 : 1);
 if (forcedAdaptiveAxisCount > 1)
 {
     throw new InvalidOperationException(
@@ -139,6 +153,14 @@ if (connectionShardPlacementAxisSelected
         "Connection-shard placement evidence requires receive_credit_publication=legacy_current.");
 }
 
+if (congestionPacingProfileAxisSelected
+    && adaptiveRuntimePolicy.ForcedMode is not null
+        and not QuicReceiveCreditPolicyMode.LegacyCurrent)
+{
+    throw new InvalidOperationException(
+        "Congestion-pacing profile evidence requires receive_credit_publication=legacy_current.");
+}
+
 var adaptiveInstrumentationEnabled =
     adaptiveRuntimePolicy.ForcedMode is not null
     || adaptiveRuntimePolicy.ShadowEnabled
@@ -148,7 +170,8 @@ var adaptiveInstrumentationEnabled =
     || packetFlushCadenceAxisSelected
     || receiveDeliveryQuantumAxisSelected
     || connectionShardPlacementAxisSelected
-    || applicationDatagramBatchTransportAxisSelected;
+    || applicationDatagramBatchTransportAxisSelected
+    || congestionPacingProfileAxisSelected;
 var sendTurnObservationMode = adaptiveInstrumentationEnabled
     ? EnableUnifiedSendTurnObservation(applicationSendTurnPolicy.ObservationMode)
     : applicationSendTurnPolicy.ObservationMode;
@@ -190,6 +213,11 @@ var applicationDatagramBatchTransportObservationMode =
         ? EnableUnifiedApplicationDatagramBatchTransportObservation(
             applicationDatagramBatchTransportPolicy.ObservationMode)
         : applicationDatagramBatchTransportPolicy.ObservationMode;
+var congestionPacingProfileObservationMode =
+    adaptiveInstrumentationEnabled
+        ? EnableUnifiedCongestionPacingProfileObservation(
+            congestionPacingProfilePolicy.ObservationMode)
+        : congestionPacingProfilePolicy.ObservationMode;
 QuicAdaptiveRuntimeStage1PolicySnapshot? configuredStage1Policy =
     adaptiveInstrumentationEnabled
         ? QuicAdaptiveRuntimeStage1ConfiguredPolicy.Create(
@@ -279,6 +307,10 @@ var listenerOptions = new QuicListenerOptions
         applicationDatagramBatchTransportObservationMode,
     ForcedApplicationDatagramBatchTransportPolicyValue =
         applicationDatagramBatchTransportPolicy.ForcedValue,
+    CongestionPacingProfileObservationMode =
+        congestionPacingProfileObservationMode,
+    ForcedCongestionPacingProfilePolicyValue =
+        congestionPacingProfilePolicy.ForcedValue,
     ConnectionOptionsCallback = (_, _, _) =>
     {
         var connectionSinks = epochPublisher?.CreateConnectionSinks();
@@ -306,6 +338,7 @@ var listenerOptions = new QuicListenerOptions
                     || packetFlushCadenceAxisSelected
                     || receiveDeliveryQuantumAxisSelected
                     || connectionShardPlacementAxisSelected
+                    || congestionPacingProfileAxisSelected
                 ? QuicReceiveCreditPolicyMode.LegacyCurrent
                 : adaptiveRuntimePolicy.ForcedMode,
             ForcedApplicationSendTurnPolicyMode = applicationSendTurnPolicy.ForcedMode,
@@ -389,6 +422,8 @@ var listenerOptions = new QuicListenerOptions
             ApplicationDatagramBatchTransportEvidenceSink =
                 connectionSinks?
                     .ApplicationDatagramBatchTransportEvidenceSink,
+            CongestionPacingProfileEvidenceSink =
+                connectionSinks?.CongestionPacingProfileEvidenceSink,
             ServerAuthenticationOptions = new SslServerAuthenticationOptions
             {
                 ServerCertificate = certificate,
@@ -408,7 +443,7 @@ Console.WriteLine($"QUIC_PORT={listenPort}");
 Console.WriteLine($"QUIC_ALPN={alpn}");
 Console.WriteLine($"QUIC_IMPLEMENTATION=incursa-raw-quic");
 Console.WriteLine(
-    $"QUIC_RECEIVE_CREDIT_POLICY={(sendAdaptiveAxisSelected || receiveDeliveryQuantumAxisSelected ? "legacy_current" : adaptiveRuntimePolicy.Name)}");
+    $"QUIC_RECEIVE_CREDIT_POLICY={(adjacentReceiveCreditMustRemainLegacy ? "legacy_current" : adaptiveRuntimePolicy.Name)}");
 Console.WriteLine($"QUIC_APPLICATION_SEND_TURN_POLICY={applicationSendTurnPolicy.Name}");
 Console.WriteLine($"QUIC_APPLICATION_SEND_BATCH_POLICY={applicationSendBatchPolicy.Name}");
 Console.WriteLine($"QUIC_QUEUED_SEND_BURST_POLICY={queuedSendBurstPolicy.Name}");
@@ -418,10 +453,11 @@ Console.WriteLine($"QUIC_PACKET_FLUSH_CADENCE_POLICY={packetFlushCadencePolicy.N
 Console.WriteLine($"QUIC_RECEIVE_DELIVERY_QUANTUM_POLICY={receiveDeliveryQuantumPolicy.Name}");
 Console.WriteLine($"QUIC_CONNECTION_SHARD_PLACEMENT_POLICY={connectionShardPlacementPolicy.Name}");
 Console.WriteLine($"QUIC_APPLICATION_DATAGRAM_BATCH_TRANSPORT_POLICY={applicationDatagramBatchTransportPolicy.Name}");
+Console.WriteLine($"QUIC_CONGESTION_PACING_PROFILE_POLICY={congestionPacingProfilePolicy.Name}");
 if (adaptiveInstrumentationEnabled)
 {
     Console.WriteLine("QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=adaptive-runtime-epoch-raw-v2");
-    Console.WriteLine("QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_CONTRACT=adaptive-runtime-unified-epoch-raw-v12");
+    Console.WriteLine("QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_CONTRACT=adaptive-runtime-unified-epoch-raw-v13");
     Console.WriteLine("QUIC_ACTOR_SERVICE_EVIDENCE_CONTRACT=quic-actor-service-epoch-v5");
     Console.WriteLine("QUIC_BUFFER_COPY_EVIDENCE_CONTRACT=quic-buffer-copy-epoch-v4");
     Console.WriteLine("QUIC_BUFFER_COPY_OPERATION_EVIDENCE_CONTRACT=quic-buffer-copy-raw-v4");
@@ -579,6 +615,39 @@ static (
             QuicApplicationDatagramBatchTransportObservationMode.Shadow),
         _ => throw new InvalidOperationException(
             "PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_DATAGRAM_BATCH_TRANSPORT_POLICY must be unset, legacy_current, segmented_batch, ordinary_datagrams, observe_only, or shadow."),
+    };
+}
+
+static (
+    string Name,
+    QuicCongestionPacingProfilePolicyValue? ForcedValue,
+    QuicCongestionPacingProfileObservationMode ObservationMode)
+    ResolveCongestionPacingProfilePolicy(string? value)
+{
+    return value?.Trim().ToLowerInvariant() switch
+    {
+        null or "" => (
+            "unset",
+            null,
+            QuicCongestionPacingProfileObservationMode.Disabled),
+        "legacy_current" => (
+            "legacy_current",
+            QuicCongestionPacingProfilePolicyValue.LegacyCurrent,
+            QuicCongestionPacingProfileObservationMode.Disabled),
+        "cubic" => (
+            "cubic",
+            QuicCongestionPacingProfilePolicyValue.Cubic,
+            QuicCongestionPacingProfileObservationMode.Disabled),
+        "observe_only" => (
+            "observe_only",
+            null,
+            QuicCongestionPacingProfileObservationMode.ObserveOnly),
+        "shadow" => (
+            "shadow",
+            null,
+            QuicCongestionPacingProfileObservationMode.Shadow),
+        _ => throw new InvalidOperationException(
+            "PROTOCOL_LAB_INCURSA_RAW_QUIC_CONGESTION_PACING_PROFILE_POLICY must be unset, legacy_current, cubic, observe_only, or shadow."),
     };
 }
 
@@ -906,6 +975,13 @@ static QuicApplicationDatagramBatchTransportObservationMode
     => mode
         == QuicApplicationDatagramBatchTransportObservationMode.Disabled
         ? QuicApplicationDatagramBatchTransportObservationMode.Shadow
+        : mode;
+
+static QuicCongestionPacingProfileObservationMode
+    EnableUnifiedCongestionPacingProfileObservation(
+        QuicCongestionPacingProfileObservationMode mode)
+    => mode == QuicCongestionPacingProfileObservationMode.Disabled
+        ? QuicCongestionPacingProfileObservationMode.Shadow
         : mode;
 
 static async Task HandleConnectionAsync(QuicConnection connection, int connectionIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool capacitySummaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes, int? boundedFinalEchoBytes)
@@ -1663,6 +1739,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         IQuicReceiveDeliveryQuantumEvidenceSink,
         IQuicConnectionShardPlacementEvidenceSink,
         IQuicApplicationDatagramBatchTransportEvidenceSink,
+        IQuicCongestionPacingProfileEvidenceSink,
         IQuicAdaptiveRuntimeUnifiedEpochEvidenceSink
     {
         private readonly AdaptiveRuntimeEpochPublisher owner;
@@ -1708,6 +1785,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
                 this,
                 this,
                 this,
+                this,
                 this);
 
         public bool TryPublish(
@@ -1727,7 +1805,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
                     evidence.Stage1));
             bool unifiedPublished = owner.unifiedEpochs.Writer.TryWrite(
                 new UnifiedAdaptiveRuntimeEpochRecord(
-                    "adaptive-runtime-unified-epoch-raw-v12",
+                    "adaptive-runtime-unified-epoch-raw-v13",
                     connectionKey,
                     evidence));
             if (!rawPublished || !stage1Published || !unifiedPublished)
@@ -1771,6 +1849,10 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         public bool TryPublish(
             in QuicApplicationDatagramBatchTransportOutcome outcome)
             => unifiedAccumulator.TryPublish(in outcome);
+
+        public bool TryPublish(
+            in QuicCongestionPacingProfileDecision decision)
+            => unifiedAccumulator.TryPublish(in decision);
 
         public bool TryPublish(in QuicApplicationSendTurnEvidence evidence)
         {
@@ -2022,7 +2104,9 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         IQuicConnectionShardPlacementEvidenceSink
             ConnectionShardPlacementEvidenceSink,
         IQuicApplicationDatagramBatchTransportEvidenceSink
-            ApplicationDatagramBatchTransportEvidenceSink);
+            ApplicationDatagramBatchTransportEvidenceSink,
+        IQuicCongestionPacingProfileEvidenceSink
+            CongestionPacingProfileEvidenceSink);
 }
 
 internal readonly record struct AdaptiveRuntimeEpochRecord(

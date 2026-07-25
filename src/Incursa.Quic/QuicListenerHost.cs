@@ -66,6 +66,10 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         forcedApplicationDatagramBatchTransportPolicyValue;
     private readonly QuicApplicationDatagramBatchTransportCapabilityStatus
         applicationDatagramBatchTransportCapabilityStatus;
+    private readonly QuicCongestionPacingProfileObservationMode
+        congestionPacingProfileObservationMode;
+    private readonly QuicCongestionPacingProfilePolicyValue?
+        forcedCongestionPacingProfilePolicyValue;
     private readonly QuicAddressValidationTokenProtector addressValidationTokenProtector;
     private readonly QuicAddressValidationTokenReplayCache addressValidationTokenReplayCache = new();
     private readonly uint flowLabelSeed = unchecked((uint)RandomNumberGenerator.GetInt32(1, int.MaxValue));
@@ -117,7 +121,12 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 QuicApplicationDatagramBatchTransportObservationMode
                     .Disabled,
         QuicApplicationDatagramBatchTransportPolicyValue?
-            forcedApplicationDatagramBatchTransportPolicyValue = null)
+            forcedApplicationDatagramBatchTransportPolicyValue = null,
+        QuicCongestionPacingProfileObservationMode
+            congestionPacingProfileObservationMode =
+                QuicCongestionPacingProfileObservationMode.Disabled,
+        QuicCongestionPacingProfilePolicyValue?
+            forcedCongestionPacingProfilePolicyValue = null)
     {
         ArgumentNullException.ThrowIfNull(listenEndPoint);
         ArgumentNullException.ThrowIfNull(applicationProtocols);
@@ -147,6 +156,12 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             QuicApplicationDatagramBatchTransportPolicy.ValidateValue(
                 forcedBatchTransport);
         }
+        QuicCongestionPacingProfilePolicy.ValidateObservationMode(
+            congestionPacingProfileObservationMode);
+        if (forcedCongestionPacingProfilePolicyValue is { } forcedProfile)
+        {
+            QuicCongestionPacingProfilePolicy.ValidateValue(forcedProfile);
+        }
 
         this.applicationProtocols = [.. applicationProtocols];
         this.connectionOptionsCallback = connectionOptionsCallback;
@@ -158,6 +173,10 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             applicationDatagramBatchTransportObservationMode;
         this.forcedApplicationDatagramBatchTransportPolicyValue =
             forcedApplicationDatagramBatchTransportPolicyValue;
+        this.congestionPacingProfileObservationMode =
+            congestionPacingProfileObservationMode;
+        this.forcedCongestionPacingProfilePolicyValue =
+            forcedCongestionPacingProfilePolicyValue;
         listenerDiagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSinkFactory?.Invoke());
         this.tlsKeyLogSecretObserver = tlsKeyLogSecretObserver;
         this.addressValidationTokenProtector = addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
@@ -1617,6 +1636,10 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 applicationDatagramBatchTransportObservationMode,
             ForcedApplicationDatagramBatchTransportPolicyValue =
                 forcedApplicationDatagramBatchTransportPolicyValue,
+            CongestionPacingProfileObservationMode =
+                congestionPacingProfileObservationMode,
+            ForcedCongestionPacingProfilePolicyValue =
+                forcedCongestionPacingProfilePolicyValue,
         };
         QuicConnectionRuntime? runtime = null;
         QuicConnection? connection = null;
@@ -2524,7 +2547,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             applicationSendTurnPlanner:
                 applicationSendTurnPlannerFactory?.Invoke(),
             applicationDatagramBatchPolicy:
-                applicationDatagramBatchPolicy);
+                applicationDatagramBatchPolicy,
+            congestionPacingProfileObservationMode:
+                congestionPacingProfileObservationMode,
+            forcedCongestionPacingProfilePolicyValue:
+                forcedCongestionPacingProfilePolicyValue);
     }
 
     private static int GetEffectiveInboundDatagramQueueSize(QuicConnectionOptions options)
@@ -2705,6 +2732,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             returnedOptions.ConnectionShardPlacementEvidenceSink;
         selectedOptions.ApplicationDatagramBatchTransportEvidenceSink =
             returnedOptions.ApplicationDatagramBatchTransportEvidenceSink;
+        selectedOptions.CongestionPacingProfileEvidenceSink =
+            returnedOptions.CongestionPacingProfileEvidenceSink;
 
         QuicReceiveWindowSizes returnedWindowSizes = returnedOptions.InitialReceiveWindowSizes;
         selectedOptions.InitialReceiveWindowSizes = new QuicReceiveWindowSizes

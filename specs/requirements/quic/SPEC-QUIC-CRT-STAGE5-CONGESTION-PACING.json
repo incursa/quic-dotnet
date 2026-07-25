@@ -1,0 +1,71 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-CRT-STAGE5-CONGESTION-PACING",
+  "artifact_type": "specification",
+  "title": "Stage 5 congestion and pacing profile safety seam",
+  "domain": "quic",
+  "capability": "adaptive-runtime-stage5-congestion-pacing",
+  "status": "proposed",
+  "owner": "quic-maintainers",
+  "tags": [
+    "adaptive-runtime",
+    "congestion-control",
+    "pacing",
+    "network-safety",
+    "forceable-internal"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE4-PLACEMENT-PLATFORM",
+    "ARC-QUIC-CRT-0054",
+    "WI-QUIC-CRT-0054",
+    "VER-QUIC-CRT-0054",
+    "ARC-QUIC-CRT-0083",
+    "WI-QUIC-CRT-0084",
+    "VER-QUIC-CRT-0085"
+  ],
+  "purpose": "Prepare a separate protocol-sensitive congestion and pacing architecture that can force only the retained NewReno and existing private CUBIC controllers without weakening network safety or enabling active selection.",
+  "scope": "This checkpoint defines connection-start forcing, observe-only and research-only shadow identity, unified evidence, deterministic rollback, safety review, and a later campaign contract. It does not claim CUBIC is conservative, safe for production, or faster, and it does not authorize measurement or activation.",
+  "context": "NewReno remains the default controller. CUBIC is already implemented and tested as a private construction-time controller. Path migration resets per-path recovery state while retaining the immutable controller selected for the connection.",
+  "requirements": [
+    {
+      "id": "REQ-QUIC-CRT-0196",
+      "title": "Force a connection-lifetime congestion and pacing profile without weakening network safety",
+      "statement": "The runtime MUST expose the congestion_pacing_profile axis with the closed legacy_current and cubic values; map legacy_current to the retained NewReno controller and cubic only to the already-implemented private CUBIC controller; support disabled, observe-only, research-only shadow, forced-legacy, and forced-cubic operation with forced, recommended, selected, and applied identities distinct; select exactly once at connection construction and retain the selected controller for the connection lifetime while path migration or recovery reset reinitializes the same controller without reselection; make congestion-window, bytes-in-flight, pacing, recovery, loss, PTO, ECN, anti-amplification, flow-control, packet, ownership, lifecycle, cancellation, disposal, close, and shutdown guards authoritative under every force value; override forced CUBIC to NewReno for missing, stale, saturated, contradictory, invalid, out-of-domain, or lifecycle input with bounded reasons; publish the immutable decision and exact observation, snapshot, rule, reason, and provenance versions in every unified epoch; reject mismatched configuration and simultaneous behavior-distinct forcing; independently prove force-legacy rollback and diagnostic-sink neutrality; exclude scenario, workload, payload constants, requested concurrency, peer, URL, host, and application identity from controller inputs; keep shadow recommendation at legacy_current until a later reviewed rule exists; and keep performance measurement, active_internal, and production activation unavailable.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0083"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0084"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0085"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-axis-roadmap.md",
+          "specs/requirements/quic/SPEC-QUIC-CRT.json",
+          "docs/design/adaptive-runtime-policy-axis-implementation-matrix.md",
+          "docs/design/adaptive-runtime-congestion-pacing-profile-safety-review.md",
+          "docs/protocol-lab/adaptive-runtime-congestion-pacing-profile-campaign.md",
+          "src/Incursa.Quic/QuicCongestionPacingProfilePolicy.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
+          "src/Incursa.Quic/QuicCongestionControlState.cs",
+          "src/Incursa.Quic/QuicAdaptiveRuntimeUnifiedEpochEvidence.cs",
+          "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
+          "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeUnifiedRawEvidence.ps1",
+          "schemas/adaptive-runtime-unified-epoch-evidence-v13.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-raw-v13.schema.json",
+          "schemas/adaptive-runtime-unified-raw-export-manifest-v14.schema.json",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0196.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0156.cs"
+        ]
+      },
+      "notes": [
+        "CUBIC is a research candidate, not a separately accepted conservative profile.",
+        "Shadow recommends legacy_current only; no candidate-selection rule or production threshold exists."
+      ]
+    }
+  ]
+}
