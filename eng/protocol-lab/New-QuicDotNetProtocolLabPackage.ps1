@@ -19,6 +19,9 @@ param(
     [ValidateSet("", "legacy_current", "conservative", "observe_only", "shadow")]
     [string] $AdaptiveRuntimeApplicationSendTurnPolicy = "",
 
+    [ValidateSet("", "legacy_current", "prompt", "observe_only", "shadow")]
+    [string] $AdaptiveRuntimePacketFlushCadencePolicy = "",
+
     [switch] $RawQuicDebugLogging,
 
     [string] $OutputPath,
@@ -468,7 +471,12 @@ if (Test-Path -LiteralPath $scriptsRoot -PathType Container) {
     Copy-Item -LiteralPath $scriptsRoot -Destination (Join-Path $stageRoot "scripts") -Recurse
 }
 
-if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy) -or -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy) -or $RawQuicDebugLogging) {
+$adaptiveRuntimeEnvironmentRequested =
+    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy) -or
+    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy) -or
+    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimePacketFlushCadencePolicy) -or
+    $RawQuicDebugLogging
+if ($adaptiveRuntimeEnvironmentRequested) {
     $implementationManifestPath = Join-Path $stageRoot "implementations/quic-dotnet-raw-dev.yaml"
     $implementationText = Get-Content -LiteralPath $implementationManifestPath -Raw
     $environmentAnchorPattern = '(?m)^(  ASPNETCORE_URLS: http://127\.0\.0\.1:53591)(\r?)$'
@@ -483,6 +491,9 @@ if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy) -or -
     }
     if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy)) {
         $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY: $AdaptiveRuntimeApplicationSendTurnPolicy"
+    }
+    if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimePacketFlushCadencePolicy)) {
+        $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_PACKET_FLUSH_CADENCE_POLICY: $AdaptiveRuntimePacketFlushCadencePolicy"
     }
     if ($RawQuicDebugLogging) {
         $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG: 1"

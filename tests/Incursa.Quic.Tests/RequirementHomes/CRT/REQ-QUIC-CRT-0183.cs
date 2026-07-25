@@ -169,16 +169,24 @@ public sealed class REQ_QUIC_CRT_0183
                 QuicAdaptiveBackpressurePolicy.CreateConfiguredSnapshot(
                     QuicAdaptiveBackpressureObservationMode.ObserveOnly,
                     forcedValue: null);
+        QuicPacketFlushCadenceConfiguredPolicySnapshot
+            configuredPacketFlushCadence =
+                QuicPacketFlushCadencePolicy.CreateConfiguredSnapshot(
+                    QuicPacketFlushCadenceObservationMode.ObserveOnly,
+                    forcedValue: null);
         QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator accumulator =
             new(
                 in configured,
                 in configuredBufferCopy,
                 in configuredAdaptiveBackpressure,
+                in configuredPacketFlushCadence,
                 sink);
         QuicActorServiceObservation actor = CreateActorObservation();
         QuicBufferCopyObservation buffer = CreateBufferObservation();
         QuicAdaptiveBackpressureObservation adaptiveBackpressure =
             CreateAdaptiveBackpressureObservation();
+        QuicPacketFlushCadenceObservation packetFlushCadence =
+            CreatePacketFlushCadenceObservation();
         QuicAdaptiveRuntimeConnectionObservation connection =
             CreateConnectionObservation(epochSequence: 1);
         QuicReceiveCreditPolicySnapshot receiveCredit =
@@ -189,6 +197,7 @@ public sealed class REQ_QUIC_CRT_0183
         Assert.True(accumulator.TryPublish(in actor));
         Assert.True(accumulator.TryPublish(in buffer));
         Assert.True(accumulator.TryPublish(in adaptiveBackpressure));
+        Assert.True(accumulator.TryPublish(in packetFlushCadence));
         Assert.True(accumulator.TryPublish(
             in connection,
             in receiveCredit,
@@ -324,7 +333,7 @@ public sealed class REQ_QUIC_CRT_0183
             string unifiedSchema = Path.Combine(
                 repoRoot,
                 "schemas",
-                "adaptive-runtime-unified-epoch-evidence-v8.schema.json");
+                "adaptive-runtime-unified-epoch-evidence-v9.schema.json");
             string command =
                 $"$boundaryValid = Get-Content -LiteralPath "
                 + $"{AdaptiveRuntimePolicyScriptTestSupport.QuotePowerShellLiteral(boundaryPath)} "
@@ -367,16 +376,24 @@ public sealed class REQ_QUIC_CRT_0183
                 QuicAdaptiveBackpressurePolicy.CreateConfiguredSnapshot(
                     QuicAdaptiveBackpressureObservationMode.ObserveOnly,
                     forcedValue: null);
+        QuicPacketFlushCadenceConfiguredPolicySnapshot
+            configuredPacketFlushCadence =
+                QuicPacketFlushCadencePolicy.CreateConfiguredSnapshot(
+                    QuicPacketFlushCadenceObservationMode.ObserveOnly,
+                    forcedValue: null);
         QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator accumulator =
             new(
                 in configured,
                 in configuredBufferCopy,
                 in configuredAdaptiveBackpressure,
+                in configuredPacketFlushCadence,
                 sink);
         QuicActorServiceObservation actor = CreateActorObservation();
         QuicBufferCopyObservation buffer = CreateBufferObservation();
         QuicAdaptiveBackpressureObservation adaptiveBackpressure =
             CreateAdaptiveBackpressureObservation();
+        QuicPacketFlushCadenceObservation packetFlushCadence =
+            CreatePacketFlushCadenceObservation();
         QuicAdaptiveRuntimeConnectionObservation connection =
             CreateConnectionObservation(epochSequence: 1);
         QuicReceiveCreditPolicySnapshot receiveCredit =
@@ -386,6 +403,7 @@ public sealed class REQ_QUIC_CRT_0183
         Assert.True(accumulator.TryPublish(in actor));
         Assert.True(accumulator.TryPublish(in buffer));
         Assert.True(accumulator.TryPublish(in adaptiveBackpressure));
+        Assert.True(accumulator.TryPublish(in packetFlushCadence));
         Assert.True(accumulator.TryPublish(
             in connection,
             in receiveCredit,
@@ -410,7 +428,7 @@ public sealed class REQ_QUIC_CRT_0183
                 new
                 {
                     schemaVersion =
-                        "adaptive-runtime-unified-epoch-raw-v8",
+                        "adaptive-runtime-unified-epoch-raw-v9",
                     connectionKey = "connection-0001",
                     epoch = evidence,
                 },
@@ -433,6 +451,15 @@ public sealed class REQ_QUIC_CRT_0183
                     observation = adaptiveBackpressure,
                 },
                 jsonOptions);
+            string packetFlushCadenceRawJson = JsonSerializer.Serialize(
+                new
+                {
+                    schemaVersion =
+                        "quic-packet-flush-cadence-raw-v1",
+                    connectionKey = "connection-0001",
+                    observation = packetFlushCadence,
+                },
+                jsonOptions);
             string hostLogPath = Path.Combine(
                 temporaryDirectory,
                 "host.stdout.log");
@@ -446,6 +473,8 @@ public sealed class REQ_QUIC_CRT_0183
                         + actorRawJson,
                     "QUIC_ADAPTIVE_BACKPRESSURE_EVIDENCE_JSON="
                         + adaptiveBackpressureRawJson,
+                    "QUIC_PACKET_FLUSH_CADENCE_EVIDENCE_JSON="
+                        + packetFlushCadenceRawJson,
                 ]);
             string outputDirectory = Path.Combine(
                 temporaryDirectory,
@@ -465,7 +494,7 @@ public sealed class REQ_QUIC_CRT_0183
                 1,
                 summary.RootElement.GetProperty("rowCount").GetInt32());
             Assert.Equal(
-                6,
+                7,
                 summary.RootElement.GetProperty("axisRecordCount").GetInt32());
             Assert.Equal(
                 1,
@@ -492,6 +521,16 @@ public sealed class REQ_QUIC_CRT_0183
                 summary.RootElement
                     .GetProperty("adaptiveBackpressureObservationRowCount")
                     .GetInt32());
+            Assert.Equal(
+                1,
+                summary.RootElement
+                    .GetProperty("packetFlushCadenceEpochRowCount")
+                    .GetInt32());
+            Assert.Equal(
+                1,
+                summary.RootElement
+                    .GetProperty("packetFlushCadenceObservationRowCount")
+                    .GetInt32());
             Assert.True(File.Exists(Path.Combine(
                 outputDirectory,
                 "adaptive-runtime-unified-raw-epochs.jsonl")));
@@ -501,6 +540,9 @@ public sealed class REQ_QUIC_CRT_0183
             Assert.True(File.Exists(Path.Combine(
                 outputDirectory,
                 "adaptive-runtime-backpressure-observations.jsonl")));
+            Assert.True(File.Exists(Path.Combine(
+                outputDirectory,
+                "adaptive-runtime-packet-flush-cadence-observations.jsonl")));
             Assert.True(File.Exists(Path.Combine(
                 outputDirectory,
                 "raw-validation-summary.json")));
@@ -520,6 +562,8 @@ public sealed class REQ_QUIC_CRT_0183
                         + actorRawJson,
                     "QUIC_ADAPTIVE_BACKPRESSURE_EVIDENCE_JSON="
                         + adaptiveBackpressureRawJson,
+                    "QUIC_PACKET_FLUSH_CADENCE_EVIDENCE_JSON="
+                        + packetFlushCadenceRawJson,
                     "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_FAILURE_JSON="
                         + JsonSerializer.Serialize(
                             new
@@ -575,6 +619,8 @@ public sealed class REQ_QUIC_CRT_0183
                         + actorRawJson,
                     "QUIC_ADAPTIVE_BACKPRESSURE_EVIDENCE_JSON="
                         + adaptiveBackpressureRawJson,
+                    "QUIC_PACKET_FLUSH_CADENCE_EVIDENCE_JSON="
+                        + packetFlushCadenceRawJson,
                     "QUIC_ACTOR_SERVICE_OBSERVATION_FAILURE_JSON="
                         + JsonSerializer.Serialize(
                             new
@@ -682,7 +728,7 @@ public sealed class REQ_QUIC_CRT_0183
                             new
                             {
                                 schemaVersion =
-                                    "adaptive-runtime-unified-epoch-raw-v8",
+                                    "adaptive-runtime-unified-epoch-raw-v9",
                                 connectionKey = "connection-0001",
                                 epoch = mismatchedEvidence,
                             },
@@ -691,6 +737,8 @@ public sealed class REQ_QUIC_CRT_0183
                         + actorRawJson,
                     "QUIC_ADAPTIVE_BACKPRESSURE_EVIDENCE_JSON="
                         + adaptiveBackpressureRawJson,
+                    "QUIC_PACKET_FLUSH_CADENCE_EVIDENCE_JSON="
+                        + packetFlushCadenceRawJson,
                 ]);
             AdaptiveRuntimePolicyScriptTestSupport.ProcessResult
                 mismatchedContender =
@@ -730,7 +778,7 @@ public sealed class REQ_QUIC_CRT_0183
                             new
                             {
                                 schemaVersion =
-                                    "adaptive-runtime-unified-epoch-raw-v8",
+                                    "adaptive-runtime-unified-epoch-raw-v9",
                                 connectionKey = "connection-0001",
                                 epoch = mismatchedAcceptedWorkEvidence,
                             },
@@ -739,6 +787,8 @@ public sealed class REQ_QUIC_CRT_0183
                         + actorRawJson,
                     "QUIC_ADAPTIVE_BACKPRESSURE_EVIDENCE_JSON="
                         + adaptiveBackpressureRawJson,
+                    "QUIC_PACKET_FLUSH_CADENCE_EVIDENCE_JSON="
+                        + packetFlushCadenceRawJson,
                 ]);
             AdaptiveRuntimePolicyScriptTestSupport.ProcessResult
                 mismatchedAcceptedWork =
@@ -778,7 +828,7 @@ public sealed class REQ_QUIC_CRT_0183
                             new
                             {
                                 schemaVersion =
-                                    "adaptive-runtime-unified-epoch-raw-v8",
+                                    "adaptive-runtime-unified-epoch-raw-v9",
                                 connectionKey = "connection-0001",
                                 epoch = mismatchedContinuationEvidence,
                             },
@@ -787,6 +837,8 @@ public sealed class REQ_QUIC_CRT_0183
                         + actorRawJson,
                     "QUIC_ADAPTIVE_BACKPRESSURE_EVIDENCE_JSON="
                         + adaptiveBackpressureRawJson,
+                    "QUIC_PACKET_FLUSH_CADENCE_EVIDENCE_JSON="
+                        + packetFlushCadenceRawJson,
                 ]);
             AdaptiveRuntimePolicyScriptTestSupport.ProcessResult
                 mismatchedContinuation =
@@ -979,6 +1031,36 @@ public sealed class REQ_QUIC_CRT_0183
             QuicConnectionPhase.Active,
             DisposalStarted: false,
             QuicAdaptiveBackpressureValidity.None);
+
+    private static QuicPacketFlushCadenceObservation
+        CreatePacketFlushCadenceObservation()
+        => new(
+            OperationSequence: 1,
+            RequestId: 1,
+            QuicPacketFlushCadenceObservationMode.ObserveOnly,
+            ForcedValue: null,
+            ShadowRecommendation: null,
+            QuicPacketFlushCadencePolicyValue.LegacyCurrent,
+            QuicPacketFlushCadencePolicyValue.LegacyCurrent,
+            QuicPacketFlushCadenceSelectionSource.LegacyCurrent,
+            QuicPacketFlushCadenceReasonCode.LegacyDelay,
+            QuicPacketFlushCadenceSafetyOverride.None,
+            QuicPacketFlushCadenceDecisionBoundary
+                .AuthorizedApplicationPacketConstruction,
+            QuicPacketFlushCadenceLatchLifetime
+                .LogicalWritePacketOpportunity,
+            FallbackApplied: false,
+            LegacyDelayEligible: true,
+            DelayApplied: true,
+            PromptFlushApplied: false,
+            StreamPayloadLength: 16,
+            QueuedWriteCount: 0,
+            FinishWrites: false,
+            AddressValidated: true,
+            RetransmissionPending: false,
+            QuicConnectionPhase.Active,
+            DisposalStarted: false,
+            QuicPacketFlushCadenceValidity.None);
 
     private sealed class RecordingPostServiceSink :
         IQuicAdaptiveRuntimeShadowEpochSink,

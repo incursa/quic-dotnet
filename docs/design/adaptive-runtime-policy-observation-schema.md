@@ -144,33 +144,36 @@ the post-service boundary without relabeling retained version 1 rows. The
 local runner accepts both versions so existing append-only evidence remains
 readable.
 
-[`../../schemas/adaptive-runtime-unified-epoch-evidence-v8.schema.json`](../../schemas/adaptive-runtime-unified-epoch-evidence-v8.schema.json)
+[`../../schemas/adaptive-runtime-unified-epoch-evidence-v9.schema.json`](../../schemas/adaptive-runtime-unified-epoch-evidence-v9.schema.json)
 defines the internal joined record. The accumulator rejects a mismatched,
 duplicate, out-of-order, or nonpositive connection-observation,
 receive-credit, and boundary join before resetting Stage 1, actor, buffer, or
-backpressure state. Successful capture seals all summaries under the same connection
+backpressure or packet-flush state. Successful capture seals all summaries under the same connection
 epoch key. Permanent run, host, binary, workload, checksum, classification,
 and raw-file provenance remains a harness/export responsibility and is not
 invented by this connection-local record.
-The retained v1 through v7 joined schemas remain immutable. Version 8 retains
-actor v5 and buffer v4, adds the configured `adaptive_backpressure` snapshot
-plus bounded admission outcomes, and continues to carry the
+The retained v1 through v8 joined schemas remain immutable. Version 9 retains
+actor v5, buffer v4, and the configured `adaptive_backpressure` snapshot,
+adds the configured `packet_flush_cadence` snapshot plus bounded packet
+opportunity outcomes, and continues to carry the
 configured `buffer_copy_coalescing` snapshot plus bounded legal/applied
 outcomes even when no applicable operation occurs.
 
 The raw QUIC host configures that same accumulator as the receive-credit,
-four Stage 1, actor-service, buffer-copy, and adaptive-backpressure evidence
+four Stage 1, actor-service, buffer-copy, adaptive-backpressure, and
+packet-flush evidence
 sink whenever an
 adaptive execution is requested. It emits
-`adaptive-runtime-unified-epoch-raw-v8` under one connection key while
+`adaptive-runtime-unified-epoch-raw-v9` under one connection key while
 retaining the prior receive-credit and Stage 1 compatibility records. The
 append-only
 [`../../eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1`](../../eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1)
 exporter validates
-[`../../schemas/adaptive-runtime-unified-epoch-raw-v8.schema.json`](../../schemas/adaptive-runtime-unified-epoch-raw-v8.schema.json),
+[`../../schemas/adaptive-runtime-unified-epoch-raw-v9.schema.json`](../../schemas/adaptive-runtime-unified-epoch-raw-v9.schema.json),
 exact monotonic join keys, exactly four Stage 1 records plus one buffer-axis
-and one backpressure-axis record per row, and at most one non-legacy applied
-axis across receive credit, Stage 1, buffer coalescing, and backpressure.
+one backpressure-axis, and one packet-flush-axis record per row, and at most
+one non-legacy applied axis across receive credit, Stage 1, buffer coalescing,
+backpressure, and packet flush.
 Connection keys are scoped to their hashed source
 log during multi-process export because each process restarts its local
 counter. The same host also emits every actor dispatch as
@@ -190,12 +193,22 @@ Those records are sample-scoped and join by exact
 `source + connectionKey + operationSequence` membership in the inclusive
 backpressure epoch range. The validator recomputes operation, delayed,
 safety-override, fallback, and maximum queue/capacity aggregates from the raw
-members. Manifest v9 retains separate actor, buffer, and backpressure raw
+members. Manifest v10 retains separate actor, buffer, and backpressure raw
 contract identities, distinct backpressure epoch and sample counts, source
 hashes, validation output, and any
 bounded-channel export failure records. An actor or unified export failure
 produces `invalid_contract`; it is never silently treated as a complete
 dataset.
+
+The host additionally emits every applicable packet-flush opportunity as
+[`../../schemas/adaptive-runtime-packet-flush-cadence-raw-v1.schema.json`](../../schemas/adaptive-runtime-packet-flush-cadence-raw-v1.schema.json).
+Those records are sample-scoped and join by exact
+`source + connectionKey + operationSequence` membership in the inclusive
+packet-flush epoch range. The validator recomputes eligible, delayed, prompt,
+safety-override, fallback, maximum-payload, and maximum-queue aggregates from
+the raw members. Manifest v10 retains the packet stream contract, artifact,
+epoch count, sample count, and exact validation counts separately from the
+other streams.
 
 ## Stage 2 Buffer Copy And Coalescing V4
 
@@ -264,6 +277,33 @@ admitted ownership, or creates a policy error. Forced mode bypasses selection
 only; lifecycle, continuation, progress, cancellation, disposal, terminal,
 flow-control, congestion, pacing, recovery, hard-bound, and ownership guards
 remain authoritative.
+
+## Stage 3 Packet Flush Cadence V1
+
+The `packet_flush_cadence` axis uses
+[`../../schemas/adaptive-runtime-packet-flush-cadence-observation-v1.schema.json`](../../schemas/adaptive-runtime-packet-flush-cadence-observation-v1.schema.json),
+[`../../schemas/adaptive-runtime-packet-flush-cadence-epoch-v1.schema.json`](../../schemas/adaptive-runtime-packet-flush-cadence-epoch-v1.schema.json),
+and the sample-scoped raw wrapper above. The closed values are
+`legacy_current` and `prompt`. The exact decision boundary is one eligible
+application write after payload construction and before the existing optional
+small-write delay or packet protection. Its latch ends with that logical-write
+packet opportunity.
+
+Each sample records operation sequence, payload length, queue count, FIN,
+retransmission and address-validation guards, mode, forced,
+shadow-recommended, selected, and applied values, source, reason, safety
+override, delay/prompt/fallback state, lifecycle, validity, and independently
+versioned contracts. Missing, stale, saturated, contradictory, invalid, and
+out-of-domain input remains explicit. The epoch retains its configured
+snapshot even without an applicable opportunity and otherwise carries an
+inclusive operation range and bounded outcome counts and maxima.
+
+`prompt` removes only the existing optional one-millisecond coalescing delay
+for an otherwise eligible application write smaller than 32 bytes. It cannot
+manufacture work or bypass retransmission, address validation and
+anti-amplification, lifecycle, congestion, pacing, flow control, packet size
+or protection, recovery, cancellation, terminal, or ownership authority.
+Forced mode bypasses selection only.
 
 ## Epoch Envelope
 

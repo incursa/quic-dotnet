@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0072",
+  "artifact_type": "work_item",
+  "status": "in_progress",
+  "title": "Implement the optional application packet flush cadence axis",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Implement REQ-QUIC-CRT-0192 as a closed legacy_current and prompt seam at the existing optional small-write delay with forcing, observe-only, shadow, safety fallback, unified evidence, exact raw joins, and force-legacy rollback while measurement and active behavior remain frozen.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE3-PACKET-RECEIVE",
+    "ARC-QUIC-CRT-0071",
+    "VER-QUIC-CRT-0073"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0071"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0073"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0192"
+  ],
+  "planned_changes": "Add closed policy enums and deterministic evaluation; preserve the original disabled branch; add forcing, observe-only, shadow, one-opportunity latching, and authoritative fallback at the optional small-write delay; propagate internal options; add bounded opportunity and epoch evidence; extend unified evidence and raw to v9 and the manifest to v10; retain sample-scoped opportunity rows in a separate append-only stream with exact joins; add deterministic mechanism, guard, fallback, schema, package, semantic-validator, terminal, cancellation, and rollback tests; and synchronize matrix, seam, observation, controller, Stage 3, schema, and evidence documents.",
+  "verification_plan": "Build the affected runtime, test project, and raw host in Release. Run REQ-QUIC-CRT-0192 and unified REQ-QUIC-CRT-0183. Verify every value and mode, force-legacy rollback, prompt versus retained delay, decision and latch boundaries, retransmission, validation, lifecycle and invalid-input fallback, adjacent-axis rejection, configured empty epochs, schemas, exact sample-to-epoch joins, aggregate recomputation, packaging, FIN, cancellation, and existing application-send delay behavior. Do not run performance, campaigns, transforms, ML, CI, or active behavior.",
+  "out_of_scope": [
+    "Performance acceptance or threshold tuning",
+    "A new timer, packet scheduler, retransmission cadence, or protocol-progress delay",
+    "Changing congestion, pacing, flow-control, packet-protection, recovery, ownership, or terminal authority",
+    "receive_delivery_quantum implementation",
+    "Campaign, dataset, normalization, curation, split, or ML execution",
+    "CI changes, push, active_internal, or production activation"
+  ]
+}

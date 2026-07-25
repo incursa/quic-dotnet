@@ -12,11 +12,16 @@ param(
     [Parameter(Mandatory = $true)]
     [string] $AdaptiveBackpressureObservationPath,
 
+    [Parameter(Mandatory = $true)]
+    [string] $PacketFlushCadenceObservationPath,
+
     [int[]] $SourceRowCount,
 
     [int[]] $SourceActorObservationRowCount,
 
     [int[]] $SourceAdaptiveBackpressureObservationRowCount,
+
+    [int[]] $SourcePacketFlushCadenceObservationRowCount,
 
     [string] $RepositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 )
@@ -24,14 +29,18 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v8.schema.json'
+$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v9.schema.json'
 $actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v4.schema.json'
 $adaptiveBackpressureSchemaPath =
     Join-Path $RepositoryRoot 'schemas\adaptive-runtime-backpressure-raw-v1.schema.json'
+$packetFlushCadenceSchemaPath =
+    Join-Path $RepositoryRoot 'schemas\adaptive-runtime-packet-flush-cadence-raw-v1.schema.json'
 $resolvedRawEpochPath = (Resolve-Path -LiteralPath $RawEpochPath).Path
 $resolvedActorObservationPath = (Resolve-Path -LiteralPath $ActorObservationPath).Path
 $resolvedAdaptiveBackpressureObservationPath =
     (Resolve-Path -LiteralPath $AdaptiveBackpressureObservationPath).Path
+$resolvedPacketFlushCadenceObservationPath =
+    (Resolve-Path -LiteralPath $PacketFlushCadenceObservationPath).Path
 $seenKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $expectedActorKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 $seenActorKeys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
@@ -41,9 +50,16 @@ $expectedAdaptiveBackpressureKeys =
 $seenAdaptiveBackpressureKeys =
     [System.Collections.Generic.HashSet[string]]::new(
         [StringComparer]::Ordinal)
+$expectedPacketFlushCadenceKeys =
+    [System.Collections.Generic.HashSet[string]]::new(
+        [StringComparer]::Ordinal)
+$seenPacketFlushCadenceKeys =
+    [System.Collections.Generic.HashSet[string]]::new(
+        [StringComparer]::Ordinal)
 $lastSequenceByConnection = @{}
 $lastActorSequenceByConnection = @{}
 $lastAdaptiveBackpressureSequenceByConnection = @{}
+$lastPacketFlushCadenceSequenceByConnection = @{}
 $actorEpochSummaryByRowKey = @{}
 $actorEpochRowByActorKey = @{}
 $actorContenderCountByEpoch = @{}
@@ -57,6 +73,9 @@ $actorContinuationByEpoch = @{}
 $adaptiveBackpressureEpochByOperationKey = @{}
 $adaptiveBackpressureSummaryByEpoch = @{}
 $adaptiveBackpressureAggregateByEpoch = @{}
+$packetFlushCadenceEpochByOperationKey = @{}
+$packetFlushCadenceSummaryByEpoch = @{}
+$packetFlushCadenceAggregateByEpoch = @{}
 $joinFailures = [System.Collections.Generic.List[string]]::new()
 $duplicateKeys = [System.Collections.Generic.List[string]]::new()
 $outOfOrderKeys = [System.Collections.Generic.List[string]]::new()
@@ -69,6 +88,12 @@ $outOfOrderAdaptiveBackpressureKeys =
     [System.Collections.Generic.List[string]]::new()
 $orphanAdaptiveBackpressureKeys =
     [System.Collections.Generic.List[string]]::new()
+$duplicatePacketFlushCadenceKeys =
+    [System.Collections.Generic.List[string]]::new()
+$outOfOrderPacketFlushCadenceKeys =
+    [System.Collections.Generic.List[string]]::new()
+$orphanPacketFlushCadenceKeys =
+    [System.Collections.Generic.List[string]]::new()
 $multiAxisRows = [System.Collections.Generic.List[string]]::new()
 $rowCount = 0
 $axisRecordCount = 0
@@ -77,6 +102,8 @@ $actorObservationRowCount = 0
 $bufferObservationRowCount = 0
 $adaptiveBackpressureEpochRowCount = 0
 $adaptiveBackpressureObservationRowCount = 0
+$packetFlushCadenceEpochRowCount = 0
+$packetFlushCadenceObservationRowCount = 0
 $sourceIndex = 0
 $sourceRowOffset = 0
 
@@ -190,7 +217,7 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
         $epoch.stage1.queuedSendBurstBudget,
         $epoch.stage1.oversizedWriteAdmissionQuantum
     )
-    $axisRecordCount += $stage1Records.Count + 2
+    $axisRecordCount += $stage1Records.Count + 3
     $nonLegacyApplied = @($stage1Records | Where-Object {
         [string] $_.decision.appliedValue -ne 'LegacyCurrent'
     }).Count
@@ -206,6 +233,11 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
     $backpressureSummary = $epoch.adaptiveBackpressure
     $backpressureSnapshot = $backpressureSummary.policySnapshot
     if ([string] $backpressureSnapshot.appliedValue -ne 'LegacyCurrent') {
+        $nonLegacyApplied++
+    }
+    $packetFlushSummary = $epoch.packetFlushCadence
+    $packetFlushSnapshot = $packetFlushSummary.policySnapshot
+    if ([string] $packetFlushSnapshot.appliedValue -ne 'LegacyCurrent') {
         $nonLegacyApplied++
     }
     if ($nonLegacyApplied -gt 1) {
@@ -473,6 +505,107 @@ foreach ($line in [System.IO.File]::ReadLines($resolvedRawEpochPath)) {
             'LegacyCurrent') {
         [void] $joinFailures.Add(
             "$rowKey|backpressure-legacy-identity")
+    }
+
+    if ([bool] $packetFlushSummary.hasObservation) {
+        $packetFlushCadenceEpochRowCount++
+        $packetFlushFirst =
+            [uint64] $packetFlushSummary.firstOperationSequence
+        $packetFlushLast =
+            [uint64] $packetFlushSummary.lastOperationSequence
+        $packetFlushCount =
+            [uint64] $packetFlushSummary.operationCount
+        if ($packetFlushCount -eq 0 -or
+            $packetFlushFirst -eq 0 -or
+            $packetFlushLast -lt $packetFlushFirst -or
+            $packetFlushCount -ne
+                (($packetFlushLast - $packetFlushFirst) + 1)) {
+            [void] $joinFailures.Add("$rowKey|packet-flush-range")
+        }
+        else {
+            $packetFlushCadenceSummaryByEpoch[$rowKey] =
+                [ordered]@{
+                    OperationCount = $packetFlushCount
+                    EligibleCount =
+                        [uint64] $packetFlushSummary.eligibleCount
+                    DelayAppliedCount =
+                        [uint64] $packetFlushSummary.delayAppliedCount
+                    PromptFlushAppliedCount =
+                        [uint64] $packetFlushSummary.promptFlushAppliedCount
+                    SafetyOverrideCount =
+                        [uint64] $packetFlushSummary.safetyOverrideCount
+                    FallbackCount =
+                        [uint64] $packetFlushSummary.fallbackCount
+                    MaximumStreamPayloadLength =
+                        [uint64] $packetFlushSummary.maximumStreamPayloadLength
+                    MaximumQueuedWriteCount =
+                        [uint64] $packetFlushSummary.maximumQueuedWriteCount
+                }
+            for ($packetFlushSequence = $packetFlushFirst;
+                $packetFlushSequence -le $packetFlushLast;
+                $packetFlushSequence++) {
+                $packetFlushKey =
+                    "$scopedConnectionKey|$packetFlushSequence"
+                [void] $expectedPacketFlushCadenceKeys.Add(
+                    $packetFlushKey)
+                if ($packetFlushCadenceEpochByOperationKey.ContainsKey(
+                        $packetFlushKey)) {
+                    [void] $joinFailures.Add(
+                        "$rowKey|packet-flush-range-overlap")
+                }
+                else {
+                    $packetFlushCadenceEpochByOperationKey[
+                        $packetFlushKey] = $rowKey
+                }
+                if ($packetFlushSequence -eq [uint64]::MaxValue) {
+                    break
+                }
+            }
+        }
+    }
+    elseif ([uint64] $packetFlushSummary.operationCount -ne 0 -or
+        [uint64] $packetFlushSummary.firstOperationSequence -ne 0 -or
+        [uint64] $packetFlushSummary.lastOperationSequence -ne 0) {
+        [void] $joinFailures.Add("$rowKey|packet-flush-empty")
+    }
+    if ([uint64] $packetFlushSummary.eligibleCount -gt
+            [uint64] $packetFlushSummary.operationCount -or
+        [uint64] $packetFlushSummary.delayAppliedCount -gt
+            [uint64] $packetFlushSummary.eligibleCount -or
+        [uint64] $packetFlushSummary.promptFlushAppliedCount -gt
+            [uint64] $packetFlushSummary.eligibleCount -or
+        [uint64] $packetFlushSummary.safetyOverrideCount -gt
+            [uint64] $packetFlushSummary.operationCount -or
+        [uint64] $packetFlushSummary.fallbackCount -gt
+            [uint64] $packetFlushSummary.operationCount) {
+        [void] $joinFailures.Add("$rowKey|packet-flush-counts")
+    }
+    if ([bool] $packetFlushSnapshot.hasForcedValue) {
+        if ([string] $packetFlushSnapshot.selectionSource -ne 'Forced' -or
+            [string] $packetFlushSnapshot.selectedValue -ne
+                [string] $packetFlushSnapshot.forcedValue -or
+            [string] $packetFlushSnapshot.appliedValue -ne
+                [string] $packetFlushSnapshot.forcedValue) {
+            [void] $joinFailures.Add(
+                "$rowKey|packet-flush-forced-identity")
+        }
+    }
+    elseif ([string] $packetFlushSnapshot.mode -eq 'Shadow') {
+        if (-not [bool] $packetFlushSnapshot.hasShadowRecommendation -or
+            [string] $packetFlushSnapshot.selectedValue -ne
+                [string] $packetFlushSnapshot.shadowRecommendation -or
+            [string] $packetFlushSnapshot.appliedValue -ne
+                'LegacyCurrent') {
+            [void] $joinFailures.Add(
+                "$rowKey|packet-flush-shadow-identity")
+        }
+    }
+    elseif ([string] $packetFlushSnapshot.selectedValue -ne
+            'LegacyCurrent' -or
+        [string] $packetFlushSnapshot.appliedValue -ne
+            'LegacyCurrent') {
+        [void] $joinFailures.Add(
+            "$rowKey|packet-flush-legacy-identity")
     }
 
     if ([bool] $epoch.postServiceBoundary.actorObservationPublished -and
@@ -906,6 +1039,160 @@ foreach ($epochRowKey in $adaptiveBackpressureSummaryByEpoch.Keys) {
     }
 }
 
+$packetFlushSourceIndex = 0
+$packetFlushSourceRowOffset = 0
+foreach ($line in [System.IO.File]::ReadLines(
+        $resolvedPacketFlushCadenceObservationPath)) {
+    if ([string]::IsNullOrWhiteSpace($line)) {
+        continue
+    }
+
+    if (-not (
+            $line |
+                Test-Json `
+                    -SchemaFile $packetFlushCadenceSchemaPath `
+                    -ErrorAction Stop)) {
+        throw (
+            "Packet-flush cadence raw observation failed schema " +
+            "validation at row " +
+            "$($packetFlushCadenceObservationRowCount + 1).")
+    }
+
+    $record = $line | ConvertFrom-Json -Depth 100
+    $sourceKey = Resolve-SourceKey `
+        -Counts $SourcePacketFlushCadenceObservationRowCount `
+        -Index ([ref] $packetFlushSourceIndex) `
+        -Offset ([ref] $packetFlushSourceRowOffset)
+    $scopedConnectionKey =
+        "$sourceKey|$([string] $record.connectionKey)"
+    $sequence = [uint64] $record.observation.operationSequence
+    $operationKey = "$scopedConnectionKey|$sequence"
+    $packetFlushCadenceObservationRowCount++
+    $packetFlushSourceRowOffset++
+
+    if (-not $seenPacketFlushCadenceKeys.Add($operationKey)) {
+        [void] $duplicatePacketFlushCadenceKeys.Add($operationKey)
+    }
+    if ($lastPacketFlushCadenceSequenceByConnection.ContainsKey(
+            $scopedConnectionKey) -and
+        $sequence -le [uint64] (
+            $lastPacketFlushCadenceSequenceByConnection[
+                $scopedConnectionKey])) {
+        [void] $outOfOrderPacketFlushCadenceKeys.Add($operationKey)
+    }
+    $lastPacketFlushCadenceSequenceByConnection[
+        $scopedConnectionKey] = $sequence
+
+    if (-not $expectedPacketFlushCadenceKeys.Remove($operationKey)) {
+        [void] $orphanPacketFlushCadenceKeys.Add($operationKey)
+        continue
+    }
+
+    $epochRowKey =
+        [string] $packetFlushCadenceEpochByOperationKey[$operationKey]
+    if (-not $packetFlushCadenceAggregateByEpoch.ContainsKey(
+            $epochRowKey)) {
+        $packetFlushCadenceAggregateByEpoch[$epochRowKey] =
+            [ordered]@{
+                OperationCount = [uint64]0
+                EligibleCount = [uint64]0
+                DelayAppliedCount = [uint64]0
+                PromptFlushAppliedCount = [uint64]0
+                SafetyOverrideCount = [uint64]0
+                FallbackCount = [uint64]0
+                MaximumStreamPayloadLength = [uint64]0
+                MaximumQueuedWriteCount = [uint64]0
+            }
+    }
+
+    $aggregate = $packetFlushCadenceAggregateByEpoch[$epochRowKey]
+    $aggregate.OperationCount =
+        [uint64] $aggregate.OperationCount + 1
+    if ([bool] $record.observation.legacyDelayEligible) {
+        $aggregate.EligibleCount =
+            [uint64] $aggregate.EligibleCount + 1
+    }
+    if ([bool] $record.observation.delayApplied) {
+        $aggregate.DelayAppliedCount =
+            [uint64] $aggregate.DelayAppliedCount + 1
+    }
+    if ([bool] $record.observation.promptFlushApplied) {
+        $aggregate.PromptFlushAppliedCount =
+            [uint64] $aggregate.PromptFlushAppliedCount + 1
+    }
+    if ([string] $record.observation.safetyOverride -ne 'None') {
+        $aggregate.SafetyOverrideCount =
+            [uint64] $aggregate.SafetyOverrideCount + 1
+    }
+    if ([bool] $record.observation.fallbackApplied) {
+        $aggregate.FallbackCount =
+            [uint64] $aggregate.FallbackCount + 1
+    }
+    $payloadLength =
+        [uint64] $record.observation.streamPayloadLength
+    if ($payloadLength -gt
+        [uint64] $aggregate.MaximumStreamPayloadLength) {
+        $aggregate.MaximumStreamPayloadLength = $payloadLength
+    }
+    $queuedWriteCount =
+        [uint64] $record.observation.queuedWriteCount
+    if ($queuedWriteCount -gt
+        [uint64] $aggregate.MaximumQueuedWriteCount) {
+        $aggregate.MaximumQueuedWriteCount = $queuedWriteCount
+    }
+}
+
+$sourcePacketFlushCadenceObservationRowTotal =
+    ($SourcePacketFlushCadenceObservationRowCount |
+        Measure-Object -Sum).Sum
+if ($null -ne $SourcePacketFlushCadenceObservationRowCount -and
+    $sourcePacketFlushCadenceObservationRowTotal -ne
+        $packetFlushCadenceObservationRowCount) {
+    throw (
+        "Packet-flush cadence source row counts do not match retained " +
+        "rows: sources=$sourcePacketFlushCadenceObservationRowTotal, " +
+        "rows=$packetFlushCadenceObservationRowCount.")
+}
+
+foreach ($epochRowKey in $packetFlushCadenceSummaryByEpoch.Keys) {
+    $expected = $packetFlushCadenceSummaryByEpoch[$epochRowKey]
+    $actual = if ($packetFlushCadenceAggregateByEpoch.ContainsKey(
+            $epochRowKey)) {
+        $packetFlushCadenceAggregateByEpoch[$epochRowKey]
+    }
+    else {
+        [ordered]@{
+            OperationCount = [uint64]0
+            EligibleCount = [uint64]0
+            DelayAppliedCount = [uint64]0
+            PromptFlushAppliedCount = [uint64]0
+            SafetyOverrideCount = [uint64]0
+            FallbackCount = [uint64]0
+            MaximumStreamPayloadLength = [uint64]0
+            MaximumQueuedWriteCount = [uint64]0
+        }
+    }
+    if ([uint64] $expected.OperationCount -ne
+            [uint64] $actual.OperationCount -or
+        [uint64] $expected.EligibleCount -ne
+            [uint64] $actual.EligibleCount -or
+        [uint64] $expected.DelayAppliedCount -ne
+            [uint64] $actual.DelayAppliedCount -or
+        [uint64] $expected.PromptFlushAppliedCount -ne
+            [uint64] $actual.PromptFlushAppliedCount -or
+        [uint64] $expected.SafetyOverrideCount -ne
+            [uint64] $actual.SafetyOverrideCount -or
+        [uint64] $expected.FallbackCount -ne
+            [uint64] $actual.FallbackCount -or
+        [uint64] $expected.MaximumStreamPayloadLength -ne
+            [uint64] $actual.MaximumStreamPayloadLength -or
+        [uint64] $expected.MaximumQueuedWriteCount -ne
+            [uint64] $actual.MaximumQueuedWriteCount) {
+        [void] $joinFailures.Add(
+            "$epochRowKey|packet-flush-raw-aggregate")
+    }
+}
+
 foreach ($actorEpochRowKey in $actorEpochSummaryByRowKey.Keys) {
     $summary = $actorEpochSummaryByRowKey[$actorEpochRowKey]
     $actualObservationCount = if (
@@ -1054,9 +1341,13 @@ $valid =
     $outOfOrderAdaptiveBackpressureKeys.Count -eq 0 -and
     $orphanAdaptiveBackpressureKeys.Count -eq 0 -and
     $expectedAdaptiveBackpressureKeys.Count -eq 0 -and
+    $duplicatePacketFlushCadenceKeys.Count -eq 0 -and
+    $outOfOrderPacketFlushCadenceKeys.Count -eq 0 -and
+    $orphanPacketFlushCadenceKeys.Count -eq 0 -and
+    $expectedPacketFlushCadenceKeys.Count -eq 0 -and
     $joinFailures.Count -eq 0 -and
     $multiAxisRows.Count -eq 0 -and
-    $axisRecordCount -eq ($rowCount * 6)
+    $axisRecordCount -eq ($rowCount * 7)
 if (-not $valid) {
     throw (
         "Unified adaptive-runtime raw evidence failed semantic validation: " +
@@ -1073,12 +1364,20 @@ if (-not $valid) {
             $orphanAdaptiveBackpressureKeys.Count), " +
         "backpressureMissing=$(
             $expectedAdaptiveBackpressureKeys.Count), " +
+        "packetFlushDuplicates=$(
+            $duplicatePacketFlushCadenceKeys.Count), " +
+        "packetFlushOutOfOrder=$(
+            $outOfOrderPacketFlushCadenceKeys.Count), " +
+        "packetFlushOrphans=$(
+            $orphanPacketFlushCadenceKeys.Count), " +
+        "packetFlushMissing=$(
+            $expectedPacketFlushCadenceKeys.Count), " +
         "joinFailures=$($joinFailures.Count), multiAxis=$($multiAxisRows.Count), " +
-        "axisRecords=$axisRecordCount, expectedAxisRecords=$($rowCount * 6).")
+        "axisRecords=$axisRecordCount, expectedAxisRecords=$($rowCount * 7).")
 }
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-validation-v9'
+    schemaVersion = 'adaptive-runtime-unified-raw-validation-v10'
     valid = $true
     rawEpochRowCount = $rowCount
     axisRecordCount = $axisRecordCount
@@ -1090,6 +1389,10 @@ if (-not $valid) {
         $adaptiveBackpressureEpochRowCount
     adaptiveBackpressureObservationRowCount =
         $adaptiveBackpressureObservationRowCount
+    packetFlushCadenceEpochRowCount =
+        $packetFlushCadenceEpochRowCount
+    packetFlushCadenceObservationRowCount =
+        $packetFlushCadenceObservationRowCount
     duplicateKeyCount = $duplicateKeys.Count
     outOfOrderKeyCount = $outOfOrderKeys.Count
     duplicateActorKeyCount = $duplicateActorKeys.Count
@@ -1104,6 +1407,14 @@ if (-not $valid) {
         $orphanAdaptiveBackpressureKeys.Count
     missingAdaptiveBackpressureKeyCount =
         $expectedAdaptiveBackpressureKeys.Count
+    duplicatePacketFlushCadenceKeyCount =
+        $duplicatePacketFlushCadenceKeys.Count
+    outOfOrderPacketFlushCadenceKeyCount =
+        $outOfOrderPacketFlushCadenceKeys.Count
+    orphanPacketFlushCadenceKeyCount =
+        $orphanPacketFlushCadenceKeys.Count
+    missingPacketFlushCadenceKeyCount =
+        $expectedPacketFlushCadenceKeys.Count
     joinFailureCount = $joinFailures.Count
     multiAxisVariationCount = $multiAxisRows.Count
 } | ConvertTo-Json -Depth 20

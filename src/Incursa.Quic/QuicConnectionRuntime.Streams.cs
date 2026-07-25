@@ -998,7 +998,9 @@ internal sealed partial class QuicConnectionRuntime
                 oversizedStreamPriority = 0;
             }
 
-            bool retransmissionPending = sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData);
+            bool oversizedRetransmissionPending =
+                sendRuntime.HasPendingRetransmission(
+                    QuicPacketNumberSpace.ApplicationData);
             QueuePendingRawApplicationSend(
                 streamId,
                 oversizedStreamPriority,
@@ -1007,13 +1009,13 @@ internal sealed partial class QuicConnectionRuntime
                 queuedStreamData,
                 committedStreamDataLength,
                 queuedStreamDataLifetimeToken,
-                retransmissionPending
+                oversizedRetransmissionPending
                     ? QuicApplicationSendQueueCause.PendingRetransmission
                     : QuicApplicationSendQueueCause.OversizedWrite,
                 nowTicks,
                 tryFlushPendingApplicationSendsAfterEnqueue: true,
                 ref effects);
-            if (retransmissionPending)
+            if (oversizedRetransmissionPending)
             {
                 _ = TryFlushPendingRetransmissions(
                     QuicPacketNumberSpace.ApplicationData,
@@ -1057,7 +1059,34 @@ internal sealed partial class QuicConnectionRuntime
             streamPriority = 0;
         }
 
-        if (sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData))
+        bool retransmissionPending =
+            sendRuntime.HasPendingRetransmission(
+                QuicPacketNumberSpace.ApplicationData);
+        bool addressValidated =
+            activePath?.AmplificationState.IsAddressValidated ?? false;
+        bool delaySmallWrite =
+            !finishWrites
+            && committedStreamDataLength > 0
+            && addressValidated
+            && (applicationSendQueue.Count > 0
+                || committedStreamDataLength
+                    < ApplicationSendDelayThresholdBytes);
+        if (PacketFlushCadenceDecisionEnabled)
+        {
+            QuicPacketFlushCadencePolicyDecision flushDecision =
+                ResolvePacketFlushCadencePolicyDecision(
+                    committedStreamDataLength,
+                    applicationSendQueue.Count,
+                    finishWrites,
+                    addressValidated,
+                    retransmissionPending);
+            TryPublishPacketFlushCadenceObservation(
+                requestId,
+                in flushDecision);
+            delaySmallWrite = flushDecision.DelayApplied;
+        }
+
+        if (retransmissionPending)
         {
             LogApplicationSend(
                 $"app-tx branch=pending-retransmission role={tlsState.Role} stream={streamId} queue={applicationSendQueue.Count}.");
@@ -1085,11 +1114,7 @@ internal sealed partial class QuicConnectionRuntime
             return true;
         }
 
-        if (!finishWrites
-            && committedStreamDataLength > 0
-            && (activePath?.AmplificationState.IsAddressValidated ?? false)
-            && (applicationSendQueue.Count > 0
-                || committedStreamDataLength < ApplicationSendDelayThresholdBytes))
+        if (delaySmallWrite)
         {
             LogApplicationSend(
                 $"app-tx branch=delay-small-write role={tlsState.Role} stream={streamId} queue={applicationSendQueue.Count}.");

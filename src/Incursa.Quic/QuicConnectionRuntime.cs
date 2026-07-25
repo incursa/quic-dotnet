@@ -75,6 +75,8 @@ internal sealed partial class QuicConnectionRuntime :
     private const int UnconfiguredBufferCopyObservationMode = -1;
     private const int UnconfiguredAdaptiveBackpressurePolicyValue = -1;
     private const int UnconfiguredAdaptiveBackpressureObservationMode = -1;
+    private const int UnconfiguredPacketFlushCadencePolicyValue = -1;
+    private const int UnconfiguredPacketFlushCadenceObservationMode = -1;
     private const int UnconfiguredQueuedSendBurstPolicyMode = -1;
     private const int UnconfiguredQueuedSendBurstObservationMode = -1;
     private const int UnconfiguredOversizedWriteAdmissionPolicyMode = -1;
@@ -121,6 +123,10 @@ internal sealed partial class QuicConnectionRuntime :
         UnconfiguredAdaptiveBackpressurePolicyValue;
     private int adaptiveBackpressureObservationMode =
         UnconfiguredAdaptiveBackpressureObservationMode;
+    private int packetFlushCadencePolicyValue =
+        UnconfiguredPacketFlushCadencePolicyValue;
+    private int packetFlushCadenceObservationMode =
+        UnconfiguredPacketFlushCadenceObservationMode;
     private int queuedSendBurstPolicyMode = UnconfiguredQueuedSendBurstPolicyMode;
     private int queuedSendBurstObservationMode = UnconfiguredQueuedSendBurstObservationMode;
     private int oversizedWriteAdmissionPolicyMode =
@@ -157,6 +163,9 @@ internal sealed partial class QuicConnectionRuntime :
     private long adaptiveBackpressureObservationSequence;
     private IQuicAdaptiveBackpressureEvidenceSink?
         adaptiveBackpressureEvidenceSink;
+    private long packetFlushCadenceObservationSequence;
+    private IQuicPacketFlushCadenceEvidenceSink?
+        packetFlushCadenceEvidenceSink;
     private IQuicQueuedSendBurstEvidenceSink? queuedSendBurstEvidenceSink;
     private IQuicOversizedWriteAdmissionEvidenceSink? oversizedWriteAdmissionEvidenceSink;
     private readonly object scheduledPeerStreamCapacityReleaseGate = new();
@@ -1468,6 +1477,12 @@ internal sealed partial class QuicConnectionRuntime :
         QuicAdaptiveBackpressurePolicyValue?
             forcedAdaptiveBackpressurePolicyValue =
                 options.ForcedAdaptiveBackpressurePolicyValue;
+        QuicPacketFlushCadenceObservationMode
+            requestedPacketFlushCadenceObservationMode =
+                options.PacketFlushCadenceObservationMode;
+        QuicPacketFlushCadencePolicyValue?
+            forcedPacketFlushCadencePolicyValue =
+                options.ForcedPacketFlushCadencePolicyValue;
         if (requestedApplicationSendTurnObservationMode is < QuicApplicationSendTurnObservationMode.Disabled
             or > QuicApplicationSendTurnObservationMode.Shadow)
         {
@@ -1580,6 +1595,17 @@ internal sealed partial class QuicConnectionRuntime :
             QuicAdaptiveBackpressurePolicy.ValidateValue(
                 requestedAdaptiveBackpressurePolicyValue);
         }
+        QuicPacketFlushCadencePolicy.ValidateObservationMode(
+            requestedPacketFlushCadenceObservationMode);
+        bool packetFlushCadenceObservationEnabled =
+            requestedPacketFlushCadenceObservationMode
+                != QuicPacketFlushCadenceObservationMode.Disabled;
+        if (forcedPacketFlushCadencePolicyValue
+            is { } requestedPacketFlushCadencePolicyValue)
+        {
+            QuicPacketFlushCadencePolicy.ValidateValue(
+                requestedPacketFlushCadencePolicyValue);
+        }
         if (!applicationSendTurnObservationEnabled && options.ApplicationSendTurnEvidenceSink is not null)
         {
             throw new InvalidOperationException(
@@ -1668,6 +1694,20 @@ internal sealed partial class QuicConnectionRuntime :
         {
             throw new InvalidOperationException(
                 "Adaptive-backpressure observe-only and shadow modes require an evidence sink.");
+        }
+
+        if (!packetFlushCadenceObservationEnabled
+            && options.PacketFlushCadenceEvidenceSink is not null)
+        {
+            throw new InvalidOperationException(
+                "Packet-flush cadence evidence export requires observe-only or shadow mode.");
+        }
+
+        if (packetFlushCadenceObservationEnabled
+            && options.PacketFlushCadenceEvidenceSink is null)
+        {
+            throw new InvalidOperationException(
+                "Packet-flush cadence observe-only and shadow modes require an evidence sink.");
         }
 
         bool applicationSendTurnTreatmentSelected =
@@ -1878,6 +1918,31 @@ internal sealed partial class QuicConnectionRuntime :
                 "Buffer-copy policy requires the legacy_current adaptive-backpressure policy.");
         }
 
+        bool packetFlushCadenceTreatmentSelected =
+            forcedPacketFlushCadencePolicyValue
+                is QuicPacketFlushCadencePolicyValue.Prompt;
+        int behaviorDistinctTreatmentCount =
+            (applicationSendTurnTreatmentSelected ? 1 : 0)
+            + (applicationSendBatchTreatmentSelected ? 1 : 0)
+            + (queuedSendBurstTreatmentSelected ? 1 : 0)
+            + (oversizedWriteAdmissionTreatmentSelected ? 1 : 0)
+            + (bufferCopyTreatmentSelected ? 1 : 0)
+            + (adaptiveBackpressureTreatmentSelected ? 1 : 0)
+            + (packetFlushCadenceTreatmentSelected ? 1 : 0);
+        if (behaviorDistinctTreatmentCount > 1)
+        {
+            throw new InvalidOperationException(
+                "Only one behavior-distinct adaptive runtime policy axis may be forced at a time.");
+        }
+
+        if (packetFlushCadenceTreatmentSelected
+            && forcedMode is not null
+                and not QuicReceiveCreditPolicyMode.LegacyCurrent)
+        {
+            throw new InvalidOperationException(
+                "Packet-flush cadence policy requires the legacy_current receive-credit policy.");
+        }
+
         if (applicationSendTurnObservationEnabled)
         {
             if (options.ApplicationSendTurnEvidenceSink is null)
@@ -1920,6 +1985,13 @@ internal sealed partial class QuicConnectionRuntime :
             ConfigureAdaptiveBackpressureObservation(
                 requestedAdaptiveBackpressureObservationMode,
                 options.AdaptiveBackpressureEvidenceSink!);
+        }
+
+        if (packetFlushCadenceObservationEnabled)
+        {
+            ConfigurePacketFlushCadenceObservation(
+                requestedPacketFlushCadenceObservationMode,
+                options.PacketFlushCadenceEvidenceSink!);
         }
 
         if (options.AdaptiveRuntimeShadowEnabled)
@@ -1975,6 +2047,13 @@ internal sealed partial class QuicConnectionRuntime :
             {
                 ConfigureAdaptiveBackpressurePolicyValue(
                     shadowAdaptiveBackpressurePolicyValue);
+            }
+
+            if (forcedPacketFlushCadencePolicyValue
+                is { } shadowPacketFlushCadencePolicyValue)
+            {
+                ConfigurePacketFlushCadencePolicyValue(
+                    shadowPacketFlushCadencePolicyValue);
             }
 
             if (applicationSendTurnObservationEnabled)
@@ -2057,6 +2136,13 @@ internal sealed partial class QuicConnectionRuntime :
         {
             ConfigureAdaptiveBackpressurePolicyValue(
                 configuredAdaptiveBackpressurePolicyValue);
+        }
+
+        if (forcedPacketFlushCadencePolicyValue
+            is { } configuredPacketFlushCadencePolicyValue)
+        {
+            ConfigurePacketFlushCadencePolicyValue(
+                configuredPacketFlushCadencePolicyValue);
         }
 
         if (applicationSendTurnObservationEnabled)
@@ -2193,6 +2279,21 @@ internal sealed partial class QuicConnectionRuntime :
         }
     }
 
+    internal void ConfigurePacketFlushCadencePolicyValue(
+        QuicPacketFlushCadencePolicyValue value)
+    {
+        QuicPacketFlushCadencePolicy.ValidateValue(value);
+        if (Interlocked.CompareExchange(
+                ref packetFlushCadencePolicyValue,
+                (int)value,
+                UnconfiguredPacketFlushCadencePolicyValue)
+            != UnconfiguredPacketFlushCadencePolicyValue)
+        {
+            throw new InvalidOperationException(
+                "The packet-flush cadence policy value has already been configured.");
+        }
+    }
+
     private void ConfigureApplicationSendTurnObservation(
         QuicApplicationSendTurnObservationMode mode,
         IQuicApplicationSendTurnEvidenceSink sink)
@@ -2289,6 +2390,23 @@ internal sealed partial class QuicConnectionRuntime :
         }
 
         adaptiveBackpressureEvidenceSink = sink;
+    }
+
+    private void ConfigurePacketFlushCadenceObservation(
+        QuicPacketFlushCadenceObservationMode mode,
+        IQuicPacketFlushCadenceEvidenceSink sink)
+    {
+        if (Interlocked.CompareExchange(
+                ref packetFlushCadenceObservationMode,
+                (int)mode,
+                UnconfiguredPacketFlushCadenceObservationMode)
+            != UnconfiguredPacketFlushCadenceObservationMode)
+        {
+            throw new InvalidOperationException(
+                "The packet-flush cadence observation mode has already been configured.");
+        }
+
+        packetFlushCadenceEvidenceSink = sink;
     }
 
     private void ConfigureQueuedSendBurstObservation(
@@ -3382,6 +3500,136 @@ internal sealed partial class QuicConnectionRuntime :
         {
             // Admission evidence is diagnostic-only. A failed sink cannot
             // reject work, change completion, or affect runtime progress.
+        }
+    }
+
+    internal bool PacketFlushCadenceObservationEnabled =>
+        (Volatile.Read(ref packetFlushCadenceObservationMode)
+            is (int)QuicPacketFlushCadenceObservationMode.ObserveOnly
+                or (int)QuicPacketFlushCadenceObservationMode.Shadow)
+        && packetFlushCadenceEvidenceSink is not null;
+
+    internal bool PacketFlushCadenceDecisionEnabled =>
+        Volatile.Read(ref packetFlushCadencePolicyValue)
+            != UnconfiguredPacketFlushCadencePolicyValue
+        || Volatile.Read(ref packetFlushCadenceObservationMode)
+            is (int)QuicPacketFlushCadenceObservationMode.ObserveOnly
+                or (int)QuicPacketFlushCadenceObservationMode.Shadow;
+
+    internal QuicPacketFlushCadenceConfiguredPolicySnapshot
+        CaptureConfiguredPacketFlushCadencePolicySnapshot()
+    {
+        int configuredMode = Volatile.Read(
+            ref packetFlushCadenceObservationMode);
+        QuicPacketFlushCadenceObservationMode mode =
+            configuredMode switch
+            {
+                (int)QuicPacketFlushCadenceObservationMode.ObserveOnly =>
+                    QuicPacketFlushCadenceObservationMode.ObserveOnly,
+                (int)QuicPacketFlushCadenceObservationMode.Shadow =>
+                    QuicPacketFlushCadenceObservationMode.Shadow,
+                _ => QuicPacketFlushCadenceObservationMode.Disabled,
+            };
+        int configuredValue = Volatile.Read(
+            ref packetFlushCadencePolicyValue);
+        QuicPacketFlushCadencePolicyValue? forcedValue =
+            configuredValue switch
+            {
+                (int)QuicPacketFlushCadencePolicyValue.LegacyCurrent =>
+                    QuicPacketFlushCadencePolicyValue.LegacyCurrent,
+                (int)QuicPacketFlushCadencePolicyValue.Prompt =>
+                    QuicPacketFlushCadencePolicyValue.Prompt,
+                _ => null,
+            };
+        return QuicPacketFlushCadencePolicy.CreateConfiguredSnapshot(
+            mode,
+            forcedValue);
+    }
+
+    internal QuicPacketFlushCadencePolicyDecision
+        ResolvePacketFlushCadencePolicyDecision(
+            int streamPayloadLength,
+            int queuedWriteCount,
+            bool finishWrites,
+            bool addressValidated,
+            bool retransmissionPending,
+            QuicPacketFlushCadenceValidity validity =
+                QuicPacketFlushCadenceValidity.None)
+    {
+        QuicPacketFlushCadenceConfiguredPolicySnapshot configured =
+            CaptureConfiguredPacketFlushCadencePolicySnapshot();
+        QuicPacketFlushCadencePolicyValue? forcedValue =
+            configured.HasForcedValue
+                ? configured.ForcedValue
+                : null;
+        QuicAdaptiveRuntimeLifecycle lifecycle =
+            CaptureAdaptiveRuntimeLifecycleFlags();
+        bool lifecycleGuard =
+            (lifecycle
+                & (QuicAdaptiveRuntimeLifecycle.Terminal
+                    | QuicAdaptiveRuntimeLifecycle.Disposed)) != 0;
+        return QuicPacketFlushCadencePolicy.Evaluate(
+            configured.Mode,
+            forcedValue,
+            streamPayloadLength,
+            queuedWriteCount,
+            finishWrites,
+            addressValidated,
+            retransmissionPending,
+            lifecycleGuard,
+            ApplicationSendDelayThresholdBytes,
+            validity);
+    }
+
+    private void TryPublishPacketFlushCadenceObservation(
+        long requestId,
+        in QuicPacketFlushCadencePolicyDecision decision)
+    {
+        IQuicPacketFlushCadenceEvidenceSink? sink =
+            packetFlushCadenceEvidenceSink;
+        if (sink is null || !PacketFlushCadenceObservationEnabled)
+        {
+            return;
+        }
+
+        ulong operationSequence =
+            unchecked((ulong)Interlocked.Increment(
+                ref packetFlushCadenceObservationSequence));
+        QuicPacketFlushCadenceObservation observation = new(
+            operationSequence,
+            requestId,
+            decision.Mode,
+            decision.HasForcedValue ? decision.ForcedValue : null,
+            decision.HasShadowRecommendation
+                ? decision.ShadowRecommendation
+                : null,
+            decision.SelectedValue,
+            decision.AppliedValue,
+            decision.SelectionSource,
+            decision.ReasonCode,
+            decision.SafetyOverride,
+            decision.DecisionBoundary,
+            decision.LatchLifetime,
+            decision.FallbackApplied,
+            decision.LegacyDelayEligible,
+            decision.DelayApplied,
+            decision.PromptFlushApplied,
+            decision.StreamPayloadLength,
+            decision.QueuedWriteCount,
+            decision.FinishWrites,
+            decision.AddressValidated,
+            decision.RetransmissionPending,
+            Phase,
+            IsDisposed,
+            decision.Validity);
+        try
+        {
+            _ = sink.TryPublish(in observation);
+        }
+        catch (Exception)
+        {
+            // Packet-flush evidence is diagnostic-only. A failed sink cannot
+            // delay, emit, reject, or otherwise affect protocol work.
         }
     }
 

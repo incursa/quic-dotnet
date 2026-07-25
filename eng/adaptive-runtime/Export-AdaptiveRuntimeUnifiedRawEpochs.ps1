@@ -23,17 +23,22 @@ $actorPrefix = 'QUIC_ACTOR_SERVICE_OBSERVATION_JSON='
 $actorFailurePrefix = 'QUIC_ACTOR_SERVICE_OBSERVATION_FAILURE_JSON='
 $adaptiveBackpressurePrefix =
     'QUIC_ADAPTIVE_BACKPRESSURE_EVIDENCE_JSON='
-$rawSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v8.schema.json'
+$packetFlushCadencePrefix =
+    'QUIC_PACKET_FLUSH_CADENCE_EVIDENCE_JSON='
+$rawSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-epoch-raw-v9.schema.json'
 $actorSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-raw-v4.schema.json'
 $actorFailureSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-actor-service-export-failure-v1.schema.json'
 $adaptiveBackpressureSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-backpressure-raw-v1.schema.json'
-$manifestSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-raw-export-manifest-v9.schema.json'
+$packetFlushCadenceSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-packet-flush-cadence-raw-v1.schema.json'
+$manifestSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-unified-raw-export-manifest-v10.schema.json'
 $validatorPath = Join-Path $RepositoryRoot 'eng\adaptive-runtime\Test-AdaptiveRuntimeUnifiedRawEvidence.ps1'
 $resolvedOutputDirectory = Resolve-AdaptiveRuntimePath -Path $OutputDirectory
 $rawEpochPath = Join-Path $resolvedOutputDirectory 'adaptive-runtime-unified-raw-epochs.jsonl'
 $actorObservationPath = Join-Path $resolvedOutputDirectory 'adaptive-runtime-actor-service-observations.jsonl'
 $adaptiveBackpressureObservationPath =
     Join-Path $resolvedOutputDirectory 'adaptive-runtime-backpressure-observations.jsonl'
+$packetFlushCadenceObservationPath =
+    Join-Path $resolvedOutputDirectory 'adaptive-runtime-packet-flush-cadence-observations.jsonl'
 $validationPath = Join-Path $resolvedOutputDirectory 'raw-validation-summary.json'
 $manifestPath = Join-Path $resolvedOutputDirectory 'raw-export-manifest.json'
 $failurePath = Join-Path $resolvedOutputDirectory 'raw-export-failures.jsonl'
@@ -42,6 +47,7 @@ foreach ($path in @(
     $rawEpochPath,
     $actorObservationPath,
     $adaptiveBackpressureObservationPath,
+    $packetFlushCadenceObservationPath,
     $validationPath,
     $manifestPath,
     $failurePath
@@ -55,6 +61,8 @@ $records = [System.Collections.Generic.List[string]]::new()
 $actorObservations = [System.Collections.Generic.List[string]]::new()
 $adaptiveBackpressureObservations =
     [System.Collections.Generic.List[string]]::new()
+$packetFlushCadenceObservations =
+    [System.Collections.Generic.List[string]]::new()
 $failures = [System.Collections.Generic.List[string]]::new()
 $sources = [System.Collections.Generic.List[object]]::new()
 foreach ($sourcePath in @($HostLogPath | Sort-Object)) {
@@ -63,6 +71,8 @@ foreach ($sourcePath in @($HostLogPath | Sort-Object)) {
     $sourceActorObservationCount = 0
     $sourceAdaptiveBackpressureEpochCount = 0
     $sourceAdaptiveBackpressureObservationCount = 0
+    $sourcePacketFlushCadenceEpochCount = 0
+    $sourcePacketFlushCadenceObservationCount = 0
     $sourceActorFailureCount = 0
     $sourceFailureCount = 0
     foreach ($line in [System.IO.File]::ReadLines($resolvedSourcePath)) {
@@ -77,6 +87,9 @@ foreach ($sourcePath in @($HostLogPath | Sort-Object)) {
             $parsedRecord = $json | ConvertFrom-Json -Depth 100
             if ([bool] $parsedRecord.epoch.adaptiveBackpressure.hasObservation) {
                 $sourceAdaptiveBackpressureEpochCount++
+            }
+            if ([bool] $parsedRecord.epoch.packetFlushCadence.hasObservation) {
+                $sourcePacketFlushCadenceEpochCount++
             }
         }
         elseif ($line.StartsWith($actorPrefix, [StringComparison]::Ordinal)) {
@@ -103,6 +116,21 @@ foreach ($sourcePath in @($HostLogPath | Sort-Object)) {
             [void] $adaptiveBackpressureObservations.Add($json)
             $sourceAdaptiveBackpressureObservationCount++
         }
+        elseif ($line.StartsWith(
+                $packetFlushCadencePrefix,
+                [StringComparison]::Ordinal)) {
+            $json = $line.Substring($packetFlushCadencePrefix.Length)
+            if (-not (
+                    $json |
+                        Test-Json `
+                            -SchemaFile $packetFlushCadenceSchemaPath `
+                            -ErrorAction Stop)) {
+                throw "Packet-flush cadence raw observation from '$resolvedSourcePath' failed schema validation."
+            }
+
+            [void] $packetFlushCadenceObservations.Add($json)
+            $sourcePacketFlushCadenceObservationCount++
+        }
         elseif ($line.StartsWith($actorFailurePrefix, [StringComparison]::Ordinal)) {
             $json = $line.Substring($actorFailurePrefix.Length)
             if (-not ($json | Test-Json -SchemaFile $actorFailureSchemaPath -ErrorAction Stop)) {
@@ -127,6 +155,10 @@ foreach ($sourcePath in @($HostLogPath | Sort-Object)) {
             $sourceAdaptiveBackpressureEpochCount
         adaptiveBackpressureObservationRowCount =
             $sourceAdaptiveBackpressureObservationCount
+        packetFlushCadenceEpochRowCount =
+            $sourcePacketFlushCadenceEpochCount
+        packetFlushCadenceObservationRowCount =
+            $sourcePacketFlushCadenceObservationCount
         actorExportFailureCount = $sourceActorFailureCount
         exportFailureCount = $sourceFailureCount
     })
@@ -149,6 +181,10 @@ New-Item -ItemType Directory -Path $resolvedOutputDirectory -Force | Out-Null
     $adaptiveBackpressureObservationPath,
     $adaptiveBackpressureObservations,
     [System.Text.UTF8Encoding]::new($false))
+[System.IO.File]::WriteAllLines(
+    $packetFlushCadenceObservationPath,
+    $packetFlushCadenceObservations,
+    [System.Text.UTF8Encoding]::new($false))
 if ($failures.Count -ne 0) {
     [System.IO.File]::WriteAllLines(
         $failurePath,
@@ -161,6 +197,8 @@ $validationJson = & $validatorPath `
     -ActorObservationPath $actorObservationPath `
     -AdaptiveBackpressureObservationPath `
         $adaptiveBackpressureObservationPath `
+    -PacketFlushCadenceObservationPath `
+        $packetFlushCadenceObservationPath `
     -SourceRowCount @($sources | ForEach-Object { [int] $_.rowCount }) `
     -SourceActorObservationRowCount @(
         $sources | ForEach-Object { [int] $_.actorObservationRowCount }) `
@@ -168,6 +206,11 @@ $validationJson = & $validatorPath `
         $sources |
             ForEach-Object {
                 [int] $_.adaptiveBackpressureObservationRowCount
+            }) `
+    -SourcePacketFlushCadenceObservationRowCount @(
+        $sources |
+            ForEach-Object {
+                [int] $_.packetFlushCadenceObservationRowCount
             }) `
     -RepositoryRoot $RepositoryRoot
 if (-not $?) {
@@ -202,6 +245,14 @@ $artifactRecords = [System.Collections.Generic.List[object]]::new()
         (Get-Item -LiteralPath $adaptiveBackpressureObservationPath).Length
 })
 [void] $artifactRecords.Add([ordered]@{
+    role = 'packet_flush_cadence_observations'
+    path = $packetFlushCadenceObservationPath
+    sha256 =
+        Get-FileSha256Hex -Path $packetFlushCadenceObservationPath
+    bytes =
+        (Get-Item -LiteralPath $packetFlushCadenceObservationPath).Length
+})
+[void] $artifactRecords.Add([ordered]@{
     role = 'validation_summary'
     path = $validationPath
     sha256 = Get-FileSha256Hex -Path $validationPath
@@ -217,14 +268,16 @@ if ($failures.Count -ne 0) {
 }
 
 $manifest = [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-export-manifest-v9'
+    schemaVersion = 'adaptive-runtime-unified-raw-export-manifest-v10'
     createdUtc = (Get-Date).ToUniversalTime().ToString('o')
-    rawEpochSchemaVersion = 'adaptive-runtime-unified-epoch-raw-v8'
+    rawEpochSchemaVersion = 'adaptive-runtime-unified-epoch-raw-v9'
     actorRawObservationSchemaVersion =
         'adaptive-runtime-actor-service-raw-v4'
     bufferRawObservationSchemaVersion = 'quic-buffer-copy-raw-v4'
     adaptiveBackpressureRawObservationSchemaVersion =
         'quic-adaptive-backpressure-raw-v1'
+    packetFlushCadenceRawObservationSchemaVersion =
+        'quic-packet-flush-cadence-raw-v1'
     classification = if ($failures.Count -eq 0) {
         'accepted'
     }
@@ -243,6 +296,10 @@ $manifest = [ordered]@{
         [int] $validationDocument.adaptiveBackpressureEpochRowCount
     adaptiveBackpressureObservationRowCount =
         [int] $validationDocument.adaptiveBackpressureObservationRowCount
+    packetFlushCadenceEpochRowCount =
+        [int] $validationDocument.packetFlushCadenceEpochRowCount
+    packetFlushCadenceObservationRowCount =
+        [int] $validationDocument.packetFlushCadenceObservationRowCount
     actorExportFailureCount = [int] (
         @(
             $sources |
@@ -261,7 +318,7 @@ $manifest = [ordered]@{
     -OutputPath $manifestPath)
 
 [ordered]@{
-    schemaVersion = 'adaptive-runtime-unified-raw-export-result-v9'
+    schemaVersion = 'adaptive-runtime-unified-raw-export-result-v10'
     rowCount = $manifest.rowCount
     axisRecordCount = $manifest.axisRecordCount
     connectionCount = $manifest.connectionCount
@@ -272,6 +329,10 @@ $manifest = [ordered]@{
         $manifest.adaptiveBackpressureEpochRowCount
     adaptiveBackpressureObservationRowCount =
         $manifest.adaptiveBackpressureObservationRowCount
+    packetFlushCadenceEpochRowCount =
+        $manifest.packetFlushCadenceEpochRowCount
+    packetFlushCadenceObservationRowCount =
+        $manifest.packetFlushCadenceObservationRowCount
     actorExportFailureCount = $manifest.actorExportFailureCount
     exportFailureCount = $manifest.exportFailureCount
     classification = $manifest.classification
@@ -279,6 +340,8 @@ $manifest = [ordered]@{
     actorObservationPath = $actorObservationPath
     adaptiveBackpressureObservationPath =
         $adaptiveBackpressureObservationPath
+    packetFlushCadenceObservationPath =
+        $packetFlushCadenceObservationPath
     validationPath = $validationPath
     manifestPath = $manifestPath
 } | ConvertTo-Json -Depth 100

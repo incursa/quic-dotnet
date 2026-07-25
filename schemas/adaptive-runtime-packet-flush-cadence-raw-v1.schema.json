@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-packet-flush-cadence-raw-v1.schema.json",
+  "title": "Adaptive Runtime Packet Flush Cadence Raw Record v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "connectionKey",
+    "observation"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "quic-packet-flush-cadence-raw-v1"
+    },
+    "connectionKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observation": {
+      "$ref": "#/$defs/observation"
+    }
+  },
+  "$defs": {
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operationSequence",
+        "requestId",
+        "mode",
+        "forcedValue",
+        "shadowRecommendation",
+        "selectedValue",
+        "appliedValue",
+        "selectionSource",
+        "reasonCode",
+        "safetyOverride",
+        "decisionBoundary",
+        "latchLifetime",
+        "fallbackApplied",
+        "legacyDelayEligible",
+        "delayApplied",
+        "promptFlushApplied",
+        "streamPayloadLength",
+        "queuedWriteCount",
+        "finishWrites",
+        "addressValidated",
+        "retransmissionPending",
+        "phaseAfter",
+        "disposalStarted",
+        "validity",
+        "policyAxisId",
+        "observationContractVersion",
+        "ruleVersion",
+        "snapshotVersion",
+        "reasonVersion",
+        "provenanceVersion"
+      ],
+      "properties": {
+        "operationSequence": { "type": "integer", "minimum": 1 },
+        "requestId": { "type": "integer", "minimum": 1 },
+        "mode": { "enum": ["Disabled", "ObserveOnly", "Shadow"] },
+        "forcedValue": {
+          "type": ["string", "null"],
+          "enum": ["LegacyCurrent", "Prompt", null]
+        },
+        "shadowRecommendation": {
+          "type": ["string", "null"],
+          "enum": ["LegacyCurrent", "Prompt", null]
+        },
+        "selectedValue": { "enum": ["LegacyCurrent", "Prompt"] },
+        "appliedValue": { "enum": ["LegacyCurrent", "Prompt"] },
+        "selectionSource": {
+          "enum": ["LegacyCurrent", "Forced", "ShadowRule", "SafetyOverride"]
+        },
+        "reasonCode": {
+          "enum": [
+            "LegacyCurrent",
+            "ObserveOnly",
+            "ForcedPrompt",
+            "ShadowPrompt",
+            "NotDelayEligible",
+            "LegacyDelay",
+            "PromptFlush",
+            "MissingInput",
+            "StaleInput",
+            "ArithmeticSaturated",
+            "Contradictory",
+            "OutOfDomain",
+            "InvalidInput",
+            "LifecycleGuard",
+            "RetransmissionGuard",
+            "AddressValidationGuard"
+          ]
+        },
+        "safetyOverride": {
+          "enum": [
+            "None",
+            "InvalidObservation",
+            "Lifecycle",
+            "Retransmission",
+            "AddressValidation"
+          ]
+        },
+        "decisionBoundary": {
+          "const": "AuthorizedApplicationPacketConstruction"
+        },
+        "latchLifetime": {
+          "const": "LogicalWritePacketOpportunity"
+        },
+        "fallbackApplied": { "type": "boolean" },
+        "legacyDelayEligible": { "type": "boolean" },
+        "delayApplied": { "type": "boolean" },
+        "promptFlushApplied": { "type": "boolean" },
+        "streamPayloadLength": { "type": "integer", "minimum": 0 },
+        "queuedWriteCount": { "type": "integer", "minimum": 0 },
+        "finishWrites": { "type": "boolean" },
+        "addressValidated": { "type": "boolean" },
+        "retransmissionPending": { "type": "boolean" },
+        "phaseAfter": { "type": ["string", "integer"] },
+        "disposalStarted": { "type": "boolean" },
+        "validity": { "type": ["string", "integer"] },
+        "policyAxisId": { "const": "packet_flush_cadence" },
+        "observationContractVersion": {
+          "const": "quic-packet-flush-cadence-observation-v1"
+        },
+        "ruleVersion": {
+          "const": "quic-packet-flush-cadence-prompt-rule-v1"
+        },
+        "snapshotVersion": {
+          "const": "quic-packet-flush-cadence-policy-snapshot-v1"
+        },
+        "reasonVersion": {
+          "const": "quic-packet-flush-cadence-reason-v1"
+        },
+        "provenanceVersion": {
+          "const": "quic-packet-flush-cadence-provenance-v1"
+        }
+      }
+    }
+  }
+}

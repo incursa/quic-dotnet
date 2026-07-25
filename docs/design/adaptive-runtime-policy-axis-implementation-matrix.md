@@ -31,7 +31,7 @@ axis remains inactive unless a later explicit review authorizes
 | `ready_stream_fairness` | 2 | current planner/queue priority plus stable-sequence order and same-stream serialization | none yet | partial | no | no | no axis record yet; bounded actor and send-path inputs are available | no same-stream reordering, priority authority, FIN/reset/cancellation, flow-control and recovery progress, bounded runnable inspection | no | inventory blocked safely | the current planner selects a priority/sequence prefix; a one-write treatment would silently vary `application_send_batch_formation`, while rotation needs a reviewed bounded runnable set and starvation/fairness outcome rather than an unbounded stream scan | none |
 | `buffer_copy_coalescing` | 2 | exact existing combined-send prefix construction | `memory_conservative`, lower-only two-source-segment cap | yes | yes | yes | yes; configured snapshot plus legal/applied operation and fixed epoch fields | Stage 1 legal prefix, priority/order, FIN/reset/cancellation, flow control, stream capacity, packet size, congestion, pacing, anti-amplification, recovery, packet protection, owner transfer/return, terminal cleanup | yes | 18 axis tests, 86 buffer/unified tests, and 164 adjacent Stage 1 tests clean | no implementation blocker; measurement remains frozen | `df8ee570` |
 | `adaptive_backpressure` | 2 | immediate admission under existing authoritative hard limits | `early_delay`, at most one additional dispatcher turn when an earlier application-send admission remains queued | yes | yes | yes | yes; configured snapshot plus sample-scoped admission records and fixed epoch summary | hard queue/buffer/stream/flow-control limits, lifecycle, progress, continuation availability, cancellation/disposal/terminal removal, ownership and exactly-once completion | yes | 20 axis tests plus unified raw schema and exact sample-to-epoch join tests clean | no implementation blocker; measurement remains frozen | `25fa33cc` |
-| `packet_flush_cadence` | 3 | current correctness-driven prompt/coalescing points | none yet | partial | no | no | no axis record yet | ACK/recovery/retransmission progress, congestion, pacing, anti-amplification, packet-size/protection, owned deadline cancellation | no | seam discovery required | no safe forceable flush-deadline owner or bounded operation latch has been established | none |
+| `packet_flush_cadence` | 3 | retained optional 1 ms coalescing delay for eligible application writes smaller than 32 bytes | `prompt`, which removes only that optional delay | yes | yes | yes | yes; configured snapshot plus sample-scoped packet-opportunity records and fixed epoch summary | retransmission priority, address validation and anti-amplification, lifecycle, congestion, pacing, flow control, packet size/protection, recovery, ownership, cancellation and terminal paths | yes | 19 axis tests plus unified raw schema, exact sample-to-epoch join, package, FIN, cancellation, and application-send delay tests clean | no implementation blocker; measurement remains frozen | pending local checkpoint |
 | `receive_delivery_quantum` | 3 | current receive delivery and application wake behavior | none yet | partial | no | no | no axis record yet | `receive_credit_publication` fixed at `legacy_current`, buffer ownership, FIN/reset/close, cancellation/disposal, flow-control progress | no | seam discovery required | receive-delivery notification, wake, batching, and ownership boundaries have not been unified into a bounded force seam | none |
 | `connection_shard_placement` | 4 | current connection-to-shard placement | none yet | partial | no | no | no axis record yet | immutable connection-start decision, valid shard ownership, lifecycle, fallback when capability/telemetry is absent | no | not started | needs a closed connection-start strategy set, capability fingerprint, and deterministic fallback | none |
 | `application_datagram_batch_transport` | 4 | current platform transport choice | none yet | partial | no | no | no axis record yet | endpoint and buffer ownership, platform capability, packet-size/segmentation limits, cancellation, send completion, deterministic fallback | no | not started | needs a closed platform-capability contract and forceable fallback seam without claiming unsupported implementations | none |
@@ -58,10 +58,15 @@ admission. The actor and ready-stream axes retain their exact safety blockers;
 neither may be represented by fabricated values or additional unbounded
 observation work.
 
+`packet_flush_cadence` now owns only the existing optional small-write delay
+after payload construction and before packet protection. `prompt` removes
+that optional delay for one logical-write packet opportunity; it cannot flush
+otherwise ineligible work or bypass retransmission, validation, recovery,
+congestion, pacing, flow-control, packet, lifecycle, or ownership authority.
+
 The next independent implementation decision is Stage 3
-`packet_flush_cadence`. It begins with a bounded safe-boundary inventory and
-must either deliver a forceable cadence seam within two prerequisite
-checkpoints or retain the exact progress/ownership blocker and advance.
+`receive_delivery_quantum`, with `receive_credit_publication` fixed at
+`legacy_current`.
 
 ## Frozen Operational State
 

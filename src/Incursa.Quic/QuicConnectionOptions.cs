@@ -222,4 +222,16 @@ public abstract class QuicConnectionOptions
 
     internal IQuicAdaptiveBackpressureEvidenceSink?
         AdaptiveBackpressureEvidenceSink { get; set; }
+
+    // CONTEXT: Internal-only Stage 3 packet-flush control. prompt may only
+    // remove the existing optional small-write coalescing delay; it cannot
+    // bypass recovery, pacing, congestion, amplification, or lifecycle guards.
+    internal QuicPacketFlushCadencePolicyValue?
+        ForcedPacketFlushCadencePolicyValue { get; set; }
+
+    internal QuicPacketFlushCadenceObservationMode
+        PacketFlushCadenceObservationMode { get; set; }
+
+    internal IQuicPacketFlushCadenceEvidenceSink?
+        PacketFlushCadenceEvidenceSink { get; set; }
 }

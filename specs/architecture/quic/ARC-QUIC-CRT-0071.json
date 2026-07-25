@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0071",
+  "artifact_type": "architecture",
+  "status": "proposed",
+  "title": "Optional application packet flush cadence seam",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0192 with an independently forceable retain-or-remove decision at the existing optional small-application-write delay without creating a packet scheduler or weakening protocol authority.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE3-PACKET-RECEIVE",
+    "WI-QUIC-CRT-0072",
+    "VER-QUIC-CRT-0073"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0192"
+  ],
+  "key_components": [
+    "QuicPacketFlushCadencePolicy",
+    "QuicPacketFlushCadenceEpochAccumulator",
+    "QuicConnectionRuntime small-application-write delay boundary",
+    "QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator",
+    "IncursaRawQuicServer packet-flush force and evidence wiring",
+    "Unified raw exporter and semantic validator"
+  ],
+  "design_summary": "The closed values are legacy_current and prompt. The runtime evaluates the policy after stream reservation and payload construction only for the existing eligible small-application-write path. legacy_current retains the generation-checked one-millisecond lifecycle delay. prompt bypasses only that optional delay and uses the unchanged direct-send packet-protection and accounting path. Observe-only applies legacy; shadow recommends prompt while applying legacy. Forced values bypass selection only, not safety. The snapshot is retained in every unified epoch and applicable opportunities are sample-scoped with exact source, connection, and operation-sequence joins.",
+  "data_and_state_considerations": "The disabled and unforced path preserves the original branch and does not construct an observation. Enabled evaluation reads bounded payload and queue values already available at the boundary. The latch lasts one logical-write packet opportunity; no dictionary, stream scan, global lock, per-packet dependency injection, model, or new timer owner is introduced. Observation, rule, snapshot, reason, provenance, epoch, raw wrapper, unified evidence, unified raw, and manifest contracts are independently versioned.",
+  "edge_cases_and_constraints": [
+    "Missing, stale, saturated, contradictory, invalid, or out-of-domain input falls back to legacy_current even when prompt is forced.",
+    "Retransmission, address-validation, or lifecycle guards retain legacy authority and cannot be bypassed.",
+    "Congestion, pacing, flow control, packet size and protection, recovery, cancellation, terminal state, and ownership remain authoritative after selection.",
+    "Only one behavior-distinct adaptive axis may be forced; every adjacent applied axis remains legacy_current.",
+    "Scenario, workload, payload constants, concurrency, peers, URLs, hosts, and application identity are not controller inputs.",
+    "No active_internal or production selection is present."
+  ],
+  "alternatives_considered": [
+    "A new free-running flush timer was rejected because it would create another deadline and progress owner.",
+    "Delaying retransmission or required protocol progress was rejected because cadence cannot weaken recovery or correctness.",
+    "Payload- or workload-tuned thresholds were rejected because measurement and threshold tuning are frozen.",
+    "Per-packet service location and dictionaries were rejected in favor of the existing bounded application-write opportunity."
+  ],
+  "risks": [
+    "An incorrectly broad prompt branch could bypass eligibility or safety checks; the seam is placed inside the existing eligible branch and tested against guards.",
+    "A raw opportunity could be mistaken for an epoch-independent outcome; the exporter retains a separate stream and exact range joins.",
+    "The value may be neutral or harmful; no performance claim or activation is authorized before the measurement freeze is separately released."
+  ],
+  "open_questions": [
+    "Does prompt merit later shadow-only or active-internal review after implementation and measurement freezes are separately released?"
+  ]
+}

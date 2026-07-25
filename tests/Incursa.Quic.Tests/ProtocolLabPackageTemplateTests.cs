@@ -273,6 +273,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("$executionManifest.dependencies.requiresDotNet", builderScript);
         Assert.Contains("AdaptiveRuntimeReceiveCreditPolicy", builderScript);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY", builderScript);
+        Assert.Contains("AdaptiveRuntimePacketFlushCadencePolicy", builderScript);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_PACKET_FLUSH_CADENCE_POLICY", builderScript);
         Assert.Contains("AdaptiveRuntimeApplicationSendTurnPolicy", builderScript);
         Assert.Contains("RawQuicDebugLogging", builderScript);
         Assert.Contains("IncursaRawQuicServer ignored failed inbound establishment", rawQuicServer);
@@ -290,7 +292,7 @@ public sealed class ProtocolLabPackageTemplateTests
             "QUIC_ADAPTIVE_RUNTIME_EPOCH_CONTRACT=adaptive-runtime-epoch-raw-v2",
             rawQuicServer);
         Assert.Contains(
-            "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_CONTRACT=adaptive-runtime-unified-epoch-raw-v8",
+            "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_CONTRACT=adaptive-runtime-unified-epoch-raw-v9",
             rawQuicServer);
         Assert.Contains(
             "QUIC_ADAPTIVE_RUNTIME_UNIFIED_EPOCH_JSON=",
@@ -318,6 +320,12 @@ public sealed class ProtocolLabPackageTemplateTests
             rawQuicServer);
         Assert.Contains(
             "QUIC_ADAPTIVE_BACKPRESSURE_EVIDENCE_JSON=",
+            rawQuicServer);
+        Assert.Contains(
+            "QUIC_PACKET_FLUSH_CADENCE_EVIDENCE_CONTRACT=quic-packet-flush-cadence-raw-v1",
+            rawQuicServer);
+        Assert.Contains(
+            "QUIC_PACKET_FLUSH_CADENCE_EVIDENCE_JSON=",
             rawQuicServer);
         Assert.Contains(
             "QUIC_BUFFER_EVIDENCE_FAILURE_JSON=",
@@ -348,6 +356,13 @@ public sealed class ProtocolLabPackageTemplateTests
             runScript);
         Assert.Contains(
             "AdaptiveRuntimeApplicationSendTurnPolicy is supported only for the RawQuic package target.",
+            runScript);
+        Assert.Contains("AdaptiveRuntimePacketFlushCadencePolicy", runScript);
+        Assert.Contains(
+            "AdaptiveRuntimePacketFlushCadencePolicy = $AdaptiveRuntimePacketFlushCadencePolicy",
+            runScript);
+        Assert.Contains(
+            "AdaptiveRuntimePacketFlushCadencePolicy is supported only for the RawQuic package target.",
             runScript);
         Assert.Contains(
             "\"conservative\", \"observe_only\", \"shadow\"",

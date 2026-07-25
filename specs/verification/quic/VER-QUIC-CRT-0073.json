@@ -1,0 +1,70 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0073",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Optional application packet flush cadence verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE3-PACKET-RECEIVE",
+    "ARC-QUIC-CRT-0071",
+    "WI-QUIC-CRT-0072"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0192"
+  ],
+  "scope": "Verify independently forceable legacy_current and prompt packet_flush_cadence values, exact one-opportunity semantics, bounded observation and unified provenance, exact sample-scoped raw joins, authoritative safety fallback, terminal and cancellation behavior, and force-legacy rollback without making a performance or active-behavior claim.",
+  "verification_method": "Canonical SpecTrace validation, deterministic requirement-home tests, schema and semantic validation, and focused application-send delay, packet opportunity, FIN, cancellation, terminal, package, and ownership correctness tests.",
+  "preconditions": [
+    "Stage 0, all four Stage 1 axes, buffer_copy_coalescing, and adaptive_backpressure remain preserved.",
+    "receive_credit_publication and every adjacent applied policy remain legacy_current.",
+    "The stopped 55,658-epoch single-axis transform remains diagnostic_incomplete and untouched.",
+    "Performance measurement, campaigns, transforms, ML, CI work, push, active_internal, and production activation remain unauthorized."
+  ],
+  "procedure": [
+    "Validate the Stage 3 specification, architecture, work item, and verification artifacts against the canonical model and reciprocal links.",
+    "Build the affected runtime, test project, and raw host in Release before testing.",
+    "Verify closed legacy_current and prompt values plus invalid closed-set rejection.",
+    "Verify disabled, observe-only, shadow, forced-legacy, and forced-prompt modes with all identities, source, reason, safety, latch, fallback, and version fields distinct.",
+    "Verify legacy_current retains the optional one-millisecond delay and prompt removes only that delay for an otherwise eligible application write smaller than 32 bytes.",
+    "Verify the decision occurs after payload construction and is latched for one logical-write packet opportunity.",
+    "Verify retransmission, address-validation, lifecycle, missing, stale, saturated, contradictory, invalid, and out-of-domain inputs fall back to legacy_current even under prompt forcing.",
+    "Verify simultaneous behavior-distinct forcing of any adjacent adaptive axis is rejected.",
+    "Verify force-legacy rollback restores the optional delay and preserves packet, recovery, congestion, pacing, flow-control, lifecycle, cancellation, terminal, and ownership authority.",
+    "Verify the configured policy snapshot remains in a unified epoch when no opportunity is observed.",
+    "Verify packet observation, epoch, raw, unified evidence v9, unified raw v9, and manifest v10 schemas.",
+    "Verify packet rows remain sample-scoped and join by exact source, connection key, and operation sequence.",
+    "Verify missing, duplicate, orphan, and out-of-order raw opportunities fail semantic validation and bounded aggregates are recomputed.",
+    "Run focused package, application-send delay, FIN, cancellation, terminal, and ownership tests.",
+    "Confirm no performance, campaign, transform, ML, CI, push, active_internal, or production action occurred."
+  ],
+  "expected_result": "packet_flush_cadence is observable, shadowable, independently forceable, unified-row represented, guarded, and force-legacy rollback tested; prompt removes only the existing optional small-write delay; sample and epoch evidence remains exactly attributable; and no active or performance decision is introduced.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0192.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0183.cs",
+    "src/Incursa.Quic/QuicPacketFlushCadencePolicy.cs",
+    "src/Incursa.Quic/QuicPacketFlushCadenceEpochAccumulator.cs",
+    "src/Incursa.Quic/QuicConnectionOptions.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicAdaptiveRuntimeUnifiedEpochEvidence.cs",
+    "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
+    "eng/protocol-lab/New-QuicDotNetProtocolLabPackage.ps1",
+    "eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1",
+    "eng/adaptive-runtime/Export-AdaptiveRuntimeUnifiedRawEpochs.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeUnifiedRawEvidence.ps1",
+    "schemas/adaptive-runtime-packet-flush-cadence-observation-v1.schema.json",
+    "schemas/adaptive-runtime-packet-flush-cadence-epoch-v1.schema.json",
+    "schemas/adaptive-runtime-packet-flush-cadence-raw-v1.schema.json",
+    "schemas/adaptive-runtime-unified-epoch-evidence-v9.schema.json",
+    "schemas/adaptive-runtime-unified-epoch-raw-v9.schema.json",
+    "schemas/adaptive-runtime-unified-raw-export-manifest-v10.schema.json",
+    "docs/design/adaptive-runtime-policy-axis-implementation-matrix.md",
+    "docs/design/adaptive-runtime-policy-controller-state-machine.md",
+    "docs/design/adaptive-runtime-policy-observation-schema.md",
+    "docs/design/adaptive-runtime-policy-seam-inventory.md",
+    "docs/design/adaptive-runtime-stage3-packet-receive-foundation.md"
+  ],
+  "status_summary": "Focused implementation verification is clean: the runtime seam, unified v9 evidence, raw v1 sample stream, schemas, exact joins, 19 axis cases, and the 136-case affected correctness band pass in Release. All four Stage 3 SpecTrace artifacts pass the canonical model, ID uniqueness, and reciprocal trace checks. Measurement and active behavior remain frozen."
+}

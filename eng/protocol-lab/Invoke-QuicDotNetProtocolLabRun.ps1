@@ -42,6 +42,9 @@ param(
     [ValidateSet("", "legacy_current", "conservative", "observe_only", "shadow")]
     [string] $AdaptiveRuntimeApplicationSendTurnPolicy = "",
 
+    [ValidateSet("", "legacy_current", "prompt", "observe_only", "shadow")]
+    [string] $AdaptiveRuntimePacketFlushCadencePolicy = "",
+
     [string[]] $RequiredCapability,
 
     [string[]] $PackageReference = @(),
@@ -219,6 +222,11 @@ $applicationSendTurnPolicySelected =
 if ($applicationSendTurnPolicySelected -and $PackageTarget -ne "RawQuic") {
     throw "AdaptiveRuntimeApplicationSendTurnPolicy is supported only for the RawQuic package target."
 }
+$packetFlushCadencePolicySelected =
+    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimePacketFlushCadencePolicy)
+if ($packetFlushCadencePolicySelected -and $PackageTarget -ne "RawQuic") {
+    throw "AdaptiveRuntimePacketFlushCadencePolicy is supported only for the RawQuic package target."
+}
 $requiredCapabilityWasSpecified = $PSBoundParameters.ContainsKey("RequiredCapability")
 if ([string]::IsNullOrWhiteSpace($Project)) {
     $Project = $targetConfig.DefaultProject
@@ -381,6 +389,7 @@ if (-not $UsePackageReferenceOnly) {
         Configuration = $Configuration
         RuntimeIdentifier = $RuntimeIdentifier
         AdaptiveRuntimeApplicationSendTurnPolicy = $AdaptiveRuntimeApplicationSendTurnPolicy
+        AdaptiveRuntimePacketFlushCadencePolicy = $AdaptiveRuntimePacketFlushCadencePolicy
         AllowDirtySource = [bool]$AllowDirtySource
         Force = $true
     }

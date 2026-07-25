@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-packet-flush-cadence-epoch-v1.schema.json",
+  "title": "Adaptive Runtime Packet Flush Cadence Epoch Summary v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policySnapshot",
+    "hasObservation",
+    "firstOperationSequence",
+    "lastOperationSequence",
+    "operationCount",
+    "eligibleCount",
+    "delayAppliedCount",
+    "promptFlushAppliedCount",
+    "safetyOverrideCount",
+    "fallbackCount",
+    "maximumStreamPayloadLength",
+    "maximumQueuedWriteCount",
+    "validity",
+    "epochContractVersion"
+  ],
+  "properties": {
+    "policySnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "hasForcedValue",
+        "forcedValue",
+        "hasShadowRecommendation",
+        "shadowRecommendation",
+        "selectedValue",
+        "appliedValue",
+        "selectionSource",
+        "reasonCode",
+        "safetyOverride",
+        "decisionBoundary",
+        "latchLifetime",
+        "fallbackApplied",
+        "snapshotVersion"
+      ],
+      "properties": {
+        "mode": { "enum": ["Disabled", "ObserveOnly", "Shadow"] },
+        "hasForcedValue": { "type": "boolean" },
+        "forcedValue": { "enum": ["LegacyCurrent", "Prompt"] },
+        "hasShadowRecommendation": { "type": "boolean" },
+        "shadowRecommendation": {
+          "enum": ["LegacyCurrent", "Prompt"]
+        },
+        "selectedValue": { "enum": ["LegacyCurrent", "Prompt"] },
+        "appliedValue": { "enum": ["LegacyCurrent", "Prompt"] },
+        "selectionSource": {
+          "enum": [
+            "LegacyCurrent",
+            "Forced",
+            "ShadowRule",
+            "SafetyOverride"
+          ]
+        },
+        "reasonCode": {
+          "enum": [
+            "LegacyCurrent",
+            "ObserveOnly",
+            "ForcedPrompt",
+            "ShadowPrompt"
+          ]
+        },
+        "safetyOverride": { "const": "None" },
+        "decisionBoundary": {
+          "const": "AuthorizedApplicationPacketConstruction"
+        },
+        "latchLifetime": {
+          "const": "LogicalWritePacketOpportunity"
+        },
+        "fallbackApplied": { "const": false },
+        "snapshotVersion": {
+          "const": "quic-packet-flush-cadence-policy-snapshot-v1"
+        }
+      }
+    },
+    "hasObservation": { "type": "boolean" },
+    "firstOperationSequence": { "$ref": "#/$defs/unsignedInteger" },
+    "lastOperationSequence": { "$ref": "#/$defs/unsignedInteger" },
+    "operationCount": { "$ref": "#/$defs/unsignedInteger" },
+    "eligibleCount": { "$ref": "#/$defs/unsignedInteger" },
+    "delayAppliedCount": { "$ref": "#/$defs/unsignedInteger" },
+    "promptFlushAppliedCount": {
+      "$ref": "#/$defs/unsignedInteger"
+    },
+    "safetyOverrideCount": { "$ref": "#/$defs/unsignedInteger" },
+    "fallbackCount": { "$ref": "#/$defs/unsignedInteger" },
+    "maximumStreamPayloadLength": {
+      "$ref": "#/$defs/unsignedInteger"
+    },
+    "maximumQueuedWriteCount": {
+      "$ref": "#/$defs/unsignedInteger"
+    },
+    "validity": { "type": ["string", "integer"] },
+    "epochContractVersion": {
+      "const": "quic-packet-flush-cadence-epoch-v1"
+    }
+  },
+  "$defs": {
+    "unsignedInteger": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

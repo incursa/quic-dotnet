@@ -1,0 +1,69 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-CRT-STAGE3-PACKET-RECEIVE",
+  "artifact_type": "specification",
+  "title": "Stage 3 packet flush cadence and receive delivery",
+  "domain": "quic",
+  "capability": "adaptive-runtime-stage3-packet-receive",
+  "status": "proposed",
+  "owner": "quic-maintainers",
+  "tags": [
+    "adaptive-runtime",
+    "packet",
+    "receive",
+    "forceable-internal"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY",
+    "ARC-QUIC-CRT-0071",
+    "WI-QUIC-CRT-0072",
+    "VER-QUIC-CRT-0073"
+  ],
+  "purpose": "Define an independently forceable packet_flush_cadence seam at an existing optional application-send delay while preserving packet, recovery, congestion, pacing, flow-control, lifecycle, and ownership authority, and retain receive_delivery_quantum as the next bounded inventory item.",
+  "scope": "This specification covers the legacy_current and prompt packet_flush_cadence values, disabled, observe-only, shadow, forcing, exact decision and latch boundaries, authoritative fallback, bounded sample and epoch evidence, exact raw joins, rollback, and deterministic correctness proof. It does not authorize performance measurement, threshold tuning, receive_delivery_quantum behavior, active_internal, or production activation.",
+  "context": "The existing application-send path already delays eligible writes smaller than 32 bytes for one millisecond using a generation-checked lifecycle timer. The force seam may retain or remove only that optional delay after payload construction and before packet protection; it may not create a new flush owner or weaken required progress.",
+  "open_questions": [
+    "Which bounded receive delivery or wake boundary can vary without changing receive credit, buffer ownership, FIN or reset ordering, cancellation, or terminal drain?"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-QUIC-CRT-0192",
+      "title": "Force optional application packet flush cadence without weakening packet authority",
+      "statement": "The runtime MUST expose the packet_flush_cadence axis with the closed legacy_current and prompt values; preserve the existing optional one-millisecond coalescing delay for an eligible application write smaller than 32 bytes under legacy_current; make prompt remove only that optional delay and continue through the unchanged direct-send packet-protection and accounting path; evaluate once after stream reservation and payload construction and before the optional delay or packet protection; latch the decision for one logical-write packet opportunity; support disabled, observe-only, shadow, forced-legacy, and forced-prompt operation with forced, recommended, selected, and applied identities distinct; make retransmission priority, address validation and anti-amplification, lifecycle, congestion, pacing, flow control, packet size and protection, recovery, cancellation, terminal state, and ownership authoritative under every forced value; handle missing, stale, saturated, contradictory, invalid, and out-of-domain input with bounded reasons and legacy fallback; record versioned sample-scoped observations and configured unified-epoch provenance with exact source-scoped connection and operation-sequence joins and distinct sample and epoch counts; reject simultaneous behavior-distinct forcing of adjacent axes; independently prove force-legacy rollback; exclude scenario, workload, payload constants, requested concurrency, peer, URL, host, and application identity from controller inputs; and keep active_internal and production selection unavailable.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0071"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0072"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0073"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-axis-roadmap.md",
+          "docs/design/adaptive-runtime-policy-axis-implementation-matrix.md",
+          "docs/design/adaptive-runtime-policy-controller-state-machine.md",
+          "docs/design/adaptive-runtime-policy-observation-schema.md",
+          "docs/design/adaptive-runtime-policy-seam-inventory.md",
+          "docs/design/adaptive-runtime-stage3-packet-receive-foundation.md",
+          "src/Incursa.Quic/QuicPacketFlushCadencePolicy.cs",
+          "src/Incursa.Quic/QuicPacketFlushCadenceEpochAccumulator.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+          "src/Incursa.Quic/QuicAdaptiveRuntimeUnifiedEpochEvidence.cs",
+          "schemas/adaptive-runtime-packet-flush-cadence-observation-v1.schema.json",
+          "schemas/adaptive-runtime-packet-flush-cadence-epoch-v1.schema.json",
+          "schemas/adaptive-runtime-packet-flush-cadence-raw-v1.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-evidence-v9.schema.json",
+          "schemas/adaptive-runtime-unified-epoch-raw-v9.schema.json",
+          "schemas/adaptive-runtime-unified-raw-export-manifest-v10.schema.json",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0192.cs"
+        ]
+      },
+      "notes": [
+        "prompt is a reviewed mechanism value, not a performance-derived threshold or claim of improvement.",
+        "Measurement, receive-delivery behavior, active_internal, and production activation remain outside this requirement."
+      ]
+    }
+  ]
+}

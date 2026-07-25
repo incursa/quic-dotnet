@@ -5,7 +5,8 @@ title: "Adaptive Runtime Controller State Machine"
 # Adaptive Runtime Controller State Machine
 
 Status: receive-credit, all four Stage 1 send-path axes,
-`buffer_copy_coalescing`, and `adaptive_backpressure`
+`buffer_copy_coalescing`, `adaptive_backpressure`, and
+`packet_flush_cadence`
 force/observe/shadow runtimes implemented;
 measurement and broader campaign verification frozen; actor and fairness
 axes remain blocked on reviewed safe mechanisms; active policy blocked
@@ -105,6 +106,20 @@ congestion, pacing, recovery, and ownership guards remain authoritative even
 when `early_delay` is forced. A removed or completed admission makes the
 posted continuation a no-op. Shadow recommends `early_delay` while applying
 `legacy_current`; the latch expires after that one application admission.
+
+The implemented `packet_flush_cadence` selector resolves `legacy_current` or
+`prompt` at the existing optional small-application-write delay boundary.
+The boundary is reached only after stream reservation and payload
+construction have produced an eligible application write smaller than 32
+bytes and before packet protection. `legacy_current` retains the existing
+one-millisecond generation-checked lifecycle delay. `prompt` removes only
+that optional delay and continues through the unchanged direct-send packet
+protection and accounting path. The latch covers one logical-write packet
+opportunity. Retransmission priority, address validation and amplification,
+lifecycle, congestion, pacing, flow control, packet size and protection,
+recovery, cancellation, terminal state, and ownership remain authoritative
+under forcing. Observe-only applies legacy, and shadow recommends `prompt`
+while applying legacy.
 
 ## States
 
