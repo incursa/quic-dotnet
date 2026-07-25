@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/incursa/quic-dotnet/schemas/adaptive-runtime-effective-behavior-materialization-v1.schema.json",
+  "title": "Adaptive runtime effective behavior materialization v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "source_evidence_ref",
+    "behavior_catalog_ref",
+    "aggregates",
+    "retained_classifications",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "adaptive-runtime-effective-behavior-materialization-v1"
+    },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "source_evidence_ref": { "$ref": "#/$defs/documentRef" },
+    "behavior_catalog_ref": { "$ref": "#/$defs/documentRef" },
+    "aggregates": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/aggregate" }
+    },
+    "retained_classifications": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/classification" }
+    },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/traceReferences" }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "positiveInteger": { "type": "integer", "minimum": 1 },
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "schema_version",
+        "document_version",
+        "content_sha256"
+      ],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "schema_version": { "$ref": "#/$defs/id" },
+        "document_version": { "$ref": "#/$defs/positiveInteger" },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "aggregate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "connection_key",
+        "epoch_sequence",
+        "axis_id",
+        "behavior_catalog_version",
+        "effective_behavior_id",
+        "operation_count",
+        "work_count",
+        "byte_count",
+        "fallback_count",
+        "error_count",
+        "inactive_count",
+        "unclassifiable_count",
+        "source_operation_ids"
+      ],
+      "properties": {
+        "run_id": { "$ref": "#/$defs/id" },
+        "connection_key": { "$ref": "#/$defs/id" },
+        "epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "axis_id": {
+          "enum": [
+            "application_send_batch_formation",
+            "buffer_copy_coalescing"
+          ]
+        },
+        "behavior_catalog_version": { "const": 1 },
+        "effective_behavior_id": { "type": "string", "minLength": 1 },
+        "operation_count": { "type": "integer", "minimum": 1 },
+        "work_count": { "type": "integer", "minimum": 0 },
+        "byte_count": { "type": "integer", "minimum": 0 },
+        "fallback_count": { "type": "integer", "minimum": 0 },
+        "error_count": { "type": "integer", "minimum": 0 },
+        "inactive_count": { "type": "integer", "minimum": 0 },
+        "unclassifiable_count": { "type": "integer", "minimum": 0 },
+        "source_operation_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/positiveInteger" }
+        }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "classification_id", "operation_id", "kind", "retained" ],
+      "properties": {
+        "classification_id": { "$ref": "#/$defs/id" },
+        "operation_id": { "$ref": "#/$defs/positiveInteger" },
+        "kind": { "type": "string", "minLength": 1 },
+        "retained": { "const": true }
+      }
+    },
+    "traceReferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "architecture_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "work_item_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "verification_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

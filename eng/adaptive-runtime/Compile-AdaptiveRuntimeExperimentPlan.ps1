@@ -86,11 +86,18 @@ function Get-ExpectedBehaviorId {
 
     foreach ($behavior in @($behaviorCatalog.effective_behaviors)) {
         if ($behavior.axis_id -eq $AxisId -and
-            ((Get-StringArray $behavior.source_policy_values) -contains $Value -or
-             (Get-StringArray $behavior.candidate_values) -contains $Value)) {
+            (Get-StringArray $behavior.source_policy_values) -contains $Value) {
             return [string]$behavior.effective_behavior_id
         }
     }
+
+    foreach ($behavior in @($behaviorCatalog.effective_behaviors)) {
+        if ($behavior.axis_id -eq $AxisId -and
+            (Get-StringArray $behavior.candidate_values) -contains $Value) {
+            return [string]$behavior.effective_behavior_id
+        }
+    }
+
     return $null
 }
 
