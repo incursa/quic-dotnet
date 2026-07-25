@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0089",
+  "artifact_type": "architecture",
+  "status": "proposed",
+  "title": "Adaptive-runtime experiment-control document architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0198 through REQ-QUIC-CRT-0201 with one planning-time contract graph that keeps runtime safety and evidence authority outside the experiment-control documents.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "SPEC-QUIC-CRT-STAGE1-SEND-PATH",
+    "SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY",
+    "WI-QUIC-CRT-0090",
+    "VER-QUIC-CRT-0091"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0198",
+    "REQ-QUIC-CRT-0199",
+    "REQ-QUIC-CRT-0200",
+    "REQ-QUIC-CRT-0201"
+  ],
+  "key_components": [
+    "docs/design/adaptive-runtime-experiment-control-architecture.md",
+    "Eight adaptive-runtime experiment-control JSON Schemas",
+    "eng/adaptive-runtime/experiment-control canonical instances",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1",
+    "tests/fixtures/adaptive-runtime-experiment-control",
+    "Focused CRT requirement-home tests"
+  ],
+  "design_summary": "Axis contracts own seam identity and safety predicates; the effective-behavior catalog owns deterministic mechanism-event derivation; the relationship graph owns directed relationships; the constraint catalog owns cross-axis legality, capabilities, and equivalence; the family catalog owns contexts and promotion prerequisites; source plans own requested treatments and order; validation results own findings and expanded cells; compiled manifests own resolved source, binary, host, capability, and execution order. All documents reference canonical facts by versioned content hash. Runtime evidence remains the owner of operation eligibility and mechanism events.",
+  "data_and_state_considerations": "Documents use strict self-contained schemas, stable lower-snake-case identities, immutable version references, and canonical SHA-256 computed after excluding only the root content_sha256 field. Set-like arrays sort by canonical element bytes, while experiment order, plan treatment order, feedback observations, and execution order are preserved. Effective behavior is derived only from closed mechanism events and may aggregate multiple effective behavior IDs within one epoch.",
+  "edge_cases_and_constraints": [
+    "A source interaction plan may be structurally valid while current capability resolution blocks all multi-axis executable cells.",
+    "Blocked and Stage 5 preparation-only axes remain representable but cannot become executable.",
+    "Forced values bypass selection only and never bypass operation eligibility, safety, ownership, ordering, congestion, pacing, recovery, lifecycle, or terminal guards.",
+    "Expected-equivalent send-turn labels collapse to one effective behavior and remain verification-only.",
+    "No binary hash or resolved host capability appears in a source plan.",
+    "No throughput, latency, CPU, allocation, or other performance result can determine effective_behavior_id."
+  ],
+  "alternatives_considered": [
+    "Rewrite adaptive-runtime-policy-catalog-v1 as the new authority. Rejected because retained evidence and the historical generator must remain valid and unchanged.",
+    "Put every rule directly in an experiment plan. Rejected because copied authority drifts and cannot be resolved deterministically.",
+    "Generate compiled manifests in this checkpoint. Rejected because compiler behavior is explicitly reserved for the next checkpoint.",
+    "Treat application-send turn labels as different treatments. Rejected because both currently execute legacy_priority_stable_sequence."
+  ],
+  "risks": [
+    "A future compiler could accidentally treat structural plan validity as runtime operation eligibility.",
+    "An incomplete capability resolver could emit interaction cells that the current runtime one-axis guard rejects.",
+    "Canonical hash drift can occur if insignificant and meaningful array order are not distinguished explicitly.",
+    "Stale catalog v1 capability claims can mislead readers unless its compatibility-only status remains prominent."
+  ],
+  "open_questions": [
+    "Which stable compiler error codes should distinguish family rejection from host capability rejection?",
+    "How should a later compiler allocate deterministic cell IDs after equivalence collapse?",
+    "Which capability evidence is sufficient to release the send-composition interaction screen from preparation-only status?"
+  ]
+}

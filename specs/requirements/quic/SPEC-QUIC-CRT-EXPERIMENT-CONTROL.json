@@ -1,0 +1,153 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+  "artifact_type": "specification",
+  "title": "Adaptive-runtime experiment-control foundation",
+  "domain": "quic",
+  "capability": "adaptive-runtime-experiment-control",
+  "status": "proposed",
+  "owner": "quic-maintainers",
+  "tags": [
+    "adaptive-runtime",
+    "experiment-control",
+    "schema",
+    "provenance",
+    "measurement-frozen"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "SPEC-QUIC-CRT-STAGE1-SEND-PATH",
+    "SPEC-QUIC-CRT-STAGE2-ACTOR-MEMORY",
+    "ARC-QUIC-CRT-0089",
+    "WI-QUIC-CRT-0090",
+    "VER-QUIC-CRT-0091"
+  ],
+  "purpose": "Define the planning-time architecture, schemas, canonical catalogs, compatibility boundary, fixtures, and deterministic validation needed before an adaptive-runtime experiment plan compiler may be implemented.",
+  "scope": "This checkpoint governs experiment-control documents only. It does not compile plans, generate execution manifests, change runtime instrumentation or operation correlation, materialize effective behavior, project analytical data, execute performance measurement, authorize active_internal, or activate production behavior.",
+  "context": "The runtime already has independently forceable lower-only seams for application-send batch formation and buffer-copy coalescing, while the configured application-send turn values remain behavior-equivalent. Existing adaptive-runtime-policy-catalog-v1 evidence is retained historical measurement metadata and is not rewritten by this contract suite.",
+  "requirements": [
+    {
+      "id": "REQ-QUIC-CRT-0198",
+      "title": "Separate experiment planning, runtime eligibility, applied values, and effective behavior",
+      "statement": "The experiment-control architecture MUST distinguish policy seam, configured value, forced value, shadow recommendation, candidate_value, plan eligibility, operation eligibility and reason, applied value, axis-specific mechanism event, deterministically derived effective behavior, experimental factor, context variable, and treatment eligibility; preserve the ordered configured-to-effective semantic sequence; permit one applied value to produce multiple bounded effective behaviors in one epoch; define the closed actuation_validation, isolated_counterfactual, interaction_screen, feedback_loop, and profile_validation experiment types; assign one canonical owner to every experiment-control fact; separate the source plan from the post-build compiled execution manifest; prohibit deriving effective behavior from performance measurements; and keep measurement, active_internal, and production authorization false.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0089"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0090"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0091"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0198.cs"
+        ],
+        "upstream_refs": [
+          "docs/design/adaptive-runtime-policy-axis-roadmap.md",
+          "docs/design/adaptive-runtime-experiment-control-architecture.md",
+          "docs/design/adaptive-runtime-stage1-unified-execution-map.md",
+          "docs/design/adaptive-runtime-stage2-buffer-ownership-copy-inventory.md"
+        ]
+      },
+      "notes": [
+        "Plan eligibility is a planning fact; operation eligibility and the applied mechanism event remain runtime evidence facts.",
+        "The current one-behavior-distinct-axis runtime capability may block compiled interaction cells without making the source interaction plan structurally invalid."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0199",
+      "title": "Define strict versioned experiment-control schemas and canonical hashing",
+      "statement": "The repository MUST provide strict self-contained v1 JSON Schemas for policy-axis contracts, effective-behavior catalogs, policy relationship graphs, combination-constraint catalogs, experiment-family catalogs, source experiment plans, plan-validation results, and compiled execution manifests; reject unknown fields; close status, experiment-type, relationship, validation, error, and warning vocabularies; carry stable versioned trace and content references; keep blocked and preparation-only axes non-executable; keep active behavior and performance acceptance unauthorized; resolve references deterministically; represent expected effective-cell equivalence and operation-scoped or bounded aggregate behavior; and reproduce lowercase SHA-256 over canonical UTF-8 JSON after excluding the document's own content_sha256 field.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0089"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0090"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0091"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0199.cs"
+        ],
+        "upstream_refs": [
+          "schemas/adaptive-runtime-policy-axis-contract-v1.schema.json",
+          "schemas/adaptive-runtime-effective-behavior-catalog-v1.schema.json",
+          "schemas/adaptive-runtime-policy-relationship-graph-v1.schema.json",
+          "schemas/adaptive-runtime-combination-constraint-catalog-v1.schema.json",
+          "schemas/adaptive-runtime-experiment-family-catalog-v1.schema.json",
+          "schemas/adaptive-runtime-experiment-plan-v1.schema.json",
+          "schemas/adaptive-runtime-experiment-plan-validation-v1.schema.json",
+          "schemas/adaptive-runtime-compiled-execution-manifest-v1.schema.json",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1"
+        ]
+      },
+      "notes": [
+        "The schemas remain self-contained because PowerShell Test-Json has not resolved external local schema references reliably in retained adaptive-runtime evidence validation.",
+        "Array ordering is preserved only where order is semantic; set-like arrays use a documented deterministic sort."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0200",
+      "title": "Publish minimal canonical send-composition contracts while preserving catalog v1 evidence",
+      "statement": "The experiment-control foundation MUST publish canonical v1 instances for application_send_batch_formation, buffer_copy_coalescing, and the behavior-equivalent application_send_turn_planning values; define deterministic effective-behavior identities and the directed batch-formation-to-buffer-coalescing relationship; define only the constraints and send_composition family needed for the first vertical slice; reference safety predicates and guardrails by stable ID and version; classify send-turn label comparisons as verification-only until a behavior-distinct planner exists; retain schemas/adaptive-runtime-policy-catalog-v1.schema.json, New-AdaptiveRuntimePolicyCatalog.ps1, existing fixtures, and historical evidence unchanged; and supersede that catalog only for new experiment-control planning while treating its generator as a historical compatibility producer.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0089"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0090"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0091"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0200.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-policy-axis-contracts-v1.json",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-effective-behavior-catalog-v1.json",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-policy-relationship-graph-v1.json",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-combination-constraint-catalog-v1.json",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-experiment-family-catalog-v1.json",
+          "schemas/adaptive-runtime-policy-catalog-v1.schema.json",
+          "eng/adaptive-runtime/New-AdaptiveRuntimePolicyCatalog.ps1"
+        ]
+      },
+      "notes": [
+        "The new contract suite does not invalidate, migrate, normalize, or relabel retained v1 catalog evidence.",
+        "No new generator or compiler is part of this checkpoint."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0201",
+      "title": "Validate experiment-control fixtures and references deterministically",
+      "statement": "The repository MUST retain schema-valid examples for every first-slice axis contract, catalog and graph, the actuation, isolated-counterfactual, and interaction-screen plans, a plan-validation result, and a compiled-manifest shape; retain invalid examples for every requested structural and semantic failure; validate every schema and valid fixture; reject every invalid fixture with stable sorted error codes; reject unknown fields, duplicate definitions and edges, illegal or unsupported values, unknown or stale references, executable blocked or preparation-only axes, forbidden authorization, malformed hashes, missing predicate references, and fixed/varied overlap; and prove repeated canonical serialization and hashing are byte-for-byte identical.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0089"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0090"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0091"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0201.cs"
+        ],
+        "upstream_refs": [
+          "tests/fixtures/adaptive-runtime-experiment-control/valid",
+          "tests/fixtures/adaptive-runtime-experiment-control/invalid",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1"
+        ]
+      },
+      "notes": [
+        "The focused validator is schema and reference validation only; it is not the reserved generic plan compiler.",
+        "No fixture is campaign evidence or authorization to execute measurement."
+      ]
+    }
+  ]
+}
