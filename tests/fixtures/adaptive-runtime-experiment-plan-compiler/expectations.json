@@ -1,0 +1,84 @@
+{
+  "valid/batch-actuation.plan.json": {
+    "classification": "valid_actuation",
+    "configured": 2,
+    "expected_effective": 2
+  },
+  "valid/buffer-actuation.plan.json": {
+    "classification": "valid_actuation",
+    "configured": 2,
+    "expected_effective": 2
+  },
+  "valid/batch-isolated.plan.json": {
+    "classification": "valid_isolated_counterfactual",
+    "configured": 2,
+    "expected_effective": 2
+  },
+  "valid/buffer-isolated.plan.json": {
+    "classification": "valid_isolated_counterfactual",
+    "configured": 2,
+    "expected_effective": 2
+  },
+  "valid/interaction.plan.json": {
+    "classification": "capability_pending",
+    "configured": 4,
+    "expected_effective": 4
+  },
+  "valid/feedback.plan.json": {
+    "classification": "valid_feedback_loop",
+    "configured": 2,
+    "expected_effective": 2
+  },
+  "valid/profile.plan.json": {
+    "classification": "valid_profile_validation",
+    "configured": 2,
+    "expected_effective": 2
+  },
+  "warning/send-verification.plan.json": {
+    "classification": "verification_only",
+    "configured": 2,
+    "expected_effective": 1,
+    "warning_codes": [
+      "all_configured_values_collapse_to_one_expected_behavior",
+      "measurement_freeze_active",
+      "verification_cell_preserved"
+    ]
+  },
+  "warning/send-equivalent-isolated.plan.json": {
+    "classification": "verification_only",
+    "configured": 2,
+    "expected_effective": 1,
+    "warning_codes": [
+      "all_configured_values_collapse_to_one_expected_behavior",
+      "equivalent_cells_deduplicated",
+      "measurement_freeze_active"
+    ]
+  },
+  "warning/capability-pending.plan.json": {
+    "classification": "capability_pending",
+    "configured": 2,
+    "expected_effective": 2,
+    "warning_codes": [
+      "capability_resolution_required",
+      "measurement_freeze_active"
+    ]
+  },
+  "warning/inactive.plan.json": {
+    "classification": "valid_actuation",
+    "configured": 2,
+    "expected_effective": 2,
+    "warning_codes": [
+      "measurement_freeze_active",
+      "structurally_inactive_cell"
+    ]
+  },
+  "warning/distinctness-unknown.plan.json": {
+    "classification": "valid_actuation",
+    "configured": 2,
+    "expected_effective": 2,
+    "warning_codes": [
+      "behavior_distinctness_unproven",
+      "measurement_freeze_active"
+    ]
+  }
+}

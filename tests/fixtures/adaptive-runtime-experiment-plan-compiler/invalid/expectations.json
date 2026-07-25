@@ -1,0 +1,123 @@
+{
+  "unsupported-axis.plan.json": {
+    "error_codes": [
+      "unknown_axis",
+      "axis_outside_experiment_family"
+    ],
+    "catalog": "canonical"
+  },
+  "illegal-policy-value.plan.json": {
+    "error_codes": [
+      "unknown_policy_value"
+    ],
+    "catalog": "canonical"
+  },
+  "illegal-combination.plan.json": {
+    "error_codes": [
+      "cross_axis_constraint_violation"
+    ],
+    "catalog": "canonical"
+  },
+  "unreachable-activation.plan.json": {
+    "error_codes": [
+      "activation_predicate_unreachable"
+    ],
+    "catalog": "canonical"
+  },
+  "invalid-adjacent-axis-value.plan.json": {
+    "error_codes": [
+      "fixed_axis_not_legacy_current"
+    ],
+    "catalog": "canonical"
+  },
+  "multiple-varied-isolated.plan.json": {
+    "error_codes": [
+      "experiment_type_axis_count_invalid"
+    ],
+    "catalog": "canonical"
+  },
+  "missing-feedback-history.plan.json": {
+    "error_codes": [
+      "feedback_loop_history_missing"
+    ],
+    "catalog": "canonical"
+  },
+  "equivalent-performance-comparable.plan.json": {
+    "error_codes": [
+      "equivalent_cells_performance_comparable"
+    ],
+    "catalog": "canonical"
+  },
+  "stale-contract-reference.plan.json": {
+    "error_codes": [
+      "stale_contract_reference"
+    ],
+    "catalog": "canonical"
+  },
+  "unknown-field.plan.json": {
+    "error_codes": [
+      "unknown_field"
+    ],
+    "catalog": "canonical"
+  },
+  "prohibited-runtime-controller-input.plan.json": {
+    "error_codes": [
+      "prohibited_runtime_controller_input"
+    ],
+    "catalog": "canonical"
+  },
+  "duplicate-axis-reference.plan.json": {
+    "error_codes": [
+      "duplicate_axis_reference"
+    ],
+    "catalog": "canonical"
+  },
+  "missing-predicate-reference.plan.json": {
+    "error_codes": [
+      "missing_canonical_predicate_reference"
+    ],
+    "catalog": "canonical"
+  },
+  "active-authorization.plan.json": {
+    "error_codes": [
+      "active_behavior_unauthorized"
+    ],
+    "catalog": "canonical"
+  },
+  "performance-authorization.plan.json": {
+    "error_codes": [
+      "performance_acceptance_unauthorized"
+    ],
+    "catalog": "canonical"
+  },
+  "plan-hash-mismatch.plan.json": {
+    "error_codes": [
+      "hash_mismatch"
+    ],
+    "catalog": "canonical"
+  },
+  "unsupported-experiment-type.plan.json": {
+    "error_codes": [
+      "unsupported_experiment_type"
+    ],
+    "catalog": "canonical"
+  },
+  "stage5-preparation-only.plan.json": {
+    "error_codes": [
+      "preparation_only_axis"
+    ],
+    "catalog": "stage5"
+  },
+  "blocked-axis.plan.json": {
+    "error_codes": [
+      "blocked_axis"
+    ],
+    "catalog": "stage5"
+  },
+  "axis-outside-interaction-family.plan.json": {
+    "error_codes": [
+      "axis_outside_experiment_family"
+    ],
+    "catalog": "stage5"
+  }
+}

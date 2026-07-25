@@ -1,0 +1,21 @@
+{
+  "manifest-hash-mismatch.manifest.json": [
+    "hash_mismatch"
+  ],
+  "plan-manifest-version-mismatch.manifest.json": [
+    "stale_contract_reference"
+  ],
+  "manifest-unknown-field.manifest.json": [
+    "unknown_field"
+  ],
+  "manifest-active-authorization.manifest.json": [
+    "active_behavior_unauthorized"
+  ],
+  "manifest-performance-authorization.manifest.json": [
+    "performance_acceptance_unauthorized"
+  ],
+  "validation-hash-mismatch.validation.json": [
+    "hash_mismatch",
+    "stale_contract_reference"
+  ]
+}
