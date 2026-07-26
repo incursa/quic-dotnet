@@ -190,7 +190,7 @@ $manifest = [pscustomobject][ordered]@{
             performance_comparable = [bool]$_.performance_comparable
         }
     })
-    orders = @($campaign.design.orders)
+    orders = $campaign.design.orders
     measurement_authorization = $true
     active_behavior_authorization = $false
     performance_acceptance_authorization = $false
