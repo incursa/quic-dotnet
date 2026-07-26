@@ -384,7 +384,14 @@ else {
                     'execution remains blocked.') $target
             }
         }
-        $declaredProofRefs = @($plan.reviewed_actuation_proof_refs)
+        $declaredProofValue = Get-AdaptiveRuntimeJsonProperty $plan `
+            'reviewed_actuation_proof_refs'
+        $declaredProofRefs = if ($null -eq $declaredProofValue) {
+            @()
+        }
+        else {
+            @($declaredProofValue)
+        }
         $exactProofRefs = @($forcedVariedTreatments | ForEach-Object {
             $treatment = $_
             @($reviewedProofs | Where-Object {
@@ -401,13 +408,21 @@ else {
             "$($_.document_id)|$($_.schema_version)|$($_.document_version)|$($_.content_sha256)"
         } | Sort-Object -CaseSensitive)
         $interactionCorrectnessAuthorized =
-            $plan.execution_purpose -ceq 'correctness_only' -and
+            (Get-AdaptiveRuntimeJsonProperty $plan 'execution_purpose') `
+                -ceq 'correctness_only' -and
             $forcedVariedTreatments.Count -eq 2 -and
             $exactProofRefs.Count -eq 2 -and
             (ConvertTo-Json $declaredKeys -Compress) -ceq
                 (ConvertTo-Json $exactKeys -Compress)
         if (-not $interactionCorrectnessAuthorized) {
             $interactionProofMissing = $true
+            foreach ($treatment in $forcedVariedTreatments) {
+                $target =
+                    "$($treatment.axis_id)=$($treatment.forced_value)"
+                Add-PlanWarning 'interaction_actuation_proof_missing' (
+                    "Interaction execution requires the exact reviewed " +
+                    "proof reference for '$target'.") $target
+            }
         }
     }
 }

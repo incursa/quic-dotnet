@@ -256,10 +256,19 @@ $manifest = [pscustomobject][ordered]@{
         'Performance measurement and active behavior remain unauthorized.'
     )
 }
+$reviewedProofValue = Get-AdaptiveRuntimeJsonProperty $plan `
+    'reviewed_actuation_proof_refs'
+$reviewedProofRefs = if ($null -eq $reviewedProofValue) {
+    @()
+}
+else {
+    @($reviewedProofValue)
+}
 if ($plan.experiment_type -eq 'interaction_screen' -and
-    $plan.execution_purpose -eq 'correctness_only' -and
+    (Get-AdaptiveRuntimeJsonProperty $plan 'execution_purpose') -eq
+        'correctness_only' -and
     $executableCells.Count -eq 1 -and
-    @($plan.reviewed_actuation_proof_refs).Count -eq 2) {
+    $reviewedProofRefs.Count -eq 2) {
     $manifest | Add-Member -NotePropertyName `
         correctness_interaction_authorization -NotePropertyValue (
         [pscustomobject][ordered]@{
@@ -274,7 +283,7 @@ if ($plan.experiment_type -eq 'interaction_screen' -and
                     policy_value = [string]$_.forced_value
                 }
             })
-            reviewed_proof_refs = @($plan.reviewed_actuation_proof_refs)
+            reviewed_proof_refs = @($reviewedProofRefs)
             relationship_graph_version = 2
             constraint_catalog_version = 1
             maximum_behavior_distinct_axes = 2
