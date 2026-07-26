@@ -629,6 +629,19 @@ $projection = & (Join-Path $PSScriptRoot `
     'New-AdaptiveRuntimeExperimentEvidenceProjectionV3.ps1') @projectionParams
 [void](Write-Fixture $projection 'valid\expected\projection.json')
 
+$completeReleaseIdentity = Copy-JsonObject $evidence
+$reusedDecision = Copy-JsonObject $completeReleaseIdentity.decisions[1]
+$reusedDecision.decision_instance_id = 202
+$completeReleaseIdentity.decisions += $reusedDecision
+$reusedOperation = Copy-JsonObject $completeReleaseIdentity.operations[1]
+$reusedOperation.decision_instance_id = 202
+$completeReleaseIdentity.operations += $reusedOperation
+$reusedRelease = Copy-JsonObject $completeReleaseIdentity.releases[0]
+$reusedRelease.decision_instance_id = 202
+$completeReleaseIdentity.releases += $reusedRelease
+[void](Write-Fixture $completeReleaseIdentity `
+    'valid\release-complete-identity-reuse.json')
+
 $changedCatalog = Copy-JsonObject $catalog
 $inactiveDefinition = @($changedCatalog.outcome_definitions |
     Where-Object outcome_id -eq 'outcome.inactive')[0]
@@ -656,6 +669,11 @@ $releaseOperationMismatch.releases[0].operation_id = 999
 $releaseDecisionMismatch = Copy-JsonObject $evidence
 $releaseDecisionMismatch.releases[0].decision_instance_id = 999
 [void](Write-Fixture $releaseDecisionMismatch `
+    'invalid\release-operation-decision-mismatch.json')
+$releaseLinkedDecisionMissing = Copy-JsonObject $evidence
+$releaseLinkedDecisionMissing.operations[1].decision_instance_id = 999
+$releaseLinkedDecisionMissing.releases[0].decision_instance_id = 999
+[void](Write-Fixture $releaseLinkedDecisionMissing `
     'invalid\release-decision-identity-mismatch.json')
 $releaseEpochMissing = Copy-JsonObject $evidence
 $releaseEpochMissing.releases[0].release_epoch_sequence = 999
@@ -758,6 +776,8 @@ $expectations = [pscustomobject][ordered]@{
         'release-forged-decision-epoch.json' =
             'release_decision_epoch_mismatch'
         'release-operation-identity-mismatch.json' =
+            'release_operation_identity_mismatch'
+        'release-operation-decision-mismatch.json' =
             'release_operation_identity_mismatch'
         'release-decision-identity-mismatch.json' =
             'release_decision_identity_mismatch'

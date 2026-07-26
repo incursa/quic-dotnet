@@ -759,6 +759,8 @@ function Get-AdaptiveRuntimeEvidenceV3Errors {
             [long]$_.epoch_sequence -eq
                 [long]$release.operation_epoch_sequence -and
             [string]$_.axis_id -ceq [string]$release.axis_id -and
+            [long]$_.decision_instance_id -eq
+                [long]$release.decision_instance_id -and
             [long]$_.operation_id -eq [long]$release.operation_id
         })
         if ($operationMatches.Count -ne 1) {
@@ -766,11 +768,6 @@ function Get-AdaptiveRuntimeEvidenceV3Errors {
             continue
         }
         $operation = $operationMatches[0]
-        if ([long]$release.decision_instance_id -ne
-            [long]$operation.decision_instance_id) {
-            & $add 'release_decision_identity_mismatch'
-            continue
-        }
         $decisionMatches = @($Evidence.decisions | Where-Object {
             [string]$_.run_id -ceq [string]$operation.run_id -and
             [string]$_.connection_key -ceq [string]$operation.connection_key -and

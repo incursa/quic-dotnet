@@ -441,6 +441,36 @@ Assert-ThrowsCode {
 } 'projection_classification_evidence_mismatch' `
     'self-hashed unrelated classifications'
 
+$completeReleaseIdentity = Read-AdaptiveRuntimeJsonDocument (
+    Join-Path $fixtureRoot 'valid\release-complete-identity-reuse.json')
+$completeReleaseClassifications = Copy-JsonObject $classificationSet
+$completeReleaseClassifications.payload.evidence_ref =
+    New-AdaptiveRuntimeDocumentRef $completeReleaseIdentity
+[void](Set-AdaptiveRuntimeDocumentHash $completeReleaseClassifications)
+$completeReleaseErrors = @(
+    Get-AdaptiveRuntimeEvidenceV3Errors `
+        -Evidence $completeReleaseIdentity `
+        -Catalog $catalog `
+        -PlanValidation $validation `
+        -ClassificationSet $completeReleaseClassifications `
+        -CompatibilityCatalog $compatibilityCatalog `
+        -ArtifactInventory $documents.artifact_inventory
+)
+Assert-Condition ($completeReleaseErrors.Count -eq 0) (
+    "Complete release identity reuse fixture failed: $($completeReleaseErrors -join ',').")
+$reusedOperationIds = @(
+    $completeReleaseIdentity.operations |
+        Where-Object {
+            $_.axis_id -eq 'buffer_copy_coalescing' -and
+            [long]$_.operation_id -eq 1
+        }
+)
+Assert-Condition ($reusedOperationIds.Count -eq 2) (
+    'Complete release identity fixture did not reuse the numeric operation ID.')
+Assert-Condition (
+    @($reusedOperationIds.decision_instance_id | Sort-Object -Unique).Count -eq 2
+) 'Complete release identity fixture did not use distinct decisions.'
+
 [pscustomobject]@{
     schemas_validated = $schemaFiles.Count
     immutable_inputs_validated = $documents.Count
@@ -456,6 +486,7 @@ Assert-ThrowsCode {
     outcome_hash = $outcome1.content_sha256
     projection_hash = $projection1.content_sha256
     authority_chain_inputs = $projection1.authority_chain.Count
+    complete_release_identity_reuse_cases = $reusedOperationIds.Count
     measurement_frozen = $true
     active_behavior_authorized = $false
 } | ConvertTo-Json -Depth 10

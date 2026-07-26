@@ -23,8 +23,11 @@ public sealed class REQ_QUIC_CRT_0214
             9,
             summary.RootElement.GetProperty("outcome_mapping_cases").GetInt32());
         Assert.Equal(
-            9,
+            10,
             summary.RootElement.GetProperty("evidence_invalid").GetInt32());
+        Assert.Equal(
+            2,
+            summary.RootElement.GetProperty("complete_release_identity_reuse_cases").GetInt32());
         Assert.False(
             summary.RootElement.GetProperty("active_behavior_authorized").GetBoolean());
     }
