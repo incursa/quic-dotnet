@@ -211,6 +211,12 @@ public abstract class QuicConnectionOptions
 
     internal IQuicBufferCopyEvidenceSink? BufferCopyEvidenceSink { get; set; }
 
+    // CONTEXT: This fixed token is produced only by the reviewed, immutable
+    // correctness-manifest path. It cannot authorize active or performance
+    // behavior and is not exposed through public connection configuration.
+    internal QuicAdaptiveRuntimeCorrectnessInteractionAuthorization?
+        SendCompositionCorrectnessAuthorization { get; set; }
+
     // CONTEXT: Internal-only Stage 2 application-admission control. The
     // conservative value may add one bounded dispatcher-turn wait but cannot
     // reject work, raise a hard bound, or wait for network progress.

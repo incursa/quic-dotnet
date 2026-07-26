@@ -256,6 +256,32 @@ $manifest = [pscustomobject][ordered]@{
         'Performance measurement and active behavior remain unauthorized.'
     )
 }
+if ($plan.experiment_type -eq 'interaction_screen' -and
+    $plan.execution_purpose -eq 'correctness_only' -and
+    $executableCells.Count -eq 1 -and
+    @($plan.reviewed_actuation_proof_refs).Count -eq 2) {
+    $manifest | Add-Member -NotePropertyName `
+        correctness_interaction_authorization -NotePropertyValue (
+        [pscustomobject][ordered]@{
+            execution_purpose = 'correctness_only'
+            family_id = [string]$plan.family_id
+            cell_id = [string]$executableCells[0].cell_id
+            axis_values = @($plan.treatments | Where-Object {
+                $null -ne (Get-AdaptiveRuntimeJsonProperty $_ 'forced_value')
+            } | Sort-Object axis_id | ForEach-Object {
+                [pscustomobject][ordered]@{
+                    axis_id = [string]$_.axis_id
+                    policy_value = [string]$_.forced_value
+                }
+            })
+            reviewed_proof_refs = @($plan.reviewed_actuation_proof_refs)
+            relationship_graph_version = 2
+            constraint_catalog_version = 1
+            maximum_behavior_distinct_axes = 2
+            active_behavior_authorization = $false
+            performance_acceptance_authorization = $false
+        })
+}
 if (-not [string]::IsNullOrWhiteSpace($physicalHostId)) {
     $manifest.host_fingerprint.physical_host_id = $physicalHostId
 }

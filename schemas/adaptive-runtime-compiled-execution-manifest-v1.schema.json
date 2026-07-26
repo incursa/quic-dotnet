@@ -83,6 +83,9 @@
     },
     "active_behavior_authorization": { "type": "boolean", "const": false },
     "performance_acceptance_authorization": { "type": "boolean", "const": false },
+    "correctness_interaction_authorization": {
+      "$ref": "#/$defs/correctnessInteractionAuthorization"
+    },
     "compiled_execution_manifest_id": { "type": "string", "minLength": 1 },
     "source_plan_ref": { "$ref": "#/$defs/documentRef" },
     "source_validation_ref": { "$ref": "#/$defs/documentRef" },
@@ -162,6 +165,59 @@
         "schema_version": { "type": "string", "minLength": 1 },
         "document_version": { "type": "integer", "minimum": 1 },
         "content_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "correctnessInteractionAuthorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "execution_purpose",
+        "family_id",
+        "cell_id",
+        "axis_values",
+        "reviewed_proof_refs",
+        "relationship_graph_version",
+        "constraint_catalog_version",
+        "maximum_behavior_distinct_axes",
+        "active_behavior_authorization",
+        "performance_acceptance_authorization"
+      ],
+      "properties": {
+        "execution_purpose": { "const": "correctness_only" },
+        "family_id": { "const": "send_composition" },
+        "cell_id": { "type": "string", "minLength": 1 },
+        "axis_values": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["axis_id", "policy_value"],
+            "properties": {
+              "axis_id": {
+                "enum": [
+                  "application_send_batch_formation",
+                  "buffer_copy_coalescing"
+                ]
+              },
+              "policy_value": {
+                "enum": ["single_eligible", "memory_conservative"]
+              }
+            }
+          }
+        },
+        "reviewed_proof_refs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": { "$ref": "#/$defs/documentRef" }
+        },
+        "relationship_graph_version": { "const": 2 },
+        "constraint_catalog_version": { "const": 1 },
+        "maximum_behavior_distinct_axes": { "const": 2 },
+        "active_behavior_authorization": { "const": false },
+        "performance_acceptance_authorization": { "const": false }
       }
     },
     "binaryRef": {

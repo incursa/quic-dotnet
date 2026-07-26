@@ -82,6 +82,15 @@
     },
     "active_behavior_authorization": { "type": "boolean", "const": false },
     "performance_acceptance_authorization": { "type": "boolean", "const": false },
+    "execution_purpose": {
+      "type": "string",
+      "enum": ["correctness_only", "verification_only", "dry_run_only"]
+    },
+    "reviewed_actuation_proof_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/documentRef" }
+    },
     "experiment_plan_id": { "type": "string", "minLength": 1 },
     "family_id": { "type": "string", "minLength": 1 },
     "experiment_type": {

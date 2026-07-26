@@ -187,6 +187,18 @@ foreach ($catalogName in $catalogFiles.Keys) {
     }
 }
 if ($CatalogContractVersion -eq 'v2') {
+    $reviewedProofRoot = Join-Path $CatalogRoot 'reviewed-proofs'
+    foreach ($proofPath in @(Get-ChildItem -LiteralPath $reviewedProofRoot `
+        -Filter '*.json' -File -ErrorAction SilentlyContinue |
+        Sort-Object Name | ForEach-Object FullName)) {
+        $proofDocument = Read-AdaptiveRuntimeJsonDocument $proofPath
+        $documentMap[[string]$proofDocument.document_id] = $proofDocument
+        if (-not (Test-AdaptiveRuntimeDocumentHash $proofDocument)) {
+            Add-PlanError 'hash_mismatch' (
+                "Reviewed proof '$($proofDocument.document_id)' has a " +
+                'content hash mismatch.') $proofDocument.document_id
+        }
+    }
     foreach ($compatibilityFile in @(
         'adaptive-runtime-effective-behavior-catalog-v1.json',
         'adaptive-runtime-policy-relationship-graph-v1.json',
@@ -228,7 +240,8 @@ $knownTopLevelFields = @(
     'family_id','experiment_type','fixed_axis_ids','fixed_axis_values','varied_axis_ids',
     'treatment_order','treatments','planned_cells','execution_status','expected_capabilities',
     'preserve_equivalent_cells_for_verification','required_predicate_refs','history_controls',
-    'profile_definition','execution_order_policy','randomization_seed','source_document_refs','notes'
+    'profile_definition','execution_order_policy','randomization_seed','source_document_refs','notes',
+    'execution_purpose','reviewed_actuation_proof_refs'
 )
 foreach ($property in $plan.PSObject.Properties.Name) {
     if ($knownTopLevelFields -notcontains $property) {
@@ -309,6 +322,7 @@ foreach ($fixedValue in @($plan.fixed_axis_values)) {
 }
 
 $interactionProofMissing = $false
+$interactionCorrectnessAuthorized = $false
 $family = @($familyCatalog.experiment_families | Where-Object family_id -eq $plan.family_id) | Select-Object -First 1
 if ($null -eq $family) {
     Add-PlanError 'unsupported_experiment_family' "Experiment family '$($plan.family_id)' is unknown." $plan.family_id
@@ -369,6 +383,31 @@ else {
                     'but reviewed v1 actuation proof is absent; measurement ' +
                     'execution remains blocked.') $target
             }
+        }
+        $declaredProofRefs = @($plan.reviewed_actuation_proof_refs)
+        $exactProofRefs = @($forcedVariedTreatments | ForEach-Object {
+            $treatment = $_
+            @($reviewedProofs | Where-Object {
+                $familyProofIds -contains [string]$_.proof_id -and
+                [string]$_.axis_id -ceq [string]$treatment.axis_id -and
+                [string]$_.policy_value -ceq [string]$treatment.forced_value -and
+                [string]$_.review_outcome -ceq 'passed'
+            } | ForEach-Object evidence_ref)
+        })
+        $declaredKeys = @($declaredProofRefs | ForEach-Object {
+            "$($_.document_id)|$($_.schema_version)|$($_.document_version)|$($_.content_sha256)"
+        } | Sort-Object -CaseSensitive)
+        $exactKeys = @($exactProofRefs | ForEach-Object {
+            "$($_.document_id)|$($_.schema_version)|$($_.document_version)|$($_.content_sha256)"
+        } | Sort-Object -CaseSensitive)
+        $interactionCorrectnessAuthorized =
+            $plan.execution_purpose -ceq 'correctness_only' -and
+            $forcedVariedTreatments.Count -eq 2 -and
+            $exactProofRefs.Count -eq 2 -and
+            (ConvertTo-Json $declaredKeys -Compress) -ceq
+                (ConvertTo-Json $exactKeys -Compress)
+        if (-not $interactionCorrectnessAuthorized) {
+            $interactionProofMissing = $true
         }
     }
 }
@@ -516,7 +555,9 @@ $behaviorKeyByCellId = @{}
 $cellById = @{}
 $capabilityPendingPlan = $plan.execution_status -eq 'blocked_by_capability' -or
     @($plan.expected_capabilities | Where-Object resolution -eq 'pending').Count -gt 0 -or
-    ($null -ne $matchingConstraint -and $matchingConstraint.capability_state -in @('blocked','capability_blocked','deferred'))
+    (($null -ne $matchingConstraint -and
+        $matchingConstraint.capability_state -in @('blocked','capability_blocked','deferred')) -and
+        -not $interactionCorrectnessAuthorized)
 
 foreach ($cell in @($plan.planned_cells | Sort-Object cell_order, cell_id)) {
     $behaviorIds = [System.Collections.Generic.List[string]]::new()

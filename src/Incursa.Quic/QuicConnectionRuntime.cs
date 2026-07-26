@@ -1881,6 +1881,20 @@ internal sealed partial class QuicConnectionRuntime :
         bool applicationSendBatchTreatmentSelected =
             forcedApplicationSendBatchMode
                 is QuicApplicationSendBatchPolicyMode.SingleEligible;
+        bool bufferCopyTreatmentSelected =
+            forcedBufferCopyPolicyValue
+                is QuicBufferCopyPolicyValue.MemoryConservative;
+        bool sendCompositionCorrectnessAuthorized =
+            options.SendCompositionCorrectnessAuthorization is { } authorization
+            && authorization.Authorizes(
+                forcedApplicationSendBatchMode,
+                forcedBufferCopyPolicyValue);
+        if (options.SendCompositionCorrectnessAuthorization is not null
+            && !sendCompositionCorrectnessAuthorized)
+        {
+            throw new InvalidOperationException(
+                "The send-composition correctness authorization does not match the exact forced cell.");
+        }
         if (applicationSendBatchTreatmentSelected)
         {
             if (forcedMode is not null and not QuicReceiveCreditPolicyMode.LegacyCurrent)
@@ -1978,9 +1992,6 @@ internal sealed partial class QuicConnectionRuntime :
             }
         }
 
-        bool bufferCopyTreatmentSelected =
-            forcedBufferCopyPolicyValue
-                is QuicBufferCopyPolicyValue.MemoryConservative;
         if (bufferCopyTreatmentSelected)
         {
             if (forcedMode is not null
@@ -1997,7 +2008,8 @@ internal sealed partial class QuicConnectionRuntime :
                     "Buffer-copy policy requires the legacy_current application-send turn policy.");
             }
 
-            if (forcedApplicationSendBatchMode is not null
+            if (!sendCompositionCorrectnessAuthorized
+                && forcedApplicationSendBatchMode is not null
                 and not QuicApplicationSendBatchPolicyMode.LegacyCurrent)
             {
                 throw new InvalidOperationException(
@@ -2101,7 +2113,13 @@ internal sealed partial class QuicConnectionRuntime :
             + (receiveDeliveryQuantumTreatmentSelected ? 1 : 0)
             + (applicationDatagramBatchTransportTreatmentSelected ? 1 : 0)
             + (congestionPacingProfileTreatmentSelected ? 1 : 0);
-        if (behaviorDistinctTreatmentCount > 1)
+        const int SendCompositionBehaviorDistinctTreatmentCount = 2;
+        if (behaviorDistinctTreatmentCount > 1
+            && !(behaviorDistinctTreatmentCount
+                    == SendCompositionBehaviorDistinctTreatmentCount
+                && applicationSendBatchTreatmentSelected
+                && bufferCopyTreatmentSelected
+                && sendCompositionCorrectnessAuthorized))
         {
             throw new InvalidOperationException(
                 "Only one behavior-distinct adaptive runtime policy axis may be forced at a time.");
