@@ -347,7 +347,9 @@ $trainLabels = @(Get-ContextLabels 'train')
 $holdoutLabels = @(Get-ContextLabels 'holdout')
 $candidateRules = [Collections.Generic.List[object]]::new()
 foreach ($feature in @('legal_write_average', 'source_segment_average')) {
-    $values = @($trainLabels.$feature | Sort-Object -Unique)
+    $values = @($trainLabels |
+        ForEach-Object { $_.$feature } |
+        Sort-Object -Unique)
     if ($values.Count -lt 2) {
         continue
     }
@@ -382,7 +384,9 @@ $bestRule = @($candidateRules |
         @{ Expression = { $_.training.accuracy }; Descending = $true },
         feature, threshold, low_cell, high_cell |
     Select-Object -First 1)
-$winnerKinds = @($trainLabels.winner | Sort-Object -Unique)
+$winnerKinds = @($trainLabels |
+    ForEach-Object winner |
+    Sort-Object -Unique)
 $hasHoldout = $holdoutLabels.Count -ge 2
 $materialTrainEffect = @($effectEstimates |
     Where-Object {
