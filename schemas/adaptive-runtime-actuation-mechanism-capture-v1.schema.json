@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/incursa/quic-dotnet/schemas/adaptive-runtime-actuation-mechanism-capture-v1.schema.json",
+  "title": "Adaptive runtime actuation mechanism capture v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "axis_id",
+    "policy_value",
+    "harness_id",
+    "capture_mode",
+    "run_id",
+    "binary_cohort_id",
+    "forced_behavior_distinct_axis_count",
+    "operations",
+    "releases",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-actuation-mechanism-capture-v1" },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "axis_id": {
+      "enum": [
+        "application_send_batch_formation",
+        "buffer_copy_coalescing"
+      ]
+    },
+    "policy_value": {
+      "enum": ["single_eligible", "memory_conservative"]
+    },
+    "harness_id": { "$ref": "#/$defs/id" },
+    "capture_mode": { "const": "focused_correctness_mechanism_harness" },
+    "run_id": { "$ref": "#/$defs/id" },
+    "binary_cohort_id": { "$ref": "#/$defs/id" },
+    "forced_behavior_distinct_axis_count": { "const": 1 },
+    "operations": {
+      "type": "array",
+      "minItems": 5,
+      "items": { "$ref": "#/$defs/operation" }
+    },
+    "releases": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/release" }
+    },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/traceReferences" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "nullableId": {
+      "oneOf": [
+        { "$ref": "#/$defs/id" },
+        { "type": "null" }
+      ]
+    },
+    "positiveInteger": { "type": "integer", "minimum": 1 },
+    "nonNegativeInteger": { "type": "integer", "minimum": 0 },
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "connection_key",
+        "epoch_sequence",
+        "decision_instance_id",
+        "operation_id",
+        "configured_value",
+        "forced_value",
+        "shadow_recommendation",
+        "candidate_value",
+        "operation_eligibility_result",
+        "operation_eligibility_reason",
+        "applied_value",
+        "operation_kind",
+        "mechanism_event_id",
+        "legal_work_count",
+        "applied_work_count",
+        "legal_bytes",
+        "applied_bytes",
+        "result",
+        "fallback_or_safety_reason",
+        "terminal_outcome",
+        "capture_case"
+      ],
+      "properties": {
+        "connection_key": { "$ref": "#/$defs/id" },
+        "epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "decision_instance_id": { "$ref": "#/$defs/positiveInteger" },
+        "operation_id": { "$ref": "#/$defs/positiveInteger" },
+        "configured_value": { "$ref": "#/$defs/id" },
+        "forced_value": { "$ref": "#/$defs/nullableId" },
+        "shadow_recommendation": { "$ref": "#/$defs/nullableId" },
+        "candidate_value": { "$ref": "#/$defs/id" },
+        "operation_eligibility_result": {
+          "enum": ["eligible", "ineligible", "clamped"]
+        },
+        "operation_eligibility_reason": { "$ref": "#/$defs/id" },
+        "applied_value": { "$ref": "#/$defs/id" },
+        "operation_kind": { "enum": ["packet_plan", "combined_send"] },
+        "mechanism_event_id": { "$ref": "#/$defs/id" },
+        "legal_work_count": { "$ref": "#/$defs/nonNegativeInteger" },
+        "applied_work_count": { "$ref": "#/$defs/nonNegativeInteger" },
+        "legal_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "applied_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "result": {
+          "enum": ["applied", "inactive", "fallback", "clamped"]
+        },
+        "fallback_or_safety_reason": { "$ref": "#/$defs/nullableId" },
+        "terminal_outcome": { "$ref": "#/$defs/id" },
+        "capture_case": {
+          "enum": [
+            "positive_actuation",
+            "structurally_inactive",
+            "safety_fallback",
+            "shadow_neutrality",
+            "rollback"
+          ]
+        }
+      }
+    },
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "connection_key",
+        "operation_epoch_sequence",
+        "decision_epoch_sequence",
+        "release_epoch_sequence",
+        "decision_instance_id",
+        "operation_id",
+        "release_count",
+        "terminal_outcome",
+        "release_reason",
+        "validity"
+      ],
+      "properties": {
+        "connection_key": { "$ref": "#/$defs/id" },
+        "operation_epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "decision_epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "release_epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "decision_instance_id": { "$ref": "#/$defs/positiveInteger" },
+        "operation_id": { "$ref": "#/$defs/positiveInteger" },
+        "release_count": { "const": 1 },
+        "terminal_outcome": { "const": "released" },
+        "release_reason": { "$ref": "#/$defs/id" },
+        "validity": { "const": "none" }
+      }
+    },
+    "traceReferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "architecture_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "work_item_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "verification_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}
