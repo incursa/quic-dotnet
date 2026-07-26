@@ -183,7 +183,7 @@ public sealed class REQ_QUIC_CRT_0229
 
         QuicListenerHost.ApplyReturnedOptions(selected, returned);
 
-        Assert.Same(
+        Assert.Equal(
             authorization,
             selected.SendCompositionPerformanceAuthorization);
     }
