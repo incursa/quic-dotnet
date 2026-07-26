@@ -97,6 +97,7 @@ internal static class QuicSendCompositionPerformanceHarness
             QuicPublicApiLoopbackBenchmarkSupport
                 .CreateServerAuthenticationOptions(serverCertificate);
 
+        Console.Error.WriteLine("send-composition-stage:create-pair");
         await using ConnectedPair pair = await ConnectedPair.CreateAsync(
             serverAuthentication,
             clientAuthentication,
@@ -107,6 +108,7 @@ internal static class QuicSendCompositionPerformanceHarness
                 authorization,
                 collector)).ConfigureAwait(false);
 
+        Console.Error.WriteLine("send-composition-stage:warmup");
         await RunSampleAsync(
             pair,
             options,
@@ -116,6 +118,7 @@ internal static class QuicSendCompositionPerformanceHarness
             collect: false,
             collector).ConfigureAwait(false);
 
+        Console.Error.WriteLine("send-composition-stage:measurement");
         SampleResult sample = await RunSampleAsync(
             pair,
             options,
@@ -125,6 +128,7 @@ internal static class QuicSendCompositionPerformanceHarness
             collect: true,
             collector).ConfigureAwait(false);
 
+        Console.Error.WriteLine("send-composition-stage:complete");
         bool releaseCorrect =
             sample.Evidence.CombinedOwnerRents
                 == sample.Evidence.CombinedOwnerReleases
@@ -474,6 +478,24 @@ internal static class QuicSendCompositionPerformanceHarness
                 Task<QuicConnection> connect = QuicConnection.ConnectAsync(
                     clientOptions,
                     cancellation.Token).AsTask();
+                Task first = await Task.WhenAny(
+                    accept,
+                    connect,
+                    Task.Delay(TimeSpan.FromSeconds(30), cancellation.Token))
+                    .ConfigureAwait(false);
+                if (first == accept && accept.IsFaulted)
+                {
+                    await accept.ConfigureAwait(false);
+                }
+                if (first == connect && connect.IsFaulted)
+                {
+                    await connect.ConfigureAwait(false);
+                }
+                if (first != accept && first != connect)
+                {
+                    throw new TimeoutException(
+                        "Loopback connection setup exceeded 30 seconds.");
+                }
                 await Task.WhenAll(accept, connect).ConfigureAwait(false);
                 return new(
                     listener,

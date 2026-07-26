@@ -159,4 +159,32 @@ public sealed class REQ_QUIC_CRT_0229
                 legalEligibleWriteCount: 8));
         Assert.True(QuicBufferCopyPolicy.MinimumCombinedSourceSegments > 1);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ListenerCallbackPreservesExactOfflineAuthorization()
+    {
+        QuicAdaptiveRuntimePerformanceInteractionAuthorization authorization =
+            QuicAdaptiveRuntimePerformanceInteractionAuthorization
+                .CreateForReviewedManifest(
+                    "campaign.send_composition.performance.v1",
+                    Hash,
+                    "cell.d",
+                    Hash,
+                    Hash,
+                    QuicApplicationSendBatchPolicyMode.SingleEligible,
+                    QuicBufferCopyPolicyValue.MemoryConservative);
+        QuicServerConnectionOptions selected = new();
+        QuicServerConnectionOptions returned = new()
+        {
+            SendCompositionPerformanceAuthorization = authorization,
+        };
+
+        QuicListenerHost.ApplyReturnedOptions(selected, returned);
+
+        Assert.Same(
+            authorization,
+            selected.SendCompositionPerformanceAuthorization);
+    }
 }

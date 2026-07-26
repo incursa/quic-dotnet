@@ -2691,6 +2691,10 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         selectedOptions.ForcedApplicationSendBatchPolicyMode = returnedOptions.ForcedApplicationSendBatchPolicyMode;
         selectedOptions.ApplicationSendBatchObservationMode = returnedOptions.ApplicationSendBatchObservationMode;
         selectedOptions.ApplicationSendBatchEvidenceSink = returnedOptions.ApplicationSendBatchEvidenceSink;
+        selectedOptions.SendCompositionCorrectnessAuthorization =
+            returnedOptions.SendCompositionCorrectnessAuthorization;
+        selectedOptions.SendCompositionPerformanceAuthorization =
+            returnedOptions.SendCompositionPerformanceAuthorization;
         selectedOptions.ForcedQueuedSendBurstPolicyMode = returnedOptions.ForcedQueuedSendBurstPolicyMode;
         selectedOptions.QueuedSendBurstObservationMode = returnedOptions.QueuedSendBurstObservationMode;
         selectedOptions.QueuedSendBurstEvidenceSink = returnedOptions.QueuedSendBurstEvidenceSink;
