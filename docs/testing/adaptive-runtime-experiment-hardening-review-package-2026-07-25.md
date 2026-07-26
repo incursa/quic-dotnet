@@ -8,6 +8,12 @@ Status: bounded correctness-only hardening complete; measurement, CI, push,
 `active_internal`, production activation, another-axis migration, and runtime
 mechanism changes remain unauthorized.
 
+Follow-up: the additive
+[`adaptive-runtime-experiment-evidence-integrity-closeout-2026-07-25.md`](adaptive-runtime-experiment-evidence-integrity-closeout-2026-07-25.md)
+closes exact outcome, release, classification, composite-accounting, and
+fifteen-input projection gaps without changing or reinterpreting this retained
+hardening package.
+
 ## 1. Recovery
 
 Work began from committed `c7076b191f6f0b3f3d3ee94b477746fc286f4144` in

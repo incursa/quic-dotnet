@@ -13,6 +13,14 @@ exact correlation, separate outcome aggregates, set-valued planning, and
 immutable projection rebuild. Interaction measurement remains blocked because
 no reviewed actuation-proof records were created.
 
+The evidence-integrity closeout adds v3 operation evidence and projection
+contracts, v3 behavior materialization, v2 outcome materialization, and a v1
+classification-compatibility catalog. These are offline evidence changes only:
+the two migrated runtime seams, their values, and every other axis remain
+unchanged. Exact composite identities now prevent cross-axis or
+cross-connection operation substitution, and projection construction validates
+all fifteen immutable authority inputs before rebuilding aggregates.
+
 This matrix is the checkpoint-oriented companion to
 [`adaptive-runtime-policy-axis-roadmap.md`](adaptive-runtime-policy-axis-roadmap.md).
 The roadmap remains the approved direction and is not replaced by this file.

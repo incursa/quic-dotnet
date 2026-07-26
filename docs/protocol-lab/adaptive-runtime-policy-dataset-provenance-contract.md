@@ -219,3 +219,16 @@ projection is not the sole authority and does not delete invalid, negative,
 inactive, clamped, fallback, excluded, or diagnostic rows. Its metric
 observations are marked `correctness_only`; no performance dataset was created
 for the July 25 runtime-evidence checkpoint.
+
+The evidence-integrity closeout makes that authority chain mechanically
+complete. Projection v3 takes fifteen explicit immutable inputs: plan,
+validation, manifest, run, host, binary cohort, workload instance, requested
+and effective workload shapes, operation evidence, behavior and outcome
+materializations, metric observations, artifact inventory, and
+classifications. Every input is schema- and hash-validated; cross-document
+identities are joined; behavior and outcome materializations are recomputed
+from evidence and the exact catalog; and the supplied canonical bytes must
+match. The artifact inventory hashes the other fourteen inputs, while the
+projection carries the inventory's own immutable reference to avoid
+self-reference. This correctness proof creates no raw campaign, normalized,
+curated, split, analysis, threshold, or model artifact.

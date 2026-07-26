@@ -609,3 +609,27 @@ aggregates, proves deterministic canonical bytes and hashes, and checks 21
 expected-invalid closed codes. It supports only
 `application_send_batch_formation` and `buffer_copy_coalescing`; it is not a
 campaign runner and authorizes neither measurement nor active behavior.
+
+## Experiment evidence-integrity closeout
+
+The additive closeout contracts preserve every v1 and v2 document while making
+outcome derivation, release correlation, classification targets, aggregate
+accounting, and projection joins exact:
+
+```powershell
+pwsh -NoProfile -File eng/adaptive-runtime/Update-AdaptiveRuntimeExperimentEvidenceIntegrityCloseoutFixtures.ps1
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentEvidenceIntegrityCloseout.ps1
+```
+
+The regression validates six additive schemas, fifteen explicit immutable
+projection inputs, all nine catalog result-to-outcome mappings, nine invalid
+evidence documents, eight invalid classification documents, all 66 unordered
+classification pairs, and seven invalid projection substitutions. The general
+projection entry point is
+`New-AdaptiveRuntimeExperimentEvidenceProjectionV3.ps1`; it requires every
+input path explicitly, validates hashes and cross-document identities, and
+recomputes behavior and outcome materializations before accepting them.
+
+These scripts are offline correctness tooling. They do not read catalogs on a
+runtime path, launch a workload, migrate an axis, authorize measurement, or
+enable active policy behavior.

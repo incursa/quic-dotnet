@@ -4454,3 +4454,35 @@ research candidate with no safety, performance, active_internal, or
 production acceptance. The next independent Stage 5 preparation axis is
 `ack_behavior_profile`. Performance measurement, active behavior, CI work,
 push, and measurement-freeze release remain unauthorized.
+
+## 2026-07-25 experiment evidence-integrity closeout
+
+This entry records correctness tooling only. Starting from accepted hardening
+commit `e6830c909b11f337d53421ec5e5c24d749eda1bb`, a clean linked worktree added
+catalog-owned outcome resolution, authoritative release correlation, exact
+classification targets, a closed classification compatibility catalog,
+composite operation accounting, and complete fifteen-input projection
+validation. No runtime policy source or mechanism changed.
+
+The deterministic corpus contains 44 files: 18 under `valid`, 25 under
+`invalid`, and one closed expectation catalog. The closeout regression
+validated 6 schemas, 15 immutable inputs, 9 catalog mappings, 9 invalid
+evidence cases, 8 invalid classification cases, 66 pairwise classification
+cases, and 7 invalid projection substitutions. Rebuilt hashes were:
+
+- behavior materialization:
+  `6b740d2847204eed394a666fa2c3460723f725c06ea7f7af78cd700d38a6eaf2`;
+- outcome materialization:
+  `e1708e38e2281c80688f8e142f584e174a6295465a7077c7c25b4d6cd852b755`;
+- projection:
+  `fdd5f135e3b0f384b66d0fcb638090fa940759dcb05f374aa9d5126c7b87a16f`.
+
+Foundation, compiler/manifest, runtime-evidence, hardening, and closeout
+regressions passed. Focused `Incursa.Quic` and `Incursa.Quic.Tests` Release
+builds passed with zero warnings and errors, and requirement homes
+`REQ-QUIC-CRT-0214` through `0217` passed 4/4. Direct model-schema validation
+passed for the touched specification, architecture, work item, and
+verification artifacts. No BenchmarkDotNet, ProtocolLab, campaign, large
+matrix, transform, normalization, curation, split, threshold, or ML command
+ran. Measurement, `active_internal`, production behavior, CI changes, push,
+another-axis migration, and interaction execution remain unauthorized.
