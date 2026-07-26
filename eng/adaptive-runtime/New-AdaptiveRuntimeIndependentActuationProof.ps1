@@ -8,6 +8,7 @@ param(
     [Parameter(Mandatory = $true)][string] $ValidationPath,
     [Parameter(Mandatory = $true)][string] $ManifestPath,
     [Parameter(Mandatory = $true)][string] $OutputRoot,
+    [string] $CandidateGenerationId,
     [string] $RepositoryRoot =
         (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path,
     [switch] $PassThru
@@ -20,6 +21,11 @@ Import-Module (Join-Path $PSScriptRoot `
     'AdaptiveRuntimeExperimentControl.Common.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot `
     'AdaptiveRuntimeExperimentEvidence.Common.psm1') -Force
+
+if (-not [string]::IsNullOrWhiteSpace($CandidateGenerationId) -and
+    $CandidateGenerationId -notmatch '^[a-z0-9][a-z0-9._-]*$') {
+    throw 'CandidateGenerationId must be a stable lower-case identifier.'
+}
 
 function Copy-JsonObject {
     param([Parameter(Mandatory = $true)][object] $Value)
@@ -691,10 +697,22 @@ else {
 }
 $proof = [pscustomobject][ordered]@{
     schema_version = 'adaptive-runtime-actuation-proof-evidence-v1'
-    document_id = "proof_candidate.$axisId.$policyValue"
+    document_id = if (
+        [string]::IsNullOrWhiteSpace($CandidateGenerationId)) {
+        "proof_candidate.$axisId.$policyValue"
+    }
+    else {
+        "proof_candidate.$axisId.$policyValue.$CandidateGenerationId"
+    }
     document_version = 1
     content_sha256 = '0' * 64
-    proof_candidate_id = "proof_candidate.$axisId.$policyValue.v1"
+    proof_candidate_id = if (
+        [string]::IsNullOrWhiteSpace($CandidateGenerationId)) {
+        "proof_candidate.$axisId.$policyValue.v1"
+    }
+    else {
+        "proof_candidate.$axisId.$policyValue.v1.$CandidateGenerationId"
+    }
     axis_id = $axisId
     policy_value = $policyValue
     activation_predicate_id = $activationPredicate
@@ -746,6 +764,13 @@ $summary = [pscustomobject][ordered]@{
     axis_id = $axisId
     policy_value = $policyValue
     proof_candidate_id = $proof.proof_candidate_id
+    candidate_generation_id = if (
+        [string]::IsNullOrWhiteSpace($CandidateGenerationId)) {
+        $null
+    }
+    else {
+        $CandidateGenerationId
+    }
     review_status = 'candidate'
     source_commit = $manifest.source_commit
     binary_sha256 = $manifestBinary.content_sha256

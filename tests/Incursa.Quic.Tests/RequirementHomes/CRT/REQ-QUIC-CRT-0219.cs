@@ -13,6 +13,8 @@ public sealed class REQ_QUIC_CRT_0219
 {
     private const string CaptureRootVariable =
         "INCURSA_ADAPTIVE_RUNTIME_ACTUATION_CAPTURE_ROOT";
+    private const string CaptureGenerationVariable =
+        "INCURSA_ADAPTIVE_RUNTIME_ACTUATION_CAPTURE_GENERATION";
 
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -150,11 +152,14 @@ public sealed class REQ_QUIC_CRT_0219
         Assert.Equal(4, rollback.GetProperty("applied_work_count").GetInt32());
 
         return NewRawCapture(
-            "mechanism_capture.batch.single_eligible",
+            WithCaptureGeneration(
+                "mechanism_capture.batch.single_eligible"),
             "application_send_batch_formation",
             "single_eligible",
-            "run.batch.single_eligible.candidate",
-            "binary.independent_actuation_proof",
+            WithCaptureGeneration(
+                "run.batch.single_eligible.candidate"),
+            WithCaptureGeneration(
+                "binary.independent_actuation_proof"),
             operations,
             []);
     }
@@ -255,11 +260,14 @@ public sealed class REQ_QUIC_CRT_0219
             shadowElement.GetProperty("applied_value").GetString());
 
         return NewRawCapture(
-            "mechanism_capture.buffer.memory_conservative",
+            WithCaptureGeneration(
+                "mechanism_capture.buffer.memory_conservative"),
             "buffer_copy_coalescing",
             "memory_conservative",
-            "run.buffer.memory_conservative.candidate",
-            "binary.independent_actuation_proof",
+            WithCaptureGeneration(
+                "run.buffer.memory_conservative.candidate"),
+            WithCaptureGeneration(
+                "binary.independent_actuation_proof"),
             operations,
             releases);
     }
@@ -589,6 +597,26 @@ public sealed class REQ_QUIC_CRT_0219
 
     private static JsonElement ToElement(object value)
         => JsonSerializer.SerializeToElement(value);
+
+    private static string WithCaptureGeneration(string value)
+    {
+        string? generation = Environment.GetEnvironmentVariable(
+            CaptureGenerationVariable);
+        if (string.IsNullOrWhiteSpace(generation))
+        {
+            return value;
+        }
+
+        if (generation.Any(static character =>
+                !(char.IsAsciiLetterOrDigit(character)
+                    || character is '_' or '-')))
+        {
+            throw new InvalidOperationException(
+                "The actuation capture generation must be a stable identifier.");
+        }
+
+        return $"{value}.{generation.ToLowerInvariant()}";
+    }
 
     private static string BatchValue(
         QuicApplicationSendBatchPolicyMode value)
