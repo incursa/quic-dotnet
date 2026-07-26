@@ -1,0 +1,72 @@
+{
+  "cases": [
+    {
+      "case_id": "activation-predicate-not-reached",
+      "expected_error": "actuation_proof_activation_not_reached"
+    },
+    {
+      "case_id": "candidate-selected-but-ineligible",
+      "expected_error": "actuation_proof_positive_operation_invalid"
+    },
+    {
+      "case_id": "wrong-mechanism-event",
+      "expected_error": "actuation_proof_wrong_mechanism_event"
+    },
+    {
+      "case_id": "missing-decision-correlation",
+      "expected_error": "missing_decision_correlation"
+    },
+    {
+      "case_id": "missing-operation-correlation",
+      "expected_error": "release_operation_identity_mismatch"
+    },
+    {
+      "case_id": "missing-buffer-release",
+      "expected_error": "missing_terminal_release_evidence"
+    },
+    {
+      "case_id": "duplicate-buffer-release",
+      "expected_error": "duplicate_owner_release"
+    },
+    {
+      "case_id": "stale-behavior-catalog",
+      "expected_error": "stale_behavior_catalog_version"
+    },
+    {
+      "case_id": "stale-manifest",
+      "expected_error": "actuation_proof_stale_manifest"
+    },
+    {
+      "case_id": "stale-binary",
+      "expected_error": "projection_binary_manifest_mismatch"
+    },
+    {
+      "case_id": "wrong-run",
+      "expected_error": "release_operation_identity_mismatch"
+    },
+    {
+      "case_id": "wrong-connection",
+      "expected_error": "release_operation_identity_mismatch"
+    },
+    {
+      "case_id": "inactive-claimed-as-positive",
+      "expected_error": "actuation_proof_positive_operation_invalid"
+    },
+    {
+      "case_id": "performance-metric-used-as-proof",
+      "expected_error": "actuation_proof_performance_metric_prohibited"
+    },
+    {
+      "case_id": "proof-marked-reviewed",
+      "expected_error": "actuation_proof_review_status_invalid"
+    },
+    {
+      "case_id": "proof-marked-passed",
+      "expected_error": "actuation_proof_review_outcome_invalid"
+    },
+    {
+      "case_id": "two-behavior-distinct-axes-forced",
+      "expected_error": "actuation_proof_multi_axis_forcing"
+    }
+  ]
+}

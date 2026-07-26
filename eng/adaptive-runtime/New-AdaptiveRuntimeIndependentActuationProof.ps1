@@ -264,6 +264,15 @@ Write-AdaptiveRuntimeCanonicalDocument $capture (
 
 $manifestBinary = @($manifest.binary_provenance |
     Sort-Object role, path | Select-Object -First 1)[0]
+Assert-Condition (
+    Test-Path -LiteralPath ([string]$manifestBinary.path)
+) 'actuation_proof_stale_binary'
+$actualBinaryHash = (
+    Get-FileHash -LiteralPath ([string]$manifestBinary.path) `
+        -Algorithm SHA256).Hash.ToLowerInvariant()
+Assert-Condition (
+    $actualBinaryHash -ceq [string]$manifestBinary.content_sha256
+) 'actuation_proof_stale_binary'
 $physicalHostId = if ($null -eq $manifest.host_fingerprint.physical_host_id) {
     $null
 }
