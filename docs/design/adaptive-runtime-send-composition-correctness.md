@@ -4,7 +4,7 @@ title: "Adaptive-runtime send-composition correctness execution"
 
 # Adaptive-runtime send-composition correctness execution
 
-Status: proposed correctness-only implementation decision.
+Status: implemented correctness-only architecture decision.
 
 This decision extends the accepted experiment-control chain only far enough to
 review the two existing actuation candidates and execute one approved,
@@ -38,8 +38,9 @@ remain retained.
 
 ## Correctness-only authorization
 
-Multi-axis forcing remains denied by default. A new versioned authorization
-document is the offline owner of permission for one exact cell. It binds:
+Multi-axis forcing remains denied by default. The strict compiled-manifest
+schema owns one optional correctness-authorization block for one exact cell.
+It binds:
 
 * `interaction_screen`;
 * the `send_composition` family;
@@ -86,8 +87,8 @@ not a claim of impossible same-operation dual actuation.
 ## Evidence and review
 
 The interaction bridge produces the existing fifteen immutable projection
-inputs, plus the authorization, interaction proof, and independent review
-result. Behavior and outcome materializations are catalog-derived and
+inputs, plus the manifest authorization, mechanism capture, interaction proof,
+and independent review result. Behavior and outcome materializations are catalog-derived and
 recomputed before projection. Composite operation identity remains:
 
 ```text
@@ -120,3 +121,14 @@ This decision does not authorize:
 
 The strongest permitted readiness result is
 `correctness_ready_measurement_still_frozen`.
+
+## Implemented result
+
+The exact reviewed cell produced 11 composite-keyed operation records and four
+buffer-owner terminal releases. The independent reviewer recomputed 11
+behavior aggregates, five outcome aggregates, and projection
+`3b0a5a855a530773085036b8a24e24679e233f2ab952f77d480f6d38caafd4a9`.
+Its review document hash is
+`53adef1ddafbc28cd5c87e2795f69973c42b91f33e5a0b4344bb8ce1461458e6`.
+The proof is correctness-passed only; these hashes do not authorize
+measurement or production behavior.

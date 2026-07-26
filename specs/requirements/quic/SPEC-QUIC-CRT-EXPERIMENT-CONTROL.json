@@ -686,7 +686,7 @@
         "implemented_by": ["WI-QUIC-CRT-0108"],
         "verified_by": ["VER-QUIC-CRT-0109"],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0223.cs"
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionCorrectness.ps1"
         ],
         "upstream_refs": [
           "schemas/adaptive-runtime-actuation-proof-review-v1.schema.json",
@@ -708,12 +708,15 @@
         "implemented_by": ["WI-QUIC-CRT-0108"],
         "verified_by": ["VER-QUIC-CRT-0109"],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0224.cs"
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionCorrectness.ps1",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0225.cs"
         ],
         "upstream_refs": [
-          "schemas/adaptive-runtime-correctness-interaction-authorization-v1.schema.json",
-          "eng/adaptive-runtime/Authorize-AdaptiveRuntimeCorrectnessInteraction.ps1",
-          "src/Incursa.Quic/QuicAdaptiveRuntimeCorrectnessInteraction.cs"
+          "schemas/adaptive-runtime-experiment-plan-v1.schema.json",
+          "schemas/adaptive-runtime-compiled-execution-manifest-v1.schema.json",
+          "eng/adaptive-runtime/Compile-AdaptiveRuntimeExperimentPlan.ps1",
+          "eng/adaptive-runtime/New-AdaptiveRuntimeCompiledExecutionManifest.ps1",
+          "src/Incursa.Quic/QuicAdaptiveRuntimeCorrectnessInteractionAuthorization.cs"
         ]
       },
       "notes": [
@@ -752,11 +755,11 @@
         "implemented_by": ["WI-QUIC-CRT-0108"],
         "verified_by": ["VER-QUIC-CRT-0109"],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0226.cs"
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionCorrectness.ps1"
         ],
         "upstream_refs": [
-          "schemas/adaptive-runtime-interaction-proof-evidence-v1.schema.json",
-          "eng/adaptive-runtime/New-AdaptiveRuntimeSendCompositionInteractionProof.ps1",
+          "schemas/adaptive-runtime-send-composition-interaction-proof-v1.schema.json",
+          "eng/adaptive-runtime/New-AdaptiveRuntimeSendCompositionEvidence.ps1",
           "eng/adaptive-runtime/New-AdaptiveRuntimeExperimentEvidenceProjectionV3.ps1"
         ]
       },
@@ -774,10 +777,10 @@
         "implemented_by": ["WI-QUIC-CRT-0108"],
         "verified_by": ["VER-QUIC-CRT-0109"],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0227.cs"
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionCorrectness.ps1"
         ],
         "upstream_refs": [
-          "schemas/adaptive-runtime-interaction-review-v1.schema.json",
+          "schemas/adaptive-runtime-send-composition-interaction-review-v1.schema.json",
           "eng/adaptive-runtime/Review-AdaptiveRuntimeSendCompositionInteraction.ps1",
           "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionCorrectness.ps1"
         ]
@@ -796,7 +799,7 @@
         "implemented_by": ["WI-QUIC-CRT-0108"],
         "verified_by": ["VER-QUIC-CRT-0109"],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0228.cs"
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionCorrectness.ps1"
         ],
         "upstream_refs": [
           "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionCorrectness.ps1",

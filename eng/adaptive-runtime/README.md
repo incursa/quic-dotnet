@@ -634,27 +634,30 @@ These scripts are offline correctness tooling. They do not read catalogs on a
 runtime path, launch a workload, migrate an axis, authorize measurement, or
 enable active policy behavior.
 
-## Independent actuation-proof candidates
+## Reviewed send-composition correctness
 
-The two first send-composition values have independent, correctness-only proof
-candidates under
-`tests/fixtures/adaptive-runtime-independent-actuation-proof/`.
-The focused harness emits existing batch and buffer operation evidence plus
-buffer owner-release observations. The offline bridge assembles the fifteen
-immutable projection inputs, recomputes both materializations, rebuilds
-projection v3 twice, and emits candidate-only proof evidence:
+The original single-axis candidates remain preserved under
+`tests/fixtures/adaptive-runtime-independent-actuation-proof/`. Fresh
+production-selector captures and independent passed reviews for the exact
+`single_eligible` and `memory_conservative` values are retained under
+`tests/fixtures/adaptive-runtime-send-composition-correctness/single-axis/`.
+The canonical family catalog references only those passed review records.
+
+The exact manifest-bound correctness interaction, its 15 immutable inputs,
+catalog-derived materializations, projection, proof, and independent review
+live under
+`tests/fixtures/adaptive-runtime-send-composition-correctness/interaction/`.
+Validate the complete milestone with:
 
 ```powershell
 pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeIndependentActuationProof.ps1
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionCorrectness.ps1
 ```
 
-The regression validates 36 content-hashed documents, two candidate proofs,
-10 captured operations, five exact buffer releases, and 17 expected-negative
-cases. Each capture forces at most one behavior-distinct axis. No interaction
-cell or performance workload is executed.
-
-The optional
-`docs/testing/adaptive-runtime-independent-actuation-proof-promotion.json-patch`
-is external-review guidance only. It has not been applied. The canonical
-family catalog has no reviewed proof records, measurement remains frozen, and
-active behavior remains unauthorized.
+The interaction regression validates ten primary content-hashed documents,
+11 composite-keyed operations, four exact terminal releases, 11 behavior
+aggregates, five outcome aggregates, the deterministic 15-input projection,
+the passed independent interaction review, and 28 adversarial cases. The
+runtime capability is internal, fixed-field, exact-cell-only, and denied by
+default. It is not reachable through public production configuration.
+Measurement and active behavior remain unauthorized.

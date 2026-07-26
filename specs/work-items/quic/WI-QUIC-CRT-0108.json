@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "WI-QUIC-CRT-0108",
   "artifact_type": "work_item",
-  "status": "in_progress",
+  "status": "complete",
   "title": "Complete send-composition correctness execution",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -22,7 +22,7 @@
     "REQ-QUIC-CRT-0227",
     "REQ-QUIC-CRT-0228"
   ],
-  "planned_changes": "Reproduce candidate binary and prefilled-mechanism defects; regenerate both one-axis candidates from production selectors and a current exact binary; add independent passed review records; update only the two canonical reviewed-proof entries; add a versioned correctness authorization and compatible constraint; extend the compiler and manifest with exact correctness purpose and cell identity; add compact internal runtime authorization; execute the approved cell through existing batch, buffer, owner, and release seams; assemble materializations and projection; independently review them; add adversarial cases; and synchronize documentation, traceability, and the final package.",
+  "planned_changes": "Reproduce candidate binary and prefilled-mechanism defects; regenerate both one-axis candidates from production selectors and a current exact binary; add independent passed review records; update only the two canonical reviewed-proof entries; add a strict compiled-manifest correctness authorization block and compatible constraint; extend the compiler and manifest with exact correctness purpose and cell identity; add compact internal runtime authorization; execute the approved cell through existing batch, buffer, owner, and release seams; assemble materializations and projection; independently review them; add adversarial cases; and synchronize documentation, traceability, and the final package.",
   "verification_plan": "Run the foundation, compiler and manifest, runtime-evidence, hardening, evidence-integrity, independent-proof, multi-axis authorization, interaction execution, interaction review, and adversarial regressions; build Incursa.Quic and Incursa.Quic.Tests in Release; run focused batch, buffer, ownership, release, and new requirement-home tests; rebuild candidates and interaction evidence twice; compare canonical bytes and hashes; validate touched SpecTrace artifacts directly; preserve the unrelated repository-wide baseline; and run git diff --check.",
   "out_of_scope": [
     "Performance measurement or measurement release",

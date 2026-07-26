@@ -108,7 +108,7 @@ This ledger tracks open questions, ambiguities, and follow-up decisions for QUIC
   an interaction cell, expand multi-axis runtime capability, self-issue a
   passed proof, release measurement, or authorize active behavior.
 
-- `adaptive-runtime-send-composition-correctness` is allocated by
+- `adaptive-runtime-send-composition-correctness` is closed by
   `REQ-QUIC-CRT-0223` through `REQ-QUIC-CRT-0228`,
   `ARC-QUIC-CRT-0107`, `WI-QUIC-CRT-0108`, and
   `VER-QUIC-CRT-0109`. It independently reviews and, when exact evidence
@@ -117,7 +117,8 @@ This ledger tracks open questions, ambiguities, and follow-up decisions for QUIC
   correctness-only `send_composition` cell through compact internal
   fixed-field authorization; executes production batch, buffer, owner, and
   release seams; rebuilds the immutable evidence chain; and independently
-  reviews the result. The slice does not release measurement, create a
+  reviews the result. The exact reviewed interaction proof passed while
+  measurement remains frozen. The slice does not create a
   general production multi-axis controller, migrate another axis, authorize
   `active_internal`, modify CI, or push.
 

@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0109",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "Send-composition correctness verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -44,13 +44,8 @@
     "docs/design/adaptive-runtime-send-composition-correctness.md",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionCorrectness.ps1",
     "tests/fixtures/adaptive-runtime-send-composition-correctness",
-    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0223.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0224.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0225.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0226.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0227.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0228.cs",
     "docs/testing/adaptive-runtime-send-composition-correctness-review-package-2026-07-26.md"
   ],
-  "status_summary": "Planned from 977ea635. Verification remains incomplete until the regenerated single-axis proofs, exact interaction authorization, real-seam evidence, independent review, adversarial audit, full regression, clean worktree, and archive are produced."
+  "status_summary": "Passed for correctness only. Both exact single-axis proofs were independently reviewed, the exact deny-by-default interaction cell executed through production selectors and evidence seams, 11 operations and four releases reconciled, materializations and the 15-input projection recomputed, the independent interaction review passed, and adversarial rejection remained clean. Measurement and production activation remain unauthorized."
 }
