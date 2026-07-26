@@ -97,7 +97,7 @@ $activationPassed =
         $_.cell_id -eq 'C' -and
         -not $_.buffer_activation_observed
     }).Count -eq 0
-$passed = $validation.raw_evidence_count -eq $rows.Count -and
+$passed = $validation.raw_evidence_count -eq $rawPaths.Count -and
     @($groups | Where-Object correctness_passed -EQ $false).Count -eq 0 -and
     $activationPassed -and
     $maximumCv -le [double]$campaign.early_termination.

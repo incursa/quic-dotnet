@@ -262,6 +262,23 @@ function Get-ContextLabels([string] $Split) {
         Where-Object { $_.split -ceq $Split } |
         Group-Object workload_id)
     foreach ($context in $contexts) {
+        $contextRows = @($rows |
+            Where-Object {
+                $_.split -ceq $Split -and
+                $_.workload_id -ceq [string]$context.Name
+            })
+        $eligibleCellIds = @($contextRows |
+            Where-Object {
+                $_.classification -in @(
+                    'performance_eligible',
+                    'expected_equivalent')
+            } |
+            ForEach-Object cell_id |
+            Sort-Object -Unique)
+        if ((ConvertTo-Json $eligibleCellIds -Compress) -cne
+            '["A","B","C","D"]') {
+            continue
+        }
         $byCell = @{}
         foreach ($result in @($context.Group |
             Where-Object { $_.cell_id -in @('A', 'B', 'C') })) {
