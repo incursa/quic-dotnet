@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0109",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Send-composition correctness verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0107",
+    "WI-QUIC-CRT-0108"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0223",
+    "REQ-QUIC-CRT-0224",
+    "REQ-QUIC-CRT-0225",
+    "REQ-QUIC-CRT-0226",
+    "REQ-QUIC-CRT-0227",
+    "REQ-QUIC-CRT-0228"
+  ],
+  "scope": "Verify independent promotion of the two exact actuation proofs and the one approved deny-by-default correctness-only send-composition interaction without performance work, general multi-axis production capability, another-axis migration, activation, CI change, or push.",
+  "verification_method": "Independent canonical hash and reference recomputation; exact source and binary identity; production-selector and evidence-seam mechanism capture; reviewed proof and authorization validation; compact runtime snapshot matching; complete composite operation and release joins; catalog-derived behavior and outcome materialization; fifteen-input projection rebuilding; independent interaction review; adversarial expected-invalid fixtures; retained regressions; focused Release builds and tests; direct SpecTrace validation; and diff and archive checks.",
+  "preconditions": [
+    "The source checkpoint is 977ea6351df047288cd3acf06f86374b18cf08e0 and contains c7076b19, e6830c90, and b5654591 in its ancestry.",
+    "The dirty primary and every prior linked worktree remain untouched.",
+    "Only the send_composition family and its two migrated axes are in scope.",
+    "Active behavior, performance acceptance, measurement, CI, and push remain unauthorized."
+  ],
+  "procedure": [
+    "Rebuild and independently validate both original candidate authority chains without trusting their claims.",
+    "Reproduce and correct any stale binary or prefilled mechanism evidence defect, then regenerate current candidates from production selectors.",
+    "Emit independent passed review records and update only the exact two canonical family proof entries.",
+    "Compile the exact correctness_only interaction plan and post-build manifest using reviewed proofs and a permitted constraint.",
+    "Prove the runtime rejects all multi-axis configuration except the exact manifest-bound internal cell.",
+    "Run the bounded interaction harness through batch selection, buffer policy, operation evidence, owner token, and release seams.",
+    "Assemble behavior and outcome materializations, classifications, all fifteen immutable inputs, projection, and interaction proof.",
+    "Independently recompute and review the interaction proof.",
+    "Run adversarial authorization, identity, release, materialization, projection, performance-metric, and rollback cases.",
+    "Run all prior regressions, focused builds and mechanism tests, direct SpecTrace validation, git diff --check, and exact Git archive hashing."
+  ],
+  "expected_result": "Both exact one-axis proofs are independently passed and canonically referenced; only the exact reviewed correctness-only two-axis cell executes; all required interaction, fallback, shadow, rollback, ownership, release, materialization, projection, review, and adversarial proofs pass; and measurement and production activation remain unauthorized.",
+  "evidence": [
+    "docs/design/adaptive-runtime-send-composition-correctness.md",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionCorrectness.ps1",
+    "tests/fixtures/adaptive-runtime-send-composition-correctness",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0223.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0224.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0225.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0226.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0227.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0228.cs",
+    "docs/testing/adaptive-runtime-send-composition-correctness-review-package-2026-07-26.md"
+  ],
+  "status_summary": "Planned from 977ea635. Verification remains incomplete until the regenerated single-axis proofs, exact interaction authorization, real-seam evidence, independent review, adversarial audit, full regression, clean worktree, and archive are produced."
+}

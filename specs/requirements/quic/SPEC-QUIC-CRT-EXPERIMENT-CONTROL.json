@@ -29,7 +29,13 @@
     "VER-QUIC-CRT-0100",
     "ARC-QUIC-CRT-0101",
     "WI-QUIC-CRT-0102",
-    "VER-QUIC-CRT-0103"
+    "VER-QUIC-CRT-0103",
+    "ARC-QUIC-CRT-0104",
+    "WI-QUIC-CRT-0105",
+    "VER-QUIC-CRT-0106",
+    "ARC-QUIC-CRT-0107",
+    "WI-QUIC-CRT-0108",
+    "VER-QUIC-CRT-0109"
   ],
   "purpose": "Define the planning-time architecture, schemas, canonical catalogs, compatibility boundary, fixtures, and deterministic validation needed before an adaptive-runtime experiment plan compiler may be implemented.",
   "scope": "This checkpoint governs experiment-control documents only. It does not compile plans, generate execution manifests, change runtime instrumentation or operation correlation, materialize effective behavior, project analytical data, execute performance measurement, authorize active_internal, or activate production behavior.",
@@ -669,6 +675,137 @@
       "notes": [
         "All proof candidates remain external-review pending.",
         "Measurement and active behavior remain unauthorized."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0223",
+      "title": "Independently review and promote the two approved actuation proofs",
+      "statement": "The send-composition correctness milestone MUST independently rebuild and validate the exact immutable plan, validation, manifest, run, host, binary, workload, mechanism evidence, behavior materialization, outcome materialization, metric, artifact, classification, and projection inputs for application_send_batch_formation=single_eligible and buffer_copy_coalescing=memory_conservative; derive every review assertion from content rather than candidate claims or fixture names; reject stale or unverifiable source and binary identity; preserve the original candidate artifacts; emit a separate content-hashed review result; and add reviewed passed metadata only for an exact axis/value proof whose activation, safety fallback, shadow neutrality, rollback, ownership, release, catalog derivation, and frozen-boundary assertions all pass.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0107"],
+        "implemented_by": ["WI-QUIC-CRT-0108"],
+        "verified_by": ["VER-QUIC-CRT-0109"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0223.cs"
+        ],
+        "upstream_refs": [
+          "schemas/adaptive-runtime-actuation-proof-review-v1.schema.json",
+          "eng/adaptive-runtime/Review-AdaptiveRuntimeActuationProof.ps1",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-experiment-family-catalog-v2.json"
+        ]
+      },
+      "notes": [
+        "Candidate records remain immutable and are not rewritten as passed records.",
+        "Promotion is limited to the two exact behavior-distinct send-composition values."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0224",
+      "title": "Authorize only the reviewed correctness-only send-composition cell",
+      "statement": "The experiment-control compiler, compiled manifest, and internal runtime configuration MUST deny multi-axis behavior-distinct forcing by default; permit exactly application_send_batch_formation=single_eligible plus buffer_copy_coalescing=memory_conservative only when an interaction_screen plan references the reviewed send_composition family, both exact passed proof records, current contract, catalog, relationship, and constraint versions, a correctness_only execution purpose, false active and performance authorization, every outside axis fixed to legacy_current, a capability-permitted exact cell, and a runtime snapshot equal to that manifest cell; and reject candidate, missing, stale, wrong-value, wrong-family, unsupported, third-axis, production, performance, and manifest-mismatch authorization before mechanism execution.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0107"],
+        "implemented_by": ["WI-QUIC-CRT-0108"],
+        "verified_by": ["VER-QUIC-CRT-0109"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0224.cs"
+        ],
+        "upstream_refs": [
+          "schemas/adaptive-runtime-correctness-interaction-authorization-v1.schema.json",
+          "eng/adaptive-runtime/Authorize-AdaptiveRuntimeCorrectnessInteraction.ps1",
+          "src/Incursa.Quic/QuicAdaptiveRuntimeCorrectnessInteraction.cs"
+        ]
+      },
+      "notes": [
+        "The capability is internal, typed, fixed-field, and unavailable through ordinary production configuration.",
+        "No general production adaptive controller or runtime catalog lookup is introduced."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0225",
+      "title": "Execute the approved two-axis interaction through production mechanism seams",
+      "statement": "A bounded deterministic correctness harness MUST execute the approved exact two-axis manifest cell through the production batch-selection, buffer-coalescing, operation-evidence, owner-token, and terminal-release seams; retain independently attributable both-distinct-across-the-cell, batch-distinct-buffer-inactive, batch-inactive-buffer-distinct, both-inactive, authoritative fallback, shadow-neutrality, and rollback cases; preserve legal prefix order and lower-only authority; account for every operation with complete composite identity; and require every rented combined owner to have exactly one non-preceding terminal release without collecting or comparing performance measurements.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0107"],
+        "implemented_by": ["WI-QUIC-CRT-0108"],
+        "verified_by": ["VER-QUIC-CRT-0109"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0225.cs"
+        ],
+        "upstream_refs": [
+          "src/Incursa.Quic/QuicApplicationSendBatchPolicy.cs",
+          "src/Incursa.Quic/QuicBufferCopyObservation.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0225.cs"
+        ]
+      },
+      "notes": [
+        "Because single_eligible supplies one selected write, same-operation buffer distinctness is structurally impossible when that batch value actuates; the both-distinct cell proof therefore requires separate attributable opportunities in the same authorized cell.",
+        "Workload labels and host identity remain offline evidence context and never controller inputs."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0226",
+      "title": "Materialize and project the complete interaction evidence chain",
+      "statement": "The interaction evidence bridge MUST consume bounded runtime-derived mechanism capture for the exact authorized cell; preserve plan, validation, manifest, runtime snapshot, proof prerequisites, run, host, binary, workload, decision, operation, release, epoch, catalog, and classification identities; deterministically derive behavior and outcome materializations from their canonical catalogs; recompute exact aggregates and all immutable joins; emit the complete fifteen-input analytical projection plus interaction-proof evidence; support multiple effective behaviors in one epoch; reject missing, duplicate, stale, contradictory, substituted, or performance-derived evidence; and reproduce canonical bytes and hashes for deterministic inputs except explicitly identified host or build identities.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0107"],
+        "implemented_by": ["WI-QUIC-CRT-0108"],
+        "verified_by": ["VER-QUIC-CRT-0109"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0226.cs"
+        ],
+        "upstream_refs": [
+          "schemas/adaptive-runtime-interaction-proof-evidence-v1.schema.json",
+          "eng/adaptive-runtime/New-AdaptiveRuntimeSendCompositionInteractionProof.ps1",
+          "eng/adaptive-runtime/New-AdaptiveRuntimeExperimentEvidenceProjectionV3.ps1"
+        ]
+      },
+      "notes": [
+        "The immutable file chain remains authoritative and no mutable database is introduced.",
+        "Correctness counts, bytes, identities, and outcomes are evidence, not performance conclusions."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0227",
+      "title": "Independently review and adversarially audit interaction proof",
+      "statement": "A separate interaction reviewer MUST ignore the proof document's claimed result and independently recompute plan and manifest authorization, reviewed proof prerequisites, runtime cell equality, candidate and applied values, activation predicates, mechanism events, behavior and outcome materializations, composite operation accounting, classification compatibility, owner release identity, rollback, immutable input joins, projection bytes, and hashes; issue passed only when every required condition is derived; and deterministically reject unreviewed or wrong proofs, stale catalogs, contracts, manifests, runtime mismatches, outside or third axes, unsupported combinations, active or performance authorization, identity and release forgeries, aggregate mismatches, projection substitutions, performance metrics, and stale rollback state.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0107"],
+        "implemented_by": ["WI-QUIC-CRT-0108"],
+        "verified_by": ["VER-QUIC-CRT-0109"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0227.cs"
+        ],
+        "upstream_refs": [
+          "schemas/adaptive-runtime-interaction-review-v1.schema.json",
+          "eng/adaptive-runtime/Review-AdaptiveRuntimeSendCompositionInteraction.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionCorrectness.ps1"
+        ]
+      },
+      "notes": [
+        "Review warnings and errors are content-derived and use closed codes.",
+        "An internally correctable failure is fixed and the evidence is regenerated before closeout."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0228",
+      "title": "Close the correctness milestone without releasing measurement",
+      "statement": "The final send-composition correctness branch MUST preserve existing v1, v2, and v3 regressions; pass foundation, compiler, manifest, runtime-evidence, hardening, evidence-integrity, independent-proof, multi-axis authorization, interaction execution, interaction review, mechanism, ownership, focused Release build, direct SpecTrace, and diff checks; retain unrelated repository-wide SpecTrace failures; produce a content-complete review package and exact committed Git archive with SHA-256; leave the worktree clean; and stop without performance measurement, another-axis migration, production activation, active_internal, CI modification, or push.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0107"],
+        "implemented_by": ["WI-QUIC-CRT-0108"],
+        "verified_by": ["VER-QUIC-CRT-0109"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0228.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionCorrectness.ps1",
+          "docs/testing/adaptive-runtime-send-composition-correctness-review-package-2026-07-26.md"
+        ]
+      },
+      "notes": [
+        "The only permitted readiness assessment is correctness_ready_measurement_still_frozen, not a measurement release.",
+        "No performance conclusion follows from this milestone."
       ]
     }
   ]

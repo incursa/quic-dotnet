@@ -1,0 +1,66 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0107",
+  "artifact_type": "architecture",
+  "status": "proposed",
+  "title": "Adaptive-runtime send-composition correctness execution",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0223 through REQ-QUIC-CRT-0228 by independently reviewing the two approved actuation candidates, promoting only exact passed proofs, authorizing one deny-by-default correctness-only two-axis cell, executing it through existing batch and buffer mechanism seams, rebuilding the immutable evidence chain, and independently reviewing the result.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0104",
+    "WI-QUIC-CRT-0108",
+    "VER-QUIC-CRT-0109"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0223",
+    "REQ-QUIC-CRT-0224",
+    "REQ-QUIC-CRT-0225",
+    "REQ-QUIC-CRT-0226",
+    "REQ-QUIC-CRT-0227",
+    "REQ-QUIC-CRT-0228"
+  ],
+  "key_components": [
+    "docs/design/adaptive-runtime-send-composition-correctness.md",
+    "schemas/adaptive-runtime-actuation-proof-review-v1.schema.json",
+    "schemas/adaptive-runtime-correctness-interaction-authorization-v1.schema.json",
+    "schemas/adaptive-runtime-interaction-proof-evidence-v1.schema.json",
+    "schemas/adaptive-runtime-interaction-review-v1.schema.json",
+    "eng/adaptive-runtime/Review-AdaptiveRuntimeActuationProof.ps1",
+    "eng/adaptive-runtime/Authorize-AdaptiveRuntimeCorrectnessInteraction.ps1",
+    "eng/adaptive-runtime/New-AdaptiveRuntimeSendCompositionInteractionProof.ps1",
+    "eng/adaptive-runtime/Review-AdaptiveRuntimeSendCompositionInteraction.ps1",
+    "src/Incursa.Quic/QuicAdaptiveRuntimeCorrectnessInteraction.cs",
+    "tests/fixtures/adaptive-runtime-send-composition-correctness"
+  ],
+  "design_summary": "Original candidate bundles stay immutable. An additive review-result contract records independently recomputed content and promotes only the two exact axis/value pairs into the v2 family catalog. A versioned authorization document binds a correctness_only interaction plan, validation, compiled manifest, exact reviewed proof hashes, catalog and constraint versions, and one two-axis cell. Runtime plumbing receives only a compact immutable fixed-field snapshot, rejects ordinary or mismatched configuration, and retains the existing one-axis path. A bounded focused harness invokes the production batch selector, buffer policy, runtime evidence sink, owner token, and release seam. Offline tooling materializes and projects the resulting immutable evidence, then a separate reviewer recomputes all authority and evidence before issuing its result.",
+  "data_and_state_considerations": "The runtime does not load JSON catalogs or proof documents. The compact authorization snapshot is internal and correctness-only; it contains exact fixed enum values and content identities, with both active and performance authorization false. Evidence remains bounded and composite-keyed. Candidate, review, authorization, proof, and review-result documents are immutable canonical JSON. The fifteen projection inputs remain the analytical authority chain, supplemented by exact authorization and review references.",
+  "edge_cases_and_constraints": [
+    "The historical candidate binary path may be overwritten, so promotion requires a freshly generated proof whose exact committed source and binary identity are verifiable.",
+    "The batch proof must derive selected count from the production selector rather than prefill an expected result.",
+    "The buffer proof must use the production policy decision's applied source count rather than a caller-provided expected count.",
+    "A single_eligible batch actuation supplies one selected write, so buffer distinctness cannot occur on that same operation; both axes may nevertheless actuate on separate attributable opportunities in one exact authorized cell.",
+    "Candidate, missing, stale, wrong-value, or revoked proof metadata denies authorization.",
+    "Any third behavior-distinct axis, outside-family axis, active authorization, performance authorization, or manifest mismatch denies before mechanism execution.",
+    "Every rented combined owner requires exactly one terminal release with complete composite identity.",
+    "Shadow recommendations never affect the applied mechanism, and rollback clears both fixed-field forced values."
+  ],
+  "alternatives_considered": [
+    "Mutate candidate documents in place to passed. Rejected because it destroys the original review input.",
+    "Load family and proof catalogs on the runtime hot path. Rejected because catalog authority belongs to offline tooling.",
+    "Remove the one-axis guard generally. Rejected because only one exact reviewed correctness cell is authorized.",
+    "Change batch or buffer mechanisms to force same-operation dual actuation. Rejected because mechanism semantics and lower-only safety authority must remain unchanged.",
+    "Use expected fixture values as operation truth. Rejected because mechanism evidence must originate from production selectors and evidence seams."
+  ],
+  "risks": [
+    "The correctness harness proves mechanism semantics, not network performance or measurement readiness.",
+    "The both-distinct result is cell-level across separate operations because the established supplies-work relationship makes same-operation dual actuation structurally impossible.",
+    "Additive plan and manifest authorization fields must preserve all retained v1 fixtures and regressions.",
+    "Repository-wide SpecTrace validation retains unrelated pre-existing failures."
+  ],
+  "open_questions": [
+    "After this correctness milestone, which external review gate will govern any future measurement release?",
+    "Will later interaction families require a generalized signed authorization carrier, or is the fixed internal correctness token sufficient for their separately reviewed slices?"
+  ]
+}

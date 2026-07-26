@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0108",
+  "artifact_type": "work_item",
+  "status": "in_progress",
+  "title": "Complete send-composition correctness execution",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Implement REQ-QUIC-CRT-0223 through REQ-QUIC-CRT-0228 as independent proof review and promotion, exact correctness authorization, fixed-field runtime plumbing, a production-seam interaction harness, immutable evidence assembly, independent review, adversarial rejection, and a merge-ready closeout package.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0107",
+    "VER-QUIC-CRT-0109"
+  ],
+  "design_links": ["ARC-QUIC-CRT-0107"],
+  "verification_links": ["VER-QUIC-CRT-0109"],
+  "addresses": [
+    "REQ-QUIC-CRT-0223",
+    "REQ-QUIC-CRT-0224",
+    "REQ-QUIC-CRT-0225",
+    "REQ-QUIC-CRT-0226",
+    "REQ-QUIC-CRT-0227",
+    "REQ-QUIC-CRT-0228"
+  ],
+  "planned_changes": "Reproduce candidate binary and prefilled-mechanism defects; regenerate both one-axis candidates from production selectors and a current exact binary; add independent passed review records; update only the two canonical reviewed-proof entries; add a versioned correctness authorization and compatible constraint; extend the compiler and manifest with exact correctness purpose and cell identity; add compact internal runtime authorization; execute the approved cell through existing batch, buffer, owner, and release seams; assemble materializations and projection; independently review them; add adversarial cases; and synchronize documentation, traceability, and the final package.",
+  "verification_plan": "Run the foundation, compiler and manifest, runtime-evidence, hardening, evidence-integrity, independent-proof, multi-axis authorization, interaction execution, interaction review, and adversarial regressions; build Incursa.Quic and Incursa.Quic.Tests in Release; run focused batch, buffer, ownership, release, and new requirement-home tests; rebuild candidates and interaction evidence twice; compare canonical bytes and hashes; validate touched SpecTrace artifacts directly; preserve the unrelated repository-wide baseline; and run git diff --check.",
+  "out_of_scope": [
+    "Performance measurement or measurement release",
+    "ProtocolLab campaigns, large matrices, transforms, thresholds, statistics, or ML",
+    "Another axis or family migration",
+    "General production adaptive selection or active_internal",
+    "Stage 5, ACK, crypto, HTTP/3, QPACK, or unrelated protocol work",
+    "CI changes or push"
+  ]
+}
