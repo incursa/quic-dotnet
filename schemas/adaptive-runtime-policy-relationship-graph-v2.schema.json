@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-policy-relationship-graph-v2.schema.json",
+  "title": "Adaptive Runtime Policy Relationship Graph v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "document_id", "document_version", "content_sha256", "trace_references", "active_behavior_authorization", "performance_acceptance_authorization", "directed_edges", "nominated_hyperedges"],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-policy-relationship-graph-v2" },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 2 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "trace_references": { "$ref": "#/$defs/trace" },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "directed_edges": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/edge" } },
+    "nominated_hyperedges": { "type": "array", "items": { "$ref": "#/$defs/hyperedge" } }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "axis": { "enum": ["application_send_batch_formation", "buffer_copy_coalescing", "application_send_turn_planning"] },
+    "relationshipType": { "enum": ["authority_overlap", "structural_constraint", "supplies_work", "changes_observed_state", "feedback_loop", "shared_outcome_only", "context_effect"] },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_ids", "architecture_ids", "work_item_ids", "verification_ids"],
+      "properties": {
+        "requirement_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^REQ-QUIC-CRT-[0-9]{4}$" } },
+        "architecture_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^ARC-QUIC-CRT-[0-9]{4}$" } },
+        "work_item_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^WI-QUIC-CRT-[0-9]{4}$" } },
+        "verification_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^VER-QUIC-CRT-[0-9]{4}$" } }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["edge_id", "source_axis_id", "target_axis_id", "relationship_type", "mechanism", "confidence", "evidence_level", "evidence_references", "experiment_requirement", "reviewed_version"],
+      "properties": {
+        "edge_id": { "$ref": "#/$defs/id" },
+        "source_axis_id": { "$ref": "#/$defs/axis" },
+        "target_axis_id": { "$ref": "#/$defs/axis" },
+        "relationship_type": { "$ref": "#/$defs/relationshipType" },
+        "mechanism": { "type": "string", "minLength": 1 },
+        "confidence": { "enum": ["low", "medium", "high", "proven"] },
+        "evidence_level": { "enum": ["architectural", "mechanism_test", "correctness_fixture", "runtime_evidence"] },
+        "evidence_references": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "experiment_requirement": { "enum": ["fixed", "varied", "context_only", "guardrail_only"] },
+        "reviewed_version": { "const": 2 },
+        "behavior_condition_ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/id" } }
+      }
+    },
+    "hyperedge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hyperedge_id", "axis_ids", "relationship_type", "mechanism", "reviewed_version"],
+      "properties": {
+        "hyperedge_id": { "$ref": "#/$defs/id" },
+        "axis_ids": { "type": "array", "minItems": 3, "uniqueItems": true, "items": { "$ref": "#/$defs/axis" } },
+        "relationship_type": { "$ref": "#/$defs/relationshipType" },
+        "mechanism": { "type": "string", "minLength": 1 },
+        "reviewed_version": { "const": 2 }
+      }
+    }
+  }
+}
