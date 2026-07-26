@@ -312,6 +312,7 @@ Write-Fixture 'valid' 'negative.retained_classification.fixture.json' $negative
 $warningFiles = [ordered]@{
     'multiple_behaviors_same_epoch.warning.fixture.json' = $multi
     'inactive_operation_retained.warning.fixture.json' = (Read-AdaptiveRuntimeJsonDocument (Join-Path $fixtureRoot 'valid\batch.inactive.fixture.json'))
+    'retained_inactive_content_stable_copy.warning.fixture.json' = (Read-AdaptiveRuntimeJsonDocument (Join-Path $fixtureRoot 'valid\batch.inactive.fixture.json'))
     'fallback_operation_retained.warning.fixture.json' = (Read-AdaptiveRuntimeJsonDocument (Join-Path $fixtureRoot 'valid\batch.fallback.fixture.json'))
     'verification_only_equivalent_cell_retained.warning.fixture.json' = $negative
 }
@@ -325,6 +326,9 @@ $invalidBuilders = [ordered]@{
     }
     'duplicate_decision_instance.fixture.json' = {
         param($d) $d.decisions = @($d.decisions[0], (Copy-Document $d.decisions[0]))
+    }
+    'candidate_value_mismatch.fixture.json' = {
+        param($d) $d.operations[0].candidate_value = 'legacy_current'
     }
     'wrong_axis_attribution.fixture.json' = {
         param($d) $d.operations[0].axis_id = 'buffer_copy_coalescing'
@@ -368,6 +372,15 @@ $invalidBuilders = [ordered]@{
     'duplicate_epoch_identity.fixture.json' = {
         param($d) $d.connection_epochs = @($d.connection_epochs[0], (Copy-Document $d.connection_epochs[0]))
     }
+    'top_epoch_missing.fixture.json' = {
+        param($d) $d.connection_epochs[0].epoch_sequence = 2
+    }
+    'classification_id_duplicate.fixture.json' = {
+        param($d)
+        $copy = Copy-Document $d.classifications[0]
+        $copy.kind = 'diagnostic'
+        $d.classifications = @($d.classifications[0], $copy)
+    }
     'shadow_recommendation_changing_applied_behavior.fixture.json' = {
         param($d)
         $d.decisions[0].forced_value = $null
@@ -408,12 +421,14 @@ $expectations = [ordered]@{
     warning = [ordered]@{
         'multiple_behaviors_same_epoch.warning.fixture.json' = @('multiple_effective_behaviors_in_epoch')
         'inactive_operation_retained.warning.fixture.json' = @('inactive_operation_retained')
+        'retained_inactive_content_stable_copy.warning.fixture.json' = @('inactive_operation_retained')
         'fallback_operation_retained.warning.fixture.json' = @('fallback_operation_retained')
         'verification_only_equivalent_cell_retained.warning.fixture.json' = @('verification_only_equivalent_cell_retained')
     }
     invalid = [ordered]@{
         'missing_decision_correlation.fixture.json' = 'missing_decision_correlation'
         'duplicate_decision_instance.fixture.json' = 'duplicate_decision_instance'
+        'candidate_value_mismatch.fixture.json' = 'candidate_value_mismatch'
         'wrong_axis_attribution.fixture.json' = 'wrong_axis_attribution'
         'wrong_epoch_attribution.fixture.json' = 'wrong_epoch_attribution'
         'broad_endpoint_event_relabel.fixture.json' = 'broad_endpoint_not_axis_mechanism'
@@ -426,6 +441,8 @@ $expectations = [ordered]@{
         'missing_checksum.fixture.json' = 'missing_checksum'
         'invalid_result_to_epoch_join.fixture.json' = 'invalid_result_to_epoch_join'
         'duplicate_epoch_identity.fixture.json' = 'duplicate_epoch_identity'
+        'top_epoch_missing.fixture.json' = 'top_epoch_missing'
+        'classification_id_duplicate.fixture.json' = 'classification_id_duplicate'
         'shadow_recommendation_changing_applied_behavior.fixture.json' = 'shadow_recommendation_changed_applied_behavior'
         'forced_candidate_bypassing_operation_eligibility.fixture.json' = 'forced_candidate_bypassed_operation_eligibility'
         'missing_terminal_release_evidence.fixture.json' = 'missing_terminal_release_evidence'
