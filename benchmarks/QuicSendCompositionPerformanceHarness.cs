@@ -363,7 +363,9 @@ internal static class QuicSendCompositionPerformanceHarness
 
         double sum = values.Sum();
         double squares = values.Sum(static value => value * value);
-        return squares == 0 ? 0 : sum * sum / (values.Length * squares);
+        return squares == 0
+            ? 0
+            : Math.Min(1.0, sum * sum / (values.Length * squares));
     }
 
     private static MechanismEventCount[] CreateMechanismEventCounts(

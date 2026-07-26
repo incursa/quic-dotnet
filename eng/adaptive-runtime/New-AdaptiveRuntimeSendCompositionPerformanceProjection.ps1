@@ -45,7 +45,7 @@ $validation = & (Join-Path $PSScriptRoot `
     'Test-AdaptiveRuntimeSendCompositionPerformance.ps1') `
     -CampaignPath $CampaignPath `
     -ManifestPath $ManifestPath `
-    -RawEvidencePath $rawPaths `
+    -RawEvidencePath ([string[]]$rawPaths) `
     -RepositoryRoot $RepositoryRoot `
     -PassThru
 $campaign = Read-AdaptiveRuntimeJsonDocument $CampaignPath
