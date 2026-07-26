@@ -7,6 +7,7 @@ param(
     [string] $CatalogRoot,
     [string] $OutputPath,
     [string] $RepositoryRoot,
+    [ValidateSet('v1','v2')][string] $CatalogContractVersion = 'v1',
     [switch] $PassThru,
     [switch] $AllowInvalid
 )
@@ -25,13 +26,14 @@ if ([string]::IsNullOrWhiteSpace($CatalogRoot)) {
 Import-Module (Join-Path $scriptRoot 'AdaptiveRuntimeExperimentControl.Common.psm1') -Force
 
 $planSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-experiment-plan-v1.schema.json'
-$validationSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-experiment-plan-validation-v1.schema.json'
+$validationSchemaPath = Join-Path $RepositoryRoot (
+    "schemas\adaptive-runtime-experiment-plan-validation-$CatalogContractVersion.schema.json")
 $catalogFiles = [ordered]@{
     axis = 'adaptive-runtime-policy-axis-contracts-v1.json'
-    behavior = 'adaptive-runtime-effective-behavior-catalog-v1.json'
-    relationship = 'adaptive-runtime-policy-relationship-graph-v1.json'
+    behavior = "adaptive-runtime-effective-behavior-catalog-$CatalogContractVersion.json"
+    relationship = "adaptive-runtime-policy-relationship-graph-$CatalogContractVersion.json"
     constraint = 'adaptive-runtime-combination-constraint-catalog-v1.json'
-    family = 'adaptive-runtime-experiment-family-catalog-v1.json'
+    family = "adaptive-runtime-experiment-family-catalog-$CatalogContractVersion.json"
 }
 
 $errors = [System.Collections.Generic.List[object]]::new()
@@ -81,24 +83,62 @@ function Get-AxisContract {
     return @($axisCatalog.axis_contracts | Where-Object axis_id -eq $AxisId) | Select-Object -First 1
 }
 
-function Get-ExpectedBehaviorId {
+function Get-ExpectedBehaviorSet {
     param([string] $AxisId, [string] $Value)
 
-    foreach ($behavior in @($behaviorCatalog.effective_behaviors)) {
-        if ($behavior.axis_id -eq $AxisId -and
-            (Get-StringArray $behavior.source_policy_values) -contains $Value) {
-            return [string]$behavior.effective_behavior_id
+    if ($behaviorCatalog.schema_version -eq
+        'adaptive-runtime-effective-behavior-catalog-v2') {
+        $valueSet = @($behaviorCatalog.value_behavior_sets | Where-Object {
+            $_.axis_id -eq $AxisId -and $_.policy_value -eq $Value
+        })
+        if ($valueSet.Count -ne 1) {
+            return $null
+        }
+        return [pscustomobject][ordered]@{
+            primary_expected_behavior_ids = @(
+                Get-StringArray $valueSet[0].primary_expected_behavior_ids |
+                    Sort-Object -Unique
+            )
+            possible_effective_behavior_ids = @(
+                Get-StringArray $valueSet[0].possible_effective_behavior_ids |
+                    Sort-Object -Unique
+            )
+            non_behavior_outcome_ids = @(
+                Get-StringArray $valueSet[0].non_behavior_outcome_ids |
+                    Sort-Object -Unique
+            )
+            activation_signature_id = [string]$valueSet[0].activation_signature_id
         }
     }
 
-    foreach ($behavior in @($behaviorCatalog.effective_behaviors)) {
-        if ($behavior.axis_id -eq $AxisId -and
-            (Get-StringArray $behavior.candidate_values) -contains $Value) {
-            return [string]$behavior.effective_behavior_id
-        }
+    $primary = @($behaviorCatalog.effective_behaviors | Where-Object {
+        $_.axis_id -eq $AxisId -and
+        (Get-StringArray $_.source_policy_values) -contains $Value
+    } | ForEach-Object { [string]$_.effective_behavior_id } | Sort-Object -Unique)
+    $possible = @($behaviorCatalog.effective_behaviors | Where-Object {
+        $_.axis_id -eq $AxisId -and
+        (Get-StringArray $_.candidate_values) -contains $Value
+    } | ForEach-Object { [string]$_.effective_behavior_id } | Sort-Object -Unique)
+    if ($primary.Count -eq 0) {
+        return $null
     }
-
-    return $null
+    $contract = Get-AxisContract -AxisId $AxisId
+    $activationSignature = if ($null -ne $contract) {
+        "activation.$AxisId.$(@(
+            $contract.readiness.behavior_distinctness_predicate_refs |
+                ForEach-Object { [string]$_ } |
+                Sort-Object -Unique
+        ) -join '+')"
+    }
+    else {
+        "activation.$AxisId"
+    }
+    return [pscustomobject][ordered]@{
+        primary_expected_behavior_ids = $primary
+        possible_effective_behavior_ids = $possible
+        non_behavior_outcome_ids = @()
+        activation_signature_id = $activationSignature
+    }
 }
 
 function Get-DocumentReferences {
@@ -144,6 +184,20 @@ foreach ($catalogName in $catalogFiles.Keys) {
     $documentMap[[string]$document.document_id] = $document
     if (-not (Test-AdaptiveRuntimeDocumentHash -Document $document)) {
         Add-PlanError 'hash_mismatch' "Catalog '$($document.document_id)' has a content hash mismatch." $document.document_id
+    }
+}
+if ($CatalogContractVersion -eq 'v2') {
+    foreach ($compatibilityFile in @(
+        'adaptive-runtime-effective-behavior-catalog-v1.json',
+        'adaptive-runtime-policy-relationship-graph-v1.json',
+        'adaptive-runtime-experiment-family-catalog-v1.json'
+    )) {
+        $compatibilityPath = Join-Path $CatalogRoot $compatibilityFile
+        $compatibilityDocument = Read-AdaptiveRuntimeJsonDocument -Path $compatibilityPath
+        $documentMap[[string]$compatibilityDocument.document_id] = $compatibilityDocument
+        if (-not (Test-AdaptiveRuntimeDocumentHash -Document $compatibilityDocument)) {
+            Add-PlanError 'hash_mismatch' "Compatibility catalog '$($compatibilityDocument.document_id)' has a content hash mismatch." $compatibilityDocument.document_id
+        }
     }
 }
 
@@ -259,10 +313,30 @@ if ($null -eq $family) {
     Add-PlanError 'unsupported_experiment_family' "Experiment family '$($plan.family_id)' is unknown." $plan.family_id
 }
 else {
+    $familyAxisIds = @(if ($familyCatalog.schema_version -eq
+        'adaptive-runtime-experiment-family-catalog-v2') {
+        Get-StringArray $family.included_axis_ids
+    }
+    else {
+        Get-StringArray $family.contexts
+    })
+    $familyFixedAxisIds = @(if ($familyCatalog.schema_version -eq
+        'adaptive-runtime-experiment-family-catalog-v2') {
+        Get-StringArray @($family.fixed_axis_requirements | ForEach-Object axis_id)
+    }
+    else {
+        @()
+    })
     foreach ($axisId in @($fixedAxisIds + $variedAxisIds)) {
-        if ((Get-StringArray $family.contexts) -notcontains $axisId) {
+        $isFamilyAxis = $familyAxisIds -contains $axisId -or
+            $familyFixedAxisIds -contains $axisId
+        if (-not $isFamilyAxis) {
             Add-PlanError 'axis_outside_experiment_family' "Axis '$axisId' is outside family '$($plan.family_id)'." $axisId
         }
+    }
+    if ($familyFixedAxisIds.Count -gt 0 -and
+        -not (Test-SameStringSet $familyFixedAxisIds $fixedAxisIds)) {
+        Add-PlanError 'axis_outside_experiment_family' "Plan fixed axes do not match family '$($plan.family_id)' fixed-axis requirements." 'fixed_axis_ids'
     }
     if ((Get-StringArray $family.supported_experiment_types) -notcontains $plan.experiment_type -and
         (Get-StringArray $family.blocked_experiment_types) -notcontains $plan.experiment_type) {
@@ -417,6 +491,9 @@ $capabilityPendingPlan = $plan.execution_status -eq 'blocked_by_capability' -or
 
 foreach ($cell in @($plan.planned_cells | Sort-Object cell_order, cell_id)) {
     $behaviorIds = [System.Collections.Generic.List[string]]::new()
+    $possibleBehaviorIds = [System.Collections.Generic.List[string]]::new()
+    $outcomeIds = [System.Collections.Generic.List[string]]::new()
+    $activationSignatureIds = [System.Collections.Generic.List[string]]::new()
     $missingTreatment = $false
     foreach ($treatmentId in @($cell.treatment_ids)) {
         if (-not $treatmentMap.ContainsKey([string]$treatmentId)) {
@@ -425,14 +502,29 @@ foreach ($cell in @($plan.planned_cells | Sort-Object cell_order, cell_id)) {
             continue
         }
         $treatment = $treatmentMap[[string]$treatmentId]
-        $behaviorId = Get-ExpectedBehaviorId -AxisId $treatment.axis_id -Value $treatment.candidate_value
-        if ([string]::IsNullOrWhiteSpace($behaviorId)) {
-            $behaviorId = "unknown.$($treatment.axis_id).$($treatment.candidate_value)"
+        $behaviorSet = Get-ExpectedBehaviorSet -AxisId $treatment.axis_id -Value $treatment.candidate_value
+        if ($null -eq $behaviorSet) {
+            $behaviorIds.Add("unknown.$($treatment.axis_id).$($treatment.candidate_value)")
+            $activationSignatureIds.Add("activation.unknown.$($treatment.axis_id)")
         }
-        $behaviorIds.Add($behaviorId)
+        else {
+            foreach ($behaviorId in @($behaviorSet.primary_expected_behavior_ids)) {
+                $behaviorIds.Add([string]$behaviorId)
+            }
+            foreach ($behaviorId in @($behaviorSet.possible_effective_behavior_ids)) {
+                $possibleBehaviorIds.Add([string]$behaviorId)
+            }
+            foreach ($outcomeId in @($behaviorSet.non_behavior_outcome_ids)) {
+                $outcomeIds.Add([string]$outcomeId)
+            }
+            $activationSignatureIds.Add([string]$behaviorSet.activation_signature_id)
+        }
     }
     $behaviorIds = @($behaviorIds | Sort-Object -Unique)
-    $behaviorKey = $behaviorIds -join '|'
+    $possibleBehaviorIds = @($possibleBehaviorIds | Sort-Object -Unique)
+    $outcomeIds = @($outcomeIds | Sort-Object -Unique)
+    $activationSignatureIds = @($activationSignatureIds | Sort-Object -Unique)
+    $behaviorKey = "$($behaviorIds -join '|')::$($activationSignatureIds -join '|')"
     $behaviorKeyByCellId[[string]$cell.cell_id] = $behaviorKey
     $cellById[[string]$cell.cell_id] = $cell
 
@@ -478,6 +570,12 @@ foreach ($cell in @($plan.planned_cells | Sort-Object cell_order, cell_id)) {
         expected_behavior_class_ids = @($behaviorIds)
         equivalence_group_id = 'pending'
         reason_codes = @($reasonCodes | Sort-Object -Unique)
+    }
+    if ($CatalogContractVersion -eq 'v2') {
+        $expanded.primary_expected_behavior_ids = @($behaviorIds)
+        $expanded.possible_effective_behavior_ids = @($possibleBehaviorIds)
+        $expanded.non_behavior_outcome_ids = @($outcomeIds)
+        $expanded.activation_signature_ids = @($activationSignatureIds)
     }
     $expandedCells.Add([pscustomobject]$expanded)
 }
@@ -574,14 +672,14 @@ $potentialExecutionCount = @($expandedCells | Where-Object execution_state -in @
 )).Count
 
 $result = [pscustomobject][ordered]@{
-    schema_version = 'adaptive-runtime-experiment-plan-validation-v1'
+    schema_version = "adaptive-runtime-experiment-plan-validation-$CatalogContractVersion"
     document_id = "validation.$($plan.experiment_plan_id)"
-    document_version = 1
+    document_version = if ($CatalogContractVersion -eq 'v2') { 2 } else { 1 }
     content_sha256 = ('0' * 64)
     trace_references = New-AdaptiveRuntimeTraceReferences
     active_behavior_authorization = $false
     performance_acceptance_authorization = $false
-    validation_id = "validation.$($plan.experiment_plan_id).v1"
+    validation_id = "validation.$($plan.experiment_plan_id).$CatalogContractVersion"
     validated_plan_ref = [ordered]@{
         document_id = [string]$plan.document_id
         schema_version = [string]$plan.schema_version
@@ -613,7 +711,7 @@ $result = [pscustomobject][ordered]@{
 
 try {
     if (-not (Test-AdaptiveRuntimeJsonSchema -Document $result -SchemaPath $validationSchemaPath)) {
-        throw 'Generated validation result failed adaptive-runtime-experiment-plan-validation-v1.'
+        throw "Generated validation result failed adaptive-runtime-experiment-plan-validation-$CatalogContractVersion."
     }
 }
 catch {
