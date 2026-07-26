@@ -26,7 +26,10 @@
     "VER-QUIC-CRT-0094",
     "ARC-QUIC-CRT-0098",
     "WI-QUIC-CRT-0099",
-    "VER-QUIC-CRT-0100"
+    "VER-QUIC-CRT-0100",
+    "ARC-QUIC-CRT-0101",
+    "WI-QUIC-CRT-0102",
+    "VER-QUIC-CRT-0103"
   ],
   "purpose": "Define the planning-time architecture, schemas, canonical catalogs, compatibility boundary, fixtures, and deterministic validation needed before an adaptive-runtime experiment plan compiler may be implemented.",
   "scope": "This checkpoint governs experiment-control documents only. It does not compile plans, generate execution manifests, change runtime instrumentation or operation correlation, materialize effective behavior, project analytical data, execute performance measurement, authorize active_internal, or activate production behavior.",
@@ -469,6 +472,94 @@
       "notes": [
         "All performance and activation authorization fields remain false.",
         "This is the mandatory stopping point for the bounded hardening checkpoint."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0214",
+      "title": "Derive operation outcomes and release ordering from canonical authorities",
+      "statement": "The evidence-integrity closeout MUST resolve every non-behavior operation result to exactly one version-pinned effective-behavior-catalog outcome definition; derive the outcome ID and retained-classification requirement from that definition; reject zero and multiple matches with closed errors; resolve every owner release to exactly one complete operation identity and linked decision; compare the copied decision epoch to the linked decision's actual epoch; require the release epoch to exist and not precede decision or owner creation; and require exactly one terminal release when the mechanism contract requires it.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0101"],
+        "implemented_by": ["WI-QUIC-CRT-0102"],
+        "verified_by": ["VER-QUIC-CRT-0103"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0214.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/AdaptiveRuntimeExperimentEvidence.Common.psm1",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-effective-behavior-catalog-v2.json",
+          "docs/design/adaptive-runtime-experiment-evidence-integrity-closeout.md"
+        ]
+      },
+      "notes": [
+        "The catalog remains an offline dependency and is not loaded on a runtime path.",
+        "Retained v1 behavior remains governed by its original contract."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0215",
+      "title": "Use exact classification targets and composite operation accounting",
+      "statement": "The evidence-integrity closeout MUST version and validate a composite operation identity containing run, connection, epoch, axis, decision, and operation components; use that identity for decision joins, release joins, behavior and outcome derivation, aggregate sources, accounting, classification targets, and projection joins; require every classification to resolve exactly one target; preserve classification identity through materialization and projection; publish one versioned canonical classification compatibility matrix; reject every unpermitted pair with classification_contradiction; require exactly one primary retained outcome classification where the matched catalog outcome requires it; and prohibit supplemental classifications from satisfying that primary requirement.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0101"],
+        "implemented_by": ["WI-QUIC-CRT-0102"],
+        "verified_by": ["VER-QUIC-CRT-0103"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0215.cs"
+        ],
+        "upstream_refs": [
+          "schemas/adaptive-runtime-operation-evidence-v3.schema.json",
+          "schemas/adaptive-runtime-classification-compatibility-catalog-v1.schema.json",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-classification-compatibility-catalog-v1.json"
+        ]
+      },
+      "notes": [
+        "Numeric operation IDs and epoch sequences are never sufficient target identities in v3.",
+        "Old target IDs are not silently reinterpreted."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0216",
+      "title": "Validate and recompute the complete immutable projection authority chain",
+      "statement": "The projection closeout MUST accept the fifteen explicit immutable plan, validation, manifest, run, host, binary, workload instance, requested workload, effective workload, operation evidence, behavior materialization, outcome materialization, metric, artifact inventory, and classification documents; validate every input against its exact schema and content hash; prove all required cross-document identities and references; require the artifact inventory to hash every peer immutable input; independently recompute behavior and outcome materializations from evidence and the exact catalog; reject any canonical mismatch; validate aggregate source composite identities; and emit an authority chain containing exact references to all fifteen inputs without fixed fixture paths, implicit discovery, placeholder identities, or mutable database authority.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0101"],
+        "implemented_by": ["WI-QUIC-CRT-0102"],
+        "verified_by": ["VER-QUIC-CRT-0103"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0216.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/New-AdaptiveRuntimeExperimentEvidenceProjectionV3.ps1",
+          "schemas/adaptive-runtime-experiment-evidence-projection-v3.schema.json",
+          "docs/protocol-lab/adaptive-runtime-policy-dataset-provenance-contract.md"
+        ]
+      },
+      "notes": [
+        "The artifact inventory lists the fourteen peer inputs and is itself referenced by the projection, avoiding impossible self-reference.",
+        "Projection inputs remain immutable files and not mutable database rows."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0217",
+      "title": "Prove evidence-integrity closeout and preserve the frozen boundary",
+      "statement": "The repository MUST retain deterministic positive and expected-invalid fixtures for every catalog outcome, ambiguous and missing derivation, forged release ordering, exact and ambiguous classification targets, exhaustive classification pairs, composite-ID collision, aggregate recomputation, all fifteen projection inputs, unrelated self-hashed inputs, and repeated projection rebuilding; preserve and rerun the foundation, compiler and manifest, runtime-evidence, and hardening regressions; validate additive schemas and direct SpecTrace artifacts; pass focused Release builds and requirement-home tests; and stop without runtime mechanism changes, another axis migration, interaction execution, performance work, campaigns, transforms, threshold or model derivation, CI changes, push, active_internal, or production activation.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0101"],
+        "implemented_by": ["WI-QUIC-CRT-0102"],
+        "verified_by": ["VER-QUIC-CRT-0103"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0217.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentEvidenceIntegrityCloseout.ps1",
+          "tests/fixtures/adaptive-runtime-experiment-evidence-integrity-closeout",
+          "docs/testing/adaptive-runtime-experiment-evidence-integrity-closeout-2026-07-25.md"
+        ]
+      },
+      "notes": [
+        "The unrelated repository-wide SpecTrace baseline remains preserved and separately reported.",
+        "This is the mandatory stopping point for the evidence-integrity closeout."
       ]
     }
   ]

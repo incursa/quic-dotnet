@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0101",
+  "artifact_type": "architecture",
+  "status": "proposed",
+  "title": "Adaptive-runtime evidence-integrity closeout",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0214 through REQ-QUIC-CRT-0217 by making outcome derivation catalog-owned, release and classification correlation exact, operation accounting collision-free, and the fifteen-input projection fully validated and recomputed without changing runtime mechanisms.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0098",
+    "WI-QUIC-CRT-0102",
+    "VER-QUIC-CRT-0103"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0214",
+    "REQ-QUIC-CRT-0215",
+    "REQ-QUIC-CRT-0216",
+    "REQ-QUIC-CRT-0217"
+  ],
+  "key_components": [
+    "docs/design/adaptive-runtime-experiment-evidence-integrity-closeout.md",
+    "eng/adaptive-runtime/AdaptiveRuntimeExperimentEvidence.Common.psm1",
+    "eng/adaptive-runtime/New-AdaptiveRuntimeExperimentEvidenceProjectionV3.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentEvidenceIntegrityCloseout.ps1",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-classification-compatibility-catalog-v1.json",
+    "tests/fixtures/adaptive-runtime-experiment-evidence-integrity-closeout"
+  ],
+  "design_summary": "The effective-behavior catalog owns operation-result-to-outcome derivation and retention requirements. Additive v3 evidence uses structured composite operation and classification target identities; release validation resolves the linked operation and decision before checking the decision epoch and terminal release. A versioned classification-compatibility catalog owns primary and supplemental roles and allowed pairs. Materializations retain composite source identities, and projection v3 validates, links, and records all fifteen immutable inputs after independently recomputing both materializations.",
+  "data_and_state_considerations": "All v1 and v2 contracts remain valid without reinterpretation. Composite identity keys are derived deterministically from structured components. The artifact inventory hashes fourteen peer inputs and is itself referenced by the projection to avoid self-reference. All processing remains offline, file-backed, deterministic, bounded, and authorization-frozen.",
+  "edge_cases_and_constraints": [
+    "Zero catalog outcome matches fail outcome_derivation_no_match.",
+    "Multiple catalog outcome matches fail outcome_derivation_ambiguous.",
+    "A copied release decision epoch cannot override the linked decision epoch.",
+    "Classification targets reused across runs, connections, axes, or operations remain distinct.",
+    "Supplemental classifications cannot satisfy a required primary retained outcome.",
+    "Aggregate accounting compares composite operation identities rather than numeric IDs.",
+    "Supplied materializations must equal independently recomputed canonical documents.",
+    "The projection authority chain contains all fifteen immutable inputs."
+  ],
+  "alternatives_considered": [
+    "Keep the result-to-outcome switch as a compatibility shortcut. Rejected because it remains a second canonical authority.",
+    "Continue using numeric operation and target IDs. Rejected because IDs can collide across exact evidence scopes.",
+    "Embed contradiction rules in validator branches. Rejected because compatibility requires one versioned canonical owner.",
+    "Trust supplied materializations after hash validation. Rejected because a self-consistent but semantically unrelated document could enter the projection."
+  ],
+  "risks": [
+    "Consumers must explicitly adopt v3 identities rather than silently interpreting v2 targets.",
+    "Catalog revisions change outcome materialization and therefore require exact hash pinning.",
+    "The projection remains a logical file-backed proof rather than a selected long-term database.",
+    "Repository-wide SpecTrace validation retains unrelated pre-existing failures."
+  ],
+  "open_questions": [
+    "Which later reviewed action will generate value-specific actuation proof?",
+    "Which compact axis should be considered only after this closeout is reviewed?"
+  ]
+}

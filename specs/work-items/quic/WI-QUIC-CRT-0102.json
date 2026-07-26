@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0102",
+  "artifact_type": "work_item",
+  "status": "in_progress",
+  "title": "Close adaptive-runtime evidence-integrity gaps",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Implement REQ-QUIC-CRT-0214 through REQ-QUIC-CRT-0217 as additive offline evidence contracts, validation, materialization, projection, fixtures, and trace proof while preserving all v1 and v2 artifacts.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0101",
+    "VER-QUIC-CRT-0103"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0101"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0103"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0214",
+    "REQ-QUIC-CRT-0215",
+    "REQ-QUIC-CRT-0216",
+    "REQ-QUIC-CRT-0217"
+  ],
+  "planned_changes": "Resolve outcomes and retention from the behavior catalog; add exact release joins; introduce structured composite operation and classification target identities; publish a closed classification compatibility catalog; use composite identities in both materializations and accounting; validate and join every immutable projection input; recompute supplied materializations before projection; add deterministic valid and invalid fixtures; and close direct trace evidence.",
+  "verification_plan": "Run the foundation, plan compiler and manifest, runtime-evidence, hardening, and closeout regressions; validate all additive schemas and catalogs; prove catalog mapping changes and ambiguity; exhaustively test the classification matrix; prove composite identity collision resistance and authoritative release ordering; reject self-hashed unrelated projection inputs; rebuild materializations and projection byte-for-byte; build Incursa.Quic and Incursa.Quic.Tests in Release; run focused requirement-home tests; validate touched SpecTrace artifacts directly; and run git diff --check.",
+  "out_of_scope": [
+    "Runtime policy mechanism changes",
+    "Migration of another adaptive-runtime axis",
+    "Interaction execution or performance measurement",
+    "ProtocolLab, large matrices, transforms, normalization, curation, splits, threshold derivation, or ML",
+    "CI changes, active_internal, production activation, or push"
+  ]
+}
