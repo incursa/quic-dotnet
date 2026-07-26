@@ -80,6 +80,7 @@
     "destinationSegmentCount": { "$ref": "#/$defs/unsignedInteger" },
     "requestedCapacityBytes": { "$ref": "#/$defs/unsignedInteger" },
     "retainedCapacityBytes": { "$ref": "#/$defs/unsignedInteger" },
+    "coalescingEvidence": { "$ref": "#/$defs/coalescingEvidence" },
     "forcedValue": {
       "type": ["string", "null"],
       "enum": ["LegacyCurrent", null]
@@ -121,6 +122,62 @@
     "positiveInteger": {
       "type": "integer",
       "minimum": 1
+    },
+    "coalescingEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "epochSequence",
+        "decisionInstanceSequence",
+        "operationSequence",
+        "candidateValue",
+        "eligibilityResult",
+        "eligibilityReason",
+        "mechanismEvent",
+        "legalSourceSegmentCount",
+        "appliedSourceSegmentCount",
+        "legalBytes",
+        "appliedBytes",
+        "ownerRented"
+      ],
+      "properties": {
+        "epochSequence": { "$ref": "#/$defs/unsignedInteger" },
+        "decisionInstanceSequence": { "$ref": "#/$defs/unsignedInteger" },
+        "operationSequence": { "$ref": "#/$defs/unsignedInteger" },
+        "candidateValue": {
+          "enum": ["LegacyCurrent", "MemoryConservative"]
+        },
+        "eligibilityResult": {
+          "enum": ["Eligible", "Ineligible", "Clamped"]
+        },
+        "eligibilityReason": {
+          "enum": [
+            "Eligible",
+            "StructurallyInactive",
+            "MissingInput",
+            "InvalidInput",
+            "LifecycleGuard",
+            "ResourceGuard",
+            "SafetyOverride",
+            "NotAxisMechanism",
+            "UnclassifiableEvidence"
+          ]
+        },
+        "mechanismEvent": {
+          "enum": [
+            "ExactCombinedPrefixRetained",
+            "LowerTwoSourceSegmentCapApplied",
+            "NoCombinedOwnerRented",
+            "NotAxisMechanism",
+            "Unclassifiable"
+          ]
+        },
+        "legalSourceSegmentCount": { "$ref": "#/$defs/unsignedInteger" },
+        "appliedSourceSegmentCount": { "$ref": "#/$defs/unsignedInteger" },
+        "legalBytes": { "$ref": "#/$defs/unsignedInteger" },
+        "appliedBytes": { "$ref": "#/$defs/unsignedInteger" },
+        "ownerRented": { "type": "boolean" }
+      }
     }
   }
 }

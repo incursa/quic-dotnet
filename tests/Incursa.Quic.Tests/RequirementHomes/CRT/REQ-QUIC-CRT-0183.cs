@@ -1081,7 +1081,27 @@ public sealed class REQ_QUIC_CRT_0183
                 StreamCapacityRemainingCount: 0));
 
     private static QuicBufferCopyObservation CreateBufferObservation()
-        => new(
+    {
+        QuicBufferCopyPolicyDecision decision = QuicBufferCopyPolicy.Evaluate(
+            QuicBufferCopyObservationMode.ObserveOnly,
+            QuicBufferCopyPolicyValue.LegacyCurrent,
+            legalSourceSegmentCount: 1,
+            QuicBufferCopyValidity.None,
+            lifecycleGuard: false);
+        QuicBufferCopyCoalescingOperationEvidence coalescingEvidence =
+            QuicBufferCopyPolicy.CreateOperationEvidence(
+                epochSequence: 1,
+                decisionInstanceSequence: 1,
+                operationSequence: 1,
+                QuicBufferCopyPath.ApplicationWriteRequest,
+                in decision,
+                legalSourceSegmentCount: 1,
+                appliedSourceSegmentCount: 1,
+                legalBytes: 8,
+                appliedBytes: 8,
+                ownerRented: false);
+
+        return new(
             OperationSequence: 1,
             QuicBufferCopyObservationMode.ObserveOnly,
             QuicBufferCopyPath.ApplicationWriteRequest,
@@ -1107,7 +1127,9 @@ public sealed class REQ_QUIC_CRT_0183
             FallbackApplied: false,
             QuicConnectionPhase.Active,
             DisposalStarted: false,
-            QuicBufferCopyValidity.None);
+            QuicBufferCopyValidity.None,
+            coalescingEvidence);
+    }
 
     private static QuicAdaptiveBackpressureObservation
         CreateAdaptiveBackpressureObservation()

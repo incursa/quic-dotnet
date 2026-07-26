@@ -4455,6 +4455,19 @@ production acceptance. The next independent Stage 5 preparation axis is
 `ack_behavior_profile`. Performance measurement, active behavior, CI work,
 push, and measurement-freeze release remain unauthorized.
 
+## 2026-07-25 Two-Axis Runtime Evidence Slice
+
+- `REQ-QUIC-CRT-0206` now anchors the first runtime/evidence vertical slice
+  for `application_send_batch_formation` and `buffer_copy_coalescing`.
+- Focused validation command:
+  `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --filter "REQ_QUIC_CRT_0190|REQ_QUIC_CRT_0182|REQ_QUIC_CRT_0183|REQ_QUIC_CRT_0200|REQ_QUIC_CRT_0201|REQ_QUIC_CRT_0206|REQ_QUIC_CRT_0177"`
+- Result: 97 tests passed, 0 failed, 0 skipped.
+- Scope remained correctness-only; no performance campaign, BenchmarkDotNet,
+  ProtocolLab campaign, CI change, or push was performed.
+- `coalescingEvidence` was added as bounded runtime evidence for the current
+  buffer-copy shape, while the retained v2/v3 compatibility shapes keep it
+  optional.
+
 ## 2026-07-25 experiment evidence-integrity closeout
 
 This entry records correctness tooling only. Starting from accepted hardening

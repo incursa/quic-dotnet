@@ -117,6 +117,68 @@
           "type": "integer",
           "minimum": 0
         },
+        "coalescingEvidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "epochSequence",
+            "decisionInstanceSequence",
+            "operationSequence",
+            "candidateValue",
+            "eligibilityResult",
+            "eligibilityReason",
+            "mechanismEvent",
+            "legalSourceSegmentCount",
+            "appliedSourceSegmentCount",
+            "legalBytes",
+            "appliedBytes",
+            "ownerRented"
+          ],
+          "properties": {
+            "epochSequence": { "type": "integer", "minimum": 0 },
+            "decisionInstanceSequence": { "type": "integer", "minimum": 0 },
+            "operationSequence": { "type": "integer", "minimum": 0 },
+            "candidateValue": {
+              "enum": ["LegacyCurrent", "MemoryConservative"]
+            },
+            "eligibilityResult": {
+              "enum": ["Eligible", "Ineligible", "Clamped"]
+            },
+            "eligibilityReason": {
+              "enum": [
+                "Eligible",
+                "StructurallyInactive",
+                "MissingInput",
+                "InvalidInput",
+                "LifecycleGuard",
+                "ResourceGuard",
+                "SafetyOverride",
+                "NotAxisMechanism",
+                "UnclassifiableEvidence"
+              ]
+            },
+            "mechanismEvent": {
+              "enum": [
+                "ExactCombinedPrefixRetained",
+                "LowerTwoSourceSegmentCapApplied",
+                "NoCombinedOwnerRented",
+                "NotAxisMechanism",
+                "Unclassifiable"
+              ]
+            },
+            "legalSourceSegmentCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "appliedSourceSegmentCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "legalBytes": { "type": "integer", "minimum": 0 },
+            "appliedBytes": { "type": "integer", "minimum": 0 },
+            "ownerRented": { "type": "boolean" }
+          }
+        },
         "forcedValue": {
           "type": ["string", "null"],
           "enum": ["LegacyCurrent", null]
