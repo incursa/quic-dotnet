@@ -156,9 +156,9 @@ $dotnetVersion = (& dotnet --version).Trim()
 
 $manifest = [pscustomobject][ordered]@{
     schema_version =
-        'adaptive-runtime-send-composition-performance-manifest-v1'
+        'adaptive-runtime-send-composition-performance-manifest-v2'
     document_id = "manifest.send_composition.performance.$($sourceCommit.Substring(0,12))"
-    document_version = 1
+    document_version = 2
     content_sha256 = '0' * 64
     campaign_ref = [pscustomobject][ordered]@{
         document_id = [string]$campaign.document_id
@@ -197,6 +197,8 @@ $manifest = [pscustomobject][ordered]@{
             [pscustomobject][ordered]@{
                 order_id = "order.$orderIndex"
                 cell_ids = @($campaign.design.orders[$orderIndex])
+                execution_sequence =
+                    (@($campaign.design.orders[$orderIndex]) -join '>')
             }
         }
     )

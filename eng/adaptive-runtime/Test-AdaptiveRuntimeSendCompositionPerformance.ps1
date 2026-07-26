@@ -143,10 +143,20 @@ foreach ($order in @($campaign.design.orders)) {
 $manifest = $null
 if (-not [string]::IsNullOrWhiteSpace($ManifestPath)) {
     $manifest = Read-AdaptiveRuntimeJsonDocument $ManifestPath
+    $manifestSchemaName = switch ([string]$manifest.schema_version) {
+        'adaptive-runtime-send-composition-performance-manifest-v1' {
+            'adaptive-runtime-send-composition-performance-manifest-v1.schema.json'
+        }
+        'adaptive-runtime-send-composition-performance-manifest-v2' {
+            'adaptive-runtime-send-composition-performance-manifest-v2.schema.json'
+        }
+        default {
+            throw 'performance_manifest_version_unsupported'
+        }
+    }
     Assert-PerformanceCondition (
         Test-AdaptiveRuntimeJsonSchema $manifest (
-            Join-Path $RepositoryRoot `
-                'schemas\adaptive-runtime-send-composition-performance-manifest-v1.schema.json')
+            Join-Path $RepositoryRoot "schemas\$manifestSchemaName")
     ) 'performance_manifest_schema_invalid'
     Assert-PerformanceCondition (
         Test-AdaptiveRuntimeDocumentHash $manifest
@@ -168,6 +178,16 @@ if (-not [string]::IsNullOrWhiteSpace($ManifestPath)) {
                 Sort-Object -CaseSensitive) -Compress) -ceq
                 '["A","B","C","D"]'
         ) 'performance_manifest_order_not_permutation'
+        if ([string]$manifest.schema_version -ceq
+            'adaptive-runtime-send-composition-performance-manifest-v2') {
+            $campaignOrder = @($campaign.design.orders[
+                [int]([string]$manifestOrder.order_id).Substring(
+                    ([string]$manifestOrder.order_id).LastIndexOf('.') + 1)])
+            Assert-PerformanceCondition (
+                [string]$manifestOrder.execution_sequence -ceq
+                    ($campaignOrder -join '>')
+            ) 'performance_manifest_execution_sequence_mismatch'
+        }
     }
 }
 

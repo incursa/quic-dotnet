@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.incursa.dev/adaptive-runtime-send-composition-performance-manifest-v2.schema.json",
+  "title": "Adaptive Runtime Send-Composition Performance Manifest v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "campaign_ref",
+    "source_commit",
+    "source_tree_clean",
+    "binary_path",
+    "binary_sha256",
+    "runner_version",
+    "runner_sha256",
+    "host",
+    "cells",
+    "orders",
+    "measurement_authorization",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "production_activation_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-send-composition-performance-manifest-v2" },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 2 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "campaign_ref": { "$ref": "#/$defs/ref" },
+    "source_commit": { "type": "string", "pattern": "^[0-9a-f]{40,64}$" },
+    "source_tree_clean": { "const": true },
+    "binary_path": { "type": "string", "minLength": 1 },
+    "binary_sha256": { "$ref": "#/$defs/hash" },
+    "runner_version": { "type": "string", "minLength": 1 },
+    "runner_sha256": { "$ref": "#/$defs/hash" },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fingerprint_sha256",
+        "machine_name_sha256",
+        "operating_system",
+        "architecture",
+        "processor_count",
+        "dotnet_version"
+      ],
+      "properties": {
+        "fingerprint_sha256": { "$ref": "#/$defs/hash" },
+        "machine_name_sha256": { "$ref": "#/$defs/hash" },
+        "operating_system": { "type": "string", "minLength": 1 },
+        "architecture": { "enum": ["x64", "x86", "arm64", "arm"] },
+        "processor_count": { "type": "integer", "minimum": 1 },
+        "dotnet_version": { "type": "string", "minLength": 1 }
+      }
+    },
+    "cells": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cell_id",
+          "batch_value",
+          "buffer_value",
+          "expected_effective_signature",
+          "performance_comparable"
+        ],
+        "properties": {
+          "cell_id": { "enum": ["A", "B", "C", "D"] },
+          "batch_value": { "enum": ["legacy_current", "single_eligible"] },
+          "buffer_value": { "enum": ["legacy_current", "memory_conservative"] },
+          "expected_effective_signature": { "$ref": "#/$defs/id" },
+          "performance_comparable": { "type": "boolean" }
+        }
+      }
+    },
+    "orders": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["order_id", "cell_ids", "execution_sequence"],
+        "properties": {
+          "order_id": { "$ref": "#/$defs/id" },
+          "cell_ids": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "items": { "enum": ["A", "B", "C", "D"] }
+          },
+          "execution_sequence": {
+            "enum": ["A>B>D>C", "C>D>B>A", "B>A>C>D", "D>C>A>B"]
+          }
+        }
+      }
+    },
+    "measurement_authorization": { "const": true },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "production_activation_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/trace" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_.-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "schema_version",
+        "document_version",
+        "content_sha256"
+      ],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "schema_version": { "$ref": "#/$defs/id" },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": { "type": "array", "items": { "type": "string" } },
+        "architecture_ids": { "type": "array", "items": { "type": "string" } },
+        "work_item_ids": { "type": "array", "items": { "type": "string" } },
+        "verification_ids": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

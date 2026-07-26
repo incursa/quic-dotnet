@@ -50,7 +50,10 @@ The campaign is serial and block-randomized. A committed canonical definition
 owns the seed, warmup, duration, repetitions, workload contexts, activation
 gates, practical thresholds, train/holdout split, retention, and early-stop
 rules. The runner freezes source and binaries and records host and runtime
-identity before executing.
+identity before executing. Manifest v2 records each order both as a
+set-validated `cell_ids` array and as an order-preserving
+`execution_sequence` scalar. The latter is the execution-order authority and
+prevents canonical set ordering from erasing the counterbalanced sequence.
 
 The custom loopback harness uses actual `QuicConnection` instances and the
 production scheduler, batch policy, buffer policy, buffer owner, and terminal
