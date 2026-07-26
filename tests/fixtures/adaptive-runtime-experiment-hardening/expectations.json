@@ -1,0 +1,67 @@
+{
+  "valid": [
+    "catalog.batch-single.json",
+    "catalog.batch-legacy.json",
+    "catalog.buffer-legacy.json",
+    "catalog.buffer-conservative.json",
+    "multiple-behaviors.json",
+    "inactive-retained.json",
+    "safe-fallback.json",
+    "unclassifiable-retained.json",
+    "both-axes-distinct.json"
+  ],
+  "warning": {
+    "multiple-derived-from-content.json": [
+      "measurement_freeze_active",
+      "multiple_effective_behaviors_in_epoch"
+    ],
+    "inactive-derived-from-content.json": [
+      "inactive_operation_retained",
+      "measurement_freeze_active"
+    ],
+    "renamed-inactive-content-copy.json": [
+      "inactive_operation_retained",
+      "measurement_freeze_active"
+    ],
+    "fallback-derived-from-content.json": [
+      "fallback_operation_retained",
+      "measurement_freeze_active"
+    ],
+    "fallback-name-without-content.json": [
+      "measurement_freeze_active"
+    ],
+    "verification-only-linked-validation.json": [
+      "measurement_freeze_active",
+      "verification_only_equivalent_cell_retained"
+    ]
+  },
+  "invalid": {
+    "candidate-mismatch.json": "candidate_value_mismatch",
+    "applied-mismatch.json": "applied_value_mismatch",
+    "configured-mismatch.json": "configured_value_mismatch",
+    "forced-mismatch.json": "forced_value_mismatch",
+    "shadow-mismatch.json": "shadow_recommendation_mismatch",
+    "eligibility-reason-mismatch.json": "eligibility_reason_mismatch",
+    "wrong-run.json": "run_correlation_mismatch",
+    "wrong-connection.json": "connection_correlation_mismatch",
+    "missing-top-epoch.json": "top_epoch_missing",
+    "duplicate-top-epoch.json": "top_epoch_not_unique",
+    "missing-decision-epoch.json": "decision_epoch_missing",
+    "missing-operation-epoch.json": "operation_epoch_missing",
+    "unknown-mechanism-event.json": "behavior_derivation_no_match",
+    "stale-catalog.json": "stale_behavior_catalog_version",
+    "classification-target-missing.json": "classification_target_missing",
+    "classification-id-duplicate.json": "classification_id_duplicate",
+    "classification-contradiction.json": "classification_contradiction",
+    "unrelated-retention.json": "required_retained_classification_missing",
+    "release-before-decision.json": "release_precedes_decision",
+    "release-epoch-missing.json": "release_epoch_missing"
+  },
+  "projection_invalid": {
+    "experiment-run-missing-hash.json": "projection_input_missing_identity:experiment_run:content_sha256",
+    "behavior-wrong-source-ref.json": "projection_behavior_evidence_reference_mismatch",
+    "manifest-plan-mismatch.json": "projection_manifest_plan_reference_mismatch",
+    "evidence-duplicate-epoch.json": "projection_duplicate_epoch_identity",
+    "classifications-target-missing.json": "projection_classification_target_missing"
+  }
+}

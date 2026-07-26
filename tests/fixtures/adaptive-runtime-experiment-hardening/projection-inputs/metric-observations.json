@@ -1,0 +1,1 @@
+{"content_sha256":"430fbc19a4366568464dd27086ab8be15839080e95d1bd686f3185e042545b17","document_id":"metrics.document.hardening_fixture","document_version":1,"metric_observations":[{"analytical_use":"correctness_only","epoch_sequence":1,"metric_id":"metric.correctness.mechanism_attribution"}],"schema_version":"adaptive-runtime-metric-observations-fixture-v1"}
