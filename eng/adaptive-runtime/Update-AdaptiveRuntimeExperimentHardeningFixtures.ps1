@@ -31,10 +31,10 @@ $verificationValidation = & (Join-Path $PSScriptRoot 'Compile-AdaptiveRuntimeExp
     -CatalogContractVersion v2 -PassThru
 
 $trace = [ordered]@{
-    requirement_ids = @('REQ-QUIC-CRT-0206','REQ-QUIC-CRT-0207','REQ-QUIC-CRT-0208','REQ-QUIC-CRT-0209')
-    architecture_ids = @('ARC-QUIC-CRT-0095')
-    work_item_ids = @('WI-QUIC-CRT-0096')
-    verification_ids = @('VER-QUIC-CRT-0097')
+    requirement_ids = @('REQ-QUIC-CRT-0210','REQ-QUIC-CRT-0211','REQ-QUIC-CRT-0212','REQ-QUIC-CRT-0213')
+    architecture_ids = @('ARC-QUIC-CRT-0098')
+    work_item_ids = @('WI-QUIC-CRT-0099')
+    verification_ids = @('VER-QUIC-CRT-0100')
 }
 
 function Copy-Value([object] $Value) {
