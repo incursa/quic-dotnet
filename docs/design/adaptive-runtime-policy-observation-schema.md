@@ -4,6 +4,13 @@ title: "Adaptive Runtime Connection Observation Schema"
 
 # Adaptive Runtime Connection Observation Schema
 
+Hardening addendum: operation evidence v2 reconciles configured, forced,
+shadow, candidate, eligibility, applied, run, connection, epoch, decision,
+operation, mechanism, release, and classification facts. Behavior
+materialization v2 derives exact mappings from the versioned catalog.
+Non-behavior results use the separate operation-outcome materialization and
+are never assigned a guessed behavior.
+
 Status: unified Stage 1 four-axis runtime emission, materialization, semantic
 validation, and the first correctness smoke are checkpointed; the Stage 2
 actor-service observation, bounded epoch, versioned post-service boundary, and

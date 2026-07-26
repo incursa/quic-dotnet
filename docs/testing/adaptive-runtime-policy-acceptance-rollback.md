@@ -4,6 +4,11 @@ title: "Adaptive Runtime Acceptance And Rollback Criteria"
 
 # Adaptive Runtime Acceptance And Rollback Criteria
 
+Hardening addendum: readiness labels are not reviewed interaction actuation
+proof. Family v2 requires explicit matching axis, value, version, evidence,
+and passed review outcome. No canonical proof records were created here;
+measurement and active behavior remain unauthorized.
+
 Status: proposed criteria; no production activation authorized
 
 These criteria govern the first proposed controller migration: shadowing and,

@@ -4,6 +4,14 @@ title: "Adaptive Runtime Experiment Control Architecture"
 
 # Adaptive Runtime Experiment Control Architecture
 
+Hardening addendum: the additive v2 decision is
+[`adaptive-runtime-experiment-control-hardening.md`](adaptive-runtime-experiment-control-hardening.md).
+It makes mechanism derivation catalog-authoritative, warnings content-derived,
+expected behavior set-valued, outcomes independently aggregated, interaction
+proof explicit, and projections rebuildable from immutable inputs. V1 remains
+valid historical evidence; no reviewed interaction proof or authorization was
+created.
+
 Status: checkpoint architecture for `REQ-QUIC-CRT-0198` through
 `REQ-QUIC-CRT-0201`; measurement remains frozen; `active_internal` and
 production authorization remain false

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0100",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Experiment-control hardening verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0098",
+    "WI-QUIC-CRT-0099"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0210",
+    "REQ-QUIC-CRT-0211",
+    "REQ-QUIC-CRT-0212",
+    "REQ-QUIC-CRT-0213"
+  ],
+  "scope": "Verify the bounded correctness-only hardening of experiment-control catalogs, compiler expansion, evidence reconciliation, behavior and outcome materialization, and immutable-input projection without changing runtime mechanisms or releasing measurement.",
+  "verification_method": "Strict JSON Schema and hash validation; deterministic PowerShell fixture generation, semantic validation, materialization, and projection rebuild; catalog-mutation and ambiguous-rule proofs; content-renaming warning proof; expected-invalid correlation, epoch, release, classification, and projection checks; foundation, compiler, and runtime-evidence regressions; focused Release builds and requirement-home tests; direct SpecTrace model validation; and diff validation.",
+  "preconditions": [
+    "The source checkpoint is c7076b191f6f0b3f3d3ee94b477746fc286f4144.",
+    "The dirty primary and prior incident worktrees remain preserved.",
+    "No reviewed interaction actuation-proof records are assumed.",
+    "Measurement, campaigns, transforms, CI, push, active_internal, and production activation remain unauthorized."
+  ],
+  "procedure": [
+    "Validate the evolved schemas and three canonical v2 planning catalogs.",
+    "Prove exact catalog authority by changing only a catalog mapping and observing changed derivation.",
+    "Reject ambiguous non-composable catalog mappings.",
+    "Prove warning results remain identical after fixture rename and differ when filename text lacks matching content.",
+    "Reject candidate, applied, configured, forced, shadow, eligibility, run, connection, epoch, release, and classification inconsistencies.",
+    "Materialize behavior and non-behavior outcomes separately and reproduce both byte-for-byte.",
+    "Prove one-to-many expected behavior expansion, seven relationship types, separated family semantics, and interaction actuation-proof blocking.",
+    "Rebuild projection v2 twice from explicit immutable inputs and reject five targeted invalid inputs.",
+    "Re-run v1 foundation, compiler, and runtime-evidence validators.",
+    "Run focused builds, requirement-home tests, SpecTrace validation, and git diff --check."
+  ],
+  "expected_result": "Catalog-derived behavior, content-derived warnings, complete correlation, separate outcome accounting, set-based planning, explicit relationship and family semantics, interaction proof blocking, and general immutable projection rebuild all validate deterministically while v1 evidence remains compatible and measurement and activation remain frozen.",
+  "evidence": [
+    "docs/design/adaptive-runtime-experiment-control-hardening.md",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentHardening.ps1",
+    "eng/adaptive-runtime/New-AdaptiveRuntimeExperimentEvidenceProjection.ps1",
+    "tests/fixtures/adaptive-runtime-experiment-hardening",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0210.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0211.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0212.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0213.cs",
+    "docs/testing/adaptive-runtime-experiment-hardening-review-package-2026-07-25.md"
+  ],
+  "status_summary": "Passed on 2026-07-25 after the focused hardening regression, foundation/compiler/runtime regressions, Release builds, requirement-home tests, direct SpecTrace validation, and diff validation completed without performance, campaign, transform, CI, push, active_internal, production activation, runtime mechanism change, or another-axis migration."
+}

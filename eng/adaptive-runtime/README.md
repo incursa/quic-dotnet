@@ -1,5 +1,12 @@
 # Adaptive Runtime Evidence Validation And Dataset Materialization
 
+The correctness-only hardening entry points are
+`Update-AdaptiveRuntimeExperimentHardeningFixtures.ps1`,
+`Test-AdaptiveRuntimeExperimentHardening.ps1`, and
+`New-AdaptiveRuntimeExperimentEvidenceProjection.ps1`. They regenerate and
+validate additive v2 contracts from explicit immutable inputs. They do not
+execute campaigns or authorize performance or active behavior.
+
 This directory contains the local validation gate for adaptive-runtime policy
 campaign results plus the measurement-only catalog and offline dataset
 materialization scripts. It does not train a model or provide runtime

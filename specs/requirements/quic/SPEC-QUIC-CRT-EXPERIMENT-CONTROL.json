@@ -23,7 +23,10 @@
     "VER-QUIC-CRT-0091",
     "ARC-QUIC-CRT-0092",
     "WI-QUIC-CRT-0093",
-    "VER-QUIC-CRT-0094"
+    "VER-QUIC-CRT-0094",
+    "ARC-QUIC-CRT-0098",
+    "WI-QUIC-CRT-0099",
+    "VER-QUIC-CRT-0100"
   ],
   "purpose": "Define the planning-time architecture, schemas, canonical catalogs, compatibility boundary, fixtures, and deterministic validation needed before an adaptive-runtime experiment plan compiler may be implemented.",
   "scope": "This checkpoint governs experiment-control documents only. It does not compile plans, generate execution manifests, change runtime instrumentation or operation correlation, materialize effective behavior, project analytical data, execute performance measurement, authorize active_internal, or activate production behavior.",
@@ -377,6 +380,95 @@
       "notes": [
         "Measurement remains frozen after this checkpoint.",
         "The next action requires a separate reviewed prompt."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0210",
+      "title": "Make effective-behavior derivation catalog-authoritative",
+      "statement": "The experiment-control hardening layer MUST derive operation effective behavior from the exact versioned effective-behavior catalog rather than a second code-owned mapping; match axis, exact mechanism-event identity, operation scope, and scope version; reject absent and ambiguous exclusive rules deterministically; derive warnings from evidence and linked validation content rather than fixture names; and reconcile configured, forced, shadow-recommended, candidate, eligibility, applied, run, connection, epoch, decision, operation, release, and retained-classification facts before materialization.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0098"],
+        "implemented_by": ["WI-QUIC-CRT-0099"],
+        "verified_by": ["VER-QUIC-CRT-0100"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0210.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/AdaptiveRuntimeExperimentEvidence.Common.psm1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentHardening.ps1",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-effective-behavior-catalog-v2.json"
+        ]
+      },
+      "notes": [
+        "Changing only a catalog mapping changes derivation without changing source evidence.",
+        "No behavior is inferred from performance data."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0211",
+      "title": "Represent sets, relationships, families, and interaction proof explicitly",
+      "statement": "The experiment-control planning contracts MUST represent primary expected behaviors, possible effective behaviors, non-behavior outcomes, and activation signatures as deterministic sets; classify equivalence from expected behavior plus activation signature; provide the closed authority_overlap, structural_constraint, supplies_work, changes_observed_state, feedback_loop, shared_outcome_only, and context_effect relationship taxonomy over explicit axis or behavior nodes; distinguish family axes, fixed axes, outer contexts, workload archetypes, primary metrics, and guardrails; and block future interaction measurement execution unless readiness metadata contains one reviewed passed version-matched actuation proof for every forced behavior-distinct axis and value.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0098"],
+        "implemented_by": ["WI-QUIC-CRT-0099"],
+        "verified_by": ["VER-QUIC-CRT-0100"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0211.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/Compile-AdaptiveRuntimeExperimentPlan.ps1",
+          "schemas/adaptive-runtime-effective-behavior-catalog-v2.schema.json",
+          "schemas/adaptive-runtime-policy-relationship-graph-v2.schema.json",
+          "schemas/adaptive-runtime-experiment-family-catalog-v2.schema.json"
+        ]
+      },
+      "notes": [
+        "The canonical readiness catalog records no reviewed actuation proofs because none were established by this checkpoint.",
+        "Missing proof yields blocked_for_measurement while correctness compilation remains inspectable."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0212",
+      "title": "Separate outcome accounting and rebuild projections from immutable inputs",
+      "statement": "The evidence contracts MUST keep effective-behavior aggregates distinct from inactive, fallback, clamped, invalid, negative, error, unclassifiable, diagnostic, and terminal-release outcome aggregates; account for every operation exactly once within each applicable aggregate kind; preserve target-aware retained classifications; and rebuild the analytical projection deterministically from explicitly supplied immutable plan, validation, manifest, run, host, binary, workload, evidence, materialization, metric, artifact, and classification documents with exact identity, hash, authority-chain, epoch, decision, operation, aggregate, artifact, and classification joins.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0098"],
+        "implemented_by": ["WI-QUIC-CRT-0099"],
+        "verified_by": ["VER-QUIC-CRT-0100"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0212.cs"
+        ],
+        "upstream_refs": [
+          "schemas/adaptive-runtime-operation-outcome-materialization-v1.schema.json",
+          "schemas/adaptive-runtime-experiment-evidence-projection-v2.schema.json",
+          "eng/adaptive-runtime/New-AdaptiveRuntimeExperimentEvidenceProjection.ps1"
+        ]
+      },
+      "notes": [
+        "A mutable database is not the evidence authority.",
+        "The builder contains no repository-specific fixed input paths."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0213",
+      "title": "Prove hardening deterministically and preserve the frozen boundary",
+      "statement": "The repository MUST retain valid, warning, expected-invalid, catalog-authority, ambiguity, filename-independence, reconciliation, release-order, classification, outcome, interaction-proof, set-expansion, and projection fixtures; validate the evolved schemas and canonical catalogs; reproduce materializations and projections byte-for-byte with stable hashes; reject invalid projection inputs with closed errors; preserve all v1 regressions; pass focused builds, requirement-home tests, and SpecTrace validation; and stop without runtime mechanism changes, another axis migration, performance work, campaign execution, CI changes, push, active_internal, or production activation.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0098"],
+        "implemented_by": ["WI-QUIC-CRT-0099"],
+        "verified_by": ["VER-QUIC-CRT-0100"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0213.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentHardening.ps1",
+          "tests/fixtures/adaptive-runtime-experiment-hardening",
+          "docs/testing/adaptive-runtime-experiment-hardening-review-package-2026-07-25.md"
+        ]
+      },
+      "notes": [
+        "All performance and activation authorization fields remain false.",
+        "This is the mandatory stopping point for the bounded hardening checkpoint."
       ]
     }
   ]

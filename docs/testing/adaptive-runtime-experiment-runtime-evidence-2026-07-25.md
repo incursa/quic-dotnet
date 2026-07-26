@@ -4,6 +4,11 @@ title: "Adaptive Runtime Two-Axis Runtime Evidence Review - 2026-07-25"
 
 # Adaptive Runtime Two-Axis Runtime Evidence Review - 2026-07-25
 
+Post-checkpoint corrections are recorded in
+[`adaptive-runtime-experiment-hardening-review-package-2026-07-25.md`](adaptive-runtime-experiment-hardening-review-package-2026-07-25.md).
+The v1 evidence, expected outputs, failures, and negative fixtures remain valid
+under their original schemas.
+
 Status: correctness-only runtime/evidence vertical slice complete for
 `application_send_batch_formation` and `buffer_copy_coalescing`; measurement
 and active behavior remain unauthorized.

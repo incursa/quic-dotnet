@@ -4,6 +4,10 @@ title: "Adaptive Runtime Shadow-Mode Verification"
 
 # Adaptive Runtime Shadow-Mode Verification
 
+Hardening addendum: v2 correlation requires shadow recommendations to match
+their linked decisions and still proves shadow cannot change applied behavior.
+Warnings derive from evidence and linked validation content, never filenames.
+
 Status: receive-credit shadow foundation implemented and verified;
 application-send turn runtime foundation implemented and focused-test
 verified; one local shadow cell and one retained-negative

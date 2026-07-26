@@ -4,6 +4,13 @@ title: "Adaptive Runtime Deterministic Experiment-Plan Compiler"
 
 # Adaptive Runtime Deterministic Experiment-Plan Compiler
 
+Hardening addendum: `-CatalogContractVersion v2` preserves all primary and
+possible behaviors, non-behavior outcomes, and activation signatures rather
+than selecting the first match. Each forced varied interaction axis/value must
+resolve to one reviewed passed v1 actuation proof. The canonical readiness
+catalog contains none, so interaction correctness compilation remains
+inspectable but is `blocked_for_measurement`.
+
 Status: compiler and dry-run manifest checkpoint; measurement and active
 behavior remain unauthorized
 

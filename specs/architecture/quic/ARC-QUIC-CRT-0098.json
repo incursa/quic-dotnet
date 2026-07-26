@@ -1,0 +1,64 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0098",
+  "artifact_type": "architecture",
+  "status": "proposed",
+  "title": "Deterministic experiment-control hardening",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0210 through REQ-QUIC-CRT-0213 by removing duplicate behavior authority, making warnings and joins content-derived, separating behavior and outcome accounting, hardening planning metadata, and rebuilding projections from explicit immutable inputs without changing runtime mechanisms or releasing measurement.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0089",
+    "ARC-QUIC-CRT-0092",
+    "ARC-QUIC-CRT-0095",
+    "WI-QUIC-CRT-0099",
+    "VER-QUIC-CRT-0100"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0210",
+    "REQ-QUIC-CRT-0211",
+    "REQ-QUIC-CRT-0212",
+    "REQ-QUIC-CRT-0213"
+  ],
+  "key_components": [
+    "docs/design/adaptive-runtime-experiment-control-hardening.md",
+    "eng/adaptive-runtime/AdaptiveRuntimeExperimentEvidence.Common.psm1",
+    "eng/adaptive-runtime/Compile-AdaptiveRuntimeExperimentPlan.ps1",
+    "eng/adaptive-runtime/New-AdaptiveRuntimeExperimentEvidenceProjection.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentHardening.ps1",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-effective-behavior-catalog-v2.json",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-policy-relationship-graph-v2.json",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-experiment-family-catalog-v2.json",
+    "tests/fixtures/adaptive-runtime-experiment-hardening"
+  ],
+  "design_summary": "The versioned effective-behavior catalog is the sole mechanism-event mapping authority. A strict offline validator reconciles full decision, operation, epoch, release, and classification identity before deterministic materialization. Behavior aggregates contain only catalog-derived mechanisms; a separate outcome contract retains inactive and failure accounting. Planning expansion preserves sets of possible behaviors and activation signatures, relationship graph v2 is axis-oriented with explicit node kinds, family v2 separates axes from contexts and metrics, and absent reviewed interaction actuation proofs block measurement eligibility. Projection v2 accepts explicit immutable document paths and rejects stale hashes or broken joins.",
+  "data_and_state_considerations": "All evolved contracts are additive versions and preserve v1 historical evidence. Canonical JSON hashing excludes only the root content_sha256 field. Set-like arrays sort ordinally while treatment order remains semantic. The projection stores document references and logical joins rather than creating a mutable evidence authority. Runtime evidence remains bounded and no hot-path representation changes in this checkpoint.",
+  "edge_cases_and_constraints": [
+    "Catalog rules with no exact mechanism match remain explicitly unclassifiable.",
+    "Two non-composable catalog rules matching one operation are ambiguous and invalid.",
+    "Renaming a fixture cannot change its warnings.",
+    "Release epochs may follow decision epochs but never precede them.",
+    "One configured value may map to several possible effective behaviors.",
+    "Shared fallback outcomes do not collapse otherwise distinct expected treatments.",
+    "No reviewed interaction actuation proofs are fabricated by this checkpoint.",
+    "Measurement and active behavior authorization remain false."
+  ],
+  "alternatives_considered": [
+    "Retain a hardcoded validator map beside the catalog. Rejected because the authorities can drift.",
+    "Encode inactive and failure counters inside behavior aggregates. Rejected because those outcomes can lack a behavior ID.",
+    "Keep fixture-path projection assembly. Rejected because it cannot rebuild arbitrary immutable evidence.",
+    "Treat existing readiness labels as reviewed interaction proof. Rejected because the cited proof artifacts were not established by this checkpoint."
+  ],
+  "risks": [
+    "Future catalog revisions can change derivation and therefore require explicit version and hash pinning.",
+    "Actuation-proof readiness requires later reviewed evidence records before measurement-capable interaction execution.",
+    "The projection remains a logical file-backed contract rather than a selected long-term database.",
+    "Additional axes require separate reviewed migration and fixture coverage."
+  ],
+  "open_questions": [
+    "Which reviewed evidence artifact format should carry future actuation-proof records?",
+    "Which remaining implemented axis should be migrated after this hardening review?",
+    "What separate review will authorize a correctness-only interaction execution?"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0099",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Harden adaptive-runtime experiment-control consistency",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Implement REQ-QUIC-CRT-0210 through REQ-QUIC-CRT-0213 as additive catalog, validation, materialization, outcome-accounting, projection, fixture, and documentation hardening with no runtime mechanism changes.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0098",
+    "VER-QUIC-CRT-0100"
+  ],
+  "design_links": ["ARC-QUIC-CRT-0098"],
+  "verification_links": ["VER-QUIC-CRT-0100"],
+  "addresses": [
+    "REQ-QUIC-CRT-0210",
+    "REQ-QUIC-CRT-0211",
+    "REQ-QUIC-CRT-0212",
+    "REQ-QUIC-CRT-0213"
+  ],
+  "planned_changes": "Replace duplicate behavior mapping with exact catalog resolution; derive warnings from content; enforce complete decision, operation, epoch, release, and classification reconciliation; add set-based expected-behavior, relationship, family, outcome, evidence, materialization, and projection contracts; block interactions missing reviewed actuation proofs; add a general immutable-input projection builder; retain expected-invalid fixtures; synchronize trace and review documentation.",
+  "verification_plan": "Run the hardening fixture generator and regression; validate all evolved schemas and canonical documents; require exact errors for every invalid evidence and projection case; prove catalog-only mapping changes, ambiguity rejection, filename-independent warnings, separate outcome accounting, set-based expansion, interaction proof blocking, byte-identical materialization and projection, and stable hashes; preserve foundation, compiler, and runtime-evidence regressions; build the library and tests; run focused requirement-home tests; validate the four SpecTrace artifacts; and run git diff --check. Run no performance, campaign, transform, CI, activation, migration, or push action.",
+  "out_of_scope": [
+    "Runtime policy mechanism changes",
+    "Migration of another adaptive-runtime axis",
+    "Performance or ProtocolLab execution",
+    "Large transforms, normalization, curation, splits, or ML work",
+    "Long-term analytical database selection",
+    "CI changes, active_internal, production activation, or push"
+  ]
+}

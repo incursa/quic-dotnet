@@ -4,6 +4,11 @@ title: "Adaptive Runtime Offline Dataset And Provenance Contract"
 
 # Adaptive Runtime Offline Dataset And Provenance Contract
 
+Hardening addendum: projection v2 accepts explicit immutable plan, validation,
+manifest, run, host, binary, workload, evidence, materialization, metric,
+artifact, and classification documents. It checks every hash and authority
+reference. No dataset transform or performance data was produced.
+
 Status: proposed contract; no training or production inference authorized
 
 The offline dataset contains one row per bounded connection epoch. Rows are

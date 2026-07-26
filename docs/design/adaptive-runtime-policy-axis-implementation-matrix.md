@@ -7,6 +7,12 @@ title: "Adaptive Runtime Policy Axis Implementation Matrix"
 Status: implementation-breadth checkpoint; measurement and active behavior
 remain unauthorized
 
+Experiment-control hardening did not change either migrated runtime mechanism.
+Additive v2 offline contracts now provide catalog-authoritative derivation,
+exact correlation, separate outcome aggregates, set-valued planning, and
+immutable projection rebuild. Interaction measurement remains blocked because
+no reviewed actuation-proof records were created.
+
 This matrix is the checkpoint-oriented companion to
 [`adaptive-runtime-policy-axis-roadmap.md`](adaptive-runtime-policy-axis-roadmap.md).
 The roadmap remains the approved direction and is not replaced by this file.
