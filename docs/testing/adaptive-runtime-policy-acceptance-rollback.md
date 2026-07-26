@@ -191,3 +191,11 @@ to exactly one terminal release. Inactive, clamped, fallback, invalid, and
 negative rows remain retained. These correctness proofs do not clear a
 performance-acceptance, interaction-execution, `active_internal`, or
 production-activation gate.
+
+The independent actuation-proof checkpoint adds candidate-only rollback
+evidence for `single_eligible` and `memory_conservative`. Each proof returns to
+`legacy_current` in a separate operation and verifies the exact legacy prefix;
+the buffer proof also retains exact terminal release evidence for every
+materialized owner. The records remain external-review candidates and the
+unapplied catalog-promotion patch is not acceptance. All performance,
+interaction, and activation gates remain closed.

@@ -633,3 +633,28 @@ recomputes behavior and outcome materializations before accepting them.
 These scripts are offline correctness tooling. They do not read catalogs on a
 runtime path, launch a workload, migrate an axis, authorize measurement, or
 enable active policy behavior.
+
+## Independent actuation-proof candidates
+
+The two first send-composition values have independent, correctness-only proof
+candidates under
+`tests/fixtures/adaptive-runtime-independent-actuation-proof/`.
+The focused harness emits existing batch and buffer operation evidence plus
+buffer owner-release observations. The offline bridge assembles the fifteen
+immutable projection inputs, recomputes both materializations, rebuilds
+projection v3 twice, and emits candidate-only proof evidence:
+
+```powershell
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeIndependentActuationProof.ps1
+```
+
+The regression validates 36 content-hashed documents, two candidate proofs,
+10 captured operations, five exact buffer releases, and 17 expected-negative
+cases. Each capture forces at most one behavior-distinct axis. No interaction
+cell or performance workload is executed.
+
+The optional
+`docs/testing/adaptive-runtime-independent-actuation-proof-promotion.json-patch`
+is external-review guidance only. It has not been applied. The canonical
+family catalog has no reviewed proof records, measurement remains frozen, and
+active behavior remains unauthorized.

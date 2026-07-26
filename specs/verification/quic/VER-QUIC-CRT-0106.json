@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0106",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "Independent adaptive-runtime actuation-proof verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -42,12 +42,9 @@
     "docs/design/adaptive-runtime-independent-actuation-proof.md",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeIndependentActuationProof.ps1",
     "tests/fixtures/adaptive-runtime-independent-actuation-proof",
-    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0218.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0219.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0220.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0221.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0222.cs",
     "docs/testing/adaptive-runtime-independent-actuation-proof-review-package-2026-07-26.md"
   ],
-  "status_summary": "Planned from b5654591; evidence and final results will be recorded after the two independent correctness-only proof candidates are generated and validated."
+  "status_summary": "Passed from b5654591: 36 content-hashed candidate documents, 10 captured operations, five exact buffer releases, two independently rebuilt 15-input projections, and 17 closed negative cases validated cleanly. Both proofs remain candidate-only and external-review pending; interaction execution, performance measurement, active behavior, CI changes, and push did not occur."
 }

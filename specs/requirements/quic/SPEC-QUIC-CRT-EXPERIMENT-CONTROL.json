@@ -571,7 +571,8 @@
         "implemented_by": ["WI-QUIC-CRT-0105"],
         "verified_by": ["VER-QUIC-CRT-0106"],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0218.cs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0219.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0222.cs"
         ],
         "upstream_refs": [
           "schemas/adaptive-runtime-actuation-proof-evidence-v1.schema.json",
@@ -613,7 +614,8 @@
         "implemented_by": ["WI-QUIC-CRT-0105"],
         "verified_by": ["VER-QUIC-CRT-0106"],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0220.cs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0219.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0222.cs"
         ],
         "upstream_refs": [
           "src/Incursa.Quic/QuicBufferCopyObservation.cs",
@@ -634,7 +636,8 @@
         "implemented_by": ["WI-QUIC-CRT-0105"],
         "verified_by": ["VER-QUIC-CRT-0106"],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0221.cs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0219.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0222.cs"
         ],
         "upstream_refs": [
           "eng/adaptive-runtime/New-AdaptiveRuntimeIndependentActuationProof.ps1",

@@ -1,0 +1,51 @@
+[
+  {
+    "op": "test",
+    "path": "/content_sha256",
+    "value": "6743ec6aeae8faecddf051c699f0dd06feb2c12198b4e505fcd177e2d2e0f880"
+  },
+  {
+    "op": "add",
+    "path": "/reviewed_actuation_proofs/0",
+    "value": {
+      "proof_id": "proof_candidate.application_send_batch_formation.single_eligible.v1",
+      "axis_id": "application_send_batch_formation",
+      "policy_value": "single_eligible",
+      "proof_version": 1,
+      "review_outcome": "passed",
+      "evidence_ref": {
+        "document_id": "proof_candidate.application_send_batch_formation.single_eligible",
+        "schema_version": "adaptive-runtime-actuation-proof-evidence-v1",
+        "document_version": 1,
+        "content_sha256": "9b8930dfe177f028bae00ea61e1f23389f77a2f4cce5c624d5838c7318a1b5e1"
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/reviewed_actuation_proofs/1",
+    "value": {
+      "proof_id": "proof_candidate.buffer_copy_coalescing.memory_conservative.v1",
+      "axis_id": "buffer_copy_coalescing",
+      "policy_value": "memory_conservative",
+      "proof_version": 1,
+      "review_outcome": "passed",
+      "evidence_ref": {
+        "document_id": "proof_candidate.buffer_copy_coalescing.memory_conservative",
+        "schema_version": "adaptive-runtime-actuation-proof-evidence-v1",
+        "document_version": 1,
+        "content_sha256": "8830a37735e7cb8cd361dacfc69da9824dfe6916e29686192a46ea144d4d1760"
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/experiment_families/1/actuation_proof_refs/0",
+    "value": "proof_candidate.application_send_batch_formation.single_eligible.v1"
+  },
+  {
+    "op": "add",
+    "path": "/experiment_families/1/actuation_proof_refs/1",
+    "value": "proof_candidate.buffer_copy_coalescing.memory_conservative.v1"
+  }
+]

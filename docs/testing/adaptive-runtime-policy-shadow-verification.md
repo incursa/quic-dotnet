@@ -172,3 +172,10 @@ mechanism. The focused batch and buffer requirement-home tests prove this
 directly. A shadow row whose recommendation changes applied behavior is
 rejected as `shadow_recommendation_changed_applied_behavior`; it cannot be
 retained as a valid treatment.
+
+The independent actuation-proof checkpoint carries this rule into both
+candidate bundles. Each one-axis capture contains a distinct shadow operation
+whose recommendation is behavior-distinct while the candidate, applied value,
+and mechanism remain `legacy_current`. These are correctness-only candidate
+records pending external review; they do not clear the shadow exit gate,
+authorize interaction execution, or authorize measurement.

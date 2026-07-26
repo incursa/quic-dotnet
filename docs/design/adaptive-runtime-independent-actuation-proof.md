@@ -142,3 +142,40 @@ behavior-distinct forced axes.
 These proofs establish correctness and attribution only. They do not authorize
 measurement, performance comparison, interaction execution, another axis,
 multi-axis runtime capability, `active_internal`, or production behavior.
+
+## Completed Candidate Evidence
+
+The batch candidate contains five runtime-derived operations and no releases.
+Its immutable chain materializes five behavior aggregates, two outcome
+aggregates, and a 15-input analytical projection. The final hashes are:
+
+- operation evidence:
+  `76f42043918cf99d41dfa97d50083b028c27dc460e0494979281116bfc50f3c7`;
+- behavior materialization:
+  `6a2cbafc27ee98e833c3c73b5d308da2e17dcf39d3a317a132e48841df52052a`;
+- outcome materialization:
+  `b55c03a4e82717868dcae6227db06127c0e5dabff9c052d43990e9d042dd9c3e`;
+- projection:
+  `e1c2e7144a2e1f55e65c294268967ede7e111469345f68be3be2e435aed25712`;
+- proof candidate:
+  `9b8930dfe177f028bae00ea61e1f23389f77a2f4cce5c624d5838c7318a1b5e1`.
+
+The buffer candidate contains five runtime-derived operations and five exact
+terminal releases. Its immutable chain materializes five behavior aggregates,
+two outcome aggregates, and a 15-input analytical projection. The final hashes
+are:
+
+- operation evidence:
+  `fe5626f5bcb543eae612289ddaee171a9e3d9f8116e1278344bb0629b24cb2b9`;
+- behavior materialization:
+  `bd6b17696d4c1e4efb3eb768ea076b210159fca9703aa3a7c4bf4a0ed7688ed7`;
+- outcome materialization:
+  `55bff657b1b8f3590c4ad4dd362f03d7fab9f6bf9cef105139b1f45449a5fa26`;
+- projection:
+  `7e925302bf5ad341359abaab1ed994f0563c5cbc273c1caa53a18a6b01982ea5`;
+- proof candidate:
+  `8830a37735e7cb8cd361dacfc69da9824dfe6916e29686192a46ea144d4d1760`.
+
+Both candidates retain `review_status = candidate`,
+`review_outcome = null`, performance authorization false, and active behavior
+authorization false. The canonical family catalog is unchanged.
