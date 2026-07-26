@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/incursa/quic-dotnet/schemas/adaptive-runtime-send-composition-mechanism-capture-v1.schema.json",
+  "title": "Adaptive runtime send-composition mechanism capture v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "run_id",
+    "binary_cohort_id",
+    "manifest_content_sha256",
+    "exact_cell_id",
+    "forced_behavior_distinct_axis_count",
+    "operations",
+    "releases",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "adaptive-runtime-send-composition-mechanism-capture-v1"
+    },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "run_id": { "$ref": "#/$defs/id" },
+    "binary_cohort_id": { "$ref": "#/$defs/id" },
+    "manifest_content_sha256": { "$ref": "#/$defs/hash" },
+    "exact_cell_id": {
+      "const": "cell.send_composition.correctness.000"
+    },
+    "forced_behavior_distinct_axis_count": { "const": 2 },
+    "operations": {
+      "type": "array",
+      "minItems": 11,
+      "items": { "$ref": "#/$defs/operationWrapper" }
+    },
+    "releases": {
+      "type": "array",
+      "minItems": 4,
+      "items": { "$ref": "#/$defs/releaseWrapper" }
+    },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "positiveInteger": { "type": "integer", "minimum": 1 },
+    "nonNegativeInteger": { "type": "integer", "minimum": 0 },
+    "axis": {
+      "enum": [
+        "application_send_batch_formation",
+        "buffer_copy_coalescing"
+      ]
+    },
+    "case": {
+      "enum": [
+        "both_distinct",
+        "batch_distinct_buffer_inactive",
+        "batch_inactive_buffer_distinct",
+        "both_inactive",
+        "safety_fallback",
+        "shadow_neutrality",
+        "rollback"
+      ]
+    },
+    "nullableValue": {
+      "oneOf": [
+        {
+          "enum": [
+            "legacy_current",
+            "single_eligible",
+            "memory_conservative"
+          ]
+        },
+        { "type": "null" }
+      ]
+    },
+    "operationWrapper": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["interaction_case", "axis_id", "evidence"],
+      "properties": {
+        "interaction_case": { "$ref": "#/$defs/case" },
+        "axis_id": { "$ref": "#/$defs/axis" },
+        "evidence": { "$ref": "#/$defs/operation" }
+      }
+    },
+    "releaseWrapper": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["interaction_case", "axis_id", "evidence"],
+      "properties": {
+        "interaction_case": { "$ref": "#/$defs/case" },
+        "axis_id": { "const": "buffer_copy_coalescing" },
+        "evidence": { "$ref": "#/$defs/release" }
+      }
+    },
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "connection_key",
+        "epoch_sequence",
+        "decision_instance_id",
+        "operation_id",
+        "configured_value",
+        "forced_value",
+        "shadow_recommendation",
+        "candidate_value",
+        "operation_eligibility_result",
+        "operation_eligibility_reason",
+        "applied_value",
+        "operation_kind",
+        "mechanism_event_id",
+        "legal_work_count",
+        "applied_work_count",
+        "legal_bytes",
+        "applied_bytes",
+        "legal_order_keys",
+        "applied_order_keys",
+        "result",
+        "fallback_or_safety_reason",
+        "terminal_outcome",
+        "capture_case"
+      ],
+      "properties": {
+        "connection_key": { "$ref": "#/$defs/id" },
+        "epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "decision_instance_id": { "$ref": "#/$defs/positiveInteger" },
+        "operation_id": { "$ref": "#/$defs/positiveInteger" },
+        "configured_value": {
+          "enum": ["legacy_current", "single_eligible", "memory_conservative"]
+        },
+        "forced_value": { "$ref": "#/$defs/nullableValue" },
+        "shadow_recommendation": { "$ref": "#/$defs/nullableValue" },
+        "candidate_value": {
+          "enum": ["legacy_current", "single_eligible", "memory_conservative"]
+        },
+        "operation_eligibility_result": {
+          "enum": ["eligible", "ineligible", "clamped"]
+        },
+        "operation_eligibility_reason": { "$ref": "#/$defs/id" },
+        "applied_value": {
+          "enum": ["legacy_current", "single_eligible", "memory_conservative"]
+        },
+        "operation_kind": { "enum": ["packet_plan", "combined_send"] },
+        "mechanism_event_id": { "$ref": "#/$defs/id" },
+        "legal_work_count": { "$ref": "#/$defs/nonNegativeInteger" },
+        "applied_work_count": { "$ref": "#/$defs/nonNegativeInteger" },
+        "legal_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "applied_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "legal_order_keys": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "applied_order_keys": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "result": {
+          "enum": [
+            "applied",
+            "inactive",
+            "fallback",
+            "clamped",
+            "error",
+            "unclassifiable"
+          ]
+        },
+        "fallback_or_safety_reason": {
+          "oneOf": [{ "$ref": "#/$defs/id" }, { "type": "null" }]
+        },
+        "terminal_outcome": { "$ref": "#/$defs/id" },
+        "capture_case": { "$ref": "#/$defs/id" }
+      }
+    },
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "connection_key",
+        "operation_epoch_sequence",
+        "decision_epoch_sequence",
+        "release_epoch_sequence",
+        "decision_instance_id",
+        "operation_id",
+        "release_count",
+        "terminal_outcome",
+        "release_reason",
+        "validity"
+      ],
+      "properties": {
+        "connection_key": { "$ref": "#/$defs/id" },
+        "operation_epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "decision_epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "release_epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "decision_instance_id": { "$ref": "#/$defs/positiveInteger" },
+        "operation_id": { "$ref": "#/$defs/positiveInteger" },
+        "release_count": { "const": 1 },
+        "terminal_outcome": { "const": "released" },
+        "release_reason": { "$ref": "#/$defs/id" },
+        "validity": { "$ref": "#/$defs/id" }
+      }
+    }
+  }
+}
