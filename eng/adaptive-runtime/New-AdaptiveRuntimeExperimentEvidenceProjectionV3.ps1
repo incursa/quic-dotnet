@@ -58,6 +58,9 @@ function Get-ProjectionSchemaFile {
         'adaptive-runtime-experiment-plan-validation-v2' {
             'adaptive-runtime-experiment-plan-validation-v2.schema.json'
         }
+        'adaptive-runtime-experiment-plan-validation-v1' {
+            'adaptive-runtime-experiment-plan-validation-v1.schema.json'
+        }
         'adaptive-runtime-compiled-execution-manifest-v1' {
             'adaptive-runtime-compiled-execution-manifest-v1.schema.json'
         }

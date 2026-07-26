@@ -117,7 +117,7 @@
       "properties": {
         "fingerprint_id": { "$ref": "#/$defs/id" },
         "manifest_ref": { "$ref": "#/$defs/documentRef" },
-        "os_platform": { "$ref": "#/$defs/id" },
+        "os_platform": { "type": "string", "minLength": 1 },
         "os_architecture": { "$ref": "#/$defs/id" },
         "physical_host_id": { "$ref": "#/$defs/nullableId" },
         "vm_id": { "$ref": "#/$defs/nullableId" },

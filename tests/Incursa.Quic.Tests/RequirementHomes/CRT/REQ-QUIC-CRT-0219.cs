@@ -84,10 +84,15 @@ public sealed class REQ_QUIC_CRT_0219
                 hasForcedValue: true,
                 forcedValue:
                     QuicApplicationSendBatchPolicyMode.SingleEligible,
-                plan: QuicApplicationSendPlan.None(
-                    QuicSendPolicyBlockedReason.CongestionLimited),
+                plan: CreateBatchPlan(
+                    QuicApplicationSendBatchPolicyMode.LegacyCurrent,
+                    eligibleWriteCount: 3,
+                    selectedWriteCount: 3,
+                    eligibleWriteBytes: 300,
+                    selectedWriteBytes: 300),
                 result: "clamped",
-                fallbackReason: "resource_guard"),
+                fallbackReason: "lifecycle_guard",
+                forceLifecycleGuard: true),
             CaptureBatchOperation(
                 "connection.batch.shadow",
                 "shadow_neutrality",
@@ -179,7 +184,17 @@ public sealed class REQ_QUIC_CRT_0219
                 appliedSourceSegments: 2,
                 legalBytes: 200,
                 appliedBytes: 200);
-        object fallback = CaptureBufferFallback();
+        (object Operation, object Release) fallback =
+            CaptureBufferRuntimeOperation(
+                "connection.buffer.fallback",
+                "safety_fallback",
+                QuicBufferCopyObservationMode.ObserveOnly,
+                QuicBufferCopyPolicyValue.MemoryConservative,
+                legalSourceSegments: 4,
+                appliedSourceSegments: 4,
+                legalBytes: 400,
+                appliedBytes: 400,
+                validity: QuicBufferCopyValidity.StaleRequiredInput);
         (object Operation, object Release) shadow =
             CaptureBufferRuntimeOperation(
                 "connection.buffer.shadow",
@@ -205,7 +220,7 @@ public sealed class REQ_QUIC_CRT_0219
         [
             positive.Operation,
             inactive.Operation,
-            fallback,
+            fallback.Operation,
             shadow.Operation,
             rollback.Operation,
         ];
@@ -213,6 +228,7 @@ public sealed class REQ_QUIC_CRT_0219
         [
             positive.Release,
             inactive.Release,
+            fallback.Release,
             shadow.Release,
             rollback.Release,
         ];
@@ -234,7 +250,7 @@ public sealed class REQ_QUIC_CRT_0219
         Assert.Equal(
             1,
             positiveRelease.GetProperty("release_count").GetInt32());
-        JsonElement fallbackElement = ToElement(fallback);
+        JsonElement fallbackElement = ToElement(fallback.Operation);
         Assert.Equal(
             "legacy_current",
             fallbackElement.GetProperty("applied_value").GetString());
@@ -266,7 +282,8 @@ public sealed class REQ_QUIC_CRT_0219
         QuicApplicationSendPlan plan,
         string result,
         string? fallbackReason,
-        bool forceShadowRecommendation = false)
+        bool forceShadowRecommendation = false,
+        bool forceLifecycleGuard = false)
     {
         QuicApplicationSendBatchObservation observation =
             CreateBatchObservation(planSequence, in plan);
@@ -276,6 +293,13 @@ public sealed class REQ_QUIC_CRT_0219
             {
                 MissingSignalMask =
                     QuicApplicationSendBatchSignalMask.MaximumPayloadBytes,
+            };
+        }
+        if (forceLifecycleGuard)
+        {
+            observation = observation with
+            {
+                LifecycleFlags = QuicAdaptiveRuntimeLifecycle.Terminal,
             };
         }
 
@@ -334,7 +358,8 @@ public sealed class REQ_QUIC_CRT_0219
             int legalSourceSegments,
             int appliedSourceSegments,
             int legalBytes,
-            int appliedBytes)
+            int appliedBytes,
+            QuicBufferCopyValidity validity = QuicBufferCopyValidity.None)
     {
         using QuicConnectionRuntime runtime =
             QuicS13ApplicationSendDelayTestSupport
@@ -345,6 +370,11 @@ public sealed class REQ_QUIC_CRT_0219
             {
                 ForcedReceiveCreditPolicyMode =
                     QuicReceiveCreditPolicyMode.LegacyCurrent,
+                AdaptiveRuntimeShadowEnabled = true,
+                AdaptiveRuntimeShadowEpochInterval =
+                    TimeSpan.FromMilliseconds(250),
+                AdaptiveRuntimeShadowEpochSink =
+                    new RecordingShadowEpochSink(),
                 ForcedBufferCopyPolicyValue = forcedValue,
                 BufferCopyObservationMode = mode,
                 BufferCopyEvidenceSink = sink,
@@ -354,7 +384,7 @@ public sealed class REQ_QUIC_CRT_0219
             mode,
             forcedValue,
             legalSourceSegments,
-            QuicBufferCopyValidity.None,
+            validity,
             lifecycleGuard: false);
         QuicBufferCopyLifetimeToken token =
             runtime.TryPublishBufferCopyObservation(
@@ -383,12 +413,19 @@ public sealed class REQ_QUIC_CRT_0219
             appliedBytes);
         QuicBufferReleaseObservation release = Assert.Single(sink.Releases);
 
-        string result = captureCase == "structurally_inactive"
-            ? "inactive"
-            : "applied";
-        string? fallbackReason = captureCase == "structurally_inactive"
-            ? "source_segment_count_within_cap"
-            : null;
+        string result = captureCase switch
+        {
+            "structurally_inactive" => "inactive",
+            "safety_fallback" => "clamped",
+            _ => "applied",
+        };
+        string? fallbackReason = captureCase switch
+        {
+            "structurally_inactive" => "source_segment_count_within_cap",
+            "safety_fallback" =>
+                EligibilityReason(evidence.EligibilityReason),
+            _ => null,
+        };
         object operation = new
         {
             connection_key = connectionKey,
@@ -433,54 +470,6 @@ public sealed class REQ_QUIC_CRT_0219
             validity = BufferReleaseValidity(release.Validity),
         };
         return (operation, releaseRecord);
-    }
-
-    private static object CaptureBufferFallback()
-    {
-        QuicBufferCopyPolicyDecision decision = QuicBufferCopyPolicy.Evaluate(
-            QuicBufferCopyObservationMode.ObserveOnly,
-            QuicBufferCopyPolicyValue.MemoryConservative,
-            legalSourceSegmentCount: 4,
-            QuicBufferCopyValidity.None,
-            lifecycleGuard: true);
-        QuicBufferCopyCoalescingOperationEvidence evidence =
-            QuicBufferCopyPolicy.CreateOperationEvidence(
-                epochSequence: 1,
-                decisionInstanceSequence: 103,
-                operationSequence: 103,
-                QuicBufferCopyPath.CombinedApplicationSend,
-                in decision,
-                legalSourceSegmentCount: 4,
-                appliedSourceSegmentCount: 0,
-                legalBytes: 400,
-                appliedBytes: 0,
-                ownerRented: false);
-        return new
-        {
-            connection_key = "connection.buffer.fallback",
-            epoch_sequence = evidence.EpochSequence,
-            decision_instance_id = evidence.DecisionInstanceSequence,
-            operation_id = evidence.OperationSequence,
-            configured_value = "legacy_current",
-            forced_value = "memory_conservative",
-            shadow_recommendation = (string?)null,
-            candidate_value = BufferValue(evidence.CandidateValue),
-            operation_eligibility_result =
-                Eligibility(evidence.EligibilityResult),
-            operation_eligibility_reason =
-                EligibilityReason(evidence.EligibilityReason),
-            applied_value = BufferValue(decision.AppliedValue),
-            operation_kind = "combined_send",
-            mechanism_event_id = BufferEvent(evidence.MechanismEvent),
-            legal_work_count = evidence.LegalSourceSegmentCount,
-            applied_work_count = evidence.AppliedSourceSegmentCount,
-            legal_bytes = evidence.LegalBytes,
-            applied_bytes = evidence.AppliedBytes,
-            result = "clamped",
-            fallback_or_safety_reason = "lifecycle_guard",
-            terminal_outcome = "owner_not_rented",
-            capture_case = "safety_fallback",
-        };
     }
 
     private static object NewRawCapture(
@@ -651,7 +640,7 @@ public sealed class REQ_QUIC_CRT_0219
         => value switch
         {
             QuicBufferCopyCoalescingMechanismEvent.ExactCombinedPrefixRetained
-                => "mechanism_event.buffer_exact_prefix",
+                => "mechanism_event.buffer_legacy_prefix",
             QuicBufferCopyCoalescingMechanismEvent
                 .LowerTwoSourceSegmentCapApplied =>
                 "mechanism_event.buffer_two_source_cap",
@@ -689,5 +678,15 @@ public sealed class REQ_QUIC_CRT_0219
             Releases.Add(observation);
             return true;
         }
+    }
+
+    private sealed class RecordingShadowEpochSink :
+        IQuicAdaptiveRuntimeShadowEpochSink
+    {
+        public bool TryPublish(
+            in QuicAdaptiveRuntimeConnectionObservation observation,
+            in QuicReceiveCreditPolicySnapshot snapshot,
+            in QuicAdaptiveRuntimePostServiceBoundary boundary)
+            => true;
     }
 }
