@@ -84,10 +84,18 @@
       "type": "array",
       "minItems": 4,
       "items": {
-        "type": "array",
-        "minItems": 4,
-        "maxItems": 4,
-        "items": { "enum": ["A", "B", "C", "D"] }
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["order_id", "cell_ids"],
+        "properties": {
+          "order_id": { "$ref": "#/$defs/id" },
+          "cell_ids": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "items": { "enum": ["A", "B", "C", "D"] }
+          }
+        }
       }
     },
     "measurement_authorization": { "const": true },

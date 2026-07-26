@@ -158,8 +158,17 @@ if (-not [string]::IsNullOrWhiteSpace($ManifestPath)) {
         $manifest.measurement_authorization -eq $true -and
         $manifest.active_behavior_authorization -eq $false -and
         $manifest.performance_acceptance_authorization -eq $false -and
-        $manifest.production_activation_authorization -eq $false
+            $manifest.production_activation_authorization -eq $false
     ) 'performance_manifest_authorization_invalid'
+    Assert-PerformanceCondition (@($manifest.orders).Count -eq 4) `
+        'performance_manifest_order_count_invalid'
+    foreach ($manifestOrder in @($manifest.orders)) {
+        Assert-PerformanceCondition (
+            (ConvertTo-Json @($manifestOrder.cell_ids |
+                Sort-Object -CaseSensitive) -Compress) -ceq
+                '["A","B","C","D"]'
+        ) 'performance_manifest_order_not_permutation'
+    }
 }
 
 $classifications = [Collections.Generic.List[object]]::new()

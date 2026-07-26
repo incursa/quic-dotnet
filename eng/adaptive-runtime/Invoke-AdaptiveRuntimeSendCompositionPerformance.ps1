@@ -190,7 +190,16 @@ $manifest = [pscustomobject][ordered]@{
             performance_comparable = [bool]$_.performance_comparable
         }
     })
-    orders = $campaign.design.orders
+    orders = @(
+        for ($orderIndex = 0;
+            $orderIndex -lt @($campaign.design.orders).Count;
+            $orderIndex++) {
+            [pscustomobject][ordered]@{
+                order_id = "order.$orderIndex"
+                cell_ids = @($campaign.design.orders[$orderIndex])
+            }
+        }
+    )
     measurement_authorization = $true
     active_behavior_authorization = $false
     performance_acceptance_authorization = $false
