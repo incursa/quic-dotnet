@@ -135,3 +135,20 @@ authorize that axis's runtime implementation or active behavior.
   records the earlier local materialization and split block.
 - `eng/adaptive-runtime/` contains the permanent schedule, local-cell,
   evidence-validation, catalog, and append-only dataset pipeline commands.
+
+## 2026-07-26 send-composition performance milestone
+
+The exact reviewed `application_send_batch_formation` /
+`buffer_copy_coalescing` family received one bounded offline measurement
+release. The manifest-v2 campaign at source
+`b3c3953907483566cc2b049a2238febe98a166eb` retained 160 raw runs: 66
+performance-eligible, 18 expected-equivalent, 40 inactive-control, and 36
+activation-missing. Correctness and owner release passed for every run.
+
+The four complete training contexts produced uncertain batch, buffer, and
+configured-interaction estimates. No holdout context supplied a complete
+eligible four-cell comparison, so the append-only decision is
+`measurement_completed_more_context_required`. No shadow selector, active
+policy, threshold, or production rule was created. Exact identities, hashes,
+commands, and guardrails are recorded in
+`adaptive-runtime-send-composition-performance-review-package-2026-07-26.md`.

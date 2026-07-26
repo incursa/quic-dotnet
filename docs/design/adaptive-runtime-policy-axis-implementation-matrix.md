@@ -4,17 +4,16 @@ title: "Adaptive Runtime Policy Axis Implementation Matrix"
 
 # Adaptive Runtime Policy Axis Implementation Matrix
 
-Status: implementation-breadth checkpoint; measurement and active behavior
-remain unauthorized
+Status: implementation-breadth checkpoint; bounded send-composition
+measurement complete; active behavior remains unauthorized
 
 Experiment-control hardening did not change either migrated runtime mechanism.
-Additive v2 offline contracts now provide catalog-authoritative derivation,
-exact correlation, separate outcome aggregates, set-valued planning, and
-immutable projection rebuild. Interaction measurement remains blocked because
-no reviewed actuation-proof records were created. Two independent
-external-review candidate records now exist for `single_eligible` and
-`memory_conservative`; neither is reviewed, passed, or present in the
-canonical family catalog.
+Additive v2 offline contracts provide catalog-authoritative derivation, exact
+correlation, separate outcome aggregates, set-valued planning, and immutable
+projection rebuild. The exact `single_eligible` and `memory_conservative`
+actuation proofs and their correctness-only interaction are independently
+reviewed and passed. A bounded offline four-configured-cell campaign has now
+completed; it does not authorize active behavior.
 
 The evidence-integrity closeout adds v3 operation evidence and projection
 contracts, v3 behavior materialization, v2 outcome materialization, and a v1
@@ -41,12 +40,12 @@ axis remains inactive unless a later explicit review authorizes
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `receive_credit_publication` | 0 foundation | retained read-dominant selector | `immediate` | yes | yes | yes | yes | flow-control progress, pending-credit flush, sticky application-write fallback, lifecycle | yes | accepted foundation | none for the retained internal seam; active selection remains unauthorized | `1b2611e1`, `55cea560`, `6e408789` |
 | `application_send_turn_planning` | 1 | retained injected planner | bounded conservative planner | yes | yes | yes | yes | priority, same-stream order, FIN, ownership, recovery, congestion, pacing, flow control, packet/queue/buffer, lifecycle | yes | implementation-ready | no implementation blocker; measurement remains frozen | `c5f9dae0`, `69e08f34`, `2fbde7bb`, `a8858010` |
-| `application_send_batch_formation` | 1 | existing eligible-prefix packing | `single_eligible` | yes | yes | yes | yes; fixed candidate/eligibility/applied/mechanism operation evidence plus per-behavior epoch counts and bytes | legal prefix and payload cap, priority, same-stream order, FIN, ownership, congestion, pacing, anti-amplification, flow control, packet/queue/buffer, lifecycle | yes | exact actuation proof independently reviewed and passed; approved correctness-only interaction passed | measurement remains frozen; production activation remains unauthorized | `1713b6a8`, `0f8797e0`, `cc1aaaf0`, `64c860a4`, `b1620359` |
+| `application_send_batch_formation` | 1 | existing eligible-prefix packing | `single_eligible` | yes | yes | yes | yes; fixed candidate/eligibility/applied/mechanism operation evidence plus per-behavior epoch counts and bytes | legal prefix and payload cap, priority, same-stream order, FIN, ownership, congestion, pacing, anti-amplification, flow control, packet/queue/buffer, lifecycle | yes | exact actuation proof independently reviewed and passed; approved correctness interaction and bounded offline measurement passed | no eligible four-cell holdout context justified a selector; production activation remains unauthorized | `1713b6a8`, `0f8797e0`, `cc1aaaf0`, `64c860a4`, `b1620359`, `b3c39539` |
 | `queued_send_burst_budget` | 1 | retained pre/post-confirmation static budget | `single_datagram` | yes | yes | yes | yes | congestion, pacing, anti-amplification, recovery, retransmission, handshake, packet, endpoint, flow control, queue/buffer, lifecycle rechecked per datagram | yes | implementation-ready | no implementation blocker; measurement remains frozen | `fb520dd7` |
 | `oversized_write_admission_quantum` | 1 | retained dispatcher plus bounded observer selector | `single_fragment`; distinct `bounded_multi_fragment` candidate | yes | yes | yes | yes | dispatcher availability, logical-write ownership, FIN, retry, recovery, congestion, pacing, anti-amplification, flow control, packet/queue/buffer, lifecycle, exactly-once completion | yes | implementation-ready | no implementation blocker; measurement remains frozen | `7d41e382` |
 | `actor_work_quantum` | 2 | current connection-work-item dispatch to completion | none yet | foundation | no | no | actor-service epoch and continuation-assessment foundation | actor transition/effect ownership, exactly resumable work, progress, repost correctness, cross-connection service | no | continuation assessment focused proof clean | no reviewed cooperative-yield boundary owns an exactly resumable unit; a distinct forced value would currently be behaviorally fake or could split transition/effect ownership | `19f69274`, `36c5bad6`, `11bb8496`, `90aaf93b`, `4da502d9` |
 | `ready_stream_fairness` | 2 | current planner/queue priority plus stable-sequence order and same-stream serialization | none yet | partial | no | no | no axis record yet; bounded actor and send-path inputs are available | no same-stream reordering, priority authority, FIN/reset/cancellation, flow-control and recovery progress, bounded runnable inspection | no | inventory blocked safely | the current planner selects a priority/sequence prefix; a one-write treatment would silently vary `application_send_batch_formation`, while rotation needs a reviewed bounded runnable set and starvation/fairness outcome rather than an unbounded stream scan | none |
-| `buffer_copy_coalescing` | 2 | exact existing combined-send prefix construction | `memory_conservative`, lower-only two-source-segment cap | yes | yes | yes | yes; fixed candidate/eligibility/applied/mechanism evidence, decision-to-owner-to-release correlation, and per-behavior epoch counts and bytes | Stage 1 legal prefix, priority/order, FIN/reset/cancellation, flow control, stream capacity, packet size, congestion, pacing, anti-amplification, recovery, packet protection, owner transfer/return, terminal cleanup | yes | exact actuation proof independently reviewed and passed; approved correctness-only interaction and four exact releases passed | measurement remains frozen; production activation remains unauthorized | `df8ee570`, `0f8797e0`, `cc1aaaf0`, `1e2aad3f`, `b1620359` |
+| `buffer_copy_coalescing` | 2 | exact existing combined-send prefix construction | `memory_conservative`, lower-only two-source-segment cap | yes | yes | yes | yes; fixed candidate/eligibility/applied/mechanism evidence, decision-to-owner-to-release correlation, and per-behavior epoch counts and bytes | Stage 1 legal prefix, priority/order, FIN/reset/cancellation, flow control, stream capacity, packet size, congestion, pacing, anti-amplification, recovery, packet protection, owner transfer/return, terminal cleanup | yes | exact actuation proof independently reviewed and passed; approved correctness interaction, exact releases, and bounded offline measurement passed | no eligible four-cell holdout context justified a selector; production activation remains unauthorized | `df8ee570`, `0f8797e0`, `cc1aaaf0`, `1e2aad3f`, `b1620359`, `b3c39539` |
 | `adaptive_backpressure` | 2 | immediate admission under existing authoritative hard limits | `early_delay`, at most one additional dispatcher turn when an earlier application-send admission remains queued | yes | yes | yes | yes; configured snapshot plus sample-scoped admission records and fixed epoch summary | hard queue/buffer/stream/flow-control limits, lifecycle, progress, continuation availability, cancellation/disposal/terminal removal, ownership and exactly-once completion | yes | 20 axis tests plus unified raw schema and exact sample-to-epoch join tests clean | no implementation blocker; measurement remains frozen | `25fa33cc` |
 | `packet_flush_cadence` | 3 | retained optional 1 ms coalescing delay for eligible application writes smaller than 32 bytes | `prompt`, which removes only that optional delay | yes | yes | yes | yes; configured snapshot plus sample-scoped packet-opportunity records and fixed epoch summary | retransmission priority, address validation and anti-amplification, lifecycle, congestion, pacing, flow control, packet size/protection, recovery, ownership, cancellation and terminal paths | yes | 19 axis tests plus unified raw schema, exact sample-to-epoch join, package, FIN, cancellation, and application-send delay tests clean | no implementation blocker; measurement remains frozen | `c676795b` |
 | `receive_delivery_quantum` | 3 | existing loop copies every contiguous receive source segment that fits one application read | `single_segment`, which returns a legal short read after at most one existing contiguous source segment | yes | yes | yes | yes; configured snapshot plus sample-scoped productive-read records and fixed epoch summary | `receive_credit_publication=legacy_current`, ordering, buffer ownership/release, FIN/reset/close, cancellation/disposal, flow-control progress, congestion, pacing, recovery, packet limits, terminal behavior | yes | 17 axis cases plus unified raw schema, exact sample-to-epoch join, aggregate recomputation, listener propagation, and package assertions clean | no implementation blocker; measurement remains frozen | `971c3c46` |
@@ -110,13 +109,13 @@ state override forced CUBIC to NewReno. No distinct conservative label is
 invented merely to duplicate legacy behavior, and no safety or performance
 preference is claimed.
 
-## Frozen Operational State
+## Operational State
 
-- No campaign axis varies during implementation checkpoints.
-- `receive_credit_publication` and all implemented adjacent axes apply
-  `legacy_current`.
+- Bounded offline measurement was released and completed only for the reviewed
+  two-axis `send_composition` family.
+- Every adjacent axis remained `legacy_current`.
 - Existing unified observations remain present.
-- Performance measurement, large dataset work, transforms, and offline
-  analysis remain frozen.
+- Additional-axis measurement, large dataset work, transforms, and online
+  adaptation remain unauthorized.
 - `active_internal` and production activation remain unauthorized.
 - CI and push are out of scope.

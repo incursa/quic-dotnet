@@ -110,3 +110,31 @@ committed campaign definition
 
 Large raw output stays outside Git. Schemas, scripts, compact summaries,
 traceability, and the final review package are committed.
+
+## Completed milestone result
+
+The accepted manifest-v2 campaign ran from committed source
+`b3c3953907483566cc2b049a2238febe98a166eb` on one Windows x64 host. The
+separate pilot completed 16 runs and the full campaign completed 160 runs in
+10 minutes 29 seconds. No command, correctness, operation-accounting, or owner
+release failure occurred. The full campaign retained:
+
+- 66 `performance_eligible` runs;
+- 18 `expected_equivalent` runs;
+- 40 `inactive_control` runs; and
+- 36 `activation_missing` runs.
+
+The four complete training contexts supplied 16 blocked observations per
+effect. Batch B versus A was -2.71 percent median useful goodput with a
+95-percent bootstrap interval of -4.35 to 0.19 percent. Buffer C versus A was
+-1.95 percent (-6.68 to 1.26 percent). The configured interaction estimate was
+2.52 percent (-1.71 to 5.61 percent). D versus B was -0.03 percent (-0.73 to
+1.03 percent), consistent with the expected mechanism equivalence.
+
+All three named holdout contexts were either inactive controls or lacked the
+required treatment activation. They remain retained, but none provides a
+complete eligible four-cell holdout comparison. Therefore no selector was
+implemented. The exact conclusion is
+`measurement_completed_more_context_required`: correctness and measurement
+infrastructure are valid, while selector evidence and production activation
+remain unauthorized.

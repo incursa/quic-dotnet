@@ -232,3 +232,12 @@ match. The artifact inventory hashes the other fourteen inputs, while the
 projection carries the inventory's own immutable reference to avoid
 self-reference. This correctness proof creates no raw campaign, normalized,
 curated, split, analysis, threshold, or model artifact.
+
+The separately authorized 2026-07-26 send-composition milestone writes its
+large immutable raw performance evidence outside Git under
+`C:\shared\temp\quic-send-composition-performance-b3c39539-full`. Its committed
+campaign definition, schema-validated manifest, per-run checksum inventory,
+catalog-derived aggregates, deterministic projection, and compact analysis
+preserve the same authority ordering. This is not a ProtocolLab campaign and
+does not alter the provenance or eligibility of earlier adaptive-runtime
+datasets.

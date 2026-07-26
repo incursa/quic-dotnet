@@ -660,4 +660,32 @@ aggregates, five outcome aggregates, the deterministic 15-input projection,
 the passed independent interaction review, and 28 adversarial cases. The
 runtime capability is internal, fixed-field, exact-cell-only, and denied by
 default. It is not reachable through public production configuration.
-Measurement and active behavior remain unauthorized.
+Active behavior remains unauthorized.
+
+## Send-composition offline performance
+
+The only released measurement scope is the reviewed four configured cells for
+`application_send_batch_formation` and `buffer_copy_coalescing`. Validate and
+rebuild the retained external evidence with:
+
+```powershell
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionPerformance.ps1 `
+  -ManifestPath <evidence-root>\compiled-manifest.json `
+  -RawEvidencePath (Get-ChildItem <evidence-root>\raw\*.json).FullName
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionPerformancePilot.ps1 `
+  -EvidenceRoot <evidence-root>
+pwsh -NoProfile -File eng/adaptive-runtime/New-AdaptiveRuntimeSendCompositionPerformanceProjection.ps1 `
+  -EvidenceRoot <evidence-root>
+pwsh -NoProfile -File eng/adaptive-runtime/Measure-AdaptiveRuntimeSendCompositionPerformance.ps1 `
+  -EvidenceRoot <evidence-root>
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionPerformanceAdversarial.ps1 `
+  -EvidenceRoot <evidence-root>
+```
+
+Manifest v2 preserves counterbalanced execution order with an explicit
+`execution_sequence` while retaining the sorted cell set for membership
+validation. The completed 160-run campaign produced 66 eligible, 18
+expected-equivalent, 40 inactive-control, and 36 activation-missing runs. No
+holdout context supplied all four eligible/equivalent cells, so the reviewed
+outcome is `measurement_completed_more_context_required`. No shadow selector
+or runtime selection rule was added.
