@@ -165,7 +165,7 @@ function Test-ValidEvidence {
         ForEach-Object { [string]$_.operation_id } | Sort-Object -Unique)
     $outcomeOperationIds = @($evidence.operations | Where-Object {
         -not [string]::IsNullOrWhiteSpace(
-            (Get-AdaptiveRuntimeOperationOutcomeId $_))
+            (Get-AdaptiveRuntimeOperationOutcomeId $_ $catalog))
     } | ForEach-Object { [string]$_.operation_id } | Sort-Object -Unique)
     $allOperationIds = @($evidence.operations |
         ForEach-Object { [string]$_.operation_id } | Sort-Object -Unique)

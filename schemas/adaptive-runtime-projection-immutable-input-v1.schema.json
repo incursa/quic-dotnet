@@ -1,0 +1,320 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/incursa/quic-dotnet/schemas/adaptive-runtime-projection-immutable-input-v1.schema.json",
+  "title": "Adaptive runtime projection immutable input v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "payload",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": {
+      "enum": [
+        "adaptive-runtime-experiment-run-v1",
+        "adaptive-runtime-host-fingerprint-v1",
+        "adaptive-runtime-binary-cohort-v1",
+        "adaptive-runtime-workload-instance-v1",
+        "adaptive-runtime-workload-shape-v1",
+        "adaptive-runtime-metric-observations-v1",
+        "adaptive-runtime-artifact-inventory-v1",
+        "adaptive-runtime-classification-set-v1"
+      ]
+    },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "payload": {
+      "oneOf": [
+        { "$ref": "#/$defs/experimentRun" },
+        { "$ref": "#/$defs/hostFingerprint" },
+        { "$ref": "#/$defs/binaryCohort" },
+        { "$ref": "#/$defs/workloadInstance" },
+        { "$ref": "#/$defs/workloadShape" },
+        { "$ref": "#/$defs/metricObservations" },
+        { "$ref": "#/$defs/artifactInventory" },
+        { "$ref": "#/$defs/classificationSet" }
+      ]
+    },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/traceReferences" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "schema_version": { "const": "adaptive-runtime-experiment-run-v1" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/experimentRun" } } }
+    },
+    {
+      "if": { "properties": { "schema_version": { "const": "adaptive-runtime-host-fingerprint-v1" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/hostFingerprint" } } }
+    },
+    {
+      "if": { "properties": { "schema_version": { "const": "adaptive-runtime-binary-cohort-v1" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/binaryCohort" } } }
+    },
+    {
+      "if": { "properties": { "schema_version": { "const": "adaptive-runtime-workload-instance-v1" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/workloadInstance" } } }
+    },
+    {
+      "if": { "properties": { "schema_version": { "const": "adaptive-runtime-workload-shape-v1" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/workloadShape" } } }
+    },
+    {
+      "if": { "properties": { "schema_version": { "const": "adaptive-runtime-metric-observations-v1" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/metricObservations" } } }
+    },
+    {
+      "if": { "properties": { "schema_version": { "const": "adaptive-runtime-artifact-inventory-v1" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/artifactInventory" } } }
+    },
+    {
+      "if": { "properties": { "schema_version": { "const": "adaptive-runtime-classification-set-v1" } } },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/classificationSet" } } }
+    }
+  ],
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._:-]*$" },
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "positiveInteger": { "type": "integer", "minimum": 1 },
+    "nonNegativeInteger": { "type": "integer", "minimum": 0 },
+    "nullableId": { "oneOf": [{ "$ref": "#/$defs/id" }, { "type": "null" }] },
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document_id", "schema_version", "document_version", "content_sha256"],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "schema_version": { "$ref": "#/$defs/id" },
+        "document_version": { "$ref": "#/$defs/positiveInteger" },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "experimentRun": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["run_id", "compiled_manifest_ref", "host_fingerprint_ref", "binary_cohort_ref", "workload_instance_ids"],
+      "properties": {
+        "run_id": { "$ref": "#/$defs/id" },
+        "compiled_manifest_ref": { "$ref": "#/$defs/documentRef" },
+        "host_fingerprint_ref": { "$ref": "#/$defs/documentRef" },
+        "binary_cohort_ref": { "$ref": "#/$defs/documentRef" },
+        "workload_instance_ids": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/id" } }
+      }
+    },
+    "hostFingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fingerprint_id", "manifest_ref", "os_platform", "os_architecture", "physical_host_id", "vm_id", "resolved_capabilities"],
+      "properties": {
+        "fingerprint_id": { "$ref": "#/$defs/id" },
+        "manifest_ref": { "$ref": "#/$defs/documentRef" },
+        "os_platform": { "$ref": "#/$defs/id" },
+        "os_architecture": { "$ref": "#/$defs/id" },
+        "physical_host_id": { "$ref": "#/$defs/nullableId" },
+        "vm_id": { "$ref": "#/$defs/nullableId" },
+        "resolved_capabilities": { "type": "array", "items": { "$ref": "#/$defs/id" } }
+      }
+    },
+    "binaryCohort": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binary_cohort_id", "manifest_ref", "source_commit", "binary_path", "binary_sha256", "runner_version", "runner_sha256"],
+      "properties": {
+        "binary_cohort_id": { "$ref": "#/$defs/id" },
+        "manifest_ref": { "$ref": "#/$defs/documentRef" },
+        "source_commit": { "$ref": "#/$defs/commit" },
+        "binary_path": { "type": "string", "minLength": 1 },
+        "binary_sha256": { "$ref": "#/$defs/hash" },
+        "runner_version": { "$ref": "#/$defs/id" },
+        "runner_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "workloadInstance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workload_instance_id", "run_ref", "requested_shape_ref", "effective_shape_ref"],
+      "properties": {
+        "workload_instance_id": { "$ref": "#/$defs/id" },
+        "run_ref": { "$ref": "#/$defs/documentRef" },
+        "requested_shape_ref": { "$ref": "#/$defs/documentRef" },
+        "effective_shape_ref": { "$ref": "#/$defs/documentRef" }
+      }
+    },
+    "workloadShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shape_kind", "workload_instance_id", "workload_archetype_id", "payload_bytes", "concurrency", "operation_count"],
+      "properties": {
+        "shape_kind": { "enum": ["requested", "effective"] },
+        "workload_instance_id": { "$ref": "#/$defs/id" },
+        "workload_archetype_id": { "$ref": "#/$defs/id" },
+        "payload_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "concurrency": { "$ref": "#/$defs/positiveInteger" },
+        "operation_count": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "metricObservations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["run_ref", "metric_observations"],
+      "properties": {
+        "run_ref": { "$ref": "#/$defs/documentRef" },
+        "metric_observations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["metric_id", "run_id", "connection_key", "epoch_sequence", "analytical_use", "value"],
+            "properties": {
+              "metric_id": { "$ref": "#/$defs/id" },
+              "run_id": { "$ref": "#/$defs/id" },
+              "connection_key": { "$ref": "#/$defs/id" },
+              "epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+              "analytical_use": { "const": "correctness_only" },
+              "value": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+    "artifactInventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifacts"],
+      "properties": {
+        "artifacts": {
+          "type": "array",
+          "minItems": 14,
+          "maxItems": 14,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["role", "document_ref"],
+            "properties": {
+              "role": {
+                "enum": [
+                  "experiment_plan",
+                  "plan_validation",
+                  "compiled_execution_manifest",
+                  "experiment_run",
+                  "host_fingerprint",
+                  "binary_cohort",
+                  "workload_instance",
+                  "requested_workload_shape",
+                  "effective_workload_shape",
+                  "operation_evidence",
+                  "behavior_materialization",
+                  "outcome_materialization",
+                  "metric_observations",
+                  "classifications"
+                ]
+              },
+              "document_ref": { "$ref": "#/$defs/documentRef" }
+            }
+          }
+        }
+      }
+    },
+    "classificationSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_ref", "compatibility_catalog_ref", "classifications"],
+      "properties": {
+        "evidence_ref": { "$ref": "#/$defs/documentRef" },
+        "compatibility_catalog_ref": { "$ref": "#/$defs/documentRef" },
+        "classifications": { "type": "array", "items": { "$ref": "#/$defs/classification" } }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classification_id", "target", "kind", "reason_code", "retained"],
+      "properties": {
+        "classification_id": { "$ref": "#/$defs/id" },
+        "target": { "$ref": "#/$defs/classificationTarget" },
+        "kind": {
+          "enum": ["analytically_eligible", "inactive", "fallback", "clamped", "invalid", "negative", "excluded", "unclassifiable", "error", "terminal_release_failure", "diagnostic", "diagnostic_context"]
+        },
+        "reason_code": { "$ref": "#/$defs/id" },
+        "retained": { "const": true }
+      }
+    },
+    "classificationTarget": {
+      "oneOf": [
+        { "$ref": "#/$defs/operationTarget" },
+        { "$ref": "#/$defs/releaseTarget" },
+        { "$ref": "#/$defs/epochTarget" },
+        { "$ref": "#/$defs/artifactTarget" }
+      ]
+    },
+    "operationTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_kind", "run_id", "connection_key", "epoch_sequence", "axis_id", "decision_instance_id", "operation_id"],
+      "properties": {
+        "target_kind": { "const": "operation" },
+        "run_id": { "$ref": "#/$defs/id" },
+        "connection_key": { "$ref": "#/$defs/id" },
+        "epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "axis_id": { "$ref": "#/$defs/id" },
+        "decision_instance_id": { "$ref": "#/$defs/positiveInteger" },
+        "operation_id": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "releaseTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_kind", "run_id", "connection_key", "epoch_sequence", "axis_id", "decision_instance_id", "operation_id", "release_epoch_sequence"],
+      "properties": {
+        "target_kind": { "const": "release" },
+        "run_id": { "$ref": "#/$defs/id" },
+        "connection_key": { "$ref": "#/$defs/id" },
+        "epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "axis_id": { "$ref": "#/$defs/id" },
+        "decision_instance_id": { "$ref": "#/$defs/positiveInteger" },
+        "operation_id": { "$ref": "#/$defs/positiveInteger" },
+        "release_epoch_sequence": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "epochTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_kind", "run_id", "connection_key", "epoch_sequence"],
+      "properties": {
+        "target_kind": { "const": "epoch" },
+        "run_id": { "$ref": "#/$defs/id" },
+        "connection_key": { "$ref": "#/$defs/id" },
+        "epoch_sequence": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "artifactTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_kind", "artifact_id"],
+      "properties": {
+        "target_kind": { "const": "artifact" },
+        "artifact_id": { "$ref": "#/$defs/id" }
+      }
+    },
+    "traceReferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_ids", "architecture_ids", "work_item_ids", "verification_ids"],
+      "properties": {
+        "requirement_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "architecture_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "work_item_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "verification_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      }
+    }
+  }
+}

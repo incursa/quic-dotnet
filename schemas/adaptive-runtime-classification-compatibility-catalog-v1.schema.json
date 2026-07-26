@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/incursa/quic-dotnet/schemas/adaptive-runtime-classification-compatibility-catalog-v1.schema.json",
+  "title": "Adaptive runtime classification compatibility catalog v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "classification_definitions",
+    "compatible_pairs",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-classification-compatibility-catalog-v1" },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "classification_definitions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/classificationDefinition" }
+    },
+    "compatible_pairs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/compatiblePair" }
+    },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/traceReferences" }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "classificationKind": {
+      "enum": [
+        "analytically_eligible",
+        "inactive",
+        "fallback",
+        "clamped",
+        "invalid",
+        "negative",
+        "excluded",
+        "unclassifiable",
+        "error",
+        "terminal_release_failure",
+        "diagnostic",
+        "diagnostic_context"
+      ]
+    },
+    "classificationDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classification_kind",
+        "role",
+        "outcome_ids",
+        "reviewed_version"
+      ],
+      "properties": {
+        "classification_kind": { "$ref": "#/$defs/classificationKind" },
+        "role": { "enum": ["primary", "supplemental"] },
+        "outcome_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "reviewed_version": { "const": 1 }
+      }
+    },
+    "compatiblePair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pair_id", "left_kind", "right_kind", "reviewed_version"],
+      "properties": {
+        "pair_id": { "$ref": "#/$defs/id" },
+        "left_kind": { "$ref": "#/$defs/classificationKind" },
+        "right_kind": { "$ref": "#/$defs/classificationKind" },
+        "reviewed_version": { "const": 1 }
+      }
+    },
+    "traceReferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_ids", "architecture_ids", "work_item_ids", "verification_ids"],
+      "properties": {
+        "requirement_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "architecture_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "work_item_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "verification_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      }
+    }
+  }
+}
