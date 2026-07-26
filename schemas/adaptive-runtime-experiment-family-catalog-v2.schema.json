@@ -4,7 +4,7 @@
   "title": "Adaptive Runtime Experiment Family Catalog v2",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "document_id", "document_version", "content_sha256", "trace_references", "active_behavior_authorization", "performance_acceptance_authorization", "experiment_families"],
+  "required": ["schema_version", "document_id", "document_version", "content_sha256", "trace_references", "active_behavior_authorization", "performance_acceptance_authorization", "reviewed_actuation_proofs", "experiment_families"],
   "properties": {
     "schema_version": { "const": "adaptive-runtime-experiment-family-catalog-v2" },
     "document_id": { "$ref": "#/$defs/id" },
@@ -13,11 +13,16 @@
     "trace_references": { "$ref": "#/$defs/trace" },
     "active_behavior_authorization": { "const": false },
     "performance_acceptance_authorization": { "const": false },
+    "reviewed_actuation_proofs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/actuationProof" }
+    },
     "experiment_families": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/family" } }
   },
   "$defs": {
     "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
     "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "positiveInteger": { "type": "integer", "minimum": 1 },
     "axis": { "enum": ["application_send_batch_formation", "buffer_copy_coalescing", "application_send_turn_planning"] },
     "experimentType": { "enum": ["actuation_validation", "isolated_counterfactual", "interaction_screen", "feedback_loop", "profile_validation"] },
     "trace": {
@@ -40,6 +45,50 @@
         "configured_value": { "const": "legacy_current" }
       }
     },
+    "actuationProof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "proof_id",
+        "axis_id",
+        "policy_value",
+        "proof_version",
+        "review_outcome",
+        "evidence_ref"
+      ],
+      "properties": {
+        "proof_id": { "$ref": "#/$defs/id" },
+        "axis_id": { "$ref": "#/$defs/axis" },
+        "policy_value": {
+          "enum": [
+            "legacy_current",
+            "single_eligible",
+            "memory_conservative",
+            "conservative"
+          ]
+        },
+        "proof_version": { "type": "integer", "const": 1 },
+        "review_outcome": {
+          "enum": ["passed", "failed", "pending", "revoked"]
+        },
+        "evidence_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "document_id",
+            "schema_version",
+            "document_version",
+            "content_sha256"
+          ],
+          "properties": {
+            "document_id": { "$ref": "#/$defs/id" },
+            "schema_version": { "$ref": "#/$defs/id" },
+            "document_version": { "$ref": "#/$defs/positiveInteger" },
+            "content_sha256": { "$ref": "#/$defs/hash" }
+          }
+        }
+      }
+    },
     "family": {
       "type": "object",
       "additionalProperties": false,
@@ -55,6 +104,7 @@
         "relationship_refs",
         "constraint_refs",
         "history_reset_requirements",
+        "actuation_proof_refs",
         "supported_experiment_types",
         "blocked_experiment_types",
         "measurement_authorized",
@@ -62,7 +112,7 @@
       ],
       "properties": {
         "family_id": { "$ref": "#/$defs/id" },
-        "included_axis_ids": { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "$ref": "#/$defs/axis" } },
+        "included_axis_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/axis" } },
         "fixed_axis_requirements": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/fixedAxis" } },
         "outer_context_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
         "workload_archetype_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
@@ -72,6 +122,11 @@
         "relationship_refs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
         "constraint_refs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
         "history_reset_requirements": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "actuation_proof_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        },
         "supported_experiment_types": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/experimentType" } },
         "blocked_experiment_types": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/experimentType" } },
         "measurement_authorized": { "const": false },

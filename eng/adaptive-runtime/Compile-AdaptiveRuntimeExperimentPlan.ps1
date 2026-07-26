@@ -308,6 +308,7 @@ foreach ($fixedValue in @($plan.fixed_axis_values)) {
     }
 }
 
+$interactionProofMissing = $false
 $family = @($familyCatalog.experiment_families | Where-Object family_id -eq $plan.family_id) | Select-Object -First 1
 if ($null -eq $family) {
     Add-PlanError 'unsupported_experiment_family' "Experiment family '$($plan.family_id)' is unknown." $plan.family_id
@@ -341,6 +342,34 @@ else {
     if ((Get-StringArray $family.supported_experiment_types) -notcontains $plan.experiment_type -and
         (Get-StringArray $family.blocked_experiment_types) -notcontains $plan.experiment_type) {
         Add-PlanError 'unsupported_experiment_type' "Family '$($plan.family_id)' does not support '$($plan.experiment_type)'." $plan.experiment_type
+    }
+    if ($familyCatalog.schema_version -eq
+        'adaptive-runtime-experiment-family-catalog-v2' -and
+        $plan.experiment_type -eq 'interaction_screen') {
+        $familyProofIds = @(Get-StringArray $family.actuation_proof_refs)
+        $reviewedProofs = @($familyCatalog.reviewed_actuation_proofs)
+        $forcedVariedTreatments = @($plan.treatments | Where-Object {
+            $variedAxisIds -contains [string]$_.axis_id -and
+            -not [string]::IsNullOrWhiteSpace(
+                [string](Get-AdaptiveRuntimeJsonProperty $_ 'forced_value'))
+        })
+        foreach ($treatment in $forcedVariedTreatments) {
+            $proofs = @($reviewedProofs | Where-Object {
+                $familyProofIds -contains [string]$_.proof_id -and
+                [string]$_.axis_id -ceq [string]$treatment.axis_id -and
+                [string]$_.policy_value -ceq [string]$treatment.forced_value -and
+                [int]$_.proof_version -eq 1 -and
+                [string]$_.review_outcome -ceq 'passed'
+            })
+            if ($proofs.Count -ne 1) {
+                $interactionProofMissing = $true
+                $target = "$($treatment.axis_id)=$($treatment.forced_value)"
+                Add-PlanWarning 'interaction_actuation_proof_missing' (
+                    "Interaction correctness compilation retained '$target', " +
+                    'but reviewed v1 actuation proof is absent; measurement ' +
+                    'execution remains blocked.') $target
+            }
+        }
     }
 }
 
@@ -643,6 +672,9 @@ if ($errors.Count -eq 0) {
     }
     elseif ($plan.experiment_type -eq 'feedback_loop') {
         $classification = 'valid_feedback_loop'
+    }
+    elseif ($interactionProofMissing) {
+        $classification = 'blocked_for_measurement'
     }
     elseif (@($expandedCells | Where-Object execution_state -eq 'capability_pending').Count -gt 0) {
         $classification = 'capability_pending'
