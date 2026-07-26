@@ -1,0 +1,484 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/incursa/quic-dotnet/schemas/adaptive-runtime-experiment-evidence-projection-v2.schema.json",
+  "title": "Adaptive runtime experiment evidence projection v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "authority_chain",
+    "experiment_plan",
+    "plan_validation",
+    "compiled_execution_manifest",
+    "experiment_run",
+    "host_fingerprint",
+    "binary_cohort",
+    "workload_instance",
+    "requested_workload_shape",
+    "effective_workload_shape",
+    "connection_epochs",
+    "axis_decisions",
+    "operation_evidence",
+    "behavior_materialization",
+    "outcome_materialization",
+    "effective_behavior_aggregates",
+    "operation_outcome_aggregates",
+    "metric_observations",
+    "artifact_inventory",
+    "classifications",
+    "provenance_versions",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "adaptive-runtime-experiment-evidence-projection-v2"
+    },
+    "document_id": {
+      "$ref": "#/$defs/id"
+    },
+    "document_version": {
+      "const": 2
+    },
+    "content_sha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "authority_chain": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "$ref": "#/$defs/documentRef"
+      }
+    },
+    "experiment_plan": {
+      "$ref": "#/$defs/documentRef"
+    },
+    "plan_validation": {
+      "$ref": "#/$defs/documentRef"
+    },
+    "compiled_execution_manifest": {
+      "$ref": "#/$defs/documentRef"
+    },
+    "experiment_run": {
+      "$ref": "#/$defs/documentRef"
+    },
+    "host_fingerprint": {
+      "$ref": "#/$defs/documentRef"
+    },
+    "binary_cohort": {
+      "$ref": "#/$defs/documentRef"
+    },
+    "workload_instance": {
+      "$ref": "#/$defs/documentRef"
+    },
+    "requested_workload_shape": {
+      "$ref": "#/$defs/documentRef"
+    },
+    "effective_workload_shape": {
+      "$ref": "#/$defs/documentRef"
+    },
+    "connection_epochs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/connectionEpoch"
+      }
+    },
+    "axis_decisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/axisDecision"
+      }
+    },
+    "operation_evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/operationJoin"
+      }
+    },
+    "effective_behavior_aggregates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/aggregateJoin"
+      }
+    },
+    "metric_observations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/metric"
+      }
+    },
+    "artifact_inventory": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    },
+    "classifications": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/classification"
+      }
+    },
+    "provenance_versions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/id"
+      }
+    },
+    "active_behavior_authorization": {
+      "const": false
+    },
+    "performance_acceptance_authorization": {
+      "const": false
+    },
+    "trace_references": {
+      "$ref": "#/$defs/traceReferences"
+    },
+    "behavior_materialization": {
+      "$ref": "#/$defs/documentRef"
+    },
+    "outcome_materialization": {
+      "$ref": "#/$defs/documentRef"
+    },
+    "operation_outcome_aggregates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/outcomeAggregateJoin"
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "schema_version",
+        "document_version",
+        "content_sha256"
+      ],
+      "properties": {
+        "document_id": {
+          "$ref": "#/$defs/id"
+        },
+        "schema_version": {
+          "$ref": "#/$defs/id"
+        },
+        "document_version": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "content_sha256": {
+          "$ref": "#/$defs/hash"
+        }
+      }
+    },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_id",
+        "content_sha256"
+      ],
+      "properties": {
+        "entity_id": {
+          "$ref": "#/$defs/id"
+        },
+        "content_sha256": {
+          "$ref": "#/$defs/hash"
+        }
+      }
+    },
+    "connectionEpoch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "connection_key",
+        "epoch_sequence"
+      ],
+      "properties": {
+        "run_id": {
+          "$ref": "#/$defs/id"
+        },
+        "connection_key": {
+          "$ref": "#/$defs/id"
+        },
+        "epoch_sequence": {
+          "$ref": "#/$defs/positiveInteger"
+        }
+      }
+    },
+    "axisDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "connection_key",
+        "epoch_sequence",
+        "axis_id",
+        "decision_instance_id"
+      ],
+      "properties": {
+        "run_id": {
+          "$ref": "#/$defs/id"
+        },
+        "connection_key": {
+          "$ref": "#/$defs/id"
+        },
+        "epoch_sequence": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "axis_id": {
+          "$ref": "#/$defs/id"
+        },
+        "decision_instance_id": {
+          "$ref": "#/$defs/positiveInteger"
+        }
+      }
+    },
+    "operationJoin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation_id",
+        "axis_id",
+        "decision_instance_id",
+        "run_id",
+        "connection_key",
+        "epoch_sequence"
+      ],
+      "properties": {
+        "operation_id": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "axis_id": {
+          "$ref": "#/$defs/id"
+        },
+        "decision_instance_id": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "run_id": {
+          "$ref": "#/$defs/id"
+        },
+        "connection_key": {
+          "$ref": "#/$defs/id"
+        },
+        "epoch_sequence": {
+          "$ref": "#/$defs/positiveInteger"
+        }
+      }
+    },
+    "aggregateJoin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "connection_key",
+        "epoch_sequence",
+        "axis_id",
+        "behavior_catalog_version",
+        "effective_behavior_id"
+      ],
+      "properties": {
+        "run_id": {
+          "$ref": "#/$defs/id"
+        },
+        "connection_key": {
+          "$ref": "#/$defs/id"
+        },
+        "epoch_sequence": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "axis_id": {
+          "$ref": "#/$defs/id"
+        },
+        "behavior_catalog_version": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "effective_behavior_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric_id",
+        "epoch_sequence",
+        "analytical_use"
+      ],
+      "properties": {
+        "metric_id": {
+          "$ref": "#/$defs/id"
+        },
+        "epoch_sequence": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "analytical_use": {
+          "const": "correctness_only"
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "content_sha256"
+      ],
+      "properties": {
+        "artifact_id": {
+          "$ref": "#/$defs/id"
+        },
+        "content_sha256": {
+          "$ref": "#/$defs/hash"
+        }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classification_id",
+        "target_kind",
+        "target_id",
+        "kind",
+        "reason_code",
+        "provenance_ref",
+        "retained"
+      ],
+      "properties": {
+        "classification_id": {
+          "$ref": "#/$defs/id"
+        },
+        "target_kind": {
+          "enum": [
+            "operation",
+            "epoch",
+            "release",
+            "artifact"
+          ]
+        },
+        "target_id": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/id"
+            },
+            {
+              "$ref": "#/$defs/positiveInteger"
+            }
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason_code": {
+          "$ref": "#/$defs/id"
+        },
+        "provenance_ref": {
+          "$ref": "#/$defs/documentRef"
+        },
+        "retained": {
+          "const": true
+        }
+      }
+    },
+    "traceReferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "architecture_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "work_item_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "verification_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "outcomeAggregateJoin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "connection_key",
+        "epoch_sequence",
+        "axis_id",
+        "outcome_contract_version",
+        "outcome_id"
+      ],
+      "properties": {
+        "run_id": {
+          "$ref": "#/$defs/id"
+        },
+        "connection_key": {
+          "$ref": "#/$defs/id"
+        },
+        "epoch_sequence": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "axis_id": {
+          "$ref": "#/$defs/id"
+        },
+        "outcome_contract_version": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "outcome_id": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    }
+  }
+}
