@@ -1,0 +1,610 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/incursa/quic-dotnet/schemas/adaptive-runtime-operation-evidence-v2.schema.json",
+  "title": "Adaptive runtime operation evidence v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "behavior_catalog_ref",
+    "plan_validation_ref",
+    "run_id",
+    "binary_cohort_id",
+    "connection_key",
+    "epoch_sequence",
+    "result_epoch_sequence",
+    "connection_epochs",
+    "decisions",
+    "operations",
+    "releases",
+    "artifact_inventory",
+    "classifications",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "adaptive-runtime-operation-evidence-v2"
+    },
+    "document_id": {
+      "$ref": "#/$defs/id"
+    },
+    "document_version": {
+      "const": 2
+    },
+    "content_sha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "behavior_catalog_ref": {
+      "$ref": "#/$defs/documentRef"
+    },
+    "run_id": {
+      "$ref": "#/$defs/id"
+    },
+    "binary_cohort_id": {
+      "$ref": "#/$defs/id"
+    },
+    "connection_key": {
+      "$ref": "#/$defs/id"
+    },
+    "epoch_sequence": {
+      "$ref": "#/$defs/positiveInteger"
+    },
+    "result_epoch_sequence": {
+      "$ref": "#/$defs/positiveInteger"
+    },
+    "connection_epochs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/connectionEpoch"
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/decision"
+      }
+    },
+    "operations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/operation"
+      }
+    },
+    "releases": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/release"
+      }
+    },
+    "artifact_inventory": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    },
+    "classifications": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/classification"
+      }
+    },
+    "active_behavior_authorization": {
+      "const": false
+    },
+    "performance_acceptance_authorization": {
+      "const": false
+    },
+    "trace_references": {
+      "$ref": "#/$defs/traceReferences"
+    },
+    "plan_validation_ref": {
+      "$ref": "#/$defs/documentRef"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "axis": {
+      "enum": [
+        "application_send_batch_formation",
+        "buffer_copy_coalescing"
+      ]
+    },
+    "policyValue": {
+      "enum": [
+        "legacy_current",
+        "single_eligible",
+        "memory_conservative"
+      ]
+    },
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "schema_version",
+        "document_version",
+        "content_sha256"
+      ],
+      "properties": {
+        "document_id": {
+          "$ref": "#/$defs/id"
+        },
+        "schema_version": {
+          "$ref": "#/$defs/id"
+        },
+        "document_version": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "content_sha256": {
+          "$ref": "#/$defs/hash"
+        }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "connection_key",
+        "axis_id",
+        "decision_instance_id",
+        "epoch_sequence",
+        "configured_value",
+        "forced_value",
+        "shadow_recommendation",
+        "candidate_value",
+        "applied_value"
+      ],
+      "properties": {
+        "axis_id": {
+          "$ref": "#/$defs/axis"
+        },
+        "decision_instance_id": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "epoch_sequence": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "configured_value": {
+          "$ref": "#/$defs/policyValue"
+        },
+        "forced_value": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "legacy_current",
+            "single_eligible",
+            "memory_conservative",
+            null
+          ]
+        },
+        "shadow_recommendation": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "legacy_current",
+            "single_eligible",
+            "memory_conservative",
+            null
+          ]
+        },
+        "candidate_value": {
+          "$ref": "#/$defs/policyValue"
+        },
+        "applied_value": {
+          "$ref": "#/$defs/policyValue"
+        },
+        "run_id": {
+          "$ref": "#/$defs/id"
+        },
+        "connection_key": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "connectionEpoch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "connection_key",
+        "epoch_sequence"
+      ],
+      "properties": {
+        "run_id": {
+          "$ref": "#/$defs/id"
+        },
+        "connection_key": {
+          "$ref": "#/$defs/id"
+        },
+        "epoch_sequence": {
+          "$ref": "#/$defs/positiveInteger"
+        }
+      }
+    },
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "connection_key",
+        "configured_value",
+        "forced_value",
+        "shadow_recommendation",
+        "operation_kind",
+        "scope_version",
+        "axis_id",
+        "decision_instance_id",
+        "operation_id",
+        "epoch_sequence",
+        "candidate_value",
+        "operation_eligibility_result",
+        "operation_eligibility_reason",
+        "applied_value",
+        "mechanism_event_id",
+        "source_event_kind",
+        "legal_work_count",
+        "applied_work_count",
+        "legal_bytes",
+        "applied_bytes",
+        "result",
+        "fallback_or_safety_reason",
+        "terminal_outcome"
+      ],
+      "properties": {
+        "axis_id": {
+          "$ref": "#/$defs/axis"
+        },
+        "decision_instance_id": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "epoch_sequence": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "candidate_value": {
+          "$ref": "#/$defs/policyValue"
+        },
+        "operation_eligibility_result": {
+          "enum": [
+            "eligible",
+            "ineligible",
+            "clamped"
+          ]
+        },
+        "operation_eligibility_reason": {
+          "enum": [
+            "eligible",
+            "structurally_inactive",
+            "invalid_input",
+            "lifecycle_guard",
+            "resource_guard",
+            "safety_override",
+            "not_axis_mechanism",
+            "unclassifiable_evidence"
+          ]
+        },
+        "applied_value": {
+          "$ref": "#/$defs/policyValue"
+        },
+        "source_event_kind": {
+          "enum": [
+            "axis_specific_mechanism",
+            "broad_endpoint"
+          ]
+        },
+        "legal_work_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "applied_work_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "legal_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "applied_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "result": {
+          "enum": [
+            "succeeded",
+            "inactive",
+            "fallback",
+            "clamped",
+            "invalid",
+            "negative",
+            "error",
+            "unclassifiable",
+            "diagnostic",
+            "terminal_release_failure"
+          ]
+        },
+        "fallback_or_safety_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "terminal_outcome": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "run_id": {
+          "$ref": "#/$defs/id"
+        },
+        "connection_key": {
+          "$ref": "#/$defs/id"
+        },
+        "configured_value": {
+          "$ref": "#/$defs/policyValue"
+        },
+        "forced_value": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "legacy_current",
+            "single_eligible",
+            "memory_conservative",
+            null
+          ]
+        },
+        "shadow_recommendation": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "legacy_current",
+            "single_eligible",
+            "memory_conservative",
+            null
+          ]
+        },
+        "operation_kind": {
+          "enum": [
+            "packet_plan",
+            "combined_send"
+          ]
+        },
+        "scope_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "mechanism_event_id": {
+          "type": "string",
+          "pattern": "^mechanism_event\\.[a-z0-9._-]+$"
+        }
+      }
+    },
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "connection_key",
+        "axis_id",
+        "operation_id",
+        "decision_instance_id",
+        "decision_epoch_sequence",
+        "release_epoch_sequence",
+        "release_count",
+        "terminal_outcome"
+      ],
+      "properties": {
+        "axis_id": {
+          "const": "buffer_copy_coalescing"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "decision_instance_id": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "decision_epoch_sequence": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "release_epoch_sequence": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "release_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "terminal_outcome": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "$ref": "#/$defs/id"
+        },
+        "connection_key": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "declaredAggregate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "axis_id",
+        "effective_behavior_id",
+        "operation_count",
+        "work_count",
+        "byte_count"
+      ],
+      "properties": {
+        "axis_id": {
+          "$ref": "#/$defs/axis"
+        },
+        "effective_behavior_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operation_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "work_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "byte_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "content_sha256"
+      ],
+      "properties": {
+        "artifact_id": {
+          "$ref": "#/$defs/id"
+        },
+        "content_sha256": {
+          "$ref": "#/$defs/hash"
+        }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classification_id",
+        "target_kind",
+        "target_id",
+        "kind",
+        "reason_code",
+        "provenance_ref",
+        "retained"
+      ],
+      "properties": {
+        "classification_id": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "enum": [
+            "analytically_eligible",
+            "inactive",
+            "clamped",
+            "fallback",
+            "invalid",
+            "negative",
+            "excluded",
+            "diagnostic",
+            "unclassifiable",
+            "error",
+            "terminal_release_failure"
+          ]
+        },
+        "retained": {
+          "const": true
+        },
+        "target_kind": {
+          "enum": [
+            "operation",
+            "epoch",
+            "release",
+            "artifact"
+          ]
+        },
+    "target_id": {
+      "oneOf": [
+        { "$ref": "#/$defs/id" },
+        { "$ref": "#/$defs/positiveInteger" }
+      ]
+        },
+        "reason_code": {
+          "$ref": "#/$defs/id"
+        },
+        "provenance_ref": {
+          "$ref": "#/$defs/documentRef"
+        }
+      }
+    },
+    "traceReferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^REQ-QUIC-CRT-[0-9]{4}$"
+          }
+        },
+        "architecture_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^ARC-QUIC-CRT-[0-9]{4}$"
+          }
+        },
+        "work_item_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^WI-QUIC-CRT-[0-9]{4}$"
+          }
+        },
+        "verification_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^VER-QUIC-CRT-[0-9]{4}$"
+          }
+        }
+      }
+    }
+  }
+}
