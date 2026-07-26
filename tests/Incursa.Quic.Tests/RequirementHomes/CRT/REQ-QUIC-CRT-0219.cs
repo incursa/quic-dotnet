@@ -272,7 +272,7 @@ public sealed class REQ_QUIC_CRT_0219
             releases);
     }
 
-    private static object CaptureBatchOperation(
+    internal static object CaptureBatchOperation(
         string connectionKey,
         string captureCase,
         ulong planSequence,
@@ -357,7 +357,7 @@ public sealed class REQ_QUIC_CRT_0219
         };
     }
 
-    private static (object Operation, object Release)
+    internal static (object Operation, object Release)
         CaptureBufferRuntimeOperation(
             string connectionKey,
             string captureCase,
@@ -366,7 +366,9 @@ public sealed class REQ_QUIC_CRT_0219
             int legalSourceSegments,
             int legalBytes,
             int appliedBytes,
-            QuicBufferCopyValidity validity = QuicBufferCopyValidity.None)
+            QuicBufferCopyValidity validity = QuicBufferCopyValidity.None,
+            QuicAdaptiveRuntimeCorrectnessInteractionAuthorization?
+                interactionAuthorization = null)
     {
         using QuicConnectionRuntime runtime =
             QuicS13ApplicationSendDelayTestSupport
@@ -377,6 +379,10 @@ public sealed class REQ_QUIC_CRT_0219
             {
                 ForcedReceiveCreditPolicyMode =
                     QuicReceiveCreditPolicyMode.LegacyCurrent,
+                ForcedApplicationSendBatchPolicyMode =
+                    interactionAuthorization is null
+                        ? null
+                        : QuicApplicationSendBatchPolicyMode.SingleEligible,
                 AdaptiveRuntimeShadowEnabled = true,
                 AdaptiveRuntimeShadowEpochInterval =
                     TimeSpan.FromMilliseconds(250),
@@ -385,6 +391,8 @@ public sealed class REQ_QUIC_CRT_0219
                 ForcedBufferCopyPolicyValue = forcedValue,
                 BufferCopyObservationMode = mode,
                 BufferCopyEvidenceSink = sink,
+                SendCompositionCorrectnessAuthorization =
+                    interactionAuthorization,
             });
 
         QuicBufferCopyPolicyDecision decision = QuicBufferCopyPolicy.Evaluate(
