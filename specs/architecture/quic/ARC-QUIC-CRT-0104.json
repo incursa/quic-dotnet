@@ -1,0 +1,59 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0104",
+  "artifact_type": "architecture",
+  "status": "proposed",
+  "title": "Independent adaptive-runtime actuation-proof candidates",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0218 through REQ-QUIC-CRT-0222 by correcting complete release lookup and producing external-review candidate proofs for single_eligible batch formation and memory_conservative buffer coalescing from independent one-axis correctness executions.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0101",
+    "WI-QUIC-CRT-0105",
+    "VER-QUIC-CRT-0106"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0218",
+    "REQ-QUIC-CRT-0219",
+    "REQ-QUIC-CRT-0220",
+    "REQ-QUIC-CRT-0221",
+    "REQ-QUIC-CRT-0222"
+  ],
+  "key_components": [
+    "docs/design/adaptive-runtime-independent-actuation-proof.md",
+    "schemas/adaptive-runtime-actuation-proof-evidence-v1.schema.json",
+    "eng/adaptive-runtime/AdaptiveRuntimeExperimentEvidence.Common.psm1",
+    "eng/adaptive-runtime/New-AdaptiveRuntimeIndependentActuationProof.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeIndependentActuationProof.ps1",
+    "tests/fixtures/adaptive-runtime-independent-actuation-proof"
+  ],
+  "design_summary": "Two independent actuation-validation proof bundles reuse the existing one-axis runtime capability. A focused mechanism harness records the existing batch and buffer evidence structs and exact release observations. An offline bridge converts each one-axis capture into the current immutable v3 authority chain, recomputes behavior and outcome materializations, rebuilds projection v3, and emits a candidate-only proof document. Release lookup includes decision identity in the first operation match. Candidate records remain absent from canonical reviewed-actuation metadata until external review.",
+  "data_and_state_considerations": "All evidence is bounded, immutable, content-hashed, and axis-specific. The bridge uses complete composite operation identities and explicit input paths. Runtime catalogs are not loaded. Existing v1, v2, and v3 documents retain their original semantics. Candidate proof records set active and performance authorization false and cannot declare a reviewed or passed outcome.",
+  "edge_cases_and_constraints": [
+    "At most one behavior-distinct axis is forced in any execution.",
+    "Two reused numeric operation IDs under different decisions remain distinguishable during release resolution.",
+    "An ineligible forced candidate cannot become positive actuation.",
+    "A shadow recommendation cannot change the applied mechanism.",
+    "A structurally inactive operation cannot satisfy the positive activation assertion.",
+    "Buffer owner construction requires exactly one terminal release with the complete operation identity.",
+    "Correctness metrics cannot be performance metrics or proof inputs.",
+    "The unapplied promotion patch is review guidance, not canonical state."
+  ],
+  "alternatives_considered": [
+    "Execute the existing interaction plan to collect both proofs. Rejected because runtime capability and this checkpoint permit only one behavior-distinct forced axis.",
+    "Treat existing synthetic fixtures as live proof. Rejected because fixture expectations are not runtime truth.",
+    "Load the behavior catalog on the runtime path. Rejected because catalog resolution is an offline tooling responsibility.",
+    "Mark candidate proofs passed in the family catalog. Rejected because external review is mandatory."
+  ],
+  "risks": [
+    "A focused mechanism harness proves the exact bounded mechanism path but is not a workload-performance result.",
+    "The legacy plan schema references v1 planning catalogs while the evidence bridge materializes against the version-pinned v2 behavior catalog.",
+    "Candidate proof promotion remains blocked until an external reviewer accepts the evidence and applies a separate catalog patch.",
+    "Repository-wide SpecTrace validation retains unrelated pre-existing failures."
+  ],
+  "open_questions": [
+    "Will external review accept both candidate proofs without requesting an additional tiny runtime smoke?",
+    "After accepted proofs are promoted, should the next reviewed action be correctness-only interaction execution while measurement remains frozen?"
+  ]
+}

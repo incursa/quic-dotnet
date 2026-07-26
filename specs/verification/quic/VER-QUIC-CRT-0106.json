@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0106",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Independent adaptive-runtime actuation-proof verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0104",
+    "WI-QUIC-CRT-0105"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0218",
+    "REQ-QUIC-CRT-0219",
+    "REQ-QUIC-CRT-0220",
+    "REQ-QUIC-CRT-0221",
+    "REQ-QUIC-CRT-0222"
+  ],
+  "scope": "Verify the complete release identity correction and two independent external-review candidate actuation proofs without interaction execution, performance measurement, another-axis migration, runtime capability expansion, or activation.",
+  "verification_method": "Strict schema, canonical hash, reference, and semantic validation; focused live/mechanism harness capture; exact composite decision-operation-release joins; deterministic materialization and projection recomputation; valid and expected-invalid proof fixtures; prior checkpoint regressions; focused Release builds and requirement-home tests; direct SpecTrace validation; and diff validation.",
+  "preconditions": [
+    "The source checkpoint is b56545913569dc8d9caf08656a654ac4b6e077b6.",
+    "The dirty primary and all prior linked worktrees remain preserved.",
+    "At most one behavior-distinct axis is forced in each correctness execution.",
+    "Measurement, interaction execution, campaigns, CI, push, active_internal, and production activation remain unauthorized."
+  ],
+  "procedure": [
+    "Prove release lookup resolves the complete operation identity before linked-decision validation.",
+    "Validate the candidate proof schema and all closed negative cases.",
+    "Run the independent batch harness for activation, inactive, fallback, shadow, and rollback paths.",
+    "Run the independent buffer harness for activation, inactive, fallback, shadow, rollback, cancellation or disposal safety, and exactly-once terminal release.",
+    "Assemble each complete immutable v3 evidence chain from captured mechanism evidence.",
+    "Recompute behavior and outcome materializations and rebuild projection v3 twice.",
+    "Verify exact candidate assertions, hashes, source, binary, host, and operation identities.",
+    "Reject any proof with performance metrics, multiple forced axes, or reviewed or passed self-classification.",
+    "Run prior regressions, focused builds, requirement homes, direct SpecTrace checks, and git diff --check."
+  ],
+  "expected_result": "Both behavior-distinct values have complete, deterministic, independently reviewable candidate proof packages; releases resolve by complete identity; all authorization remains false; and no proof is self-promoted.",
+  "evidence": [
+    "docs/design/adaptive-runtime-independent-actuation-proof.md",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeIndependentActuationProof.ps1",
+    "tests/fixtures/adaptive-runtime-independent-actuation-proof",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0218.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0219.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0220.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0221.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0222.cs",
+    "docs/testing/adaptive-runtime-independent-actuation-proof-review-package-2026-07-26.md"
+  ],
+  "status_summary": "Planned from b5654591; evidence and final results will be recorded after the two independent correctness-only proof candidates are generated and validated."
+}

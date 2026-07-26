@@ -561,6 +561,112 @@
         "The unrelated repository-wide SpecTrace baseline remains preserved and separately reported.",
         "This is the mandatory stopping point for the evidence-integrity closeout."
       ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0218",
+      "title": "Represent independent actuation proof as an external-review candidate",
+      "statement": "The experiment-control system MUST represent each actuation-proof candidate as an immutable, versioned, content-hashed document scoped to exactly one axis and one behavior-distinct value; reference the exact plan, validation, manifest, run, operation evidence, behavior materialization, outcome materialization, projection, source commit, binary cohort, host, positive operation, fallback operation, shadow-neutrality evidence, rollback evidence, terminal release where applicable, and correctness assertions; keep active behavior and performance acceptance unauthorized; and require review_status candidate without self-issuing a reviewed or passed outcome.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0104"],
+        "implemented_by": ["WI-QUIC-CRT-0105"],
+        "verified_by": ["VER-QUIC-CRT-0106"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0218.cs"
+        ],
+        "upstream_refs": [
+          "schemas/adaptive-runtime-actuation-proof-evidence-v1.schema.json",
+          "docs/design/adaptive-runtime-independent-actuation-proof.md"
+        ]
+      },
+      "notes": [
+        "Candidate proof documents do not satisfy reviewed_actuation_proofs in the canonical experiment-family catalog.",
+        "The catalog promotion patch remains unapplied pending external review."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0219",
+      "title": "Prove single-eligible batch actuation independently",
+      "statement": "The correctness-only batch actuation proof candidate MUST use an actuation-validation plan with application_send_batch_formation as the only varied axis and every adjacent axis fixed to legacy_current; prove that a forced single_eligible value becomes the pre-safety candidate, remains operation-eligible, is applied after more than one legal write exists, shortens the legal prefix to exactly one without widening or reordering it, preserves priority, same-stream sequence, completion ownership, and packet-plan commit or abandonment; retain a one-write inactive case, an authoritative fallback or clamp, a non-actuating shadow recommendation, and a rollback to the exact legal legacy prefix; and derive the intended effective behavior only from the emitted packet-plan mechanism event.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0104"],
+        "implemented_by": ["WI-QUIC-CRT-0105"],
+        "verified_by": ["VER-QUIC-CRT-0106"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0219.cs"
+        ],
+        "upstream_refs": [
+          "src/Incursa.Quic/QuicApplicationSendBatchPolicy.cs",
+          "eng/adaptive-runtime/New-AdaptiveRuntimeIndependentActuationProof.ps1"
+        ]
+      },
+      "notes": [
+        "The proof is correctness-only and makes no throughput, latency, CPU, or allocation claim.",
+        "Fixture expectations are not runtime truth."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0220",
+      "title": "Prove memory-conservative buffer actuation independently",
+      "statement": "The correctness-only buffer actuation proof candidate MUST use an actuation-validation plan with buffer_copy_coalescing as the only varied axis and every adjacent axis fixed to legacy_current; prove that a forced memory_conservative value becomes the pre-safety candidate, remains operation-eligible, is applied after more than two legal source segments exist, lowers the exact legal prefix to two without widening or reordering it, rents the combined owner only after the decision, carries the complete decision and operation identity through the owner token, records exactly one terminal release, preserves cancellation, disposal, fallback, and ownership safety, retains an inactive or no-owner case, proves a non-actuating shadow recommendation, and rolls back to the exact legacy prefix; and derive the intended effective behavior only from the emitted combined-owner mechanism event.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0104"],
+        "implemented_by": ["WI-QUIC-CRT-0105"],
+        "verified_by": ["VER-QUIC-CRT-0106"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0220.cs"
+        ],
+        "upstream_refs": [
+          "src/Incursa.Quic/QuicBufferCopyObservation.cs",
+          "eng/adaptive-runtime/New-AdaptiveRuntimeIndependentActuationProof.ps1"
+        ]
+      },
+      "notes": [
+        "Release resolution uses the complete operation identity before accepting a linked decision.",
+        "The proof is correctness-only and does not execute a multi-axis cell."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0221",
+      "title": "Bridge focused mechanism evidence into the immutable authority chain",
+      "statement": "A reusable offline correctness-evidence bridge MUST consume actual bounded batch or buffer mechanism evidence emitted by the runtime or focused mechanism harness; reject missing, duplicate, stale, contradictory, wrong-run, wrong-connection, and wrong-mechanism evidence; preserve exact decision, operation, release, epoch, run, connection, source, binary, and host identities; assemble the plan, validation, manifest, run, host, binary, workload, operation-evidence v3, behavior-materialization v3, outcome-materialization v2, correctness metrics, artifact inventory, exact classifications, and projection v3 inputs; recompute both materializations and the projection; and produce byte- and hash-identical output for deterministic inputs without runtime catalog loading or hot-path evidence structures.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0104"],
+        "implemented_by": ["WI-QUIC-CRT-0105"],
+        "verified_by": ["VER-QUIC-CRT-0106"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0221.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/New-AdaptiveRuntimeIndependentActuationProof.ps1",
+          "eng/adaptive-runtime/New-AdaptiveRuntimeExperimentEvidenceProjectionV3.ps1",
+          "schemas/adaptive-runtime-operation-evidence-v3.schema.json"
+        ]
+      },
+      "notes": [
+        "Workload shape is offline context and never a runtime controller input.",
+        "The immutable file chain remains authoritative; no mutable database is introduced."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0222",
+      "title": "Reject false actuation proofs and preserve the frozen boundary",
+      "statement": "The independent proof validator MUST reject an unreached activation predicate, ineligible or safely replaced candidate claimed as positive actuation, shadow-driven actuation, wrong mechanism event, missing decision or operation correlation, missing or duplicate required buffer release, stale catalog, manifest, source, or binary identity, wrong run or connection, structurally inactive operation claimed as positive actuation, performance metric used as proof, reviewed or passed self-classification, and more than one behavior-distinct forced axis before runtime execution; retain valid fallback, inactive, negative, diagnostic, and rollback evidence; rerun prior experiment-control regressions and focused builds; and stop without interaction execution, performance work, another axis migration, CI change, push, active_internal, or production activation.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0104"],
+        "implemented_by": ["WI-QUIC-CRT-0105"],
+        "verified_by": ["VER-QUIC-CRT-0106"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0222.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeIndependentActuationProof.ps1",
+          "tests/fixtures/adaptive-runtime-independent-actuation-proof"
+        ]
+      },
+      "notes": [
+        "All proof candidates remain external-review pending.",
+        "Measurement and active behavior remain unauthorized."
+      ]
     }
   ]
 }
