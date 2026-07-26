@@ -40,6 +40,28 @@ public sealed class REQ_QUIC_CRT_0219
         }
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TerminalRuntimeClampsBatchSelectionBeforeScheduler()
+    {
+        using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport
+                .CreateFinishedClientRuntimeWithValidatedActivePath();
+        runtime.ConfigureApplicationSendBatchPolicyMode(
+            QuicApplicationSendBatchPolicyMode.SingleEligible);
+
+        Assert.Equal(
+            QuicApplicationSendBatchPolicyMode.SingleEligible,
+            runtime.ApplicationSendBatchPolicyMode);
+
+        runtime.Dispose();
+
+        Assert.Equal(
+            QuicApplicationSendBatchPolicyMode.LegacyCurrent,
+            runtime.ApplicationSendBatchPolicyMode);
+    }
+
     private static object CreateBatchCapture()
     {
         object[] operations =
@@ -52,12 +74,7 @@ public sealed class REQ_QUIC_CRT_0219
                 hasForcedValue: true,
                 forcedValue:
                     QuicApplicationSendBatchPolicyMode.SingleEligible,
-                plan: CreateBatchPlan(
-                    QuicApplicationSendBatchPolicyMode.SingleEligible,
-                    eligibleWriteCount: 4,
-                    selectedWriteCount: 1,
-                    eligibleWriteBytes: 400,
-                    selectedWriteBytes: 100),
+                legalWriteBytes: [100, 100, 100, 100],
                 result: "applied",
                 fallbackReason: null),
             CaptureBatchOperation(
@@ -68,12 +85,7 @@ public sealed class REQ_QUIC_CRT_0219
                 hasForcedValue: true,
                 forcedValue:
                     QuicApplicationSendBatchPolicyMode.SingleEligible,
-                plan: CreateBatchPlan(
-                    QuicApplicationSendBatchPolicyMode.SingleEligible,
-                    eligibleWriteCount: 1,
-                    selectedWriteCount: 1,
-                    eligibleWriteBytes: 80,
-                    selectedWriteBytes: 80),
+                legalWriteBytes: [80],
                 result: "inactive",
                 fallbackReason: "eligible_count_one"),
             CaptureBatchOperation(
@@ -84,12 +96,7 @@ public sealed class REQ_QUIC_CRT_0219
                 hasForcedValue: true,
                 forcedValue:
                     QuicApplicationSendBatchPolicyMode.SingleEligible,
-                plan: CreateBatchPlan(
-                    QuicApplicationSendBatchPolicyMode.LegacyCurrent,
-                    eligibleWriteCount: 3,
-                    selectedWriteCount: 3,
-                    eligibleWriteBytes: 300,
-                    selectedWriteBytes: 300),
+                legalWriteBytes: [100, 100, 100],
                 result: "clamped",
                 fallbackReason: "lifecycle_guard",
                 forceLifecycleGuard: true),
@@ -101,12 +108,7 @@ public sealed class REQ_QUIC_CRT_0219
                 hasForcedValue: false,
                 forcedValue:
                     QuicApplicationSendBatchPolicyMode.LegacyCurrent,
-                plan: CreateBatchPlan(
-                    QuicApplicationSendBatchPolicyMode.LegacyCurrent,
-                    eligibleWriteCount: 3,
-                    selectedWriteCount: 3,
-                    eligibleWriteBytes: 300,
-                    selectedWriteBytes: 300),
+                legalWriteBytes: [100, 100, 100],
                 result: "applied",
                 fallbackReason: null,
                 forceShadowRecommendation: true),
@@ -118,12 +120,7 @@ public sealed class REQ_QUIC_CRT_0219
                 hasForcedValue: false,
                 forcedValue:
                     QuicApplicationSendBatchPolicyMode.LegacyCurrent,
-                plan: CreateBatchPlan(
-                    QuicApplicationSendBatchPolicyMode.LegacyCurrent,
-                    eligibleWriteCount: 4,
-                    selectedWriteCount: 4,
-                    eligibleWriteBytes: 400,
-                    selectedWriteBytes: 400),
+                legalWriteBytes: [100, 100, 100, 100],
                 result: "applied",
                 fallbackReason: null),
         ];
@@ -171,7 +168,6 @@ public sealed class REQ_QUIC_CRT_0219
                 QuicBufferCopyObservationMode.ObserveOnly,
                 QuicBufferCopyPolicyValue.MemoryConservative,
                 legalSourceSegments: 4,
-                appliedSourceSegments: 2,
                 legalBytes: 400,
                 appliedBytes: 200);
         (object Operation, object Release) inactive =
@@ -181,7 +177,6 @@ public sealed class REQ_QUIC_CRT_0219
                 QuicBufferCopyObservationMode.ObserveOnly,
                 QuicBufferCopyPolicyValue.MemoryConservative,
                 legalSourceSegments: 2,
-                appliedSourceSegments: 2,
                 legalBytes: 200,
                 appliedBytes: 200);
         (object Operation, object Release) fallback =
@@ -191,7 +186,6 @@ public sealed class REQ_QUIC_CRT_0219
                 QuicBufferCopyObservationMode.ObserveOnly,
                 QuicBufferCopyPolicyValue.MemoryConservative,
                 legalSourceSegments: 4,
-                appliedSourceSegments: 4,
                 legalBytes: 400,
                 appliedBytes: 400,
                 validity: QuicBufferCopyValidity.StaleRequiredInput);
@@ -202,7 +196,6 @@ public sealed class REQ_QUIC_CRT_0219
                 QuicBufferCopyObservationMode.Shadow,
                 forcedValue: null,
                 legalSourceSegments: 4,
-                appliedSourceSegments: 4,
                 legalBytes: 400,
                 appliedBytes: 400);
         (object Operation, object Release) rollback =
@@ -212,7 +205,6 @@ public sealed class REQ_QUIC_CRT_0219
                 QuicBufferCopyObservationMode.ObserveOnly,
                 forcedValue: null,
                 legalSourceSegments: 4,
-                appliedSourceSegments: 4,
                 legalBytes: 400,
                 appliedBytes: 400);
 
@@ -279,14 +271,17 @@ public sealed class REQ_QUIC_CRT_0219
         QuicApplicationSendBatchObservationMode mode,
         bool hasForcedValue,
         QuicApplicationSendBatchPolicyMode forcedValue,
-        QuicApplicationSendPlan plan,
+        int[] legalWriteBytes,
         string result,
         string? fallbackReason,
         bool forceShadowRecommendation = false,
         bool forceLifecycleGuard = false)
     {
+        QuicApplicationSendPlan legalPlan = CreateBatchPlan(
+            QuicApplicationSendBatchPolicyMode.LegacyCurrent,
+            legalWriteBytes);
         QuicApplicationSendBatchObservation observation =
-            CreateBatchObservation(planSequence, in plan);
+            CreateBatchObservation(planSequence, in legalPlan);
         if (forceShadowRecommendation)
         {
             observation = observation with
@@ -309,7 +304,10 @@ public sealed class REQ_QUIC_CRT_0219
                 mode,
                 hasForcedValue,
                 forcedValue,
-                in plan);
+                in legalPlan);
+        QuicApplicationSendPlan plan = CreateBatchPlan(
+            BatchMode(decision.AppliedValue),
+            legalWriteBytes);
         QuicApplicationSendBatchOperationEvidence evidence =
             QuicApplicationSendBatchPolicy.CreateOperationEvidence(
                 epochSequence: 1,
@@ -340,6 +338,8 @@ public sealed class REQ_QUIC_CRT_0219
             applied_work_count = evidence.AppliedWriteCount,
             legal_bytes = evidence.LegalWriteBytes,
             applied_bytes = evidence.AppliedWriteBytes,
+            legal_order_keys = CreateOrderKeys(evidence.LegalWriteCount),
+            applied_order_keys = CreateOrderKeys(evidence.AppliedWriteCount),
             result,
             fallback_or_safety_reason = fallbackReason,
             terminal_outcome = plan.Kind == QuicApplicationSendPlanKind.None
@@ -356,7 +356,6 @@ public sealed class REQ_QUIC_CRT_0219
             QuicBufferCopyObservationMode mode,
             QuicBufferCopyPolicyValue? forcedValue,
             int legalSourceSegments,
-            int appliedSourceSegments,
             int legalBytes,
             int appliedBytes,
             QuicBufferCopyValidity validity = QuicBufferCopyValidity.None)
@@ -386,6 +385,7 @@ public sealed class REQ_QUIC_CRT_0219
             legalSourceSegments,
             validity,
             lifecycleGuard: false);
+        int appliedSourceSegments = decision.AppliedSourceSegmentCount;
         QuicBufferCopyLifetimeToken token =
             runtime.TryPublishBufferCopyObservation(
             QuicBufferCopyPath.CombinedApplicationSend,
@@ -451,6 +451,10 @@ public sealed class REQ_QUIC_CRT_0219
             applied_work_count = evidence.AppliedSourceSegmentCount,
             legal_bytes = evidence.LegalBytes,
             applied_bytes = evidence.AppliedBytes,
+            legal_order_keys =
+                CreateOrderKeys(evidence.LegalSourceSegmentCount),
+            applied_order_keys =
+                CreateOrderKeys(evidence.AppliedSourceSegmentCount),
             result,
             fallback_or_safety_reason = fallbackReason,
             terminal_outcome = "released",
@@ -517,23 +521,45 @@ public sealed class REQ_QUIC_CRT_0219
 
     private static QuicApplicationSendPlan CreateBatchPlan(
         QuicApplicationSendBatchPolicyMode mode,
-        int eligibleWriteCount,
-        int selectedWriteCount,
-        int eligibleWriteBytes,
-        int selectedWriteBytes)
-        => new(
+        int[] legalWriteBytes)
+    {
+        int selectedWriteCount =
+            QuicApplicationSendBatchPolicy.SelectWriteCount(
+                mode,
+                legalWriteBytes.Length);
+        int eligibleWriteBytes = legalWriteBytes.Sum();
+        int selectedWriteBytes =
+            legalWriteBytes.AsSpan(0, selectedWriteCount).ToArray().Sum();
+        return new(
             selectedWriteCount == 1
                 ? QuicApplicationSendPlanKind.SingleWrite
                 : QuicApplicationSendPlanKind.Batch,
             selectedWriteCount,
             FragmentDataLength: 0,
-            HasMoreQueuedData: selectedWriteCount < eligibleWriteCount,
+            HasMoreQueuedData: selectedWriteCount < legalWriteBytes.Length,
             QuicSendPolicyBlockedReason.None,
             FirstStreamId: 0,
             mode,
-            eligibleWriteCount,
+            legalWriteBytes.Length,
             eligibleWriteBytes,
             selectedWriteBytes);
+    }
+
+    private static string[] CreateOrderKeys(uint count)
+        => Enumerable.Range(0, checked((int)count))
+            .Select(static value => $"work.{value:D4}")
+            .ToArray();
+
+    private static QuicApplicationSendBatchPolicyMode BatchMode(
+        QuicAdaptiveRuntimeStage1PolicyValue value)
+        => value switch
+        {
+            QuicAdaptiveRuntimeStage1PolicyValue.LegacyCurrent =>
+                QuicApplicationSendBatchPolicyMode.LegacyCurrent,
+            QuicAdaptiveRuntimeStage1PolicyValue.SingleEligible =>
+                QuicApplicationSendBatchPolicyMode.SingleEligible,
+            _ => throw new ArgumentOutOfRangeException(nameof(value)),
+        };
 
     private static QuicApplicationSendBatchObservation CreateBatchObservation(
         ulong planSequence,

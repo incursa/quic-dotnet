@@ -117,6 +117,16 @@
         "applied_work_count": { "$ref": "#/$defs/nonNegativeInteger" },
         "legal_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
         "applied_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "legal_order_keys": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "applied_order_keys": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        },
         "result": {
           "enum": ["applied", "inactive", "fallback", "clamped"]
         },

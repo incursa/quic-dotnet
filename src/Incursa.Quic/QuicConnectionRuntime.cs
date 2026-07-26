@@ -3483,10 +3483,21 @@ internal sealed partial class QuicConnectionRuntime :
         };
 
     internal QuicApplicationSendBatchPolicyMode ApplicationSendBatchPolicyMode
-        => Volatile.Read(ref applicationSendBatchPolicyMode)
-            == (int)QuicApplicationSendBatchPolicyMode.SingleEligible
-                ? QuicApplicationSendBatchPolicyMode.SingleEligible
-                : QuicApplicationSendBatchPolicyMode.LegacyCurrent;
+    {
+        get
+        {
+            QuicApplicationSendBatchPolicyMode configured =
+                Volatile.Read(ref applicationSendBatchPolicyMode)
+                    == (int)QuicApplicationSendBatchPolicyMode.SingleEligible
+                        ? QuicApplicationSendBatchPolicyMode.SingleEligible
+                        : QuicApplicationSendBatchPolicyMode.LegacyCurrent;
+            return configured
+                    == QuicApplicationSendBatchPolicyMode.SingleEligible
+                && HasTerminalStreamOperation
+                    ? QuicApplicationSendBatchPolicyMode.LegacyCurrent
+                    : configured;
+        }
+    }
 
     internal QuicApplicationSendBatchObservationMode ApplicationSendBatchObservationMode
         => Volatile.Read(ref applicationSendBatchObservationMode) switch
