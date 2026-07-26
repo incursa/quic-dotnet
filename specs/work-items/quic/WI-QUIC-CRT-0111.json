@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0111",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Characterize send-composition performance offline",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Consolidate the accepted adaptive-runtime chain into local main, preserve unrelated work, define the exact offline measurement authority, run a bounded four-configured-cell production loopback campaign, analyze three reachable effective signatures with held-out validation, and close without production activation or push.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-SEND-COMPOSITION-PERFORMANCE",
+    "ARC-QUIC-CRT-0110",
+    "VER-QUIC-CRT-0112"
+  ],
+  "design_links": ["ARC-QUIC-CRT-0110"],
+  "verification_links": ["VER-QUIC-CRT-0112"],
+  "addresses": [
+    "REQ-QUIC-CRT-0229",
+    "REQ-QUIC-CRT-0230",
+    "REQ-QUIC-CRT-0231",
+    "REQ-QUIC-CRT-0232",
+    "REQ-QUIC-CRT-0233",
+    "REQ-QUIC-CRT-0234"
+  ],
+  "planned_changes": "Add measurement-only schemas and campaign definition; add a fixed internal performance authorization without changing policy mechanisms; extend the existing benchmark executable with a production loopback send-composition runner and bounded evidence collectors; add deterministic campaign, validation, analysis, and holdout scripts; execute pilot and accepted full cells; retain raw artifacts externally; publish compact reports and traceability; run adversarial and retained regressions; archive final main.",
+  "verification_plan": "Validate campaign and result schemas; prove authorization denial and exact cell matching; run a short serial pilot and enforce variance and activation gates; run counterbalanced training and holdout blocks; validate checksums and classifications; recompute effect and selector reports twice; run all prior adaptive-runtime regressions, focused Release builds, focused mechanism and ownership tests, direct SpecTrace validation, and git diff --check; verify final archive and bundle hashes.",
+  "out_of_scope": [
+    "Production activation or active_internal",
+    "CI changes or push",
+    "Additional-axis migration",
+    "Stage 5 ACK, crypto, HTTP/3, or QPACK development",
+    "Online learning or runtime model loading",
+    "Workload or host identity as runtime controller input"
+  ]
+}

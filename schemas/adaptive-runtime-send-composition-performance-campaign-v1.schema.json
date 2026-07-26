@@ -1,0 +1,295 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.incursa.dev/adaptive-runtime-send-composition-performance-campaign-v1.schema.json",
+  "title": "Adaptive Runtime Send-Composition Performance Campaign v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "family_id",
+    "measurement_authorization",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "production_activation_authorization",
+    "reviewed_proof_refs",
+    "correctness_review_ref",
+    "cells",
+    "workloads",
+    "design",
+    "environment",
+    "metrics",
+    "correctness_gates",
+    "early_termination",
+    "analysis",
+    "retention",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-send-composition-performance-campaign-v1" },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "family_id": { "const": "send_composition" },
+    "measurement_authorization": { "const": true },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "production_activation_authorization": { "const": false },
+    "reviewed_proof_refs": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": { "$ref": "#/$defs/ref" }
+    },
+    "correctness_review_ref": { "$ref": "#/$defs/ref" },
+    "cells": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cell_id",
+          "batch_value",
+          "buffer_value",
+          "expected_effective_signature",
+          "buffer_activation_required",
+          "performance_comparable"
+        ],
+        "properties": {
+          "cell_id": { "enum": ["A", "B", "C", "D"] },
+          "batch_value": { "enum": ["legacy_current", "single_eligible"] },
+          "buffer_value": { "enum": ["legacy_current", "memory_conservative"] },
+          "expected_effective_signature": { "$ref": "#/$defs/id" },
+          "buffer_activation_required": { "type": "boolean" },
+          "performance_comparable": { "type": "boolean" }
+        }
+      }
+    },
+    "workloads": {
+      "type": "array",
+      "minItems": 9,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "workload_id",
+          "family",
+          "split",
+          "scenario",
+          "payload_bytes",
+          "response_payload_bytes",
+          "concurrency",
+          "receive_window_bytes",
+          "activation_expectation"
+        ],
+        "properties": {
+          "workload_id": { "$ref": "#/$defs/id" },
+          "family": { "$ref": "#/$defs/id" },
+          "split": { "enum": ["pilot", "train", "holdout"] },
+          "scenario": { "enum": ["upload", "download", "duplex"] },
+          "payload_bytes": { "type": "integer", "minimum": 1 },
+          "response_payload_bytes": { "type": "integer", "minimum": 1 },
+          "concurrency": { "type": "integer", "minimum": 1, "maximum": 64 },
+          "receive_window_bytes": { "type": "integer", "minimum": 0 },
+          "activation_expectation": {
+            "enum": [
+              "inactive_control",
+              "batch_reachable",
+              "buffer_reachable",
+              "batch_and_upstream_buffer_reachable"
+            ]
+          }
+        }
+      }
+    },
+    "design": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seed",
+        "pilot_repetitions",
+        "full_repetitions",
+        "warmup_seconds",
+        "duration_seconds",
+        "serial_execution",
+        "orders",
+        "maximum_pilot_cv_percent",
+        "cooldown_seconds"
+      ],
+      "properties": {
+        "seed": { "type": "integer", "minimum": 1 },
+        "pilot_repetitions": { "type": "integer", "minimum": 2 },
+        "full_repetitions": { "type": "integer", "minimum": 3 },
+        "warmup_seconds": { "type": "integer", "minimum": 1 },
+        "duration_seconds": { "type": "integer", "minimum": 1 },
+        "serial_execution": { "const": true },
+        "orders": {
+          "type": "array",
+          "minItems": 4,
+          "items": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "items": { "enum": ["A", "B", "C", "D"] }
+          }
+        },
+        "maximum_pilot_cv_percent": { "type": "number", "minimum": 0 },
+        "cooldown_seconds": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "execution_mode",
+        "processor_affinity_policy",
+        "power_policy",
+        "frequency_policy",
+        "host_fingerprint_required",
+        "binary_hash_required",
+        "clean_source_required"
+      ],
+      "properties": {
+        "execution_mode": { "const": "serial_local_loopback" },
+        "processor_affinity_policy": { "const": "operating_system_default_serial" },
+        "power_policy": { "const": "record_observed_no_mutation" },
+        "frequency_policy": { "const": "record_observed_no_mutation" },
+        "host_fingerprint_required": { "const": true },
+        "binary_hash_required": { "const": true },
+        "clean_source_required": { "const": true }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["primary", "guardrails", "mechanisms"],
+      "properties": {
+        "primary": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "guardrails": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "mechanisms": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/id" }
+        }
+      }
+    },
+    "correctness_gates": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "early_termination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stop_on_authorization_failure",
+        "stop_on_identity_mismatch",
+        "stop_context_on_correctness_failure",
+        "pilot_required_before_full",
+        "pilot_maximum_cv_percent"
+      ],
+      "properties": {
+        "stop_on_authorization_failure": { "const": true },
+        "stop_on_identity_mismatch": { "const": true },
+        "stop_context_on_correctness_failure": { "const": true },
+        "pilot_required_before_full": { "const": true },
+        "pilot_maximum_cv_percent": { "type": "number", "minimum": 0 }
+      }
+    },
+    "analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary_metric",
+        "practical_goodput_percent",
+        "maximum_p95_regression_percent",
+        "minimum_fairness",
+        "confidence_level",
+        "bootstrap_iterations",
+        "selector_inputs",
+        "prohibited_inputs"
+      ],
+      "properties": {
+        "primary_metric": { "const": "useful_bytes_per_second" },
+        "practical_goodput_percent": { "type": "number", "minimum": 0 },
+        "maximum_p95_regression_percent": { "type": "number", "minimum": 0 },
+        "minimum_fairness": { "type": "number", "minimum": 0, "maximum": 1 },
+        "confidence_level": { "const": 0.95 },
+        "bootstrap_iterations": { "type": "integer", "minimum": 100 },
+        "selector_inputs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "prohibited_inputs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" }
+        }
+      }
+    },
+    "retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["retain_all_runs", "raw_external", "checksum_algorithm"],
+      "properties": {
+        "retain_all_runs": { "const": true },
+        "raw_external": { "const": true },
+        "checksum_algorithm": { "const": "sha256" }
+      }
+    },
+    "trace_references": { "$ref": "#/$defs/trace" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_.-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "schema_version",
+        "document_version",
+        "content_sha256"
+      ],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "schema_version": { "$ref": "#/$defs/id" },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": { "type": "array", "items": { "type": "string" } },
+        "architecture_ids": { "type": "array", "items": { "type": "string" } },
+        "work_item_ids": { "type": "array", "items": { "type": "string" } },
+        "verification_ids": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

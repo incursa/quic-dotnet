@@ -4,6 +4,21 @@
 using System.Reflection;
 using BenchmarkDotNet.Running;
 
+if (args is ["--send-composition-performance", ..])
+{
+    if (!OperatingSystem.IsWindows()
+        && !OperatingSystem.IsLinux()
+        && !OperatingSystem.IsMacOS())
+    {
+        Console.Error.WriteLine(
+            "The send-composition performance harness supports Windows, Linux, and macOS.");
+        return 3;
+    }
+
+    return await Incursa.Quic.Benchmarks.QuicSendCompositionPerformanceHarness
+        .RunAsync(args[1..]);
+}
+
 if (args is ["--http3-loopback", ..])
 {
     if (!OperatingSystem.IsWindows() && !OperatingSystem.IsLinux() && !OperatingSystem.IsMacOS())

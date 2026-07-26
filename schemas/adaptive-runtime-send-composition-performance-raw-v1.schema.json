@@ -1,0 +1,258 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.incursa.dev/adaptive-runtime-send-composition-performance-raw-v1.schema.json",
+  "title": "Adaptive Runtime Send-Composition Performance Raw Evidence v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "campaignId",
+    "manifestSha256",
+    "sourceCommit",
+    "binarySha256",
+    "cellId",
+    "batchValue",
+    "bufferValue",
+    "workloadId",
+    "split",
+    "block",
+    "order",
+    "scenario",
+    "payloadBytes",
+    "responsePayloadBytes",
+    "concurrency",
+    "receiveWindowBytes",
+    "warmupSeconds",
+    "durationSeconds",
+    "startedUtc",
+    "endedUtc",
+    "runtime",
+    "operatingSystem",
+    "architecture",
+    "processorCount",
+    "machineFingerprint",
+    "sample",
+    "mechanismEventCounts",
+    "operationResultCounts",
+    "releaseCorrect",
+    "correctnessPassed",
+    "activeBehaviorAuthorization",
+    "performanceAcceptanceAuthorization",
+    "productionActivationAuthorization"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "adaptive-runtime-send-composition-performance-raw-v1" },
+    "campaignId": { "$ref": "#/$defs/id" },
+    "manifestSha256": { "$ref": "#/$defs/hash" },
+    "sourceCommit": { "type": "string", "pattern": "^[0-9a-f]{40,64}$" },
+    "binarySha256": { "$ref": "#/$defs/hash" },
+    "cellId": { "enum": ["A", "B", "C", "D"] },
+    "batchValue": { "enum": ["legacy_current", "single_eligible"] },
+    "bufferValue": { "enum": ["legacy_current", "memory_conservative"] },
+    "workloadId": { "$ref": "#/$defs/id" },
+    "split": { "enum": ["pilot", "train", "holdout"] },
+    "block": { "type": "integer", "minimum": 0 },
+    "order": { "type": "integer", "minimum": 0 },
+    "scenario": { "enum": ["upload", "download", "duplex"] },
+    "payloadBytes": { "type": "integer", "minimum": 1 },
+    "responsePayloadBytes": { "type": "integer", "minimum": 1 },
+    "concurrency": { "type": "integer", "minimum": 1, "maximum": 64 },
+    "receiveWindowBytes": { "type": "integer", "minimum": 0 },
+    "warmupSeconds": { "type": "integer", "minimum": 1 },
+    "durationSeconds": { "type": "integer", "minimum": 1 },
+    "startedUtc": { "type": "string", "format": "date-time" },
+    "endedUtc": { "type": "string", "format": "date-time" },
+    "runtime": { "type": "string", "minLength": 1 },
+    "operatingSystem": { "type": "string", "minLength": 1 },
+    "architecture": { "enum": ["x64", "x86", "arm64", "arm"] },
+    "processorCount": { "type": "integer", "minimum": 1 },
+    "machineFingerprint": { "$ref": "#/$defs/hash" },
+    "sample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operations",
+        "failures",
+        "elapsedMilliseconds",
+        "operationsPerSecond",
+        "usefulBytesPerSecond",
+        "latencyP50Milliseconds",
+        "latencyP95Milliseconds",
+        "latencyP99Milliseconds",
+        "allocatedBytes",
+        "allocatedBytesPerOperation",
+        "cpuMilliseconds",
+        "cpuMicrosecondsPerOperation",
+        "gen0Collections",
+        "gen1Collections",
+        "gen2Collections",
+        "jainFairness",
+        "evidence"
+      ],
+      "properties": {
+        "operations": { "type": "integer", "minimum": 1 },
+        "failures": { "type": "integer", "minimum": 0 },
+        "elapsedMilliseconds": { "type": "number", "exclusiveMinimum": 0 },
+        "operationsPerSecond": { "type": "number", "minimum": 0 },
+        "usefulBytesPerSecond": { "type": "number", "minimum": 0 },
+        "latencyP50Milliseconds": { "type": "number", "minimum": 0 },
+        "latencyP95Milliseconds": { "type": "number", "minimum": 0 },
+        "latencyP99Milliseconds": { "type": "number", "minimum": 0 },
+        "allocatedBytes": { "type": "integer", "minimum": 0 },
+        "allocatedBytesPerOperation": { "type": "number", "minimum": 0 },
+        "cpuMilliseconds": { "type": "number", "minimum": 0 },
+        "cpuMicrosecondsPerOperation": { "type": "number", "minimum": 0 },
+        "gen0Collections": { "type": "integer", "minimum": 0 },
+        "gen1Collections": { "type": "integer", "minimum": 0 },
+        "gen2Collections": { "type": "integer", "minimum": 0 },
+        "jainFairness": { "type": "number", "minimum": 0, "maximum": 1 },
+        "evidence": { "$ref": "#/$defs/evidence" }
+      }
+    },
+    "mechanismEventCounts": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "axisId",
+          "mechanismEventId",
+          "operationCount",
+          "workAmount"
+        ],
+        "properties": {
+          "axisId": {
+            "enum": [
+              "application_send_batch_formation",
+              "buffer_copy_coalescing"
+            ]
+          },
+          "mechanismEventId": {
+            "enum": [
+              "mechanism_event.batch_legal_prefix",
+              "mechanism_event.batch_single_eligible",
+              "mechanism_event.buffer_legacy_prefix",
+              "mechanism_event.buffer_two_source_cap"
+            ]
+          },
+          "operationCount": { "$ref": "#/$defs/count" },
+          "workAmount": { "$ref": "#/$defs/count" }
+        }
+      }
+    },
+    "operationResultCounts": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["axisId", "resultKind", "operationCount"],
+        "properties": {
+          "axisId": {
+            "enum": [
+              "application_send_batch_formation",
+              "buffer_copy_coalescing"
+            ]
+          },
+          "resultKind": {
+            "enum": [
+              "inactive",
+              "fallback",
+              "unclassifiable",
+              "terminal_release_failure"
+            ]
+          },
+          "operationCount": { "$ref": "#/$defs/count" }
+        }
+      }
+    },
+    "releaseCorrect": { "type": "boolean" },
+    "correctnessPassed": { "type": "boolean" },
+    "activeBehaviorAuthorization": { "const": false },
+    "performanceAcceptanceAuthorization": { "const": false },
+    "productionActivationAuthorization": { "const": false }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "batchOperations",
+        "batchLegacyOperations",
+        "batchLegacyBytes",
+        "batchDistinctOperations",
+        "batchDistinctBytes",
+        "batchNoBehaviorOperations",
+        "batchUnclassifiableOperations",
+        "batchInactiveOperations",
+        "batchFallbackOperations",
+        "batchLegalWrites",
+        "batchAppliedWrites",
+        "batchLegalBytes",
+        "batchAppliedBytes",
+        "bufferOperations",
+        "bufferLegacyOperations",
+        "bufferLegacyCopiedBytes",
+        "bufferDistinctOperations",
+        "bufferDistinctCopiedBytes",
+        "bufferNoBehaviorOperations",
+        "bufferUnclassifiableOperations",
+        "bufferInactiveOperations",
+        "bufferFallbackOperations",
+        "bufferLegalSegments",
+        "bufferAppliedSegments",
+        "copiedBytes",
+        "retainedBytes",
+        "combinedOwnerRents",
+        "combinedOwnerReleases",
+        "invalidReleases"
+      ],
+      "properties": {
+        "batchOperations": { "$ref": "#/$defs/count" },
+        "batchLegacyOperations": { "$ref": "#/$defs/count" },
+        "batchLegacyBytes": { "$ref": "#/$defs/count" },
+        "batchDistinctOperations": { "$ref": "#/$defs/count" },
+        "batchDistinctBytes": { "$ref": "#/$defs/count" },
+        "batchNoBehaviorOperations": { "$ref": "#/$defs/count" },
+        "batchUnclassifiableOperations": { "$ref": "#/$defs/count" },
+        "batchInactiveOperations": { "$ref": "#/$defs/count" },
+        "batchFallbackOperations": { "$ref": "#/$defs/count" },
+        "batchLegalWrites": { "$ref": "#/$defs/count" },
+        "batchAppliedWrites": { "$ref": "#/$defs/count" },
+        "batchLegalBytes": { "$ref": "#/$defs/count" },
+        "batchAppliedBytes": { "$ref": "#/$defs/count" },
+        "bufferOperations": { "$ref": "#/$defs/count" },
+        "bufferLegacyOperations": { "$ref": "#/$defs/count" },
+        "bufferLegacyCopiedBytes": { "$ref": "#/$defs/count" },
+        "bufferDistinctOperations": { "$ref": "#/$defs/count" },
+        "bufferDistinctCopiedBytes": { "$ref": "#/$defs/count" },
+        "bufferNoBehaviorOperations": { "$ref": "#/$defs/count" },
+        "bufferUnclassifiableOperations": { "$ref": "#/$defs/count" },
+        "bufferInactiveOperations": { "$ref": "#/$defs/count" },
+        "bufferFallbackOperations": { "$ref": "#/$defs/count" },
+        "bufferLegalSegments": { "$ref": "#/$defs/count" },
+        "bufferAppliedSegments": { "$ref": "#/$defs/count" },
+        "copiedBytes": { "$ref": "#/$defs/count" },
+        "retainedBytes": { "$ref": "#/$defs/count" },
+        "combinedOwnerRents": { "$ref": "#/$defs/count" },
+        "combinedOwnerReleases": { "$ref": "#/$defs/count" },
+        "invalidReleases": { "$ref": "#/$defs/count" }
+      }
+    }
+  }
+}

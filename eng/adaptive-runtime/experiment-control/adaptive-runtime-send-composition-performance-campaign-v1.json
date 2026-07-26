@@ -1,0 +1,305 @@
+{
+  "schema_version": "adaptive-runtime-send-composition-performance-campaign-v1",
+  "document_id": "adaptive_runtime_send_composition_performance_campaign_v1",
+  "document_version": 1,
+  "content_sha256": "75cde5a89eca604d78b1e72f95007cf7bfdef5a8f14e76bae87100292fa53f45",
+  "family_id": "send_composition",
+  "measurement_authorization": true,
+  "active_behavior_authorization": false,
+  "performance_acceptance_authorization": false,
+  "production_activation_authorization": false,
+  "reviewed_proof_refs": [
+    {
+      "document_id": "review.proof_candidate.application_send_batch_formation.single_eligible.v1.reviewed_80113e61",
+      "schema_version": "adaptive-runtime-actuation-proof-review-v1",
+      "document_version": 1,
+      "content_sha256": "f40368b49bfdc8607d22449e7e80e6c1dda03a611da2362909907710a6d24b37"
+    },
+    {
+      "document_id": "review.proof_candidate.buffer_copy_coalescing.memory_conservative.v1.reviewed_80113e61",
+      "schema_version": "adaptive-runtime-actuation-proof-review-v1",
+      "document_version": 1,
+      "content_sha256": "da60ba782cd646f6c285ff1ef6dda877bc30c984054644f2bc501025e6c02408"
+    }
+  ],
+  "correctness_review_ref": {
+    "document_id": "review.send_composition.correctness",
+    "schema_version": "adaptive-runtime-send-composition-interaction-review-v1",
+    "document_version": 1,
+    "content_sha256": "53adef1ddafbc28cd5c87e2795f69973c42b91f33e5a0b4344bb8ce1461458e6"
+  },
+  "cells": [
+    {
+      "cell_id": "A",
+      "batch_value": "legacy_current",
+      "buffer_value": "legacy_current",
+      "expected_effective_signature": "signature.legacy_batch.exact_buffer",
+      "buffer_activation_required": false,
+      "performance_comparable": true
+    },
+    {
+      "cell_id": "B",
+      "batch_value": "single_eligible",
+      "buffer_value": "legacy_current",
+      "expected_effective_signature": "signature.single_eligible.buffer_inactive",
+      "buffer_activation_required": false,
+      "performance_comparable": true
+    },
+    {
+      "cell_id": "C",
+      "batch_value": "legacy_current",
+      "buffer_value": "memory_conservative",
+      "expected_effective_signature": "signature.legacy_batch.two_source_cap",
+      "buffer_activation_required": true,
+      "performance_comparable": true
+    },
+    {
+      "cell_id": "D",
+      "batch_value": "single_eligible",
+      "buffer_value": "memory_conservative",
+      "expected_effective_signature": "signature.single_eligible.buffer_inactive",
+      "buffer_activation_required": false,
+      "performance_comparable": false
+    }
+  ],
+  "workloads": [
+    {
+      "workload_id": "single_stream_bulk",
+      "family": "single_stream_bulk",
+      "split": "pilot",
+      "scenario": "upload",
+      "payload_bytes": 1048576,
+      "response_payload_bytes": 1,
+      "concurrency": 1,
+      "receive_window_bytes": 0,
+      "activation_expectation": "inactive_control"
+    },
+    {
+      "workload_id": "pilot_segment_rich",
+      "family": "segment_rich_writes",
+      "split": "pilot",
+      "scenario": "upload",
+      "payload_bytes": 8192,
+      "response_payload_bytes": 1,
+      "concurrency": 8,
+      "receive_window_bytes": 0,
+      "activation_expectation": "batch_and_upstream_buffer_reachable"
+    },
+    {
+      "workload_id": "few_stream_bulk",
+      "family": "few_stream_bulk",
+      "split": "train",
+      "scenario": "upload",
+      "payload_bytes": 262144,
+      "response_payload_bytes": 1,
+      "concurrency": 4,
+      "receive_window_bytes": 0,
+      "activation_expectation": "batch_and_upstream_buffer_reachable"
+    },
+    {
+      "workload_id": "many_stream_saturation",
+      "family": "many_stream_saturation",
+      "split": "train",
+      "scenario": "upload",
+      "payload_bytes": 65536,
+      "response_payload_bytes": 1,
+      "concurrency": 16,
+      "receive_window_bytes": 0,
+      "activation_expectation": "batch_and_upstream_buffer_reachable"
+    },
+    {
+      "workload_id": "small_chatty_sparse",
+      "family": "small_chatty_writes",
+      "split": "train",
+      "scenario": "upload",
+      "payload_bytes": 1024,
+      "response_payload_bytes": 1,
+      "concurrency": 1,
+      "receive_window_bytes": 0,
+      "activation_expectation": "inactive_control"
+    },
+    {
+      "workload_id": "small_chatty_bursty",
+      "family": "small_chatty_writes",
+      "split": "train",
+      "scenario": "upload",
+      "payload_bytes": 1024,
+      "response_payload_bytes": 1,
+      "concurrency": 8,
+      "receive_window_bytes": 0,
+      "activation_expectation": "batch_and_upstream_buffer_reachable"
+    },
+    {
+      "workload_id": "mixed_bulk_interactive",
+      "family": "mixed_bulk_interactive",
+      "split": "train",
+      "scenario": "duplex",
+      "payload_bytes": 4096,
+      "response_payload_bytes": 262144,
+      "concurrency": 8,
+      "receive_window_bytes": 0,
+      "activation_expectation": "batch_and_upstream_buffer_reachable"
+    },
+    {
+      "workload_id": "segment_rich_writes",
+      "family": "segment_rich_writes",
+      "split": "train",
+      "scenario": "upload",
+      "payload_bytes": 8192,
+      "response_payload_bytes": 1,
+      "concurrency": 16,
+      "receive_window_bytes": 0,
+      "activation_expectation": "batch_and_upstream_buffer_reachable"
+    },
+    {
+      "workload_id": "copy_memory_pressure",
+      "family": "copy_memory_pressure",
+      "split": "holdout",
+      "scenario": "duplex",
+      "payload_bytes": 65536,
+      "response_payload_bytes": 65536,
+      "concurrency": 12,
+      "receive_window_bytes": 0,
+      "activation_expectation": "batch_and_upstream_buffer_reachable"
+    },
+    {
+      "workload_id": "backpressure_slow_drain",
+      "family": "backpressure_slow_drain",
+      "split": "holdout",
+      "scenario": "download",
+      "payload_bytes": 1,
+      "response_payload_bytes": 65536,
+      "concurrency": 8,
+      "receive_window_bytes": 65536,
+      "activation_expectation": "batch_and_upstream_buffer_reachable"
+    },
+    {
+      "workload_id": "inactive_control",
+      "family": "inactive_controls",
+      "split": "holdout",
+      "scenario": "upload",
+      "payload_bytes": 2048,
+      "response_payload_bytes": 1,
+      "concurrency": 1,
+      "receive_window_bytes": 0,
+      "activation_expectation": "inactive_control"
+    }
+  ],
+  "design": {
+    "seed": 20260726,
+    "pilot_repetitions": 2,
+    "full_repetitions": 4,
+    "warmup_seconds": 1,
+    "duration_seconds": 1,
+    "serial_execution": true,
+    "orders": [
+      ["A", "B", "D", "C"],
+      ["C", "D", "B", "A"],
+      ["B", "A", "C", "D"],
+      ["D", "C", "A", "B"]
+    ],
+    "maximum_pilot_cv_percent": 15.0,
+    "cooldown_seconds": 1
+  },
+  "environment": {
+    "execution_mode": "serial_local_loopback",
+    "processor_affinity_policy": "operating_system_default_serial",
+    "power_policy": "record_observed_no_mutation",
+    "frequency_policy": "record_observed_no_mutation",
+    "host_fingerprint_required": true,
+    "binary_hash_required": true,
+    "clean_source_required": true
+  },
+  "metrics": {
+    "primary": [
+      "useful_bytes_per_second",
+      "operations_per_second"
+    ],
+    "guardrails": [
+      "latency_p50_milliseconds",
+      "latency_p95_milliseconds",
+      "latency_p99_milliseconds",
+      "cpu_microseconds_per_operation",
+      "allocated_bytes_per_operation",
+      "jain_fairness",
+      "gc_collection_counts"
+    ],
+    "mechanisms": [
+      "batch_activation_rate",
+      "buffer_activation_rate",
+      "legal_eligible_write_count",
+      "legal_eligible_bytes",
+      "source_segment_count",
+      "copied_bytes",
+      "retained_bytes",
+      "owner_rents",
+      "owner_releases",
+      "inactive_count",
+      "fallback_count",
+      "unclassifiable_count"
+    ]
+  },
+  "correctness_gates": [
+    "payload_exact",
+    "operation_failures_zero",
+    "manifest_identity_exact",
+    "runtime_cell_exact",
+    "mechanism_accounting_exact",
+    "terminal_release_exact",
+    "active_behavior_unauthorized",
+    "production_activation_unauthorized"
+  ],
+  "early_termination": {
+    "stop_on_authorization_failure": true,
+    "stop_on_identity_mismatch": true,
+    "stop_context_on_correctness_failure": true,
+    "pilot_required_before_full": true,
+    "pilot_maximum_cv_percent": 15.0
+  },
+  "analysis": {
+    "primary_metric": "useful_bytes_per_second",
+    "practical_goodput_percent": 3.0,
+    "maximum_p95_regression_percent": 5.0,
+    "minimum_fairness": 0.98,
+    "confidence_level": 0.95,
+    "bootstrap_iterations": 2000,
+    "selector_inputs": [
+      "legal_eligible_write_count",
+      "legal_eligible_bytes",
+      "source_segment_count",
+      "queue_pressure",
+      "retained_bytes",
+      "backpressure_ratio",
+      "recent_activation_rate"
+    ],
+    "prohibited_inputs": [
+      "workload_family",
+      "scenario_name",
+      "requested_concurrency",
+      "benchmark_case_id",
+      "host_identity",
+      "machine_name",
+      "url",
+      "peer_identity",
+      "application_identity"
+    ]
+  },
+  "retention": {
+    "retain_all_runs": true,
+    "raw_external": true,
+    "checksum_algorithm": "sha256"
+  },
+  "trace_references": {
+    "requirement_ids": [
+      "REQ-QUIC-CRT-0229",
+      "REQ-QUIC-CRT-0230",
+      "REQ-QUIC-CRT-0231",
+      "REQ-QUIC-CRT-0232",
+      "REQ-QUIC-CRT-0233",
+      "REQ-QUIC-CRT-0234"
+    ],
+    "architecture_ids": ["ARC-QUIC-CRT-0110"],
+    "work_item_ids": ["WI-QUIC-CRT-0111"],
+    "verification_ids": ["VER-QUIC-CRT-0112"]
+  }
+}

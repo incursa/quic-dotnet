@@ -217,6 +217,12 @@ public abstract class QuicConnectionOptions
     internal QuicAdaptiveRuntimeCorrectnessInteractionAuthorization?
         SendCompositionCorrectnessAuthorization { get; set; }
 
+    // CONTEXT: This fixed token is produced only by the reviewed offline
+    // send-composition campaign. It is not public configuration, cannot
+    // authorize active behavior, and cannot authorize performance acceptance.
+    internal QuicAdaptiveRuntimePerformanceInteractionAuthorization?
+        SendCompositionPerformanceAuthorization { get; set; }
+
     // CONTEXT: Internal-only Stage 2 application-admission control. The
     // conservative value may add one bounded dispatcher-turn wait but cannot
     // reject work, raise a hard bound, or wait for network progress.

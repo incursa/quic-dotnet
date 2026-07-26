@@ -1889,11 +1889,29 @@ internal sealed partial class QuicConnectionRuntime :
             && authorization.Authorizes(
                 forcedApplicationSendBatchMode,
                 forcedBufferCopyPolicyValue);
+        bool sendCompositionPerformanceAuthorized =
+            options.SendCompositionPerformanceAuthorization
+                is { } performanceAuthorization
+            && performanceAuthorization.Authorizes(
+                forcedApplicationSendBatchMode,
+                forcedBufferCopyPolicyValue);
         if (options.SendCompositionCorrectnessAuthorization is not null
             && !sendCompositionCorrectnessAuthorized)
         {
             throw new InvalidOperationException(
                 "The send-composition correctness authorization does not match the exact forced cell.");
+        }
+        if (options.SendCompositionPerformanceAuthorization is not null
+            && !sendCompositionPerformanceAuthorized)
+        {
+            throw new InvalidOperationException(
+                "The send-composition offline measurement authorization does not match the exact forced cell.");
+        }
+        if (options.SendCompositionCorrectnessAuthorization is not null
+            && options.SendCompositionPerformanceAuthorization is not null)
+        {
+            throw new InvalidOperationException(
+                "Correctness and offline measurement authorizations are mutually exclusive.");
         }
         if (applicationSendBatchTreatmentSelected)
         {
@@ -2009,6 +2027,7 @@ internal sealed partial class QuicConnectionRuntime :
             }
 
             if (!sendCompositionCorrectnessAuthorized
+                && !sendCompositionPerformanceAuthorized
                 && forcedApplicationSendBatchMode is not null
                 and not QuicApplicationSendBatchPolicyMode.LegacyCurrent)
             {
@@ -2119,7 +2138,8 @@ internal sealed partial class QuicConnectionRuntime :
                     == SendCompositionBehaviorDistinctTreatmentCount
                 && applicationSendBatchTreatmentSelected
                 && bufferCopyTreatmentSelected
-                && sendCompositionCorrectnessAuthorized))
+                && (sendCompositionCorrectnessAuthorized
+                    || sendCompositionPerformanceAuthorized)))
         {
             throw new InvalidOperationException(
                 "Only one behavior-distinct adaptive runtime policy axis may be forced at a time.");

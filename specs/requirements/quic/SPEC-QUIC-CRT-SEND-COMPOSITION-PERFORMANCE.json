@@ -1,0 +1,141 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-CRT-SEND-COMPOSITION-PERFORMANCE",
+  "artifact_type": "specification",
+  "title": "Adaptive-runtime send-composition offline performance characterization",
+  "domain": "quic",
+  "capability": "adaptive-runtime-send-composition-performance",
+  "status": "implemented",
+  "owner": "quic-maintainers",
+  "tags": [
+    "adaptive-runtime",
+    "experiment-control",
+    "offline-measurement",
+    "shadow-only"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0107",
+    "ARC-QUIC-CRT-0110",
+    "WI-QUIC-CRT-0111",
+    "VER-QUIC-CRT-0112"
+  ],
+  "purpose": "Authorize and govern one bounded offline performance characterization of the reviewed send_composition family while keeping production actuation, active_internal, CI, push, and unrelated axes outside the authority boundary.",
+  "scope": "The specification applies only to the four configured cells formed by application_send_batch_formation values legacy_current and single_eligible and buffer_copy_coalescing values legacy_current and memory_conservative. It governs a clean committed binary, local host, production loopback mechanism seams, immutable campaign evidence, blocked factorial analysis, held-out selector assessment, and an optional deterministic shadow recommendation.",
+  "requirements": [
+    {
+      "id": "REQ-QUIC-CRT-0229",
+      "title": "Authorize only the reviewed offline four-cell family",
+      "statement": "The repository MUST authorize offline performance measurement only for the four configured send_composition cells built from application_send_batch_formation values legacy_current and single_eligible and buffer_copy_coalescing values legacy_current and memory_conservative; require the two exact reviewed actuation proofs, the passed correctness interaction review, a clean committed source tree, exact binary and host identity, false active behavior authorization, false production activation, false performance acceptance authorization, and every outside axis at legacy_current; and deny ordinary production configuration, active_internal, another axis, a stale manifest, or a mismatched runtime cell.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0110"],
+        "implemented_by": ["WI-QUIC-CRT-0111"],
+        "verified_by": ["VER-QUIC-CRT-0112"],
+        "x_test_refs": ["tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0229.cs"],
+        "upstream_refs": [
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-composition-performance-campaign-v1.json",
+          "src/Incursa.Quic/QuicAdaptiveRuntimePerformanceInteractionAuthorization.cs"
+        ]
+      },
+      "notes": [
+        "Measurement authorization is distinct from performance acceptance and production activation.",
+        "The authorization carrier is internal and fixed-field."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0230",
+      "title": "Compile and execute a deterministic production-seam campaign",
+      "statement": "The send-composition performance runner MUST execute serial randomized or counterbalanced blocks through the production QUIC application-send scheduler, buffer-coalescing, owner, and terminal-release seams; freeze and hash source and binaries; fingerprint the host; retain exact configured and effective cell identity, workload context, treatment order, seed, warmup, duration, repetitions, correctness gates, runtime evidence aggregates, raw outcomes, and checksums; classify every run; and exclude inactive, fallback-dominated, incorrect, identity-mismatched, or environment-invalid runs from performance conclusions without deleting them.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0110"],
+        "implemented_by": ["WI-QUIC-CRT-0111"],
+        "verified_by": ["VER-QUIC-CRT-0112"],
+        "x_test_refs": ["tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0229.cs"],
+        "upstream_refs": [
+          "benchmarks/QuicSendCompositionPerformanceHarness.cs",
+          "eng/adaptive-runtime/Invoke-AdaptiveRuntimeSendCompositionPerformance.ps1"
+        ]
+      },
+      "notes": [
+        "Workload identity is offline context and is not a runtime controller input.",
+        "Large matrices and concurrent treatment execution remain prohibited."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0231",
+      "title": "Classify configured and effective send-composition cells truthfully",
+      "statement": "Campaign validation MUST derive activation and effective signatures from runtime mechanism evidence; require batch activation for single_eligible comparisons and buffer activation for memory_conservative comparisons when the upstream batch remains legacy_current; record that single_eligible supplies one selected write and therefore makes the downstream buffer-coalescing distinct predicate structurally inactive on that send opportunity; retain all four configured cells while treating configured cells with the same effective signature as expected-equivalent; and prohibit performance claims for missing or incorrectly attributed activation.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0110"],
+        "implemented_by": ["WI-QUIC-CRT-0111"],
+        "verified_by": ["VER-QUIC-CRT-0112"],
+        "x_test_refs": ["tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0229.cs"],
+        "upstream_refs": [
+          "src/Incursa.Quic/QuicApplicationSendScheduler.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+          "docs/design/adaptive-runtime-send-composition-performance.md"
+        ]
+      },
+      "notes": [
+        "The D configured cell is expected-equivalent to B at the mechanism layer when single_eligible actuates.",
+        "The campaign therefore characterizes four configured cells and three reachable primary effective signatures."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0232",
+      "title": "Analyze effects and guardrails reproducibly",
+      "statement": "Offline analysis MUST use the predeclared blocked design, deterministic train and holdout split, effect sizes, confidence intervals, practical significance thresholds, and multiplicity-aware metric interpretation; report batch, buffer, configured interaction, and context effects without averaging away regimes; retain throughput, completion latency, CPU, allocation, copy, retained-memory, fairness, fallback, inactivity, and correctness guardrails where observed; and distinguish uncertain, trivial, workload-specific, broadly generalizable, guardrail-violating, dominated, and structurally equivalent results.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0110"],
+        "implemented_by": ["WI-QUIC-CRT-0111"],
+        "verified_by": ["VER-QUIC-CRT-0112"],
+        "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionPerformance.ps1"],
+        "upstream_refs": [
+          "eng/adaptive-runtime/Measure-AdaptiveRuntimeSendCompositionPerformance.ps1",
+          "docs/testing/adaptive-runtime-send-composition-performance-review-package-2026-07-26.md"
+        ]
+      },
+      "notes": [
+        "A p-value alone is not an acceptance rule.",
+        "Structurally inactive D-cell buffer behavior is not an observed buffer treatment."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0233",
+      "title": "Permit only reproducible shadow selection",
+      "statement": "Selector analysis MUST use only bounded legitimate runtime observations, exclude workload, scenario, benchmark, host, peer, URL, and application identity, prevent run and repetition leakage, evaluate held-out regret and guardrails, implement a compact deterministic shadow-only rule only when predeclared practical benefit and held-out stability gates pass, otherwise emit no_stable_rule or more_context_required, and ensure any shadow recommendation preserves the configured applied behavior, carries a versioned rule and evidence hash, requires no runtime model loading or unbounded state, and remains independently reproducible and rollbackable.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0110"],
+        "implemented_by": ["WI-QUIC-CRT-0111"],
+        "verified_by": ["VER-QUIC-CRT-0112"],
+        "x_test_refs": ["tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0229.cs"],
+        "upstream_refs": [
+          "eng/adaptive-runtime/Measure-AdaptiveRuntimeSendCompositionPerformance.ps1",
+          "docs/testing/adaptive-runtime-send-composition-selector-assessment-2026-07-26.md"
+        ]
+      },
+      "notes": [
+        "No selector is preferable to a speculative selector.",
+        "Production actuation remains unauthorized."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-CRT-0234",
+      "title": "Close the milestone with preserved repository and evidence authority",
+      "statement": "The milestone MUST preserve the complete accepted correctness ancestry and coherent local work in clean local main; retain recoverable pre-consolidation patches, files, and Git bundle; remove only merged obsolete adaptive-runtime worktrees and branches; keep unrelated unique branches; validate prior correctness regressions, the campaign, analysis, held-out result, direct SpecTrace artifacts, focused Release builds, and diff checks; retain large raw evidence outside Git with checksum inventories; create an exact final Git archive and bundle; and finish with one clean main worktree, no push, no CI modification, no active_internal, and no production activation.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0110"],
+        "implemented_by": ["WI-QUIC-CRT-0111"],
+        "verified_by": ["VER-QUIC-CRT-0112"],
+        "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionPerformance.ps1"],
+        "upstream_refs": [
+          "docs/testing/adaptive-runtime-send-composition-performance-review-package-2026-07-26.md"
+        ]
+      },
+      "notes": [
+        "The preserved ACK Stage 5 draft remains outside this measurement slice.",
+        "Remote branches are not deleted and nothing is pushed."
+      ]
+    }
+  ]
+}

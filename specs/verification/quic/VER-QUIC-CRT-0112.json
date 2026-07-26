@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0112",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Offline send-composition performance verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-SEND-COMPOSITION-PERFORMANCE",
+    "ARC-QUIC-CRT-0110",
+    "WI-QUIC-CRT-0111"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0229",
+    "REQ-QUIC-CRT-0230",
+    "REQ-QUIC-CRT-0231",
+    "REQ-QUIC-CRT-0232",
+    "REQ-QUIC-CRT-0233",
+    "REQ-QUIC-CRT-0234"
+  ],
+  "scope": "Verify exact offline authority, production-mechanism execution, evidence retention and classification, configured/effective cell semantics, blocked statistical analysis, held-out selector assessment, and clean repository closeout without production activation, CI, push, or unrelated-axis work.",
+  "verification_method": "Schema and canonical hash validation; exact Git, binary, proof, review, host, manifest, cell, workload, and artifact identity; runtime mechanism counters from production loopback connections; activation and ownership gates; serial counterbalanced blocks; deterministic effect and bootstrap calculations; frozen train/holdout separation; adversarial authorization and substitution tests; retained correctness regressions; focused Release builds; direct SpecTrace validation; diff, archive, bundle, and clean-worktree checks.",
+  "preconditions": [
+    "Local main contains 337c171f747eee29643aa49fd9f1628aa770813f and its accepted ancestry.",
+    "Both reviewed single-axis proofs and the passed correctness interaction remain valid.",
+    "The worktree is clean and the measured binary is built from the exact committed source.",
+    "Only the exact send_composition four-cell family is authorized for offline measurement."
+  ],
+  "procedure": [
+    "Validate the campaign contract, reviewed proofs, correctness review, clean source, binary, and host.",
+    "Prove ordinary and mismatched multi-axis configuration is denied while exact campaign cells configure.",
+    "Run a short serial pilot in counterbalanced order and assess variance, drift, correctness, and activation.",
+    "Run accepted training contexts and retain every run with classification and checksums.",
+    "Analyze batch, buffer, configured interaction, context effects, confidence intervals, and guardrails.",
+    "Assess legitimate runtime observations using training data only and freeze a rule or no-rule conclusion.",
+    "Run held-out contexts and report accuracy, regret, guardrails, and stability without retuning.",
+    "Independently validate evidence, conclusions, shadow neutrality when applicable, and repository cleanup.",
+    "Run prior regressions, focused builds/tests, direct SpecTrace validation, git diff --check, archive, bundle, and final clean-state checks."
+  ],
+  "expected_result": "The exact four configured cells execute through production mechanisms; every run is retained and classified; only activation-eligible evidence supports conclusions; configured and effective equivalence is explicit; analysis and holdout results reproduce; any selector is shadow-only and evidence-backed or a no-rule conclusion is retained; and local main is clean with no push, CI change, active_internal, or production activation.",
+  "evidence": [
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionPerformance.ps1",
+    "docs/testing/adaptive-runtime-send-composition-performance-review-package-2026-07-26.md"
+  ],
+  "status_summary": "Planned until the pilot, full campaign, held-out analysis, regressions, archive, and clean-state checks complete."
+}

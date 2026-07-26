@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.incursa.dev/adaptive-runtime-send-composition-performance-analysis-v1.schema.json",
+  "title": "Adaptive Runtime Send-Composition Performance Analysis v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "projection_ref",
+    "run_counts",
+    "workload_results",
+    "effect_estimates",
+    "selector_assessment",
+    "measurement_readiness",
+    "active_behavior_authorization",
+    "production_activation_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-send-composition-performance-analysis-v1" },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "projection_ref": { "$ref": "#/$defs/ref" },
+    "run_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "eligible", "inactive", "equivalent", "excluded"],
+      "properties": {
+        "total": { "$ref": "#/$defs/count" },
+        "eligible": { "$ref": "#/$defs/count" },
+        "inactive": { "$ref": "#/$defs/count" },
+        "equivalent": { "$ref": "#/$defs/count" },
+        "excluded": { "$ref": "#/$defs/count" }
+      }
+    },
+    "workload_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "workload_id",
+          "split",
+          "cell_id",
+          "run_count",
+          "median_useful_bytes_per_second",
+          "median_p95_milliseconds",
+          "median_cpu_microseconds_per_operation",
+          "median_allocated_bytes_per_operation",
+          "median_fairness",
+          "batch_activation_rate",
+          "buffer_activation_rate"
+        ],
+        "properties": {
+          "workload_id": { "$ref": "#/$defs/id" },
+          "split": { "enum": ["pilot", "train", "holdout"] },
+          "cell_id": { "enum": ["A", "B", "C", "D"] },
+          "run_count": { "$ref": "#/$defs/count" },
+          "median_useful_bytes_per_second": { "type": "number", "minimum": 0 },
+          "median_p95_milliseconds": { "type": "number", "minimum": 0 },
+          "median_cpu_microseconds_per_operation": { "type": "number", "minimum": 0 },
+          "median_allocated_bytes_per_operation": { "type": "number", "minimum": 0 },
+          "median_fairness": { "type": "number", "minimum": 0, "maximum": 1 },
+          "batch_activation_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+          "buffer_activation_rate": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "effect_estimates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "split",
+          "effect_id",
+          "observation_count",
+          "median_percent",
+          "confidence_low_percent",
+          "confidence_high_percent",
+          "classification"
+        ],
+        "properties": {
+          "split": { "enum": ["pilot", "train", "holdout"] },
+          "effect_id": {
+            "enum": [
+              "batch_main_b_vs_a",
+              "buffer_main_c_vs_a",
+              "configured_interaction",
+              "expected_equivalence_d_vs_b"
+            ]
+          },
+          "observation_count": { "$ref": "#/$defs/count" },
+          "median_percent": { "type": "number" },
+          "confidence_low_percent": { "type": "number" },
+          "confidence_high_percent": { "type": "number" },
+          "classification": {
+            "enum": [
+              "uncertain",
+              "practically_trivial",
+              "material_positive",
+              "material_negative",
+              "expected_equivalent"
+            ]
+          }
+        }
+      }
+    },
+    "selector_assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "conclusion",
+        "rule_id",
+        "rule_text",
+        "permitted_inputs",
+        "training_accuracy",
+        "training_median_regret_percent",
+        "holdout_accuracy",
+        "holdout_median_regret_percent",
+        "shadow_implementation_authorized"
+      ],
+      "properties": {
+        "conclusion": {
+          "enum": [
+            "shadow_candidate",
+            "no_stable_rule",
+            "more_context_required"
+          ]
+        },
+        "rule_id": { "type": ["string", "null"] },
+        "rule_text": { "type": ["string", "null"] },
+        "permitted_inputs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "training_accuracy": { "type": "number", "minimum": 0, "maximum": 1 },
+        "training_median_regret_percent": { "type": "number", "minimum": 0 },
+        "holdout_accuracy": { "type": "number", "minimum": 0, "maximum": 1 },
+        "holdout_median_regret_percent": { "type": "number", "minimum": 0 },
+        "shadow_implementation_authorized": { "type": "boolean" }
+      }
+    },
+    "measurement_readiness": {
+      "enum": [
+        "measurement_completed_shadow_candidate_ready",
+        "measurement_completed_no_stable_rule",
+        "measurement_completed_more_context_required"
+      ]
+    },
+    "active_behavior_authorization": { "const": false },
+    "production_activation_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/trace" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_.-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "count": { "type": "integer", "minimum": 0 },
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "schema_version",
+        "document_version",
+        "content_sha256"
+      ],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "schema_version": { "$ref": "#/$defs/id" },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": { "type": "array", "items": { "type": "string" } },
+        "architecture_ids": { "type": "array", "items": { "type": "string" } },
+        "work_item_ids": { "type": "array", "items": { "type": "string" } },
+        "verification_ids": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

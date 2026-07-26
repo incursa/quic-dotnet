@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.incursa.dev/adaptive-runtime-send-composition-performance-projection-v1.schema.json",
+  "title": "Adaptive Runtime Send-Composition Performance Projection v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "campaign_ref",
+    "manifest_ref",
+    "behavior_catalog_ref",
+    "raw_evidence_refs",
+    "behavior_aggregates",
+    "outcome_aggregates",
+    "metric_observations",
+    "classifications",
+    "behavior_materialization_sha256",
+    "outcome_materialization_sha256",
+    "all_operations_accounted",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "production_activation_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-send-composition-performance-projection-v1" },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "campaign_ref": { "$ref": "#/$defs/ref" },
+    "manifest_ref": { "$ref": "#/$defs/ref" },
+    "behavior_catalog_ref": { "$ref": "#/$defs/ref" },
+    "raw_evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/rawRef" }
+    },
+    "behavior_aggregates": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/behaviorAggregate" }
+    },
+    "outcome_aggregates": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/outcomeAggregate" }
+    },
+    "metric_observations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/metric" }
+    },
+    "classifications": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/classification" }
+    },
+    "behavior_materialization_sha256": { "$ref": "#/$defs/hash" },
+    "outcome_materialization_sha256": { "$ref": "#/$defs/hash" },
+    "all_operations_accounted": { "const": true },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "production_activation_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/trace" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_.-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "schema_version",
+        "document_version",
+        "content_sha256"
+      ],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "schema_version": { "$ref": "#/$defs/id" },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "rawRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "relative_path",
+        "content_sha256",
+        "workload_id",
+        "split",
+        "cell_id",
+        "block",
+        "classification"
+      ],
+      "properties": {
+        "run_id": { "$ref": "#/$defs/id" },
+        "relative_path": { "type": "string", "minLength": 1 },
+        "content_sha256": { "$ref": "#/$defs/hash" },
+        "workload_id": { "$ref": "#/$defs/id" },
+        "split": { "enum": ["pilot", "train", "holdout"] },
+        "cell_id": { "enum": ["A", "B", "C", "D"] },
+        "block": { "type": "integer", "minimum": 0 },
+        "classification": {
+          "enum": [
+            "performance_eligible",
+            "expected_equivalent",
+            "inactive_control",
+            "activation_missing",
+            "failed_correctness"
+          ]
+        }
+      }
+    },
+    "behaviorAggregate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "axis_id",
+        "effective_behavior_id",
+        "operation_count",
+        "work_amount"
+      ],
+      "properties": {
+        "run_id": { "$ref": "#/$defs/id" },
+        "axis_id": {
+          "enum": [
+            "application_send_batch_formation",
+            "buffer_copy_coalescing"
+          ]
+        },
+        "effective_behavior_id": { "$ref": "#/$defs/id" },
+        "operation_count": { "type": "integer", "minimum": 0 },
+        "work_amount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "outcomeAggregate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "axis_id",
+        "outcome_id",
+        "operation_count",
+        "requires_retained_classification"
+      ],
+      "properties": {
+        "run_id": { "$ref": "#/$defs/id" },
+        "axis_id": {
+          "enum": [
+            "application_send_batch_formation",
+            "buffer_copy_coalescing"
+          ]
+        },
+        "outcome_id": { "$ref": "#/$defs/id" },
+        "operation_count": { "type": "integer", "minimum": 0 },
+        "requires_retained_classification": { "type": "boolean" }
+      }
+    },
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["run_id", "metric_id", "value", "unit"],
+      "properties": {
+        "run_id": { "$ref": "#/$defs/id" },
+        "metric_id": { "$ref": "#/$defs/id" },
+        "value": { "type": "number" },
+        "unit": { "$ref": "#/$defs/id" }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["run_id", "classification", "retained", "reason_code"],
+      "properties": {
+        "run_id": { "$ref": "#/$defs/id" },
+        "classification": {
+          "enum": [
+            "performance_eligible",
+            "expected_equivalent",
+            "inactive_control",
+            "activation_missing",
+            "failed_correctness"
+          ]
+        },
+        "retained": { "const": true },
+        "reason_code": { "$ref": "#/$defs/id" }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": { "type": "array", "items": { "type": "string" } },
+        "architecture_ids": { "type": "array", "items": { "type": "string" } },
+        "work_item_ids": { "type": "array", "items": { "type": "string" } },
+        "verification_ids": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

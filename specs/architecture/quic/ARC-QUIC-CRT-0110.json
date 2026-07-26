@@ -1,0 +1,64 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0110",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Offline send-composition performance characterization",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0229 through REQ-QUIC-CRT-0234 with a manifest-bound offline authorization, a production loopback mechanism runner, immutable aggregate evidence, blocked effect analysis, held-out selector assessment, and a clean local-main closeout.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-SEND-COMPOSITION-PERFORMANCE",
+    "ARC-QUIC-CRT-0107",
+    "WI-QUIC-CRT-0111",
+    "VER-QUIC-CRT-0112"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0229",
+    "REQ-QUIC-CRT-0230",
+    "REQ-QUIC-CRT-0231",
+    "REQ-QUIC-CRT-0232",
+    "REQ-QUIC-CRT-0233",
+    "REQ-QUIC-CRT-0234"
+  ],
+  "key_components": [
+    "docs/design/adaptive-runtime-send-composition-performance.md",
+    "schemas/adaptive-runtime-send-composition-performance-campaign-v1.schema.json",
+    "schemas/adaptive-runtime-send-composition-performance-manifest-v1.schema.json",
+    "schemas/adaptive-runtime-send-composition-performance-raw-v1.schema.json",
+    "schemas/adaptive-runtime-send-composition-performance-projection-v1.schema.json",
+    "schemas/adaptive-runtime-send-composition-performance-analysis-v1.schema.json",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-composition-performance-campaign-v1.json",
+    "src/Incursa.Quic/QuicAdaptiveRuntimePerformanceInteractionAuthorization.cs",
+    "benchmarks/QuicSendCompositionPerformanceHarness.cs",
+    "eng/adaptive-runtime/Invoke-AdaptiveRuntimeSendCompositionPerformance.ps1",
+    "eng/adaptive-runtime/Measure-AdaptiveRuntimeSendCompositionPerformance.ps1"
+  ],
+  "design_summary": "A new internal fixed-field token distinguishes offline measurement from correctness authorization, performance acceptance, and production activation. It binds one exact campaign manifest, configured cell, and the two reviewed proof hashes. A custom non-BenchmarkDotNet loopback runner in the existing benchmark assembly configures the real QUIC connection runtime, scheduler, buffer policy, owner, and release seams and captures bounded thread-safe mechanism aggregates. An external PowerShell orchestrator freezes source and binary identities, executes serial counterbalanced blocks, retains raw JSON outside Git, validates every run, and produces deterministic compact summaries. Analysis uses predeclared blocked comparisons and a frozen train/holdout split. A shadow rule is optional and may be emitted only after held-out gates pass.",
+  "data_and_state_considerations": "Raw run documents and logs are immutable external artifacts with SHA-256 inventory. Compact campaign definitions, schemas, scripts, and reviewed summaries are committed. Runtime state uses only fixed enums, immutable authorization fields, existing policy snapshots, and bounded atomic counters. Workload and host identity remain offline provenance. No mutable database, runtime catalog lookup, online learning, or unbounded per-operation retention is introduced.",
+  "edge_cases_and_constraints": [
+    "single_eligible selects one write before buffer coalescing, so the D configured cell cannot actuate the buffer two-source cap on that opportunity.",
+    "The campaign retains four configured cells but expects three primary effective signatures; B and D are equivalent when batch actuation occurs.",
+    "A run without its required reachable activation is retained but performance-ineligible.",
+    "Correctness, exact release, binary, host, manifest, evidence, or environment failure excludes a run from conclusions.",
+    "Only serial local execution is authorized; treatment cells do not run concurrently on the host.",
+    "Performance acceptance and production activation remain false even though bounded offline measurement is authorized."
+  ],
+  "alternatives_considered": [
+    "Use BenchmarkDotNet microbenchmarks only. Rejected because the milestone requires production connection, scheduling, copying, ownership, and release seams.",
+    "Use an informal CSV benchmark. Rejected because immutable identity, classification, and checksums are required.",
+    "Pretend D actuates both mechanisms. Rejected because the production seam orders batch shortening before buffer coalescing.",
+    "Expose policies through public production options. Rejected because authorization must remain internal and offline-only.",
+    "Implement a selector before measurement. Rejected because no rule is authorized without held-out evidence."
+  ],
+  "risks": [
+    "Single-host loopback results may not generalize to remote networks or other hardware.",
+    "One-second samples can be noisy, so pilot variance gates must control full-campaign progression.",
+    "Opening one stream per operation emphasizes connection scheduling and lifecycle costs alongside the two policy seams.",
+    "Some requested guardrails are unavailable from the bounded harness and must be reported as unavailable rather than inferred."
+  ],
+  "open_questions": [
+    "If the three reachable effective signatures show a stable distinction, should a later reviewed milestone add a remote isolated host before any active experiment?",
+    "Should a future independently behavior-distinct batch value preserve enough selected work for a true same-opportunity 2x2 buffer interaction?"
+  ]
+}
