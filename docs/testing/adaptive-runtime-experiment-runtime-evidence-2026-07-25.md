@@ -173,8 +173,8 @@ The fixture corpus contains:
 | Classification | Count |
 | --- | ---: |
 | valid | 16 |
-| warning/retained | 4 |
-| expected invalid | 21 |
+| warning/retained | 5 |
+| expected invalid | 24 |
 | expected materializations | 16 |
 | expected projections | 16 |
 
@@ -229,7 +229,7 @@ dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj `
 # 166 passed, 0 failed, 0 skipped
 
 pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentRuntimeEvidence.ps1
-# 3 schemas; 16 valid; 4 warning; 21 invalid; 16 deterministic rebuilds
+# 3 schemas; 16 valid; 5 warning; 24 invalid; 16 deterministic rebuilds
 
 pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentControl.ps1 -RepositoryRoot .
 # 8 schemas; 5 canonical documents; 12 valid; 15 invalid; clean

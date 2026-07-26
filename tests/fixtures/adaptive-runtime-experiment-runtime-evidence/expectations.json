@@ -2,6 +2,7 @@
   "valid": {},
   "warning": {
     "multiple_behaviors_same_epoch.warning.fixture.json": [
+      "inactive_operation_retained",
       "multiple_effective_behaviors_in_epoch"
     ],
     "inactive_operation_retained.warning.fixture.json": [

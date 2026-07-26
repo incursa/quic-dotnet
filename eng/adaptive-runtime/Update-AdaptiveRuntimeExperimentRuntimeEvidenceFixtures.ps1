@@ -419,7 +419,10 @@ $invalidBuilders = [ordered]@{
 $expectations = [ordered]@{
     valid = @{}
     warning = [ordered]@{
-        'multiple_behaviors_same_epoch.warning.fixture.json' = @('multiple_effective_behaviors_in_epoch')
+        'multiple_behaviors_same_epoch.warning.fixture.json' = @(
+            'inactive_operation_retained',
+            'multiple_effective_behaviors_in_epoch'
+        )
         'inactive_operation_retained.warning.fixture.json' = @('inactive_operation_retained')
         'retained_inactive_content_stable_copy.warning.fixture.json' = @('inactive_operation_retained')
         'fallback_operation_retained.warning.fixture.json' = @('fallback_operation_retained')

@@ -212,6 +212,77 @@ function Test-AdaptiveRuntimeJsonSchema {
     return Test-Json -Json $json -SchemaFile $SchemaPath -ErrorAction Stop
 }
 
+function Get-AdaptiveRuntimeEvidenceWarningCodes {
+    param(
+        [Parameter(Mandatory = $true)][object] $Evidence,
+        [AllowNull()][object] $PlanValidation
+    )
+
+    $warningCodes = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+
+    foreach ($group in @($Evidence.operations | Group-Object {
+        "$($_.epoch_sequence)|$($_.axis_id)"
+    })) {
+        $behaviorIds = @(
+            $group.Group |
+                Where-Object {
+                    -not [string]::IsNullOrWhiteSpace([string]$_.effective_behavior_id)
+                } |
+                ForEach-Object { [string]$_.effective_behavior_id } |
+                Sort-Object -Unique
+        )
+        if ($behaviorIds.Count -gt 1) {
+            [void]$warningCodes.Add('multiple_effective_behaviors_in_epoch')
+        }
+    }
+
+    foreach ($operation in @($Evidence.operations)) {
+        $retainedKinds = @(
+            $Evidence.classifications |
+                Where-Object {
+                    [long]$_.operation_id -eq [long]$operation.operation_id -and
+                    $_.retained -eq $true
+                } |
+                ForEach-Object { [string]$_.kind } |
+                Sort-Object -Unique
+        )
+        if ($operation.result -eq 'inactive' -and $retainedKinds -contains 'inactive') {
+            [void]$warningCodes.Add('inactive_operation_retained')
+        }
+        if ($operation.result -in @('fallback', 'clamped') -and
+            @($retainedKinds | Where-Object { $_ -in @('fallback', 'clamped') }).Count -gt 0) {
+            [void]$warningCodes.Add('fallback_operation_retained')
+        }
+    }
+
+    if ($null -ne $PlanValidation -and
+        [string]$PlanValidation.validation_classification -eq 'verification_only') {
+        $retainedEquivalentCells = @(
+            $PlanValidation.expanded_planned_cells |
+                Where-Object {
+                    [string]$_.execution_state -eq 'retained_for_verification'
+                }
+        )
+        if ($retainedEquivalentCells.Count -gt 0) {
+            [void]$warningCodes.Add(
+                'verification_only_equivalent_cell_retained')
+        }
+    }
+    elseif ([string]$Evidence.schema_version -eq
+        'adaptive-runtime-operation-evidence-v1' -and
+        @($Evidence.classifications | Where-Object {
+            [string]$_.kind -eq 'negative' -and $_.retained -eq $true
+        }).Count -gt 0) {
+        # Retained v1 fixtures predate an explicit plan-validation reference.
+        # Keep their content-derived compatibility classification while v2
+        # requires the authoritative linked validation document.
+        [void]$warningCodes.Add(
+            'verification_only_equivalent_cell_retained')
+    }
+
+    return @($warningCodes | Sort-Object)
+}
+
 function New-AdaptiveRuntimeTraceReferences {
     return [ordered]@{
         requirement_ids = @(
@@ -233,6 +304,7 @@ Export-ModuleMember -Function @(
     'Get-AdaptiveRuntimeSha256',
     'New-AdaptiveRuntimeTraceReferences',
     'Read-AdaptiveRuntimeJsonDocument',
+    'Get-AdaptiveRuntimeEvidenceWarningCodes',
     'Set-AdaptiveRuntimeDocumentHash',
     'Test-AdaptiveRuntimeDocumentHash',
     'Test-AdaptiveRuntimeJsonSchema',

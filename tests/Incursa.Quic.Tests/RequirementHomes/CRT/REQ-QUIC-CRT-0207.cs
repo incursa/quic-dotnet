@@ -21,8 +21,8 @@ public sealed class REQ_QUIC_CRT_0207
         using JsonDocument summary = JsonDocument.Parse(result.Output);
         Assert.Equal(3, summary.RootElement.GetProperty("schemas_validated").GetInt32());
         Assert.Equal(16, summary.RootElement.GetProperty("valid_fixtures").GetInt32());
-        Assert.Equal(4, summary.RootElement.GetProperty("warning_fixtures").GetInt32());
-        Assert.Equal(21, summary.RootElement.GetProperty("invalid_fixtures").GetInt32());
+        Assert.Equal(5, summary.RootElement.GetProperty("warning_fixtures").GetInt32());
+        Assert.Equal(24, summary.RootElement.GetProperty("invalid_fixtures").GetInt32());
         Assert.Equal(
             16,
             summary.RootElement

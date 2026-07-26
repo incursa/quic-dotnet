@@ -27,15 +27,22 @@ $validation = Read-AdaptiveRuntimeJsonDocument $validationPath
 $manifest = Read-AdaptiveRuntimeJsonDocument $manifestPath
 $expectations = Read-AdaptiveRuntimeJsonDocument (Join-Path $fixtureRoot 'expectations.json')
 
-$behaviorByEvent = [ordered]@{
-    'application_send_batch_formation|batch_legal_prefix' =
-        'behavior.application_send_batch_formation.legacy_current.prefix'
-    'application_send_batch_formation|batch_single_eligible' =
-        'behavior.application_send_batch_formation.single_eligible.prefix'
-    'buffer_copy_coalescing|buffer_legacy_prefix' =
-        'behavior.buffer_copy_coalescing.legacy_current.exact_prefix'
-    'buffer_copy_coalescing|buffer_two_source_cap' =
-        'behavior.buffer_copy_coalescing.memory_conservative.two_source_cap'
+$behaviorByEvent = [ordered]@{}
+$behaviorEventConflicts = [System.Collections.Generic.List[string]]::new()
+foreach ($behavior in $catalog.effective_behaviors) {
+    foreach ($event in @($behavior.mechanism_events)) {
+        $key = "$($behavior.axis_id)|$([string]$event.mechanism_event_id)"
+        if ($behaviorByEvent.Contains($key) -and
+            [string]$behaviorByEvent[$key] -ne [string]$behavior.effective_behavior_id) {
+            $behaviorEventConflicts.Add($key)
+        }
+        else {
+            $behaviorByEvent[$key] = [string]$behavior.effective_behavior_id
+        }
+    }
+}
+if ($behaviorEventConflicts.Count -gt 0) {
+    throw "The effective-behavior catalog contains ambiguous mechanism-event mappings: $($behaviorEventConflicts -join ', ')"
 }
 $supportedBehaviorIds = [System.Collections.Generic.HashSet[string]]::new(
     [StringComparer]::Ordinal)
@@ -55,7 +62,7 @@ function New-DocumentRef {
 
 function Get-DerivedBehaviorId {
     param([object] $Operation)
-    $key = "$($Operation.axis_id)|$($Operation.mechanism_event)"
+    $key = "$($Operation.axis_id)|mechanism_event.$($Operation.mechanism_event)"
     if ($behaviorByEvent.Contains($key)) {
         return [string]$behaviorByEvent[$key]
     }
@@ -107,6 +114,12 @@ function Get-RecomputedAggregates {
     })
 }
 
+function Get-ObservedWarnings {
+    param([object] $Evidence)
+
+    return @(Get-AdaptiveRuntimeEvidenceWarningCodes -Evidence $Evidence)
+}
+
 function Get-ObservedError {
     param([object] $Evidence)
 
@@ -135,6 +148,14 @@ function Get-ObservedError {
     if (@($epochKeys | Group-Object | Where-Object Count -gt 1).Count -gt 0) {
         return 'duplicate_epoch_identity'
     }
+    $topEpochMatches = @($Evidence.connection_epochs | Where-Object {
+        [string]$_.run_id -eq [string]$Evidence.run_id -and
+        [string]$_.connection_key -eq [string]$Evidence.connection_key -and
+        [long]$_.epoch_sequence -eq [long]$Evidence.epoch_sequence
+    })
+    if ($topEpochMatches.Count -eq 0) {
+        return 'top_epoch_missing'
+    }
     if ([long]$Evidence.result_epoch_sequence -ne [long]$Evidence.epoch_sequence) {
         return 'invalid_result_to_epoch_join'
     }
@@ -144,6 +165,16 @@ function Get-ObservedError {
     })
     if (@($decisionKeys | Group-Object | Where-Object Count -gt 1).Count -gt 0) {
         return 'duplicate_decision_instance'
+    }
+    if (@($Evidence.classifications | Group-Object classification_id | Where-Object Count -gt 1).Count -gt 0) {
+        return 'classification_id_duplicate'
+    }
+    foreach ($classification in @($Evidence.classifications)) {
+        if (@($Evidence.operations | Where-Object {
+            [long]$_.operation_id -eq [long]$classification.operation_id
+        }).Count -eq 0) {
+            return 'classification_operation_missing'
+        }
     }
 
     $operationKeys = @($Evidence.operations | ForEach-Object {
@@ -179,6 +210,18 @@ function Get-ObservedError {
         if ([long]$operation.epoch_sequence -ne [long]$Evidence.epoch_sequence -or
             [long]$decision[0].epoch_sequence -ne [long]$Evidence.epoch_sequence) {
             return 'wrong_epoch_attribution'
+        }
+        if (-not [string]::Equals(
+            [string]$operation.candidate_value,
+            [string]$decision[0].candidate_value,
+            [StringComparison]::Ordinal)) {
+            return 'candidate_value_mismatch'
+        }
+        if (-not [string]::Equals(
+            [string]$operation.applied_value,
+            [string]$decision[0].applied_value,
+            [StringComparison]::Ordinal)) {
+            return 'applied_value_mismatch'
         }
         if ($operation.source_event_kind -eq 'broad_endpoint') {
             return 'broad_endpoint_not_axis_mechanism'
@@ -235,6 +278,23 @@ function Get-ObservedError {
         }
         if ([long]$release[0].decision_epoch_sequence -ne [long]$Evidence.epoch_sequence) {
             return 'wrong_epoch_attribution'
+        }
+        if ([long]$release[0].release_epoch_sequence -lt [long]$release[0].decision_epoch_sequence) {
+            return 'wrong_epoch_attribution'
+        }
+    }
+
+    foreach ($operation in @($Evidence.operations)) {
+        $hasRetainedClassification = @($Evidence.classifications | Where-Object {
+            [long]$_.operation_id -eq [long]$operation.operation_id -and
+            $_.retained -eq $true
+        }).Count -gt 0
+        if ($operation.result -in @('inactive','fallback','invalid','negative') -or
+            ([string]$operation.mechanism_event -eq 'unclassifiable' -and
+             [string]::IsNullOrWhiteSpace([string]$operation.effective_behavior_id))) {
+            if (-not $hasRetainedClassification) {
+                return 'missing_retained_classification'
+            }
         }
     }
 
@@ -443,13 +503,7 @@ foreach ($path in Get-ChildItem (Join-Path $fixtureRoot 'warning') -Filter '*.js
         continue
     }
     $expectedWarnings = @($expectations.warning.PSObject.Properties[$path.Name].Value)
-    $observedWarnings = switch -Wildcard ($path.Name) {
-        'multiple_behaviors*' { @('multiple_effective_behaviors_in_epoch') }
-        'inactive*' { @('inactive_operation_retained') }
-        'fallback*' { @('fallback_operation_retained') }
-        'verification_only*' { @('verification_only_equivalent_cell_retained') }
-        default { @() }
-    }
+    $observedWarnings = @(Get-ObservedWarnings $evidence)
     if ((@($expectedWarnings | Sort-Object) -join '|') -cne
         (@($observedWarnings | Sort-Object) -join '|')) {
         $failures.Add("$($path.Name):warning_mismatch")

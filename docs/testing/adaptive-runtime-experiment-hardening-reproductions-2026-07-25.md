@@ -44,3 +44,21 @@ failures:
 This red checkpoint is intentional. The fixtures remain immutable proof inputs
 for the corrective implementation and must pass only after the corresponding
 catalog, warning, reconciliation, and join rules are implemented.
+
+## Corrective implementation result
+
+After the hardening fix in the current worktree, the same validator command now
+passes with the repaired content-derived warning and join rules:
+
+```text
+schemas_validated: 3
+valid_fixtures: 16
+warning_fixtures: 5
+invalid_fixtures: 24
+deterministic_materialization_and_projection_runs: 16
+failures: []
+```
+
+The hardening reproductions therefore transitioned from an intentional red
+baseline to a clean correctness proof without changing the preserved fixture
+corpus.
