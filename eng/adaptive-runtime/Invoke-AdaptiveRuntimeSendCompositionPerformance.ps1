@@ -157,7 +157,10 @@ $dotnetVersion = (& dotnet --version).Trim()
 $manifest = [pscustomobject][ordered]@{
     schema_version =
         'adaptive-runtime-send-composition-performance-manifest-v2'
-    document_id = "manifest.send_composition.performance.$($sourceCommit.Substring(0,12))"
+    document_id = (
+        'manifest.send_composition.performance.{0}.{1}' -f
+        [string]$campaign.document_id,
+        $sourceCommit.Substring(0,12))
     document_version = 2
     content_sha256 = '0' * 64
     campaign_ref = [pscustomobject][ordered]@{
