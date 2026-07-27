@@ -368,3 +368,24 @@ separately traced, measurement-only inventory of
 `application_send_turn_planning`. All other adjacent axes remain
 `legacy_current` or inventory-only until their own force, evidence, and
 review gates are complete.
+
+## 2026-07-26 Send-Composition Holdout Decision
+
+The independently reviewed `application_send_batch_formation=single_eligible`
+and `buffer_copy_coalescing=memory_conservative` activation proofs remain
+passed, and both values remain correctness-eligible beneath their existing
+safety guards. The approved two-axis correctness interaction also remains
+valid.
+
+The activation-qualified holdout extension recorded in
+[`testing/adaptive-runtime-send-composition-holdout-extension-review-2026-07-26.md`](testing/adaptive-runtime-send-composition-holdout-extension-review-2026-07-26.md)
+closed the earlier holdout activation gap. Its rule-promotion decision is
+`measurement_completed_no_stable_rule`: no stable deterministic selector met
+the predeclared confidence and practical gates. That result is retained
+negative selection evidence, not a failure of activation, correctness,
+forceability, fallback, or rollback.
+
+No shadow selector, threshold, model, `active_internal` authorization, or
+production behavior was introduced. Additional implemented axes require their
+own canonical contract onboarding and independent correctness proof before
+they can participate in a new experiment family.

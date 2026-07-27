@@ -1788,28 +1788,23 @@ The following must not be guessed during implementation:
 
 ## Recommended Next Review Decision
 
-The July 25, 2026 correctness checkpoint completed the first
-operation-correlated evidence/materialization/projection vertical slice for
-`application_send_batch_formation` and `buffer_copy_coalescing`. It did not
-release measurement, interaction execution, or activation. The review package
-is `docs/testing/adaptive-runtime-experiment-runtime-evidence-2026-07-25.md`;
-any additional axis migration remains a separate reviewed action.
+The July 25-26, 2026 experiment-control chain completed operation-correlated
+evidence, reviewed actuation proofs, the approved batch/buffer correctness
+interaction, and the bounded activation-qualified holdout extension for
+`application_send_batch_formation` and `buffer_copy_coalescing`. The extension
+closed the prior activation gap and concluded
+`measurement_completed_no_stable_rule`. That result preserves the two values'
+activation and correctness eligibility while declining to promote a selector.
+`active_internal` and production behavior remain unauthorized.
 
-After the current receive-credit correctness and multi-host evidence work is
-closed, review this order:
-
-1. `application_send_turn_planning`;
-2. `application_send_batch_formation`;
-3. `queued_send_burst_budget`;
-4. `oversized_write_admission_quantum` migration;
-5. actor service/fairness observations;
-6. `actor_work_quantum`; and
-7. `buffer_copy_coalescing`.
-
-This order creates the most useful forced-policy library with the least
-premature widening. It keeps protocol-sensitive network control, public
-backpressure behavior, and platform-specific offload behind later architecture
-reviews.
+The next reviewed action is bounded canonical onboarding, not another
+foundation rebuild: audit `oversized_write_admission_quantum`,
+`queued_send_burst_budget`, and `packet_flush_cadence`; select at most two
+axes whose authority and evidence paths are truthful; create candidate-only
+actuation proofs; and calculate their constrained effective correctness space.
+Family placement must follow direct mechanism relationships rather than a
+shared top-level throughput outcome. Actor service/fairness, Stage 5 protocol
+profiles, and other axes remain separate future decisions.
 
 ## Final Constraint
 

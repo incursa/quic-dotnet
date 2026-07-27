@@ -131,10 +131,16 @@ effect. Batch B versus A was -2.71 percent median useful goodput with a
 2.52 percent (-1.71 to 5.61 percent). D versus B was -0.03 percent (-0.73 to
 1.03 percent), consistent with the expected mechanism equivalence.
 
-All three named holdout contexts were either inactive controls or lacked the
-required treatment activation. They remain retained, but none provides a
-complete eligible four-cell holdout comparison. Therefore no selector was
-implemented. The exact conclusion is
-`measurement_completed_more_context_required`: correctness and measurement
-infrastructure are valid, while selector evidence and production activation
-remain unauthorized.
+The initial campaign's three named holdout contexts were either inactive
+controls or lacked the required treatment activation. They remain retained,
+and the initial decision remains
+`measurement_completed_more_context_required`.
+
+The subsequent predeclared activation-qualified extension is recorded in
+[`adaptive-runtime-send-composition-holdout-extension.md`](adaptive-runtime-send-composition-holdout-extension.md).
+It closed the activation gap and supplied complete eligible/equivalent
+four-cell holdout blocks. The final rule-promotion conclusion is
+`measurement_completed_no_stable_rule`: the reviewed activation and
+correctness proofs remain valid, but no stable deterministic selector met the
+predeclared evidence gates. Selector implementation, `active_internal`, and
+production activation remain unauthorized.
