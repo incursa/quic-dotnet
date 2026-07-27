@@ -4499,3 +4499,21 @@ verification artifacts. No BenchmarkDotNet, ProtocolLab, campaign, large
 matrix, transform, normalization, curation, split, threshold, or ML command
 ran. Measurement, `active_internal`, production behavior, CI changes, push,
 another-axis migration, and interaction execution remain unauthorized.
+
+## 2026-07-26 Implemented-factor onboarding
+
+Exactly `oversized_write_admission_quantum` and
+`queued_send_burst_budget` were added to additive experiment-control
+contracts. Three correctness-only candidate proof chains bind the production
+mechanism tests to operation evidence v4, catalog-derived behavior and outcome
+materializations, all fifteen immutable projection inputs, and deterministic
+projection v3. They remain `candidate` with null review outcomes and are not
+present in reviewed-proof metadata.
+
+The constrained inventory contains 12 explicit admission-family cells and two
+explicit queued-send cells. The spaces are exhaustively enumerated because
+they are below the 65-effective-cell covering-array trigger. Admission
+multi-axis execution and all measurement remain blocked. Packet flush was
+audited and deferred because its current prose predicate needs a separate
+correction and timer/send-transition proof. No runtime mechanism, CI file,
+policy activation, performance artifact, or dataset was changed.

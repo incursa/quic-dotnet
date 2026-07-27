@@ -706,3 +706,24 @@ predeclared upload contexts at new continuous workload points. The completed
 rebuilt projection and analysis bytes identically, and concluded
 `measurement_completed_no_stable_rule`. No selector was emitted; shadow,
 active, performance-acceptance, and production authorization remain false.
+
+## Implemented-factor onboarding
+
+The additive factor-onboarding contracts cover exactly
+`oversized_write_admission_quantum` and `queued_send_burst_budget`:
+
+```powershell
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeFactorOnboarding.ps1
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj `
+  -c Release --no-build `
+  --filter FullyQualifiedName~REQ_QUIC_CRT_0238
+```
+
+The canonical planning spaces contain 12 explicit
+`send_admission_composition` cells and two explicit
+`queued_send_burst_correctness` cells. These small spaces are exhaustively
+enumerated; no covering-array generator is implemented. The three new
+actuation proofs are candidate-only, no new reviewed-proof metadata exists,
+and every multi-axis cell involving an onboarded factor remains blocked.
+Packet-flush onboarding, performance measurement, active behavior, and
+production authorization remain outside this checkpoint.

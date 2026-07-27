@@ -1,0 +1,53 @@
+[
+  {
+    "op": "test",
+    "path": "/schema_version",
+    "value": "adaptive-runtime-experiment-family-catalog-v3"
+  },
+  {
+    "op": "test",
+    "path": "/active_behavior_authorization",
+    "value": false
+  },
+  {
+    "op": "test",
+    "path": "/performance_acceptance_authorization",
+    "value": false
+  },
+  {
+    "op": "add",
+    "path": "/reviewed_actuation_proofs/-",
+    "value": {
+      "axis_id": "oversized_write_admission_quantum",
+      "policy_value": "single_fragment",
+      "proof_id": "__EXTERNAL_REVIEW_PROOF_ID__",
+      "proof_version": 2,
+      "review_outcome": "passed",
+      "evidence_ref": "__EXTERNAL_REVIEW_RESULT_REF__"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/reviewed_actuation_proofs/-",
+    "value": {
+      "axis_id": "oversized_write_admission_quantum",
+      "policy_value": "bounded_multi_fragment",
+      "proof_id": "__EXTERNAL_REVIEW_PROOF_ID__",
+      "proof_version": 2,
+      "review_outcome": "passed",
+      "evidence_ref": "__EXTERNAL_REVIEW_RESULT_REF__"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/reviewed_actuation_proofs/-",
+    "value": {
+      "axis_id": "queued_send_burst_budget",
+      "policy_value": "single_datagram",
+      "proof_id": "__EXTERNAL_REVIEW_PROOF_ID__",
+      "proof_version": 2,
+      "review_outcome": "passed",
+      "evidence_ref": "__EXTERNAL_REVIEW_RESULT_REF__"
+    }
+  }
+]

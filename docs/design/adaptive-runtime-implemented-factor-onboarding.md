@@ -87,10 +87,9 @@ actuation or correctness proof, and it does not authorize active behavior.
   cannot itself be simultaneously batch- or buffer-distinct
 - direct oversized-to-buffer edge: intentionally omitted; the influence is
   transitive through batch formation
-- existing proof: mechanism forceability and safety tests exist, but the
-  existing 16-observer case does not prove bounded-multi distinctness
-- missing proof: value-specific immutable candidate chains for both nonlegacy
-  values, with a sparse-observer case for `bounded_multi_fragment`
+- candidate proof: separate immutable chains now bind `single_fragment` to
+  the 16-observer legacy-two case and `bounded_multi_fragment` to the
+  sparse-observer legacy-one case. Both remain external-review candidates.
 
 ### `queued_send_burst_budget`
 
@@ -121,10 +120,10 @@ actuation or correctness proof, and it does not authorize active behavior.
 - relationship to batch formation: queued burst supplies repeated packet-plan
   opportunities; batch selection can change whether a later burst iteration
   exists
-- existing proof: live runtime mechanism tests prove the one-datagram cap,
-  safety, shadow neutrality, replay, and rollback
-- missing proof: exact composite actor-turn operation evidence and an immutable
-  candidate chain
+- candidate proof: the immutable chain binds the existing live actor-turn
+  evidence to exact composite operation identity, catalog materialization,
+  retained fallback, shadow neutrality, rollback, and projection. It remains
+  external-review pending.
 
 ### `packet_flush_cadence` (deferred)
 
@@ -176,6 +175,7 @@ reviewed activation predicate. A shared fallback never collapses two values.
 
 - raw configured cells: `3 × 2 × 2 = 12`
 - explicit cells after nominal enumeration: 12
+- nominal single-axis correctness cells, including baseline: 5
 - current correctness-executable multi-axis cells involving the new factor: 0
 - candidate single-axis actuation cells: 4 configured oversized cells across
   its two independent two-cell plans
@@ -187,6 +187,11 @@ reviewed activation predicate. A shared fallback never collapses two values.
 - raw configured cells: 2
 - explicit cells: 2
 - candidate single-axis actuation cells: 2
+
+The three new proof documents have `review_status = candidate` and
+`review_outcome = null`. They are not present in canonical reviewed-proof
+metadata. The review package includes an intentionally unapplied promotion
+template that cannot be completed without independent review-result documents.
 
 Both spaces are no larger than 64. Exhaustive explicit enumeration is stronger,
 clearer, and inexpensive. No covering-array generator or placeholder is added.
