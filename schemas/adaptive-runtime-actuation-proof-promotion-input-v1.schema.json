@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/incursa/quic-dotnet/schemas/adaptive-runtime-actuation-proof-promotion-input-v1.schema.json",
+  "title": "Adaptive runtime actuation proof promotion input v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "axis_id",
+    "policy_value",
+    "proof_ref",
+    "mechanism_capture_ref",
+    "operation_evidence_ref",
+    "projection_ref",
+    "reviewed_proof_catalog_base_hash",
+    "reviewer_identity",
+    "review_artifact_ref",
+    "independent_outcome",
+    "promotion_state",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "adaptive-runtime-actuation-proof-promotion-input-v1"
+    },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "axis_id": {
+      "enum": [
+        "oversized_write_admission_quantum",
+        "queued_send_burst_budget"
+      ]
+    },
+    "policy_value": {
+      "enum": [
+        "single_fragment",
+        "bounded_multi_fragment",
+        "single_datagram"
+      ]
+    },
+    "proof_ref": { "$ref": "#/$defs/documentRef" },
+    "mechanism_capture_ref": { "$ref": "#/$defs/documentRef" },
+    "operation_evidence_ref": { "$ref": "#/$defs/documentRef" },
+    "projection_ref": { "$ref": "#/$defs/documentRef" },
+    "reviewed_proof_catalog_base_hash": { "$ref": "#/$defs/hash" },
+    "reviewer_identity": { "type": "null" },
+    "review_artifact_ref": { "type": "null" },
+    "independent_outcome": { "type": "null" },
+    "promotion_state": { "const": "not_applied" },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/traceReferences" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "schema_version",
+        "document_version",
+        "content_sha256"
+      ],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "schema_version": { "$ref": "#/$defs/id" },
+        "document_version": { "$ref": "#/$defs/positiveInteger" },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "traceReferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "architecture_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "work_item_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "verification_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

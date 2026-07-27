@@ -244,8 +244,12 @@ function Convert-QueuedRecord {
             follow_on_wake_generation =
                 [long]$Record.follow_on_wake_generation
         }
-        legal_work_count = [long]$Record.legal_maximum_datagrams
-        applied_work_count = [long]$Record.applied_maximum_datagrams
+        legal_work_count = [Math]::Min(
+            [long]$Record.legal_maximum_datagrams,
+            [long]$Record.queued_writes_before)
+        applied_work_count = [Math]::Min(
+            [long]$Record.applied_maximum_datagrams,
+            [long]$Record.queued_writes_before)
         legal_bytes = [long]$Record.queued_bytes_before
         applied_bytes = [long]$Record.queued_bytes_before -
             [long]$Record.queued_bytes_after
@@ -374,8 +378,13 @@ try {
         Write-AdaptiveRuntimeCanonicalDocument $capture $capturePath
         $spec | Add-Member -NotePropertyName SourceRoot `
             -NotePropertyValue $sourceRoot
+        $spec | Add-Member -NotePropertyName RuntimeExportPath `
+            -NotePropertyValue $runtimeExport.Path
     }
 
+    $familyCatalog = Read-AdaptiveRuntimeJsonDocument (
+        Join-Path $catalogRoot `
+            'adaptive-runtime-experiment-family-catalog-v3.json')
     foreach ($spec in $specs) {
         $planPath = Join-Path $catalogRoot $spec.Plan
         $proofRoot = Join-Path $OutputRoot $spec.Slug
@@ -388,6 +397,46 @@ try {
             -OutputRoot $proofRoot `
             -CandidateGenerationId 'runtime-proof-capture-20260727' |
             Out-Null
+        [System.IO.File]::Copy(
+            $spec.RuntimeExportPath,
+            (Join-Path $proofRoot 'runtime-sink-export.json'),
+            $true)
+        $proof = Read-AdaptiveRuntimeJsonDocument (
+            Join-Path $proofRoot 'proof-candidate.json')
+        $capture = Read-AdaptiveRuntimeJsonDocument (
+            Join-Path $proofRoot 'mechanism-capture.json')
+        $evidence = Read-AdaptiveRuntimeJsonDocument (
+            Join-Path $proofRoot 'inputs\operation_evidence.json')
+        $projection = Read-AdaptiveRuntimeJsonDocument (
+            Join-Path $proofRoot 'expected\projection.json')
+        $promotion = [pscustomobject][ordered]@{
+            schema_version =
+                'adaptive-runtime-actuation-proof-promotion-input-v1'
+            document_id =
+                "promotion_input.$($spec.Axis).$($spec.Value)"
+            document_version = 1
+            content_sha256 = '0' * 64
+            axis_id = $spec.Axis
+            policy_value = $spec.Value
+            proof_ref = New-AdaptiveRuntimeDocumentRef $proof
+            mechanism_capture_ref =
+                New-AdaptiveRuntimeDocumentRef $capture
+            operation_evidence_ref =
+                New-AdaptiveRuntimeDocumentRef $evidence
+            projection_ref = New-AdaptiveRuntimeDocumentRef $projection
+            reviewed_proof_catalog_base_hash =
+                [string]$familyCatalog.content_sha256
+            reviewer_identity = $null
+            review_artifact_ref = $null
+            independent_outcome = $null
+            promotion_state = 'not_applied'
+            active_behavior_authorization = $false
+            performance_acceptance_authorization = $false
+            trace_references = $trace
+        }
+        [void](Set-AdaptiveRuntimeDocumentHash $promotion)
+        Write-AdaptiveRuntimeCanonicalDocument $promotion (
+            Join-Path $proofRoot 'promotion-review-input.json')
     }
 }
 finally {

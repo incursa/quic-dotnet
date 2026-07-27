@@ -276,7 +276,7 @@ public sealed partial class REQ_QUIC_CRT_0238
                 forceValue: true,
                 queuedWriteCount: 1,
                 connectionSendLimit: 16_384,
-                triggerWithAck: true);
+                triggerWithAck: false);
         QuicQueuedSendBurstEvidence fallback =
             await RunQueuedSendBurstAsync(
                 QuicQueuedSendBurstPolicyMode.SingleDatagram,
