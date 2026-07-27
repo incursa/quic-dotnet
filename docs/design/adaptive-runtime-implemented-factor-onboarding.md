@@ -83,8 +83,12 @@ actuation or correctness proof, and it does not authorize active behavior.
   committed fragments/bytes, continuation posts, completion outcome
 - direct downstream edge: `oversized_write_admission_quantum` supplies work to
   `application_send_batch_formation`
-- structural constraint: a raw oversized fragment is a single batch write and
-  cannot itself be simultaneously batch- or buffer-distinct
+- operation-local constraint: a raw oversized fragment is a single batch write
+  and cannot itself be simultaneously batch- or buffer-distinct in that
+  decision opportunity
+- cell-level consequence: none is currently proved; later fragments,
+  continuations, packet plans, or operations can still expose downstream batch
+  and buffer behavior in the same configured workload cell
 - direct oversized-to-buffer edge: intentionally omitted; the influence is
   transitive through batch formation
 - candidate proof: separate immutable chains now bind `single_fragment` to
@@ -147,7 +151,7 @@ actuation or correctness proof, and it does not authorize active behavior.
 | Source | Target | Type | Canonical treatment |
 | --- | --- | --- | --- |
 | oversized admission | batch formation | `supplies_work` | direct edge |
-| oversized admission | buffer coalescing | `structural_constraint` | represented as a constraint, not a duplicate direct graph edge |
+| oversized admission | buffer coalescing | `structural_constraint` | operation-local noncoactivation represented as a constraint, not a duplicate direct graph edge or a cell-level exclusion |
 | batch formation | buffer coalescing | `supplies_work` | retained direct edge |
 | queued burst | packet flush | `changes_observed_state` | direction is packet flush to queued burst in a future graph because flush choice changes queue arrival |
 | queued burst | datagram transport | `changes_observed_state` | documented context; target axis is not onboarded here |
@@ -171,27 +175,51 @@ reviewed activation predicate. A shared fallback never collapses two values.
 
 ## Effective-space decision
 
+The v1 cell-space document is retained as historical checkpoint evidence. The
+canonical v2 report separates mutually exclusive cell partitions from
+overlapping annotations:
+
+- partitions are `correctness_executable`, `capability_pending`,
+  `cell_structurally_inactive`, and `rejected`; their counts sum to the
+  post-legality cell count;
+- annotations such as `measurement_blocked`, `verification_only`,
+  `operation_local_noncoactivation`, and `safety_clamped` may overlap the
+  partitions and each other;
+- `distinct_effective_cell_count_including_baseline` always includes the
+  effective baseline cell; and
+- `nonlegacy_behavior_distinct_treatment_value_count` counts only nonlegacy
+  behavior-distinct axis/value treatments.
+
 `send_admission_composition` has:
 
 - raw configured cells: `3 × 2 × 2 = 12`
 - explicit cells after nominal enumeration: 12
-- nominal single-axis correctness cells, including baseline: 5
+- distinct effective correctness cells, including baseline: 5
+- nonlegacy behavior-distinct treatment values: 4
 - current correctness-executable multi-axis cells involving the new factor: 0
 - candidate single-axis actuation cells: 4 configured oversized cells across
   its two independent two-cell plans
-- multi-axis cells: retained as capability-pending or structurally inactive
-  according to the canonical constraints
+- capability-pending cells: 7
+- cell-structurally-inactive cells: 0
+- operation-local noncoactivation annotations: 6
+- multi-axis cells remain retained and capability-pending; operation-local
+  noncoactivation does not remove them from a future workload-level
+  interaction space
 
 `queued_send_burst_correctness` has:
 
 - raw configured cells: 2
 - explicit cells: 2
+- distinct effective correctness cells, including baseline: 2
+- nonlegacy behavior-distinct treatment values: 1
 - candidate single-axis actuation cells: 2
 
 The three new proof documents have `review_status = candidate` and
 `review_outcome = null`. They are not present in canonical reviewed-proof
-metadata. The review package includes an intentionally unapplied promotion
-template that cannot be completed without independent review-result documents.
+metadata. External review inputs are emitted separately for
+`single_fragment`, `bounded_multi_fragment`, and `single_datagram`, each bound
+to its exact proof hash, evidence reference, catalog base hash, and independent
+review outcome. No all-at-once promotion template is canonical or applied.
 
 Both spaces are no larger than 64. Exhaustive explicit enumeration is stronger,
 clearer, and inexpensive. No covering-array generator or placeholder is added.

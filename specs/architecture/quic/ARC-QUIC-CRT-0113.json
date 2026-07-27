@@ -29,14 +29,15 @@
     "eng/adaptive-runtime/experiment-control/adaptive-runtime-effective-behavior-catalog-v3.json",
     "eng/adaptive-runtime/experiment-control/adaptive-runtime-policy-relationship-graph-v3.json",
     "eng/adaptive-runtime/experiment-control/adaptive-runtime-combination-constraint-catalog-v2.json",
-    "eng/adaptive-runtime/experiment-control/adaptive-runtime-experiment-family-catalog-v3.json"
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-experiment-family-catalog-v3.json",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-factor-cell-space-v2.json"
   ],
-  "design_summary": "The additive planning line preserves all earlier artifacts and introduces generic versioned contracts for two audited implemented axes. Oversized admission, batch formation, and buffer coalescing form a directed admission/composition chain. Queued burst remains a separate actor-turn correctness family. Three nonlegacy values receive candidate-only proof chains. The 12-cell admission space and 2-cell burst space are explicit and exhaustive; unsupported multi-axis cells remain capability-blocked.",
+  "design_summary": "The additive planning line preserves all earlier artifacts and introduces generic versioned contracts for two audited implemented axes. Oversized admission, batch formation, and buffer coalescing form a directed admission/composition chain. Queued burst remains a separate actor-turn correctness family. Three nonlegacy values receive candidate-only proof chains. The retained v1 cell-space document preserves the checkpoint record; v2 defines effective-cell counts as including baseline, separates nonlegacy treatment counts, and separates disjoint cell partitions from overlapping annotations. The 12-cell admission space and 2-cell burst space are explicit and exhaustive; unsupported multi-axis cells remain capability-blocked.",
   "data_and_state_considerations": "Runtime policy mechanics remain unchanged. Evidence-only correlation uses fixed value fields and bounded operation identities. Catalog lookup, hashing, materialization, projection, and proof assembly remain offline. Workload and host identity are provenance only.",
   "edge_cases_and_constraints": [
     "Single-fragment and bounded-multi-fragment are context-dependent distinct values and must not collapse merely because both can use a one-fragment fallback.",
     "Queued single-datagram is inactive when the legal budget is at most one or the queue drains after one emission.",
-    "Raw oversized fragments structurally select one batch write, so the same operation cannot be both oversized- and batch-distinct.",
+    "Raw oversized fragments structurally select one batch write, so the same operation cannot be both oversized- and batch-distinct; this operation-local noncoactivation does not prove that the configured workload cell is structurally inactive.",
     "No new multi-axis execution capability is introduced."
   ],
   "alternatives_considered": [

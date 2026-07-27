@@ -722,8 +722,14 @@ dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj `
 The canonical planning spaces contain 12 explicit
 `send_admission_composition` cells and two explicit
 `queued_send_burst_correctness` cells. These small spaces are exhaustively
-enumerated; no covering-array generator is implemented. The three new
-actuation proofs are candidate-only, no new reviewed-proof metadata exists,
-and every multi-axis cell involving an onboarded factor remains blocked.
-Packet-flush onboarding, performance measurement, active behavior, and
-production authorization remain outside this checkpoint.
+enumerated; no covering-array generator is implemented. Cell-space v2 counts
+the baseline in `distinct_effective_cell_count_including_baseline` (5
+admission, 2 queued) and separately counts nonlegacy behavior-distinct
+treatment values (4 admission, 1 queued). Its primary partition counts are
+disjoint, while explicitly named annotation counts may overlap. The six
+oversized/downstream same-operation cases are
+`operation_local_noncoactivation` annotations, not workload-cell exclusions.
+The three new actuation proofs are candidate-only, no new reviewed-proof
+metadata exists, and every multi-axis cell involving an onboarded factor
+remains blocked. Packet-flush onboarding, performance measurement, active
+behavior, and production authorization remain outside this checkpoint.

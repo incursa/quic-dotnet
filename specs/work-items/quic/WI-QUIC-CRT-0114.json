@@ -22,7 +22,7 @@
     "REQ-QUIC-CRT-0239",
     "REQ-QUIC-CRT-0240"
   ],
-  "planned_changes": "Reconcile the no-stable-rule documentation; record the three-axis audit and two-axis selection; add axis-contract v2, behavior-catalog v3, relationship-graph v3, combination-constraint v2, family-catalog v3, capture/proof v2, operation-evidence v4, and cell-space v1 contracts; create three candidate proof chains from focused mechanism evidence; add explicit 12-cell and 2-cell plans; validate retained versions and new negative cases; and publish a correctness-only review package.",
+  "planned_changes": "Reconcile the no-stable-rule documentation; record the three-axis audit and two-axis selection; add axis-contract v2, behavior-catalog v3, relationship-graph v3, combination-constraint v2, family-catalog v3, capture/proof v2, operation-evidence v4, and cell-space v1 contracts; retain cell-space v1 and add cell-space v2 to define baseline-inclusive effective counts, separate nonlegacy treatments, and distinguish operation-local noncoactivation from cell-level inactivity; create three candidate proof chains from focused mechanism evidence; add explicit 12-cell and 2-cell plans; validate retained versions and new negative cases; and keep transient review records outside the repository.",
   "verification_plan": "Run the factor-onboarding generator twice and compare bytes; validate every new canonical document and proof chain against its schema and hash; prove catalog-owned behavior derivation and candidate-only review state; run existing foundation/compiler/runtime/hardening/closeout/proof regressions, focused axis tests, Release builds, direct SpecTrace validation, and git diff --check.",
   "out_of_scope": [
     "Performance measurement or selector analysis",

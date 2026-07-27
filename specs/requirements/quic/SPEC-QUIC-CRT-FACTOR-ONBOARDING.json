@@ -83,7 +83,10 @@
         "implemented_by": ["WI-QUIC-CRT-0114"],
         "verified_by": ["VER-QUIC-CRT-0115"],
         "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeFactorOnboarding.ps1"],
-        "upstream_refs": ["eng/adaptive-runtime/experiment-control/adaptive-runtime-factor-cell-space-v1.json"]
+        "upstream_refs": [
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-factor-cell-space-v1.json",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-factor-cell-space-v2.json"
+        ]
       }
     },
     {

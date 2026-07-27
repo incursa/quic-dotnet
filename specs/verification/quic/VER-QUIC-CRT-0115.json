@@ -32,6 +32,7 @@
     "Recompute the three candidate proof chains from focused mechanism captures.",
     "Recompute catalog-owned behavior and outcome materializations and projections.",
     "Prove all candidate proofs remain unreviewed and no promotion patch is applied.",
+    "Validate the retained v1 and canonical v2 cell-space documents, including baseline-inclusive effective counts, disjoint partition totals, overlapping annotation totals, and operation-local noncoactivation without false cell exclusion.",
     "Validate the 12-cell and 2-cell exhaustive inventories and blocked multi-axis states.",
     "Run retained regressions, focused mechanism tests, Release builds, SpecTrace checks, and git diff --check."
   ],
