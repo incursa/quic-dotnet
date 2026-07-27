@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-effective-behavior-catalog-v3.schema.json",
+  "title": "Adaptive Runtime Effective Behavior Catalog v3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "trace_references",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "effective_behaviors",
+    "value_behavior_sets",
+    "outcome_definitions"
+  ],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-effective-behavior-catalog-v3" },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 3 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "trace_references": { "$ref": "#/$defs/trace" },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "effective_behaviors": {
+      "type": "array",
+      "minItems": 9,
+      "items": { "$ref": "#/$defs/behavior" }
+    },
+    "value_behavior_sets": {
+      "type": "array",
+      "minItems": 11,
+      "items": { "$ref": "#/$defs/valueSet" }
+    },
+    "outcome_definitions": {
+      "type": "array",
+      "minItems": 9,
+      "items": { "$ref": "#/$defs/outcome" }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "axis": {
+      "enum": [
+        "application_send_batch_formation",
+        "buffer_copy_coalescing",
+        "application_send_turn_planning", "oversized_write_admission_quantum", "queued_send_burst_budget"
+      ]
+    },
+    "policyValue": {
+      "enum": [
+        "legacy_current",
+        "single_eligible",
+        "memory_conservative",
+        "conservative", "single_fragment", "bounded_multi_fragment", "single_datagram"
+      ]
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_ids", "architecture_ids", "work_item_ids", "verification_ids"],
+      "properties": {
+        "requirement_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^REQ-QUIC-CRT-[0-9]{4}$" } },
+        "architecture_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^ARC-QUIC-CRT-[0-9]{4}$" } },
+        "work_item_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^WI-QUIC-CRT-[0-9]{4}$" } },
+        "verification_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^VER-QUIC-CRT-[0-9]{4}$" } }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operation_kind", "boundary", "scope_version"],
+      "properties": {
+        "operation_kind": { "enum": ["packet_plan", "combined_send", "send_turn", "logical_write"] },
+        "boundary": { "type": "string", "minLength": 1 },
+        "scope_version": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "behavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "effective_behavior_id",
+        "axis_id",
+        "derivation_mode",
+        "reviewed_version",
+        "operation_scope",
+        "mechanism_event_ids"
+      ],
+      "properties": {
+        "effective_behavior_id": { "$ref": "#/$defs/id" },
+        "axis_id": { "$ref": "#/$defs/axis" },
+        "derivation_mode": { "enum": ["mutually_exclusive", "composable"] },
+        "reviewed_version": { "const": 3 },
+        "operation_scope": { "$ref": "#/$defs/scope" },
+        "mechanism_event_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^mechanism_event\\.[a-z0-9._-]+$" }
+        }
+      }
+    },
+    "valueSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "axis_id",
+        "policy_value",
+        "primary_expected_behavior_ids",
+        "possible_effective_behavior_ids",
+        "non_behavior_outcome_ids",
+        "activation_signature_id",
+        "multiple_primary_permitted"
+      ],
+      "properties": {
+        "axis_id": { "$ref": "#/$defs/axis" },
+        "policy_value": { "$ref": "#/$defs/policyValue" },
+        "primary_expected_behavior_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "possible_effective_behavior_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "non_behavior_outcome_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "activation_signature_id": { "$ref": "#/$defs/id" },
+        "multiple_primary_permitted": { "type": "boolean" }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outcome_id", "result_kinds", "requires_retained_classification"],
+      "properties": {
+        "outcome_id": { "$ref": "#/$defs/id" },
+        "result_kinds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "inactive",
+              "fallback",
+              "clamped",
+              "invalid",
+              "negative",
+              "error",
+              "unclassifiable",
+              "diagnostic",
+              "terminal_release_failure"
+            ]
+          }
+        },
+        "requires_retained_classification": { "const": true }
+      }
+    }
+  }
+}

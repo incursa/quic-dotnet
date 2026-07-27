@@ -1,0 +1,361 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-compiled-execution-manifest-v2.schema.json",
+  "title": "Adaptive Runtime Compiled Execution Manifest v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "trace_references",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "compiled_execution_manifest_id",
+    "source_plan_ref",
+    "source_validation_ref",
+    "source_commit",
+    "binary_provenance",
+    "host_capabilities",
+    "execution_order",
+    "executable_cells",
+    "post_build_refs",
+    "build_status"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "adaptive-runtime-compiled-execution-manifest-v2"
+    },
+    "document_id": { "type": "string", "minLength": 1 },
+    "document_version": { "type": "integer", "const": 2 },
+    "content_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "trace_references": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_ids", "architecture_ids", "work_item_ids", "verification_ids"],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "REQ-QUIC-CRT-0198",
+              "REQ-QUIC-CRT-0199",
+              "REQ-QUIC-CRT-0200",
+              "REQ-QUIC-CRT-0201",
+              "REQ-QUIC-CRT-0202",
+              "REQ-QUIC-CRT-0203",
+              "REQ-QUIC-CRT-0204",
+              "REQ-QUIC-CRT-0205"
+            ]
+          }
+        },
+        "architecture_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": { "type": "string", "enum": ["ARC-QUIC-CRT-0089", "ARC-QUIC-CRT-0092"] }
+        },
+        "work_item_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": { "type": "string", "enum": ["WI-QUIC-CRT-0090", "WI-QUIC-CRT-0093"] }
+        },
+        "verification_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": { "type": "string", "enum": ["VER-QUIC-CRT-0091", "VER-QUIC-CRT-0094"] }
+        }
+      }
+    },
+    "active_behavior_authorization": { "type": "boolean", "const": false },
+    "performance_acceptance_authorization": { "type": "boolean", "const": false },
+    "correctness_interaction_authorization": {
+      "$ref": "#/$defs/correctnessInteractionAuthorization"
+    },
+    "compiled_execution_manifest_id": { "type": "string", "minLength": 1 },
+    "source_plan_ref": { "$ref": "#/$defs/documentRef" },
+    "source_validation_ref": { "$ref": "#/$defs/documentRef" },
+    "source_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$"
+    },
+    "binary_provenance": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/binaryRef" }
+    },
+    "runner_identity": { "$ref": "#/$defs/runnerIdentity" },
+    "host_fingerprint": { "$ref": "#/$defs/hostFingerprint" },
+    "host_capabilities": { "$ref": "#/$defs/hostCapabilities" },
+    "execution_order": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "executable_cells": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/executableCell" }
+    },
+    "capability_ineligible_cells": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/executableCell" }
+    },
+    "excluded_cells": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/executableCell" }
+    },
+    "execution_order_policy": {
+      "type": "string",
+      "enum": ["deterministic", "randomized"]
+    },
+    "randomization_seed": { "type": "integer", "minimum": 0 },
+    "output_roots": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "retention_rules": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "expected_result_schemas": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "post_build_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/documentRef" }
+    },
+    "build_status": {
+      "type": "string",
+      "enum": ["compiled", "blocked_by_capability", "deferred"]
+    },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document_id", "schema_version", "document_version", "content_sha256"],
+      "properties": {
+        "document_id": { "type": "string", "minLength": 1 },
+        "schema_version": { "type": "string", "minLength": 1 },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "correctnessInteractionAuthorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "execution_purpose",
+        "family_id",
+        "cell_id",
+        "axis_values",
+        "reviewed_proof_refs",
+        "relationship_graph_version",
+        "constraint_catalog_version",
+        "maximum_behavior_distinct_axes",
+        "active_behavior_authorization",
+        "performance_acceptance_authorization"
+      ],
+      "properties": {
+        "execution_purpose": { "const": "correctness_only" },
+        "family_id": { "const": "send_composition" },
+        "cell_id": { "type": "string", "minLength": 1 },
+        "axis_values": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["axis_id", "policy_value"],
+            "properties": {
+              "axis_id": {
+                "enum": [
+                  "application_send_batch_formation",
+                  "buffer_copy_coalescing"
+                ]
+              },
+              "policy_value": {
+                "enum": ["single_eligible", "memory_conservative"]
+              }
+            }
+          }
+        },
+        "reviewed_proof_refs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": { "$ref": "#/$defs/documentRef" }
+        },
+        "relationship_graph_version": { "const": 2 },
+        "constraint_catalog_version": { "const": 1 },
+        "maximum_behavior_distinct_axes": { "const": 2 },
+        "active_behavior_authorization": { "const": false },
+        "performance_acceptance_authorization": { "const": false }
+      }
+    },
+    "binaryRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "path", "content_sha256"],
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": [
+            "source_plan",
+            "validation_result",
+            "runtime_binary",
+            "test_binary",
+            "other"
+          ]
+        },
+        "path": { "type": "string", "minLength": 1 },
+        "content_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "runnerIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runner_id", "version", "path", "content_sha256"],
+      "properties": {
+        "runner_id": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1 },
+        "content_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "hostFingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fingerprint_id", "machine_name", "os", "architecture", "processor_count"],
+      "properties": {
+        "fingerprint_id": { "type": "string", "minLength": 1 },
+        "machine_name": { "type": "string", "minLength": 1 },
+        "os": { "type": "string", "minLength": 1 },
+        "architecture": { "type": "string", "minLength": 1 },
+        "processor_count": { "type": "integer", "minimum": 1 },
+        "physical_host_id": { "type": "string", "minLength": 1 },
+        "vm_id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "hostCapabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["host_id", "os", "architecture", "processor_count", "capability_flags"],
+      "properties": {
+        "host_id": { "type": "string", "minLength": 1 },
+        "os": { "type": "string", "minLength": 1 },
+        "architecture": { "type": "string", "minLength": 1 },
+        "processor_count": { "type": "integer", "minimum": 1 },
+        "capability_flags": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "source_plan_valid",
+              "current_combination_blocked",
+              "single_axis_executable",
+              "multi_axis_blocked",
+              "post_build_refs_present"
+            ]
+          }
+        },
+        "resolved_capabilities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["capability_id", "state"],
+            "properties": {
+              "capability_id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
+              },
+              "state": {
+                "type": "string",
+                "enum": ["available", "unavailable", "unknown"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "executableCell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cell_id",
+        "cell_order",
+        "axis_ids",
+        "treatment_ids",
+        "execution_state"
+      ],
+      "properties": {
+        "cell_id": { "type": "string", "minLength": 1 },
+        "cell_order": { "type": "integer", "minimum": 0 },
+        "axis_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "application_send_batch_formation",
+              "buffer_copy_coalescing",
+              "application_send_turn_planning", "oversized_write_admission_quantum", "queued_send_burst_budget"
+            ]
+          }
+        },
+        "treatment_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "execution_state": {
+          "type": "string",
+          "enum": [
+            "executable",
+            "capability_ineligible",
+            "excluded",
+            "retained_for_verification",
+            "blocked",
+            "deferred"
+          ]
+        },
+        "notes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

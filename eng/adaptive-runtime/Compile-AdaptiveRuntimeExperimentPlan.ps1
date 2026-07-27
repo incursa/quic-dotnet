@@ -7,7 +7,7 @@ param(
     [string] $CatalogRoot,
     [string] $OutputPath,
     [string] $RepositoryRoot,
-    [ValidateSet('v1','v2')][string] $CatalogContractVersion = 'v1',
+    [ValidateSet('v1','v2','v3')][string] $CatalogContractVersion = 'v1',
     [switch] $PassThru,
     [switch] $AllowInvalid
 )
@@ -28,12 +28,26 @@ Import-Module (Join-Path $scriptRoot 'AdaptiveRuntimeExperimentControl.Common.ps
 $planSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-experiment-plan-v1.schema.json'
 $validationSchemaPath = Join-Path $RepositoryRoot (
     "schemas\adaptive-runtime-experiment-plan-validation-$CatalogContractVersion.schema.json")
-$catalogFiles = [ordered]@{
-    axis = 'adaptive-runtime-policy-axis-contracts-v1.json'
-    behavior = "adaptive-runtime-effective-behavior-catalog-$CatalogContractVersion.json"
-    relationship = "adaptive-runtime-policy-relationship-graph-$CatalogContractVersion.json"
-    constraint = 'adaptive-runtime-combination-constraint-catalog-v1.json'
-    family = "adaptive-runtime-experiment-family-catalog-$CatalogContractVersion.json"
+$catalogFiles = if ($CatalogContractVersion -eq 'v3') {
+    [ordered]@{
+        axis = 'adaptive-runtime-policy-axis-contracts-v2.json'
+        behavior = 'adaptive-runtime-effective-behavior-catalog-v3.json'
+        relationship = 'adaptive-runtime-policy-relationship-graph-v3.json'
+        constraint = 'adaptive-runtime-combination-constraint-catalog-v2.json'
+        family = 'adaptive-runtime-experiment-family-catalog-v3.json'
+    }
+}
+else {
+    [ordered]@{
+        axis = 'adaptive-runtime-policy-axis-contracts-v1.json'
+        behavior =
+            "adaptive-runtime-effective-behavior-catalog-$CatalogContractVersion.json"
+        relationship =
+            "adaptive-runtime-policy-relationship-graph-$CatalogContractVersion.json"
+        constraint = 'adaptive-runtime-combination-constraint-catalog-v1.json'
+        family =
+            "adaptive-runtime-experiment-family-catalog-$CatalogContractVersion.json"
+    }
 }
 
 $errors = [System.Collections.Generic.List[object]]::new()
@@ -86,8 +100,9 @@ function Get-AxisContract {
 function Get-ExpectedBehaviorSet {
     param([string] $AxisId, [string] $Value)
 
-    if ($behaviorCatalog.schema_version -eq
-        'adaptive-runtime-effective-behavior-catalog-v2') {
+    if ($behaviorCatalog.schema_version -in @(
+        'adaptive-runtime-effective-behavior-catalog-v2',
+        'adaptive-runtime-effective-behavior-catalog-v3')) {
         $valueSet = @($behaviorCatalog.value_behavior_sets | Where-Object {
             $_.axis_id -eq $AxisId -and $_.policy_value -eq $Value
         })
@@ -186,7 +201,7 @@ foreach ($catalogName in $catalogFiles.Keys) {
         Add-PlanError 'hash_mismatch' "Catalog '$($document.document_id)' has a content hash mismatch." $document.document_id
     }
 }
-if ($CatalogContractVersion -eq 'v2') {
+if ($CatalogContractVersion -in @('v2','v3')) {
     $reviewedProofRoot = Join-Path $CatalogRoot 'reviewed-proofs'
     foreach ($proofPath in @(Get-ChildItem -LiteralPath $reviewedProofRoot `
         -Filter '*.json' -File -ErrorAction SilentlyContinue |
@@ -328,15 +343,17 @@ if ($null -eq $family) {
     Add-PlanError 'unsupported_experiment_family' "Experiment family '$($plan.family_id)' is unknown." $plan.family_id
 }
 else {
-    $familyAxisIds = @(if ($familyCatalog.schema_version -eq
-        'adaptive-runtime-experiment-family-catalog-v2') {
+    $familyAxisIds = @(if ($familyCatalog.schema_version -in @(
+        'adaptive-runtime-experiment-family-catalog-v2',
+        'adaptive-runtime-experiment-family-catalog-v3')) {
         Get-StringArray $family.included_axis_ids
     }
     else {
         Get-StringArray $family.contexts
     })
-    $familyFixedAxisIds = @(if ($familyCatalog.schema_version -eq
-        'adaptive-runtime-experiment-family-catalog-v2') {
+    $familyFixedAxisIds = @(if ($familyCatalog.schema_version -in @(
+        'adaptive-runtime-experiment-family-catalog-v2',
+        'adaptive-runtime-experiment-family-catalog-v3')) {
         Get-StringArray @($family.fixed_axis_requirements | ForEach-Object axis_id)
     }
     else {
@@ -357,8 +374,9 @@ else {
         (Get-StringArray $family.blocked_experiment_types) -notcontains $plan.experiment_type) {
         Add-PlanError 'unsupported_experiment_type' "Family '$($plan.family_id)' does not support '$($plan.experiment_type)'." $plan.experiment_type
     }
-    if ($familyCatalog.schema_version -eq
-        'adaptive-runtime-experiment-family-catalog-v2' -and
+    if ($familyCatalog.schema_version -in @(
+        'adaptive-runtime-experiment-family-catalog-v2',
+        'adaptive-runtime-experiment-family-catalog-v3') -and
         $plan.experiment_type -eq 'interaction_screen') {
         $familyProofIds = @(Get-StringArray $family.actuation_proof_refs)
         $reviewedProofs = @($familyCatalog.reviewed_actuation_proofs)
@@ -656,7 +674,7 @@ foreach ($cell in @($plan.planned_cells | Sort-Object cell_order, cell_id)) {
         equivalence_group_id = 'pending'
         reason_codes = @($reasonCodes | Sort-Object -Unique)
     }
-    if ($CatalogContractVersion -eq 'v2') {
+    if ($CatalogContractVersion -in @('v2','v3')) {
         $expanded.primary_expected_behavior_ids = @($behaviorIds)
         $expanded.possible_effective_behavior_ids = @($possibleBehaviorIds)
         $expanded.non_behavior_outcome_ids = @($outcomeIds)
@@ -762,7 +780,11 @@ $potentialExecutionCount = @($expandedCells | Where-Object execution_state -in @
 $result = [pscustomobject][ordered]@{
     schema_version = "adaptive-runtime-experiment-plan-validation-$CatalogContractVersion"
     document_id = "validation.$($plan.experiment_plan_id)"
-    document_version = if ($CatalogContractVersion -eq 'v2') { 2 } else { 1 }
+    document_version = switch ($CatalogContractVersion) {
+        'v3' { 3 }
+        'v2' { 2 }
+        default { 1 }
+    }
     content_sha256 = ('0' * 64)
     trace_references = New-AdaptiveRuntimeTraceReferences
     active_behavior_authorization = $false

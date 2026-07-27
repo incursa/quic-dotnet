@@ -1,0 +1,219 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/incursa/quic-dotnet/schemas/adaptive-runtime-operation-evidence-v4.schema.json",
+  "title": "Adaptive runtime operation evidence v3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "behavior_catalog_ref",
+    "plan_validation_ref",
+    "experiment_run_ref",
+    "binary_cohort_ref",
+    "run_id",
+    "binary_cohort_id",
+    "connection_key",
+    "epoch_sequence",
+    "result_epoch_sequence",
+    "connection_epochs",
+    "decisions",
+    "operations",
+    "releases",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-operation-evidence-v4" },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 4 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "behavior_catalog_ref": { "$ref": "#/$defs/documentRef" },
+    "plan_validation_ref": { "$ref": "#/$defs/documentRef" },
+    "experiment_run_ref": { "$ref": "#/$defs/documentRef" },
+    "binary_cohort_ref": { "$ref": "#/$defs/documentRef" },
+    "run_id": { "$ref": "#/$defs/id" },
+    "binary_cohort_id": { "$ref": "#/$defs/id" },
+    "connection_key": { "$ref": "#/$defs/id" },
+    "epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+    "result_epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+    "connection_epochs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/connectionEpoch" }
+    },
+    "decisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/decision" }
+    },
+    "operations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/operation" }
+    },
+    "releases": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/release" }
+    },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/traceReferences" }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "positiveInteger": { "type": "integer", "minimum": 1 },
+    "nonNegativeInteger": { "type": "integer", "minimum": 0 },
+    "nullableId": { "oneOf": [{ "$ref": "#/$defs/id" }, { "type": "null" }] },
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document_id", "schema_version", "document_version", "content_sha256"],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "schema_version": { "$ref": "#/$defs/id" },
+        "document_version": { "$ref": "#/$defs/positiveInteger" },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "connectionEpoch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["run_id", "connection_key", "epoch_sequence"],
+      "properties": {
+        "run_id": { "$ref": "#/$defs/id" },
+        "connection_key": { "$ref": "#/$defs/id" },
+        "epoch_sequence": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "connection_key",
+        "epoch_sequence",
+        "axis_id",
+        "decision_instance_id",
+        "configured_value",
+        "forced_value",
+        "shadow_recommendation",
+        "candidate_value",
+        "operation_eligibility_result",
+        "operation_eligibility_reason",
+        "applied_value"
+      ],
+      "properties": {
+        "run_id": { "$ref": "#/$defs/id" },
+        "connection_key": { "$ref": "#/$defs/id" },
+        "epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "axis_id": { "$ref": "#/$defs/id" },
+        "decision_instance_id": { "$ref": "#/$defs/positiveInteger" },
+        "configured_value": { "$ref": "#/$defs/id" },
+        "forced_value": { "$ref": "#/$defs/nullableId" },
+        "shadow_recommendation": { "$ref": "#/$defs/nullableId" },
+        "candidate_value": { "$ref": "#/$defs/id" },
+        "operation_eligibility_result": { "enum": ["eligible", "ineligible", "clamped"] },
+        "operation_eligibility_reason": { "$ref": "#/$defs/id" },
+        "applied_value": { "$ref": "#/$defs/id" }
+      }
+    },
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "connection_key",
+        "epoch_sequence",
+        "axis_id",
+        "decision_instance_id",
+        "operation_id",
+        "configured_value",
+        "forced_value",
+        "shadow_recommendation",
+        "candidate_value",
+        "operation_eligibility_result",
+        "operation_eligibility_reason",
+        "applied_value",
+        "operation_kind",
+        "scope_version",
+        "mechanism_event_id",
+        "legal_work_count",
+        "applied_work_count",
+        "legal_bytes",
+        "applied_bytes",
+        "result",
+        "fallback_or_safety_reason",
+        "terminal_outcome"
+      ],
+      "properties": {
+        "run_id": { "$ref": "#/$defs/id" },
+        "connection_key": { "$ref": "#/$defs/id" },
+        "epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "axis_id": { "$ref": "#/$defs/id" },
+        "decision_instance_id": { "$ref": "#/$defs/positiveInteger" },
+        "operation_id": { "$ref": "#/$defs/positiveInteger" },
+        "configured_value": { "$ref": "#/$defs/id" },
+        "forced_value": { "$ref": "#/$defs/nullableId" },
+        "shadow_recommendation": { "$ref": "#/$defs/nullableId" },
+        "candidate_value": { "$ref": "#/$defs/id" },
+        "operation_eligibility_result": { "enum": ["eligible", "ineligible", "clamped"] },
+        "operation_eligibility_reason": { "$ref": "#/$defs/id" },
+        "applied_value": { "$ref": "#/$defs/id" },
+        "operation_kind": { "enum": ["packet_plan", "combined_send", "logical_write", "send_turn"] },
+        "scope_version": { "const": 1 },
+        "mechanism_event_id": { "$ref": "#/$defs/id" },
+        "legal_work_count": { "$ref": "#/$defs/nonNegativeInteger" },
+        "applied_work_count": { "$ref": "#/$defs/nonNegativeInteger" },
+        "legal_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "applied_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "result": { "$ref": "#/$defs/id" },
+        "fallback_or_safety_reason": { "$ref": "#/$defs/nullableId" },
+        "terminal_outcome": { "$ref": "#/$defs/id" }
+      }
+    },
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "connection_key",
+        "axis_id",
+        "decision_instance_id",
+        "operation_id",
+        "operation_epoch_sequence",
+        "decision_epoch_sequence",
+        "release_epoch_sequence",
+        "release_count",
+        "terminal_outcome"
+      ],
+      "properties": {
+        "run_id": { "$ref": "#/$defs/id" },
+        "connection_key": { "$ref": "#/$defs/id" },
+        "axis_id": { "$ref": "#/$defs/id" },
+        "decision_instance_id": { "$ref": "#/$defs/positiveInteger" },
+        "operation_id": { "$ref": "#/$defs/positiveInteger" },
+        "operation_epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "decision_epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "release_epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "release_count": { "$ref": "#/$defs/positiveInteger" },
+        "terminal_outcome": { "$ref": "#/$defs/id" }
+      }
+    },
+    "traceReferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_ids", "architecture_ids", "work_item_ids", "verification_ids"],
+      "properties": {
+        "requirement_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "architecture_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "work_item_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "verification_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      }
+    }
+  }
+}

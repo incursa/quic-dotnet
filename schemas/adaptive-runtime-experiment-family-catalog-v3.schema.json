@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-experiment-family-catalog-v3.schema.json",
+  "title": "Adaptive Runtime Experiment Family Catalog v3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "document_id", "document_version", "content_sha256", "trace_references", "active_behavior_authorization", "performance_acceptance_authorization", "reviewed_actuation_proofs", "experiment_families"],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-experiment-family-catalog-v3" },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 3 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "trace_references": { "$ref": "#/$defs/trace" },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "reviewed_actuation_proofs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/actuationProof" }
+    },
+    "experiment_families": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/family" } }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "positiveInteger": { "type": "integer", "minimum": 1 },
+    "axis": { "enum": ["application_send_batch_formation", "buffer_copy_coalescing", "application_send_turn_planning", "oversized_write_admission_quantum", "queued_send_burst_budget"] },
+    "experimentType": { "enum": ["actuation_validation", "isolated_counterfactual", "interaction_screen", "feedback_loop", "profile_validation"] },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_ids", "architecture_ids", "work_item_ids", "verification_ids"],
+      "properties": {
+        "requirement_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^REQ-QUIC-CRT-[0-9]{4}$" } },
+        "architecture_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^ARC-QUIC-CRT-[0-9]{4}$" } },
+        "work_item_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^WI-QUIC-CRT-[0-9]{4}$" } },
+        "verification_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^VER-QUIC-CRT-[0-9]{4}$" } }
+      }
+    },
+    "fixedAxis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis_id", "configured_value"],
+      "properties": {
+        "axis_id": { "$ref": "#/$defs/axis" },
+        "configured_value": { "const": "legacy_current" }
+      }
+    },
+    "actuationProof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "proof_id",
+        "axis_id",
+        "policy_value",
+        "proof_version",
+        "review_outcome",
+        "evidence_ref"
+      ],
+      "properties": {
+        "proof_id": { "$ref": "#/$defs/id" },
+        "axis_id": { "$ref": "#/$defs/axis" },
+        "policy_value": {
+          "enum": [
+            "legacy_current",
+            "single_eligible",
+            "memory_conservative",
+            "conservative", "single_fragment", "bounded_multi_fragment", "single_datagram"
+          ]
+        },
+        "proof_version": { "type": "integer", "const": 1 },
+        "review_outcome": {
+          "enum": ["passed", "failed", "pending", "revoked"]
+        },
+        "evidence_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "document_id",
+            "schema_version",
+            "document_version",
+            "content_sha256"
+          ],
+          "properties": {
+            "document_id": { "$ref": "#/$defs/id" },
+            "schema_version": { "$ref": "#/$defs/id" },
+            "document_version": { "$ref": "#/$defs/positiveInteger" },
+            "content_sha256": { "$ref": "#/$defs/hash" }
+          }
+        }
+      }
+    },
+    "family": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "family_id",
+        "included_axis_ids",
+        "fixed_axis_requirements",
+        "outer_context_ids",
+        "workload_archetype_ids",
+        "primary_metric_ids",
+        "guardrail_metric_ids",
+        "predicate_refs",
+        "relationship_refs",
+        "constraint_refs",
+        "history_reset_requirements",
+        "actuation_proof_refs",
+        "supported_experiment_types",
+        "blocked_experiment_types",
+        "measurement_authorized",
+        "promotion_status"
+      ],
+      "properties": {
+        "family_id": { "$ref": "#/$defs/id" },
+        "included_axis_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/axis" } },
+        "fixed_axis_requirements": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/fixedAxis" } },
+        "outer_context_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "workload_archetype_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "primary_metric_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "guardrail_metric_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "predicate_refs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "relationship_refs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "constraint_refs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "history_reset_requirements": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "actuation_proof_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "supported_experiment_types": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/experimentType" } },
+        "blocked_experiment_types": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/experimentType" } },
+        "measurement_authorized": { "const": false },
+        "promotion_status": { "enum": ["deferred", "blocked", "eligible", "promoted"] }
+      }
+    }
+  }
+}
