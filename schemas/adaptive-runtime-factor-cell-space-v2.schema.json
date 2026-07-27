@@ -1,0 +1,266 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-factor-cell-space-v2.schema.json",
+  "title": "Adaptive Runtime Factor Cell Space v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "catalog_refs",
+    "generation_mode",
+    "covering_array_generator_implemented",
+    "covering_array_trigger_effective_cell_count",
+    "family_spaces",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-factor-cell-space-v2" },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 2 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "catalog_refs": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": { "$ref": "#/$defs/ref" }
+    },
+    "generation_mode": { "const": "exhaustive_explicit" },
+    "covering_array_generator_implemented": { "const": false },
+    "covering_array_trigger_effective_cell_count": { "const": 65 },
+    "family_spaces": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "#/$defs/space" }
+    },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/trace" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "schema_version",
+        "document_version",
+        "content_sha256"
+      ],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "schema_version": { "$ref": "#/$defs/id" },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "axisValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis_id", "policy_value"],
+      "properties": {
+        "axis_id": { "$ref": "#/$defs/id" },
+        "policy_value": { "$ref": "#/$defs/id" }
+      }
+    },
+    "partitionCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "correctness_executable",
+        "capability_pending",
+        "cell_structurally_inactive",
+        "rejected"
+      ],
+      "properties": {
+        "correctness_executable": { "type": "integer", "minimum": 0 },
+        "capability_pending": { "type": "integer", "minimum": 0 },
+        "cell_structurally_inactive": { "type": "integer", "minimum": 0 },
+        "rejected": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "annotationCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "measurement_blocked",
+        "verification_only",
+        "operation_local_noncoactivation",
+        "safety_clamped"
+      ],
+      "properties": {
+        "measurement_blocked": { "type": "integer", "minimum": 0 },
+        "verification_only": { "type": "integer", "minimum": 0 },
+        "operation_local_noncoactivation": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "safety_clamped": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "annotations": {
+                "contains": {
+                  "const": "operation_local_noncoactivation"
+                }
+              }
+            },
+            "required": ["annotations"]
+          },
+          "then": {
+            "properties": {
+              "classification": {
+                "not": {
+                  "const": "cell_structurally_inactive"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "required": [
+        "cell_id",
+        "cell_order",
+        "axis_values",
+        "classification",
+        "annotations",
+        "reason_codes",
+        "measurement_authorized",
+        "active_behavior_authorization"
+      ],
+      "properties": {
+        "cell_id": { "$ref": "#/$defs/id" },
+        "cell_order": { "type": "integer", "minimum": 0 },
+        "axis_values": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/axisValue" }
+        },
+        "classification": {
+          "enum": [
+            "correctness_single_axis_candidate",
+            "capability_pending",
+            "cell_structurally_inactive",
+            "rejected"
+          ]
+        },
+        "annotations": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "measurement_blocked",
+              "verification_only",
+              "operation_local_noncoactivation",
+              "safety_clamped"
+            ]
+          }
+        },
+        "reason_codes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "measurement_authorized": { "const": false },
+        "active_behavior_authorization": { "const": false }
+      }
+    },
+    "space": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "family_id",
+        "raw_configured_cell_count",
+        "after_illegal_removal_count",
+        "after_capability_filter_count",
+        "expected_equivalence_group_count",
+        "distinct_effective_cell_count_including_baseline",
+        "nonlegacy_behavior_distinct_treatment_value_count",
+        "partition_counts",
+        "annotation_counts",
+        "annotation_counts_overlap_partitions",
+        "planned_cells"
+      ],
+      "properties": {
+        "family_id": { "$ref": "#/$defs/id" },
+        "raw_configured_cell_count": { "type": "integer", "minimum": 1 },
+        "after_illegal_removal_count": { "type": "integer", "minimum": 0 },
+        "after_capability_filter_count": { "type": "integer", "minimum": 0 },
+        "expected_equivalence_group_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "distinct_effective_cell_count_including_baseline": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "nonlegacy_behavior_distinct_treatment_value_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "partition_counts": { "$ref": "#/$defs/partitionCounts" },
+        "annotation_counts": { "$ref": "#/$defs/annotationCounts" },
+        "annotation_counts_overlap_partitions": { "const": true },
+        "planned_cells": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/cell" }
+        }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "architecture_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "work_item_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "verification_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

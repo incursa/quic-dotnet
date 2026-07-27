@@ -59,14 +59,29 @@ $canonical = [ordered]@{
     family = @(
         'eng/adaptive-runtime/experiment-control/adaptive-runtime-experiment-family-catalog-v3.json',
         'schemas/adaptive-runtime-experiment-family-catalog-v3.schema.json')
-    cells = @(
+    cells_v1 = @(
         'eng/adaptive-runtime/experiment-control/adaptive-runtime-factor-cell-space-v1.json',
         'schemas/adaptive-runtime-factor-cell-space-v1.schema.json')
+    cells = @(
+        'eng/adaptive-runtime/experiment-control/adaptive-runtime-factor-cell-space-v2.json',
+        'schemas/adaptive-runtime-factor-cell-space-v2.schema.json')
 }
 $documents = @{}
 foreach ($entry in $canonical.GetEnumerator()) {
     $documents[$entry.Key] = Test-Document $entry.Value[0] $entry.Value[1]
 }
+
+$cellSpaceV2Schema = Join-Path $RepositoryRoot `
+    'schemas/adaptive-runtime-factor-cell-space-v2.schema.json'
+$unknownFieldCellSpace = (
+    $documents.cells | ConvertTo-Json -Depth 100 -Compress |
+        ConvertFrom-Json -Depth 100)
+$unknownFieldCellSpace | Add-Member -NotePropertyName unknown_field `
+    -NotePropertyValue $true
+Assert-True (-not (Test-Json -Json (
+    $unknownFieldCellSpace | ConvertTo-Json -Depth 100 -Compress
+) -SchemaFile $cellSpaceV2Schema -ErrorAction SilentlyContinue)) `
+    'cell_space_v2_unknown_field_accepted'
 
 $axisIds = @($documents.axis.axis_contracts.axis_id)
 Assert-True (@($axisIds | Where-Object {
@@ -141,9 +156,83 @@ Assert-True ($admissionExecutable.Count -eq 5) `
 Assert-True (
     [int]$admissionSpace.after_capability_filter_count -eq
         $admissionExecutable.Count -and
-    [int]$admissionSpace.correctness_executable_cell_count -eq
+    [int]$admissionSpace.partition_counts.correctness_executable -eq
         $admissionExecutable.Count
 ) 'admission_executable_count_inconsistent'
+Assert-True (
+    [int]$admissionSpace.distinct_effective_cell_count_including_baseline -eq 5
+) 'admission_effective_count_must_include_baseline'
+Assert-True (
+    [int]$queuedSpace.distinct_effective_cell_count_including_baseline -eq 2
+) 'queued_effective_count_must_include_baseline'
+Assert-True (
+    [int]$admissionSpace.nonlegacy_behavior_distinct_treatment_value_count -eq 4
+) 'admission_nonlegacy_treatment_count'
+Assert-True (
+    [int]$queuedSpace.nonlegacy_behavior_distinct_treatment_value_count -eq 1
+) 'queued_nonlegacy_treatment_count'
+$admissionPartitionTotal =
+    [int]$admissionSpace.partition_counts.correctness_executable +
+    [int]$admissionSpace.partition_counts.capability_pending +
+    [int]$admissionSpace.partition_counts.cell_structurally_inactive +
+    [int]$admissionSpace.partition_counts.rejected
+Assert-True (
+    $admissionPartitionTotal -eq
+        [int]$admissionSpace.after_illegal_removal_count
+) 'admission_partition_count_inconsistent'
+Assert-True (
+    [int]$admissionSpace.partition_counts.capability_pending -eq 7
+) 'admission_capability_pending_count'
+Assert-True (
+    [int]$admissionSpace.partition_counts.cell_structurally_inactive -eq 0
+) 'operation_local_noncoactivation_must_not_remove_cell'
+$operationLocalCells = @($admissionSpace.planned_cells | Where-Object {
+    $_.annotations -contains 'operation_local_noncoactivation'
+})
+Assert-True ($operationLocalCells.Count -eq 6) `
+    'operation_local_noncoactivation_count'
+$falseInactiveCellSpace = (
+    $documents.cells | ConvertTo-Json -Depth 100 -Compress |
+        ConvertFrom-Json -Depth 100)
+$falseInactiveCell = @(
+    $falseInactiveCellSpace.family_spaces.planned_cells |
+        Where-Object {
+            $_.annotations -contains 'operation_local_noncoactivation'
+        })[0]
+$falseInactiveCell.classification = 'cell_structurally_inactive'
+Assert-True (-not (Test-Json -Json (
+    $falseInactiveCellSpace | ConvertTo-Json -Depth 100 -Compress
+) -SchemaFile $cellSpaceV2Schema -ErrorAction SilentlyContinue)) `
+    'operation_local_noncoactivation_false_inactive_schema_accepted'
+Assert-True (
+    @($admissionSpace.planned_cells | Where-Object {
+        $_.classification -eq 'cell_structurally_inactive'
+    }).Count -eq 0
+) 'operation_local_noncoactivation_claimed_cell_inactive'
+Assert-True (
+    @($admissionSpace.planned_cells | Where-Object {
+        $_.reason_codes -contains
+            'oversized_fragment_same_operation_structural_inactivity'
+    }).Count -eq 0
+) 'stale_same_operation_structural_inactivity_reason'
+Assert-True (
+    $admissionSpace.annotation_counts_overlap_partitions -eq $true -and
+    $queuedSpace.annotation_counts_overlap_partitions -eq $true
+) 'annotation_overlap_semantics_missing'
+foreach ($space in @($admissionSpace,$queuedSpace)) {
+    foreach ($annotationName in @(
+        'measurement_blocked',
+        'verification_only',
+        'operation_local_noncoactivation',
+        'safety_clamped')) {
+        $actual = @($space.planned_cells | Where-Object {
+            $_.annotations -contains $annotationName
+        }).Count
+        $declared = [int]$space.annotation_counts.$annotationName
+        Assert-True ($actual -eq $declared) `
+            "annotation_count_inconsistent:$($space.family_id):$annotationName"
+    }
+}
 Assert-True ($queuedSpace.raw_configured_cell_count -eq 2) `
     'queued_raw_count'
 Assert-True (@($queuedSpace.planned_cells).Count -eq 2) `
@@ -178,6 +267,13 @@ $planSpecs = @(
 )
 $compiler = Join-Path $PSScriptRoot `
     'Compile-AdaptiveRuntimeExperimentPlan.ps1'
+$admissionPlanDocument = Read-Document `
+    'eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-explicit-plan-v1.json'
+Assert-True (
+    @($admissionPlanDocument.planned_cells | Where-Object {
+        $_.activation_expectation -eq 'structurally_inactive'
+    }).Count -eq 0
+) 'operation_local_noncoactivation_claimed_plan_inactive'
 $tempRoot = Join-Path ([IO.Path]::GetTempPath()) (
     'adaptive-runtime-factor-onboarding-' + [guid]::NewGuid().ToString('N'))
 [void](New-Item -ItemType Directory -Path $tempRoot)
@@ -277,6 +373,8 @@ if ($failures.Count -gt 0) {
         @($queuedSpace.planned_cells).Count
     proof_candidate_count = if ($SkipProofCandidates) { 0 } else { 3 }
     invalid_case_count = $negativeCodes.Count
+    cell_space_v2_invalid_case_count = 2
+    total_invalid_case_count = $negativeCodes.Count + 2
     covering_array_generator_implemented = $false
     performance_measurement_ran = $false
     active_behavior_authorized = $false

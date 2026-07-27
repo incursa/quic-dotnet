@@ -912,6 +912,129 @@ $cellSpace = [pscustomobject][ordered]@{
 Write-Document $cellSpace `
     'eng/adaptive-runtime/experiment-control/adaptive-runtime-factor-cell-space-v1.json'
 
+$admissionCellsV2 = @($admissionCells | ForEach-Object {
+    $isBaseline = @($_.axis_values |
+        Where-Object policy_value -ne 'legacy_current').Count -eq 0
+    $hasOperationLocalNoncoactivation =
+        $_.reason_codes -contains
+            'oversized_fragment_same_operation_structural_inactivity'
+    $annotations = [Collections.Generic.List[string]]::new()
+    $annotations.Add('measurement_blocked')
+    if ($isBaseline) {
+        $annotations.Add('verification_only')
+    }
+    if ($hasOperationLocalNoncoactivation) {
+        $annotations.Add('operation_local_noncoactivation')
+    }
+    $reasonCodes = @($_.reason_codes | ForEach-Object {
+        if ($_ -eq
+            'oversized_fragment_same_operation_structural_inactivity') {
+            'operation_local_noncoactivation'
+        }
+        else {
+            $_
+        }
+    } | Sort-Object -Unique)
+    [pscustomobject][ordered]@{
+        cell_id = $_.cell_id
+        cell_order = $_.cell_order
+        axis_values = @($_.axis_values)
+        classification = $_.classification
+        annotations = @($annotations | Sort-Object)
+        reason_codes = $reasonCodes
+        measurement_authorized = $false
+        active_behavior_authorization = $false
+    }
+})
+$queuedCellsV2 = @($queuedCells | ForEach-Object {
+    $isBaseline = @($_.axis_values |
+        Where-Object policy_value -ne 'legacy_current').Count -eq 0
+    $annotations = [Collections.Generic.List[string]]::new()
+    $annotations.Add('measurement_blocked')
+    if ($isBaseline) {
+        $annotations.Add('verification_only')
+    }
+    [pscustomobject][ordered]@{
+        cell_id = $_.cell_id
+        cell_order = $_.cell_order
+        axis_values = @($_.axis_values)
+        classification = $_.classification
+        annotations = @($annotations | Sort-Object)
+        reason_codes = @($_.reason_codes)
+        measurement_authorized = $false
+        active_behavior_authorization = $false
+    }
+})
+$cellSpaceV2 = [pscustomobject][ordered]@{
+    schema_version = 'adaptive-runtime-factor-cell-space-v2'
+    document_id = 'adaptive_runtime_factor_cell_space_v2'
+    document_version = 2
+    content_sha256 = '0' * 64
+    catalog_refs = @(
+        New-DocumentRef $axisCatalog
+        New-DocumentRef $behaviorCatalog
+        New-DocumentRef $relationship
+        New-DocumentRef $constraintCatalog
+        New-DocumentRef $familyCatalog
+    )
+    generation_mode = 'exhaustive_explicit'
+    covering_array_generator_implemented = $false
+    covering_array_trigger_effective_cell_count = 65
+    family_spaces = @(
+        [pscustomobject][ordered]@{
+            family_id = 'send_admission_composition'
+            raw_configured_cell_count = 12
+            after_illegal_removal_count = 12
+            after_capability_filter_count = 5
+            expected_equivalence_group_count = 0
+            distinct_effective_cell_count_including_baseline = 5
+            nonlegacy_behavior_distinct_treatment_value_count = 4
+            partition_counts = [pscustomobject][ordered]@{
+                correctness_executable = 5
+                capability_pending = 7
+                cell_structurally_inactive = 0
+                rejected = 0
+            }
+            annotation_counts = [pscustomobject][ordered]@{
+                measurement_blocked = 12
+                verification_only = 1
+                operation_local_noncoactivation = 6
+                safety_clamped = 0
+            }
+            annotation_counts_overlap_partitions = $true
+            planned_cells = $admissionCellsV2
+        },
+        [pscustomobject][ordered]@{
+            family_id = 'queued_send_burst_correctness'
+            raw_configured_cell_count = 2
+            after_illegal_removal_count = 2
+            after_capability_filter_count = 2
+            expected_equivalence_group_count = 0
+            distinct_effective_cell_count_including_baseline = 2
+            nonlegacy_behavior_distinct_treatment_value_count = 1
+            partition_counts = [pscustomobject][ordered]@{
+                correctness_executable = 2
+                capability_pending = 0
+                cell_structurally_inactive = 0
+                rejected = 0
+            }
+            annotation_counts = [pscustomobject][ordered]@{
+                measurement_blocked = 2
+                verification_only = 1
+                operation_local_noncoactivation = 0
+                safety_clamped = 0
+            }
+            annotation_counts_overlap_partitions = $true
+            planned_cells = $queuedCellsV2
+        })
+    active_behavior_authorization = $false
+    performance_acceptance_authorization = $false
+    trace_references = $trace
+}
+[void](Set-AdaptiveRuntimeDocumentHash $cellSpaceV2)
+Write-Document $cellSpaceV2 `
+    'eng/adaptive-runtime/experiment-control/adaptive-runtime-factor-cell-space-v2.json'
+
 $sourceRefs = @(
     New-DocumentRef $axisCatalog
     New-DocumentRef $behaviorCatalog
@@ -958,12 +1081,7 @@ $admissionPlannedCells = @($admissionCells | ForEach-Object {
         expected_equivalence_group_id = "declared.$($_.cell_id)"
         execution_state = 'blocked'
         performance_comparable = $false
-        activation_expectation = if (
-            $_.reason_codes -contains
-                'oversized_fragment_same_operation_structural_inactivity') {
-            'structurally_inactive'
-        }
-        else { 'reachable' }
+        activation_expectation = 'reachable'
     }
 })
 $admissionPlan = [pscustomobject][ordered]@{
