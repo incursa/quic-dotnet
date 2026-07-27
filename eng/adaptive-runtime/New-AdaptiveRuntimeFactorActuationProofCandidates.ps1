@@ -281,29 +281,49 @@ $manifestCompiler = Join-Path $PSScriptRoot `
 $proofCompiler = Join-Path $PSScriptRoot `
     'New-AdaptiveRuntimeIndependentActuationProof.ps1'
 
-foreach ($spec in $specs) {
-    $proofRoot = Join-Path $OutputRoot $spec.Slug
-    $sourceRoot = Join-Path $proofRoot 'source'
-    [void](New-Item -ItemType Directory -Path $sourceRoot -Force)
-    $planPath = Join-Path $catalogRoot $spec.Plan
-    $validationPath = Join-Path $sourceRoot 'plan-validation.json'
-    $manifestPath = Join-Path $sourceRoot 'compiled-manifest.json'
-    $capturePath = Join-Path $sourceRoot 'mechanism-capture.json'
+$temporaryRoot = Join-Path ([IO.Path]::GetTempPath()) (
+    'adaptive-runtime-factor-proofs-' + [guid]::NewGuid().ToString('N'))
+[void](New-Item -ItemType Directory -Path $temporaryRoot)
+try {
+    foreach ($spec in $specs) {
+        $sourceRoot = Join-Path $temporaryRoot $spec.Slug
+        [void](New-Item -ItemType Directory -Path $sourceRoot)
+        $planPath = Join-Path $catalogRoot $spec.Plan
+        $validationPath = Join-Path $sourceRoot 'plan-validation.json'
+        $manifestPath = Join-Path $sourceRoot 'compiled-manifest.json'
+        $capturePath = Join-Path $sourceRoot 'mechanism-capture.json'
 
-    & $compiler -PlanPath $planPath -CatalogContractVersion v3 `
-        -OutputPath $validationPath | Out-Null
-    & $manifestCompiler -PlanPath $planPath `
-        -ValidationPath $validationPath -BinaryPath $BinaryPath `
-        -RunnerPath $compiler -RunnerVersion 'factor-onboarding-v1' `
-        -OutputPath $manifestPath `
-        -ResolvedCapability @(
-            'adaptive_runtime_internal_forced_mode=available',
-            'single_behavior_distinct_axis_only=available') | Out-Null
-    Write-AdaptiveRuntimeCanonicalDocument $spec.Capture $capturePath
-    & $proofCompiler -MechanismCapturePath $capturePath `
-        -PlanPath $planPath -ValidationPath $validationPath `
-        -ManifestPath $manifestPath -OutputRoot $proofRoot `
-        -CandidateGenerationId 'factor-onboarding-20260726' | Out-Null
+        & $compiler -PlanPath $planPath -CatalogContractVersion v3 `
+            -OutputPath $validationPath | Out-Null
+        & $manifestCompiler -PlanPath $planPath `
+            -ValidationPath $validationPath -BinaryPath $BinaryPath `
+            -RunnerPath $compiler -RunnerVersion 'factor-onboarding-v1' `
+            -OutputPath $manifestPath `
+            -ResolvedCapability @(
+                'adaptive_runtime_internal_forced_mode=available',
+                'single_behavior_distinct_axis_only=available') | Out-Null
+        Write-AdaptiveRuntimeCanonicalDocument $spec.Capture $capturePath
+        $spec | Add-Member -NotePropertyName SourceRoot `
+            -NotePropertyValue $sourceRoot
+    }
+
+    foreach ($spec in $specs) {
+        $proofRoot = Join-Path $OutputRoot $spec.Slug
+        $planPath = Join-Path $catalogRoot $spec.Plan
+        & $proofCompiler `
+            -MechanismCapturePath (
+                Join-Path $spec.SourceRoot 'mechanism-capture.json') `
+            -PlanPath $planPath `
+            -ValidationPath (
+                Join-Path $spec.SourceRoot 'plan-validation.json') `
+            -ManifestPath (
+                Join-Path $spec.SourceRoot 'compiled-manifest.json') `
+            -OutputRoot $proofRoot `
+            -CandidateGenerationId 'factor-onboarding-20260726' | Out-Null
+    }
+}
+finally {
+    Remove-Item -LiteralPath $temporaryRoot -Recurse -Force
 }
 
 [pscustomobject][ordered]@{
