@@ -462,8 +462,9 @@ $negativeCases = @(
     @($queuedCapture, $queuedExport, $queuedExportHash,
         'follow_on_wake_identity_mismatch', {
         param($value)
-        $value.operations[0].mechanism_details.follow_on_wake_required =
-            $false
+        (@($value.operations |
+            Where-Object capture_case -ceq 'positive_actuation')[0]).
+            mechanism_details.follow_on_wake_required = $false
     }),
     @($queuedCapture, $queuedExport, $queuedExportHash,
         'queued_actor_turn_identity_mismatch', {
