@@ -6,7 +6,7 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests.RequirementHomes.CRT;
 
 [Requirement("REQ-QUIC-CRT-0238")]
-public sealed class REQ_QUIC_CRT_0238
+public sealed partial class REQ_QUIC_CRT_0238
 {
     private static readonly string[] ProofSlugs =
     [

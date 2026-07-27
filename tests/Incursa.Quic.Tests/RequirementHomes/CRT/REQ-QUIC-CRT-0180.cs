@@ -345,13 +345,96 @@ public sealed class REQ_QUIC_CRT_0180
         QuicOversizedWriteAdmissionEvidence evidence =
             Assert.Single(sink.Evidence);
         Assert.Equal(expectedQuantum, evidence.AppliedChunkQuantum);
+        Assert.Equal(
+            expectedQuantum,
+            evidence.InitialCommittedFragments);
+        Assert.True(evidence.InitialCommittedBytes > 0);
         Assert.Equal(5, evidence.CommittedFragments);
         Assert.Equal(expectedContinuationPosts, evidence.ContinuationPosts);
+        Assert.Equal(
+            modeValue == (int)QuicOversizedWriteAdmissionPolicyMode.SingleFragment
+                ? 4
+                : expectedContinuationPosts,
+            evidence.ContinuationCount);
+        Assert.Equal(
+            evidence.ContinuationCount > 0 ? 1UL : 0UL,
+            evidence.FirstContinuationSequence);
+        Assert.Equal(
+            modeValue == (int)QuicOversizedWriteAdmissionPolicyMode.BoundedMultiFragment
+                ? evidence.RuntimeRequestId
+                : 0,
+            evidence.ContinuationRequestId);
         Assert.Equal((ulong)payload.Length, evidence.CommittedBytes);
+        Assert.Equal(1, evidence.CompletionCount);
+        Assert.Equal(
+            modeValue == (int)QuicOversizedWriteAdmissionPolicyMode.SingleFragment
+                ? QuicOversizedWriteMechanismEvent.SequentialSingleFragmentAdmission
+                : QuicOversizedWriteMechanismEvent.BoundedTwoFragmentAdmission,
+            evidence.MechanismEvent);
         Assert.Equal(QuicOversizedWriteOutcome.Completed, evidence.Outcome);
         Assert.Equal(
             QuicAdaptiveRuntimeStage1LatchState.Completed,
             evidence.Decision.LatchState);
+    }
+
+    [Theory]
+    [InlineData((int)QuicOversizedWriteAdmissionPolicyMode.SingleFragment)]
+    [InlineData((int)QuicOversizedWriteAdmissionPolicyMode.BoundedMultiFragment)]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task OneFragmentRuntimeWriteIsRetainedAsInactiveEvidence(
+        int modeValue)
+    {
+        await using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport
+                .CreateFinishedClientRuntimeWithValidatedActivePath(
+                    connectionSendLimit: 2 * 1024 * 1024,
+                    localBidirectionalSendLimit: 2 * 1024 * 1024);
+        ConcurrentQueue<PostedStreamWrite> postedWrites = new();
+        runtime.SetStreamWriteDispatcher(
+            (requestId, actionKind, streamId, streamData, streamDataSuffix) =>
+            {
+                postedWrites.Enqueue(new PostedStreamWrite(
+                    requestId,
+                    actionKind,
+                    streamId,
+                    streamData,
+                    streamDataSuffix));
+                return true;
+            });
+        RecordingEvidenceSink sink = new();
+        runtime.ConfigureAdaptiveRuntimePolicy(new QuicClientConnectionOptions
+        {
+            ForcedOversizedWriteAdmissionPolicyMode =
+                (QuicOversizedWriteAdmissionPolicyMode)modeValue,
+            OversizedWriteAdmissionObservationMode =
+                QuicOversizedWriteAdmissionObservationMode.ObserveOnly,
+            OversizedWriteAdmissionEvidenceSink = sink,
+        });
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out _));
+
+        Task write = runtime.WriteStreamAsync(
+            streamId.Value,
+            new byte[800],
+            CancellationToken.None).AsTask();
+        PostedStreamWrite postedWrite = Assert.Single(postedWrites);
+        _ = postedWrites.TryDequeue(out _);
+        _ = TransitionStreamWrite(runtime, postedWrite, nowTicks: 20);
+
+        await write.WaitAsync(TimeSpan.FromSeconds(5));
+        QuicOversizedWriteAdmissionEvidence evidence =
+            Assert.Single(sink.Evidence);
+        Assert.Equal(
+            QuicOversizedWriteMechanismEvent.InactiveSingleFragmentWrite,
+            evidence.MechanismEvent);
+        Assert.Equal(1, evidence.InitialCommittedFragments);
+        Assert.Equal(1, evidence.CommittedFragments);
+        Assert.Equal(0, evidence.ContinuationCount);
+        Assert.Equal(1, evidence.CompletionCount);
+        Assert.Equal(QuicOversizedWriteOutcome.Completed, evidence.Outcome);
     }
 
     [Fact]
@@ -406,6 +489,10 @@ public sealed class REQ_QUIC_CRT_0180
             Assert.Single(sink.Evidence);
         Assert.Equal(QuicOversizedWriteOutcome.Canceled, evidence.Outcome);
         Assert.Equal(2, evidence.CommittedFragments);
+        Assert.Equal(1, evidence.CompletionCount);
+        Assert.Equal(
+            QuicOversizedWriteMechanismEvent.SafetyFallback,
+            evidence.MechanismEvent);
     }
 
     [Fact]

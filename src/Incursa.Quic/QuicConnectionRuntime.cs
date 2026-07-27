@@ -356,8 +356,13 @@ internal sealed partial class QuicConnectionRuntime :
         private QuicOversizedWriteAdmissionResolution oversizedWriteAdmissionResolution;
         private long writeStartedTimestamp;
         private ulong oversizedWriteCommittedBytes;
+        private ulong oversizedWriteInitialCommittedBytes;
         private int oversizedWriteCommittedFragments;
+        private int oversizedWriteInitialCommittedFragments;
         private int oversizedWriteContinuationPosts;
+        private long oversizedWriteRequestId;
+        private long oversizedWriteContinuationRequestId;
+        private ulong oversizedWriteFirstContinuationSequence;
         private int completed;
         private bool queuedForWriteRetry;
         private bool adaptiveBackpressureAdmissionEvaluated;
@@ -393,8 +398,13 @@ internal sealed partial class QuicConnectionRuntime :
             oversizedWriteAdmissionResolution = default;
             writeStartedTimestamp = 0;
             oversizedWriteCommittedBytes = 0;
+            oversizedWriteInitialCommittedBytes = 0;
             oversizedWriteCommittedFragments = 0;
+            oversizedWriteInitialCommittedFragments = 0;
             oversizedWriteContinuationPosts = 0;
+            oversizedWriteRequestId = 0;
+            oversizedWriteContinuationRequestId = 0;
+            oversizedWriteFirstContinuationSequence = 0;
             completed = 0;
             queuedForWriteRetry = false;
             adaptiveBackpressureAdmissionEvaluated = false;
@@ -414,10 +424,12 @@ internal sealed partial class QuicConnectionRuntime :
         internal bool SuppressTerminalException { get; set; }
 
         internal void ConfigureWrite(
+            long requestId,
             QuicConnectionStreamActionKind actionKind,
             ulong streamId,
             int streamDataLength)
         {
+            oversizedWriteRequestId = requestId;
             ActionKind = actionKind;
             StreamId = streamId;
             StreamDataLength = streamDataLength;
@@ -427,6 +439,16 @@ internal sealed partial class QuicConnectionRuntime :
                 Volatile.Write(ref owner.hasIssuedApplicationDataWrite, 1);
             }
         }
+
+        internal void ConfigureWrite(
+            QuicConnectionStreamActionKind actionKind,
+            ulong streamId,
+            int streamDataLength)
+            => ConfigureWrite(
+                requestId: 0,
+                actionKind,
+                streamId,
+                streamDataLength);
 
         internal void ConfigureCompletionAction(Action completionAction)
             => this.completionAction = completionAction;
@@ -479,6 +501,12 @@ internal sealed partial class QuicConnectionRuntime :
             oversizedWrite = true;
             oversizedStreamData = streamData;
             oversizedStreamDataOffset = 0;
+            ConfigureOversizedWriteAdmissionEvidence(in resolution);
+        }
+
+        internal void ConfigureOversizedWriteAdmissionEvidence(
+            in QuicOversizedWriteAdmissionResolution resolution)
+        {
             oversizedWriteAdmissionResolution = resolution;
             hasOversizedWriteAdmissionResolution = true;
         }
@@ -495,14 +523,27 @@ internal sealed partial class QuicConnectionRuntime :
                 ulong.MaxValue - oversizedWriteCommittedBytes < (ulong)committedBytes
                     ? ulong.MaxValue
                     : oversizedWriteCommittedBytes + (ulong)committedBytes;
+            if (oversizedWriteContinuationPosts == 0)
+            {
+                oversizedWriteInitialCommittedFragments++;
+                oversizedWriteInitialCommittedBytes =
+                    ulong.MaxValue - oversizedWriteInitialCommittedBytes < (ulong)committedBytes
+                        ? ulong.MaxValue
+                        : oversizedWriteInitialCommittedBytes + (ulong)committedBytes;
+            }
         }
 
-        internal void RecordOversizedWriteContinuationPost()
+        internal void RecordOversizedWriteContinuationPost(long requestId)
         {
             if (hasOversizedWriteAdmissionResolution
                 && oversizedWriteContinuationPosts < int.MaxValue)
             {
                 oversizedWriteContinuationPosts++;
+                if (oversizedWriteFirstContinuationSequence == 0)
+                {
+                    oversizedWriteFirstContinuationSequence = 1;
+                    oversizedWriteContinuationRequestId = requestId;
+                }
             }
         }
 
@@ -763,8 +804,14 @@ internal sealed partial class QuicConnectionRuntime :
 
             owner.PublishOversizedWriteAdmissionEvidence(
                 in oversizedWriteAdmissionResolution,
+                oversizedWriteRequestId,
+                oversizedWriteInitialCommittedFragments,
+                oversizedWriteInitialCommittedBytes,
                 oversizedWriteCommittedFragments,
                 oversizedWriteContinuationPosts,
+                oversizedWriteContinuationPosts,
+                oversizedWriteFirstContinuationSequence,
+                oversizedWriteContinuationRequestId,
                 oversizedWriteCommittedBytes,
                 outcome);
         }
@@ -1219,9 +1266,12 @@ internal sealed partial class QuicConnectionRuntime :
     }
 
     private QuicOversizedWriteAdmissionResolution ResolveOversizedWriteAdmission(
-        int logicalWriteBytes)
+        int logicalWriteBytes,
+        bool allowInactiveEvidence = false)
     {
-        if (logicalWriteBytes <= MaximumStreamWriteChunkBytes)
+        if (logicalWriteBytes <= 0
+            || (!allowInactiveEvidence
+                && logicalWriteBytes <= MaximumStreamWriteChunkBytes))
         {
             throw new ArgumentOutOfRangeException(
                 nameof(logicalWriteBytes),
@@ -1384,8 +1434,14 @@ internal sealed partial class QuicConnectionRuntime :
 
     private void PublishOversizedWriteAdmissionEvidence(
         in QuicOversizedWriteAdmissionResolution resolution,
+        long runtimeRequestId,
+        int initialCommittedFragments,
+        ulong initialCommittedBytes,
         int committedFragments,
         int continuationPosts,
+        int continuationCount,
+        ulong firstContinuationSequence,
+        long continuationRequestId,
         ulong committedBytes,
         QuicOversizedWriteOutcome outcome)
     {
@@ -1408,14 +1464,27 @@ internal sealed partial class QuicConnectionRuntime :
             QuicOversizedWriteAdmissionPolicy.Complete(
                 in latchedDecision,
                 outcome);
+        QuicOversizedWriteMechanismEvent mechanismEvent =
+            GetOversizedWriteMechanismEvent(
+                in resolution,
+                initialCommittedFragments,
+                outcome);
         QuicOversizedWriteAdmissionEvidence evidence = new(
             resolution.Mode,
             resolution.Observation,
             completedDecision,
             resolution.AppliedChunkQuantum,
+            runtimeRequestId,
+            initialCommittedFragments,
+            initialCommittedBytes,
             committedFragments,
             continuationPosts,
+            continuationCount,
+            firstContinuationSequence,
+            continuationRequestId,
             committedBytes,
+            CompletionCount: 1,
+            mechanismEvent,
             ConvertTicksToMicros(elapsedTicks),
             outcome);
         try
@@ -1426,6 +1495,31 @@ internal sealed partial class QuicConnectionRuntime :
         {
             // Evidence export is diagnostic-only. A failed sink must never affect transport behavior.
         }
+    }
+
+    private static QuicOversizedWriteMechanismEvent GetOversizedWriteMechanismEvent(
+        in QuicOversizedWriteAdmissionResolution resolution,
+        int initialCommittedFragments,
+        QuicOversizedWriteOutcome outcome)
+    {
+        if (outcome != QuicOversizedWriteOutcome.Completed)
+        {
+            return QuicOversizedWriteMechanismEvent.SafetyFallback;
+        }
+
+        if (resolution.Observation.LogicalWriteBytes
+            <= resolution.Observation.MaximumFragmentBytes)
+        {
+            return QuicOversizedWriteMechanismEvent.InactiveSingleFragmentWrite;
+        }
+
+        return initialCommittedFragments switch
+        {
+            1 => QuicOversizedWriteMechanismEvent.SequentialSingleFragmentAdmission,
+            QuicOversizedWriteAdmissionPolicy.BoundedMultiFragmentChunkQuantum =>
+                QuicOversizedWriteMechanismEvent.BoundedTwoFragmentAdmission,
+            _ => QuicOversizedWriteMechanismEvent.None,
+        };
     }
 
     internal bool ShouldUseBatchedReceiveCreditPath()
@@ -5600,6 +5694,16 @@ internal sealed partial class QuicConnectionRuntime :
             useMultiplexedOversizedWritePath =
                 oversizedWriteAdmission.UseMultiplexedPath;
         }
+        else if (oversizedWriteAdmissionEvidenceSink is not null
+            && OversizedWriteAdmissionObservationMode
+                != QuicOversizedWriteAdmissionObservationMode.Disabled
+            && !buffer.IsEmpty)
+        {
+            oversizedWriteAdmission =
+                ResolveOversizedWriteAdmission(
+                    buffer.Length,
+                    allowInactiveEvidence: true);
+        }
 
         if (isOversizedWrite
             && !useMultiplexedOversizedWritePath)
@@ -5622,6 +5726,7 @@ internal sealed partial class QuicConnectionRuntime :
         long requestId = Interlocked.Increment(ref nextStreamActionRequestId);
         StreamActionRequestCompletionSource completion = RentStreamActionRequestCompletionSource();
         completion.ConfigureWrite(
+            requestId,
             finishWrites ? QuicConnectionStreamActionKind.Finish : QuicConnectionStreamActionKind.Write,
             streamId,
             buffer.Length);
@@ -5629,6 +5734,12 @@ internal sealed partial class QuicConnectionRuntime :
         {
             completion.ConfigureOversizedStreamData(
                 buffer,
+                in oversizedWriteAdmission);
+        }
+        else if (!isOversizedWrite
+            && oversizedWriteAdmission.Observation.LogicalWriteSequence != 0)
+        {
+            completion.ConfigureOversizedWriteAdmissionEvidence(
                 in oversizedWriteAdmission);
         }
         if (completionAction is not null)
@@ -5704,7 +5815,8 @@ internal sealed partial class QuicConnectionRuntime :
         bool finishWrites,
         bool suppressTerminalException,
         Action<bool>? completionAction,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool suppressOversizedAdmissionEvidence = false)
         => WriteStreamAsyncCore(
             streamId,
             buffer,
@@ -5712,7 +5824,8 @@ internal sealed partial class QuicConnectionRuntime :
             finishWrites,
             suppressTerminalException,
             completionAction,
-            cancellationToken);
+            cancellationToken,
+            suppressOversizedAdmissionEvidence);
 
     private ValueTask<bool> WriteStreamAsyncCore(
         ulong streamId,
@@ -5721,7 +5834,8 @@ internal sealed partial class QuicConnectionRuntime :
         bool finishWrites,
         bool suppressTerminalException,
         Action<bool>? completionAction,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool suppressOversizedAdmissionEvidence = false)
     {
         ThrowIfDisposed();
 
@@ -5745,9 +5859,11 @@ internal sealed partial class QuicConnectionRuntime :
         }
 
         int totalLength = checked(buffer.Length + bufferSuffix.Length);
+        bool isOversizedWrite =
+            totalLength > MaximumStreamWriteChunkBytes;
         QuicOversizedWriteAdmissionResolution oversizedWriteAdmission = default;
         bool useMultiplexedOversizedWritePath = false;
-        if (totalLength > MaximumStreamWriteChunkBytes)
+        if (isOversizedWrite)
         {
             if (!bufferSuffix.IsEmpty)
             {
@@ -5774,6 +5890,17 @@ internal sealed partial class QuicConnectionRuntime :
                     : AwaitTryWriteStreamResultAndCompleteAsync(chunkWriteTask, completionAction);
             }
         }
+        else if (!suppressOversizedAdmissionEvidence
+            && oversizedWriteAdmissionEvidenceSink is not null
+            && OversizedWriteAdmissionObservationMode
+                != QuicOversizedWriteAdmissionObservationMode.Disabled
+            && totalLength > 0)
+        {
+            oversizedWriteAdmission =
+                ResolveOversizedWriteAdmission(
+                    totalLength,
+                    allowInactiveEvidence: true);
+        }
 
         LogApplicationSend(
             $"app-tx api-write role={tlsState.Role} stream={streamId} length={totalLength} fin={finishWrites}.");
@@ -5781,6 +5908,7 @@ internal sealed partial class QuicConnectionRuntime :
         long requestId = Interlocked.Increment(ref nextStreamActionRequestId);
         StreamActionRequestCompletionSource completion = RentStreamActionRequestCompletionSource();
         completion.ConfigureWrite(
+            requestId,
             finishWrites ? QuicConnectionStreamActionKind.Finish : QuicConnectionStreamActionKind.Write,
             streamId,
             totalLength);
@@ -5788,6 +5916,12 @@ internal sealed partial class QuicConnectionRuntime :
         {
             completion.ConfigureOversizedStreamData(
                 buffer,
+                in oversizedWriteAdmission);
+        }
+        else if (!isOversizedWrite
+            && oversizedWriteAdmission.Observation.LogicalWriteSequence != 0)
+        {
+            completion.ConfigureOversizedWriteAdmissionEvidence(
                 in oversizedWriteAdmission);
         }
         if (completionAction is not null)
@@ -5865,7 +5999,9 @@ internal sealed partial class QuicConnectionRuntime :
                         finishChunk,
                         suppressTerminalException,
                         completionAction: null,
-                        cancellationToken).ConfigureAwait(false))
+                        cancellationToken,
+                        suppressOversizedAdmissionEvidence: true)
+                    .ConfigureAwait(false))
                 {
                     outcome = IsDisposed
                         ? QuicOversizedWriteOutcome.Disposed
@@ -5906,8 +6042,21 @@ internal sealed partial class QuicConnectionRuntime :
         {
             PublishOversizedWriteAdmissionEvidence(
                 in oversizedWriteAdmission,
+                runtimeRequestId: 0,
+                initialCommittedFragments:
+                    committedFragments > 0 ? 1 : 0,
+                initialCommittedBytes:
+                    committedFragments > 0
+                        ? (ulong)Math.Min(
+                            oversizedWriteAdmission.Observation.MaximumFragmentBytes,
+                            oversizedWriteAdmission.Observation.LogicalWriteBytes)
+                        : 0,
                 committedFragments,
                 continuationPosts: 0,
+                continuationCount: Math.Max(0, committedFragments - 1),
+                firstContinuationSequence:
+                    committedFragments > 1 ? 1UL : 0UL,
+                continuationRequestId: 0,
                 committedBytes,
                 outcome);
         }
@@ -6047,6 +6196,7 @@ internal sealed partial class QuicConnectionRuntime :
         long requestId = Interlocked.Increment(ref nextStreamActionRequestId);
         StreamActionRequestCompletionSource completion = RentStreamActionRequestCompletionSource();
         completion.ConfigureWrite(
+            requestId,
             QuicConnectionStreamActionKind.Finish,
             streamId,
             streamDataLength: 0);
@@ -6116,6 +6266,7 @@ internal sealed partial class QuicConnectionRuntime :
         long requestId = Interlocked.Increment(ref nextStreamActionRequestId);
         StreamActionRequestCompletionSource completion = RentStreamActionRequestCompletionSource();
         completion.ConfigureWrite(
+            requestId,
             QuicConnectionStreamActionKind.Finish,
             streamId,
             streamDataLength: 0);

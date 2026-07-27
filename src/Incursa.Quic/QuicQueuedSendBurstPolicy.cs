@@ -101,8 +101,40 @@ internal readonly record struct QuicQueuedSendBurstEvidence(
     int EmittedDatagrams,
     int QueuedWritesBefore,
     int QueuedWritesAfter,
+    bool FollowOnWakeRequired,
+    long? FollowOnWakeDueTicks,
+    ulong FollowOnWakeGeneration,
     QuicApplicationSendRecoveryFlushOutcome Outcome,
-    QuicSendPolicyBlockedReason BlockedReason);
+    QuicSendPolicyBlockedReason BlockedReason)
+{
+    internal QuicQueuedSendBurstEvidence(
+        QuicQueuedSendBurstObservationMode Mode,
+        QuicQueuedSendBurstObservation Observation,
+        QuicAdaptiveRuntimeStage1AxisDecision Decision,
+        int LegalMaximumDatagrams,
+        int AppliedMaximumDatagrams,
+        int EmittedDatagrams,
+        int QueuedWritesBefore,
+        int QueuedWritesAfter,
+        QuicApplicationSendRecoveryFlushOutcome Outcome,
+        QuicSendPolicyBlockedReason BlockedReason)
+        : this(
+            Mode,
+            Observation,
+            Decision,
+            LegalMaximumDatagrams,
+            AppliedMaximumDatagrams,
+            EmittedDatagrams,
+            QueuedWritesBefore,
+            QueuedWritesAfter,
+            FollowOnWakeRequired: false,
+            FollowOnWakeDueTicks: null,
+            FollowOnWakeGeneration: 0,
+            Outcome,
+            BlockedReason)
+    {
+    }
+}
 
 internal interface IQuicQueuedSendBurstEvidenceSink
 {

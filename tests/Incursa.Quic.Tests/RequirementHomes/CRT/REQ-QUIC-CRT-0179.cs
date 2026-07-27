@@ -712,6 +712,9 @@ public sealed class REQ_QUIC_CRT_0179
                 forceSingleDatagram,
                 evidence.Decision.HasForcedValue);
             Assert.True(evidence.Decision.HasShadowRecommendation);
+            Assert.Equal(
+                QuicAdaptiveRuntimeStage1PolicyValue.SingleDatagram,
+                evidence.Decision.ShadowRecommendation);
             QuicAdaptiveRuntimeStage1PolicyValue expectedAppliedValue =
                 forceSingleDatagram
                     ? QuicAdaptiveRuntimeStage1PolicyValue.SingleDatagram
@@ -733,6 +736,9 @@ public sealed class REQ_QUIC_CRT_0179
                     QuicAdaptiveRuntimeStage1PolicyValue.SingleDatagram,
                     evidence.Decision.ForcedValue);
                 Assert.InRange(evidence.QueuedWritesAfter, 1, 47);
+                Assert.True(evidence.FollowOnWakeRequired);
+                Assert.True(evidence.FollowOnWakeDueTicks.HasValue);
+                Assert.True(evidence.FollowOnWakeGeneration > 0);
             }
             else
             {
@@ -741,6 +747,7 @@ public sealed class REQ_QUIC_CRT_0179
                     2,
                     evidence.LegalMaximumDatagrams);
                 Assert.Equal(0, evidence.QueuedWritesAfter);
+                Assert.False(evidence.FollowOnWakeRequired);
             }
 
             Assert.NotEmpty(turnSink.Evidence);

@@ -667,7 +667,8 @@ internal sealed partial class QuicConnectionRuntime
             if (dispatcher is not null
                 && completion.HasPendingOversizedStreamData)
             {
-                completion.RecordOversizedWriteContinuationPost();
+                completion.RecordOversizedWriteContinuationPost(
+                    continuation.RequestId);
                 posted = dispatcher(
                     continuation.RequestId,
                     completion.ActionKind,
@@ -2302,6 +2303,13 @@ internal sealed partial class QuicConnectionRuntime
 
                 if (hasQueuedSendBurstDecision)
                 {
+                    QuicConnectionTimerSchedule followOnWakeSchedule =
+                        lifecycleTimerState.TimerState.ApplicationSendDelay;
+                    bool followOnWakeRequired =
+                        applicationSendQueue.Count > 0
+                        && pendingApplicationSendDelayDueTicks.HasValue
+                        && followOnWakeSchedule.DueTicks
+                            == pendingApplicationSendDelayDueTicks;
                     TryPublishQueuedSendBurstEvidenceAtActorBoundary(
                         in queuedSendBurstObservation,
                         in queuedSendBurstDecision,
@@ -2309,6 +2317,9 @@ internal sealed partial class QuicConnectionRuntime
                         flushedDatagrams,
                         queuedWritesBefore,
                         applicationSendQueue.Count,
+                        followOnWakeRequired,
+                        followOnWakeSchedule.DueTicks,
+                        followOnWakeSchedule.Generation,
                         outcome,
                         blockedReason);
                 }
@@ -2554,6 +2565,9 @@ internal sealed partial class QuicConnectionRuntime
         int emittedDatagrams,
         int queuedWritesBefore,
         int queuedWritesAfter,
+        bool followOnWakeRequired,
+        long? followOnWakeDueTicks,
+        ulong followOnWakeGeneration,
         QuicApplicationSendRecoveryFlushOutcome outcome,
         QuicSendPolicyBlockedReason blockedReason)
     {
@@ -2571,6 +2585,9 @@ internal sealed partial class QuicConnectionRuntime
             emittedDatagrams,
             queuedWritesBefore,
             queuedWritesAfter,
+            followOnWakeRequired,
+            followOnWakeDueTicks,
+            followOnWakeGeneration,
             outcome,
             blockedReason);
         try

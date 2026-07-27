@@ -74,6 +74,15 @@ internal enum QuicOversizedWriteOutcome : byte
     ContinuationPostFailed = 5,
 }
 
+internal enum QuicOversizedWriteMechanismEvent : byte
+{
+    None = 0,
+    InactiveSingleFragmentWrite = 1,
+    SequentialSingleFragmentAdmission = 2,
+    BoundedTwoFragmentAdmission = 3,
+    SafetyFallback = 4,
+}
+
 internal readonly record struct QuicOversizedWriteAdmissionObservation(
     ulong LogicalWriteSequence,
     long CapturedAtTicks,
@@ -119,11 +128,51 @@ internal readonly record struct QuicOversizedWriteAdmissionEvidence(
     QuicOversizedWriteAdmissionObservation Observation,
     QuicAdaptiveRuntimeStage1AxisDecision Decision,
     int AppliedChunkQuantum,
+    long RuntimeRequestId,
+    int InitialCommittedFragments,
+    ulong InitialCommittedBytes,
     int CommittedFragments,
     int ContinuationPosts,
+    int ContinuationCount,
+    ulong FirstContinuationSequence,
+    long ContinuationRequestId,
     ulong CommittedBytes,
+    int CompletionCount,
+    QuicOversizedWriteMechanismEvent MechanismEvent,
     ulong CompletionLatencyMicros,
-    QuicOversizedWriteOutcome Outcome);
+    QuicOversizedWriteOutcome Outcome)
+{
+    internal QuicOversizedWriteAdmissionEvidence(
+        QuicOversizedWriteAdmissionObservationMode Mode,
+        QuicOversizedWriteAdmissionObservation Observation,
+        QuicAdaptiveRuntimeStage1AxisDecision Decision,
+        int AppliedChunkQuantum,
+        int CommittedFragments,
+        int ContinuationPosts,
+        ulong CommittedBytes,
+        ulong CompletionLatencyMicros,
+        QuicOversizedWriteOutcome Outcome)
+        : this(
+            Mode,
+            Observation,
+            Decision,
+            AppliedChunkQuantum,
+            RuntimeRequestId: 0,
+            InitialCommittedFragments: CommittedFragments,
+            InitialCommittedBytes: CommittedBytes,
+            CommittedFragments,
+            ContinuationPosts,
+            ContinuationCount: ContinuationPosts,
+            FirstContinuationSequence: ContinuationPosts > 0 ? 1UL : 0UL,
+            ContinuationRequestId: 0,
+            CommittedBytes,
+            CompletionCount: 1,
+            MechanismEvent: QuicOversizedWriteMechanismEvent.None,
+            CompletionLatencyMicros,
+            Outcome)
+    {
+    }
+}
 
 internal interface IQuicOversizedWriteAdmissionEvidenceSink
 {
