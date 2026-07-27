@@ -151,9 +151,15 @@ function Test-DocumentAgainstSchema {
     )
     $schemaPath = Join-Path $RepositoryRoot "schemas\$SchemaName"
     $json = $Document | ConvertTo-Json -Depth 100 -Compress
-    Assert-Condition (
-        $json | Test-Json -SchemaFile $schemaPath -ErrorAction SilentlyContinue
-    ) $FailureCode
+    $schemaErrors = @()
+    $valid = $json | Test-Json -SchemaFile $schemaPath `
+        -ErrorAction SilentlyContinue -ErrorVariable schemaErrors
+    if (-not $valid) {
+        $detail = @($schemaErrors | ForEach-Object {
+            $_.Exception.Message
+        }) -join '; '
+        throw "${FailureCode}:$detail"
+    }
 }
 
 $capture = Read-AdaptiveRuntimeJsonDocument $MechanismCapturePath
