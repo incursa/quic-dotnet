@@ -62,16 +62,24 @@
     {
       "id": "REQ-QUIC-CRT-0238",
       "title": "Produce independent candidate actuation evidence",
-      "statement": "Each newly onboarded behavior-distinct value MUST have an independent correctness-only candidate proof that binds an actual mechanism capture to plan, validation, manifest, run, host, binary, workload, exact operation evidence, catalog-owned behavior and outcome materializations, classifications, artifact inventory, metrics, and deterministic projection; proves activation, forcing, eligibility, application, safety fallback, shadow neutrality, rollback, and terminal correctness; and remains candidate with no passed review outcome.",
+      "statement": "Each newly onboarded behavior-distinct value MUST have an independent correctness-only candidate proof whose mechanism facts originate in the production runtime evidence sink; bind exact run, connection, epoch, decision, operation, logical-write/continuation or actor-turn/wake identity as applicable; bind plan, validation, manifest, host, binary, workload, exact operation evidence, catalog-owned behavior and outcome materializations, classifications, artifact inventory, metrics, and deterministic projection; prove or truthfully fail activation, forcing, eligibility, application, safety fallback, shadow neutrality, rollback, and terminal correctness; and remain candidate with no passed review outcome.",
       "trace": {
         "satisfied_by": ["ARC-QUIC-CRT-0113"],
         "implemented_by": ["WI-QUIC-CRT-0114"],
         "verified_by": ["VER-QUIC-CRT-0115"],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0238.cs",
-          "eng/adaptive-runtime/Test-AdaptiveRuntimeFactorOnboarding.ps1"
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0238.RuntimeCapture.cs",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeFactorOnboarding.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeRuntimeProofCapture.ps1"
         ],
-        "upstream_refs": ["tests/fixtures/adaptive-runtime-factor-onboarding"]
+        "upstream_refs": [
+          "tests/fixtures/adaptive-runtime-factor-onboarding",
+          "tests/fixtures/adaptive-runtime-runtime-proof-capture",
+          "schemas/adaptive-runtime-runtime-proof-sink-export-v1.schema.json",
+          "schemas/adaptive-runtime-actuation-mechanism-capture-v3.schema.json",
+          "schemas/adaptive-runtime-actuation-proof-evidence-v3.schema.json"
+        ]
       }
     },
     {

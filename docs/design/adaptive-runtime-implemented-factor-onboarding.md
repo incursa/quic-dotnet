@@ -91,9 +91,15 @@ actuation or correctness proof, and it does not authorize active behavior.
   and buffer behavior in the same configured workload cell
 - direct oversized-to-buffer edge: intentionally omitted; the influence is
   transitive through batch formation
-- candidate proof: separate immutable chains now bind `single_fragment` to
-  the 16-observer legacy-two case and `bounded_multi_fragment` to the
-  sparse-observer legacy-one case. Both remain external-review candidates.
+- candidate proof: separate immutable chains now originate in the production
+  oversized-write evidence sink. They bind decision, operation, logical-write
+  request, continuation, and exactly-once completion identities for positive,
+  inactive, fallback, shadow, and rollback cases. `single_fragment` has no
+  failed proof assertion. `bounded_multi_fragment` truthfully retains
+  `shadow_recommendation_value_mismatch`, because the production shadow rule
+  currently recommends only `single_fragment`; changing that selection rule is
+  outside this evidence-only checkpoint. Both remain external-review
+  candidates.
 
 ### `queued_send_burst_budget`
 
@@ -124,10 +130,38 @@ actuation or correctness proof, and it does not authorize active behavior.
 - relationship to batch formation: queued burst supplies repeated packet-plan
   opportunities; batch selection can change whether a later burst iteration
   exists
-- candidate proof: the immutable chain binds the existing live actor-turn
-  evidence to exact composite operation identity, catalog materialization,
-  retained fallback, shadow neutrality, rollback, and projection. It remains
-  external-review pending.
+- candidate proof: the immutable chain originates in the production queued-send
+  evidence sink and binds the exact actor turn, queue-before/after state,
+  accepted follow-on wake generation, catalog materializations, fallback,
+  shadow neutrality, rollback, and projection. It has no failed proof
+  assertion and remains external-review pending.
+
+## Runtime-derived proof provenance
+
+The v3 proof-capture line supersedes the earlier expectation-authored candidate
+contents without deleting the retained v2 evidence. The focused correctness
+harness executes the production policy and governed mechanism, then exports
+only the bounded evidence objects emitted by those paths. The offline adapter
+may translate those records into immutable contracts, but it cannot select a
+mechanism event, count, candidate, applied value, terminal result, continuation,
+or wake from a requested fixture value.
+
+The capture contract carries:
+
+- the exact committed source and binary hash;
+- run, connection, epoch, axis, decision, and operation identity;
+- the logical-write request and continuation identities for oversized writes;
+- the actor-turn and follow-on wake-generation identities for queued sends;
+- configured, forced, shadow, candidate, eligibility, applied, mechanism, and
+  terminal facts; and
+- one positive, inactive, fallback, shadow-neutrality, and rollback operation
+  per proof.
+
+`single_fragment` and `single_datagram` are structurally ready for independent
+external promotion review. `bounded_multi_fragment` is not promotion-ready
+until a separately authorized production shadow rule can truthfully recommend
+that exact value and a new runtime-derived candidate is generated. No proof is
+promoted by this checkpoint.
 
 ### `packet_flush_cadence` (deferred)
 
@@ -220,6 +254,9 @@ metadata. External review inputs are emitted separately for
 `single_fragment`, `bounded_multi_fragment`, and `single_datagram`, each bound
 to its exact proof hash, evidence reference, catalog base hash, and independent
 review outcome. No all-at-once promotion template is canonical or applied.
+The regenerated v3 proof candidates preserve that state. Their promotion inputs
+remain `not_applied`, with reviewer, review artifact, and independent outcome
+unset.
 
 Both spaces are no larger than 64. Exhaustive explicit enumeration is stronger,
 clearer, and inexpensive. No covering-array generator or placeholder is added.

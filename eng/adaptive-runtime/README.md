@@ -733,3 +733,38 @@ The three new actuation proofs are candidate-only, no new reviewed-proof
 metadata exists, and every multi-axis cell involving an onboarded factor
 remains blocked. Packet-flush onboarding, performance measurement, active
 behavior, and production authorization remain outside this checkpoint.
+
+Runtime-derived replacement candidates are captured and validated with:
+
+```powershell
+$sourceCommit = git rev-parse HEAD
+$binary = Resolve-Path src/Incursa.Quic/bin/Release/net10.0/Incursa.Quic.dll
+$env:INCURSA_ADAPTIVE_RUNTIME_FACTOR_RUNTIME_CAPTURE_ROOT = `
+  'C:\shared\temp\quic-dotnet\runtime-proof-capture\raw'
+$env:INCURSA_ADAPTIVE_RUNTIME_FACTOR_SOURCE_COMMIT = $sourceCommit
+$env:INCURSA_ADAPTIVE_RUNTIME_FACTOR_BINARY_SHA256 = `
+  (Get-FileHash $binary -Algorithm SHA256).Hash.ToLowerInvariant()
+$env:INCURSA_ADAPTIVE_RUNTIME_FACTOR_CAPTURE_SESSION_ID = `
+  'runtime_capture.factor_proof'
+
+dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj `
+  -c Release --no-build `
+  --filter FullyQualifiedName~RuntimeProofHarnessExportsOnlySinkEmittedMechanismFacts
+
+pwsh -NoProfile -File `
+  eng/adaptive-runtime/New-AdaptiveRuntimeFactorActuationProofCandidates.ps1 `
+  -RuntimeCaptureRoot $env:INCURSA_ADAPTIVE_RUNTIME_FACTOR_RUNTIME_CAPTURE_ROOT `
+  -BinaryPath $binary
+
+pwsh -NoProfile -File `
+  eng/adaptive-runtime/Test-AdaptiveRuntimeRuntimeProofCapture.ps1
+```
+
+The adapter accepts actual bounded sink exports only. Capture v3 carries
+logical-write request/continuation identity or actor-turn/wake-generation
+identity as applicable, and the regression recomputes behavior, outcome, and
+projection hashes. `single_fragment` and `single_datagram` have no failed proof
+assertions. `bounded_multi_fragment` remains an honest candidate with
+`shadow_recommendation_value_mismatch`: the current production shadow rule
+recommends `single_fragment`, and this evidence-only workflow does not alter
+selection semantics. All three external promotion inputs remain unapplied.

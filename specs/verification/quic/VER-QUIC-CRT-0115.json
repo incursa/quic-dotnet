@@ -19,8 +19,8 @@
     "REQ-QUIC-CRT-0239",
     "REQ-QUIC-CRT-0240"
   ],
-  "scope": "Verify the additive factor contracts, actual mechanism-derived candidate proof chains, family and relationship decisions, deterministic cell-space enumeration, blocked execution, retained compatibility, and correctness-only stopping boundary.",
-  "verification_method": "Schema, canonical hash, reference, semantic, materialization, projection, candidate-state, and deterministic-byte validation; focused runtime mechanism tests for oversized admission and queued burst; retained experiment-control regressions; focused Release builds; direct SpecTrace validation; and diff hygiene.",
+  "scope": "Verify the additive factor contracts, production-runtime-evidence-derived candidate proof chains, family and relationship decisions, deterministic cell-space enumeration, blocked execution, retained compatibility, and correctness-only stopping boundary.",
+  "verification_method": "Focused production-mechanism execution and bounded sink export; schema, canonical hash, source/binary/reference, complete-identity, semantic, materialization, projection, candidate-state, and deterministic-byte validation; focused runtime mechanism tests for oversized admission and queued burst; retained experiment-control regressions; focused Release builds; direct SpecTrace validation; and diff hygiene.",
   "preconditions": [
     "The accepted experiment-control and no-stable-rule chain is present.",
     "All existing v1, v2, and v3 artifacts remain unchanged and valid.",
@@ -29,16 +29,21 @@
   "procedure": [
     "Validate the canonical-state reconciliation and three-axis audit.",
     "Validate all additive schemas and canonical catalogs with false authorization.",
-    "Recompute the three candidate proof chains from focused mechanism captures.",
+    "Execute the focused production mechanisms and export their oversized-write and queued-send evidence sinks.",
+    "Reject expectation-authored captures and validate logical-write request, continuation, exactly-once completion, actor-turn, queue, and wake-generation identities.",
+    "Recompute the three candidate proof chains from the runtime sink exports.",
     "Recompute catalog-owned behavior and outcome materializations and projections.",
-    "Prove all candidate proofs remain unreviewed and no promotion patch is applied.",
+    "Prove single_fragment and single_datagram have no failed assertion; prove bounded_multi_fragment truthfully retains shadow_recommendation_value_mismatch; prove all remain unreviewed and no promotion input is applied.",
     "Validate the retained v1 and canonical v2 cell-space documents, including baseline-inclusive effective counts, disjoint partition totals, overlapping annotation totals, and operation-local noncoactivation without false cell exclusion.",
     "Validate the 12-cell and 2-cell exhaustive inventories and blocked multi-axis states.",
     "Run retained regressions, focused mechanism tests, Release builds, SpecTrace checks, and git diff --check."
   ],
   "expected_result": "Exactly two implemented axes are canonically onboarded; three nonlegacy values have deterministic candidate-only proof chains; family placement follows mechanism relationships; all small spaces are explicitly enumerated; broader execution and measurement remain blocked; and prior artifacts continue to validate.",
   "evidence": [
-    "eng/adaptive-runtime/Test-AdaptiveRuntimeFactorOnboarding.ps1"
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeFactorOnboarding.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeRuntimeProofCapture.ps1",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0238.RuntimeCapture.cs",
+    "tests/fixtures/adaptive-runtime-runtime-proof-capture"
   ],
-  "status_summary": "Passed when the focused commands and exact counts recorded in the review package are reproduced. Repository-wide unrelated SpecTrace baseline failures are retained rather than relabeled."
+  "status_summary": "Passed when the focused commands reproduce three runtime-derived candidates, two with no failed assertion and one bounded-value shadow mismatch, 14 deterministic negative cases, exact materialization/projection hashes, false active/performance authorization, and candidate-only promotion state. Repository-wide unrelated SpecTrace baseline failures are retained rather than relabeled."
 }
