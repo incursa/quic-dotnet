@@ -163,7 +163,7 @@ function New-OversizedCapture {
         (New-CaptureOperation -Case safety_fallback `
             -Connection "connection.$slug.fallback" -Identity 103 `
             -Configured legacy_current -Forced $Value -Shadow $null `
-            -Candidate $Value -Eligibility ineligible `
+            -Candidate $Value -Eligibility clamped `
             -EligibilityReason terminal_guard -Applied $fallbackValue `
             -OperationKind logical_write -MechanismEvent $fallbackEvent `
             -LegalCount 2 -AppliedCount $fallbackApplied `
