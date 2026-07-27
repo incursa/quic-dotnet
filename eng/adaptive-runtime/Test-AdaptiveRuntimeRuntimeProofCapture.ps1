@@ -111,6 +111,11 @@ function Get-RuntimeCaptureErrors {
                 [long]$operation.decision_instance_id -or
             [long]$record.operation_id -ne
                 [long]$operation.operation_id -or
+            [long]$record.decision_instance_id -ne
+                [long]$operation.runtime_source_identity.
+                    decision_instance_id -or
+            [long]$record.operation_id -ne
+                [long]$operation.runtime_source_identity.operation_id -or
             [string]$record.capture_case -cne
                 [string]$operation.capture_case) {
             Add-Error 'runtime_capture_operation_identity_mismatch'
@@ -118,6 +123,10 @@ function Get-RuntimeCaptureErrors {
         if ($Capture.axis_id -ceq
             'oversized_write_admission_quantum') {
             $details = $operation.mechanism_details
+            if ([long]$record.runtime_request_id -ne
+                    [long]$details.runtime_request_id) {
+                Add-Error 'logical_write_request_identity_mismatch'
+            }
             if ([long]$record.completion_count -ne 1 -or
                 [long]$details.completion_count -ne 1) {
                 Add-Error 'logical_write_completion_not_exact_once'
@@ -130,14 +139,32 @@ function Get-RuntimeCaptureErrors {
                 [long]$details.continuation_posts) {
                 Add-Error 'continuation_post_count_mismatch'
             }
+            if ([long]$record.first_continuation_sequence -ne
+                    [long]$details.first_continuation_sequence -or
+                [long]$record.continuation_request_id -ne
+                    [long]$details.continuation_request_id) {
+                Add-Error 'continuation_identity_mismatch'
+            }
         }
         else {
             $details = $operation.mechanism_details
+            if ([long]$record.actor_turn_sequence -ne
+                    [long]$details.actor_turn_sequence) {
+                Add-Error 'queued_actor_turn_identity_mismatch'
+            }
             if ([long]$record.queued_writes_before -ne
                     [long]$details.queued_writes_before -or
                 [long]$record.queued_writes_after -ne
                     [long]$details.queued_writes_after) {
                 Add-Error 'queued_work_identity_mismatch'
+            }
+            if ([bool]$record.follow_on_wake_required -ne
+                    [bool]$details.follow_on_wake_required -or
+                [string]$record.follow_on_wake_due_ticks -cne
+                    [string]$details.follow_on_wake_due_ticks -or
+                [long]$record.follow_on_wake_generation -ne
+                    [long]$details.follow_on_wake_generation) {
+                Add-Error 'follow_on_wake_identity_mismatch'
             }
         }
     }
@@ -304,9 +331,10 @@ foreach ($configuration in $configurations) {
         $proof.performance_acceptance_authorization -eq $false
     ) "runtime_proof_candidate_state_invalid:$($configuration.Slug)"
     Assert-Condition (
-        @($proof.failed_assertions | Sort-Object -CaseSensitive).Count -eq
-        $expectedErrors.Count
-    ) "runtime_proof_failed_assertion_count:$($configuration.Slug)"
+        (ConvertTo-Json @($proof.failed_assertions |
+            Sort-Object -CaseSensitive) -Compress) -ceq
+        (ConvertTo-Json $expectedErrors -Compress)
+    ) "runtime_proof_failed_assertion_set:$($configuration.Slug)"
     Assert-Condition (
         [string]$promotion.proof_ref.content_sha256 -ceq
             [string]$proof.content_sha256 -and
@@ -359,56 +387,98 @@ $singleExportJson = Get-Content -LiteralPath $singleExportPath -Raw
 $singleExport = $singleExportJson | ConvertFrom-Json -Depth 100
 $singleExportHash = (Get-FileHash -LiteralPath $singleExportPath `
     -Algorithm SHA256).Hash.ToLowerInvariant()
+$queuedCapture = Read-ProofFile 'queued-single' 'mechanism-capture.json'
+$queuedExportPath = Join-Path (Join-Path $fixtureRoot 'queued-single') `
+    'runtime-sink-export.json'
+$queuedExportJson = Get-Content -LiteralPath $queuedExportPath -Raw
+$queuedExport = $queuedExportJson | ConvertFrom-Json -Depth 100
+$queuedExportHash = (Get-FileHash -LiteralPath $queuedExportPath `
+    -Algorithm SHA256).Hash.ToLowerInvariant()
 $negativeCases = @(
-    @('expectation_authored_capture_source', {
+    @($singleCapture, $singleExport, $singleExportHash,
+        'expectation_authored_capture_source', {
         param($value)
         $value.capture_mode = 'focused_correctness_mechanism_harness'
     }),
-    @('logical_write_completion_not_exact_once', {
+    @($singleCapture, $singleExport, $singleExportHash,
+        'logical_write_completion_not_exact_once', {
         param($value)
         $value.operations[0].mechanism_details.completion_count = 0
     }),
-    @('logical_write_completion_not_exact_once', {
+    @($singleCapture, $singleExport, $singleExportHash,
+        'logical_write_completion_not_exact_once', {
         param($value)
         $value.operations[0].mechanism_details.completion_count = 2
     }),
-    @('continuation_count_mismatch', {
+    @($singleCapture, $singleExport, $singleExportHash,
+        'continuation_count_mismatch', {
         param($value)
         $value.operations[0].mechanism_details.continuation_count++
     }),
-    @('oversized_activation_predicate_not_reached', {
+    @($singleCapture, $singleExport, $singleExportHash,
+        'continuation_identity_mismatch', {
+        param($value)
+        $value.operations[0].mechanism_details.continuation_request_id++
+    }),
+    @($singleCapture, $singleExport, $singleExportHash,
+        'logical_write_request_identity_mismatch', {
+        param($value)
+        $value.operations[0].mechanism_details.runtime_request_id++
+    }),
+    @($singleCapture, $singleExport, $singleExportHash,
+        'oversized_activation_predicate_not_reached', {
         param($value)
         $value.operations[0].legal_work_count = 1
     }),
-    @('shadow_recommendation_value_mismatch', {
+    @($singleCapture, $singleExport, $singleExportHash,
+        'shadow_recommendation_value_mismatch', {
         param($value)
         (@($value.operations |
             Where-Object capture_case -ceq 'shadow_neutrality')[0]).
             shadow_recommendation = 'legacy_current'
     }),
-    @('runtime_capture_operation_identity_mismatch', {
+    @($singleCapture, $singleExport, $singleExportHash,
+        'runtime_capture_operation_identity_mismatch', {
         param($value)
         $value.operations[0].runtime_source_identity.operation_id++
     }),
-    @('rollback_retained_policy_state', {
+    @($singleCapture, $singleExport, $singleExportHash,
+        'rollback_retained_policy_state', {
         param($value)
         (@($value.operations |
             Where-Object capture_case -ceq 'rollback')[0]).
             applied_value = 'single_fragment'
     }),
-    @('actuation_proof_multi_axis_forcing', {
+    @($singleCapture, $singleExport, $singleExportHash,
+        'actuation_proof_multi_axis_forcing', {
         param($value)
         $value.forced_behavior_distinct_axis_count = 2
+    }),
+    @($queuedCapture, $queuedExport, $queuedExportHash,
+        'queued_work_identity_mismatch', {
+        param($value)
+        $value.operations[0].mechanism_details.queued_writes_before++
+    }),
+    @($queuedCapture, $queuedExport, $queuedExportHash,
+        'follow_on_wake_identity_mismatch', {
+        param($value)
+        $value.operations[0].mechanism_details.follow_on_wake_required =
+            $false
+    }),
+    @($queuedCapture, $queuedExport, $queuedExportHash,
+        'queued_actor_turn_identity_mismatch', {
+        param($value)
+        $value.operations[0].mechanism_details.actor_turn_sequence++
     })
 )
 $negativeCount = 0
 foreach ($negativeCase in $negativeCases) {
-    $mutated = Copy-JsonObject $singleCapture
-    & $negativeCase[1] $mutated
+    $mutated = Copy-JsonObject $negativeCase[0]
+    & $negativeCase[4] $mutated
     $errors = @(Get-RuntimeCaptureErrors `
-        $mutated $singleExport $singleExportHash)
-    Assert-Condition ($errors -contains [string]$negativeCase[0]) `
-        "runtime_negative_case_not_rejected:$($negativeCase[0])"
+        $mutated $negativeCase[1] $negativeCase[2])
+    Assert-Condition ($errors -contains [string]$negativeCase[3]) `
+        "runtime_negative_case_not_rejected:$($negativeCase[3])"
     $negativeCount++
 }
 

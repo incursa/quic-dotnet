@@ -138,6 +138,8 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "runtime_request_id": { "$ref": "#/$defs/nonNegativeInteger" },
+        "actor_turn_sequence": { "$ref": "#/$defs/positiveInteger" },
         "logical_write_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
         "maximum_fragment_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
         "initial_committed_fragments": { "$ref": "#/$defs/nonNegativeInteger" },

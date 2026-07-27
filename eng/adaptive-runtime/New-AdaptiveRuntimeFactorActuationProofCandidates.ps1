@@ -154,6 +154,7 @@ function Convert-OversizedRecord {
         operation_kind = 'logical_write'
         mechanism_event_id = Get-OversizedMechanismEventId $Record
         mechanism_details = [pscustomobject][ordered]@{
+            runtime_request_id = [long]$Record.runtime_request_id
             logical_write_bytes = [long]$Record.logical_write_bytes
             maximum_fragment_bytes = [long]$Record.maximum_fragment_bytes
             initial_committed_fragments =
@@ -237,6 +238,7 @@ function Convert-QueuedRecord {
         operation_kind = 'send_turn'
         mechanism_event_id = Get-QueuedMechanismEventId $Record
         mechanism_details = [pscustomobject][ordered]@{
+            actor_turn_sequence = [long]$Record.actor_turn_sequence
             queued_writes_before = [long]$Record.queued_writes_before
             queued_writes_after = [long]$Record.queued_writes_after
             follow_on_wake_required = [bool]$Record.follow_on_wake_required
