@@ -734,14 +734,26 @@ function Get-AdaptiveRuntimeEvidenceV3Errors {
         }
         $behavior = Resolve-AdaptiveRuntimeEffectiveBehavior $operation $Catalog
         if ($behavior.status -eq 'no_match' -and
-            [string]$operation.result -cne 'unclassifiable') {
+            [string]$operation.result -notin @(
+                'inactive',
+                'fallback',
+                'clamped',
+                'error',
+                'invalid',
+                'negative',
+                'terminal_release_failure',
+                'unclassifiable')) {
             & $add 'behavior_derivation_no_match'
         }
         elseif ($behavior.status -eq 'ambiguous') {
             & $add 'behavior_derivation_ambiguous'
         }
         $outcome = Resolve-AdaptiveRuntimeOperationOutcome $operation $Catalog
-        if ($outcome.status -in @('no_match','ambiguous')) {
+        if ($outcome.status -eq 'no_match' -and
+            [string]$operation.result -cne 'applied') {
+            & $add ([string]$outcome.error_code)
+        }
+        elseif ($outcome.status -eq 'ambiguous') {
             & $add ([string]$outcome.error_code)
         }
     }

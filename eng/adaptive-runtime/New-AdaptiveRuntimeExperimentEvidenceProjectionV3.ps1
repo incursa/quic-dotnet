@@ -58,14 +58,23 @@ function Get-ProjectionSchemaFile {
         'adaptive-runtime-experiment-plan-validation-v2' {
             'adaptive-runtime-experiment-plan-validation-v2.schema.json'
         }
+        'adaptive-runtime-experiment-plan-validation-v3' {
+            'adaptive-runtime-experiment-plan-validation-v3.schema.json'
+        }
         'adaptive-runtime-experiment-plan-validation-v1' {
             'adaptive-runtime-experiment-plan-validation-v1.schema.json'
         }
         'adaptive-runtime-compiled-execution-manifest-v1' {
             'adaptive-runtime-compiled-execution-manifest-v1.schema.json'
         }
+        'adaptive-runtime-compiled-execution-manifest-v2' {
+            'adaptive-runtime-compiled-execution-manifest-v2.schema.json'
+        }
         'adaptive-runtime-operation-evidence-v3' {
             'adaptive-runtime-operation-evidence-v3.schema.json'
+        }
+        'adaptive-runtime-operation-evidence-v4' {
+            'adaptive-runtime-operation-evidence-v4.schema.json'
         }
         'adaptive-runtime-effective-behavior-materialization-v3' {
             'adaptive-runtime-effective-behavior-materialization-v3.schema.json'
@@ -75,6 +84,9 @@ function Get-ProjectionSchemaFile {
         }
         'adaptive-runtime-effective-behavior-catalog-v2' {
             'adaptive-runtime-effective-behavior-catalog-v2.schema.json'
+        }
+        'adaptive-runtime-effective-behavior-catalog-v3' {
+            'adaptive-runtime-effective-behavior-catalog-v3.schema.json'
         }
         'adaptive-runtime-classification-compatibility-catalog-v1' {
             'adaptive-runtime-classification-compatibility-catalog-v1.schema.json'

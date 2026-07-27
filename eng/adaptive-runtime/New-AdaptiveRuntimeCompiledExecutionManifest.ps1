@@ -31,6 +31,14 @@ Import-Module (Join-Path $PSScriptRoot 'AdaptiveRuntimeExperimentControl.Common.
 
 $plan = Read-AdaptiveRuntimeJsonDocument -Path $PlanPath
 $validation = Read-AdaptiveRuntimeJsonDocument -Path $ValidationPath
+$manifestVersion = if (
+    [string]$validation.schema_version -ceq
+        'adaptive-runtime-experiment-plan-validation-v3') {
+    2
+}
+else {
+    1
+}
 if (-not (Test-AdaptiveRuntimeDocumentHash -Document $plan)) {
     throw 'The source-plan hash is invalid.'
 }
@@ -179,14 +187,16 @@ if ($capabilityIneligibleCells.Count -gt 0) {
 }
 
 $manifest = [pscustomobject][ordered]@{
-    schema_version = 'adaptive-runtime-compiled-execution-manifest-v1'
+    schema_version =
+        "adaptive-runtime-compiled-execution-manifest-v$manifestVersion"
     document_id = "manifest.$($plan.experiment_plan_id).$($sourceCommit.Substring(0,12))"
-    document_version = 1
+    document_version = $manifestVersion
     content_sha256 = ('0' * 64)
     trace_references = New-AdaptiveRuntimeTraceReferences
     active_behavior_authorization = $false
     performance_acceptance_authorization = $false
-    compiled_execution_manifest_id = "manifest.$($plan.experiment_plan_id).$($sourceCommit.Substring(0,12)).v1"
+    compiled_execution_manifest_id =
+        "manifest.$($plan.experiment_plan_id).$($sourceCommit.Substring(0,12)).v$manifestVersion"
     source_plan_ref = [ordered]@{
         document_id = [string]$plan.document_id
         schema_version = [string]$plan.schema_version
@@ -302,9 +312,10 @@ if ($orderPolicy -eq 'randomized') {
 }
 
 [void](Set-AdaptiveRuntimeDocumentHash -Document $manifest)
-$manifestSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-compiled-execution-manifest-v1.schema.json'
+$manifestSchemaPath = Join-Path $RepositoryRoot (
+    "schemas\adaptive-runtime-compiled-execution-manifest-v$manifestVersion.schema.json")
 if (-not (Test-AdaptiveRuntimeJsonSchema -Document $manifest -SchemaPath $manifestSchemaPath)) {
-    throw 'Compiler defect: generated manifest failed adaptive-runtime-compiled-execution-manifest-v1.'
+    throw "Compiler defect: generated manifest failed adaptive-runtime-compiled-execution-manifest-v$manifestVersion."
 }
 Write-AdaptiveRuntimeCanonicalDocument -Document $manifest -Path $OutputPath
 $manifest

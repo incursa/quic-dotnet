@@ -16,6 +16,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+$script:FactorProofMode = $false
 
 Import-Module (Join-Path $PSScriptRoot `
     'AdaptiveRuntimeExperimentControl.Common.psm1') -Force
@@ -44,6 +45,21 @@ function Assert-Condition {
 }
 
 function New-ProofTraceReferences {
+    if ($script:FactorProofMode) {
+        return [pscustomobject][ordered]@{
+            requirement_ids = @(
+                'REQ-QUIC-CRT-0235',
+                'REQ-QUIC-CRT-0236',
+                'REQ-QUIC-CRT-0237',
+                'REQ-QUIC-CRT-0238',
+                'REQ-QUIC-CRT-0239',
+                'REQ-QUIC-CRT-0240'
+            )
+            architecture_ids = @('ARC-QUIC-CRT-0113')
+            work_item_ids = @('WI-QUIC-CRT-0114')
+            verification_ids = @('VER-QUIC-CRT-0115')
+        }
+    }
     return [pscustomobject][ordered]@{
         requirement_ids = @(
             'REQ-QUIC-CRT-0218',
@@ -142,15 +158,30 @@ function Test-DocumentAgainstSchema {
 
 $capture = Read-AdaptiveRuntimeJsonDocument $MechanismCapturePath
 [void](Set-AdaptiveRuntimeDocumentHash $capture)
+$isFactorProof = [string]$capture.schema_version -ceq
+    'adaptive-runtime-actuation-mechanism-capture-v2'
+$script:FactorProofMode = $isFactorProof
+$captureSchemaName = if ($isFactorProof) {
+    'adaptive-runtime-actuation-mechanism-capture-v2.schema.json'
+}
+else {
+    'adaptive-runtime-actuation-mechanism-capture-v1.schema.json'
+}
 Test-DocumentAgainstSchema $capture `
-    'adaptive-runtime-actuation-mechanism-capture-v1.schema.json' `
+    $captureSchemaName `
     'actuation_proof_capture_schema_invalid'
 $plan = Read-AdaptiveRuntimeJsonDocument $PlanPath
 $validation = Read-AdaptiveRuntimeJsonDocument $ValidationPath
 $manifest = Read-AdaptiveRuntimeJsonDocument $ManifestPath
+$behaviorCatalogFile = if ($isFactorProof) {
+    'adaptive-runtime-effective-behavior-catalog-v3.json'
+}
+else {
+    'adaptive-runtime-effective-behavior-catalog-v2.json'
+}
 $catalog = Read-AdaptiveRuntimeJsonDocument (
     Join-Path $RepositoryRoot `
-        'eng\adaptive-runtime\experiment-control\adaptive-runtime-effective-behavior-catalog-v2.json')
+        "eng\adaptive-runtime\experiment-control\$behaviorCatalogFile")
 $compatibilityCatalog = Read-AdaptiveRuntimeJsonDocument (
     Join-Path $RepositoryRoot `
         'eng\adaptive-runtime\experiment-control\adaptive-runtime-classification-compatibility-catalog-v1.json')
@@ -219,12 +250,20 @@ Assert-Condition (
 Assert-Condition (
     $fallback[0].forced_value -ceq $policyValue -and
     $fallback[0].candidate_value -ceq $policyValue -and
-    $fallback[0].applied_value -ceq 'legacy_current' -and
-    $fallback[0].operation_eligibility_result -in @('clamped','ineligible')
+    $fallback[0].operation_eligibility_result -in @('clamped','ineligible') -and
+    (
+        (-not $isFactorProof -and
+            $fallback[0].applied_value -ceq 'legacy_current') -or
+        ($isFactorProof -and (
+            $fallback[0].applied_value -cne $policyValue -or
+            [long]$fallback[0].applied_work_count -eq 0))
+    )
 ) 'actuation_proof_safety_fallback_invalid'
 Assert-Condition (
     $null -eq $shadow[0].forced_value -and
-    $shadow[0].shadow_recommendation -ceq $policyValue -and
+    $null -ne $shadow[0].shadow_recommendation -and
+    ($isFactorProof -or
+        $shadow[0].shadow_recommendation -ceq $policyValue) -and
     $shadow[0].applied_value -ceq 'legacy_current'
 ) 'actuation_proof_shadow_actuated'
 Assert-Condition (
@@ -232,17 +271,23 @@ Assert-Condition (
     $rollback[0].applied_value -ceq 'legacy_current'
 ) 'actuation_proof_rollback_invalid'
 
-$expectedEvent = if ($axisId -ceq
-    'application_send_batch_formation') {
-    'mechanism_event.batch_single_eligible'
-}
-else {
-    'mechanism_event.buffer_two_source_cap'
-}
+$expectedValueSet = @($catalog.value_behavior_sets | Where-Object {
+    [string]$_.axis_id -ceq $axisId -and
+    [string]$_.policy_value -ceq $policyValue
+})
+Assert-Condition ($expectedValueSet.Count -eq 1) `
+    'actuation_proof_behavior_set_missing'
+$expectedPrimaryIds = @(
+    $expectedValueSet[0].primary_expected_behavior_ids |
+        Sort-Object -CaseSensitive)
+$expectedEvents = @($catalog.effective_behaviors | Where-Object {
+    $expectedPrimaryIds -contains [string]$_.effective_behavior_id
+} | ForEach-Object mechanism_event_ids | Sort-Object -Unique)
 Assert-Condition (
-    $positive[0].mechanism_event_id -ceq $expectedEvent
+    $expectedEvents -contains [string]$positive[0].mechanism_event_id
 ) 'actuation_proof_wrong_mechanism_event'
-if ($axisId -ceq 'application_send_batch_formation') {
+if (-not $isFactorProof -and
+    $axisId -ceq 'application_send_batch_formation') {
     Assert-Condition (
         [long]$positive[0].legal_work_count -gt 1 -and
         [long]$positive[0].applied_work_count -eq 1 -and
@@ -250,11 +295,33 @@ if ($axisId -ceq 'application_send_batch_formation') {
             [long]$positive[0].legal_work_count
     ) 'actuation_proof_activation_not_reached'
 }
-else {
+elseif (-not $isFactorProof) {
     Assert-Condition (
         [long]$positive[0].legal_work_count -gt 2 -and
         [long]$positive[0].applied_work_count -eq 2 -and
         [long]$positive[0].applied_work_count -le
+            [long]$positive[0].legal_work_count
+    ) 'actuation_proof_activation_not_reached'
+}
+elseif ($axisId -ceq 'oversized_write_admission_quantum') {
+    $expectedAppliedCount = if ($policyValue -ceq 'single_fragment') {
+        1
+    }
+    else {
+        2
+    }
+    Assert-Condition (
+        [long]$positive[0].legal_work_count -eq 2 -and
+        [long]$positive[0].applied_work_count -eq $expectedAppliedCount -and
+        [long]$positive[0].applied_work_count -le
+            [long]$positive[0].legal_work_count
+    ) 'actuation_proof_activation_not_reached'
+}
+elseif ($axisId -ceq 'queued_send_burst_budget') {
+    Assert-Condition (
+        [long]$positive[0].legal_work_count -gt 1 -and
+        [long]$positive[0].applied_work_count -eq 1 -and
+        [long]$positive[0].applied_work_count -lt
             [long]$positive[0].legal_work_count
     ) 'actuation_proof_activation_not_reached'
 }
@@ -439,9 +506,14 @@ foreach ($release in $releases) {
     }
 }
 $evidence = [pscustomobject][ordered]@{
-    schema_version = 'adaptive-runtime-operation-evidence-v3'
+    schema_version = if ($isFactorProof) {
+        'adaptive-runtime-operation-evidence-v4'
+    }
+    else {
+        'adaptive-runtime-operation-evidence-v3'
+    }
     document_id = "operation_evidence.$runId"
-    document_version = 3
+    document_version = if ($isFactorProof) { 4 } else { 3 }
     content_sha256 = '0' * 64
     behavior_catalog_ref = New-AdaptiveRuntimeDocumentRef $catalog
     plan_validation_ref = New-AdaptiveRuntimeDocumentRef $validation
@@ -579,7 +651,7 @@ $projectionParams = @{
     ArtifactInventoryPath = Join-Path $inputRoot 'artifact_inventory.json'
     ClassificationsPath = Join-Path $inputRoot 'classifications.json'
     BehaviorCatalogPath = Join-Path $RepositoryRoot `
-        'eng\adaptive-runtime\experiment-control\adaptive-runtime-effective-behavior-catalog-v2.json'
+        "eng\adaptive-runtime\experiment-control\$behaviorCatalogFile"
     ClassificationCompatibilityCatalogPath = Join-Path $RepositoryRoot `
         'eng\adaptive-runtime\experiment-control\adaptive-runtime-classification-compatibility-catalog-v1.json'
     SchemaRoot = Join-Path $RepositoryRoot 'schemas'
@@ -618,13 +690,7 @@ Assert-Condition (
     $positiveDerivation.Count -eq 1 -and
     $positiveDerivation[0].derivation_status -ceq 'matched'
 ) 'actuation_proof_behavior_derivation_failed'
-$expectedPrimary = if ($axisId -ceq
-    'application_send_batch_formation') {
-    'behavior.application_send_batch_formation.single_eligible.prefix'
-}
-else {
-    'behavior.buffer_copy_coalescing.memory_conservative.two_source_cap'
-}
+$expectedPrimary = [string]$expectedPrimaryIds[0]
 Assert-Condition (
     @($positiveDerivation[0].effective_behavior_ids) -contains
         $expectedPrimary
@@ -680,7 +746,7 @@ if ($axisId -ceq 'application_send_batch_formation') {
         'batch_inactive_operation_retained'
     )
 }
-else {
+elseif ($axisId -ceq 'buffer_copy_coalescing') {
     $assertions += @(
         'buffer_two_source_cap_applied',
         'buffer_prefix_not_widened',
@@ -688,15 +754,51 @@ else {
         'buffer_terminal_release_exact_once'
     )
 }
-$activationPredicate = if ($axisId -ceq
-    'application_send_batch_formation') {
-    'predicate.batch.distinct_only_when_multiple_eligible'
+elseif ($axisId -ceq 'oversized_write_admission_quantum') {
+    $assertions += @(
+        'oversized_logical_write_activation_reached',
+        'fragment_quantum_exact',
+        'continuation_count_exact',
+        'logical_write_completion_exact_once',
+        'ownership_and_hard_limits_authoritative',
+        'oversized_inactive_operation_retained')
+}
+elseif ($axisId -ceq 'queued_send_burst_budget') {
+    $assertions += @(
+        'queued_legal_budget_exceeded_one',
+        'queued_follow_on_work_retained',
+        'single_datagram_cap_changed_actor_turn',
+        'transport_authority_preserved',
+        'follow_on_wake_correct',
+        'queued_inactive_operation_retained')
+}
+$activationPredicate = switch ("$axisId=$policyValue") {
+    'application_send_batch_formation=single_eligible' {
+        'predicate.batch.distinct_only_when_multiple_eligible'
+    }
+    'buffer_copy_coalescing=memory_conservative' {
+        'predicate.buffer.lower_only'
+    }
+    'oversized_write_admission_quantum=single_fragment' {
+        'predicate.oversized_write.single_fragment_distinct'
+    }
+    'oversized_write_admission_quantum=bounded_multi_fragment' {
+        'predicate.oversized_write.bounded_multi_fragment_distinct'
+    }
+    'queued_send_burst_budget=single_datagram' {
+        'predicate.queued_send.legal_budget_gt_one'
+    }
+    default { throw 'actuation_proof_activation_predicate_missing' }
+}
+$proofSchemaVersion = if ($isFactorProof) {
+    'adaptive-runtime-actuation-proof-evidence-v2'
 }
 else {
-    'predicate.buffer.lower_only'
+    'adaptive-runtime-actuation-proof-evidence-v1'
 }
+$proofDocumentVersion = if ($isFactorProof) { 2 } else { 1 }
 $proof = [pscustomobject][ordered]@{
-    schema_version = 'adaptive-runtime-actuation-proof-evidence-v1'
+    schema_version = $proofSchemaVersion
     document_id = if (
         [string]::IsNullOrWhiteSpace($CandidateGenerationId)) {
         "proof_candidate.$axisId.$policyValue"
@@ -704,14 +806,14 @@ $proof = [pscustomobject][ordered]@{
     else {
         "proof_candidate.$axisId.$policyValue.$CandidateGenerationId"
     }
-    document_version = 1
+    document_version = $proofDocumentVersion
     content_sha256 = '0' * 64
     proof_candidate_id = if (
         [string]::IsNullOrWhiteSpace($CandidateGenerationId)) {
-        "proof_candidate.$axisId.$policyValue.v1"
+        "proof_candidate.$axisId.$policyValue.v$proofDocumentVersion"
     }
     else {
-        "proof_candidate.$axisId.$policyValue.v1.$CandidateGenerationId"
+        "proof_candidate.$axisId.$policyValue.v$proofDocumentVersion.$CandidateGenerationId"
     }
     axis_id = $axisId
     policy_value = $policyValue
@@ -745,7 +847,12 @@ $proof = [pscustomobject][ordered]@{
 }
 [void](Set-AdaptiveRuntimeDocumentHash $proof)
 Test-DocumentAgainstSchema $proof `
-    'adaptive-runtime-actuation-proof-evidence-v1.schema.json' `
+    (if ($isFactorProof) {
+        'adaptive-runtime-actuation-proof-evidence-v2.schema.json'
+    }
+    else {
+        'adaptive-runtime-actuation-proof-evidence-v1.schema.json'
+    }) `
     'actuation_proof_schema_invalid'
 Write-AdaptiveRuntimeCanonicalDocument $proof (
     Join-Path $OutputRoot 'proof-candidate.json')
