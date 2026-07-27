@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0113",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Implemented-factor onboarding and constrained planning",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0235 through REQ-QUIC-CRT-0240 with additive contract versions, mechanism-derived proof candidates, honest family boundaries, and exhaustive explicit planning.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-FACTOR-ONBOARDING",
+    "ARC-QUIC-CRT-0110",
+    "WI-QUIC-CRT-0114",
+    "VER-QUIC-CRT-0115"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0235",
+    "REQ-QUIC-CRT-0236",
+    "REQ-QUIC-CRT-0237",
+    "REQ-QUIC-CRT-0238",
+    "REQ-QUIC-CRT-0239",
+    "REQ-QUIC-CRT-0240"
+  ],
+  "key_components": [
+    "docs/design/adaptive-runtime-implemented-factor-onboarding.md",
+    "eng/adaptive-runtime/Update-AdaptiveRuntimeFactorOnboardingFixtures.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeFactorOnboarding.ps1",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-policy-axis-contracts-v2.json",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-effective-behavior-catalog-v3.json",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-policy-relationship-graph-v3.json",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-combination-constraint-catalog-v2.json",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-experiment-family-catalog-v3.json"
+  ],
+  "design_summary": "The additive planning line preserves all earlier artifacts and introduces generic versioned contracts for two audited implemented axes. Oversized admission, batch formation, and buffer coalescing form a directed admission/composition chain. Queued burst remains a separate actor-turn correctness family. Three nonlegacy values receive candidate-only proof chains. The 12-cell admission space and 2-cell burst space are explicit and exhaustive; unsupported multi-axis cells remain capability-blocked.",
+  "data_and_state_considerations": "Runtime policy mechanics remain unchanged. Evidence-only correlation uses fixed value fields and bounded operation identities. Catalog lookup, hashing, materialization, projection, and proof assembly remain offline. Workload and host identity are provenance only.",
+  "edge_cases_and_constraints": [
+    "Single-fragment and bounded-multi-fragment are context-dependent distinct values and must not collapse merely because both can use a one-fragment fallback.",
+    "Queued single-datagram is inactive when the legal budget is at most one or the queue drains after one emission.",
+    "Raw oversized fragments structurally select one batch write, so the same operation cannot be both oversized- and batch-distinct.",
+    "No new multi-axis execution capability is introduced."
+  ],
+  "alternatives_considered": [
+    "Mutate retained schemas in place; rejected because historical fixtures and evidence require stable version semantics.",
+    "Put all four send axes in one family; rejected because shared performance outcomes do not establish a direct mechanism relationship.",
+    "Build a covering-array generator; rejected because the reviewed spaces contain only 12 and 2 configured cells."
+  ],
+  "risks": [
+    "Candidate evidence must not be confused with externally reviewed proof.",
+    "Context-dependent legacy behavior signatures require activation-aware equivalence.",
+    "Future packet-flush onboarding must correct the queued-work branch of its delay predicate."
+  ],
+  "open_questions": [
+    "After external review, should the two new proof values be promoted before any family interaction capability is considered?",
+    "Should packet_flush_cadence and queued_send_burst_budget form the next reviewed two-axis family?"
+  ]
+}

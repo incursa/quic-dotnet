@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0115",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Implemented-factor onboarding verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-FACTOR-ONBOARDING",
+    "ARC-QUIC-CRT-0113",
+    "WI-QUIC-CRT-0114"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0235",
+    "REQ-QUIC-CRT-0236",
+    "REQ-QUIC-CRT-0237",
+    "REQ-QUIC-CRT-0238",
+    "REQ-QUIC-CRT-0239",
+    "REQ-QUIC-CRT-0240"
+  ],
+  "scope": "Verify the additive factor contracts, actual mechanism-derived candidate proof chains, family and relationship decisions, deterministic cell-space enumeration, blocked execution, retained compatibility, and correctness-only stopping boundary.",
+  "verification_method": "Schema, canonical hash, reference, semantic, materialization, projection, candidate-state, and deterministic-byte validation; focused runtime mechanism tests for oversized admission and queued burst; retained experiment-control regressions; focused Release builds; direct SpecTrace validation; and diff hygiene.",
+  "preconditions": [
+    "The accepted experiment-control and no-stable-rule chain is present.",
+    "All existing v1, v2, and v3 artifacts remain unchanged and valid.",
+    "Runtime policy mechanics, CI, performance measurement, and active behavior remain outside scope."
+  ],
+  "procedure": [
+    "Validate the canonical-state reconciliation and three-axis audit.",
+    "Validate all additive schemas and canonical catalogs with false authorization.",
+    "Recompute the three candidate proof chains from focused mechanism captures.",
+    "Recompute catalog-owned behavior and outcome materializations and projections.",
+    "Prove all candidate proofs remain unreviewed and no promotion patch is applied.",
+    "Validate the 12-cell and 2-cell exhaustive inventories and blocked multi-axis states.",
+    "Run retained regressions, focused mechanism tests, Release builds, SpecTrace checks, and git diff --check."
+  ],
+  "expected_result": "Exactly two implemented axes are canonically onboarded; three nonlegacy values have deterministic candidate-only proof chains; family placement follows mechanism relationships; all small spaces are explicitly enumerated; broader execution and measurement remain blocked; and prior artifacts continue to validate.",
+  "evidence": [
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeFactorOnboarding.ps1",
+    "docs/testing/adaptive-runtime-factor-onboarding-review-package-2026-07-26.md"
+  ],
+  "status_summary": "Passed when the focused commands and exact counts recorded in the review package are reproduced. Repository-wide unrelated SpecTrace baseline failures are retained rather than relabeled."
+}

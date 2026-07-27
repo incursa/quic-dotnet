@@ -1,0 +1,102 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-CRT-FACTOR-ONBOARDING",
+  "artifact_type": "specification",
+  "title": "Adaptive-runtime implemented-factor onboarding",
+  "domain": "quic",
+  "capability": "adaptive-runtime-factor-onboarding",
+  "status": "implemented",
+  "owner": "quic-maintainers",
+  "tags": [
+    "adaptive-runtime",
+    "experiment-control",
+    "correctness-only",
+    "factor-onboarding"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "SPEC-QUIC-CRT-SEND-COMPOSITION-PERFORMANCE",
+    "ARC-QUIC-CRT-0113",
+    "WI-QUIC-CRT-0114",
+    "VER-QUIC-CRT-0115"
+  ],
+  "purpose": "Onboard exactly two already-implemented adaptive-runtime factors into the versioned experiment-control contracts, produce externally reviewable correctness-only proof candidates, and enumerate their constrained planning space without performance measurement or broad multi-axis execution.",
+  "scope": "The specification applies only to oversized_write_admission_quantum and queued_send_burst_budget, while preserving the existing batch/buffer chain, the completed no_stable_rule result, all retained schema versions, and the one-behavior-distinct-axis runtime boundary.",
+  "requirements": [
+    {
+      "id": "REQ-QUIC-CRT-0235",
+      "title": "Reconcile completed send-composition state",
+      "statement": "The repository MUST distinguish reviewed actuation proof, correctness eligibility, completed holdout extension, and runtime-rule promotion; retain measurement_completed_no_stable_rule as a completed non-promoting result; and keep active behavior authorization and performance acceptance false.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0113"],
+        "implemented_by": ["WI-QUIC-CRT-0114"],
+        "verified_by": ["VER-QUIC-CRT-0115"],
+        "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeFactorOnboarding.ps1"],
+        "upstream_refs": ["docs/design/adaptive-runtime-implemented-factor-onboarding.md"]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0236",
+      "title": "Audit and select exactly two implemented factors",
+      "statement": "The checkpoint MUST audit oversized_write_admission_quantum, queued_send_burst_budget, and packet_flush_cadence from their production mechanism seams; select exactly the first two only when their authority and evidence path are bounded and truthful; classify relationships using the reviewed taxonomy; and defer the third axis with an exact reason rather than constructing an artificial family.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0113"],
+        "implemented_by": ["WI-QUIC-CRT-0114"],
+        "verified_by": ["VER-QUIC-CRT-0115"],
+        "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeFactorOnboarding.ps1"],
+        "upstream_refs": ["docs/design/adaptive-runtime-implemented-factor-onboarding.md"]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0237",
+      "title": "Additive canonical factor contracts",
+      "statement": "The repository MUST preserve every existing v1, v2, and v3 artifact and add versioned axis, behavior, relationship, combination-constraint, and experiment-family contracts that canonically represent the two selected axes, their legal values, activation and distinctness predicates, mechanism-derived behaviors, safety clamps, fixed-axis requirements, and false active and measurement authorization.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0113"],
+        "implemented_by": ["WI-QUIC-CRT-0114"],
+        "verified_by": ["VER-QUIC-CRT-0115"],
+        "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeFactorOnboarding.ps1"],
+        "upstream_refs": ["eng/adaptive-runtime/experiment-control"]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0238",
+      "title": "Produce independent candidate actuation evidence",
+      "statement": "Each newly onboarded behavior-distinct value MUST have an independent correctness-only candidate proof that binds an actual mechanism capture to plan, validation, manifest, run, host, binary, workload, exact operation evidence, catalog-owned behavior and outcome materializations, classifications, artifact inventory, metrics, and deterministic projection; proves activation, forcing, eligibility, application, safety fallback, shadow neutrality, rollback, and terminal correctness; and remains candidate with no passed review outcome.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0113"],
+        "implemented_by": ["WI-QUIC-CRT-0114"],
+        "verified_by": ["VER-QUIC-CRT-0115"],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0238.cs",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeFactorOnboarding.ps1"
+        ],
+        "upstream_refs": ["tests/fixtures/adaptive-runtime-factor-onboarding"]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0239",
+      "title": "Enumerate the constrained effective space",
+      "statement": "The planning artifacts MUST deterministically enumerate every configured cell, apply canonical legality, capability, structural-inactivity, safety-clamp, and equivalence classifications, preserve shared-fallback values as distinct when their primary behavior signatures differ, emit explicit planned_cells, and prefer exhaustive enumeration when the behavior-distinct correctness space is no larger than 64 cells.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0113"],
+        "implemented_by": ["WI-QUIC-CRT-0114"],
+        "verified_by": ["VER-QUIC-CRT-0115"],
+        "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeFactorOnboarding.ps1"],
+        "upstream_refs": ["eng/adaptive-runtime/experiment-control/adaptive-runtime-factor-cell-space-v1.json"]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0240",
+      "title": "Preserve correctness-only and review boundaries",
+      "statement": "The checkpoint MUST reject unknown or stale factor references, missing or ambiguous behavior derivation, unsupported tuples, false distinctness, self-approved proof candidates, active or measurement authorization, and arbitrary multi-axis execution; run focused regressions and builds; preserve unrelated failures; and finish without performance work, another-axis migration, CI modification, push, or active policy behavior.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0113"],
+        "implemented_by": ["WI-QUIC-CRT-0114"],
+        "verified_by": ["VER-QUIC-CRT-0115"],
+        "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeFactorOnboarding.ps1"],
+        "upstream_refs": ["docs/testing/adaptive-runtime-factor-onboarding-review-package-2026-07-26.md"]
+      }
+    }
+  ]
+}
