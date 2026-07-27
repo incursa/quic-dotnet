@@ -175,6 +175,8 @@ Copy-SchemaVariant `
             '"application_send_turn_planning", "oversized_write_admission_quantum", "queued_send_burst_budget"]'
         '"conservative"' =
             '"conservative", "single_fragment", "bounded_multi_fragment", "single_datagram"'
+        '"relationship_refs": { "type": "array", "minItems": 1,' =
+            '"relationship_refs": { "type": "array", "minItems": 0,'
     }
 
 Copy-SchemaVariant `
@@ -753,8 +755,7 @@ $families += @(
             'metric.correctness.transport_authority')
         predicate_refs = @(
             'predicate.queued_send.legal_budget_gt_one')
-        relationship_refs = @(
-            'edge.oversized_to_batch.supplies_work.v3')
+        relationship_refs = @()
         constraint_refs = @(
             'constraint.queued_send_burst.single_axis')
         history_reset_requirements = @(
@@ -879,14 +880,14 @@ $cellSpace = [pscustomobject][ordered]@{
             family_id = 'send_admission_composition'
             raw_configured_cell_count = 12
             after_illegal_removal_count = 12
-            after_capability_filter_count = 4
+            after_capability_filter_count = 5
             structurally_inactive_cell_count = 6
             safety_clamped_cell_count = 0
             expected_equivalence_group_count = 0
             behavior_distinct_effective_cell_count = 4
             verification_only_cell_count = 8
             measurement_blocked_cell_count = 12
-            correctness_executable_cell_count = 4
+            correctness_executable_cell_count = 5
             planned_cells = @($admissionCells)
         },
         [pscustomobject][ordered]@{

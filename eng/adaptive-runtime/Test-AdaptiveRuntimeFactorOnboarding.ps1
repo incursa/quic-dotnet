@@ -117,6 +117,10 @@ Assert-True ($familyIds -contains 'send_admission_composition') `
     'admission_family_missing'
 Assert-True ($familyIds -contains 'queued_send_burst_correctness') `
     'queued_family_missing'
+$queuedFamily = @($documents.family.experiment_families |
+    Where-Object family_id -eq 'queued_send_burst_correctness')[0]
+Assert-True (@($queuedFamily.relationship_refs).Count -eq 0) `
+    'single_axis_family_has_unrelated_relationship'
 $newReviewed = @($documents.family.reviewed_actuation_proofs |
     Where-Object axis_id -in @(
         'oversized_write_admission_quantum','queued_send_burst_budget'))
@@ -130,6 +134,16 @@ Assert-True ($admissionSpace.raw_configured_cell_count -eq 12) `
     'admission_raw_count'
 Assert-True (@($admissionSpace.planned_cells).Count -eq 12) `
     'admission_planned_count'
+$admissionExecutable = @($admissionSpace.planned_cells |
+    Where-Object classification -eq 'correctness_single_axis_candidate')
+Assert-True ($admissionExecutable.Count -eq 5) `
+    'admission_executable_count'
+Assert-True (
+    [int]$admissionSpace.after_capability_filter_count -eq
+        $admissionExecutable.Count -and
+    [int]$admissionSpace.correctness_executable_cell_count -eq
+        $admissionExecutable.Count
+) 'admission_executable_count_inconsistent'
 Assert-True ($queuedSpace.raw_configured_cell_count -eq 2) `
     'queued_raw_count'
 Assert-True (@($queuedSpace.planned_cells).Count -eq 2) `
