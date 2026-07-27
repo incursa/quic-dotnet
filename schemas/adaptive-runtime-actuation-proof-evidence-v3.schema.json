@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/incursa/quic-dotnet/schemas/adaptive-runtime-actuation-proof-evidence-v3.schema.json",
+  "title": "Adaptive runtime actuation proof evidence v3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "proof_candidate_id",
+    "axis_id",
+    "policy_value",
+    "activation_predicate_id",
+    "primary_behavior_signature",
+    "source_plan_ref",
+    "plan_validation_ref",
+    "compiled_manifest_ref",
+    "experiment_run_ref",
+    "mechanism_capture_ref",
+    "operation_evidence_ref",
+    "behavior_materialization_ref",
+    "outcome_materialization_ref",
+    "projection_ref",
+    "positive_actuation_operation",
+    "safety_fallback_operation",
+    "shadow_neutrality_operation",
+    "rollback_operation",
+    "terminal_release_evidence",
+    "correctness_assertions",
+    "failed_assertions",
+    "harness_id",
+    "source_commit",
+    "binary_cohort_ref",
+    "host_fingerprint_ref",
+    "review_status",
+    "review_outcome",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "adaptive-runtime-actuation-proof-evidence-v3"
+    },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 3 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "proof_candidate_id": { "$ref": "#/$defs/id" },
+    "axis_id": {
+      "enum": [
+        "oversized_write_admission_quantum",
+        "queued_send_burst_budget"
+      ]
+    },
+    "policy_value": {
+      "enum": [
+        "single_fragment",
+        "bounded_multi_fragment",
+        "single_datagram"
+      ]
+    },
+    "activation_predicate_id": { "$ref": "#/$defs/id" },
+    "primary_behavior_signature": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "source_plan_ref": { "$ref": "#/$defs/documentRef" },
+    "plan_validation_ref": { "$ref": "#/$defs/documentRef" },
+    "compiled_manifest_ref": { "$ref": "#/$defs/documentRef" },
+    "experiment_run_ref": { "$ref": "#/$defs/documentRef" },
+    "mechanism_capture_ref": { "$ref": "#/$defs/documentRef" },
+    "operation_evidence_ref": { "$ref": "#/$defs/documentRef" },
+    "behavior_materialization_ref": { "$ref": "#/$defs/documentRef" },
+    "outcome_materialization_ref": { "$ref": "#/$defs/documentRef" },
+    "projection_ref": { "$ref": "#/$defs/documentRef" },
+    "positive_actuation_operation": { "$ref": "#/$defs/operationIdentity" },
+    "safety_fallback_operation": { "$ref": "#/$defs/operationIdentity" },
+    "shadow_neutrality_operation": { "$ref": "#/$defs/operationIdentity" },
+    "rollback_operation": { "$ref": "#/$defs/operationIdentity" },
+    "terminal_release_evidence": {
+      "oneOf": [
+        { "$ref": "#/$defs/releaseIdentity" },
+        { "type": "null" }
+      ]
+    },
+    "correctness_assertions": {
+      "type": "array",
+      "minItems": 10,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "failed_assertions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "harness_id": { "$ref": "#/$defs/id" },
+    "source_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "binary_cohort_ref": { "$ref": "#/$defs/documentRef" },
+    "host_fingerprint_ref": { "$ref": "#/$defs/documentRef" },
+    "review_status": { "const": "candidate" },
+    "review_outcome": { "type": "null" },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/traceReferences" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "schema_version",
+        "document_version",
+        "content_sha256"
+      ],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "schema_version": { "$ref": "#/$defs/id" },
+        "document_version": { "$ref": "#/$defs/positiveInteger" },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "operationIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "connection_key",
+        "epoch_sequence",
+        "axis_id",
+        "decision_instance_id",
+        "operation_id"
+      ],
+      "properties": {
+        "run_id": { "$ref": "#/$defs/id" },
+        "connection_key": { "$ref": "#/$defs/id" },
+        "epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "axis_id": { "$ref": "#/$defs/id" },
+        "decision_instance_id": { "$ref": "#/$defs/positiveInteger" },
+        "operation_id": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "releaseIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "connection_key",
+        "operation_epoch_sequence",
+        "release_epoch_sequence",
+        "axis_id",
+        "decision_instance_id",
+        "operation_id"
+      ],
+      "properties": {
+        "run_id": { "$ref": "#/$defs/id" },
+        "connection_key": { "$ref": "#/$defs/id" },
+        "operation_epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "release_epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "axis_id": { "$ref": "#/$defs/id" },
+        "decision_instance_id": { "$ref": "#/$defs/positiveInteger" },
+        "operation_id": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "traceReferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "architecture_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "work_item_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "verification_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

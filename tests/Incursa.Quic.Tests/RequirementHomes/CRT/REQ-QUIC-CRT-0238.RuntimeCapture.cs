@@ -10,6 +10,12 @@ public sealed partial class REQ_QUIC_CRT_0238
 {
     private const string RuntimeCaptureRootVariable =
         "INCURSA_ADAPTIVE_RUNTIME_FACTOR_RUNTIME_CAPTURE_ROOT";
+    private const string RuntimeCaptureSourceCommitVariable =
+        "INCURSA_ADAPTIVE_RUNTIME_FACTOR_SOURCE_COMMIT";
+    private const string RuntimeCaptureBinaryHashVariable =
+        "INCURSA_ADAPTIVE_RUNTIME_FACTOR_BINARY_SHA256";
+    private const string RuntimeCaptureSessionVariable =
+        "INCURSA_ADAPTIVE_RUNTIME_FACTOR_CAPTURE_SESSION_ID";
 
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -52,7 +58,7 @@ public sealed partial class REQ_QUIC_CRT_0238
                 QuicOversizedWriteAdmissionObservationMode.ObserveOnly,
                 payloadLength: 5 * 32 * 1024,
                 cancelAfterFirstTransition: false,
-                forceValue: true);
+                forceValue: false);
         QuicOversizedWriteAdmissionEvidence inactive =
             await RunOversizedWriteAsync(
                 policyValue,
@@ -98,6 +104,15 @@ public sealed partial class REQ_QUIC_CRT_0238
         {
             schema_version = "adaptive-runtime-runtime-proof-sink-export-v1",
             export_id = $"runtime_sink_export.oversized_write.{OversizedValue(policyValue)}",
+            source_commit = GetCaptureBinding(
+                RuntimeCaptureSourceCommitVariable,
+                new string('0', 40)),
+            binary_sha256 = GetCaptureBinding(
+                RuntimeCaptureBinaryHashVariable,
+                new string('0', 64)),
+            capture_session_id = GetCaptureBinding(
+                RuntimeCaptureSessionVariable,
+                "runtime_capture.unbound"),
             axis_id = "oversized_write_admission_quantum",
             policy_value = OversizedValue(policyValue),
             source_kind = "quic_oversized_write_admission_evidence_sink",
@@ -203,10 +218,11 @@ public sealed partial class REQ_QUIC_CRT_0238
             capture_case = captureCase,
             logical_write_sequence = evidence.Observation.LogicalWriteSequence,
             runtime_request_id = evidence.RuntimeRequestId,
-            configured_value = OversizedDecisionValue(
-                evidence.Decision.HasForcedValue
-                    ? evidence.Decision.ForcedValue
-                    : QuicAdaptiveRuntimeStage1PolicyValue.LegacyCurrent),
+            decision_instance_id = evidence.Decision.DecisionSequence,
+            operation_id = evidence.RuntimeRequestId > 0
+                ? evidence.RuntimeRequestId
+                : checked((long)evidence.Observation.LogicalWriteSequence),
+            configured_value = "legacy_current",
             forced_value = evidence.Decision.HasForcedValue
                 ? OversizedDecisionValue(evidence.Decision.ForcedValue)
                 : null,
@@ -240,6 +256,9 @@ public sealed partial class REQ_QUIC_CRT_0238
             completion_count = evidence.CompletionCount,
             mechanism_event = evidence.MechanismEvent.ToString(),
             terminal_outcome = evidence.Outcome.ToString(),
+            observation_contract_version =
+                evidence.Observation.ObservationContractVersion,
+            rule_version = evidence.Observation.RuleVersion,
         };
 
     private static async Task<object> CaptureQueuedProofAsync()
@@ -275,7 +294,7 @@ public sealed partial class REQ_QUIC_CRT_0238
         QuicQueuedSendBurstEvidence rollback =
             await RunQueuedSendBurstAsync(
                 QuicQueuedSendBurstPolicyMode.LegacyCurrent,
-                forceValue: true,
+                forceValue: false,
                 queuedWriteCount: 48,
                 connectionSendLimit: 16_384,
                 triggerWithAck: true);
@@ -293,6 +312,15 @@ public sealed partial class REQ_QUIC_CRT_0238
         {
             schema_version = "adaptive-runtime-runtime-proof-sink-export-v1",
             export_id = "runtime_sink_export.queued_send.single_datagram",
+            source_commit = GetCaptureBinding(
+                RuntimeCaptureSourceCommitVariable,
+                new string('0', 40)),
+            binary_sha256 = GetCaptureBinding(
+                RuntimeCaptureBinaryHashVariable,
+                new string('0', 64)),
+            capture_session_id = GetCaptureBinding(
+                RuntimeCaptureSessionVariable,
+                "runtime_capture.unbound"),
             axis_id = "queued_send_burst_budget",
             policy_value = "single_datagram",
             source_kind = "quic_queued_send_burst_evidence_sink",
@@ -427,9 +455,9 @@ public sealed partial class REQ_QUIC_CRT_0238
         {
             capture_case = captureCase,
             actor_turn_sequence = evidence.Observation.TurnSequence,
-            configured_value = evidence.Decision.HasForcedValue
-                ? QueuedDecisionValue(evidence.Decision.ForcedValue)
-                : "legacy_current",
+            decision_instance_id = evidence.Decision.DecisionSequence,
+            operation_id = checked((long)evidence.Observation.TurnSequence),
+            configured_value = "legacy_current",
             forced_value = evidence.Decision.HasForcedValue
                 ? QueuedDecisionValue(evidence.Decision.ForcedValue)
                 : null,
@@ -448,12 +476,25 @@ public sealed partial class REQ_QUIC_CRT_0238
             emitted_datagrams = evidence.EmittedDatagrams,
             queued_writes_before = evidence.QueuedWritesBefore,
             queued_writes_after = evidence.QueuedWritesAfter,
+            queued_bytes_before = evidence.QueuedBytesBefore,
+            queued_bytes_after = evidence.QueuedBytesAfter,
             follow_on_wake_required = evidence.FollowOnWakeRequired,
             follow_on_wake_due_ticks = evidence.FollowOnWakeDueTicks,
             follow_on_wake_generation = evidence.FollowOnWakeGeneration,
             outcome = evidence.Outcome.ToString(),
             blocked_reason = evidence.BlockedReason.ToString(),
+            observation_contract_version =
+                evidence.Observation.ObservationContractVersion,
+            rule_version = evidence.Observation.RuleVersion,
         };
+
+    private static string GetCaptureBinding(
+        string variable,
+        string unboundValue)
+    {
+        string? value = Environment.GetEnvironmentVariable(variable);
+        return string.IsNullOrWhiteSpace(value) ? unboundValue : value;
+    }
 
     private static string OversizedValue(
         QuicOversizedWriteAdmissionPolicyMode value)

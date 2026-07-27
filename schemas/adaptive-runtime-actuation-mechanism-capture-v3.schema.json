@@ -1,0 +1,269 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/incursa/quic-dotnet/schemas/adaptive-runtime-actuation-mechanism-capture-v3.schema.json",
+  "title": "Adaptive runtime actuation mechanism capture v3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "axis_id",
+    "policy_value",
+    "harness_id",
+    "capture_mode",
+    "runtime_source",
+    "run_id",
+    "binary_cohort_id",
+    "forced_behavior_distinct_axis_count",
+    "operations",
+    "releases",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "adaptive-runtime-actuation-mechanism-capture-v3"
+    },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 3 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "axis_id": {
+      "enum": [
+        "oversized_write_admission_quantum",
+        "queued_send_burst_budget"
+      ]
+    },
+    "policy_value": {
+      "enum": [
+        "single_fragment",
+        "bounded_multi_fragment",
+        "single_datagram"
+      ]
+    },
+    "harness_id": { "$ref": "#/$defs/id" },
+    "capture_mode": { "const": "runtime_evidence_sink" },
+    "runtime_source": { "$ref": "#/$defs/runtimeSource" },
+    "run_id": { "$ref": "#/$defs/id" },
+    "binary_cohort_id": { "$ref": "#/$defs/id" },
+    "forced_behavior_distinct_axis_count": { "const": 1 },
+    "operations": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": { "$ref": "#/$defs/operation" }
+    },
+    "releases": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/traceReferences" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "nullableId": {
+      "oneOf": [
+        { "$ref": "#/$defs/id" },
+        { "type": "null" }
+      ]
+    },
+    "nonNegativeInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "runtimeSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "export_id",
+        "file_sha256",
+        "source_commit",
+        "binary_sha256",
+        "capture_session_id",
+        "source_kind"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "adaptive-runtime-runtime-proof-sink-export-v1"
+        },
+        "export_id": { "$ref": "#/$defs/id" },
+        "file_sha256": { "$ref": "#/$defs/hash" },
+        "source_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "binary_sha256": { "$ref": "#/$defs/hash" },
+        "capture_session_id": { "$ref": "#/$defs/id" },
+        "source_kind": {
+          "enum": [
+            "quic_oversized_write_admission_evidence_sink",
+            "quic_queued_send_burst_evidence_sink"
+          ]
+        }
+      }
+    },
+    "runtimeIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "export_id",
+        "record_index",
+        "decision_instance_id",
+        "operation_id"
+      ],
+      "properties": {
+        "export_id": { "$ref": "#/$defs/id" },
+        "record_index": { "$ref": "#/$defs/nonNegativeInteger" },
+        "decision_instance_id": { "$ref": "#/$defs/positiveInteger" },
+        "operation_id": { "$ref": "#/$defs/positiveInteger" }
+      }
+    },
+    "mechanismDetails": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "logical_write_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "maximum_fragment_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "initial_committed_fragments": { "$ref": "#/$defs/nonNegativeInteger" },
+        "initial_committed_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "committed_fragments": { "$ref": "#/$defs/nonNegativeInteger" },
+        "committed_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "continuation_count": { "$ref": "#/$defs/nonNegativeInteger" },
+        "continuation_posts": { "$ref": "#/$defs/nonNegativeInteger" },
+        "first_continuation_sequence": { "$ref": "#/$defs/nonNegativeInteger" },
+        "continuation_request_id": { "$ref": "#/$defs/nonNegativeInteger" },
+        "completion_count": { "$ref": "#/$defs/nonNegativeInteger" },
+        "queued_writes_before": { "$ref": "#/$defs/nonNegativeInteger" },
+        "queued_writes_after": { "$ref": "#/$defs/nonNegativeInteger" },
+        "follow_on_wake_required": { "type": "boolean" },
+        "follow_on_wake_due_ticks": {
+          "oneOf": [
+            { "type": "integer" },
+            { "type": "null" }
+          ]
+        },
+        "follow_on_wake_generation": { "$ref": "#/$defs/nonNegativeInteger" }
+      }
+    },
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "connection_key",
+        "epoch_sequence",
+        "decision_instance_id",
+        "operation_id",
+        "runtime_source_identity",
+        "configured_value",
+        "forced_value",
+        "shadow_recommendation",
+        "candidate_value",
+        "operation_eligibility_result",
+        "operation_eligibility_reason",
+        "applied_value",
+        "operation_kind",
+        "mechanism_event_id",
+        "mechanism_details",
+        "legal_work_count",
+        "applied_work_count",
+        "legal_bytes",
+        "applied_bytes",
+        "result",
+        "fallback_or_safety_reason",
+        "terminal_outcome",
+        "capture_case"
+      ],
+      "properties": {
+        "connection_key": { "$ref": "#/$defs/id" },
+        "epoch_sequence": { "$ref": "#/$defs/positiveInteger" },
+        "decision_instance_id": { "$ref": "#/$defs/positiveInteger" },
+        "operation_id": { "$ref": "#/$defs/positiveInteger" },
+        "runtime_source_identity": { "$ref": "#/$defs/runtimeIdentity" },
+        "configured_value": { "$ref": "#/$defs/id" },
+        "forced_value": { "$ref": "#/$defs/nullableId" },
+        "shadow_recommendation": { "$ref": "#/$defs/nullableId" },
+        "candidate_value": { "$ref": "#/$defs/id" },
+        "operation_eligibility_result": {
+          "enum": ["eligible", "ineligible", "clamped"]
+        },
+        "operation_eligibility_reason": { "$ref": "#/$defs/id" },
+        "applied_value": { "$ref": "#/$defs/id" },
+        "operation_kind": {
+          "enum": ["logical_write", "send_turn"]
+        },
+        "mechanism_event_id": { "$ref": "#/$defs/id" },
+        "mechanism_details": { "$ref": "#/$defs/mechanismDetails" },
+        "legal_work_count": { "$ref": "#/$defs/nonNegativeInteger" },
+        "applied_work_count": { "$ref": "#/$defs/nonNegativeInteger" },
+        "legal_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "applied_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "result": {
+          "enum": ["applied", "inactive", "fallback", "clamped"]
+        },
+        "fallback_or_safety_reason": { "$ref": "#/$defs/nullableId" },
+        "terminal_outcome": { "$ref": "#/$defs/id" },
+        "capture_case": {
+          "enum": [
+            "positive_actuation",
+            "structurally_inactive",
+            "safety_fallback",
+            "shadow_neutrality",
+            "rollback"
+          ]
+        }
+      }
+    },
+    "traceReferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "architecture_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "work_item_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "verification_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -2303,6 +2303,14 @@ internal sealed partial class QuicConnectionRuntime
 
                 if (hasQueuedSendBurstDecision)
                 {
+                    ulong queuedBytesAfter = applicationSendQueue.Count == 0
+                        ? 0
+                        : applicationSendQueue.CaptureBoundedTurnSnapshot(
+                            GetElapsedMicros(nowTicks),
+                            MaximumObservedApplicationSendTurnWrites,
+                            QuicApplicationSendPressureClassifier
+                                .MaximumObservedDistinctStreamCount)
+                            .OutboundBacklogBytes;
                     QuicConnectionTimerSchedule followOnWakeSchedule =
                         lifecycleTimerState.TimerState.ApplicationSendDelay;
                     bool followOnWakeRequired =
@@ -2317,6 +2325,8 @@ internal sealed partial class QuicConnectionRuntime
                         flushedDatagrams,
                         queuedWritesBefore,
                         applicationSendQueue.Count,
+                        queuedSendBurstObservation.OutboundBacklogBytes,
+                        queuedBytesAfter,
                         followOnWakeRequired,
                         followOnWakeSchedule.DueTicks,
                         followOnWakeSchedule.Generation,
@@ -2565,6 +2575,8 @@ internal sealed partial class QuicConnectionRuntime
         int emittedDatagrams,
         int queuedWritesBefore,
         int queuedWritesAfter,
+        ulong queuedBytesBefore,
+        ulong queuedBytesAfter,
         bool followOnWakeRequired,
         long? followOnWakeDueTicks,
         ulong followOnWakeGeneration,
@@ -2585,6 +2597,8 @@ internal sealed partial class QuicConnectionRuntime
             emittedDatagrams,
             queuedWritesBefore,
             queuedWritesAfter,
+            queuedBytesBefore,
+            queuedBytesAfter,
             followOnWakeRequired,
             followOnWakeDueTicks,
             followOnWakeGeneration,

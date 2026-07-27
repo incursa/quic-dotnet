@@ -4,10 +4,11 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)][string] $BinaryPath,
+    [Parameter(Mandatory = $true)][string] $RuntimeCaptureRoot,
     [string] $RepositoryRoot =
         (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path,
     [string] $OutputRoot = (Join-Path $RepositoryRoot `
-        'tests\fixtures\adaptive-runtime-factor-onboarding\proofs')
+        'tests\fixtures\adaptive-runtime-runtime-proof-capture\proofs')
 )
 
 Set-StrictMode -Version Latest
@@ -30,73 +31,273 @@ $trace = [pscustomobject][ordered]@{
     verification_ids = @('VER-QUIC-CRT-0115')
 }
 
-function New-CaptureOperation {
-    param(
-        [string] $Case,
-        [string] $Connection,
-        [long] $Identity,
-        [string] $Configured,
-        [AllowNull()][object] $Forced,
-        [AllowNull()][object] $Shadow,
-        [string] $Candidate,
-        [string] $Eligibility,
-        [string] $EligibilityReason,
-        [string] $Applied,
-        [string] $OperationKind,
-        [string] $MechanismEvent,
-        [long] $LegalCount,
-        [long] $AppliedCount,
-        [long] $LegalBytes,
-        [long] $AppliedBytes,
-        [string] $Result,
-        [AllowNull()][object] $FallbackReason,
-        [string] $TerminalOutcome
-    )
-    return [pscustomobject][ordered]@{
-        connection_key = $Connection
-        epoch_sequence = 1
-        decision_instance_id = $Identity
-        operation_id = $Identity
-        configured_value = $Configured
-        forced_value = $Forced
-        shadow_recommendation = $Shadow
-        candidate_value = $Candidate
-        operation_eligibility_result = $Eligibility
-        operation_eligibility_reason = $EligibilityReason
-        applied_value = $Applied
-        operation_kind = $OperationKind
-        mechanism_event_id = $MechanismEvent
-        legal_work_count = $LegalCount
-        applied_work_count = $AppliedCount
-        legal_bytes = $LegalBytes
-        applied_bytes = $AppliedBytes
-        result = $Result
-        fallback_or_safety_reason = $FallbackReason
-        terminal_outcome = $TerminalOutcome
-        capture_case = $Case
+function Assert-CaptureCondition {
+    param([bool] $Condition, [string] $Code)
+    if (-not $Condition) {
+        throw $Code
     }
 }
 
-function New-Capture {
+function Test-RuntimeExportSchema {
+    param([object] $Export)
+    $schemaPath = Join-Path $RepositoryRoot `
+        'schemas\adaptive-runtime-runtime-proof-sink-export-v1.schema.json'
+    $errors = @()
+    $valid = ($Export | ConvertTo-Json -Depth 100 -Compress) |
+        Test-Json -SchemaFile $schemaPath -ErrorAction SilentlyContinue `
+            -ErrorVariable errors
+    if (-not $valid) {
+        $detail = @($errors | ForEach-Object Exception |
+            ForEach-Object Message) -join '; '
+        throw "runtime_capture_schema_invalid:$detail"
+    }
+}
+
+function Read-RuntimeExport {
     param(
-        [string] $Axis,
-        [string] $Value,
-        [string] $Slug,
-        [object[]] $Operations
+        [string] $Path,
+        [string] $ExpectedAxis,
+        [string] $ExpectedValue,
+        [string] $ExpectedSourceKind,
+        [string] $ExpectedCommit,
+        [string] $ExpectedBinaryHash
     )
+    Assert-CaptureCondition (Test-Path -LiteralPath $Path) `
+        'runtime_capture_source_missing'
+    $export = Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
+    Test-RuntimeExportSchema $export
+    Assert-CaptureCondition (
+        [string]$export.axis_id -ceq $ExpectedAxis -and
+        [string]$export.policy_value -ceq $ExpectedValue -and
+        [string]$export.source_kind -ceq $ExpectedSourceKind
+    ) 'runtime_capture_source_identity_mismatch'
+    Assert-CaptureCondition (
+        [string]$export.source_commit -ceq $ExpectedCommit
+    ) 'runtime_capture_source_commit_mismatch'
+    Assert-CaptureCondition (
+        [string]$export.binary_sha256 -ceq $ExpectedBinaryHash
+    ) 'runtime_capture_binary_hash_mismatch'
+    $caseNames = @(
+        'positive_actuation',
+        'structurally_inactive',
+        'safety_fallback',
+        'shadow_neutrality',
+        'rollback')
+    foreach ($caseName in $caseNames) {
+        Assert-CaptureCondition (
+            @($export.records | Where-Object capture_case -ceq $caseName).
+                Count -eq 1
+        ) 'runtime_capture_case_missing_or_duplicate'
+    }
+    $identities = @($export.records | ForEach-Object {
+        "$($_.capture_case)|$($_.decision_instance_id)|$($_.operation_id)"
+    })
+    Assert-CaptureCondition (
+        @($identities | Sort-Object -Unique).Count -eq $identities.Count
+    ) 'runtime_capture_operation_identity_duplicate'
+    return [pscustomobject][ordered]@{
+        Path = (Resolve-Path -LiteralPath $Path).Path
+        FileSha256 = (Get-FileHash -LiteralPath $Path -Algorithm SHA256).
+            Hash.ToLowerInvariant()
+        Document = $export
+    }
+}
+
+function Get-OversizedMechanismEventId {
+    param([object] $Record)
+    if ([long]$Record.initial_committed_fragments -eq 1) {
+        return 'mechanism_event.oversized_write.one_fragment_per_turn'
+    }
+    if ([long]$Record.initial_committed_fragments -eq 2) {
+        return 'mechanism_event.oversized_write.bounded_two_fragments_per_turn'
+    }
+    throw 'runtime_capture_oversized_mechanism_unclassifiable'
+}
+
+function Convert-OversizedRecord {
+    param(
+        [object] $Record,
+        [object] $Export,
+        [int] $RecordIndex,
+        [string] $Slug
+    )
+    $caseName = [string]$Record.capture_case
+    $result = switch ($caseName) {
+        'structurally_inactive' { 'inactive' }
+        'safety_fallback' { 'fallback' }
+        default { 'applied' }
+    }
+    $eligibilityReason = switch ($caseName) {
+        'structurally_inactive' { 'structurally_inactive' }
+        'safety_fallback' { 'canceled_after_initial_commit' }
+        'shadow_neutrality' { 'shadow_only' }
+        default { 'eligible' }
+    }
+    [pscustomobject][ordered]@{
+        connection_key = "connection.$Slug.$($caseName.Replace('_','-'))"
+        epoch_sequence = 1
+        decision_instance_id = [long]$Record.decision_instance_id
+        operation_id = [long]$Record.operation_id
+        runtime_source_identity = [pscustomobject][ordered]@{
+            export_id = [string]$Export.export_id
+            record_index = $RecordIndex
+            decision_instance_id = [long]$Record.decision_instance_id
+            operation_id = [long]$Record.operation_id
+        }
+        configured_value = [string]$Record.configured_value
+        forced_value = $Record.forced_value
+        shadow_recommendation = $Record.shadow_recommendation
+        candidate_value = [string]$Record.candidate_value
+        operation_eligibility_result = 'eligible'
+        operation_eligibility_reason = $eligibilityReason
+        applied_value = [string]$Record.applied_value
+        operation_kind = 'logical_write'
+        mechanism_event_id = Get-OversizedMechanismEventId $Record
+        mechanism_details = [pscustomobject][ordered]@{
+            logical_write_bytes = [long]$Record.logical_write_bytes
+            maximum_fragment_bytes = [long]$Record.maximum_fragment_bytes
+            initial_committed_fragments =
+                [long]$Record.initial_committed_fragments
+            initial_committed_bytes = [long]$Record.initial_committed_bytes
+            committed_fragments = [long]$Record.committed_fragments
+            committed_bytes = [long]$Record.committed_bytes
+            continuation_count = [long]$Record.continuation_count
+            continuation_posts = [long]$Record.continuation_posts
+            first_continuation_sequence =
+                [long]$Record.first_continuation_sequence
+            continuation_request_id =
+                [long]$Record.continuation_request_id
+            completion_count = [long]$Record.completion_count
+        }
+        legal_work_count = [long]$Record.legal_fragment_count
+        applied_work_count = [long]$Record.initial_committed_fragments
+        legal_bytes = [long]$Record.logical_write_bytes
+        applied_bytes = [long]$Record.initial_committed_bytes
+        result = $result
+        fallback_or_safety_reason = if ($caseName -ceq 'safety_fallback') {
+            ([string]$Record.terminal_outcome).ToLowerInvariant()
+        } elseif ($caseName -ceq 'structurally_inactive') {
+            'one_fragment_fit'
+        } else { $null }
+        terminal_outcome =
+            ([string]$Record.terminal_outcome).ToLowerInvariant()
+        capture_case = $caseName
+    }
+}
+
+function Get-QueuedMechanismEventId {
+    param([object] $Record)
+    if ([long]$Record.legal_maximum_datagrams -gt 1 -and
+        [long]$Record.applied_maximum_datagrams -eq 1) {
+        return 'mechanism_event.queued_send.single_datagram_cap'
+    }
+    return 'mechanism_event.queued_send.legal_actor_turn_budget'
+}
+
+function Convert-QueuedRecord {
+    param(
+        [object] $Record,
+        [object] $Export,
+        [int] $RecordIndex,
+        [string] $Slug
+    )
+    $caseName = [string]$Record.capture_case
+    $result = switch ($caseName) {
+        'structurally_inactive' { 'inactive' }
+        'safety_fallback' { 'clamped' }
+        default { 'applied' }
+    }
+    $eligibility = if ($caseName -ceq 'safety_fallback') {
+        'clamped'
+    } else { 'eligible' }
+    $eligibilityReason = switch ($caseName) {
+        'structurally_inactive' { 'structurally_inactive' }
+        'safety_fallback' { 'legal_budget_clamp' }
+        'shadow_neutrality' { 'shadow_only' }
+        default { 'eligible' }
+    }
+    [pscustomobject][ordered]@{
+        connection_key = "connection.$Slug.$($caseName.Replace('_','-'))"
+        epoch_sequence = 1
+        decision_instance_id = [long]$Record.decision_instance_id
+        operation_id = [long]$Record.operation_id
+        runtime_source_identity = [pscustomobject][ordered]@{
+            export_id = [string]$Export.export_id
+            record_index = $RecordIndex
+            decision_instance_id = [long]$Record.decision_instance_id
+            operation_id = [long]$Record.operation_id
+        }
+        configured_value = [string]$Record.configured_value
+        forced_value = $Record.forced_value
+        shadow_recommendation = $Record.shadow_recommendation
+        candidate_value = [string]$Record.candidate_value
+        operation_eligibility_result = $eligibility
+        operation_eligibility_reason = $eligibilityReason
+        applied_value = [string]$Record.applied_value
+        operation_kind = 'send_turn'
+        mechanism_event_id = Get-QueuedMechanismEventId $Record
+        mechanism_details = [pscustomobject][ordered]@{
+            queued_writes_before = [long]$Record.queued_writes_before
+            queued_writes_after = [long]$Record.queued_writes_after
+            follow_on_wake_required = [bool]$Record.follow_on_wake_required
+            follow_on_wake_due_ticks = $Record.follow_on_wake_due_ticks
+            follow_on_wake_generation =
+                [long]$Record.follow_on_wake_generation
+        }
+        legal_work_count = [long]$Record.legal_maximum_datagrams
+        applied_work_count = [long]$Record.applied_maximum_datagrams
+        legal_bytes = [long]$Record.queued_bytes_before
+        applied_bytes = [long]$Record.queued_bytes_before -
+            [long]$Record.queued_bytes_after
+        result = $result
+        fallback_or_safety_reason = if ($caseName -ceq 'safety_fallback') {
+            'legal_budget_clamp'
+        } elseif ($caseName -ceq 'structurally_inactive') {
+            'legal_budget_one'
+        } else { $null }
+        terminal_outcome = ([string]$Record.outcome).ToLowerInvariant()
+        capture_case = $caseName
+    }
+}
+
+function New-CaptureFromRuntimeExport {
+    param(
+        [object] $RuntimeExport,
+        [string] $Slug
+    )
+    $source = $RuntimeExport.Document
+    $operations = for ($index = 0; $index -lt $source.records.Count; $index++) {
+        if ([string]$source.axis_id -ceq
+            'oversized_write_admission_quantum') {
+            Convert-OversizedRecord $source.records[$index] $source `
+                $index $Slug
+        }
+        else {
+            Convert-QueuedRecord $source.records[$index] $source $index $Slug
+        }
+    }
     $capture = [pscustomobject][ordered]@{
-        schema_version = 'adaptive-runtime-actuation-mechanism-capture-v2'
+        schema_version = 'adaptive-runtime-actuation-mechanism-capture-v3'
         document_id = "mechanism_capture.$Slug"
-        document_version = 2
+        document_version = 3
         content_sha256 = '0' * 64
-        axis_id = $Axis
-        policy_value = $Value
-        harness_id = "incursa.quic.tests.req-quic-crt-0238.$Slug"
-        capture_mode = 'focused_correctness_mechanism_harness'
-        run_id = "run.factor_onboarding.$Slug"
-        binary_cohort_id = 'binary.factor_onboarding.correctness'
+        axis_id = [string]$source.axis_id
+        policy_value = [string]$source.policy_value
+        harness_id = 'incursa.quic.tests.req-quic-crt-0238.runtime-proof-capture'
+        capture_mode = 'runtime_evidence_sink'
+        runtime_source = [pscustomobject][ordered]@{
+            schema_version = [string]$source.schema_version
+            export_id = [string]$source.export_id
+            file_sha256 = [string]$RuntimeExport.FileSha256
+            source_commit = [string]$source.source_commit
+            binary_sha256 = [string]$source.binary_sha256
+            capture_session_id = [string]$source.capture_session_id
+            source_kind = [string]$source.source_kind
+        }
+        run_id = "run.runtime_proof_capture.$Slug"
+        binary_cohort_id = 'binary.runtime_proof_capture.correctness'
         forced_behavior_distinct_axis_count = 1
-        operations = @($Operations)
+        operations = @($operations)
         releases = @()
         active_behavior_authorization = $false
         performance_acceptance_authorization = $false
@@ -106,220 +307,77 @@ function New-Capture {
     return $capture
 }
 
-function New-OversizedCapture {
-    param(
-        [ValidateSet('single_fragment','bounded_multi_fragment')]
-        [string] $Value
-    )
-    $slug = "oversized_write.$Value"
-    $positiveApplied = if ($Value -ceq 'single_fragment') { 1 } else { 2 }
-    $positiveEvent = if ($Value -ceq 'single_fragment') {
-        'mechanism_event.oversized_write.one_fragment_per_turn'
-    }
-    else {
-        'mechanism_event.oversized_write.bounded_two_fragments_per_turn'
-    }
-    $rollbackApplied = if ($Value -ceq 'single_fragment') { 2 } else { 1 }
-    $rollbackEvent = if ($rollbackApplied -eq 2) {
-        'mechanism_event.oversized_write.bounded_two_fragments_per_turn'
-    }
-    else {
-        'mechanism_event.oversized_write.one_fragment_per_turn'
-    }
-    $fallbackApplied = if ($Value -ceq 'bounded_multi_fragment') { 1 } else { 0 }
-    $fallbackValue = if ($Value -ceq 'bounded_multi_fragment') {
-        'single_fragment'
-    }
-    else {
-        'single_fragment'
-    }
-    $fallbackEvent = if ($fallbackApplied -eq 1) {
-        'mechanism_event.oversized_write.one_fragment_per_turn'
-    }
-    else {
-        'mechanism_event.oversized_write.no_dispatch'
-    }
-    $operations = @(
-        (New-CaptureOperation -Case positive_actuation `
-            -Connection "connection.$slug.positive" -Identity 101 `
-            -Configured legacy_current -Forced $Value -Shadow $null `
-            -Candidate $Value -Eligibility eligible `
-            -EligibilityReason eligible -Applied $Value `
-            -OperationKind logical_write -MechanismEvent $positiveEvent `
-            -LegalCount 2 -AppliedCount $positiveApplied `
-            -LegalBytes 65536 -AppliedBytes (32768 * $positiveApplied) `
-            -Result applied -FallbackReason $null `
-            -TerminalOutcome logical_write_completed),
-        (New-CaptureOperation -Case structurally_inactive `
-            -Connection "connection.$slug.inactive" -Identity 102 `
-            -Configured legacy_current -Forced $Value -Shadow $null `
-            -Candidate $Value -Eligibility eligible `
-            -EligibilityReason structurally_inactive `
-            -Applied $Value -OperationKind logical_write `
-            -MechanismEvent $positiveEvent -LegalCount 1 -AppliedCount 1 `
-            -LegalBytes 16384 -AppliedBytes 16384 -Result inactive `
-            -FallbackReason one_fragment_fit `
-            -TerminalOutcome logical_write_completed),
-        (New-CaptureOperation -Case safety_fallback `
-            -Connection "connection.$slug.fallback" -Identity 103 `
-            -Configured legacy_current -Forced $Value -Shadow $null `
-            -Candidate $Value -Eligibility clamped `
-            -EligibilityReason terminal_guard -Applied $fallbackValue `
-            -OperationKind logical_write -MechanismEvent $fallbackEvent `
-            -LegalCount 2 -AppliedCount $fallbackApplied `
-            -LegalBytes 65536 -AppliedBytes (32768 * $fallbackApplied) `
-            -Result fallback -FallbackReason terminal_guard `
-            -TerminalOutcome terminal),
-        (New-CaptureOperation -Case shadow_neutrality `
-            -Connection "connection.$slug.shadow" -Identity 104 `
-            -Configured legacy_current -Forced $null -Shadow single_fragment `
-            -Candidate single_fragment -Eligibility eligible `
-            -EligibilityReason shadow_only -Applied legacy_current `
-            -OperationKind logical_write -MechanismEvent $rollbackEvent `
-            -LegalCount 2 -AppliedCount $rollbackApplied `
-            -LegalBytes 65536 -AppliedBytes (32768 * $rollbackApplied) `
-            -Result applied -FallbackReason $null `
-            -TerminalOutcome logical_write_completed),
-        (New-CaptureOperation -Case rollback `
-            -Connection "connection.$slug.rollback" -Identity 105 `
-            -Configured legacy_current -Forced $null -Shadow $null `
-            -Candidate legacy_current -Eligibility eligible `
-            -EligibilityReason eligible -Applied legacy_current `
-            -OperationKind logical_write -MechanismEvent $rollbackEvent `
-            -LegalCount 2 -AppliedCount $rollbackApplied `
-            -LegalBytes 65536 -AppliedBytes (32768 * $rollbackApplied) `
-            -Result applied -FallbackReason $null `
-            -TerminalOutcome logical_write_completed)
-    )
-    return New-Capture `
-        -Axis oversized_write_admission_quantum `
-        -Value $Value -Slug $slug -Operations $operations
-}
-
-function New-QueuedCapture {
-    $slug = 'queued_send.single_datagram'
-    $operations = @(
-        (New-CaptureOperation -Case positive_actuation `
-            -Connection "connection.$slug.positive" -Identity 201 `
-            -Configured legacy_current -Forced single_datagram -Shadow $null `
-            -Candidate single_datagram -Eligibility eligible `
-            -EligibilityReason eligible -Applied single_datagram `
-            -OperationKind send_turn `
-            -MechanismEvent mechanism_event.queued_send.single_datagram_cap `
-            -LegalCount 8 -AppliedCount 1 -LegalBytes 11840 `
-            -AppliedBytes 1480 -Result applied -FallbackReason $null `
-            -TerminalOutcome burst_limit_reached),
-        (New-CaptureOperation -Case structurally_inactive `
-            -Connection "connection.$slug.inactive" -Identity 202 `
-            -Configured legacy_current -Forced single_datagram -Shadow $null `
-            -Candidate single_datagram -Eligibility eligible `
-            -EligibilityReason structurally_inactive `
-            -Applied single_datagram -OperationKind send_turn `
-            -MechanismEvent mechanism_event.queued_send.single_datagram_cap `
-            -LegalCount 1 -AppliedCount 1 -LegalBytes 1480 `
-            -AppliedBytes 1480 -Result inactive `
-            -FallbackReason legal_budget_one -TerminalOutcome queue_drained),
-        (New-CaptureOperation -Case safety_fallback `
-            -Connection "connection.$slug.fallback" -Identity 203 `
-            -Configured legacy_current -Forced single_datagram -Shadow $null `
-            -Candidate single_datagram -Eligibility ineligible `
-            -EligibilityReason disposal_guard -Applied legacy_current `
-            -OperationKind send_turn `
-            -MechanismEvent mechanism_event.queued_send.no_send `
-            -LegalCount 0 -AppliedCount 0 -LegalBytes 0 -AppliedBytes 0 `
-            -Result fallback -FallbackReason disposal_guard `
-            -TerminalOutcome disposed),
-        (New-CaptureOperation -Case shadow_neutrality `
-            -Connection "connection.$slug.shadow" -Identity 204 `
-            -Configured legacy_current -Forced $null -Shadow legacy_current `
-            -Candidate legacy_current -Eligibility eligible `
-            -EligibilityReason shadow_only -Applied legacy_current `
-            -OperationKind send_turn `
-            -MechanismEvent mechanism_event.queued_send.legal_actor_turn_budget `
-            -LegalCount 8 -AppliedCount 8 -LegalBytes 11840 `
-            -AppliedBytes 11840 -Result applied -FallbackReason $null `
-            -TerminalOutcome queue_drained),
-        (New-CaptureOperation -Case rollback `
-            -Connection "connection.$slug.rollback" -Identity 205 `
-            -Configured legacy_current -Forced $null -Shadow $null `
-            -Candidate legacy_current -Eligibility eligible `
-            -EligibilityReason eligible -Applied legacy_current `
-            -OperationKind send_turn `
-            -MechanismEvent mechanism_event.queued_send.legal_actor_turn_budget `
-            -LegalCount 8 -AppliedCount 8 -LegalBytes 11840 `
-            -AppliedBytes 11840 -Result applied -FallbackReason $null `
-            -TerminalOutcome queue_drained)
-    )
-    return New-Capture -Axis queued_send_burst_budget `
-        -Value single_datagram -Slug $slug -Operations $operations
-}
+$resolvedBinary = (Resolve-Path -LiteralPath $BinaryPath).Path
+$binaryHash = (Get-FileHash -LiteralPath $resolvedBinary -Algorithm SHA256).
+    Hash.ToLowerInvariant()
+$sourceCommit = (& git -C $RepositoryRoot rev-parse HEAD).Trim()
+Assert-CaptureCondition ($LASTEXITCODE -eq 0) `
+    'runtime_capture_source_commit_unresolved'
 
 $specs = @(
     [pscustomobject]@{
         Slug = 'oversized-single'
         Plan = 'adaptive-runtime-oversized-write-single_fragment-actuation-plan-v1.json'
-        Capture = New-OversizedCapture single_fragment
+        File = 'oversized-single.runtime.json'
+        Axis = 'oversized_write_admission_quantum'
+        Value = 'single_fragment'
+        SourceKind = 'quic_oversized_write_admission_evidence_sink'
     },
     [pscustomobject]@{
         Slug = 'oversized-bounded'
         Plan = 'adaptive-runtime-oversized-write-bounded_multi_fragment-actuation-plan-v1.json'
-        Capture = New-OversizedCapture bounded_multi_fragment
+        File = 'oversized-bounded.runtime.json'
+        Axis = 'oversized_write_admission_quantum'
+        Value = 'bounded_multi_fragment'
+        SourceKind = 'quic_oversized_write_admission_evidence_sink'
     },
     [pscustomobject]@{
         Slug = 'queued-single'
         Plan = 'adaptive-runtime-queued-send-actuation-plan-v1.json'
-        Capture = New-QueuedCapture
+        File = 'queued-single.runtime.json'
+        Axis = 'queued_send_burst_budget'
+        Value = 'single_datagram'
+        SourceKind = 'quic_queued_send_burst_evidence_sink'
     }
 )
 
-$catalogRoot = Join-Path $RepositoryRoot `
-    'eng\adaptive-runtime\experiment-control'
-$compiler = Join-Path $PSScriptRoot `
-    'Compile-AdaptiveRuntimeExperimentPlan.ps1'
+$catalogRoot = Join-Path $RepositoryRoot 'eng\adaptive-runtime\experiment-control'
+$compiler = Join-Path $PSScriptRoot 'Compile-AdaptiveRuntimeExperimentPlan.ps1'
 $manifestCompiler = Join-Path $PSScriptRoot `
     'New-AdaptiveRuntimeCompiledExecutionManifest.ps1'
 $proofCompiler = Join-Path $PSScriptRoot `
     'New-AdaptiveRuntimeIndependentActuationProof.ps1'
-
 $temporaryRoot = Join-Path ([IO.Path]::GetTempPath()) (
-    'adaptive-runtime-factor-proofs-' + [guid]::NewGuid().ToString('N'))
+    'adaptive-runtime-runtime-proofs-' + [guid]::NewGuid().ToString('N'))
 [void](New-Item -ItemType Directory -Path $temporaryRoot)
 try {
     foreach ($spec in $specs) {
+        $runtimeExport = Read-RuntimeExport `
+            (Join-Path $RuntimeCaptureRoot $spec.File) `
+            $spec.Axis $spec.Value $spec.SourceKind $sourceCommit $binaryHash
         $sourceRoot = Join-Path $temporaryRoot $spec.Slug
         [void](New-Item -ItemType Directory -Path $sourceRoot)
         $planPath = Join-Path $catalogRoot $spec.Plan
         $validationPath = Join-Path $sourceRoot 'plan-validation.json'
         $manifestPath = Join-Path $sourceRoot 'compiled-manifest.json'
         $capturePath = Join-Path $sourceRoot 'mechanism-capture.json'
-
         & $compiler -PlanPath $planPath -CatalogContractVersion v3 `
             -OutputPath $validationPath | Out-Null
         & $manifestCompiler -PlanPath $planPath `
-            -ValidationPath $validationPath -BinaryPath $BinaryPath `
-            -RunnerPath $compiler -RunnerVersion 'factor-onboarding-v1' `
+            -ValidationPath $validationPath -BinaryPath $resolvedBinary `
+            -RunnerPath $compiler -RunnerVersion 'runtime-proof-capture-v1' `
             -OutputPath $manifestPath `
             -ResolvedCapability @(
                 'adaptive_runtime_internal_forced_mode=available',
                 'single_behavior_distinct_axis_only=available') | Out-Null
-        Write-AdaptiveRuntimeCanonicalDocument $spec.Capture $capturePath
-        $spec | Add-Member -NotePropertyName SourceRoot `
-            -NotePropertyValue $sourceRoot
-    }
-
-    foreach ($spec in $specs) {
+        $capture = New-CaptureFromRuntimeExport $runtimeExport $spec.Slug
+        Write-AdaptiveRuntimeCanonicalDocument $capture $capturePath
         $proofRoot = Join-Path $OutputRoot $spec.Slug
-        $planPath = Join-Path $catalogRoot $spec.Plan
-        & $proofCompiler `
-            -MechanismCapturePath (
-                Join-Path $spec.SourceRoot 'mechanism-capture.json') `
-            -PlanPath $planPath `
-            -ValidationPath (
-                Join-Path $spec.SourceRoot 'plan-validation.json') `
-            -ManifestPath (
-                Join-Path $spec.SourceRoot 'compiled-manifest.json') `
-            -OutputRoot $proofRoot `
-            -CandidateGenerationId 'factor-onboarding-20260726' | Out-Null
+        & $proofCompiler -MechanismCapturePath $capturePath `
+            -PlanPath $planPath -ValidationPath $validationPath `
+            -ManifestPath $manifestPath -OutputRoot $proofRoot `
+            -CandidateGenerationId 'runtime-proof-capture-20260727' |
+            Out-Null
     }
 }
 finally {
@@ -327,8 +385,10 @@ finally {
 }
 
 [pscustomobject][ordered]@{
-    result = 'generated'
+    result = 'generated_from_runtime_evidence_sinks'
     proof_candidate_count = $specs.Count
+    source_commit = $sourceCommit
+    binary_sha256 = $binaryHash
     output_root = $OutputRoot
     performance_measurement_ran = $false
     active_behavior_authorized = $false

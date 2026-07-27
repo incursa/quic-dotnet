@@ -164,10 +164,16 @@ function Test-DocumentAgainstSchema {
 
 $capture = Read-AdaptiveRuntimeJsonDocument $MechanismCapturePath
 [void](Set-AdaptiveRuntimeDocumentHash $capture)
-$isFactorProof = [string]$capture.schema_version -ceq
-    'adaptive-runtime-actuation-mechanism-capture-v2'
+$isRuntimeFactorProof = [string]$capture.schema_version -ceq
+    'adaptive-runtime-actuation-mechanism-capture-v3'
+$isFactorProof = $isRuntimeFactorProof -or (
+    [string]$capture.schema_version -ceq
+        'adaptive-runtime-actuation-mechanism-capture-v2')
 $script:FactorProofMode = $isFactorProof
-$captureSchemaName = if ($isFactorProof) {
+$captureSchemaName = if ($isRuntimeFactorProof) {
+    'adaptive-runtime-actuation-mechanism-capture-v3.schema.json'
+}
+elseif ($isFactorProof) {
     'adaptive-runtime-actuation-mechanism-capture-v2.schema.json'
 }
 else {
@@ -228,6 +234,7 @@ Assert-Condition (
     $capture.active_behavior_authorization -eq $false -and
     $capture.performance_acceptance_authorization -eq $false
 ) 'actuation_proof_authorization_invalid'
+$failedAssertions = [System.Collections.Generic.List[string]]::new()
 
 $axisId = [string]$capture.axis_id
 $policyValue = [string]$capture.policy_value
@@ -256,10 +263,19 @@ Assert-Condition (
 Assert-Condition (
     $fallback[0].forced_value -ceq $policyValue -and
     $fallback[0].candidate_value -ceq $policyValue -and
-    $fallback[0].operation_eligibility_result -in @('clamped','ineligible') -and
+    (
+        ($isRuntimeFactorProof -and
+            $fallback[0].operation_eligibility_result -in
+                @('eligible','clamped','ineligible') -and
+            $fallback[0].result -in @('fallback','clamped')) -or
+        (-not $isRuntimeFactorProof -and
+            $fallback[0].operation_eligibility_result -in
+                @('clamped','ineligible'))
+    ) -and
     (
         (-not $isFactorProof -and
             $fallback[0].applied_value -ceq 'legacy_current') -or
+        $isRuntimeFactorProof -or
         ($isFactorProof -and (
             $fallback[0].applied_value -cne $policyValue -or
             [long]$fallback[0].applied_work_count -eq 0))
@@ -272,6 +288,10 @@ Assert-Condition (
         $shadow[0].shadow_recommendation -ceq $policyValue) -and
     $shadow[0].applied_value -ceq 'legacy_current'
 ) 'actuation_proof_shadow_actuated'
+if ($isRuntimeFactorProof -and
+    [string]$shadow[0].shadow_recommendation -cne $policyValue) {
+    $failedAssertions.Add('shadow_recommendation_value_mismatch')
+}
 Assert-Condition (
     $null -eq $rollback[0].forced_value -and
     $rollback[0].applied_value -ceq 'legacy_current'
@@ -317,7 +337,8 @@ elseif ($axisId -ceq 'oversized_write_admission_quantum') {
         2
     }
     Assert-Condition (
-        [long]$positive[0].legal_work_count -eq 2 -and
+        [long]$positive[0].legal_work_count -gt
+            $expectedAppliedCount -and
         [long]$positive[0].applied_work_count -eq $expectedAppliedCount -and
         [long]$positive[0].applied_work_count -le
             [long]$positive[0].legal_work_count
@@ -796,13 +817,19 @@ $activationPredicate = switch ("$axisId=$policyValue") {
     }
     default { throw 'actuation_proof_activation_predicate_missing' }
 }
-$proofSchemaVersion = if ($isFactorProof) {
+$proofSchemaVersion = if ($isRuntimeFactorProof) {
+    'adaptive-runtime-actuation-proof-evidence-v3'
+}
+elseif ($isFactorProof) {
     'adaptive-runtime-actuation-proof-evidence-v2'
 }
 else {
     'adaptive-runtime-actuation-proof-evidence-v1'
 }
-$proofDocumentVersion = if ($isFactorProof) { 2 } else { 1 }
+$proofDocumentVersion = if ($isRuntimeFactorProof) {
+    3
+}
+elseif ($isFactorProof) { 2 } else { 1 }
 $proof = [pscustomobject][ordered]@{
     schema_version = $proofSchemaVersion
     document_id = if (
@@ -840,7 +867,8 @@ $proof = [pscustomobject][ordered]@{
     rollback_operation = $rollbackIdentity
     terminal_release_evidence = $terminalReleaseIdentity
     correctness_assertions = @($assertions | Sort-Object -CaseSensitive)
-    failed_assertions = @()
+    failed_assertions = @($failedAssertions |
+        Sort-Object -CaseSensitive)
     harness_id = [string]$capture.harness_id
     source_commit = [string]$manifest.source_commit
     binary_cohort_ref = New-AdaptiveRuntimeDocumentRef $binary
@@ -852,7 +880,10 @@ $proof = [pscustomobject][ordered]@{
     trace_references = New-ProofTraceReferences
 }
 [void](Set-AdaptiveRuntimeDocumentHash $proof)
-$proofSchemaName = if ($isFactorProof) {
+$proofSchemaName = if ($isRuntimeFactorProof) {
+    'adaptive-runtime-actuation-proof-evidence-v3.schema.json'
+}
+elseif ($isFactorProof) {
     'adaptive-runtime-actuation-proof-evidence-v2.schema.json'
 }
 else {

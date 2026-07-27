@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/incursa/quic-dotnet/schemas/adaptive-runtime-runtime-proof-sink-export-v1.schema.json",
+  "title": "Adaptive runtime proof sink export v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "export_id",
+    "source_commit",
+    "binary_sha256",
+    "capture_session_id",
+    "axis_id",
+    "policy_value",
+    "source_kind",
+    "records"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "adaptive-runtime-runtime-proof-sink-export-v1"
+    },
+    "export_id": { "$ref": "#/$defs/id" },
+    "source_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "binary_sha256": { "$ref": "#/$defs/hash" },
+    "capture_session_id": { "$ref": "#/$defs/id" },
+    "axis_id": {
+      "enum": [
+        "oversized_write_admission_quantum",
+        "queued_send_burst_budget"
+      ]
+    },
+    "policy_value": {
+      "enum": [
+        "single_fragment",
+        "bounded_multi_fragment",
+        "single_datagram"
+      ]
+    },
+    "source_kind": {
+      "enum": [
+        "quic_oversized_write_admission_evidence_sink",
+        "quic_queued_send_burst_evidence_sink"
+      ]
+    },
+    "records": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": { "$ref": "#/$defs/record" }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "nullableId": {
+      "oneOf": [
+        { "$ref": "#/$defs/id" },
+        { "type": "null" }
+      ]
+    },
+    "nonNegativeInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capture_case",
+        "decision_instance_id",
+        "operation_id",
+        "configured_value",
+        "forced_value",
+        "shadow_recommendation",
+        "candidate_value",
+        "applied_value",
+        "selection_source",
+        "safety_override_reason",
+        "observation_contract_version",
+        "rule_version"
+      ],
+      "properties": {
+        "capture_case": {
+          "enum": [
+            "positive_actuation",
+            "structurally_inactive",
+            "safety_fallback",
+            "shadow_neutrality",
+            "rollback"
+          ]
+        },
+        "decision_instance_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "operation_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "configured_value": { "$ref": "#/$defs/id" },
+        "forced_value": { "$ref": "#/$defs/nullableId" },
+        "shadow_recommendation": { "$ref": "#/$defs/nullableId" },
+        "candidate_value": { "$ref": "#/$defs/id" },
+        "applied_value": { "$ref": "#/$defs/id" },
+        "selection_source": {
+          "enum": [
+            "Forced",
+            "LegacySelector",
+            "ShadowRule",
+            "SafetyOverride"
+          ]
+        },
+        "safety_override_reason": {
+          "enum": [
+            "None",
+            "Resource",
+            "Recovery",
+            "Congestion",
+            "Pacing",
+            "Terminal",
+            "Disposal"
+          ]
+        },
+        "observation_contract_version": { "$ref": "#/$defs/id" },
+        "rule_version": { "$ref": "#/$defs/id" },
+        "logical_write_sequence": { "$ref": "#/$defs/nonNegativeInteger" },
+        "runtime_request_id": { "$ref": "#/$defs/nonNegativeInteger" },
+        "logical_write_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "maximum_fragment_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "legal_fragment_count": { "$ref": "#/$defs/nonNegativeInteger" },
+        "applied_chunk_quantum": { "$ref": "#/$defs/nonNegativeInteger" },
+        "initial_committed_fragments": { "$ref": "#/$defs/nonNegativeInteger" },
+        "initial_committed_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "committed_fragments": { "$ref": "#/$defs/nonNegativeInteger" },
+        "committed_bytes": { "$ref": "#/$defs/nonNegativeInteger" },
+        "continuation_count": { "$ref": "#/$defs/nonNegativeInteger" },
+        "continuation_posts": { "$ref": "#/$defs/nonNegativeInteger" },
+        "first_continuation_sequence": { "$ref": "#/$defs/nonNegativeInteger" },
+        "continuation_request_id": { "$ref": "#/$defs/nonNegativeInteger" },
+        "completion_count": { "$ref": "#/$defs/nonNegativeInteger" },
+        "mechanism_event": {
+          "enum": [
+            "InactiveSingleFragmentWrite",
+            "SequentialSingleFragmentAdmission",
+            "BoundedTwoFragmentAdmission",
+            "SafetyFallback"
+          ]
+        },
+        "terminal_outcome": {
+          "enum": [
+            "Completed",
+            "Canceled",
+            "Terminal",
+            "Disposed",
+            "Failed",
+            "ContinuationPostFailed"
+          ]
+        },
+        "actor_turn_sequence": { "$ref": "#/$defs/nonNegativeInteger" },
+        "legal_maximum_datagrams": { "$ref": "#/$defs/nonNegativeInteger" },
+        "applied_maximum_datagrams": { "$ref": "#/$defs/nonNegativeInteger" },
+        "emitted_datagrams": { "$ref": "#/$defs/nonNegativeInteger" },
+        "queued_writes_before": { "$ref": "#/$defs/nonNegativeInteger" },
+        "queued_writes_after": { "$ref": "#/$defs/nonNegativeInteger" },
+        "queued_bytes_before": { "$ref": "#/$defs/nonNegativeInteger" },
+        "queued_bytes_after": { "$ref": "#/$defs/nonNegativeInteger" },
+        "follow_on_wake_required": { "type": "boolean" },
+        "follow_on_wake_due_ticks": {
+          "oneOf": [
+            { "type": "integer" },
+            { "type": "null" }
+          ]
+        },
+        "follow_on_wake_generation": { "$ref": "#/$defs/nonNegativeInteger" },
+        "outcome": {
+          "enum": [
+            "BudgetBlocked",
+            "BurstLimitReached",
+            "PlannerDeferred",
+            "FlushBlocked",
+            "FlushFailed",
+            "RetransmissionPending",
+            "QueueDrained"
+          ]
+        },
+        "blocked_reason": {
+          "enum": [
+            "None",
+            "NoActivePath",
+            "OrdinaryPacketsUnavailable",
+            "OneRttProtectionUnavailable",
+            "ApplicationDataRetransmissionPending",
+            "InvalidPayloadBudget",
+            "CongestionLimited",
+            "AntiAmplificationLimited",
+            "InvalidQueuedApplicationSend"
+          ]
+        }
+      }
+    }
+  }
+}
