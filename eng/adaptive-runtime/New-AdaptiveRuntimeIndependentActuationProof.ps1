@@ -846,13 +846,14 @@ $proof = [pscustomobject][ordered]@{
     trace_references = New-ProofTraceReferences
 }
 [void](Set-AdaptiveRuntimeDocumentHash $proof)
+$proofSchemaName = if ($isFactorProof) {
+    'adaptive-runtime-actuation-proof-evidence-v2.schema.json'
+}
+else {
+    'adaptive-runtime-actuation-proof-evidence-v1.schema.json'
+}
 Test-DocumentAgainstSchema $proof `
-    (if ($isFactorProof) {
-        'adaptive-runtime-actuation-proof-evidence-v2.schema.json'
-    }
-    else {
-        'adaptive-runtime-actuation-proof-evidence-v1.schema.json'
-    }) `
+    $proofSchemaName `
     'actuation_proof_schema_invalid'
 Write-AdaptiveRuntimeCanonicalDocument $proof (
     Join-Path $OutputRoot 'proof-candidate.json')
