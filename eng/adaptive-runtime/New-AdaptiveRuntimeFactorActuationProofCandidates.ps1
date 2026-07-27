@@ -372,10 +372,20 @@ try {
                 'single_behavior_distinct_axis_only=available') | Out-Null
         $capture = New-CaptureFromRuntimeExport $runtimeExport $spec.Slug
         Write-AdaptiveRuntimeCanonicalDocument $capture $capturePath
+        $spec | Add-Member -NotePropertyName SourceRoot `
+            -NotePropertyValue $sourceRoot
+    }
+
+    foreach ($spec in $specs) {
+        $planPath = Join-Path $catalogRoot $spec.Plan
         $proofRoot = Join-Path $OutputRoot $spec.Slug
-        & $proofCompiler -MechanismCapturePath $capturePath `
-            -PlanPath $planPath -ValidationPath $validationPath `
-            -ManifestPath $manifestPath -OutputRoot $proofRoot `
+        & $proofCompiler -MechanismCapturePath (
+                Join-Path $spec.SourceRoot 'mechanism-capture.json') `
+            -PlanPath $planPath -ValidationPath (
+                Join-Path $spec.SourceRoot 'plan-validation.json') `
+            -ManifestPath (
+                Join-Path $spec.SourceRoot 'compiled-manifest.json') `
+            -OutputRoot $proofRoot `
             -CandidateGenerationId 'runtime-proof-capture-20260727' |
             Out-Null
     }
