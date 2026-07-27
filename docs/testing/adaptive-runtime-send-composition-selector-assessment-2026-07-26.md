@@ -4,68 +4,71 @@ title: "Adaptive Runtime Send-Composition Selector Assessment"
 
 # Adaptive Runtime Send-Composition Selector Assessment
 
-Decision: `measurement_completed_more_context_required`
+Decision: `measurement_completed_no_stable_rule`
 
-No shadow selector was implemented.
+No shadow selector was implemented. The initial campaign and its
+`measurement_completed_more_context_required` result remain retained; this
+assessment records the completed, predeclared activation-qualified extension.
 
 ## Sealed evidence
 
-The assessment uses the manifest-v2 campaign rooted at:
+The extension assessment uses the manifest-v2 campaign rooted at:
 
 ```text
-C:\shared\temp\quic-send-composition-performance-b3c39539-full
+C:\shared\temp\quic-send-composition-holdout-e8c62e82-full
 ```
 
 The measured source commit is
-`b3c3953907483566cc2b049a2238febe98a166eb`, the binary SHA-256 is
-`594ef8b2fcea3cc6279778292e9c78418350c2bf85dc8c026ff1900a35949e86`,
+`e8c62e82af8111fe8adb3fd05c2d9c494821f9e0`, the binary SHA-256 is
+`eb74daff04582fc31619446da82dffb040b89aee914f9dff062a7d9c8769ff04`,
 and the manifest content hash is
-`1cd5dddf82653e5b149a0f760036056fd229c5573de7f12e738bb5c9f4f52226`.
+`22bce631f18b637fafd5154bdf24fee26c6d883d15ae1321124820a9d8f7334a`.
 The deterministic analysis content hash is
-`4cda64682936f3a7abd82451e43b656e36ce60983066ca2a772435cac4dd74e2`.
+`c558895ea812fe99d2df9dca5930aca40468b17f6c198a36510bbc436bfb49a2`.
 
-The full campaign retained 160 runs: 66 `performance_eligible`, 18
-`expected_equivalent`, 40 `inactive_control`, and 36 `activation_missing`.
-Four training contexts supplied a complete eligible/equivalent A/B/C/D block:
-`few_stream_bulk`, `many_stream_saturation`, `segment_rich_writes`, and
-`small_chatty_bursty`.
+The full extension retained 176 runs: 93 `performance_eligible`, 30
+`expected_equivalent`, 40 `inactive_control`, and 13 `activation_missing`.
+All three new activation-expected holdouts supplied a complete
+eligible/equivalent A/B/C/D block.
 
 ## Effect result
 
-| Training effect | Median | 95% blocked bootstrap interval | Classification |
-| --- | ---: | ---: | --- |
-| Batch B versus A | -2.71% | -4.35% to 0.19% | `uncertain` |
-| Buffer C versus A | -1.95% | -6.68% to 1.26% | `uncertain` |
-| Configured interaction | 2.52% | -1.71% to 5.61% | `uncertain` |
-| Expected equivalence D versus B | -0.03% | -0.73% to 1.03% | `expected_equivalent` |
+| Effect | Training median (95% interval) | Holdout median (95% interval) |
+| --- | ---: | ---: |
+| Batch B versus A | -0.82% (-2.90% to 1.75%) | -1.63% (-4.49% to 2.59%) |
+| Buffer C versus A | 3.48% (-1.41% to 8.74%) | 2.12% (-2.40% to 3.34%) |
+| Configured interaction | -3.04% (-9.92% to 1.65%) | -2.89% (-6.67% to 1.86%) |
+| Expected equivalence D versus B | 0.04% (-1.31% to 1.80%) | 0.68% (-4.46% to 3.40%) |
 
-The eligible training contexts did not identify a stable broad winner. Pooled
-cell medians also showed tradeoffs: B and C reduced copied and retained bytes,
-but their P95 completion-latency medians were more than five percent above A
-and their CPU-per-operation medians were higher. Fairness stayed near one and
-all owner releases remained exact.
+No training or holdout main effect or interaction excluded zero. Descriptive
+pooled holdout medians showed no guardrail reason to override that uncertainty:
+B and C had 5.26% and 6.63% lower P95 latency than A and 5.28% and 4.29% lower
+CPU per operation, while allocated bytes were within 0.06% and fairness stayed
+near one. These pooled summaries are guardrails, not substitutes for the
+blocked effect estimates.
 
 ## Held-out result
 
-The predeclared holdout contexts were `copy_memory_pressure`,
-`backpressure_slow_drain`, and `inactive_control`. The first two did not reach
-the required batch and buffer activation for B, C, and D; the third was
-deliberately inactive. All 48 holdout runs remain retained, but no holdout
-context supplies an eligible four-cell counterfactual.
+The predeclared extension holdouts were `holdout_segment_rich_medium`,
+`holdout_many_stream_medium`, `holdout_copy_pressure_upload`, and
+`inactive_control`. Every activation-expected context reached batch actuation
+in B and D and buffer actuation in C for all four repetitions. D remained
+expected-equivalent to B because batch shortening leaves buffer coalescing
+inactive at the production seam. The inactive control remained inactive.
 
 The only permitted selector inputs evaluated were
-`legal_eligible_write_count` and `source_segment_count`. A training-only
-candidate reached 0.75 accuracy, but held-out accuracy and regret are
-undefined in substance because eligible holdout labels are absent. The
-analysis records zero eligible holdout contexts and
+`legal_eligible_write_count` and `source_segment_count`. The training-only
+candidate reached 1.0 training accuracy, but held-out accuracy was 2/3. Median
+held-out regret was zero because the missed context had no practically stable
+winner. The analysis records
 `shadow_implementation_authorized=false`.
 
 ## Conclusion
 
-The data supports the mechanism-level B/D equivalence and proves the bounded
-measurement chain, but it does not support a generalizable selection rule.
-Additional predeclared holdout contexts that reliably activate the reviewed
-mechanisms are required before selector work can resume. Workload identity,
-scenario, host, peer, URL, application identity, and requested benchmark
-concurrency remain prohibited runtime inputs. Production activation and
-`active_internal` remain unauthorized.
+The activation gap is closed, and the data continues to support the
+mechanism-level B/D equivalence. It does not support a stable selection rule:
+training and holdout estimates are uncertain, the predeclared practical gates
+are not met, and held-out classification is incomplete. No speculative rule
+was created. Workload identity, scenario, host, peer, URL, application
+identity, and requested benchmark concurrency remain prohibited runtime
+inputs. Production activation and `active_internal` remain unauthorized.

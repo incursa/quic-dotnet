@@ -690,15 +690,19 @@ holdout context supplied all four eligible/equivalent cells, so the reviewed
 outcome is `measurement_completed_more_context_required`. No shadow selector
 or runtime selection rule was added.
 
-The follow-on holdout extension is generated and validated with:
+The completed holdout extension is generated and validated with:
 
 ```powershell
 pwsh -NoProfile -File eng/adaptive-runtime/Update-AdaptiveRuntimeSendCompositionPerformanceHoldoutCampaign.ps1
 pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionPerformanceHoldoutExtension.ps1
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionPerformanceHoldoutResults.ps1 `
+  -EvidenceRoot <extension-evidence-root>
 ```
 
 It preserves the reviewed cells, proofs, thresholds, authorization boundary,
 and training contexts while replacing the non-activating holdouts with three
-predeclared upload contexts at new continuous workload points. Only activation
-evidence may be inspected during preflight; performance results remain sealed
-until the complete extension validates.
+predeclared upload contexts at new continuous workload points. The completed
+176-run extension produced complete activation-qualified holdout blocks,
+rebuilt projection and analysis bytes identically, and concluded
+`measurement_completed_no_stable_rule`. No selector was emitted; shadow,
+active, performance-acceptance, and production authorization remain false.

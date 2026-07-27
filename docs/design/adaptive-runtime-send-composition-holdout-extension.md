@@ -4,8 +4,8 @@ title: "Adaptive Runtime Send-Composition Holdout Extension"
 
 # Adaptive Runtime Send-Composition Holdout Extension
 
-Status: predeclared bounded follow-on to
-`measurement_completed_more_context_required`
+Status: completed bounded follow-on; decision
+`measurement_completed_no_stable_rule`
 
 ## Purpose
 
@@ -38,7 +38,7 @@ The canonical extension campaign has content hash
 `21835708e640c57a5bd90ba37632763f62793c0833549cabd5b758c0d785c7b6`
 and seed `20260727`.
 
-## Predeclared holdout contexts
+## Holdout contexts
 
 | Workload ID | Family | Scenario | Payload | Concurrency | Expected activation |
 | --- | --- | --- | ---: | ---: | --- |
@@ -49,8 +49,9 @@ and seed `20260727`.
 
 These points are not exact duplicates of the training points. Their names and
 families remain offline provenance and cannot become runtime selector inputs.
-Only activation evidence may be inspected during the preflight. Performance
-outcomes remain sealed until all predeclared holdout cells finish and validate.
+Only activation evidence was inspected during the preflight. Performance
+outcomes remained sealed until all predeclared holdout cells finished and
+validated.
 
 ## Decision rule
 
@@ -66,3 +67,37 @@ After the full extension rebuilds:
 
 Production actuation, `active_internal`, another axis, CI modification, and
 online learning remain out of scope.
+
+## Completed result
+
+The extension executed 176 serial production-mechanism runs: 16 pilot, 96
+training, and 64 holdout. All three activation-expected holdouts produced four
+repetitions of A, B, C, and D. A, B, and C were performance-eligible and D was
+retained as expected-equivalent to B. The inactive control remained inactive
+for every cell. All runs passed correctness and exact owner-release checks.
+
+The retained classification totals are 93 `performance_eligible`, 30
+`expected_equivalent`, 40 `inactive_control`, and 13 `activation_missing`.
+The remaining exclusions are retained training evidence; no new
+activation-expected holdout was excluded.
+
+The sealed holdout estimates were:
+
+| Effect | Median | 95% blocked bootstrap interval | Classification |
+| --- | ---: | ---: | --- |
+| Batch B versus A | -1.63% | -4.49% to 2.59% | `uncertain` |
+| Buffer C versus A | 2.12% | -2.40% to 3.34% | `uncertain` |
+| Configured interaction | -2.89% | -6.67% to 1.86% | `uncertain` |
+| Expected equivalence D versus B | 0.68% | -4.46% to 3.40% | `expected_equivalent` |
+
+The only evaluated selector inputs were `legal_eligible_write_count` and
+`source_segment_count`. The training-only candidate classified its three
+labels, but held-out accuracy was 2/3. No main effect or interaction cleared
+the predeclared practical and confidence gates. The canonical outcome is
+therefore `measurement_completed_no_stable_rule`; no selector or runtime rule
+was emitted.
+
+The deterministic projection content hash is
+`578067eca23c8af10c4560f2ef265a8c64a1beeb9f15be125c3e984df2008c7e`.
+The deterministic analysis content hash is
+`c558895ea812fe99d2df9dca5930aca40468b17f6c198a36510bbc436bfb49a2`.

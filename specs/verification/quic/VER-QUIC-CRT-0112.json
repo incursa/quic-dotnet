@@ -41,7 +41,10 @@
   "expected_result": "The exact four configured cells execute through production mechanisms; every run is retained and classified; only activation-eligible evidence supports conclusions; configured and effective equivalence is explicit; analysis and holdout results reproduce; any selector is shadow-only and evidence-backed or a no-rule conclusion is retained; and local main is clean with no push, CI change, active_internal, or production activation.",
   "evidence": [
     "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionPerformance.ps1",
-    "docs/testing/adaptive-runtime-send-composition-performance-review-package-2026-07-26.md"
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionPerformanceHoldoutExtension.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionPerformanceHoldoutResults.ps1",
+    "docs/testing/adaptive-runtime-send-composition-performance-review-package-2026-07-26.md",
+    "docs/testing/adaptive-runtime-send-composition-holdout-extension-review-2026-07-26.md"
   ],
-  "status_summary": "Passed for the bounded offline milestone: the manifest-v2 pilot and 160-run production-seam campaign validated, all runs were retained and classified, materializations and projections rebuilt byte-identically, the adversarial audit passed, and the selector assessment correctly concluded measurement_completed_more_context_required because no holdout context supplied a complete eligible four-cell comparison. Production activation, active_internal, CI changes, and push remained absent."
+  "status_summary": "Passed for the bounded offline milestone and activation-qualified extension: the original 160-run campaign and the extension's 176-run production-seam campaign validated; all runs were retained and classified; three new holdouts supplied complete eligible or expected-equivalent four-cell blocks; materializations, projection, and analysis rebuilt byte-identically; and uncertain train and holdout effects plus 2-of-3 held-out rule accuracy produced measurement_completed_no_stable_rule. No selector was emitted. Production activation, active_internal, and CI changes remained absent."
 }
