@@ -37,8 +37,7 @@
   ],
   "expected_result": "Exactly two implemented axes are canonically onboarded; three nonlegacy values have deterministic candidate-only proof chains; family placement follows mechanism relationships; all small spaces are explicitly enumerated; broader execution and measurement remain blocked; and prior artifacts continue to validate.",
   "evidence": [
-    "eng/adaptive-runtime/Test-AdaptiveRuntimeFactorOnboarding.ps1",
-    "docs/testing/adaptive-runtime-factor-onboarding-review-package-2026-07-26.md"
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeFactorOnboarding.ps1"
   ],
   "status_summary": "Passed when the focused commands and exact counts recorded in the review package are reproduced. Repository-wide unrelated SpecTrace baseline failures are retained rather than relabeled."
 }

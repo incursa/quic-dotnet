@@ -28,6 +28,15 @@ Every protocol slice MUST define how it will be proven before code review is con
 - Use the SpecTrace templates in [`specs/templates/README.md`](specs/templates/README.md) when creating new artifacts.
 - Use the quality intent contract in [`quality/testing-intent.yaml`](quality/testing-intent.yaml) as the repo-level testing bar, but do not treat coverage percentages as a substitute for protocol correctness evidence.
 
+## Temporary Work And Review Artifacts
+
+- Put temporary work under `C:\shared\temp\quic-dotnet\<task-or-date>` and temporary linked worktrees under `C:\shared\temp\quic-dotnet-worktrees\<task>`.
+- Do not create sibling repository copies, dated snapshot directories, or worktree roots under `C:\shared\src\incursa`.
+- Do not commit exact-tree archives, review packages, command logs, upload bundles, preservation patches, promotion-patch drafts, generated handoff reports, or one-run evidence exports. Keep them under the external temporary root and delete them after review.
+- Keep `docs/testing` for durable testing contracts and reusable verification guidance. Record authoritative proof in SpecTrace verification artifacts, deterministic tests, schemas, fixtures, and reproducible validators rather than dated review summaries.
+- Keep scripts under `eng/` only when they are reusable, deterministic tooling for a maintained workflow or regression. A script written solely to export or package one checkpoint belongs with that checkpoint under `C:\shared\temp`.
+- Before removing a temporary worktree, prove it is clean and its terminal commit is represented on the intended branch. Remove obsolete worktrees and branches promptly after integration.
+
 ## ProtocolLab Rack Lab
 
 Use the ProtocolLab rack controller for clean lab execution of performance-sensitive changes when local developer-machine noise would make a result hard to trust.

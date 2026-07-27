@@ -1,8 +1,8 @@
 {
   "version": 1,
   "baseRef": "origin/main",
-  "worktreeRoot": "C:/src/incursa/quic-dotnet.worktrees",
-  "launchOutputRoot": ".artifacts/codex-parallel-launches",
+  "worktreeRoot": "C:/shared/temp/quic-dotnet-worktrees",
+  "launchOutputRoot": "C:/shared/temp/quic-dotnet-agent-runs",
   "workerScript": "scripts/Run-CodexAutopilot.ps1",
   "lanes": [
     {

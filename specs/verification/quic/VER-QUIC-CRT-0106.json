@@ -43,8 +43,7 @@
     "eng/adaptive-runtime/Test-AdaptiveRuntimeIndependentActuationProof.ps1",
     "tests/fixtures/adaptive-runtime-independent-actuation-proof",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0219.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0222.cs",
-    "docs/testing/adaptive-runtime-independent-actuation-proof-review-package-2026-07-26.md"
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0222.cs"
   ],
   "status_summary": "Passed from b5654591: 36 content-hashed candidate documents, 10 captured operations, five exact buffer releases, two independently rebuilt 15-input projections, and 17 closed negative cases validated cleanly. Both proofs remain candidate-only and external-review pending; interaction execution, performance measurement, active behavior, CI changes, and push did not occur."
 }

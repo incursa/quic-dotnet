@@ -353,11 +353,10 @@ observation, internal forced-policy, provenance, and shadow-only foundation.
 That approval does not authorize `active_internal`, a wider receive-credit
 selector, any other policy axis, online learning, or production exploration.
 
-## 2026-07-23 Evidence Review Decision
+## Receive-Credit Evidence Review Decision
 
-The append-only receive-credit evidence review is recorded in
-[`testing/adaptive-runtime-policy-evidence-review-checkpoint-2026-07-23.md`](testing/adaptive-runtime-policy-evidence-review-checkpoint-2026-07-23.md).
-It concluded `remain_legacy_current`: the three-host review cohort does not
+The append-only receive-credit evidence review concluded
+`remain_legacy_current`: the three-host review cohort does not
 satisfy the complete host-and-workload holdout contract, and the broader
 corpus does not support a transferable deterministic rule. This is a
 non-promoting decision; it does not change the applied selector or authorize
@@ -369,7 +368,7 @@ separately traced, measurement-only inventory of
 `legacy_current` or inventory-only until their own force, evidence, and
 review gates are complete.
 
-## 2026-07-26 Send-Composition Holdout Decision
+## Send-Composition Holdout Decision
 
 The independently reviewed `application_send_batch_formation=single_eligible`
 and `buffer_copy_coalescing=memory_conservative` activation proofs remain
@@ -377,9 +376,8 @@ passed, and both values remain correctness-eligible beneath their existing
 safety guards. The approved two-axis correctness interaction also remains
 valid.
 
-The activation-qualified holdout extension recorded in
-[`testing/adaptive-runtime-send-composition-holdout-extension-review-2026-07-26.md`](testing/adaptive-runtime-send-composition-holdout-extension-review-2026-07-26.md)
-closed the earlier holdout activation gap. Its rule-promotion decision is
+The activation-qualified holdout extension closed the earlier holdout
+activation gap. Its rule-promotion decision is
 `measurement_completed_no_stable_rule`: no stable deterministic selector met
 the predeclared confidence and practical gates. That result is retained
 negative selection evidence, not a failure of activation, correctness,

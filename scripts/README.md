@@ -21,7 +21,7 @@ Start the default non-overlapping lane set from a clean `main`:
 pwsh -NoProfile -File scripts/Start-QuicParallelCodex.ps1
 ```
 
-The launcher creates worktrees under `C:/src/incursa/quic-dotnet.worktrees`, branches under `codex/`, lane prompts under `.artifacts/codex-parallel-launches/<timestamp>/`, and starts one background Codex autopilot process per selected lane.
+The launcher creates temporary worktrees under `C:/shared/temp/quic-dotnet-worktrees`, branches under `codex/`, and lane prompts and logs under `C:/shared/temp/quic-dotnet-agent-runs`. These are disposable execution artifacts: integrate reviewed commits, remove the worktree and branch, and delete the corresponding temporary run directory after review.
 
 By default the launcher uses `gpt-5.4-mini` with `xhigh` reasoning so the common path stays cost-aware while still giving each lane enough thinking depth. Override with `-Model` and `-ReasoningEffort` only for lanes that are genuinely blocked.
 

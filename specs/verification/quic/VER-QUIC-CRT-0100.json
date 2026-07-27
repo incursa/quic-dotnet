@@ -46,8 +46,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0210.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0211.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0212.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0213.cs",
-    "docs/testing/adaptive-runtime-experiment-hardening-review-package-2026-07-25.md"
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0213.cs"
   ],
   "status_summary": "Passed on 2026-07-25 after the focused hardening regression, foundation/compiler/runtime regressions, Release builds, requirement-home tests, direct SpecTrace validation, and diff validation completed without performance, campaign, transform, CI, push, active_internal, production activation, runtime mechanism change, or another-axis migration."
 }

@@ -8,9 +8,9 @@ param(
 
     [string]$MissionPromptFile = "C:\src\incursa\quic-dotnet\prompts\mission.md",
 
-    [string]$WorktreeRoot = "C:\src\incursa\quic-dotnet.worktrees\interop-autopilot",
+    [string]$WorktreeRoot = "C:\shared\temp\quic-dotnet-worktrees\interop-autopilot",
 
-    [string]$StateDirectory = "C:\src\incursa\quic-dotnet\.artifacts\interop-autopilot",
+    [string]$StateDirectory = "C:\shared\temp\quic-dotnet-agent-runs\interop-autopilot",
 
     [string]$LaneId = "",
 

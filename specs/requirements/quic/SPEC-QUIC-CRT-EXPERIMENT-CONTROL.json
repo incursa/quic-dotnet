@@ -268,8 +268,7 @@
         ],
         "upstream_refs": [
           "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentPlanCompiler.ps1",
-          "tests/fixtures/adaptive-runtime-experiment-plan-compiler",
-          "docs/testing/adaptive-runtime-experiment-plan-compiler-evidence-2026-07-25.md"
+          "tests/fixtures/adaptive-runtime-experiment-plan-compiler"
         ]
       },
       "notes": [
@@ -382,8 +381,7 @@
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0209.cs"
         ],
         "upstream_refs": [
-          "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentRuntimeEvidence.ps1",
-          "docs/testing/adaptive-runtime-experiment-runtime-evidence-2026-07-25.md"
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentRuntimeEvidence.ps1"
         ]
       },
       "notes": [
@@ -471,8 +469,7 @@
         ],
         "upstream_refs": [
           "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentHardening.ps1",
-          "tests/fixtures/adaptive-runtime-experiment-hardening",
-          "docs/testing/adaptive-runtime-experiment-hardening-review-package-2026-07-25.md"
+          "tests/fixtures/adaptive-runtime-experiment-hardening"
         ]
       },
       "notes": [
@@ -559,8 +556,7 @@
         ],
         "upstream_refs": [
           "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentEvidenceIntegrityCloseout.ps1",
-          "tests/fixtures/adaptive-runtime-experiment-evidence-integrity-closeout",
-          "docs/testing/adaptive-runtime-experiment-evidence-integrity-closeout-2026-07-25.md"
+          "tests/fixtures/adaptive-runtime-experiment-evidence-integrity-closeout"
         ]
       },
       "notes": [
@@ -802,8 +798,7 @@
           "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionCorrectness.ps1"
         ],
         "upstream_refs": [
-          "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionCorrectness.ps1",
-          "docs/testing/adaptive-runtime-send-composition-correctness-review-package-2026-07-26.md"
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionCorrectness.ps1"
         ]
       },
       "notes": [

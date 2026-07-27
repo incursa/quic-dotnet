@@ -430,3 +430,10 @@ FodyWeavers.xsd
 .dotnet/
 .codex-profile/
 .artifacts/
+
+# Checkpoint and review artifacts belong under C:\shared\temp\quic-dotnet.
+/docs/testing/adaptive-runtime-*-20??-??-??.md
+/docs/testing/*-promotion.json-patch
+/review-packages/
+/temp/
+/.tmp/

@@ -45,8 +45,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0214.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0215.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0216.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0217.cs",
-    "docs/testing/adaptive-runtime-experiment-evidence-integrity-closeout-2026-07-25.md"
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0217.cs"
   ],
   "status_summary": "Passed on 2026-07-25 after six additive schemas, fifteen immutable inputs, nine catalog mappings, nine invalid evidence cases, eight invalid classification cases, all 66 classification pairs, seven invalid projection substitutions, prior checkpoint regressions, both focused Release builds, four requirement homes, direct SpecTrace model validation, deterministic rebuilds, and diff validation completed without runtime mechanism change, another-axis migration, interaction execution, performance work, CI change, push, active_internal, or production activation."
 }

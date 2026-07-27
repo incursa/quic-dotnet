@@ -33,8 +33,8 @@ public sealed class REQ_QUIC_CRT_0209
             expectations.RootElement.GetProperty("warning").EnumerateObject().Count());
         Assert.True(File.Exists(Path.Combine(
             root,
-            "docs",
-            "testing",
-            "adaptive-runtime-experiment-runtime-evidence-2026-07-25.md")));
+            "eng",
+            "adaptive-runtime",
+            "Test-AdaptiveRuntimeExperimentRuntimeEvidence.ps1")));
     }
 }

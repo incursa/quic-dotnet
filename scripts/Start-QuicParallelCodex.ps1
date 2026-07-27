@@ -437,7 +437,7 @@ try {
     }
 
     if ([string]::IsNullOrWhiteSpace($WorktreeRoot)) {
-        $WorktreeRoot = [string](Get-PropertyValue -Object $manifest -Name "worktreeRoot" -Default "C:/src/incursa/quic-dotnet.worktrees")
+        $WorktreeRoot = [string](Get-PropertyValue -Object $manifest -Name "worktreeRoot" -Default "C:/shared/temp/quic-dotnet-worktrees")
     }
 
     if ([string]::IsNullOrWhiteSpace($LaunchOutputRoot)) {

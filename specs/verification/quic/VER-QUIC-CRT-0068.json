@@ -57,8 +57,7 @@
     "schemas/adaptive-runtime-stage1-unified-epoch-raw-v1.schema.json",
     "schemas/adaptive-runtime-stage1-unified-epoch-v1.schema.json",
     "schemas/adaptive-runtime-stage1-axis-decision-v1.schema.json",
-    "docs/design/adaptive-runtime-stage1-unified-execution-map.md",
-    "docs/testing/adaptive-runtime-policy-local-campaign-evidence-2026-07-23.md"
+    "docs/design/adaptive-runtime-stage1-unified-execution-map.md"
   ],
   "status_summary": "In progress. All four Stage 1 axes are independently forceable, observable, and shadow-evaluable. The permanent raw host enables all four observation streams, permits at most one forced axis, holds receive credit at legacy_current, and emits one versioned unified epoch containing exactly four axis summaries. Canonical raw-to-curated materialization and semantic join validation are implemented. The first correctness-only smoke retained its pre-fix r001 result as invalid_contract and its corrected r002 result as invalid_environment: 189 unified epochs and 756 axis decisions were preserved, application_send_turn_planning was the only varied axis, all adjacent axes applied legacy_current, and forced/applied plus shadow-neutrality joins passed. That smoke is architecture proof only and is excluded from policy acceptance. Focused REQ-QUIC-CRT-0177 tests and the Release build are green. Manual or nightly mechanism-cost evidence, the complete Release correctness suite, matched multi-host verification, and acceptance-quality campaigns remain open. No policy acceptance, rule derivation, active behavior, or production readiness is claimed."
 }

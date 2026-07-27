@@ -11,7 +11,7 @@ public sealed class REQ_QUIC_CRT_0213
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void HardeningCorpusAndReviewPackageAreRetained()
+    public void HardeningCorpusAndReusableValidatorAreRetained()
     {
         string root = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
         string fixtures = Path.Combine(
@@ -36,8 +36,8 @@ public sealed class REQ_QUIC_CRT_0213
                 .Count());
         Assert.True(File.Exists(Path.Combine(
             root,
-            "docs",
-            "testing",
-            "adaptive-runtime-experiment-hardening-review-package-2026-07-25.md")));
+            "eng",
+            "adaptive-runtime",
+            "Test-AdaptiveRuntimeExperimentHardening.ps1")));
     }
 }

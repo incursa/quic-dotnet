@@ -20,7 +20,6 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0174.cs",
     "tests/Incursa.Quic.Tests/QuicApplicationSendSchedulerTests.cs",
     "benchmarks/QuicApplicationSendTurnPlannerBenchmarks.cs",
-    "docs/testing/adaptive-runtime-policy-local-campaign-evidence-2026-07-23.md",
     ".artifacts/adaptive-runtime/verification/send-turn-provenance-focused-20260723/adaptive-runtime-send-turn-provenance-20260723.trx",
     ".artifacts/adaptive-runtime/verification/send-turn-provenance-focused-20260723/adaptive-runtime-send-turn-force-20260723.trx"
   ],

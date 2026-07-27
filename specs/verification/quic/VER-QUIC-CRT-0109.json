@@ -44,8 +44,7 @@
     "docs/design/adaptive-runtime-send-composition-correctness.md",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeSendCompositionCorrectness.ps1",
     "tests/fixtures/adaptive-runtime-send-composition-correctness",
-    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0225.cs",
-    "docs/testing/adaptive-runtime-send-composition-correctness-review-package-2026-07-26.md"
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0225.cs"
   ],
   "status_summary": "Passed for correctness only. Both exact single-axis proofs were independently reviewed, the exact deny-by-default interaction cell executed through production selectors and evidence seams, 11 operations and four releases reconciled, materializations and the 15-input projection recomputed, the independent interaction review passed, and adversarial rejection remained clean. Measurement and production activation remain unauthorized."
 }

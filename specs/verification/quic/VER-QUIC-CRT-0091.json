@@ -55,8 +55,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0198.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0199.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0200.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0201.cs",
-    "docs/testing/adaptive-runtime-experiment-control-foundation-evidence-2026-07-24.md"
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0201.cs"
   ],
   "status_summary": "The focused validator passes all eight schemas, five canonical documents, twelve valid fixtures, and fifteen deterministically invalid fixtures with zero code mismatches. Repeated validator output, canonical serialization, and SHA-256 recomputation are byte-identical. The affected Release test project builds with zero warnings and errors, and the four focused requirement-home tests pass. The four new SpecTrace artifacts validate directly against the repository model with reciprocal links; repository-wide core validation remains blocked by 2,693 baseline-wide schema and unresolved-reference errors beginning in unchanged API and RFC artifacts. The historical policy-catalog v1 schema and producer remain unchanged. No performance, campaign, transform, ML, CI, push, active_internal, or production action occurred."
 }

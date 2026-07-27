@@ -95,7 +95,7 @@
         "implemented_by": ["WI-QUIC-CRT-0114"],
         "verified_by": ["VER-QUIC-CRT-0115"],
         "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeFactorOnboarding.ps1"],
-        "upstream_refs": ["docs/testing/adaptive-runtime-factor-onboarding-review-package-2026-07-26.md"]
+        "upstream_refs": ["docs/design/adaptive-runtime-implemented-factor-onboarding.md"]
       }
     }
   ]

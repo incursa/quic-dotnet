@@ -408,7 +408,7 @@ The first runtime/evidence vertical slice now closes those questions for
 - the logical projection rebuilds from immutable checksummed fixtures.
 
 This closure is trace-owned by `REQ-QUIC-CRT-0206` through
-`REQ-QUIC-CRT-0209` and reviewed in
-`docs/testing/adaptive-runtime-experiment-runtime-evidence-2026-07-25.md`.
+`REQ-QUIC-CRT-0209` and is reproducible through
+`eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentRuntimeEvidence.ps1`.
 Other axes, live campaign retention, interaction execution, measurement, and
 activation remain outside this checkpoint.
