@@ -36,8 +36,8 @@ function New-CaptureOperation {
         [string] $Connection,
         [long] $Identity,
         [string] $Configured,
-        [AllowNull()][string] $Forced,
-        [AllowNull()][string] $Shadow,
+        [AllowNull()][object] $Forced,
+        [AllowNull()][object] $Shadow,
         [string] $Candidate,
         [string] $Eligibility,
         [string] $EligibilityReason,
@@ -49,7 +49,7 @@ function New-CaptureOperation {
         [long] $LegalBytes,
         [long] $AppliedBytes,
         [string] $Result,
-        [AllowNull()][string] $FallbackReason,
+        [AllowNull()][object] $FallbackReason,
         [string] $TerminalOutcome
     )
     return [pscustomobject][ordered]@{
