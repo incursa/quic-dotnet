@@ -58,7 +58,7 @@ public sealed partial class REQ_QUIC_CRT_0238
                 QuicOversizedWriteAdmissionObservationMode.ObserveOnly,
                 payloadLength: 5 * 32 * 1024,
                 cancelAfterFirstTransition: false,
-                forceValue: false);
+                forceValue: true);
         QuicOversizedWriteAdmissionEvidence inactive =
             await RunOversizedWriteAsync(
                 policyValue,
@@ -86,7 +86,7 @@ public sealed partial class REQ_QUIC_CRT_0238
                 QuicOversizedWriteAdmissionObservationMode.ObserveOnly,
                 payloadLength: 5 * 32 * 1024,
                 cancelAfterFirstTransition: false,
-                forceValue: true);
+                forceValue: false);
 
         Assert.Equal(1, positive.CompletionCount);
         Assert.Equal(1, fallback.CompletionCount);
