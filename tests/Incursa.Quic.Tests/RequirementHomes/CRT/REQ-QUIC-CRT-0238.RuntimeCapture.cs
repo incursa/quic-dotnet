@@ -269,35 +269,40 @@ public sealed partial class REQ_QUIC_CRT_0238
                 forceValue: true,
                 queuedWriteCount: 48,
                 connectionSendLimit: 16_384,
-                triggerWithAck: true);
+                triggerWithAck: true,
+                observeShadow: true);
         QuicQueuedSendBurstEvidence inactive =
             await RunQueuedSendBurstAsync(
                 QuicQueuedSendBurstPolicyMode.SingleDatagram,
                 forceValue: true,
                 queuedWriteCount: 1,
                 connectionSendLimit: 16_384,
-                triggerWithAck: false);
+                triggerWithAck: false,
+                observeShadow: true);
         QuicQueuedSendBurstEvidence fallback =
             await RunQueuedSendBurstAsync(
                 QuicQueuedSendBurstPolicyMode.SingleDatagram,
                 forceValue: true,
                 queuedWriteCount: 8,
                 connectionSendLimit: 16_384,
-                triggerWithAck: false);
+                triggerWithAck: false,
+                observeShadow: true);
         QuicQueuedSendBurstEvidence shadow =
             await RunQueuedSendBurstAsync(
                 QuicQueuedSendBurstPolicyMode.SingleDatagram,
                 forceValue: false,
                 queuedWriteCount: 48,
                 connectionSendLimit: 16_384,
-                triggerWithAck: true);
+                triggerWithAck: true,
+                observeShadow: true);
         QuicQueuedSendBurstEvidence rollback =
             await RunQueuedSendBurstAsync(
                 QuicQueuedSendBurstPolicyMode.LegacyCurrent,
                 forceValue: false,
                 queuedWriteCount: 48,
                 connectionSendLimit: 16_384,
-                triggerWithAck: true);
+                triggerWithAck: true,
+                observeShadow: false);
 
         Assert.Equal(1, positive.EmittedDatagrams);
         Assert.True(positive.FollowOnWakeRequired);
@@ -341,7 +346,8 @@ public sealed partial class REQ_QUIC_CRT_0238
             bool forceValue,
             int queuedWriteCount,
             ulong connectionSendLimit,
-            bool triggerWithAck)
+            bool triggerWithAck,
+            bool observeShadow)
     {
         QuicConnectionRuntime runtime =
             QuicS13ApplicationSendDelayTestSupport
@@ -369,7 +375,9 @@ public sealed partial class REQ_QUIC_CRT_0238
                 ForcedQueuedSendBurstPolicyMode =
                     forceValue ? policyValue : null,
                 QueuedSendBurstObservationMode =
-                    QuicQueuedSendBurstObservationMode.Shadow,
+                    observeShadow
+                        ? QuicQueuedSendBurstObservationMode.Shadow
+                        : QuicQueuedSendBurstObservationMode.ObserveOnly,
                 QueuedSendBurstEvidenceSink = sink,
             });
             Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(

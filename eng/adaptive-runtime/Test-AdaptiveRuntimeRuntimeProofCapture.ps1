@@ -293,7 +293,8 @@ foreach ($configuration in $configurations) {
     Assert-Condition (
         (ConvertTo-Json $captureErrors -Compress) -ceq
         (ConvertTo-Json $expectedErrors -Compress)
-    ) "runtime_capture_error_set_mismatch:$($configuration.Slug)"
+    ) "runtime_capture_error_set_mismatch:$($configuration.Slug):actual=$(
+        $captureErrors -join ','):expected=$($expectedErrors -join ',')"
     Assert-Condition (
         [string]$proof.axis_id -ceq $configuration.Axis -and
         [string]$proof.policy_value -ceq $configuration.Value -and
