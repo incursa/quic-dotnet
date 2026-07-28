@@ -1,0 +1,57 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0116",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "Reviewed proof promotion and exact admission-family correctness",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0241 through REQ-QUIC-CRT-0246 with independent proof review, sequential exact promotion, and one finite manifest-bound three-axis correctness capability.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-ADMISSION-CORRECTNESS",
+    "SPEC-QUIC-CRT-FACTOR-ONBOARDING",
+    "ARC-QUIC-CRT-0113",
+    "WI-QUIC-CRT-0117",
+    "VER-QUIC-CRT-0118"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0241",
+    "REQ-QUIC-CRT-0242",
+    "REQ-QUIC-CRT-0243",
+    "REQ-QUIC-CRT-0244",
+    "REQ-QUIC-CRT-0245",
+    "REQ-QUIC-CRT-0246"
+  ],
+  "key_components": [
+    "eng/adaptive-runtime/Review-AdaptiveRuntimeActuationProof.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeRuntimeProofReview.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeProofPromotion.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeSendAdmissionCorrectness.ps1",
+    "eng/adaptive-runtime/experiment-control/reviewed-proofs",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-correctness-plan-v1.json",
+    "src/Incursa.Quic/QuicAdaptiveRuntimeAdmissionCorrectnessAuthorization.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "tests/fixtures/adaptive-runtime-send-admission-correctness",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0244.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0245.cs"
+  ],
+  "design_summary": "A deterministic offline reviewer recomputes every immutable runtime-proof input and emits exact passed, blocked, or failed review records. Promotions are append-only, individually hash-bound, and rebuild the reviewed-proof catalog base between applications. The bounded-multi-fragment shadow mismatch is a policy-semantic blocker, not an evidence failure. A new internal fixed-field token identifies send_admission_composition_correctness_v1, the exact manifest and catalogs, three reviewed proofs, and one of eight enumerated cells. The runtime gate may bypass existing pairwise nonlegacy rejection only when that token exactly matches all configured values and all adjacent axes remain legacy_current. Each cell uses isolated connection state and distinct identity-bound opportunities so oversized admission, batch formation, and buffer coalescing can actuate separately in one run without claiming impossible same-operation coactivation.",
+  "data_and_state_considerations": "All catalog lookup, hashing, proof review, promotion, materialization, projection, and cell result assembly remain offline. Runtime authorization is internal-only immutable test infrastructure. Each cell receives a fresh run identity and connection state. Operation identity remains run, connection, epoch, axis, decision, and operation composite identity; buffer release remains exactly once and oversized logical-write completion remains exactly once.",
+  "edge_cases_and_constraints": [
+    "A legacy level is represented exactly and does not require behavior-distinct actuation.",
+    "A nonlegacy configured level must actuate in at least one operation in its own cell.",
+    "Oversized fragments can make batch or buffer distinctness impossible on the same operation, so later identity-bound opportunities are required.",
+    "bounded_multi_fragment and queued_send_burst_budget are never authorized by this family.",
+    "No generic maximum-varied-axis switch or covering-array generator is permitted."
+  ],
+  "alternatives_considered": [
+    "Extend the existing two-axis send_composition token generically; rejected because it would blur family and proof boundaries.",
+    "Authorize the existing 12-cell planning superset; rejected because bounded_multi_fragment remains review-blocked.",
+    "Treat operation-local noncoactivation as cell inactivity; rejected because separately attributable downstream opportunities can actuate in the same cell."
+  ],
+  "risks": [
+    "Stale catalog or proof hashes could silently authorize the wrong cell unless all bindings are exact.",
+    "A harness could falsely credit activation across cells unless every operation identity is run-local.",
+    "Policy-selection semantics must remain untouched even when the bounded proof cannot be promoted."
+  ]
+}

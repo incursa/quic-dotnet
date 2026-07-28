@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0118",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Reviewed admission-family correctness verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-ADMISSION-CORRECTNESS",
+    "ARC-QUIC-CRT-0116",
+    "WI-QUIC-CRT-0117"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0241",
+    "REQ-QUIC-CRT-0242",
+    "REQ-QUIC-CRT-0243",
+    "REQ-QUIC-CRT-0244",
+    "REQ-QUIC-CRT-0245",
+    "REQ-QUIC-CRT-0246"
+  ],
+  "scope": "Verify independent runtime-proof review, exact sequential promotion, preserved bounded blocker, exact finite admission-family authorization, isolated execution and immutable evidence for A0 through A7, and the correctness-only stopping boundary.",
+  "verification_method": "Schema and canonical hash validation; exact source, binary, host, plan, manifest, workload, operation, release, materialization, classification, inventory, projection, proof, review, promotion, catalog, authorization, and cell-result recomputation; focused runtime mechanism and cross-axis tests; retained experiment-control regressions; Release builds; direct touched-artifact SpecTrace validation; and diff hygiene.",
+  "preconditions": [
+    "The accepted runtime-proof-capture chain at source commit 8d510a34737c2c475b36199af2e089043c6d4213 is present beneath the selected source descendant.",
+    "The existing single_eligible batch and memory_conservative buffer reviewed proofs remain passed and current.",
+    "Performance measurement, active behavior, queued burst interaction, bounded_multi_fragment authorization, arbitrary multi-axis execution, and CI changes remain disabled."
+  ],
+  "procedure": [
+    "Recompute and independently review the single_fragment, bounded_multi_fragment, and single_datagram proof chains.",
+    "Prove single_fragment and single_datagram pass only when every exact assertion passes; prove bounded_multi_fragment remains blocked on shadow_recommendation_value_mismatch when the production recommendation remains single_fragment.",
+    "Apply only eligible promotions one at a time and prove each exact catalog-base rebind.",
+    "Verify the existing batch and buffer reviewed proofs and all three admission-family prerequisites.",
+    "Validate send_admission_composition_correctness_v1 against exact family, graph, constraint, reviewed-proof catalog, manifest, source, and A0 through A7 identities.",
+    "Reject bounded_multi_fragment, nonlegacy queued burst, any fourth axis, stale proof or catalog, out-of-family cells, performance intent, active intent, wildcard capability, and generic varied-axis authorization.",
+    "Execute A0 through A7 one cell at a time with fresh run and connection identity.",
+    "For every configured nonlegacy value, prove at least one behavior-distinct operation in that cell; preserve separate operations when one operation cannot actuate every seam.",
+    "Recompute every cell behavior and outcome materialization, projection, artifact inventory, classifications, cross-axis assertions, and correctness result.",
+    "Run retained and new focused regressions, mechanism tests, Release builds, direct touched-artifact SpecTrace validation, and git diff --check."
+  ],
+  "expected_result": "single_fragment and single_datagram receive independent passed reviews and exact promotions when all evidence remains valid; bounded_multi_fragment remains blocked and unpromoted; exactly A0 through A7 are correctness-authorized and executed or receive precise blockers; every passed nonlegacy cell proves local actuation and cross-axis correctness; all immutable chains recompute; and performance, active behavior, additional axes, arbitrary multi-axis execution, CI changes, and push remain absent.",
+  "evidence": [
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeRuntimeProofReview.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeProofPromotion.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeSendAdmissionCorrectness.ps1",
+    "tests/fixtures/adaptive-runtime-runtime-proof-capture",
+    "tests/fixtures/adaptive-runtime-send-admission-correctness"
+  ],
+  "status_summary": "Planned. Final status requires all proof-review, promotion, authorization, eight-cell, focused runtime, build, direct SpecTrace, and diff-hygiene evidence."
+}

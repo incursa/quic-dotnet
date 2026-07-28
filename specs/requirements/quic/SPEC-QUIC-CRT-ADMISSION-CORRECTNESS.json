@@ -1,0 +1,120 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-CRT-ADMISSION-CORRECTNESS",
+  "artifact_type": "specification",
+  "title": "Adaptive-runtime reviewed admission-family correctness",
+  "domain": "quic",
+  "capability": "adaptive-runtime-reviewed-admission-correctness",
+  "status": "draft",
+  "owner": "quic-maintainers",
+  "tags": [
+    "adaptive-runtime",
+    "correctness-only",
+    "proof-review",
+    "send-admission-composition"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-FACTOR-ONBOARDING",
+    "SPEC-QUIC-CRT-EXPERIMENT-CONTROL",
+    "ARC-QUIC-CRT-0116",
+    "WI-QUIC-CRT-0117",
+    "VER-QUIC-CRT-0118"
+  ],
+  "purpose": "Independently review the three runtime-derived factor proofs, promote only exact passed proofs, and validate the exact eight-cell send-admission composition family through a limited correctness-only runtime capability.",
+  "scope": "The specification applies only to independent review and promotion of oversized_write_admission_quantum=single_fragment, oversized_write_admission_quantum=bounded_multi_fragment, and queued_send_burst_budget=single_datagram, followed by correctness-only interaction of oversized_write_admission_quantum in {legacy_current,single_fragment}, application_send_batch_formation in {legacy_current,single_eligible}, and buffer_copy_coalescing in {legacy_current,memory_conservative}. Queued-send burst remains a separate family.",
+  "requirements": [
+    {
+      "id": "REQ-QUIC-CRT-0241",
+      "title": "Independently review runtime-derived factor proofs",
+      "statement": "The repository MUST independently recompute each exact runtime-derived proof chain from source plan through analytical projection; validate schema, canonical content hash, source commit, binary and host identity, workload identity, runtime mechanism provenance, composite operation identity, catalog-owned behavior and outcome materialization, classifications, artifact inventory, focused mechanism binding, fallback, shadow, rollback, terminal facts, and absence of performance-derived or expectation-authored mechanism facts; and emit one canonical content-hashed review with passed, blocked, or failed outcome while active and performance authorization remain false.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0116"],
+        "implemented_by": ["WI-QUIC-CRT-0117"],
+        "verified_by": ["VER-QUIC-CRT-0118"],
+        "x_test_refs": [
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeRuntimeProofReview.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeRuntimeProofCapture.ps1"
+        ],
+        "upstream_refs": ["tests/fixtures/adaptive-runtime-runtime-proof-capture"]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0242",
+      "title": "Promote passed proofs independently",
+      "statement": "The repository MUST promote a proof only when its independent review outcome is passed and promotion eligibility is true, bind each promotion to the exact axis, value, proof, operation evidence, mechanism capture, projection, review artifact, and current reviewed-proof catalog base hash, apply promotions one at a time with catalog-base recomputation between them, and retain every unapplied or blocked input and its negative evidence.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0116"],
+        "implemented_by": ["WI-QUIC-CRT-0117"],
+        "verified_by": ["VER-QUIC-CRT-0118"],
+        "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeProofPromotion.ps1"],
+        "upstream_refs": [
+          "eng/adaptive-runtime/experiment-control/reviewed-proofs",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-experiment-family-catalog-v3.json"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0243",
+      "title": "Preserve bounded multi-fragment policy blocker",
+      "statement": "When the production shadow recommendation for oversized_write_admission_quantum remains single_fragment, the bounded_multi_fragment review MUST record blocked outcome, false promotion eligibility, and blocker shadow_recommendation_value_mismatch, preserve its positive and terminal evidence, and leave selection thresholds, recommendation semantics, fragment quantum, scheduling objectives, and safety authority unchanged.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0116"],
+        "implemented_by": ["WI-QUIC-CRT-0117"],
+        "verified_by": ["VER-QUIC-CRT-0118"],
+        "x_test_refs": [
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeRuntimeProofReview.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeProofPromotion.ps1"
+        ],
+        "upstream_refs": ["src/Incursa.Quic/QuicOversizedWriteAdmissionPolicy.cs"]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0244",
+      "title": "Authorize exactly eight admission-family correctness cells",
+      "statement": "The repository MUST define send_admission_composition_correctness_v1 as an exact correctness-only authorization bound to the family, relationship graph, constraint catalog, reviewed-proof catalog version and hash, exact allowed axes and levels, exact A0 through A7 cell identities and hashes, exact source commit, and exact compiled manifest, invalidate stale catalog or hash bindings, keep active and performance authorization false, and reject bounded_multi_fragment, any queued-burst nonlegacy value, any fourth behavior-distinct axis, any unreviewed or stale proof, any cell outside A0 through A7, and any wildcard or generic allow-N-varied-axes capability.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0116"],
+        "implemented_by": ["WI-QUIC-CRT-0117"],
+        "verified_by": ["VER-QUIC-CRT-0118"],
+        "x_test_refs": [
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeSendAdmissionCorrectness.ps1",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0244.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-explicit-plan-v1.json",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0245",
+      "title": "Execute and prove the isolated A0 through A7 matrix",
+      "statement": "The repository MUST execute exactly A0 through A7 one cell at a time with a fresh run identity and isolated connection state; use deterministic bounded oversized-write, batch-formation, and buffer-coalescing opportunities in the same cell run where safe; bind separate policy-seam operations when they cannot co-actuate; require every configured nonlegacy value to behavior-distinctly actuate within its own cell before correctness_passed; preserve operation-local noncoactivation without treating it as cell inactivity; and produce the complete immutable authority chain, correctness-only counts, cell result, and exact cross-axis assertions without performance observations.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0116"],
+        "implemented_by": ["WI-QUIC-CRT-0117"],
+        "verified_by": ["VER-QUIC-CRT-0118"],
+        "x_test_refs": [
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeSendAdmissionCorrectness.ps1",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0245.cs"
+        ],
+        "upstream_refs": ["tests/fixtures/adaptive-runtime-send-admission-correctness"]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0246",
+      "title": "Preserve the correctness-only stopping boundary",
+      "statement": "The milestone MUST retain passing and negative cell evidence; fix only harness, evidence, schema, validator, authorization-plumbing, or unambiguous contract-defined correctness defects; stop an affected branch before changing policy recommendations, fragment quantum, thresholds, scheduling objectives, congestion or pacing authority, or safety guards; run focused regressions, Release builds, direct touched-artifact SpecTrace validation, and diff hygiene; and finish without performance measurement, arbitrary multi-axis execution, another-axis migration, adaptive-rule derivation, active behavior, CI modification, push, external dossier, or source snapshot.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0116"],
+        "implemented_by": ["WI-QUIC-CRT-0117"],
+        "verified_by": ["VER-QUIC-CRT-0118"],
+        "x_test_refs": [
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeSendAdmissionCorrectness.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeProofPromotion.ps1"
+        ],
+        "upstream_refs": ["docs/testing/adaptive-runtime-reviewed-admission-correctness.md"]
+      }
+    }
+  ]
+}

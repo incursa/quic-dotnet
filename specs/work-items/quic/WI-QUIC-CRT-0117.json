@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0117",
+  "artifact_type": "work_item",
+  "status": "planned",
+  "title": "Review proofs and validate the exact admission-family matrix",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Independently review the three runtime-derived proof candidates, promote only passed proofs, preserve the bounded shadow blocker, authorize only the exact A0 through A7 correctness cells, execute them through production seams, and close the immutable evidence chain.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-ADMISSION-CORRECTNESS",
+    "ARC-QUIC-CRT-0116",
+    "VER-QUIC-CRT-0118"
+  ],
+  "design_links": ["ARC-QUIC-CRT-0116"],
+  "verification_links": ["VER-QUIC-CRT-0118"],
+  "addresses": [
+    "REQ-QUIC-CRT-0241",
+    "REQ-QUIC-CRT-0242",
+    "REQ-QUIC-CRT-0243",
+    "REQ-QUIC-CRT-0244",
+    "REQ-QUIC-CRT-0245",
+    "REQ-QUIC-CRT-0246"
+  ],
+  "planned_changes": "Add a v3-aware independent proof reviewer and canonical review records; add exact sequential promotion tooling and reviewed-proof catalog updates; retain bounded_multi_fragment as blocked; add versioned finite authorization contracts, schemas, plan, manifest binding, and negative cases for send_admission_composition_correctness_v1; add an internal exact three-axis token and narrow runtime gate; execute deterministic isolated A0 through A7 cells with separate identity-bound opportunities; assemble and recompute each immutable evidence chain and cell result; add a canonical closeout document and update the evidence ledger and family status.",
+  "verification_plan": "Run experiment-control, compiler/manifest, runtime-evidence, hardening, evidence-integrity, independent-proof, factor-onboarding, runtime-proof-capture, proof-review, proof-promotion, limited-authorization, and eight-cell regressions; run focused oversized, batch, buffer, ownership, and cross-axis tests; build Incursa.Quic and Incursa.Quic.Tests in Release; validate touched SpecTrace artifacts directly; run git diff --check; and record the unrelated broader baseline separately.",
+  "out_of_scope": [
+    "Changing bounded_multi_fragment shadow recommendation or authorizing that value",
+    "Adding queued_send_burst_budget to the admission interaction",
+    "Performance measurement, rule derivation, or release of the measurement freeze",
+    "Arbitrary multi-axis or covering-array execution",
+    "Another-axis migration, active_internal, or production activation",
+    "CI changes, push, source snapshot, or external dossier"
+  ]
+}
