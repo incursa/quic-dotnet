@@ -279,28 +279,28 @@ foreach ($runInput in $expectedRunInputs) {
         throw "missing_exact_package_identities:$($runInput.cell_id)"
     }
 
-    $runHelperArgs = @(
-        '-ControllerUri', $controllerUri,
-        '-PackageTarget', 'RawQuic',
-        '-ProtocolLabRoot', $protocolLabRootFull,
-        '-ScenarioId', 'quic.transport.multiplex.100x64kb',
-        '-Protocol', 'quic',
-        '-TestExecutorId', 'quic-go-raw-load',
-        '-LoadProfileId', 'raw-quic-peer-confidence',
-        '-Repetitions', '2',
-        '-PlacementPolicy', 'isolated-pair',
-        '-PackageVersion', $packageVersion,
-        '-RunIdPrefix', $runIdPrefix,
-        '-ResultRoot', $cellOutputRoot,
-        '-TimeoutSeconds', '3600',
-        '-UsePackageReferenceOnly',
-        '-PackageReference', ("{0}|{1}|{2}" -f $packageRef.packageId, $packageRef.packageVersion, $packageRef.sha256),
-        '-AdaptiveRuntimeOversizedWriteAdmissionPolicy', [string]$runInput.oversized_write_admission_quantum,
-        '-AdaptiveRuntimeApplicationSendBatchPolicy', [string]$runInput.application_send_batch_formation,
-        '-AdaptiveRuntimeBufferCopyPolicy', [string]$runInput.buffer_copy_coalescing
-    )
+    $runHelperArgs = @{
+        ControllerUri = $controllerUri
+        PackageTarget = 'RawQuic'
+        ProtocolLabRoot = $protocolLabRootFull
+        ScenarioId = 'quic.transport.multiplex.100x64kb'
+        Protocol = 'quic'
+        TestExecutorId = 'quic-go-raw-load'
+        LoadProfileId = 'raw-quic-peer-confidence'
+        Repetitions = 2
+        PlacementPolicy = 'isolated-pair'
+        PackageVersion = $packageVersion
+        RunIdPrefix = $runIdPrefix
+        ResultRoot = $cellOutputRoot
+        TimeoutSeconds = 3600
+        UsePackageReferenceOnly = $true
+        PackageReference = ("{0}|{1}|{2}" -f $packageRef.packageId, $packageRef.packageVersion, $packageRef.sha256)
+        AdaptiveRuntimeOversizedWriteAdmissionPolicy = [string]$runInput.oversized_write_admission_quantum
+        AdaptiveRuntimeApplicationSendBatchPolicy = [string]$runInput.application_send_batch_formation
+        AdaptiveRuntimeBufferCopyPolicy = [string]$runInput.buffer_copy_coalescing
+    }
     if (-not [string]::IsNullOrWhiteSpace($protocolLabExecutionRootFull)) {
-        $runHelperArgs += @('-ProtocolLabExecutionRoot', $protocolLabExecutionRootFull)
+        $runHelperArgs.ProtocolLabExecutionRoot = $protocolLabExecutionRootFull
     }
 
     try {
