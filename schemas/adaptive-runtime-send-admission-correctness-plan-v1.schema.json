@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/incursa/quic-dotnet/schemas/adaptive-runtime-send-admission-correctness-plan-v1.schema.json",
+  "title": "Adaptive runtime send-admission correctness plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "authorization_id",
+    "family_id",
+    "execution_purpose",
+    "allowed_axis_levels",
+    "fixed_axis_values",
+    "planned_cells",
+    "source_document_refs",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "adaptive-runtime-send-admission-correctness-plan-v1"
+    },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "authorization_id": {
+      "const": "send_admission_composition_correctness_v1"
+    },
+    "family_id": { "const": "send_admission_composition" },
+    "execution_purpose": { "const": "correctness_only" },
+    "allowed_axis_levels": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "$ref": "#/$defs/axisLevels" }
+    },
+    "fixed_axis_values": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": { "$ref": "#/$defs/fixedAxis" }
+    },
+    "planned_cells": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": { "$ref": "#/$defs/cell" }
+    },
+    "source_document_refs": {
+      "type": "array",
+      "minItems": 8,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/documentRef" }
+    },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/trace" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "schema_version",
+        "document_version",
+        "content_sha256"
+      ],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "schema_version": { "$ref": "#/$defs/id" },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "axisLevels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis_id", "levels"],
+      "properties": {
+        "axis_id": {
+          "enum": [
+            "oversized_write_admission_quantum",
+            "application_send_batch_formation",
+            "buffer_copy_coalescing"
+          ]
+        },
+        "levels": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "legacy_current",
+              "single_fragment",
+              "single_eligible",
+              "memory_conservative"
+            ]
+          }
+        }
+      }
+    },
+    "fixedAxis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis_id", "configured_value"],
+      "properties": {
+        "axis_id": {
+          "enum": [
+            "application_send_turn_planning",
+            "queued_send_burst_budget"
+          ]
+        },
+        "configured_value": { "const": "legacy_current" }
+      }
+    },
+    "cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cell_id",
+        "content_sha256",
+        "oversized_write_admission_quantum",
+        "application_send_batch_formation",
+        "buffer_copy_coalescing"
+      ],
+      "properties": {
+        "cell_id": {
+          "pattern": "^cell\\.send_admission_composition\\.correctness\\.a[0-7]$"
+        },
+        "content_sha256": { "$ref": "#/$defs/hash" },
+        "oversized_write_admission_quantum": {
+          "enum": ["legacy_current", "single_fragment"]
+        },
+        "application_send_batch_formation": {
+          "enum": ["legacy_current", "single_eligible"]
+        },
+        "buffer_copy_coalescing": {
+          "enum": ["legacy_current", "memory_conservative"]
+        }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "architecture_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "work_item_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "verification_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/incursa/quic-dotnet/schemas/adaptive-runtime-send-admission-correctness-authorization-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "authorization_id",
+    "family_id",
+    "execution_purpose",
+    "source_commit",
+    "compiled_manifest_ref",
+    "family_catalog_ref",
+    "relationship_catalog_ref",
+    "constraint_catalog_ref",
+    "axis_catalog_ref",
+    "behavior_catalog_ref",
+    "reviewed_proof_refs",
+    "allowed_axis_levels",
+    "fixed_axis_values",
+    "authorized_cell_refs",
+    "invalidation_policy",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "adaptive-runtime-send-admission-correctness-authorization-v1"
+    },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "authorization_id": {
+      "const": "send_admission_composition_correctness_v1"
+    },
+    "family_id": { "const": "send_admission_composition" },
+    "execution_purpose": { "const": "correctness_only" },
+    "source_commit": { "pattern": "^[0-9a-f]{40}$" },
+    "compiled_manifest_ref": { "$ref": "#/$defs/documentRef" },
+    "family_catalog_ref": { "$ref": "#/$defs/documentRef" },
+    "relationship_catalog_ref": { "$ref": "#/$defs/documentRef" },
+    "constraint_catalog_ref": { "$ref": "#/$defs/documentRef" },
+    "axis_catalog_ref": { "$ref": "#/$defs/documentRef" },
+    "behavior_catalog_ref": { "$ref": "#/$defs/documentRef" },
+    "reviewed_proof_refs": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/documentRef" }
+    },
+    "allowed_axis_levels": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "$ref": "#/$defs/axisLevels" }
+    },
+    "fixed_axis_values": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": { "$ref": "#/$defs/fixedAxis" }
+    },
+    "authorized_cell_refs": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": { "$ref": "#/$defs/cellRef" }
+    },
+    "invalidation_policy": {
+      "const": "invalid_on_any_bound_hash_version_source_or_cell_change"
+    },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/trace" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "schema_version",
+        "document_version",
+        "content_sha256"
+      ],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "schema_version": { "$ref": "#/$defs/id" },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "cellRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cell_id", "content_sha256"],
+      "properties": {
+        "cell_id": { "$ref": "#/$defs/id" },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "axisLevels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis_id", "levels"],
+      "properties": {
+        "axis_id": {
+          "enum": [
+            "oversized_write_admission_quantum",
+            "application_send_batch_formation",
+            "buffer_copy_coalescing"
+          ]
+        },
+        "levels": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "fixedAxis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis_id", "configured_value"],
+      "properties": {
+        "axis_id": {
+          "enum": [
+            "application_send_turn_planning",
+            "queued_send_burst_budget"
+          ]
+        },
+        "configured_value": { "const": "legacy_current" }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": { "type": "array", "minItems": 1 },
+        "architecture_ids": { "type": "array", "minItems": 1 },
+        "work_item_ids": { "type": "array", "minItems": 1 },
+        "verification_ids": { "type": "array", "minItems": 1 }
+      }
+    }
+  }
+}

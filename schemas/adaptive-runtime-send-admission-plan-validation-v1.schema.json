@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/incursa/quic-dotnet/schemas/adaptive-runtime-send-admission-plan-validation-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "validated_plan_ref",
+    "validation_classification",
+    "validated_cell_refs",
+    "validation_errors",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "adaptive-runtime-send-admission-plan-validation-v1"
+    },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "validated_plan_ref": { "$ref": "#/$defs/documentRef" },
+    "validation_classification": {
+      "const": "valid_exact_eight_cell_correctness"
+    },
+    "validated_cell_refs": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": { "$ref": "#/$defs/cellRef" }
+    },
+    "validation_errors": { "type": "array", "maxItems": 0 },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/trace" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "schema_version",
+        "document_version",
+        "content_sha256"
+      ],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "schema_version": { "$ref": "#/$defs/id" },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "cellRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cell_id", "content_sha256"],
+      "properties": {
+        "cell_id": { "$ref": "#/$defs/id" },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": { "type": "array", "minItems": 1 },
+        "architecture_ids": { "type": "array", "minItems": 1 },
+        "work_item_ids": { "type": "array", "minItems": 1 },
+        "verification_ids": { "type": "array", "minItems": 1 }
+      }
+    }
+  }
+}
