@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/incursa/quic-dotnet/schemas/adaptive-runtime-actuation-proof-review-v2.schema.json",
+  "title": "Adaptive runtime actuation proof independent review v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "review_id",
+    "proof_id",
+    "proof_hash",
+    "candidate_ref",
+    "axis_id",
+    "policy_value",
+    "source_commit",
+    "binary_sha256",
+    "reviewer_identity",
+    "review_timestamp",
+    "reviewed_evidence_refs",
+    "assertion_results",
+    "failed_assertions",
+    "review_outcome",
+    "promotion_eligibility",
+    "blocker",
+    "recomputed_behavior_materialization_sha256",
+    "recomputed_outcome_materialization_sha256",
+    "recomputed_projection_sha256",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "adaptive-runtime-actuation-proof-review-v2"
+    },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 2 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "review_id": { "$ref": "#/$defs/id" },
+    "proof_id": { "$ref": "#/$defs/id" },
+    "proof_hash": { "$ref": "#/$defs/hash" },
+    "candidate_ref": { "$ref": "#/$defs/documentRef" },
+    "axis_id": {
+      "enum": [
+        "oversized_write_admission_quantum",
+        "queued_send_burst_budget"
+      ]
+    },
+    "policy_value": {
+      "enum": [
+        "single_fragment",
+        "bounded_multi_fragment",
+        "single_datagram"
+      ]
+    },
+    "source_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "binary_sha256": { "$ref": "#/$defs/hash" },
+    "reviewer_identity": { "$ref": "#/$defs/id" },
+    "review_timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reviewed_evidence_refs": {
+      "type": "array",
+      "minItems": 17,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/documentRef" }
+    },
+    "assertion_results": {
+      "type": "array",
+      "minItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["assertion_id", "status", "evidence"],
+        "properties": {
+          "assertion_id": { "$ref": "#/$defs/id" },
+          "status": {
+            "enum": ["passed", "failed", "not_applicable"]
+          },
+          "evidence": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "failed_assertions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "review_outcome": {
+      "enum": ["passed", "failed", "blocked"]
+    },
+    "promotion_eligibility": { "type": "boolean" },
+    "blocker": {
+      "type": ["string", "null"],
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "recomputed_behavior_materialization_sha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "recomputed_outcome_materialization_sha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "recomputed_projection_sha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/traceReferences" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "review_outcome": { "const": "passed" } }
+      },
+      "then": {
+        "properties": {
+          "promotion_eligibility": { "const": true },
+          "blocker": { "type": "null" },
+          "failed_assertions": { "maxItems": 0 }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "review_outcome": { "const": "blocked" } }
+      },
+      "then": {
+        "properties": {
+          "promotion_eligibility": { "const": false },
+          "blocker": { "const": "shadow_recommendation_value_mismatch" }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "schema_version",
+        "document_version",
+        "content_sha256"
+      ],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "schema_version": { "$ref": "#/$defs/id" },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "traceReferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "architecture_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "work_item_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "verification_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}
