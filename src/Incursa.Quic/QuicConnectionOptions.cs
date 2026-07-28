@@ -217,6 +217,12 @@ public abstract class QuicConnectionOptions
     internal QuicAdaptiveRuntimeCorrectnessInteractionAuthorization?
         SendCompositionCorrectnessAuthorization { get; set; }
 
+    // CONTEXT: This token authorizes only the exact reviewed A0-A7
+    // send-admission correctness matrix. It remains internal, correctness
+    // only, and cannot authorize adaptive selection or performance.
+    internal QuicAdaptiveRuntimeAdmissionCorrectnessAuthorization?
+        SendAdmissionCorrectnessAuthorization { get; set; }
+
     // CONTEXT: This fixed token is produced only by the reviewed offline
     // send-composition campaign. It is not public configuration, cannot
     // authorize active behavior, and cannot authorize performance acceptance.

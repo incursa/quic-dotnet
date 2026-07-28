@@ -1989,6 +1989,16 @@ internal sealed partial class QuicConnectionRuntime :
             && performanceAuthorization.Authorizes(
                 forcedApplicationSendBatchMode,
                 forcedBufferCopyPolicyValue);
+        bool sendAdmissionCorrectnessAuthorized =
+            options.SendAdmissionCorrectnessAuthorization
+                is { } admissionAuthorization
+            && admissionAuthorization.Authorizes(
+                forcedOversizedWriteAdmissionMode,
+                forcedApplicationSendBatchMode,
+                forcedBufferCopyPolicyValue,
+                forcedMode,
+                forcedApplicationSendTurnMode,
+                forcedQueuedSendBurstMode);
         if (options.SendCompositionCorrectnessAuthorization is not null
             && !sendCompositionCorrectnessAuthorized)
         {
@@ -2001,11 +2011,24 @@ internal sealed partial class QuicConnectionRuntime :
             throw new InvalidOperationException(
                 "The send-composition offline measurement authorization does not match the exact forced cell.");
         }
+        if (options.SendAdmissionCorrectnessAuthorization is not null
+            && !sendAdmissionCorrectnessAuthorized)
+        {
+            throw new InvalidOperationException(
+                "The send-admission correctness authorization does not match the exact A0-A7 forced cell.");
+        }
         if (options.SendCompositionCorrectnessAuthorization is not null
             && options.SendCompositionPerformanceAuthorization is not null)
         {
             throw new InvalidOperationException(
                 "Correctness and offline measurement authorizations are mutually exclusive.");
+        }
+        if (options.SendAdmissionCorrectnessAuthorization is not null
+            && (options.SendCompositionCorrectnessAuthorization is not null
+                || options.SendCompositionPerformanceAuthorization is not null))
+        {
+            throw new InvalidOperationException(
+                "Send-admission correctness authorization is mutually exclusive with send-composition authorizations.");
         }
         if (applicationSendBatchTreatmentSelected)
         {
@@ -2029,7 +2052,8 @@ internal sealed partial class QuicConnectionRuntime :
                     "Application-send batch policy requires the legacy_current queued-send burst policy.");
             }
 
-            if (forcedOversizedWriteAdmissionMode is not null
+            if (!sendAdmissionCorrectnessAuthorized
+                && forcedOversizedWriteAdmissionMode is not null
                 and not QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent)
             {
                 throw new InvalidOperationException(
@@ -2055,7 +2079,8 @@ internal sealed partial class QuicConnectionRuntime :
                     "Queued-send burst policy requires the legacy_current application-send turn policy.");
             }
 
-            if (forcedApplicationSendBatchMode is not null
+            if (!sendAdmissionCorrectnessAuthorized
+                && forcedApplicationSendBatchMode is not null
                 and not QuicApplicationSendBatchPolicyMode.LegacyCurrent)
             {
                 throw new InvalidOperationException(
@@ -2089,7 +2114,8 @@ internal sealed partial class QuicConnectionRuntime :
                     "Oversized-write admission policy requires the legacy_current application-send turn policy.");
             }
 
-            if (forcedApplicationSendBatchMode is not null
+            if (!sendAdmissionCorrectnessAuthorized
+                && forcedApplicationSendBatchMode is not null
                 and not QuicApplicationSendBatchPolicyMode.LegacyCurrent)
             {
                 throw new InvalidOperationException(
@@ -2120,7 +2146,8 @@ internal sealed partial class QuicConnectionRuntime :
                     "Buffer-copy policy requires the legacy_current application-send turn policy.");
             }
 
-            if (!sendCompositionCorrectnessAuthorized
+            if (!sendAdmissionCorrectnessAuthorized
+                && !sendCompositionCorrectnessAuthorized
                 && !sendCompositionPerformanceAuthorized
                 && forcedApplicationSendBatchMode is not null
                 and not QuicApplicationSendBatchPolicyMode.LegacyCurrent)
@@ -2136,7 +2163,8 @@ internal sealed partial class QuicConnectionRuntime :
                     "Buffer-copy policy requires the legacy_current queued-send burst policy.");
             }
 
-            if (forcedOversizedWriteAdmissionMode is not null
+            if (!sendAdmissionCorrectnessAuthorized
+                && forcedOversizedWriteAdmissionMode is not null
                 and not QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent)
             {
                 throw new InvalidOperationException(
@@ -2227,7 +2255,23 @@ internal sealed partial class QuicConnectionRuntime :
             + (applicationDatagramBatchTransportTreatmentSelected ? 1 : 0)
             + (congestionPacingProfileTreatmentSelected ? 1 : 0);
         const int SendCompositionBehaviorDistinctTreatmentCount = 2;
+        bool exactSendAdmissionTreatmentSet =
+            sendAdmissionCorrectnessAuthorized
+            && !applicationSendTurnTreatmentSelected
+            && !queuedSendBurstTreatmentSelected
+            && !adaptiveBackpressureTreatmentSelected
+            && !packetFlushCadenceTreatmentSelected
+            && !receiveDeliveryQuantumTreatmentSelected
+            && !applicationDatagramBatchTransportTreatmentSelected
+            && !congestionPacingProfileTreatmentSelected;
+        if (sendAdmissionCorrectnessAuthorized
+            && !exactSendAdmissionTreatmentSet)
+        {
+            throw new InvalidOperationException(
+                "The send-admission correctness authorization cannot join a fourth behavior-distinct axis.");
+        }
         if (behaviorDistinctTreatmentCount > 1
+            && !exactSendAdmissionTreatmentSet
             && !(behaviorDistinctTreatmentCount
                     == SendCompositionBehaviorDistinctTreatmentCount
                 && applicationSendBatchTreatmentSelected
