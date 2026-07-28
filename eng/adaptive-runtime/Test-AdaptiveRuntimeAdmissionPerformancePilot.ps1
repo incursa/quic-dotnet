@@ -154,6 +154,19 @@ Assert-CompileRejects $componentPackagePilot 'wrong-component-package' `
     'component_package_references'
 
 $driverPath = Join-Path $PSScriptRoot 'Invoke-AdaptiveRuntimeAdmissionPerformancePilot.ps1'
+$driverText = Get-Content -LiteralPath $driverPath -Raw
+Assert-Ready (
+    $driverText.Contains('$runJson.job.result.runId') -and
+    $driverText.Contains('pilot_cell_job_failed') -and
+    $driverText.Contains('Write-PilotState')
+) 'driver_terminal_failure_retention_missing'
+Assert-Ready (
+    $driverText.Contains('independent_physical_hosts') -and
+    $driverText.Contains('pilot_cell_topology_not_credible')
+) 'driver_credible_topology_gate_missing'
+Assert-Ready (
+    $driverText.Contains('$sourceCommit.Substring(0, 8)')
+) 'driver_source_commit_package_version_missing'
 $driverRoot = Join-Path $TemporaryRoot 'driver'
 $planOnly = & $driverPath `
     -RepositoryRoot $RepositoryRoot `

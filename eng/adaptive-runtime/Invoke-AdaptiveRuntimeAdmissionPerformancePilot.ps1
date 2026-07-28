@@ -56,6 +56,154 @@ function Get-PhysicalHostId {
     return $null
 }
 
+function Get-PilotTopology {
+    param(
+        [Parameter(Mandatory = $true)] [object] $Job,
+        [Parameter(Mandatory = $true)] [object[]] $Nodes
+    )
+
+    $leases = @($Job.reservation.leases)
+    $sutLease = @($leases | Where-Object roleId -ceq 'sut' | Select-Object -First 1)
+    $loadLease = @($leases | Where-Object roleId -ceq 'load' | Select-Object -First 1)
+    $sutNodeId = if ($sutLease.Count -eq 1) { [string]$sutLease[0].nodeId } else { $null }
+    $loadNodeId = if ($loadLease.Count -eq 1) { [string]$loadLease[0].nodeId } else { $null }
+    $sutNode = @($Nodes | Where-Object nodeId -ceq $sutNodeId | Select-Object -First 1)
+    $loadNode = @($Nodes | Where-Object nodeId -ceq $loadNodeId | Select-Object -First 1)
+    $sutPhysicalHostId = if ($sutNode.Count -eq 1) {
+        Get-PhysicalHostId $sutNode[0]
+    }
+    else {
+        $null
+    }
+    $loadPhysicalHostId = if ($loadNode.Count -eq 1) {
+        Get-PhysicalHostId $loadNode[0]
+    }
+    else {
+        $null
+    }
+
+    $classification = if ([string]::IsNullOrWhiteSpace($sutNodeId) -or
+        [string]::IsNullOrWhiteSpace($loadNodeId)) {
+        'topology_unverified'
+    }
+    elseif ([string]::IsNullOrWhiteSpace($sutPhysicalHostId) -or
+        [string]::IsNullOrWhiteSpace($loadPhysicalHostId)) {
+        'physical_host_unverified'
+    }
+    elseif ([string]::Equals(
+        $sutPhysicalHostId,
+        $loadPhysicalHostId,
+        [StringComparison]::OrdinalIgnoreCase)) {
+        'shared_physical_host'
+    }
+    else {
+        'independent_physical_hosts'
+    }
+
+    [pscustomobject][ordered]@{
+        sutNodeId = $sutNodeId
+        loadNodeId = $loadNodeId
+        sutPhysicalHostId = $sutPhysicalHostId
+        loadPhysicalHostId = $loadPhysicalHostId
+        classification = $classification
+    }
+}
+
+function Write-PilotState {
+    param(
+        [Parameter(Mandatory = $true)] [object] $Manifest,
+        [Parameter(Mandatory = $true)] [object[]] $RunRecords,
+        [Parameter(Mandatory = $true)] [object[]] $ExpectedRunInputs,
+        [Parameter(Mandatory = $true)] [object] $Preflight,
+        [Parameter(Mandatory = $true)] [object] $Pilot,
+        [Parameter(Mandatory = $true)] [string] $ControllerUri,
+        [Parameter(Mandatory = $true)] [string] $ExecutionManifestPath,
+        [Parameter(Mandatory = $true)] [string] $PreflightPath,
+        [Parameter(Mandatory = $true)] [string] $PackagesPath,
+        [Parameter(Mandatory = $true)] [string] $ControllerIndexPath
+    )
+
+    Write-JsonFile -Path $PreflightPath -Value $Preflight
+    Write-JsonFile -Path $PackagesPath -Value @{
+        implementation_packages = @(
+            $RunRecords | ForEach-Object { $_.package_ref }
+        )
+        component_packages = @(
+            $Pilot.package_selection.component_package_references
+        )
+    }
+    Write-JsonFile -Path $ControllerIndexPath -Value @{
+        controller_uri = $ControllerUri
+        runs = @($RunRecords)
+    }
+
+    $Manifest.planned_runs = @($ExpectedRunInputs | ForEach-Object {
+        $runInput = $_
+        $record = @($RunRecords |
+            Where-Object cell_id -ceq $runInput.cell_id |
+            Select-Object -First 1)
+        if ($record.Count -eq 0) {
+            [pscustomobject][ordered]@{
+                cell_id = $runInput.cell_id
+                execution_order_index = @($ExpectedRunInputs).IndexOf($runInput) + 1
+                repetitions = 2
+                state = 'planned'
+                job_id = $null
+                package_ref = $null
+                run_id = $null
+                topology = $null
+                outcome = 'planned'
+                controller_artifact_index_path = $null
+                controller_artifact_downloads = @()
+                policy_controls = [pscustomobject][ordered]@{
+                    oversized_write_admission_quantum =
+                        $runInput.oversized_write_admission_quantum
+                    application_send_batch_formation =
+                        $runInput.application_send_batch_formation
+                    buffer_copy_coalescing =
+                        $runInput.buffer_copy_coalescing
+                }
+            }
+        }
+        else {
+            $current = $record[0]
+            $state = switch ([string]$current.outcome) {
+                'Completed' { 'completed' }
+                'submitted' { 'executing' }
+                'Running' { 'executing' }
+                'Queued' { 'executing' }
+                'planned' { 'planned' }
+                default { 'failed' }
+            }
+            [pscustomobject][ordered]@{
+                cell_id = $current.cell_id
+                execution_order_index = $current.execution_order_index
+                repetitions = 2
+                state = $state
+                job_id = $current.job_id
+                package_ref = $current.package_ref
+                run_id = $current.run_id
+                topology = $current.topology
+                outcome = $current.outcome
+                controller_artifact_index_path =
+                    $current.controller_artifact_index_path
+                controller_artifact_downloads =
+                    @($current.controller_artifact_downloads)
+                policy_controls = [pscustomobject][ordered]@{
+                    oversized_write_admission_quantum =
+                        $runInput.oversized_write_admission_quantum
+                    application_send_batch_formation =
+                        $runInput.application_send_batch_formation
+                    buffer_copy_coalescing =
+                        $runInput.buffer_copy_coalescing
+                }
+            }
+        }
+    })
+    [void](Set-AdaptiveRuntimeDocumentHash $Manifest)
+    Write-AdaptiveRuntimeCanonicalDocument $Manifest $ExecutionManifestPath
+}
+
 function Invoke-ControllerJson {
     param(
         [Parameter(Mandatory = $true)][string] $Uri,
@@ -259,8 +407,15 @@ Assert-Pilot ($componentPackageReferenceStrings.Count -eq 2) `
     'component_package_reference_count_invalid'
 
 $runRecords = [System.Collections.Generic.List[object]]::new()
-$packageVersionPrefix = 'adaptive-runtime-admission-performance-pilot-{0}' -f
-    ([string]$manifest.content_sha256).Substring(0, 8)
+$sourceCommit = (& git -C $RepositoryRoot rev-parse HEAD).Trim()
+Assert-Pilot (
+    $LASTEXITCODE -eq 0 -and
+    $sourceCommit -match '^[0-9a-f]{40}$'
+) 'source_commit_unresolved'
+$packageVersionPrefix =
+    'adaptive-runtime-admission-performance-pilot-{0}-{1}' -f
+        ([string]$manifest.content_sha256).Substring(0, 8),
+        $sourceCommit.Substring(0, 8)
 $protocolLabRootFull = Resolve-AbsolutePath -Path $ProtocolLabRoot -BasePath $RepositoryRoot
 $protocolLabExecutionRootFull = if ([string]::IsNullOrWhiteSpace($ProtocolLabExecutionRoot)) {
     $null
@@ -368,11 +523,35 @@ foreach ($runInput in $expectedRunInputs) {
         $runResult = & (Join-Path $PSScriptRoot '..\protocol-lab\Invoke-QuicDotNetProtocolLabRun.ps1') @runHelperArgs
         $runJson = $runResult | ConvertFrom-Json
         Write-JsonFile -Path $cellManifestPath -Value $runJson
+        Write-JsonFile -Path $jobResultPath -Value $runJson.job
         $runRecord.job_id = [string]$runJson.job.jobId
-        $runRecord.run_id = [string]$runJson.job.runId
-        $runRecord.topology = if ($null -ne $runJson.job.reservation) { $runJson.job.reservation } else { $null }
+        $runId = [string]$runJson.job.result.runId
+        if ([string]::IsNullOrWhiteSpace($runId)) {
+            $leaseRunIds = @(
+                $runJson.job.reservation.leases |
+                    ForEach-Object { [string]$_.result.runId } |
+                    Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+                    Select-Object -First 1
+            )
+            if ($leaseRunIds.Count -gt 0) {
+                $runId = [string]$leaseRunIds[0]
+            }
+        }
+        $runRecord.run_id = if ([string]::IsNullOrWhiteSpace($runId)) {
+            $null
+        }
+        else {
+            $runId
+        }
+        $runRecord.topology = Get-PilotTopology -Job $runJson.job -Nodes $nodes
         $runRecord.outcome = if ([string]::IsNullOrWhiteSpace([string]$runJson.job.status)) { 'submitted' } else { [string]$runJson.job.status }
-        $runRecord.controller_artifact_index_path = $artifactIndexPath
+        $runRecord.controller_artifact_index_path = if (
+            Test-Path -LiteralPath $artifactIndexPath -PathType Leaf) {
+            $artifactIndexPath
+        }
+        else {
+            $null
+        }
         $runRecord.controller_artifact_downloads = @()
         if (Test-Path -LiteralPath $artifactIndexPath -PathType Leaf) {
             $runRecord.controller_artifact_downloads = @(Get-ChildItem -LiteralPath $downloadRoot -File -ErrorAction SilentlyContinue | ForEach-Object FullName)
@@ -383,50 +562,79 @@ foreach ($runInput in $expectedRunInputs) {
         $runRecord.outcome = 'failed'
         $runRecord.controller_artifact_downloads = @()
         $preflight.blockers += $_.Exception.Message
+        [void]$runRecords.Add([pscustomobject]$runRecord)
+        Write-PilotState `
+            -Manifest $manifest `
+            -RunRecords @($runRecords) `
+            -ExpectedRunInputs $expectedRunInputs `
+            -Preflight $preflight `
+            -Pilot $pilot `
+            -ControllerUri $controllerUri `
+            -ExecutionManifestPath $executionManifestPath `
+            -PreflightPath $preflightPath `
+            -PackagesPath $packagesPath `
+            -ControllerIndexPath $controllerIndexPath
         throw
     }
 
     [void]$runRecords.Add([pscustomobject]$runRecord)
+    if ($runRecord.outcome -cne 'Completed') {
+        $reasonCode = [string]$runJson.job.result.failureReasonCode
+        $blocker = 'pilot_cell_job_failed:{0}:{1}:{2}:{3}' -f
+            $runInput.cell_id,
+            $runRecord.job_id,
+            $runRecord.outcome,
+            $reasonCode
+        $preflight.blockers += $blocker
+        Write-PilotState `
+            -Manifest $manifest `
+            -RunRecords @($runRecords) `
+            -ExpectedRunInputs $expectedRunInputs `
+            -Preflight $preflight `
+            -Pilot $pilot `
+            -ControllerUri $controllerUri `
+            -ExecutionManifestPath $executionManifestPath `
+            -PreflightPath $preflightPath `
+            -PackagesPath $packagesPath `
+            -ControllerIndexPath $controllerIndexPath
+        throw $blocker
+    }
+    if ([string]$runRecord.topology.classification -cne
+        'independent_physical_hosts') {
+        $blocker = 'pilot_cell_topology_not_credible:{0}:{1}:{2}:{3}' -f
+            $runInput.cell_id,
+            $runRecord.topology.classification,
+            $runRecord.topology.sutPhysicalHostId,
+            $runRecord.topology.loadPhysicalHostId
+        $preflight.blockers += $blocker
+        Write-PilotState `
+            -Manifest $manifest `
+            -RunRecords @($runRecords) `
+            -ExpectedRunInputs $expectedRunInputs `
+            -Preflight $preflight `
+            -Pilot $pilot `
+            -ControllerUri $controllerUri `
+            -ExecutionManifestPath $executionManifestPath `
+            -PreflightPath $preflightPath `
+            -PackagesPath $packagesPath `
+            -ControllerIndexPath $controllerIndexPath
+        throw $blocker
+    }
 }
 
 $preflight.package_identity_status = 'resolved'
 $preflight.blockers = @()
-Write-JsonFile -Path $preflightPath -Value $preflight
-Write-JsonFile -Path $packagesPath -Value @{
-    implementation_packages = @(
-        $runRecords | ForEach-Object { $_.package_ref }
-    )
-    component_packages = @(
-        $pilot.package_selection.component_package_references
-    )
-}
-Write-JsonFile -Path $controllerIndexPath -Value @{
-    controller_uri = $controllerUri
-    runs = @($runRecords)
-}
-
-$manifest.planned_runs = @($runRecords | ForEach-Object {
-    [pscustomobject][ordered]@{
-        cell_id = $_.cell_id
-        execution_order_index = $_.execution_order_index
-        repetitions = 2
-        state = if ($_.outcome -eq 'submitted') { 'executing' } else { 'completed' }
-        job_id = $_.job_id
-        package_ref = $_.package_ref
-        run_id = $_.run_id
-        topology = $_.topology
-        outcome = $_.outcome
-        controller_artifact_index_path = $_.controller_artifact_index_path
-        controller_artifact_downloads = @($_.controller_artifact_downloads)
-        policy_controls = [pscustomobject][ordered]@{
-            oversized_write_admission_quantum = @($expectedRunInputs | Where-Object cell_id -ceq $_.cell_id)[0].oversized_write_admission_quantum
-            application_send_batch_formation = @($expectedRunInputs | Where-Object cell_id -ceq $_.cell_id)[0].application_send_batch_formation
-            buffer_copy_coalescing = @($expectedRunInputs | Where-Object cell_id -ceq $_.cell_id)[0].buffer_copy_coalescing
-        }
-    }
-})
-[void](Set-AdaptiveRuntimeDocumentHash $manifest)
-Write-AdaptiveRuntimeCanonicalDocument $manifest $executionManifestPath
+Write-PilotState `
+    -Manifest $manifest `
+    -RunRecords @($runRecords) `
+    -ExpectedRunInputs $expectedRunInputs `
+    -Preflight $preflight `
+    -Pilot $pilot `
+    -ControllerUri $controllerUri `
+    -ExecutionManifestPath $executionManifestPath `
+    -PreflightPath $preflightPath `
+    -PackagesPath $packagesPath `
+    -ControllerIndexPath $controllerIndexPath
 
 $result.mode = 'execute'
 $result.submitted_job_count = @($runRecords).Count
