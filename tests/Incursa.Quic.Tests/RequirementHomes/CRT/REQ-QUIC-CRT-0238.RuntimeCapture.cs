@@ -133,7 +133,13 @@ public sealed partial class REQ_QUIC_CRT_0238
             QuicOversizedWriteAdmissionObservationMode observationMode,
             int payloadLength,
             bool cancelAfterFirstTransition,
-            bool forceValue)
+            bool forceValue,
+            QuicAdaptiveRuntimeAdmissionCorrectnessAuthorization?
+                admissionAuthorization = null,
+            QuicApplicationSendBatchPolicyMode admissionBatchMode =
+                QuicApplicationSendBatchPolicyMode.LegacyCurrent,
+            QuicBufferCopyPolicyValue admissionBufferValue =
+                QuicBufferCopyPolicyValue.LegacyCurrent)
     {
         await using QuicConnectionRuntime runtime =
             QuicS13ApplicationSendDelayTestSupport
@@ -156,10 +162,32 @@ public sealed partial class REQ_QUIC_CRT_0238
         RuntimeOversizedEvidenceSink sink = new();
         runtime.ConfigureAdaptiveRuntimePolicy(new QuicClientConnectionOptions
         {
+            ForcedReceiveCreditPolicyMode =
+                admissionAuthorization is null
+                    ? null
+                    : QuicReceiveCreditPolicyMode.LegacyCurrent,
+            ForcedApplicationSendTurnPolicyMode =
+                admissionAuthorization is null
+                    ? null
+                    : QuicApplicationSendTurnPolicyMode.LegacyCurrent,
+            ForcedApplicationSendBatchPolicyMode =
+                admissionAuthorization is null
+                    ? null
+                    : admissionBatchMode,
+            ForcedBufferCopyPolicyValue =
+                admissionAuthorization is null
+                    ? null
+                    : admissionBufferValue,
+            ForcedQueuedSendBurstPolicyMode =
+                admissionAuthorization is null
+                    ? null
+                    : QuicQueuedSendBurstPolicyMode.LegacyCurrent,
             ForcedOversizedWriteAdmissionPolicyMode =
                 forceValue ? policyValue : null,
             OversizedWriteAdmissionObservationMode = observationMode,
             OversizedWriteAdmissionEvidenceSink = sink,
+            SendAdmissionCorrectnessAuthorization =
+                admissionAuthorization,
         });
         Assert.True(runtime.StreamRegistry.Bookkeeping.TryOpenLocalStream(
             bidirectional: true,
@@ -208,6 +236,28 @@ public sealed partial class REQ_QUIC_CRT_0238
         }
 
         return Assert.Single(sink.Evidence);
+    }
+
+    internal static async Task<object>
+        CaptureAdmissionOversizedOperationAsync(
+            QuicOversizedWriteAdmissionPolicyMode policyValue,
+            QuicApplicationSendBatchPolicyMode batchMode,
+            QuicBufferCopyPolicyValue bufferValue,
+            QuicAdaptiveRuntimeAdmissionCorrectnessAuthorization
+                authorization)
+    {
+        QuicOversizedWriteAdmissionEvidence evidence =
+            await RunOversizedWriteAsync(
+                policyValue,
+                QuicOversizedWriteAdmissionObservationMode.ObserveOnly,
+                payloadLength: 5 * 32 * 1024,
+                cancelAfterFirstTransition: false,
+                forceValue: true,
+                authorization,
+                batchMode,
+                bufferValue);
+        Assert.Equal(1, evidence.CompletionCount);
+        return OversizedRecord("cell_opportunity", evidence);
     }
 
     private static object OversizedRecord(

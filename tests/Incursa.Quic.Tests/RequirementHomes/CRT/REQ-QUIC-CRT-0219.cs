@@ -368,7 +368,13 @@ public sealed class REQ_QUIC_CRT_0219
             int appliedBytes,
             QuicBufferCopyValidity validity = QuicBufferCopyValidity.None,
             QuicAdaptiveRuntimeCorrectnessInteractionAuthorization?
-                interactionAuthorization = null)
+                interactionAuthorization = null,
+            QuicAdaptiveRuntimeAdmissionCorrectnessAuthorization?
+                admissionAuthorization = null,
+            QuicOversizedWriteAdmissionPolicyMode admissionOversizedMode =
+                QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent,
+            QuicApplicationSendBatchPolicyMode admissionBatchMode =
+                QuicApplicationSendBatchPolicyMode.LegacyCurrent)
     {
         using QuicConnectionRuntime runtime =
             QuicS13ApplicationSendDelayTestSupport
@@ -380,9 +386,23 @@ public sealed class REQ_QUIC_CRT_0219
                 ForcedReceiveCreditPolicyMode =
                     QuicReceiveCreditPolicyMode.LegacyCurrent,
                 ForcedApplicationSendBatchPolicyMode =
-                    interactionAuthorization is null
+                    admissionAuthorization is not null
+                        ? admissionBatchMode
+                        : interactionAuthorization is null
+                            ? null
+                            : QuicApplicationSendBatchPolicyMode.SingleEligible,
+                ForcedApplicationSendTurnPolicyMode =
+                    admissionAuthorization is null
                         ? null
-                        : QuicApplicationSendBatchPolicyMode.SingleEligible,
+                        : QuicApplicationSendTurnPolicyMode.LegacyCurrent,
+                ForcedQueuedSendBurstPolicyMode =
+                    admissionAuthorization is null
+                        ? null
+                        : QuicQueuedSendBurstPolicyMode.LegacyCurrent,
+                ForcedOversizedWriteAdmissionPolicyMode =
+                    admissionAuthorization is null
+                        ? null
+                        : admissionOversizedMode,
                 AdaptiveRuntimeShadowEnabled = true,
                 AdaptiveRuntimeShadowEpochInterval =
                     TimeSpan.FromMilliseconds(250),
@@ -393,6 +413,8 @@ public sealed class REQ_QUIC_CRT_0219
                 BufferCopyEvidenceSink = sink,
                 SendCompositionCorrectnessAuthorization =
                     interactionAuthorization,
+                SendAdmissionCorrectnessAuthorization =
+                    admissionAuthorization,
             });
 
         QuicBufferCopyPolicyDecision decision = QuicBufferCopyPolicy.Evaluate(

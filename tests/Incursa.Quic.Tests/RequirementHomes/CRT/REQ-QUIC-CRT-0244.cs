@@ -253,7 +253,7 @@ public sealed class REQ_QUIC_CRT_0244
             runtime.ConfigureAdaptiveRuntimePolicy(options));
     }
 
-    private static
+    internal static
         QuicAdaptiveRuntimeAdmissionCorrectnessAuthorization
         CreateAuthorization(
             string cellId,
