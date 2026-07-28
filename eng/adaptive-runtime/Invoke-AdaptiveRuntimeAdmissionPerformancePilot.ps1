@@ -90,6 +90,44 @@ function ConvertTo-LabPackageReference {
     }
 }
 
+function Publish-PilotPackage {
+    param(
+        [Parameter(Mandatory = $true)][string] $ControllerUri,
+        [Parameter(Mandatory = $true)][string] $Path
+    )
+
+    $resolved = Resolve-AbsolutePath -Path $Path -BasePath $RepositoryRoot
+    Assert-Pilot (Test-Path -LiteralPath $resolved -PathType Leaf) `
+        "package_path_missing:$resolved"
+
+    Add-Type -AssemblyName System.Net.Http
+    $client = [System.Net.Http.HttpClient]::new()
+    $client.Timeout = [TimeSpan]::FromMinutes(5)
+    $form = [System.Net.Http.MultipartFormDataContent]::new()
+    $stream = [System.IO.File]::OpenRead($resolved)
+    try {
+        $fileContent = [System.Net.Http.StreamContent]::new($stream)
+        $form.Add(
+            $fileContent,
+            'file',
+            [System.IO.Path]::GetFileName($resolved))
+        $response = $client.PostAsync(
+            "$ControllerUri/api/lab/packages",
+            $form).GetAwaiter().GetResult()
+        $body = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+        if (-not $response.IsSuccessStatusCode) {
+            throw "package_upload_failed:$([int]$response.StatusCode):$body"
+        }
+
+        return $body | ConvertFrom-Json
+    }
+    finally {
+        $stream.Dispose()
+        $form.Dispose()
+        $client.Dispose()
+    }
+}
+
 function Get-RefKey {
     param([object] $Reference)
     "$($Reference.document_id)|$($Reference.schema_version)|$($Reference.document_version)|$($Reference.content_sha256)"
@@ -251,6 +289,14 @@ foreach ($runInput in $expectedRunInputs) {
         throw "missing_exact_package_identities:$($runInput.cell_id)"
     }
     $packageRef = ConvertTo-LabPackageReference $packageResult
+    $uploadedPackage = Publish-PilotPackage `
+        -ControllerUri $controllerUri `
+        -Path ([string]$packageResult.path)
+    Assert-Pilot (
+        [string]$uploadedPackage.packageId -ceq [string]$packageRef.packageId -and
+        [string]$uploadedPackage.packageVersion -ceq [string]$packageRef.packageVersion -and
+        [string]$uploadedPackage.sha256 -ceq [string]$packageRef.sha256
+    ) "uploaded_package_identity_mismatch:$($runInput.cell_id)"
     $packageIdentity = [string]$packageResult.packageId + '@' + [string]$packageResult.packageVersion + '#' + [string]$packageResult.sha256
 
     $runRecord = [ordered]@{
