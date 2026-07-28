@@ -115,6 +115,81 @@ public sealed class REQ_QUIC_CRT_0248
         Assert.Equal(CampaignId, authorization.CampaignId);
     }
 
+    [Theory]
+    [MemberData(nameof(ReviewedPackagePathCells))]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ExactReviewedPackagePathCellMayCreateComposedStage1Snapshot(
+        string cellId,
+        string cellHash,
+        int oversizedModeValue,
+        int batchModeValue,
+        int bufferValueValue)
+    {
+        QuicOversizedWriteAdmissionPolicyMode oversizedMode =
+            (QuicOversizedWriteAdmissionPolicyMode)oversizedModeValue;
+        QuicApplicationSendBatchPolicyMode batchMode =
+            (QuicApplicationSendBatchPolicyMode)batchModeValue;
+        QuicBufferCopyPolicyValue bufferValue =
+            (QuicBufferCopyPolicyValue)bufferValueValue;
+        QuicAdaptiveRuntimeAdmissionPerformanceAuthorization authorization =
+            CreateReviewedPackagePathAuthorization(
+                CampaignId,
+                cellId,
+                cellHash,
+                oversizedMode,
+                batchMode,
+                bufferValue);
+
+        QuicAdaptiveRuntimeStage1PolicySnapshot snapshot =
+            QuicAdaptiveRuntimeStage1ConfiguredPolicy
+                .CreateForAdmissionPerformance(
+                    authorization,
+                    sendTurnForced: null,
+                    QuicApplicationSendTurnObservationMode.Disabled,
+                    batchMode,
+                    QuicApplicationSendBatchObservationMode.Disabled,
+                    burstForced: null,
+                    QuicQueuedSendBurstObservationMode.Disabled,
+                    oversizedMode,
+                    QuicOversizedWriteAdmissionObservationMode.Disabled,
+                    bufferValue);
+
+        Assert.True(snapshot.ApplicationSendBatchFormation.HasForcedValue);
+        Assert.True(snapshot.OversizedWriteAdmissionQuantum.HasForcedValue);
+        Assert.False(snapshot.ApplicationSendTurnPlanning.HasForcedValue);
+        Assert.False(snapshot.QueuedSendBurstBudget.HasForcedValue);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ComposedStage1SnapshotRejectsTupleOutsideAuthorization()
+    {
+        QuicAdaptiveRuntimeAdmissionPerformanceAuthorization authorization =
+            CreateReviewedPackagePathAuthorization(
+                CampaignId,
+                "cell.send_admission_composition.correctness.a0",
+                "c9e070a0880872c9c9dce62f07e933a0de96c7590d343ce7f923f121278bba28",
+                QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent,
+                QuicApplicationSendBatchPolicyMode.LegacyCurrent,
+                QuicBufferCopyPolicyValue.LegacyCurrent);
+
+        Assert.Throws<InvalidOperationException>(() =>
+            QuicAdaptiveRuntimeStage1ConfiguredPolicy
+                .CreateForAdmissionPerformance(
+                    authorization,
+                    sendTurnForced: null,
+                    QuicApplicationSendTurnObservationMode.Disabled,
+                    QuicApplicationSendBatchPolicyMode.SingleEligible,
+                    QuicApplicationSendBatchObservationMode.Disabled,
+                    burstForced: null,
+                    QuicQueuedSendBurstObservationMode.Disabled,
+                    QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent,
+                    QuicOversizedWriteAdmissionObservationMode.Disabled,
+                    QuicBufferCopyPolicyValue.LegacyCurrent));
+    }
+
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]

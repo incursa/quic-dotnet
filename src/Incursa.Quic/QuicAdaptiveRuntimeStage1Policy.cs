@@ -128,6 +128,21 @@ internal readonly record struct QuicAdaptiveRuntimeStage1PolicySnapshot
         QuicAdaptiveRuntimeStage1AxisDecision applicationSendBatchFormation,
         QuicAdaptiveRuntimeStage1AxisDecision queuedSendBurstBudget,
         QuicAdaptiveRuntimeStage1AxisDecision oversizedWriteAdmissionQuantum)
+        : this(
+            applicationSendTurnPlanning,
+            applicationSendBatchFormation,
+            queuedSendBurstBudget,
+            oversizedWriteAdmissionQuantum,
+            allowReviewedAdmissionPerformanceComposition: false)
+    {
+    }
+
+    internal QuicAdaptiveRuntimeStage1PolicySnapshot(
+        QuicAdaptiveRuntimeStage1AxisDecision applicationSendTurnPlanning,
+        QuicAdaptiveRuntimeStage1AxisDecision applicationSendBatchFormation,
+        QuicAdaptiveRuntimeStage1AxisDecision queuedSendBurstBudget,
+        QuicAdaptiveRuntimeStage1AxisDecision oversizedWriteAdmissionQuantum,
+        bool allowReviewedAdmissionPerformanceComposition)
     {
         ValidateDecision(
             in applicationSendTurnPlanning,
@@ -177,7 +192,15 @@ internal readonly record struct QuicAdaptiveRuntimeStage1PolicySnapshot
             }
         }
 
-        if (forcedCount > 1)
+        bool isReviewedAdmissionPerformanceShape =
+            forcedCount == 2
+            && !applicationSendTurnPlanning.HasForcedValue
+            && applicationSendBatchFormation.HasForcedValue
+            && !queuedSendBurstBudget.HasForcedValue
+            && oversizedWriteAdmissionQuantum.HasForcedValue;
+        if (forcedCount > 1
+            && !(allowReviewedAdmissionPerformanceComposition
+                && isReviewedAdmissionPerformanceShape))
         {
             throw new ArgumentException(
                 "A Stage 1 counterfactual snapshot may force at most one policy axis.");
@@ -297,6 +320,64 @@ internal static class QuicAdaptiveRuntimeStage1ConfiguredPolicy
         QuicQueuedSendBurstObservationMode burstObservation,
         QuicOversizedWriteAdmissionPolicyMode? oversizedForced,
         QuicOversizedWriteAdmissionObservationMode oversizedObservation)
+        => CreateCore(
+            sendTurnForced,
+            sendTurnObservation,
+            sendBatchForced,
+            sendBatchObservation,
+            burstForced,
+            burstObservation,
+            oversizedForced,
+            oversizedObservation,
+            allowReviewedAdmissionPerformanceComposition: false);
+
+    internal static QuicAdaptiveRuntimeStage1PolicySnapshot
+        CreateForAdmissionPerformance(
+            QuicAdaptiveRuntimeAdmissionPerformanceAuthorization authorization,
+            QuicApplicationSendTurnPolicyMode? sendTurnForced,
+            QuicApplicationSendTurnObservationMode sendTurnObservation,
+            QuicApplicationSendBatchPolicyMode? sendBatchForced,
+            QuicApplicationSendBatchObservationMode sendBatchObservation,
+            QuicQueuedSendBurstPolicyMode? burstForced,
+            QuicQueuedSendBurstObservationMode burstObservation,
+            QuicOversizedWriteAdmissionPolicyMode? oversizedForced,
+            QuicOversizedWriteAdmissionObservationMode oversizedObservation,
+            QuicBufferCopyPolicyValue? bufferCopyForced)
+    {
+        if (!authorization.Authorizes(
+            oversizedForced,
+            sendBatchForced,
+            bufferCopyForced,
+            receiveCreditMode: null,
+            sendTurnForced,
+            burstForced))
+        {
+            throw new InvalidOperationException(
+                "The admission-performance authorization does not match the requested Stage 1 composition.");
+        }
+
+        return CreateCore(
+            sendTurnForced,
+            sendTurnObservation,
+            sendBatchForced,
+            sendBatchObservation,
+            burstForced,
+            burstObservation,
+            oversizedForced,
+            oversizedObservation,
+            allowReviewedAdmissionPerformanceComposition: true);
+    }
+
+    private static QuicAdaptiveRuntimeStage1PolicySnapshot CreateCore(
+        QuicApplicationSendTurnPolicyMode? sendTurnForced,
+        QuicApplicationSendTurnObservationMode sendTurnObservation,
+        QuicApplicationSendBatchPolicyMode? sendBatchForced,
+        QuicApplicationSendBatchObservationMode sendBatchObservation,
+        QuicQueuedSendBurstPolicyMode? burstForced,
+        QuicQueuedSendBurstObservationMode burstObservation,
+        QuicOversizedWriteAdmissionPolicyMode? oversizedForced,
+        QuicOversizedWriteAdmissionObservationMode oversizedObservation,
+        bool allowReviewedAdmissionPerformanceComposition)
         => new(
             CreateDecision(
                 QuicAdaptiveRuntimeStage1Axis.ApplicationSendTurnPlanning,
@@ -363,7 +444,8 @@ internal static class QuicAdaptiveRuntimeStage1ConfiguredPolicy
                     == QuicOversizedWriteAdmissionObservationMode.Shadow,
                 QuicAdaptiveRuntimeStage1PolicyValue.SingleFragment,
                 QuicAdaptiveRuntimeStage1DecisionBoundary.LogicalWriteAdmission,
-                QuicAdaptiveRuntimeStage1LatchLifetime.LogicalWrite));
+                QuicAdaptiveRuntimeStage1LatchLifetime.LogicalWrite),
+            allowReviewedAdmissionPerformanceComposition);
 
     private static QuicAdaptiveRuntimeStage1AxisDecision CreateDecision(
         QuicAdaptiveRuntimeStage1Axis axis,

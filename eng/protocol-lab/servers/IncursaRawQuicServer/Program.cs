@@ -229,15 +229,28 @@ var congestionPacingProfileObservationMode =
         : congestionPacingProfilePolicy.ObservationMode;
 QuicAdaptiveRuntimeStage1PolicySnapshot? configuredStage1Policy =
     adaptiveInstrumentationEnabled
-        ? QuicAdaptiveRuntimeStage1ConfiguredPolicy.Create(
-            applicationSendTurnPolicy.ForcedMode,
-            sendTurnObservationMode,
-            applicationSendBatchPolicy.ForcedMode,
-            sendBatchObservationMode,
-            queuedSendBurstPolicy.ForcedMode,
-            burstObservationMode,
-            oversizedWriteAdmissionPolicy.ForcedMode,
-            oversizedObservationMode)
+        ? admissionPerformanceAuthorization is { } admissionAuthorization
+            ? QuicAdaptiveRuntimeStage1ConfiguredPolicy
+                .CreateForAdmissionPerformance(
+                    admissionAuthorization,
+                    applicationSendTurnPolicy.ForcedMode,
+                    sendTurnObservationMode,
+                    applicationSendBatchPolicy.ForcedMode,
+                    sendBatchObservationMode,
+                    queuedSendBurstPolicy.ForcedMode,
+                    burstObservationMode,
+                    oversizedWriteAdmissionPolicy.ForcedMode,
+                    oversizedObservationMode,
+                    bufferCopyPolicy.ForcedValue)
+            : QuicAdaptiveRuntimeStage1ConfiguredPolicy.Create(
+                applicationSendTurnPolicy.ForcedMode,
+                sendTurnObservationMode,
+                applicationSendBatchPolicy.ForcedMode,
+                sendBatchObservationMode,
+                queuedSendBurstPolicy.ForcedMode,
+                burstObservationMode,
+                oversizedWriteAdmissionPolicy.ForcedMode,
+                oversizedObservationMode)
         : null;
 QuicBufferCopyConfiguredPolicySnapshot? configuredBufferCopyPolicy =
     adaptiveInstrumentationEnabled
