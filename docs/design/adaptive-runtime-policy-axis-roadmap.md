@@ -1807,15 +1807,16 @@ independently reviewed their runtime-derived proofs, promoted
 Factor-cell-space v3 now binds that reviewed eight-cell exhaustive subset to
 family catalog v5 while retaining all four bounded cells as blocked.
 
-The next reviewed decision is measurement execution scope, not another
-authorization or a covering-array generator. The exact internal
-`send_admission_composition_performance_v1` capability and deterministic
-dry-run campaign are prepared, but timing execution remains false until a
-host and workload scope are selected. Review must choose between a clearly
-labeled local developer-host characterization and ProtocolLab rack execution,
-then choose a four-cell pilot (`A0`, `A3`, `A4`, `A7`) or the full A0 through
-A7 pilot. Covering arrays remain deferred until a future reviewed family has
-at least 65 effective cells and a separately traced generator.
+Measurement execution scope is now selected: a package-backed ProtocolLab rack
+pilot over exactly `A0`, `A3`, `A4`, and `A7`, in `A0`, `A4`, `A3`, `A7`
+execution order. The retained
+`send_admission_composition_performance_v1` dry-run campaign remains immutable
+and timing-disabled; a separate pilot control owns the timing authorization.
+Performance acceptance and active production behavior remain unauthorized.
+The four cells identify the oversized seam and the combined
+batch-plus-buffer effect, but do not separate batch from buffer independently.
+Covering arrays remain deferred until a future reviewed family has at least 65
+effective cells and a separately traced generator.
 
 ## Final Constraint
 

@@ -284,8 +284,38 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("AdaptiveRuntimeCongestionPacingProfilePolicy", builderScript);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_CONGESTION_PACING_PROFILE_POLICY", builderScript);
         Assert.Contains("AdaptiveRuntimeApplicationSendTurnPolicy", builderScript);
+        Assert.Contains("AdaptiveRuntimeOversizedWriteAdmissionPolicy", builderScript);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_OVERSIZED_WRITE_ADMISSION_POLICY", builderScript);
+        Assert.Contains("AdaptiveRuntimeApplicationSendBatchPolicy", builderScript);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_BATCH_POLICY", builderScript);
+        Assert.Contains("AdaptiveRuntimeBufferCopyPolicy", builderScript);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_BUFFER_COPY_POLICY", builderScript);
+        Assert.Contains("Get-AdmissionPerformancePackagePathCell", builderScript);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CAMPAIGN_ID", builderScript);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_MANIFEST_CONTENT_SHA256", builderScript);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CELL_ID", builderScript);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CELL_CONTENT_SHA256", builderScript);
+        Assert.Contains("admissionPerformancePackagePathSelected", builderScript);
+        Assert.Contains("admissionPerformanceManifestContentSha256", builderScript);
+        Assert.Contains("cell.send_admission_composition.correctness.a0", builderScript);
+        Assert.Contains("cell.send_admission_composition.correctness.a3", builderScript);
+        Assert.Contains("cell.send_admission_composition.correctness.a4", builderScript);
+        Assert.Contains("cell.send_admission_composition.correctness.a7", builderScript);
+        Assert.DoesNotContain("cell.send_admission_composition.correctness.a1", builderScript);
+        Assert.DoesNotContain("cell.send_admission_composition.correctness.a2", builderScript);
+        Assert.DoesNotContain("cell.send_admission_composition.correctness.a5", builderScript);
+        Assert.DoesNotContain("cell.send_admission_composition.correctness.a6", builderScript);
         Assert.Contains("RawQuicDebugLogging", builderScript);
         Assert.Contains("IncursaRawQuicServer ignored failed inbound establishment", rawQuicServer);
+        Assert.Contains("ResolveAdmissionPerformanceAuthorization", rawQuicServer);
+        Assert.Contains("SendAdmissionPerformanceAuthorization =", rawQuicServer);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CAMPAIGN_ID", rawQuicServer);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_MANIFEST_CONTENT_SHA256", rawQuicServer);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CELL_ID", rawQuicServer);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CELL_CONTENT_SHA256", rawQuicServer);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_OVERSIZED_WRITE_ADMISSION_POLICY", rawQuicServer);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_APPLICATION_SEND_BATCH_POLICY", rawQuicServer);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_BUFFER_COPY_POLICY", rawQuicServer);
         Assert.Contains("connection = await listener.AcceptConnectionAsync(default);", rawQuicServer);
         Assert.Contains("QUIC_APPLICATION_SEND_TURN_POLICY_JSON=", rawQuicServer);
         Assert.Contains("QUIC_APPLICATION_SEND_TURN_POLICY_CONTRACT=", rawQuicServer);
@@ -371,6 +401,36 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains(
             "AdaptiveRuntimeApplicationSendTurnPolicy is supported only for the RawQuic package target.",
             runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeOversizedWriteAdmissionPolicy = $AdaptiveRuntimeOversizedWriteAdmissionPolicy",
+            runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeApplicationSendBatchPolicy = $AdaptiveRuntimeApplicationSendBatchPolicy",
+            runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeBufferCopyPolicy = $AdaptiveRuntimeBufferCopyPolicy",
+            runScript);
+        Assert.Contains("AdaptiveRuntimeOversizedWriteAdmissionPolicy", runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeOversizedWriteAdmissionPolicy = $AdaptiveRuntimeOversizedWriteAdmissionPolicy",
+            runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeOversizedWriteAdmissionPolicy is supported only for the RawQuic package target.",
+            runScript);
+        Assert.Contains("AdaptiveRuntimeApplicationSendBatchPolicy", runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeApplicationSendBatchPolicy = $AdaptiveRuntimeApplicationSendBatchPolicy",
+            runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeApplicationSendBatchPolicy is supported only for the RawQuic package target.",
+            runScript);
+        Assert.Contains("AdaptiveRuntimeBufferCopyPolicy", runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeBufferCopyPolicy = $AdaptiveRuntimeBufferCopyPolicy",
+            runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeBufferCopyPolicy is supported only for the RawQuic package target.",
+            runScript);
         Assert.Contains("AdaptiveRuntimePacketFlushCadencePolicy", runScript);
         Assert.Contains(
             "AdaptiveRuntimePacketFlushCadencePolicy = $AdaptiveRuntimePacketFlushCadencePolicy",
@@ -446,6 +506,16 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("ResolveBuiltServerDll(sourceProjectDirectory, sourceAssemblyName)", launcher);
         Assert.Contains("si.ArgumentList.Add(sourceProject);", launcher);
         Assert.Contains("throw new FileNotFoundException(", launcher);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_OVERSIZED_WRITE_ADMISSION_POLICY", launcher);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_BATCH_POLICY", launcher);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_BUFFER_COPY_POLICY", launcher);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CAMPAIGN_ID", launcher);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_MANIFEST_CONTENT_SHA256", launcher);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CELL_ID", launcher);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CELL_CONTENT_SHA256", launcher);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_OVERSIZED_WRITE_ADMISSION_POLICY", launcher);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_APPLICATION_SEND_BATCH_POLICY", launcher);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_BUFFER_COPY_POLICY", launcher);
     }
 
     [Fact]

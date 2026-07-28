@@ -2,11 +2,11 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "ARC-QUIC-CRT-0119",
   "artifact_type": "architecture",
-  "status": "draft",
+  "status": "implemented",
   "title": "Exact admission-family offline performance readiness",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Satisfy REQ-QUIC-CRT-0247 through REQ-QUIC-CRT-0252 with additive factor-space reconciliation, one exact performance-only A0-A7 authorization, deterministic campaign compilation, and a hard boundary before host-sensitive measurement.",
+  "purpose": "Satisfy REQ-QUIC-CRT-0247 through REQ-QUIC-CRT-0252 with additive factor-space reconciliation, one exact performance-only A0-A7 authorization, deterministic campaign compilation, and a separately authorized package-backed A0/A3/A4/A7 ProtocolLab rack pilot.",
   "related_artifacts": [
     "SPEC-QUIC-CRT-ADMISSION-PERFORMANCE",
     "SPEC-QUIC-CRT-ADMISSION-CORRECTNESS",
@@ -30,34 +30,39 @@
     "schemas/adaptive-runtime-send-admission-performance-campaign-v1.schema.json",
     "schemas/adaptive-runtime-send-admission-performance-manifest-v1.schema.json",
     "eng/adaptive-runtime/Compile-AdaptiveRuntimeAdmissionPerformanceCampaign.ps1",
+    "eng/adaptive-runtime/Compile-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
+    "eng/adaptive-runtime/Invoke-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceReadiness.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-pilot-v1.json",
+    "eng/protocol-lab/New-QuicDotNetProtocolLabPackage.ps1",
+    "eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1",
+    "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
     "src/Incursa.Quic/QuicAdaptiveRuntimeAdmissionPerformanceAuthorization.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0248.cs"
   ],
-  "design_summary": "The retained v2 cell space remains immutable. A v3 document rebinds the same twelve-cell configured admission space to family catalog v5, identifies A0 through A7 as the reviewed exact exhaustive subset, and keeps the four bounded cells blocked. A new internal fixed-field performance token is parallel to, but mutually exclusive with, correctness authorization; it binds one exact campaign manifest and one A0-A7 tuple and carries no performance-acceptance or active authority. A deterministic compiler validates current hashes, expands only the explicit eight cells, freezes workload and counterbalanced execution metadata, and emits a dry-run manifest without running a clock. Actual loopback or rack-lab execution remains a later step because machine identity, workload scope, and evidence destination materially affect the result.",
-  "data_and_state_considerations": "Canonical control documents are additive, versioned, and content-hashed. Runtime authorization is immutable, internal-only, and connection-local. Compilation reads canonical inputs and emits one deterministic manifest; it does not mutate runtime policy or collect timing data. Later raw runs must be append-only external evidence bound to source, binary, host, manifest, cell, workload, repetition, and checksums.",
+  "design_summary": "The retained v2 cell space and timing-disabled campaign v1 remain immutable. Factor-space v3 identifies A0 through A7 as the reviewed exact exhaustive subset and keeps the four bounded cells blocked. An internal fixed-field performance token is parallel to, but mutually exclusive with, correctness authorization; it binds one exact campaign manifest and one A0-A7 tuple and carries no performance-acceptance or active authority. The dry-run compiler continues to expand all eight cells without running a clock. A new additive pilot document selects the ProtocolLab rack, isolated-pair controller-owned placement, package-backed raw QUIC, the existing multiplex.100x64kb workload, and exactly A0, A3, A4, and A7. Its execution order is A0, A4, A3, A7 so the baseline precedes the oversized-only and combined cells. The package builder embeds the three exact policy values and authorization identity, the adapter forwards them to the raw server, and the server attaches the reviewed admission token before the runtime gate. The controller owns worker selection and records immutable package, topology, run, and artifact identities.",
+  "data_and_state_considerations": "Canonical control documents are additive, versioned, and content-hashed. Runtime authorization is immutable, internal-only, and connection-local. Both compilers emit deterministic manifests without collecting timing data. Pilot runs are append-only external evidence under the temporary evidence root and bind source, package binary, controller, topology, manifest, cell, workload, repetition, job, run, runtime evidence, outcome, and checksums.",
   "edge_cases_and_constraints": [
     "The eight reviewed cells are exhaustive, so covering arrays would reduce evidence without reducing a large search space.",
     "The four bounded_multi_fragment cells remain present but blocked on shadow_recommendation_value_mismatch.",
     "Oversized fragments can prevent batch and buffer distinctness on the same operation; separate run-local operations preserve attribution.",
     "The older send_composition performance authorization and every correctness authorization are mutually exclusive with this token.",
     "A clean local dry run does not establish a stable performance result."
+    ,"The four-cell pilot estimates oversized and combined batch-plus-buffer effects; it cannot isolate batch from buffer without additional cells."
   ],
   "alternatives_considered": [
     "Modify factor-cell-space v2 in place; rejected because retained canonical versions are immutable.",
     "Generalize the old two-axis token; rejected because family, proof, and cell boundaries must remain exact.",
     "Implement a covering-array generator now; rejected because eight effective reviewed cells are below the trigger of 65.",
-    "Run local timings immediately; rejected because the execution host and workload scope are part of the measurement contract."
+    "Run local timings immediately; rejected because the ProtocolLab rack provides the selected credible execution environment.",
+    "Rewrite the timing-disabled campaign v1 in place; rejected because retained canonical controls are immutable and the selected pilot is additive."
   ],
   "risks": [
     "A stale catalog binding could authorize the wrong proof set unless all hashes are exact.",
     "A generic multi-axis escape hatch could unintentionally admit blocked cells.",
-    "Developer-machine timings could be overinterpreted if host selection is not explicit.",
+    "Rack timings could be overinterpreted if topology, package identity, or artifact readability is incomplete.",
     "Operation-local noncoactivation could be misclassified as whole-cell inactivity without separate evidence identities."
-  ],
-  "open_questions": [
-    "Should the first measured campaign run on the ProtocolLab rack or be explicitly labeled as local developer-host characterization?",
-    "Should the first execution be a pilot-only workload subset or the full predeclared train and holdout schedule?"
   ]
 }

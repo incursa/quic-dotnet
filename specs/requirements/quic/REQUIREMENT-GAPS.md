@@ -140,8 +140,11 @@ This ledger tracks open questions, ambiguities, and follow-up decisions for QUIC
   `VER-QUIC-CRT-0121`. The current slice reconciles the retained admission
   factor space to family catalog v5, permits only an exact manifest-bound
   offline A0 through A7 measurement capability, and prepares deterministic
-  campaign compilation without collecting timings. The execution host and
-  workload scope remain an explicit decision before measurement.
+  campaign compilation without collecting timings. On 2026-07-28 the user
+  selected the ProtocolLab rack and the four-cell A0/A3/A4/A7 pilot. The
+  selected execution remains additive to the retained timing-disabled campaign
+  and uses the package-backed raw QUIC boundary; exact rack topology, job,
+  runtime-evidence, and effect-analysis results remain the active closeout.
   `bounded_multi_fragment`, covering-array generation, performance
   acceptance, adaptive-rule activation, active behavior, CI changes, and
   push remain blocked.

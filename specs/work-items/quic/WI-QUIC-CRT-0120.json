@@ -6,7 +6,7 @@
   "title": "Reconcile and prepare exact admission-family performance measurement",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "summary": "Rebind the admission cell space to the reviewed family catalog, add exact performance-only A0-A7 runtime authorization, compile and validate a deterministic dry-run campaign, and stop before host-sensitive measurement.",
+  "summary": "Rebind the admission cell space to the reviewed family catalog, add exact performance-only A0-A7 runtime authorization, preserve the deterministic dry-run campaign, and execute the selected A0/A3/A4/A7 pilot through the ProtocolLab rack package boundary.",
   "related_artifacts": [
     "SPEC-QUIC-CRT-ADMISSION-PERFORMANCE",
     "ARC-QUIC-CRT-0119",
@@ -22,15 +22,15 @@
     "REQ-QUIC-CRT-0251",
     "REQ-QUIC-CRT-0252"
   ],
-  "planned_changes": "Add factor-cell-space v3 and schema without rewriting retained v2; add an exact manifest-bound performance-only admission token, option propagation, runtime gate, and focused negative tests; add a versioned eight-cell campaign contract and deterministic dry-run compiler; validate current hashes, exact cells, workload schedule, metric definitions, and environment requirements; keep actual timing execution pending an explicit host and workload decision.",
-  "verification_plan": "Validate all new canonical JSON against its schema and recompute hashes; prove exactly A0 through A7 compile and all four bounded cells, covering-array intent, outside axes, stale hashes, correctness intent, active intent, and performance-acceptance intent fail closed; run focused runtime authorization tests; build source and tests in Release; validate the four touched SpecTrace artifacts directly; run git diff --check; and record actual measurement as not run pending the selected execution environment and workload scope.",
-  "completion_notes": "Readiness implementation is complete through factor-space v3, exact runtime authorization, deterministic eight-cell dry-run compilation, focused tests, and a clean analyzer-enabled Release build. Actual performance-runner extension, timing execution, raw evidence, and effect analysis remain pending the explicit host and workload-scope decision.",
+  "planned_changes": "Keep factor-cell-space v3 and the retained timing-disabled campaign immutable; add an exact manifest-bound performance-only admission token, option propagation, runtime gate, and focused negative tests; add an additive selected-pilot control and deterministic compiler for ProtocolLab rack execution of A0, A3, A4, and A7; extend the raw QUIC package, adapter, and server boundary with exact three-axis and authorization identity; submit isolated-pair package-backed jobs for the existing multiplex.100x64kb workload; retain controller artifacts; and classify pilot effects without accepting or activating a policy.",
+  "verification_plan": "Validate all new canonical JSON against its schema and recompute hashes; prove exactly A0, A3, A4, and A7 compile into the selected pilot while bounded cells, covering-array intent, outside axes, stale hashes, wrong host or workload, correctness intent, active intent, and performance-acceptance intent fail closed; run focused runtime and package authorization tests; build source, raw server, adapter, and tests in Release; verify controller package identity, isolated topology, job outcomes, artifact readability, runtime cell identity, activation accounting, release accounting, failed and timeout request counts, and checksums; validate the four touched SpecTrace artifacts directly; and run git diff --check.",
+  "completion_notes": "Readiness implementation is complete through factor-space v3, exact runtime authorization, deterministic eight-cell dry-run compilation, focused tests, and a clean analyzer-enabled Release build. The user selected ProtocolLab rack execution and the A0/A3/A4/A7 pilot on 2026-07-28. The additive pilot control, package/runtime glue, controller driver, rack execution, raw evidence, and effect analysis are the active completion slice.",
   "out_of_scope": [
     "Authorizing or measuring bounded_multi_fragment",
     "Implementing covering-array generation",
     "Accepting a performance policy or activating an adaptive rule",
     "active_internal or production activation",
     "CI modification, push, or deletion of retained evidence",
-    "Presenting a local dry run as multi-host performance evidence"
+    "Presenting a local dry run or topology-incomplete rack run as credible performance evidence"
   ]
 }

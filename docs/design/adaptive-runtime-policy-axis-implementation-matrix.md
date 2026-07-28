@@ -5,9 +5,10 @@ title: "Adaptive Runtime Policy Axis Implementation Matrix"
 # Adaptive Runtime Policy Axis Implementation Matrix
 
 Status: implementation-breadth checkpoint; reviewed admission-family
-correctness interaction is `correctness_interaction_validated`; exact A0-A7
-offline measurement capability and dry-run compilation are prepared; timing
-execution, performance acceptance, and active behavior remain unauthorized
+correctness interaction is `correctness_interaction_validated`; the retained
+exact A0-A7 dry run remains timing-disabled; an additive ProtocolLab rack
+pilot authorizes timing for exactly A0, A3, A4, and A7; performance acceptance
+and active behavior remain unauthorized
 
 Experiment-control hardening did not change either migrated runtime mechanism.
 Additive v2 offline contracts provide catalog-authoritative derivation, exact
@@ -129,9 +130,13 @@ preference is claimed.
   retains four bounded cells as review-blocked, keeps the covering-array
   trigger at 65, and keeps the generator disabled.
 - The exact `send_admission_composition_performance_v1` internal capability is
-  implemented. Its deterministic dry-run compiles eight cells into eight
-  execution items, each blocked pending host and workload selection. No timing
-  observation has been collected.
+  implemented. Its retained deterministic dry run compiles eight cells into
+  eight timing-disabled execution items.
+- An additive package-backed ProtocolLab rack pilot selects A0, A3, A4, and A7
+  and executes them in A0, A4, A3, A7 order with controller-owned
+  `isolated-pair` placement. No timing observation has been collected yet.
+- The four-cell pilot can attribute the oversized seam and the combined
+  batch-plus-buffer effect, but cannot separate batch from buffer.
 - Bounded offline measurement was released and completed only for the reviewed
   two-axis `send_composition` family.
 - Every adjacent axis remained `legacy_current`.

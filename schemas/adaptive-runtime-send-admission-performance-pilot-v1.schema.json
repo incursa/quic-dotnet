@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-send-admission-performance-pilot-v1.schema.json",
+  "title": "Adaptive Runtime Send Admission Performance Pilot v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "campaign_ref",
+    "controller_uri",
+    "host_selection",
+    "package_selection",
+    "selected_cells",
+    "execution_sequence",
+    "cell_bindings",
+    "excluded_values",
+    "covering_array_generator_implemented",
+    "covering_array_trigger_effective_cell_count",
+    "measurement_capability_authorized",
+    "timing_execution_authorized",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "production_activation_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-send-admission-performance-pilot-v1" },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "campaign_ref": { "$ref": "#/$defs/documentRef" },
+    "controller_uri": { "const": "http://10.10.99.176:5088" },
+    "host_selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "placement_policy",
+        "worker_selection_owner"
+      ],
+      "properties": {
+        "placement_policy": { "const": "isolated-pair" },
+        "worker_selection_owner": { "const": "controller-owned" }
+      }
+    },
+    "package_selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package_target",
+        "implementation_id",
+        "suite_id",
+        "scenario_id",
+        "protocol",
+        "test_executor_id",
+        "load_profile_id",
+        "repetitions_per_cell",
+        "package_backed_execution"
+      ],
+      "properties": {
+        "package_target": { "const": "RawQuic" },
+        "implementation_id": { "const": "quic-dotnet-raw-dev" },
+        "suite_id": { "const": "quic-transport-v1-comparison" },
+        "scenario_id": { "const": "quic.transport.multiplex.100x64kb" },
+        "protocol": { "const": "quic" },
+        "test_executor_id": { "const": "quic-go-raw-load" },
+        "load_profile_id": { "const": "raw-quic-peer-confidence" },
+        "repetitions_per_cell": { "const": 2 },
+        "package_backed_execution": { "const": true }
+      }
+    },
+    "selected_cells": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/cellId" }
+    },
+    "execution_sequence": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": { "$ref": "#/$defs/cellId" }
+    },
+    "cell_bindings": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": { "$ref": "#/$defs/cellBinding" }
+    },
+    "excluded_values": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["oversized_write_admission_quantum"],
+      "properties": {
+        "oversized_write_admission_quantum": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "const": "bounded_multi_fragment" }
+        }
+      }
+    },
+    "covering_array_generator_implemented": { "const": false },
+    "covering_array_trigger_effective_cell_count": { "const": 65 },
+    "measurement_capability_authorized": { "const": true },
+    "timing_execution_authorized": { "const": true },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "production_activation_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/trace" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.-]+$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "schema_version",
+        "document_version",
+        "content_sha256"
+      ],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "schema_version": { "$ref": "#/$defs/id" },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "cellId": {
+      "type": "string",
+      "enum": ["a0", "a3", "a4", "a7"]
+    },
+    "cellBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cell_id",
+        "content_sha256",
+        "oversized_write_admission_quantum",
+        "application_send_batch_formation",
+        "buffer_copy_coalescing"
+      ],
+      "properties": {
+        "cell_id": { "$ref": "#/$defs/cellId" },
+        "content_sha256": { "$ref": "#/$defs/hash" },
+        "oversized_write_admission_quantum": {
+          "enum": ["legacy_current", "single_fragment"]
+        },
+        "application_send_batch_formation": {
+          "enum": ["legacy_current", "single_eligible"]
+        },
+        "buffer_copy_coalescing": {
+          "enum": ["legacy_current", "memory_conservative"]
+        }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_ids", "architecture_ids", "work_item_ids", "verification_ids"],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "architecture_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "work_item_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "verification_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

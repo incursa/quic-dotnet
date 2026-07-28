@@ -21,6 +21,10 @@ internal readonly record struct
 
     private const string CampaignIdValue =
         "campaign.send_admission_composition.performance.v1";
+    private const string PackagePathCampaignIdValue =
+        "campaign.send_admission_composition.performance.v1";
+    private const string PackagePathManifestContentSha256 =
+        "a56b59fdd26ce16a7131197269415e19175184c7d5f8da346d2b367218eb29cb";
     private const string FamilyCatalogSha256 =
         "cfee17afcc28da35e657b2d1331bde68c752b5a3487f0af69087c12df6530b93";
     private const string RelationshipCatalogSha256 =
@@ -82,6 +86,68 @@ internal readonly record struct
     internal bool ActiveBehaviorAuthorization { get; }
 
     internal bool PerformanceAcceptanceAuthorization { get; }
+
+    internal static
+        QuicAdaptiveRuntimeAdmissionPerformanceAuthorization
+        CreateForReviewedPackagePath(
+            string campaignId,
+            string manifestContentSha256,
+            string cellId,
+            string cellContentSha256,
+            QuicOversizedWriteAdmissionPolicyMode oversizedMode,
+            QuicApplicationSendBatchPolicyMode batchMode,
+            QuicBufferCopyPolicyValue bufferValue)
+    {
+        ValidateIdentifier(campaignId, nameof(campaignId));
+        if (!string.Equals(
+            campaignId,
+            PackagePathCampaignIdValue,
+            StringComparison.Ordinal))
+        {
+            throw new ArgumentException(
+                "Admission performance package-path authorization requires the reviewed campaign identifier.",
+                nameof(campaignId));
+        }
+
+        ValidateHash(manifestContentSha256, nameof(manifestContentSha256));
+        if (!string.Equals(
+            manifestContentSha256,
+            PackagePathManifestContentSha256,
+            StringComparison.Ordinal))
+        {
+            throw new ArgumentException(
+                "Admission performance package-path authorization requires the reviewed manifest content hash.",
+                nameof(manifestContentSha256));
+        }
+
+        ValidateIdentifier(cellId, nameof(cellId));
+        if (!IsReviewedPackagePathCell(
+            cellId,
+            cellContentSha256,
+            oversizedMode,
+            batchMode,
+            bufferValue))
+        {
+            throw new ArgumentException(
+                "Admission performance package-path authorization requires the reviewed A0, A3, A4, or A7 tuple.",
+                nameof(cellId));
+        }
+
+        return CreateForReviewedManifest(
+            campaignId,
+            manifestContentSha256,
+            cellId,
+            cellContentSha256,
+            FamilyCatalogSha256,
+            RelationshipCatalogSha256,
+            ConstraintCatalogSha256,
+            BatchProofReviewSha256,
+            BufferProofReviewSha256,
+            OversizedProofReviewSha256,
+            oversizedMode,
+            batchMode,
+            bufferValue);
+    }
 
     internal static
         QuicAdaptiveRuntimeAdmissionPerformanceAuthorization
@@ -205,6 +271,44 @@ internal readonly record struct
                 "Admission performance authorization requires an exact A0-A7 cell identity, hash, and value tuple.",
                 nameof(cellId));
         }
+    }
+
+    private static bool IsReviewedPackagePathCell(
+        string cellId,
+        string cellContentSha256,
+        QuicOversizedWriteAdmissionPolicyMode oversizedMode,
+        QuicApplicationSendBatchPolicyMode batchMode,
+        QuicBufferCopyPolicyValue bufferValue)
+    {
+        return (cellId, cellContentSha256, oversizedMode, batchMode, bufferValue)
+            switch
+            {
+                (
+                    "cell.send_admission_composition.correctness.a0",
+                    "c9e070a0880872c9c9dce62f07e933a0de96c7590d343ce7f923f121278bba28",
+                    QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent,
+                    QuicApplicationSendBatchPolicyMode.LegacyCurrent,
+                    QuicBufferCopyPolicyValue.LegacyCurrent) => true,
+                (
+                    "cell.send_admission_composition.correctness.a3",
+                    "1b7b63f5d53d39416d999b4bda0cc0c80e8817a535ceed9bc91e36aa12bcc2b1",
+                    QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent,
+                    QuicApplicationSendBatchPolicyMode.SingleEligible,
+                    QuicBufferCopyPolicyValue.MemoryConservative) => true,
+                (
+                    "cell.send_admission_composition.correctness.a4",
+                    "99c02f1b21aaef38b13b996a8e25d31b1e78d1f6927433470dd743ddc3a37598",
+                    QuicOversizedWriteAdmissionPolicyMode.SingleFragment,
+                    QuicApplicationSendBatchPolicyMode.LegacyCurrent,
+                    QuicBufferCopyPolicyValue.LegacyCurrent) => true,
+                (
+                    "cell.send_admission_composition.correctness.a7",
+                    "281b32fd62406993adbffb6c6717e8a73d8ced29524b8f0a82b2d470cbda409f",
+                    QuicOversizedWriteAdmissionPolicyMode.SingleFragment,
+                    QuicApplicationSendBatchPolicyMode.SingleEligible,
+                    QuicBufferCopyPolicyValue.MemoryConservative) => true,
+                _ => false,
+            };
     }
 
     private static bool IsExactCell(

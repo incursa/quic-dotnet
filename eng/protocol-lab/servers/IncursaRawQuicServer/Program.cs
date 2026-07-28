@@ -44,6 +44,14 @@ var oversizedWriteAdmissionPolicy = ResolveOversizedWriteAdmissionPolicy(
     Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_OVERSIZED_WRITE_ADMISSION_POLICY"));
 var bufferCopyPolicy = ResolveBufferCopyPolicy(
     Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_BUFFER_COPY_POLICY"));
+var admissionPerformanceAuthorization = ResolveAdmissionPerformanceAuthorization(
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CAMPAIGN_ID"),
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_MANIFEST_CONTENT_SHA256"),
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CELL_ID"),
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CELL_CONTENT_SHA256"),
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_OVERSIZED_WRITE_ADMISSION_POLICY"),
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_APPLICATION_SEND_BATCH_POLICY"),
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_BUFFER_COPY_POLICY"));
 var adaptiveBackpressurePolicy = ResolveAdaptiveBackpressurePolicy(
     Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADAPTIVE_BACKPRESSURE_POLICY"));
 var packetFlushCadencePolicy = ResolvePacketFlushCadencePolicy(
@@ -123,7 +131,8 @@ var forcedAdaptiveAxisCount =
     + (applicationDatagramBatchTransportPolicy.ForcedValue
         is null ? 0 : 1)
     + (congestionPacingProfilePolicy.ForcedValue is null ? 0 : 1);
-if (forcedAdaptiveAxisCount > 1)
+if (forcedAdaptiveAxisCount > 1
+    && admissionPerformanceAuthorization is null)
 {
     throw new InvalidOperationException(
         "Only one adaptive-runtime policy axis can be forced by a raw QUIC host process.");
@@ -348,6 +357,8 @@ var listenerOptions = new QuicListenerOptions
                 oversizedWriteAdmissionPolicy.ForcedMode,
             ForcedBufferCopyPolicyValue =
                 bufferCopyPolicy.ForcedValue,
+            SendAdmissionPerformanceAuthorization =
+                admissionPerformanceAuthorization,
             AdaptiveRuntimeShadowEnabled = adaptiveInstrumentationEnabled,
             AdaptiveRuntimeShadowEpochInterval = !adaptiveInstrumentationEnabled
                 ? TimeSpan.Zero
@@ -535,6 +546,64 @@ catch (QuicException ex)
 finally
 {
     await listener.DisposeAsync();
+}
+
+static QuicAdaptiveRuntimeAdmissionPerformanceAuthorization? ResolveAdmissionPerformanceAuthorization(
+    string? campaignId,
+    string? manifestContentSha256,
+    string? cellId,
+    string? cellContentSha256,
+    string? oversizedWriteAdmissionPolicyValue,
+    string? applicationSendBatchPolicyValue,
+    string? bufferCopyPolicyValue)
+{
+    bool anyValueSpecified =
+        !string.IsNullOrWhiteSpace(campaignId)
+        || !string.IsNullOrWhiteSpace(manifestContentSha256)
+        || !string.IsNullOrWhiteSpace(cellId)
+        || !string.IsNullOrWhiteSpace(cellContentSha256)
+        || !string.IsNullOrWhiteSpace(oversizedWriteAdmissionPolicyValue)
+        || !string.IsNullOrWhiteSpace(applicationSendBatchPolicyValue)
+        || !string.IsNullOrWhiteSpace(bufferCopyPolicyValue);
+    if (!anyValueSpecified)
+    {
+        return null;
+    }
+
+    if (string.IsNullOrWhiteSpace(campaignId)
+        || string.IsNullOrWhiteSpace(manifestContentSha256)
+        || string.IsNullOrWhiteSpace(cellId)
+        || string.IsNullOrWhiteSpace(cellContentSha256)
+        || string.IsNullOrWhiteSpace(oversizedWriteAdmissionPolicyValue)
+        || string.IsNullOrWhiteSpace(applicationSendBatchPolicyValue)
+        || string.IsNullOrWhiteSpace(bufferCopyPolicyValue))
+    {
+        throw new InvalidOperationException(
+            "Admission-performance package-path environment variables must be supplied together.");
+    }
+
+    var oversizedWriteAdmissionPolicy =
+        ResolveOversizedWriteAdmissionPolicy(oversizedWriteAdmissionPolicyValue);
+    var applicationSendBatchPolicy =
+        ResolveApplicationSendBatchPolicy(applicationSendBatchPolicyValue);
+    var bufferCopyPolicy = ResolveBufferCopyPolicy(bufferCopyPolicyValue);
+
+    if (oversizedWriteAdmissionPolicy.ForcedMode is not { } oversizedMode
+        || applicationSendBatchPolicy.ForcedMode is not { } batchMode
+        || bufferCopyPolicy.ForcedValue is not { } bufferValue)
+    {
+        throw new InvalidOperationException(
+            "Admission-performance package-path authorization requires forced legacy_current/single_fragment oversized admission, forced legacy_current/single_eligible application-send batch, and forced legacy_current/memory_conservative buffer-copy policies.");
+    }
+
+    return QuicAdaptiveRuntimeAdmissionPerformanceAuthorization.CreateForReviewedPackagePath(
+        campaignId,
+        manifestContentSha256,
+        cellId,
+        cellContentSha256,
+        oversizedMode,
+        batchMode,
+        bufferValue);
 }
 
 static (string Name, QuicReceiveCreditPolicyMode? ForcedMode, bool ShadowEnabled) ResolveAdaptiveRuntimePolicy(string? value)

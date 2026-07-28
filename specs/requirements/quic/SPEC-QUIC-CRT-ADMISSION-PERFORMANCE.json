@@ -15,8 +15,8 @@
     "WI-QUIC-CRT-0120",
     "VER-QUIC-CRT-0121"
   ],
-  "purpose": "Reconcile the reviewed send-admission factor space and authorize one bounded, exact, offline A0 through A7 performance campaign without authorizing bounded_multi_fragment, covering-array generation, performance acceptance, adaptive selection, or production behavior.",
-  "scope": "This specification applies only to the eight configured cells formed by oversized_write_admission_quantum values legacy_current and single_fragment, application_send_batch_formation values legacy_current and single_eligible, and buffer_copy_coalescing values legacy_current and memory_conservative. It governs exact catalog reconciliation, a manifest-bound internal measurement token, deterministic dry-run campaign compilation, production-seam measurement preparation, immutable evidence, and a stopping boundary before host-sensitive measurement execution.",
+  "purpose": "Reconcile the reviewed send-admission factor space and authorize one bounded, exact, offline performance program whose first selected execution is the A0, A3, A4, and A7 pilot on the ProtocolLab rack, without authorizing bounded_multi_fragment, covering-array generation, performance acceptance, adaptive selection, or production behavior.",
+  "scope": "This specification applies only to the eight configured cells formed by oversized_write_admission_quantum values legacy_current and single_fragment, application_send_batch_formation values legacy_current and single_eligible, and buffer_copy_coalescing values legacy_current and memory_conservative. It governs exact catalog reconciliation, a manifest-bound internal measurement token, deterministic dry-run campaign compilation, an additive selected-pilot authorization, package-backed ProtocolLab execution through production seams, immutable evidence, and analysis that remains non-accepting and offline.",
   "requirements": [
     {
       "id": "REQ-QUIC-CRT-0247",
@@ -51,15 +51,20 @@
     {
       "id": "REQ-QUIC-CRT-0249",
       "title": "Compile one deterministic exhaustive campaign before execution",
-      "statement": "The repository MUST compile a deterministic dry-run campaign for exactly A0 through A7 from current canonical inputs; preserve exact source-document hashes, cell order, workload definitions, treatment order, seed, repetitions, warmup, duration, correctness gates, metric definitions, environment requirements, and stopping rules; reject a stale catalog, blocked value, outside axis, covering-array request, performance-acceptance intent, active intent, or non-clean source requirement; and emit no timing observation during compilation or validation.",
+      "statement": "The repository MUST compile a deterministic dry-run campaign for exactly A0 through A7 from current canonical inputs; permit an additive timing-authorized pilot only after exact host, workload, and cell-scope selection; preserve exact source-document hashes, cell order, workload definitions, treatment order, seed, repetitions, warmup, duration, correctness gates, metric definitions, environment requirements, and stopping rules; reject a stale catalog, blocked value, outside axis, covering-array request, performance-acceptance intent, active intent, or non-clean source requirement; and emit no timing observation during compilation or validation.",
       "trace": {
         "satisfied_by": ["ARC-QUIC-CRT-0119"],
         "implemented_by": ["WI-QUIC-CRT-0120"],
         "verified_by": ["VER-QUIC-CRT-0121"],
-        "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceReadiness.ps1"],
+        "x_test_refs": [
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceReadiness.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformancePilot.ps1"
+        ],
         "upstream_refs": [
           "eng/adaptive-runtime/Compile-AdaptiveRuntimeAdmissionPerformanceCampaign.ps1",
-          "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-campaign-v1.json"
+          "eng/adaptive-runtime/Compile-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-campaign-v1.json",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-pilot-v1.json"
         ]
       }
     },
@@ -71,8 +76,15 @@
         "satisfied_by": ["ARC-QUIC-CRT-0119"],
         "implemented_by": ["WI-QUIC-CRT-0120"],
         "verified_by": ["VER-QUIC-CRT-0121"],
-        "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceReadiness.ps1"],
-        "upstream_refs": ["benchmarks/QuicSendCompositionPerformanceHarness.cs"]
+        "x_test_refs": [
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
+          "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/Invoke-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
+          "eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1",
+          "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs"
+        ]
       }
     },
     {
@@ -83,8 +95,11 @@
         "satisfied_by": ["ARC-QUIC-CRT-0119"],
         "implemented_by": ["WI-QUIC-CRT-0120"],
         "verified_by": ["VER-QUIC-CRT-0121"],
-        "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceReadiness.ps1"],
-        "upstream_refs": ["docs/design/adaptive-runtime-send-composition-performance.md"]
+        "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformancePilot.ps1"],
+        "upstream_refs": [
+          "eng/adaptive-runtime/Invoke-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
+          "docs/design/adaptive-runtime-send-composition-performance.md"
+        ]
       }
     },
     {

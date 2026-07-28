@@ -10,6 +10,8 @@ public sealed class REQ_QUIC_CRT_0248
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     private const string CampaignId =
         "campaign.send_admission_composition.performance.v1";
+    private const string PackagePathManifestHash =
+        "a56b59fdd26ce16a7131197269415e19175184c7d5f8da346d2b367218eb29cb";
     private const string FamilyCatalogHash =
         "cfee17afcc28da35e657b2d1331bde68c752b5a3487f0af69087c12df6530b93";
     private const string RelationshipCatalogHash =
@@ -68,6 +70,49 @@ public sealed class REQ_QUIC_CRT_0248
         Assert.True(authorization.OfflineMeasurementOnly);
         Assert.False(authorization.ActiveBehaviorAuthorization);
         Assert.False(authorization.PerformanceAcceptanceAuthorization);
+    }
+
+    [Theory]
+    [MemberData(nameof(ReviewedPackagePathCells))]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ExactReviewedPackagePathCellMayConfigureOnlyForOfflineMeasurement(
+        string cellId,
+        string cellHash,
+        int oversizedModeValue,
+        int batchModeValue,
+        int bufferValueValue)
+    {
+        QuicOversizedWriteAdmissionPolicyMode oversizedMode =
+            (QuicOversizedWriteAdmissionPolicyMode)oversizedModeValue;
+        QuicApplicationSendBatchPolicyMode batchMode =
+            (QuicApplicationSendBatchPolicyMode)batchModeValue;
+        QuicBufferCopyPolicyValue bufferValue =
+            (QuicBufferCopyPolicyValue)bufferValueValue;
+
+        QuicAdaptiveRuntimeAdmissionPerformanceAuthorization authorization =
+            CreateReviewedPackagePathAuthorization(
+                CampaignId,
+                cellId,
+                cellHash,
+                oversizedMode,
+                batchMode,
+                bufferValue);
+
+        using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport
+                .CreateFinishedClientRuntimeWithValidatedActivePath();
+
+        runtime.ConfigureAdaptiveRuntimePolicy(CreateOptions(
+            authorization,
+            oversizedMode,
+            batchMode,
+            bufferValue));
+
+        Assert.Equal(cellId, authorization.CellId);
+        Assert.Equal(cellHash, authorization.CellContentSha256);
+        Assert.Equal(PackagePathManifestHash, authorization.ManifestContentSha256);
+        Assert.Equal(CampaignId, authorization.CampaignId);
     }
 
     [Fact]
@@ -154,6 +199,45 @@ public sealed class REQ_QUIC_CRT_0248
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    public void PackagePathAuthorizationRejectsNonReviewedTuples()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            CreateReviewedPackagePathAuthorization(
+                CampaignId,
+                "cell.send_admission_composition.correctness.a1",
+                "c41ed6674829898c3dc4e9af34cca11d159c07642c267a893b9d7097c3cc4f25",
+                QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent,
+                QuicApplicationSendBatchPolicyMode.LegacyCurrent,
+                QuicBufferCopyPolicyValue.MemoryConservative));
+        Assert.Throws<ArgumentException>(() =>
+            CreateReviewedPackagePathAuthorization(
+                CampaignId,
+                "cell.send_admission_composition.correctness.a2",
+                "68c4112be72f82a9eb11b8a6dcf0594542337960c85bcc5f7386d91a172341db",
+                QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent,
+                QuicApplicationSendBatchPolicyMode.SingleEligible,
+                QuicBufferCopyPolicyValue.LegacyCurrent));
+        Assert.Throws<ArgumentException>(() =>
+            CreateReviewedPackagePathAuthorization(
+                CampaignId,
+                "cell.send_admission_composition.correctness.a5",
+                "e3635faeb1b2435fc40487bd1cc5060f822624607c2c2202b78d1c1894041b2a",
+                QuicOversizedWriteAdmissionPolicyMode.SingleFragment,
+                QuicApplicationSendBatchPolicyMode.LegacyCurrent,
+                QuicBufferCopyPolicyValue.MemoryConservative));
+        Assert.Throws<ArgumentException>(() =>
+            CreateReviewedPackagePathAuthorization(
+                CampaignId,
+                "cell.send_admission_composition.correctness.a6",
+                "ac2a8d830612027da8f85d90d6bf9624c344078ae0067dd9fca3b8e7c6ae6fd1",
+                QuicOversizedWriteAdmissionPolicyMode.SingleFragment,
+                QuicApplicationSendBatchPolicyMode.SingleEligible,
+                QuicBufferCopyPolicyValue.LegacyCurrent));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void AuthorizationCannotCombineWithCorrectnessOrEarlierPerformanceAuthorizations()
     {
         QuicAdaptiveRuntimeAdmissionPerformanceAuthorization admission =
@@ -229,6 +313,65 @@ public sealed class REQ_QUIC_CRT_0248
             correctnessRuntime.ConfigureAdaptiveRuntimePolicy(options);
         });
     }
+
+    internal static
+        QuicAdaptiveRuntimeAdmissionPerformanceAuthorization
+        CreateReviewedPackagePathAuthorization(
+            string campaignId,
+            string cellId,
+            string cellHash,
+            QuicOversizedWriteAdmissionPolicyMode oversizedMode,
+            QuicApplicationSendBatchPolicyMode batchMode,
+            QuicBufferCopyPolicyValue bufferValue)
+    {
+        return QuicAdaptiveRuntimeAdmissionPerformanceAuthorization
+            .CreateForReviewedPackagePath(
+                campaignId,
+                PackagePathManifestHash,
+                cellId,
+                cellHash,
+                oversizedMode,
+                batchMode,
+                bufferValue);
+    }
+
+    public static TheoryData<
+        string,
+        string,
+        int,
+        int,
+        int> ReviewedPackagePathCells =>
+        new()
+        {
+            {
+                "cell.send_admission_composition.correctness.a0",
+                "c9e070a0880872c9c9dce62f07e933a0de96c7590d343ce7f923f121278bba28",
+                (int)QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent,
+                (int)QuicApplicationSendBatchPolicyMode.LegacyCurrent,
+                (int)QuicBufferCopyPolicyValue.LegacyCurrent
+            },
+            {
+                "cell.send_admission_composition.correctness.a3",
+                "1b7b63f5d53d39416d999b4bda0cc0c80e8817a535ceed9bc91e36aa12bcc2b1",
+                (int)QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent,
+                (int)QuicApplicationSendBatchPolicyMode.SingleEligible,
+                (int)QuicBufferCopyPolicyValue.MemoryConservative
+            },
+            {
+                "cell.send_admission_composition.correctness.a4",
+                "99c02f1b21aaef38b13b996a8e25d31b1e78d1f6927433470dd743ddc3a37598",
+                (int)QuicOversizedWriteAdmissionPolicyMode.SingleFragment,
+                (int)QuicApplicationSendBatchPolicyMode.LegacyCurrent,
+                (int)QuicBufferCopyPolicyValue.LegacyCurrent
+            },
+            {
+                "cell.send_admission_composition.correctness.a7",
+                "281b32fd62406993adbffb6c6717e8a73d8ced29524b8f0a82b2d470cbda409f",
+                (int)QuicOversizedWriteAdmissionPolicyMode.SingleFragment,
+                (int)QuicApplicationSendBatchPolicyMode.SingleEligible,
+                (int)QuicBufferCopyPolicyValue.MemoryConservative
+            },
+        };
 
     internal static
         QuicAdaptiveRuntimeAdmissionPerformanceAuthorization

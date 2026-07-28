@@ -827,8 +827,23 @@ pwsh -NoProfile -File eng/adaptive-runtime/Compile-AdaptiveRuntimeAdmissionPerfo
 `send_admission_composition_performance_v1` is internal, exact-cell-only, and
 manifest-bound. It cannot join `bounded_multi_fragment`, nonlegacy queued
 burst, a fourth axis, a correctness token, the prior two-axis performance
-token, or public production configuration. The dry run compiles eight cells
-and records both host and workload selection as `decision_required`;
-`timing_execution_authorized`, performance acceptance, active behavior, and
-production activation remain false. No performance number is produced by
-these commands.
+token, or public production configuration. The retained dry run still
+compiles all eight cells with timing disabled and produces no performance
+number.
+
+The additive rack pilot selects exactly A0, A3, A4, and A7, executes them in
+A0, A4, A3, A7 order, and uses the package-backed raw QUIC lane with
+controller-owned `isolated-pair` placement. Compile and exercise its plan-only
+path with:
+
+```powershell
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformancePilot.ps1
+
+pwsh -NoProfile -File eng/adaptive-runtime/Invoke-AdaptiveRuntimeAdmissionPerformancePilot.ps1 `
+  -OutputRoot C:\shared\temp\quic-dotnet\admission-performance-pilot
+```
+
+Only an explicit `-Execute` submits rack work. Performance acceptance, active
+behavior, and production activation remain false. The four-cell pilot can
+measure the oversized seam and the combined batch-plus-buffer effect; it
+cannot attribute batch and buffer independently.

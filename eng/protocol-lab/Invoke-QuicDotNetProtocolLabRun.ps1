@@ -42,6 +42,15 @@ param(
     [ValidateSet("", "legacy_current", "conservative", "observe_only", "shadow")]
     [string] $AdaptiveRuntimeApplicationSendTurnPolicy = "",
 
+    [ValidateSet("", "legacy_current", "single_fragment")]
+    [string] $AdaptiveRuntimeOversizedWriteAdmissionPolicy = "",
+
+    [ValidateSet("", "legacy_current", "single_eligible")]
+    [string] $AdaptiveRuntimeApplicationSendBatchPolicy = "",
+
+    [ValidateSet("", "legacy_current", "memory_conservative")]
+    [string] $AdaptiveRuntimeBufferCopyPolicy = "",
+
     [ValidateSet("", "legacy_current", "prompt", "observe_only", "shadow")]
     [string] $AdaptiveRuntimePacketFlushCadencePolicy = "",
 
@@ -234,6 +243,21 @@ $applicationSendTurnPolicySelected =
 if ($applicationSendTurnPolicySelected -and $PackageTarget -ne "RawQuic") {
     throw "AdaptiveRuntimeApplicationSendTurnPolicy is supported only for the RawQuic package target."
 }
+$oversizedWriteAdmissionPolicySelected =
+    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeOversizedWriteAdmissionPolicy)
+if ($oversizedWriteAdmissionPolicySelected -and $PackageTarget -ne "RawQuic") {
+    throw "AdaptiveRuntimeOversizedWriteAdmissionPolicy is supported only for the RawQuic package target."
+}
+$applicationSendBatchPolicySelected =
+    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendBatchPolicy)
+if ($applicationSendBatchPolicySelected -and $PackageTarget -ne "RawQuic") {
+    throw "AdaptiveRuntimeApplicationSendBatchPolicy is supported only for the RawQuic package target."
+}
+$bufferCopyPolicySelected =
+    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeBufferCopyPolicy)
+if ($bufferCopyPolicySelected -and $PackageTarget -ne "RawQuic") {
+    throw "AdaptiveRuntimeBufferCopyPolicy is supported only for the RawQuic package target."
+}
 $packetFlushCadencePolicySelected =
     -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimePacketFlushCadencePolicy)
 if ($packetFlushCadencePolicySelected -and $PackageTarget -ne "RawQuic") {
@@ -421,6 +445,9 @@ if (-not $UsePackageReferenceOnly) {
         Configuration = $Configuration
         RuntimeIdentifier = $RuntimeIdentifier
         AdaptiveRuntimeApplicationSendTurnPolicy = $AdaptiveRuntimeApplicationSendTurnPolicy
+        AdaptiveRuntimeOversizedWriteAdmissionPolicy = $AdaptiveRuntimeOversizedWriteAdmissionPolicy
+        AdaptiveRuntimeApplicationSendBatchPolicy = $AdaptiveRuntimeApplicationSendBatchPolicy
+        AdaptiveRuntimeBufferCopyPolicy = $AdaptiveRuntimeBufferCopyPolicy
         AdaptiveRuntimePacketFlushCadencePolicy = $AdaptiveRuntimePacketFlushCadencePolicy
         AdaptiveRuntimeReceiveDeliveryQuantumPolicy = $AdaptiveRuntimeReceiveDeliveryQuantumPolicy
         AdaptiveRuntimeConnectionShardPlacementPolicy = $AdaptiveRuntimeConnectionShardPlacementPolicy
