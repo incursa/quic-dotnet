@@ -1,0 +1,63 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0119",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "Exact admission-family offline performance readiness",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0247 through REQ-QUIC-CRT-0252 with additive factor-space reconciliation, one exact performance-only A0-A7 authorization, deterministic campaign compilation, and a hard boundary before host-sensitive measurement.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-ADMISSION-PERFORMANCE",
+    "SPEC-QUIC-CRT-ADMISSION-CORRECTNESS",
+    "ARC-QUIC-CRT-0116",
+    "WI-QUIC-CRT-0120",
+    "VER-QUIC-CRT-0121"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0247",
+    "REQ-QUIC-CRT-0248",
+    "REQ-QUIC-CRT-0249",
+    "REQ-QUIC-CRT-0250",
+    "REQ-QUIC-CRT-0251",
+    "REQ-QUIC-CRT-0252"
+  ],
+  "key_components": [
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-experiment-family-catalog-v5.json",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-factor-cell-space-v3.json",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-campaign-v1.json",
+    "schemas/adaptive-runtime-factor-cell-space-v3.schema.json",
+    "schemas/adaptive-runtime-send-admission-performance-campaign-v1.schema.json",
+    "schemas/adaptive-runtime-send-admission-performance-manifest-v1.schema.json",
+    "eng/adaptive-runtime/Compile-AdaptiveRuntimeAdmissionPerformanceCampaign.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceReadiness.ps1",
+    "src/Incursa.Quic/QuicAdaptiveRuntimeAdmissionPerformanceAuthorization.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0248.cs"
+  ],
+  "design_summary": "The retained v2 cell space remains immutable. A v3 document rebinds the same twelve-cell configured admission space to family catalog v5, identifies A0 through A7 as the reviewed exact exhaustive subset, and keeps the four bounded cells blocked. A new internal fixed-field performance token is parallel to, but mutually exclusive with, correctness authorization; it binds one exact campaign manifest and one A0-A7 tuple and carries no performance-acceptance or active authority. A deterministic compiler validates current hashes, expands only the explicit eight cells, freezes workload and counterbalanced execution metadata, and emits a dry-run manifest without running a clock. Actual loopback or rack-lab execution remains a later step because machine identity, workload scope, and evidence destination materially affect the result.",
+  "data_and_state_considerations": "Canonical control documents are additive, versioned, and content-hashed. Runtime authorization is immutable, internal-only, and connection-local. Compilation reads canonical inputs and emits one deterministic manifest; it does not mutate runtime policy or collect timing data. Later raw runs must be append-only external evidence bound to source, binary, host, manifest, cell, workload, repetition, and checksums.",
+  "edge_cases_and_constraints": [
+    "The eight reviewed cells are exhaustive, so covering arrays would reduce evidence without reducing a large search space.",
+    "The four bounded_multi_fragment cells remain present but blocked on shadow_recommendation_value_mismatch.",
+    "Oversized fragments can prevent batch and buffer distinctness on the same operation; separate run-local operations preserve attribution.",
+    "The older send_composition performance authorization and every correctness authorization are mutually exclusive with this token.",
+    "A clean local dry run does not establish a stable performance result."
+  ],
+  "alternatives_considered": [
+    "Modify factor-cell-space v2 in place; rejected because retained canonical versions are immutable.",
+    "Generalize the old two-axis token; rejected because family, proof, and cell boundaries must remain exact.",
+    "Implement a covering-array generator now; rejected because eight effective reviewed cells are below the trigger of 65.",
+    "Run local timings immediately; rejected because the execution host and workload scope are part of the measurement contract."
+  ],
+  "risks": [
+    "A stale catalog binding could authorize the wrong proof set unless all hashes are exact.",
+    "A generic multi-axis escape hatch could unintentionally admit blocked cells.",
+    "Developer-machine timings could be overinterpreted if host selection is not explicit.",
+    "Operation-local noncoactivation could be misclassified as whole-cell inactivity without separate evidence identities."
+  ],
+  "open_questions": [
+    "Should the first measured campaign run on the ProtocolLab rack or be explicitly labeled as local developer-host characterization?",
+    "Should the first execution be a pilot-only workload subset or the full predeclared train and holdout schedule?"
+  ]
+}

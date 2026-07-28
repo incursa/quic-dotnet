@@ -1,0 +1,106 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-CRT-ADMISSION-PERFORMANCE",
+  "artifact_type": "specification",
+  "title": "Adaptive-runtime admission-family offline performance characterization",
+  "domain": "quic",
+  "capability": "adaptive-runtime-admission-performance",
+  "status": "proposed",
+  "owner": "quic-maintainers",
+  "tags": ["adaptive-runtime", "experiment-control", "offline-measurement", "shadow-only"],
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-ADMISSION-CORRECTNESS",
+    "SPEC-QUIC-CRT-FACTOR-ONBOARDING",
+    "ARC-QUIC-CRT-0119",
+    "WI-QUIC-CRT-0120",
+    "VER-QUIC-CRT-0121"
+  ],
+  "purpose": "Reconcile the reviewed send-admission factor space and authorize one bounded, exact, offline A0 through A7 performance campaign without authorizing bounded_multi_fragment, covering-array generation, performance acceptance, adaptive selection, or production behavior.",
+  "scope": "This specification applies only to the eight configured cells formed by oversized_write_admission_quantum values legacy_current and single_fragment, application_send_batch_formation values legacy_current and single_eligible, and buffer_copy_coalescing values legacy_current and memory_conservative. It governs exact catalog reconciliation, a manifest-bound internal measurement token, deterministic dry-run campaign compilation, production-seam measurement preparation, immutable evidence, and a stopping boundary before host-sensitive measurement execution.",
+  "requirements": [
+    {
+      "id": "REQ-QUIC-CRT-0247",
+      "title": "Reconcile the reviewed admission factor space",
+      "statement": "The repository MUST add an immutable current factor-cell-space document bound to experiment-family catalog version 5 and its exact reviewed-proof references; preserve the twelve configured admission cells; classify exactly A0 through A7 as the current reviewed exhaustive subset; retain all four bounded_multi_fragment cells as blocked; keep queued_send_burst_budget outside the family at legacy_current; keep covering-array generation disabled with the effective-cell trigger at 65; and keep active behavior and performance acceptance authorization false.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0119"],
+        "implemented_by": ["WI-QUIC-CRT-0120"],
+        "verified_by": ["VER-QUIC-CRT-0121"],
+        "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceReadiness.ps1"],
+        "upstream_refs": [
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-experiment-family-catalog-v5.json",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-factor-cell-space-v2.json"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0248",
+      "title": "Authorize only the exact reviewed offline eight-cell family",
+      "statement": "The repository MUST authorize offline performance measurement only for exact A0 through A7 send_admission_composition cells; bind the authorization to one stable campaign ID, one exact manifest hash, the current family, relationship, constraint, and reviewed-proof hashes, and the exact cell identity, hash, and three policy values; require every adjacent axis to remain null or legacy_current; and reject bounded_multi_fragment, nonlegacy queued burst, a stale binding, an outside cell, correctness intent, performance acceptance, active behavior, or ordinary production configuration.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0119"],
+        "implemented_by": ["WI-QUIC-CRT-0120"],
+        "verified_by": ["VER-QUIC-CRT-0121"],
+        "x_test_refs": ["tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0248.cs"],
+        "upstream_refs": [
+          "src/Incursa.Quic/QuicAdaptiveRuntimeAdmissionPerformanceAuthorization.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0249",
+      "title": "Compile one deterministic exhaustive campaign before execution",
+      "statement": "The repository MUST compile a deterministic dry-run campaign for exactly A0 through A7 from current canonical inputs; preserve exact source-document hashes, cell order, workload definitions, treatment order, seed, repetitions, warmup, duration, correctness gates, metric definitions, environment requirements, and stopping rules; reject a stale catalog, blocked value, outside axis, covering-array request, performance-acceptance intent, active intent, or non-clean source requirement; and emit no timing observation during compilation or validation.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0119"],
+        "implemented_by": ["WI-QUIC-CRT-0120"],
+        "verified_by": ["VER-QUIC-CRT-0121"],
+        "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceReadiness.ps1"],
+        "upstream_refs": [
+          "eng/adaptive-runtime/Compile-AdaptiveRuntimeAdmissionPerformanceCampaign.ps1",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-campaign-v1.json"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0250",
+      "title": "Execute production seams with exact activation accounting",
+      "statement": "An authorized admission performance runner MUST execute cells serially through the production oversized-write admission, application-send batch, buffer-coalescing, ownership, and terminal-release seams; use separate identity-bound opportunities when the three seams cannot co-actuate on one operation; require every configured nonlegacy value to actuate in its own run context; retain inactive and failed runs with exact reasons; and bind every raw observation to source, binary, host, manifest, cell, workload, repetition, runtime evidence, correctness, and checksum identity.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0119"],
+        "implemented_by": ["WI-QUIC-CRT-0120"],
+        "verified_by": ["VER-QUIC-CRT-0121"],
+        "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceReadiness.ps1"],
+        "upstream_refs": ["benchmarks/QuicSendCompositionPerformanceHarness.cs"]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0251",
+      "title": "Analyze configured and effective effects reproducibly",
+      "statement": "Offline analysis MUST preserve all eight configured cells, derive effective activation signatures from runtime evidence, report oversized-admission, batch, buffer, and interaction effects without attributing operation-local noncoactivation as whole-cell inactivity, use predeclared practical thresholds and guardrails, prevent workload and repetition leakage, reserve independent host and workload contexts for validation, and emit no adaptive rule unless a later trace-owned review accepts stable held-out evidence.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0119"],
+        "implemented_by": ["WI-QUIC-CRT-0120"],
+        "verified_by": ["VER-QUIC-CRT-0121"],
+        "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceReadiness.ps1"],
+        "upstream_refs": ["docs/design/adaptive-runtime-send-composition-performance.md"]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0252",
+      "title": "Preserve the measurement stopping boundary",
+      "statement": "The milestone MUST finish campaign reconciliation, exact authorization, dry-run compilation, schema validation, focused positive and negative tests, Release builds, direct touched-artifact SpecTrace validation, and diff hygiene before a host-sensitive timing run; require an explicit selected execution environment and workload scope before measurement; and finish without covering-array generation, bounded_multi_fragment authorization, performance acceptance, adaptive-rule activation, active_internal, production activation, CI modification, push, or deletion of retained evidence.",
+      "trace": {
+        "satisfied_by": ["ARC-QUIC-CRT-0119"],
+        "implemented_by": ["WI-QUIC-CRT-0120"],
+        "verified_by": ["VER-QUIC-CRT-0121"],
+        "x_test_refs": [
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceReadiness.ps1",
+          "scripts/Validate-SpecTraceJson.ps1"
+        ],
+        "upstream_refs": ["docs/protocol-lab/rack-lab-controller.md"]
+      }
+    }
+  ]
+}

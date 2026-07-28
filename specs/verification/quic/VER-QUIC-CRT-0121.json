@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0121",
+  "artifact_type": "verification",
+  "status": "planned",
+  "title": "Exact admission-family performance readiness verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-ADMISSION-PERFORMANCE",
+    "ARC-QUIC-CRT-0119",
+    "WI-QUIC-CRT-0120"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0247",
+    "REQ-QUIC-CRT-0248",
+    "REQ-QUIC-CRT-0249",
+    "REQ-QUIC-CRT-0250",
+    "REQ-QUIC-CRT-0251",
+    "REQ-QUIC-CRT-0252"
+  ],
+  "scope": "Verify additive factor-space reconciliation, exact A0-A7 offline measurement authority, deterministic no-timing campaign compilation, fail-closed negative cases, and the explicit stop before host-sensitive execution. This artifact does not claim measured performance, a stable rule, performance acceptance, active behavior, or production readiness.",
+  "verification_method": "Canonical JSON schema and hash validation; exact catalog, proof, campaign, manifest, cell, and policy-tuple checks; focused positive and negative runtime authorization tests; deterministic compiler replay; Release builds; direct touched-artifact SpecTrace validation; and diff hygiene.",
+  "preconditions": [
+    "The passed A0 through A7 correctness result and its current reviewed proof catalog remain present.",
+    "bounded_multi_fragment remains blocked on shadow_recommendation_value_mismatch.",
+    "No execution host or workload scope has yet been selected for performance measurement.",
+    "Performance acceptance, adaptive selection, active behavior, and production activation remain false."
+  ],
+  "procedure": [
+    "Validate factor-cell-space v3 against the current family v5 hash and prove retained v2 is unchanged.",
+    "Verify exactly A0 through A7 are the reviewed exhaustive measurement subset and all bounded cells remain blocked.",
+    "Create an exact admission performance authorization for each A0-A7 tuple and reject mismatched hashes, cells, values, adjacent axes, or concurrent authorization tokens.",
+    "Compile the campaign twice and prove byte-identical canonical output without collecting timing observations.",
+    "Reject covering-array requests, blocked values, stale inputs, outside axes, correctness intent, performance-acceptance intent, and active intent.",
+    "Run focused source tests and Release builds with the repository's documented analyzer floor.",
+    "Validate SPEC-QUIC-CRT-ADMISSION-PERFORMANCE, ARC-QUIC-CRT-0119, WI-QUIC-CRT-0120, and VER-QUIC-CRT-0121 directly.",
+    "Run git diff --check and confirm no actual measurement, CI change, push, or production activation occurred."
+  ],
+  "expected_result": "The current factor space is reconciled additively; only the exact reviewed A0 through A7 family can receive internal offline measurement authorization; dry-run compilation is deterministic and fail-closed; focused tests and builds pass or retain a precise inherited analyzer blocker; and actual timing remains pending the selected execution environment and workload scope.",
+  "evidence": [
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-factor-cell-space-v3.json",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-campaign-v1.json",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceReadiness.ps1",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0248.cs",
+    "scripts/Validate-SpecTraceJson.ps1"
+  ],
+  "status_summary": "Readiness portion passed: 21 deterministic contract assertions, eight reviewed and four blocked factor cells, eight compiled dry-run work items, four fail-closed campaign mutations, 12 focused authorization tests, 55 combined admission and oversized-outcome tests, and the analyzer-enabled Incursa.Quic Release build all passed. The full test project completed with 10,244 passed, 4 skipped, and 5 unrelated baseline failures in Windows path budget, completion-source reflection ambiguity, a retained gate-field inventory, and sent-packet layout. The retained A0-A7 evidence validator reports admission_runtime_binary_stale after the runtime authorization change, preserving its original binary provenance. Actual measurements run: zero. Host selection, workload scope, performance-runner extension, raw evidence, and effect analysis remain pending."
+}

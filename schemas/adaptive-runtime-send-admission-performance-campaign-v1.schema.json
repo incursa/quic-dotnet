@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-send-admission-performance-campaign-v1.schema.json",
+  "title": "Adaptive Runtime Send Admission Performance Campaign v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "authorization_id",
+    "campaign_id",
+    "family_id",
+    "execution_purpose",
+    "generation_mode",
+    "covering_array_generator_implemented",
+    "covering_array_trigger_effective_cell_count",
+    "source_document_refs",
+    "planned_cells",
+    "dry_run_workloads",
+    "design",
+    "environment",
+    "metrics",
+    "correctness_gates",
+    "measurement_capability_authorized",
+    "timing_execution_authorized",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "production_activation_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-send-admission-performance-campaign-v1" },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "authorization_id": { "const": "send_admission_composition_performance_v1" },
+    "campaign_id": { "const": "campaign.send_admission_composition.performance.v1" },
+    "family_id": { "const": "send_admission_composition" },
+    "execution_purpose": { "const": "offline_performance" },
+    "generation_mode": { "const": "exhaustive_explicit" },
+    "covering_array_generator_implemented": { "const": false },
+    "covering_array_trigger_effective_cell_count": { "const": 65 },
+    "source_document_refs": {
+      "type": "array",
+      "minItems": 3,
+      "items": { "$ref": "#/$defs/documentRef" }
+    },
+    "planned_cells": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": { "$ref": "#/$defs/cell" }
+    },
+    "dry_run_workloads": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/workload" }
+    },
+    "design": { "type": "object" },
+    "environment": { "type": "object" },
+    "metrics": { "type": "object" },
+    "correctness_gates": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "measurement_capability_authorized": { "const": true },
+    "timing_execution_authorized": { "const": false },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "production_activation_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/trace" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.-]+$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document_id", "schema_version", "document_version", "content_sha256"],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "schema_version": { "$ref": "#/$defs/id" },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cell_id",
+        "content_sha256",
+        "oversized_write_admission_quantum",
+        "application_send_batch_formation",
+        "buffer_copy_coalescing"
+      ],
+      "properties": {
+        "cell_id": {
+          "type": "string",
+          "pattern": "^cell\\.send_admission_composition\\.correctness\\.a[0-7]$"
+        },
+        "content_sha256": { "$ref": "#/$defs/hash" },
+        "oversized_write_admission_quantum": {
+          "enum": ["legacy_current", "single_fragment"]
+        },
+        "application_send_batch_formation": {
+          "enum": ["legacy_current", "single_eligible"]
+        },
+        "buffer_copy_coalescing": {
+          "enum": ["legacy_current", "memory_conservative"]
+        }
+      }
+    },
+    "workload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "workload_id",
+        "purpose",
+        "timing_eligible",
+        "opportunity_sets"
+      ],
+      "properties": {
+        "workload_id": { "$ref": "#/$defs/id" },
+        "purpose": { "const": "authorization_dry_run" },
+        "timing_eligible": { "const": false },
+        "opportunity_sets": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "oversized_write",
+              "batch_formation",
+              "buffer_coalescing"
+            ]
+          }
+        }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_ids", "architecture_ids", "work_item_ids", "verification_ids"],
+      "properties": {
+        "requirement_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+        "architecture_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+        "work_item_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+        "verification_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } }
+      }
+    }
+  }
+}

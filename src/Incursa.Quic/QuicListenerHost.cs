@@ -2695,6 +2695,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             returnedOptions.SendCompositionCorrectnessAuthorization;
         selectedOptions.SendAdmissionCorrectnessAuthorization =
             returnedOptions.SendAdmissionCorrectnessAuthorization;
+        selectedOptions.SendAdmissionPerformanceAuthorization =
+            returnedOptions.SendAdmissionPerformanceAuthorization;
         selectedOptions.SendCompositionPerformanceAuthorization =
             returnedOptions.SendCompositionPerformanceAuthorization;
         selectedOptions.ForcedQueuedSendBurstPolicyMode = returnedOptions.ForcedQueuedSendBurstPolicyMode;

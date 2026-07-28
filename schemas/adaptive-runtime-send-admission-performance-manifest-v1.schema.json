@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-send-admission-performance-manifest-v1.schema.json",
+  "title": "Adaptive Runtime Send Admission Performance Manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "authorization_id",
+    "execution_purpose",
+    "campaign_ref",
+    "source_document_refs",
+    "compiled_cells",
+    "compiled_work_items",
+    "host_selection_state",
+    "workload_selection_state",
+    "measurement_capability_authorized",
+    "timing_execution_authorized",
+    "no_timing_observations",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization",
+    "production_activation_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-send-admission-performance-manifest-v1" },
+    "document_id": { "$ref": "#/$defs/id" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "authorization_id": { "const": "send_admission_composition_performance_v1" },
+    "execution_purpose": { "const": "offline_performance_dry_run" },
+    "campaign_ref": { "$ref": "#/$defs/documentRef" },
+    "source_document_refs": {
+      "type": "array",
+      "minItems": 3,
+      "items": { "$ref": "#/$defs/documentRef" }
+    },
+    "compiled_cells": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": { "$ref": "#/$defs/cellRef" }
+    },
+    "compiled_work_items": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "$ref": "#/$defs/workItem" }
+    },
+    "host_selection_state": { "const": "decision_required" },
+    "workload_selection_state": { "const": "decision_required" },
+    "measurement_capability_authorized": { "const": true },
+    "timing_execution_authorized": { "const": false },
+    "no_timing_observations": { "const": true },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false },
+    "production_activation_authorization": { "const": false },
+    "trace_references": { "type": "object" }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 1, "pattern": "^[A-Za-z0-9_.-]+$" },
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document_id", "schema_version", "document_version", "content_sha256"],
+      "properties": {
+        "document_id": { "$ref": "#/$defs/id" },
+        "schema_version": { "$ref": "#/$defs/id" },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "cellRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cell_id", "content_sha256"],
+      "properties": {
+        "cell_id": {
+          "type": "string",
+          "pattern": "^cell\\.send_admission_composition\\.correctness\\.a[0-7]$"
+        },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "workItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_item_id",
+        "cell_id",
+        "workload_id",
+        "execution_state"
+      ],
+      "properties": {
+        "work_item_id": { "$ref": "#/$defs/id" },
+        "cell_id": { "$ref": "#/$defs/id" },
+        "workload_id": { "$ref": "#/$defs/id" },
+        "execution_state": { "const": "blocked_pending_host_and_workload" }
+      }
+    }
+  }
+}

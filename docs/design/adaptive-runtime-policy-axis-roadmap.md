@@ -1797,14 +1797,25 @@ closed the prior activation gap and concluded
 activation and correctness eligibility while declining to promote a selector.
 `active_internal` and production behavior remain unauthorized.
 
-The next reviewed action is bounded canonical onboarding, not another
-foundation rebuild: audit `oversized_write_admission_quantum`,
-`queued_send_burst_budget`, and `packet_flush_cadence`; select at most two
-axes whose authority and evidence paths are truthful; create candidate-only
-actuation proofs; and calculate their constrained effective correctness space.
-Family placement must follow direct mechanism relationships rather than a
-shared top-level throughput outcome. Actor service/fairness, Stage 5 protocol
-profiles, and other axes remain separate future decisions.
+The July 27-28 follow-up completed bounded canonical onboarding for
+`oversized_write_admission_quantum` and `queued_send_burst_budget`,
+independently reviewed their runtime-derived proofs, promoted
+`single_fragment` and `single_datagram`, and preserved
+`bounded_multi_fragment` as blocked on
+`shadow_recommendation_value_mismatch`. The exact
+`send_admission_composition` A0 through A7 matrix then passed correctness.
+Factor-cell-space v3 now binds that reviewed eight-cell exhaustive subset to
+family catalog v5 while retaining all four bounded cells as blocked.
+
+The next reviewed decision is measurement execution scope, not another
+authorization or a covering-array generator. The exact internal
+`send_admission_composition_performance_v1` capability and deterministic
+dry-run campaign are prepared, but timing execution remains false until a
+host and workload scope are selected. Review must choose between a clearly
+labeled local developer-host characterization and ProtocolLab rack execution,
+then choose a four-cell pilot (`A0`, `A3`, `A4`, `A7`) or the full A0 through
+A7 pilot. Covering arrays remain deferred until a future reviewed family has
+at least 65 effective cells and a separately traced generator.
 
 ## Final Constraint
 

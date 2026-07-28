@@ -1999,6 +1999,16 @@ internal sealed partial class QuicConnectionRuntime :
                 forcedMode,
                 forcedApplicationSendTurnMode,
                 forcedQueuedSendBurstMode);
+        bool sendAdmissionPerformanceAuthorized =
+            options.SendAdmissionPerformanceAuthorization
+                is { } performanceAdmissionAuthorization
+            && performanceAdmissionAuthorization.Authorizes(
+                forcedOversizedWriteAdmissionMode,
+                forcedApplicationSendBatchMode,
+                forcedBufferCopyPolicyValue,
+                forcedMode,
+                forcedApplicationSendTurnMode,
+                forcedQueuedSendBurstMode);
         if (options.SendCompositionCorrectnessAuthorization is not null
             && !sendCompositionCorrectnessAuthorized)
         {
@@ -2017,6 +2027,12 @@ internal sealed partial class QuicConnectionRuntime :
             throw new InvalidOperationException(
                 "The send-admission correctness authorization does not match the exact A0-A7 forced cell.");
         }
+        if (options.SendAdmissionPerformanceAuthorization is not null
+            && !sendAdmissionPerformanceAuthorized)
+        {
+            throw new InvalidOperationException(
+                "The send-admission performance authorization does not match the exact reviewed A0-A7 offline-measurement cell.");
+        }
         if (options.SendCompositionCorrectnessAuthorization is not null
             && options.SendCompositionPerformanceAuthorization is not null)
         {
@@ -2029,6 +2045,14 @@ internal sealed partial class QuicConnectionRuntime :
         {
             throw new InvalidOperationException(
                 "Send-admission correctness authorization is mutually exclusive with send-composition authorizations.");
+        }
+        if (options.SendAdmissionPerformanceAuthorization is not null
+            && (options.SendAdmissionCorrectnessAuthorization is not null
+                || options.SendCompositionCorrectnessAuthorization is not null
+                || options.SendCompositionPerformanceAuthorization is not null))
+        {
+            throw new InvalidOperationException(
+                "Send-admission performance authorization is mutually exclusive with correctness and send-composition authorizations.");
         }
         if (applicationSendBatchTreatmentSelected)
         {
@@ -2053,6 +2077,7 @@ internal sealed partial class QuicConnectionRuntime :
             }
 
             if (!sendAdmissionCorrectnessAuthorized
+                && !sendAdmissionPerformanceAuthorized
                 && forcedOversizedWriteAdmissionMode is not null
                 and not QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent)
             {
@@ -2080,6 +2105,7 @@ internal sealed partial class QuicConnectionRuntime :
             }
 
             if (!sendAdmissionCorrectnessAuthorized
+                && !sendAdmissionPerformanceAuthorized
                 && forcedApplicationSendBatchMode is not null
                 and not QuicApplicationSendBatchPolicyMode.LegacyCurrent)
             {
@@ -2115,6 +2141,7 @@ internal sealed partial class QuicConnectionRuntime :
             }
 
             if (!sendAdmissionCorrectnessAuthorized
+                && !sendAdmissionPerformanceAuthorized
                 && forcedApplicationSendBatchMode is not null
                 and not QuicApplicationSendBatchPolicyMode.LegacyCurrent)
             {
@@ -2147,6 +2174,7 @@ internal sealed partial class QuicConnectionRuntime :
             }
 
             if (!sendAdmissionCorrectnessAuthorized
+                && !sendAdmissionPerformanceAuthorized
                 && !sendCompositionCorrectnessAuthorized
                 && !sendCompositionPerformanceAuthorized
                 && forcedApplicationSendBatchMode is not null
@@ -2164,6 +2192,7 @@ internal sealed partial class QuicConnectionRuntime :
             }
 
             if (!sendAdmissionCorrectnessAuthorized
+                && !sendAdmissionPerformanceAuthorized
                 && forcedOversizedWriteAdmissionMode is not null
                 and not QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent)
             {
@@ -2255,8 +2284,11 @@ internal sealed partial class QuicConnectionRuntime :
             + (applicationDatagramBatchTransportTreatmentSelected ? 1 : 0)
             + (congestionPacingProfileTreatmentSelected ? 1 : 0);
         const int SendCompositionBehaviorDistinctTreatmentCount = 2;
-        bool exactSendAdmissionTreatmentSet =
+        bool sendAdmissionTreatmentAuthorized =
             sendAdmissionCorrectnessAuthorized
+            || sendAdmissionPerformanceAuthorized;
+        bool exactSendAdmissionTreatmentSet =
+            sendAdmissionTreatmentAuthorized
             && !applicationSendTurnTreatmentSelected
             && !queuedSendBurstTreatmentSelected
             && !adaptiveBackpressureTreatmentSelected
@@ -2264,11 +2296,11 @@ internal sealed partial class QuicConnectionRuntime :
             && !receiveDeliveryQuantumTreatmentSelected
             && !applicationDatagramBatchTransportTreatmentSelected
             && !congestionPacingProfileTreatmentSelected;
-        if (sendAdmissionCorrectnessAuthorized
+        if (sendAdmissionTreatmentAuthorized
             && !exactSendAdmissionTreatmentSet)
         {
             throw new InvalidOperationException(
-                "The send-admission correctness authorization cannot join a fourth behavior-distinct axis.");
+                "The send-admission authorization cannot join a fourth behavior-distinct axis.");
         }
         if (behaviorDistinctTreatmentCount > 1
             && !exactSendAdmissionTreatmentSet
@@ -6028,61 +6060,9 @@ internal sealed partial class QuicConnectionRuntime :
     {
         int committedFragments = 0;
         ulong committedBytes = 0;
-        QuicOversizedWriteOutcome outcome = QuicOversizedWriteOutcome.Failed;
-        try
-        {
-            while (!buffer.IsEmpty)
-            {
-                int chunkLength = Math.Min(
-                    buffer.Length,
-                    MaximumStreamWriteChunkBytes);
-                bool finishChunk = finishWrites && chunkLength == buffer.Length;
-                if (!await WriteStreamAsyncCore(
-                        streamId,
-                        buffer[..chunkLength],
-                        finishChunk,
-                        suppressTerminalException,
-                        completionAction: null,
-                        cancellationToken,
-                        suppressOversizedAdmissionEvidence: true)
-                    .ConfigureAwait(false))
-                {
-                    outcome = IsDisposed
-                        ? QuicOversizedWriteOutcome.Disposed
-                        : QuicOversizedWriteOutcome.Terminal;
-                    return false;
-                }
-
-                committedFragments++;
-                committedBytes += (ulong)chunkLength;
-                buffer = buffer[chunkLength..];
-            }
-
-            outcome = QuicOversizedWriteOutcome.Completed;
-            return true;
-        }
-        catch (OperationCanceledException)
-        {
-            outcome = QuicOversizedWriteOutcome.Canceled;
-            throw;
-        }
-        catch (ObjectDisposedException)
-        {
-            outcome = QuicOversizedWriteOutcome.Disposed;
-            throw;
-        }
-        catch (Exception)
-        {
-            if (HasTerminalStreamOperation)
-            {
-                outcome = IsDisposed
-                    ? QuicOversizedWriteOutcome.Disposed
-                    : QuicOversizedWriteOutcome.Terminal;
-            }
-
-            throw;
-        }
-        finally
+        bool completed = true;
+        bool disposedOnFailure = false;
+        void PublishOutcome(QuicOversizedWriteOutcome outcome)
         {
             PublishOversizedWriteAdmissionEvidence(
                 in oversizedWriteAdmission,
@@ -6104,6 +6084,71 @@ internal sealed partial class QuicConnectionRuntime :
                 committedBytes,
                 outcome);
         }
+
+        try
+        {
+            while (!buffer.IsEmpty)
+            {
+                int chunkLength = Math.Min(
+                    buffer.Length,
+                    MaximumStreamWriteChunkBytes);
+                bool finishChunk = finishWrites && chunkLength == buffer.Length;
+                if (!await WriteStreamAsyncCore(
+                        streamId,
+                        buffer[..chunkLength],
+                        finishChunk,
+                        suppressTerminalException,
+                        completionAction: null,
+                        cancellationToken,
+                        suppressOversizedAdmissionEvidence: true)
+                    .ConfigureAwait(false))
+                {
+                    completed = false;
+                    disposedOnFailure = IsDisposed;
+                    break;
+                }
+
+                committedFragments++;
+                committedBytes += (ulong)chunkLength;
+                buffer = buffer[chunkLength..];
+            }
+
+        }
+        catch (OperationCanceledException)
+        {
+            PublishOutcome(QuicOversizedWriteOutcome.Canceled);
+            throw;
+        }
+        catch (ObjectDisposedException)
+        {
+            PublishOutcome(QuicOversizedWriteOutcome.Disposed);
+            throw;
+        }
+        catch (Exception)
+        {
+            QuicOversizedWriteOutcome failureOutcome =
+                QuicOversizedWriteOutcome.Failed;
+            if (HasTerminalStreamOperation)
+            {
+                failureOutcome = IsDisposed
+                    ? QuicOversizedWriteOutcome.Disposed
+                    : QuicOversizedWriteOutcome.Terminal;
+            }
+
+            PublishOutcome(failureOutcome);
+            throw;
+        }
+
+        if (completed)
+        {
+            PublishOutcome(QuicOversizedWriteOutcome.Completed);
+            return true;
+        }
+
+        PublishOutcome(disposedOnFailure
+            ? QuicOversizedWriteOutcome.Disposed
+            : QuicOversizedWriteOutcome.Terminal);
+        return false;
     }
 
     internal async ValueTask SendDatagramAsync(

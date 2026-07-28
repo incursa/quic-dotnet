@@ -799,3 +799,36 @@ behavior and outcome materializations, correctness-only metrics, a
 deterministic analytical projection, and a cell result. All eight results are
 `correctness_passed`. This capability is exact-cell-only, internal, and denied
 by default; it authorizes neither performance nor active behavior.
+
+## Admission-family offline performance readiness
+
+The reviewed admission family now has an additive factor-cell-space v3 bound
+to experiment-family catalog v5. It preserves all 12 configured cells,
+classifies exactly A0 through A7 as the reviewed exhaustive subset, and keeps
+all four `bounded_multi_fragment` cells blocked on
+`shadow_recommendation_value_mismatch`. The space is far below the effective
+cell trigger of 65, so covering arrays remain disabled and no generator is
+implemented.
+
+Regenerate and validate the current readiness contracts with:
+
+```powershell
+pwsh -NoProfile -File eng/adaptive-runtime/Update-AdaptiveRuntimeAdmissionPerformanceFixtures.ps1
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceReadiness.ps1
+```
+
+Compile the no-timing manifest outside the repository with:
+
+```powershell
+pwsh -NoProfile -File eng/adaptive-runtime/Compile-AdaptiveRuntimeAdmissionPerformanceCampaign.ps1 `
+  -OutputPath C:\shared\temp\quic-dotnet\admission-performance\dry-run-manifest.json
+```
+
+`send_admission_composition_performance_v1` is internal, exact-cell-only, and
+manifest-bound. It cannot join `bounded_multi_fragment`, nonlegacy queued
+burst, a fourth axis, a correctness token, the prior two-axis performance
+token, or public production configuration. The dry run compiles eight cells
+and records both host and workload selection as `decision_required`;
+`timing_execution_authorized`, performance acceptance, active behavior, and
+production activation remain false. No performance number is produced by
+these commands.
