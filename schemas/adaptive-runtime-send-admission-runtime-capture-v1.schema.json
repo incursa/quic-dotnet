@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/incursa/quic-dotnet/schemas/adaptive-runtime-send-admission-runtime-capture-v1.schema.json",
+  "title": "Adaptive runtime send-admission correctness runtime capture v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "authorization_id",
+    "source_commit",
+    "binary_sha256",
+    "harness_binary_sha256",
+    "host_fingerprint_id",
+    "os_platform",
+    "os_architecture",
+    "manifest_content_sha256",
+    "authorization_content_sha256",
+    "cells",
+    "active_behavior_authorization",
+    "performance_acceptance_authorization"
+  ],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-send-admission-runtime-capture-v1" },
+    "document_id": { "const": "runtime_capture.send_admission_composition.correctness_v1" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "authorization_id": { "const": "send_admission_composition_correctness_v1" },
+    "source_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "binary_sha256": { "$ref": "#/$defs/hash" },
+    "harness_binary_sha256": { "$ref": "#/$defs/hash" },
+    "host_fingerprint_id": { "$ref": "#/$defs/id" },
+    "os_platform": { "type": "string", "minLength": 1 },
+    "os_architecture": { "$ref": "#/$defs/id" },
+    "manifest_content_sha256": { "$ref": "#/$defs/hash" },
+    "authorization_content_sha256": { "$ref": "#/$defs/hash" },
+    "cells": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": { "$ref": "#/$defs/cell" }
+    },
+    "active_behavior_authorization": { "const": false },
+    "performance_acceptance_authorization": { "const": false }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "configuredValues": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "oversized_write_admission_quantum",
+        "application_send_batch_formation",
+        "buffer_copy_coalescing",
+        "application_send_turn_planning",
+        "queued_send_burst_budget"
+      ],
+      "properties": {
+        "oversized_write_admission_quantum": { "enum": ["legacy_current", "single_fragment"] },
+        "application_send_batch_formation": { "enum": ["legacy_current", "single_eligible"] },
+        "buffer_copy_coalescing": { "enum": ["legacy_current", "memory_conservative"] },
+        "application_send_turn_planning": { "const": "legacy_current" },
+        "queued_send_burst_budget": { "const": "legacy_current" }
+      }
+    },
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "axis_id",
+        "operation_identity",
+        "operation_local_noncoactivation",
+        "evidence"
+      ],
+      "properties": {
+        "axis_id": {
+          "enum": [
+            "oversized_write_admission_quantum",
+            "application_send_batch_formation",
+            "buffer_copy_coalescing"
+          ]
+        },
+        "operation_identity": { "type": "string", "minLength": 1 },
+        "operation_local_noncoactivation": { "type": "boolean" },
+        "evidence": { "type": "object", "minProperties": 1 }
+      }
+    },
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis_id", "operation_identity", "evidence"],
+      "properties": {
+        "axis_id": { "const": "buffer_copy_coalescing" },
+        "operation_identity": { "type": "string", "minLength": 1 },
+        "evidence": { "type": "object", "minProperties": 1 }
+      }
+    },
+    "cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cell_id",
+        "cell_content_sha256",
+        "run_id",
+        "connection_state_id",
+        "configured_values",
+        "operations",
+        "releases",
+        "active_behavior_authorization",
+        "performance_acceptance_authorization"
+      ],
+      "properties": {
+        "cell_id": { "$ref": "#/$defs/id" },
+        "cell_content_sha256": { "$ref": "#/$defs/hash" },
+        "run_id": { "$ref": "#/$defs/id" },
+        "connection_state_id": { "$ref": "#/$defs/id" },
+        "configured_values": { "$ref": "#/$defs/configuredValues" },
+        "operations": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": { "$ref": "#/$defs/operation" }
+        },
+        "releases": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": { "$ref": "#/$defs/release" }
+        },
+        "active_behavior_authorization": { "const": false },
+        "performance_acceptance_authorization": { "const": false }
+      }
+    }
+  }
+}
