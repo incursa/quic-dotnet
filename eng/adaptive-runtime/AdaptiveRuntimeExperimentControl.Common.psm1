@@ -176,7 +176,8 @@ function Set-AdaptiveRuntimeDocumentHash {
 function Read-AdaptiveRuntimeJsonDocument {
     param([Parameter(Mandatory = $true)][string] $Path)
 
-    return Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json -Depth 100
+    return Get-Content -LiteralPath $Path -Raw |
+        ConvertFrom-Json -Depth 100 -DateKind String
 }
 
 function Write-AdaptiveRuntimeCanonicalDocument {
