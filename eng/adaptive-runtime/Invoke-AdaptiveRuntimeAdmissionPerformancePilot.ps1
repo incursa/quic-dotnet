@@ -67,8 +67,12 @@ function Get-PilotTopology {
     $loadLease = @($leases | Where-Object roleId -ceq 'load' | Select-Object -First 1)
     $sutNodeId = if ($sutLease.Count -eq 1) { [string]$sutLease[0].nodeId } else { $null }
     $loadNodeId = if ($loadLease.Count -eq 1) { [string]$loadLease[0].nodeId } else { $null }
-    $sutNode = @($Nodes | Where-Object nodeId -ceq $sutNodeId | Select-Object -First 1)
-    $loadNode = @($Nodes | Where-Object nodeId -ceq $loadNodeId | Select-Object -First 1)
+    $sutNode = @($Nodes |
+        Where-Object { [string]$_.nodeId -ceq $sutNodeId } |
+        Select-Object -First 1)
+    $loadNode = @($Nodes |
+        Where-Object { [string]$_.nodeId -ceq $loadNodeId } |
+        Select-Object -First 1)
     $sutPhysicalHostId = if ($sutNode.Count -eq 1) {
         Get-PhysicalHostId $sutNode[0]
     }
@@ -352,7 +356,12 @@ if (-not $Execute) {
 
 $controllerUri = [string]$pilot.controller_uri
 try {
-    $nodes = @(Invoke-ControllerJson -Uri "$controllerUri/api/lab/nodes" -Method 'GET')
+    $nodeResponse = Invoke-ControllerJson `
+        -Uri "$controllerUri/api/lab/nodes" `
+        -Method 'GET'
+    $nodes = @(foreach ($node in $nodeResponse) {
+        $node
+    })
     Write-JsonFile -Path $nodesPath -Value $nodes
 }
 catch {

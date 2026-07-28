@@ -167,6 +167,10 @@ Assert-Ready (
 Assert-Ready (
     $driverText.Contains('$sourceCommit.Substring(0, 8)')
 ) 'driver_source_commit_package_version_missing'
+Assert-Ready (
+    $driverText.Contains('$nodeResponse = Invoke-ControllerJson') -and
+    $driverText.Contains('$nodes = @(foreach ($node in $nodeResponse)')
+) 'driver_controller_node_response_flattening_missing'
 $driverRoot = Join-Path $TemporaryRoot 'driver'
 $planOnly = & $driverPath `
     -RepositoryRoot $RepositoryRoot `
