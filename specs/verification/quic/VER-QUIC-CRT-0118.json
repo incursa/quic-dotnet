@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0118",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "Reviewed admission-family correctness verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -42,9 +42,10 @@
   "evidence": [
     "eng/adaptive-runtime/Test-AdaptiveRuntimeRuntimeProofReview.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeProofPromotion.ps1",
-    "eng/adaptive-runtime/Test-AdaptiveRuntimeSendAdmissionCorrectness.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionCorrectnessAuthorization.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionCorrectness.ps1",
     "tests/fixtures/adaptive-runtime-runtime-proof-capture",
     "tests/fixtures/adaptive-runtime-send-admission-correctness"
   ],
-  "status_summary": "Planned. Final status requires all proof-review, promotion, authorization, eight-cell, focused runtime, build, direct SpecTrace, and diff-hygiene evidence."
+  "status_summary": "Passed. The independent review produced two passed and one blocked proof, exactly two sequential promotions were applied, send_admission_composition_correctness_v1 rejected all twelve prohibited authorization cases, A0 through A7 each produced eighteen immutable documents and correctness_passed, all behavior, outcome, and projection records recomputed, 343 positive evidence assertions and 10 evidence rejection cases passed, and 25 focused runtime tests passed. Analyzer-disabled Release builds passed with zero warnings and errors; the ordinary analyzer-enabled source build retained four pre-existing S1854 findings from commit 7d41e382. Performance, active behavior, arbitrary multi-axis execution, another-axis migration, CI changes, and push remained absent."
 }

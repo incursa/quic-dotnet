@@ -767,4 +767,35 @@ projection hashes. `single_fragment` and `single_datagram` have no failed proof
 assertions. `bounded_multi_fragment` remains an honest candidate with
 `shadow_recommendation_value_mismatch`: the current production shadow rule
 recommends `single_fragment`, and this evidence-only workflow does not alter
-selection semantics. All three external promotion inputs remain unapplied.
+selection semantics.
+
+## Reviewed admission-family correctness
+
+The runtime-derived candidates were independently reviewed. `single_fragment`
+and `single_datagram` passed and were promoted one at a time;
+`bounded_multi_fragment` remains blocked and unpromoted on
+`shadow_recommendation_value_mismatch`. Validate the reviews and sequential
+catalog updates with:
+
+```powershell
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeRuntimeProofReview.ps1
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeProofPromotion.ps1
+```
+
+The exact `send_admission_composition_correctness_v1` plan authorizes only A0
+through A7 across reviewed `single_fragment`, `single_eligible`, and
+`memory_conservative` levels. Compile and validate that finite authorization,
+then validate the retained per-cell evidence with:
+
+```powershell
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionCorrectnessAuthorization.ps1
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionCorrectness.ps1
+```
+
+Each cell retains 18 immutable documents, including the correctness
+authorization, runtime and host identity, production and harness binary
+bindings, three operation records, exactly one buffer release, catalog-derived
+behavior and outcome materializations, correctness-only metrics, a
+deterministic analytical projection, and a cell result. All eight results are
+`correctness_passed`. This capability is exact-cell-only, internal, and denied
+by default; it authorizes neither performance nor active behavior.

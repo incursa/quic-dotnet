@@ -5,7 +5,7 @@
   "title": "Adaptive-runtime reviewed admission-family correctness",
   "domain": "quic",
   "capability": "adaptive-runtime-reviewed-admission-correctness",
-  "status": "draft",
+  "status": "implemented",
   "owner": "quic-maintainers",
   "tags": [
     "adaptive-runtime",
@@ -77,7 +77,7 @@
         "implemented_by": ["WI-QUIC-CRT-0117"],
         "verified_by": ["VER-QUIC-CRT-0118"],
         "x_test_refs": [
-          "eng/adaptive-runtime/Test-AdaptiveRuntimeSendAdmissionCorrectness.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionCorrectnessAuthorization.ps1",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0244.cs"
         ],
         "upstream_refs": [
@@ -95,7 +95,7 @@
         "implemented_by": ["WI-QUIC-CRT-0117"],
         "verified_by": ["VER-QUIC-CRT-0118"],
         "x_test_refs": [
-          "eng/adaptive-runtime/Test-AdaptiveRuntimeSendAdmissionCorrectness.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionCorrectness.ps1",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0245.cs"
         ],
         "upstream_refs": ["tests/fixtures/adaptive-runtime-send-admission-correctness"]
@@ -110,7 +110,7 @@
         "implemented_by": ["WI-QUIC-CRT-0117"],
         "verified_by": ["VER-QUIC-CRT-0118"],
         "x_test_refs": [
-          "eng/adaptive-runtime/Test-AdaptiveRuntimeSendAdmissionCorrectness.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionCorrectness.ps1",
           "eng/adaptive-runtime/Test-AdaptiveRuntimeProofPromotion.ps1"
         ],
         "upstream_refs": ["docs/testing/adaptive-runtime-reviewed-admission-correctness.md"]
