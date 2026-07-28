@@ -259,7 +259,8 @@ Assert-Pilot ($componentPackageReferenceStrings.Count -eq 2) `
     'component_package_reference_count_invalid'
 
 $runRecords = [System.Collections.Generic.List[object]]::new()
-$packageVersionPrefix = 'adaptive-runtime-admission-performance-pilot'
+$packageVersionPrefix = 'adaptive-runtime-admission-performance-pilot-{0}' -f
+    ([string]$manifest.content_sha256).Substring(0, 8)
 $protocolLabRootFull = Resolve-AbsolutePath -Path $ProtocolLabRoot -BasePath $RepositoryRoot
 $protocolLabExecutionRootFull = if ([string]::IsNullOrWhiteSpace($ProtocolLabExecutionRoot)) {
     $null
