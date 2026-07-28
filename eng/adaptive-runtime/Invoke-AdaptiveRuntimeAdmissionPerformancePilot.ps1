@@ -62,7 +62,7 @@ function Invoke-ControllerJson {
         [Parameter(Mandatory = $true)][string] $Method,
         [object] $Body
     )
-    $parameters = @{ Uri = $Uri; Method = $Method }
+    $parameters = @{ Uri = $Uri; Method = $Method; TimeoutSec = 15 }
     if ($null -ne $Body) {
         $parameters.ContentType = 'application/json'
         $parameters.Body = ($Body | ConvertTo-Json -Depth 64)
