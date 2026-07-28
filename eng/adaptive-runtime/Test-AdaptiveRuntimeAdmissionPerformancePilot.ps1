@@ -107,6 +107,16 @@ Assert-Ready (
     $manifestOne.timing_execution_authorized -eq $true
 ) 'manifest_controls_invalid'
 Assert-Ready (
+    (@($manifestOne.package_selection.component_package_references |
+        ForEach-Object {
+            "{0}|{1}|{2}" -f
+                [string]$_.package_id,
+                [string]$_.package_version,
+                [string]$_.sha256
+        }) -join ';') -ceq
+    'org.protocol-lab.components.executor.quic-go-raw-load|0.1.17|e5a8c03cebd67a9722d47d080728fbb2c52d4dcdd34474880e179972d0df5167;org.protocol-lab.components.scenario.raw-quic-transport|0.1.20|b9ab49d83404b7dd4d377fb6ed04dd0594869f69c01c05082a28bbb5cb4a3bd2'
+) 'manifest_component_package_references_invalid'
+Assert-Ready (
     @($manifestOne.planned_runs).Count -eq 4 -and
     @($manifestOne.selected_cells).Count -eq 4 -and
     (Join-Values @($manifestOne.execution_sequence)) -ceq
@@ -136,6 +146,12 @@ Assert-CompileRejects $boundedPilot 'missing-bounded-exclusion' 'excluded_values
 $cellPilot = Copy-Document $pilot
 $cellPilot.cell_bindings[3].oversized_write_admission_quantum = 'bounded_multi_fragment'
 Assert-CompileRejects $cellPilot 'bounded-cell' 'cell_bindings'
+
+$componentPackagePilot = Copy-Document $pilot
+$componentPackagePilot.package_selection.component_package_references[1].sha256 =
+    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+Assert-CompileRejects $componentPackagePilot 'wrong-component-package' `
+    'component_package_references'
 
 $driverPath = Join-Path $PSScriptRoot 'Invoke-AdaptiveRuntimeAdmissionPerformancePilot.ps1'
 $driverRoot = Join-Path $TemporaryRoot 'driver'

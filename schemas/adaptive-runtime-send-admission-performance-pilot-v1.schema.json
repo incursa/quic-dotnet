@@ -49,6 +49,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "component_package_references",
         "package_target",
         "implementation_id",
         "suite_id",
@@ -60,6 +61,21 @@
         "package_backed_execution"
       ],
       "properties": {
+        "component_package_references": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["package_id", "package_version", "sha256"],
+            "properties": {
+              "package_id": { "$ref": "#/$defs/id" },
+              "package_version": { "$ref": "#/$defs/id" },
+              "sha256": { "$ref": "#/$defs/hash" }
+            }
+          }
+        },
         "package_target": { "const": "RawQuic" },
         "implementation_id": { "const": "quic-dotnet-raw-dev" },
         "suite_id": { "const": "quic-transport-v1-comparison" },

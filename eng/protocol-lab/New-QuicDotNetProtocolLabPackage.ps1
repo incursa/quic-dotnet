@@ -162,7 +162,7 @@ function Get-AdmissionPerformancePackagePathCell {
         "legacy_current|legacy_current|legacy_current" {
             return [ordered]@{
                 campaignId = "campaign.send_admission_composition.performance.v1"
-                manifestContentSha256 = "a56b59fdd26ce16a7131197269415e19175184c7d5f8da346d2b367218eb29cb"
+                manifestContentSha256 = "257b31f3f93c6a34e14066b2c5d77bfc15ab5f2cfe54603b8d9244eb93fb7fd9"
                 cellId = "cell.send_admission_composition.correctness.a0"
                 cellContentSha256 = "c9e070a0880872c9c9dce62f07e933a0de96c7590d343ce7f923f121278bba28"
             }
@@ -170,7 +170,7 @@ function Get-AdmissionPerformancePackagePathCell {
         "legacy_current|single_eligible|memory_conservative" {
             return [ordered]@{
                 campaignId = "campaign.send_admission_composition.performance.v1"
-                manifestContentSha256 = "a56b59fdd26ce16a7131197269415e19175184c7d5f8da346d2b367218eb29cb"
+                manifestContentSha256 = "257b31f3f93c6a34e14066b2c5d77bfc15ab5f2cfe54603b8d9244eb93fb7fd9"
                 cellId = "cell.send_admission_composition.correctness.a3"
                 cellContentSha256 = "1b7b63f5d53d39416d999b4bda0cc0c80e8817a535ceed9bc91e36aa12bcc2b1"
             }
@@ -178,7 +178,7 @@ function Get-AdmissionPerformancePackagePathCell {
         "single_fragment|legacy_current|legacy_current" {
             return [ordered]@{
                 campaignId = "campaign.send_admission_composition.performance.v1"
-                manifestContentSha256 = "a56b59fdd26ce16a7131197269415e19175184c7d5f8da346d2b367218eb29cb"
+                manifestContentSha256 = "257b31f3f93c6a34e14066b2c5d77bfc15ab5f2cfe54603b8d9244eb93fb7fd9"
                 cellId = "cell.send_admission_composition.correctness.a4"
                 cellContentSha256 = "99c02f1b21aaef38b13b996a8e25d31b1e78d1f6927433470dd743ddc3a37598"
             }
@@ -186,7 +186,7 @@ function Get-AdmissionPerformancePackagePathCell {
         "single_fragment|single_eligible|memory_conservative" {
             return [ordered]@{
                 campaignId = "campaign.send_admission_composition.performance.v1"
-                manifestContentSha256 = "a56b59fdd26ce16a7131197269415e19175184c7d5f8da346d2b367218eb29cb"
+                manifestContentSha256 = "257b31f3f93c6a34e14066b2c5d77bfc15ab5f2cfe54603b8d9244eb93fb7fd9"
                 cellId = "cell.send_admission_composition.correctness.a7"
                 cellContentSha256 = "281b32fd62406993adbffb6c6717e8a73d8ced29524b8f0a82b2d470cbda409f"
             }

@@ -246,6 +246,18 @@ $expectedRunInputs = @(
     }
 )
 
+$componentPackageReferenceStrings = @(
+    $pilot.package_selection.component_package_references |
+        ForEach-Object {
+            "{0}|{1}|{2}" -f
+                [string]$_.package_id,
+                [string]$_.package_version,
+                [string]$_.sha256
+        }
+)
+Assert-Pilot ($componentPackageReferenceStrings.Count -eq 2) `
+    'component_package_reference_count_invalid'
+
 $runRecords = [System.Collections.Generic.List[object]]::new()
 $packageVersionPrefix = 'adaptive-runtime-admission-performance-pilot'
 $protocolLabRootFull = Resolve-AbsolutePath -Path $ProtocolLabRoot -BasePath $RepositoryRoot
@@ -340,7 +352,9 @@ foreach ($runInput in $expectedRunInputs) {
         ResultRoot = $cellOutputRoot
         TimeoutSeconds = 3600
         UsePackageReferenceOnly = $true
-        PackageReference = ("{0}|{1}|{2}" -f $packageRef.packageId, $packageRef.packageVersion, $packageRef.sha256)
+        PackageReference = @(
+            ("{0}|{1}|{2}" -f $packageRef.packageId, $packageRef.packageVersion, $packageRef.sha256)
+        ) + $componentPackageReferenceStrings
         AdaptiveRuntimeOversizedWriteAdmissionPolicy = [string]$runInput.oversized_write_admission_quantum
         AdaptiveRuntimeApplicationSendBatchPolicy = [string]$runInput.application_send_batch_formation
         AdaptiveRuntimeBufferCopyPolicy = [string]$runInput.buffer_copy_coalescing
@@ -377,7 +391,14 @@ foreach ($runInput in $expectedRunInputs) {
 $preflight.package_identity_status = 'resolved'
 $preflight.blockers = @()
 Write-JsonFile -Path $preflightPath -Value $preflight
-Write-JsonFile -Path $packagesPath -Value @($runRecords | ForEach-Object { $_.package_ref })
+Write-JsonFile -Path $packagesPath -Value @{
+    implementation_packages = @(
+        $runRecords | ForEach-Object { $_.package_ref }
+    )
+    component_packages = @(
+        $pilot.package_selection.component_package_references
+    )
+}
 Write-JsonFile -Path $controllerIndexPath -Value @{
     controller_uri = $controllerUri
     runs = @($runRecords)

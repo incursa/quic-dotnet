@@ -117,6 +117,23 @@ Assert-Compile (
     $pilot.production_activation_authorization -eq $false
 ) 'admission_pilot_controls_invalid'
 
+$componentPackageReferenceKeys = @(
+    $pilot.package_selection.component_package_references |
+        ForEach-Object {
+            "{0}|{1}|{2}" -f
+                [string]$_.package_id,
+                [string]$_.package_version,
+                [string]$_.sha256
+        }
+)
+Assert-Compile (
+    (Join-Values $componentPackageReferenceKeys) -ceq
+    (Join-Values @(
+        'org.protocol-lab.components.scenario.raw-quic-transport|0.1.20|b9ab49d83404b7dd4d377fb6ed04dd0594869f69c01c05082a28bbb5cb4a3bd2',
+        'org.protocol-lab.components.executor.quic-go-raw-load|0.1.17|e5a8c03cebd67a9722d47d080728fbb2c52d4dcdd34474880e179972d0df5167'
+    ))
+) 'admission_pilot_component_package_references_invalid'
+
 $admissionSpace = @($factor.family_spaces | Where-Object family_id -ceq 'send_admission_composition')
 Assert-Compile ($admissionSpace.Count -eq 1) 'admission_pilot_factor_space_missing'
 $reviewed = @($admissionSpace[0].planned_cells |

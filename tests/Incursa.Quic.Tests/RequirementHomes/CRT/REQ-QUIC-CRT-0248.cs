@@ -11,7 +11,7 @@ public sealed class REQ_QUIC_CRT_0248
     private const string CampaignId =
         "campaign.send_admission_composition.performance.v1";
     private const string PackagePathManifestHash =
-        "a56b59fdd26ce16a7131197269415e19175184c7d5f8da346d2b367218eb29cb";
+        "257b31f3f93c6a34e14066b2c5d77bfc15ab5f2cfe54603b8d9244eb93fb7fd9";
     private const string FamilyCatalogHash =
         "cfee17afcc28da35e657b2d1331bde68c752b5a3487f0af69087c12df6530b93";
     private const string RelationshipCatalogHash =
