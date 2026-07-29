@@ -258,6 +258,7 @@ function Assert-RunSelection {
     $supportedCapabilities = @($TargetConfig.SupportedCapabilities)
     $unsupportedCapabilities = @($RequiredCapabilities | Where-Object {
             -not [string]::IsNullOrWhiteSpace($_) -and
+            $_.IndexOf('=') -lt 0 -and
             $supportedCapabilities -notcontains $_
         })
     if ($unsupportedCapabilities.Count -gt 0) {

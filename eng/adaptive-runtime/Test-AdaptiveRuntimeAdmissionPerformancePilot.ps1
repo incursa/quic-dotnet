@@ -186,6 +186,7 @@ $runHelperText = Get-Content -LiteralPath (
 Assert-Ready (
     $runHelperText.Contains('function ConvertTo-RequiredCapability') -and
     $runHelperText.Contains('$trimmed.IndexOf(''='')') -and
+    $runHelperText.Contains('$_.IndexOf(''='') -lt 0') -and
     $runHelperText.Contains('ConvertTo-RequiredCapability -Capability $_')
 ) 'run_helper_valued_capability_missing'
 $driverRoot = Join-Path $TemporaryRoot 'driver'
