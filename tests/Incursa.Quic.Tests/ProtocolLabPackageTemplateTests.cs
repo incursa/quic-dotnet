@@ -301,13 +301,19 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("admissionPerformancePackagePathSelected", builderScript);
         Assert.Contains("admissionPerformanceManifestContentSha256", builderScript);
         Assert.Contains("cell.send_admission_composition.correctness.a0", builderScript);
+        Assert.Contains("cell.send_admission_composition.correctness.a1", builderScript);
+        Assert.Contains("cell.send_admission_composition.correctness.a2", builderScript);
         Assert.Contains("cell.send_admission_composition.correctness.a3", builderScript);
         Assert.Contains("cell.send_admission_composition.correctness.a4", builderScript);
+        Assert.Contains("cell.send_admission_composition.correctness.a5", builderScript);
+        Assert.Contains("cell.send_admission_composition.correctness.a6", builderScript);
         Assert.Contains("cell.send_admission_composition.correctness.a7", builderScript);
-        Assert.DoesNotContain("cell.send_admission_composition.correctness.a1", builderScript);
-        Assert.DoesNotContain("cell.send_admission_composition.correctness.a2", builderScript);
-        Assert.DoesNotContain("cell.send_admission_composition.correctness.a5", builderScript);
-        Assert.DoesNotContain("cell.send_admission_composition.correctness.a6", builderScript);
+        Assert.Contains(
+            "19f4b05440e74f3952632eb65dd302ad1b738f0d5d7a04d606cdf3d12aeb1e77",
+            builderScript);
+        Assert.Contains(
+            "Admission-performance pilot package path requires one of the reviewed A0, A3, A4, or A7 tuples.",
+            builderScript);
         Assert.Contains("RawQuicDebugLogging", builderScript);
         Assert.Contains("IncursaRawQuicServer ignored failed inbound establishment", rawQuicServer);
         Assert.Contains("ResolveAdmissionPerformanceAuthorization", rawQuicServer);

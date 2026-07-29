@@ -700,6 +700,8 @@ else {
                 [string]$binding.application_send_batch_formation) `
             -AdaptiveRuntimeBufferCopyPolicy (
                 [string]$binding.buffer_copy_coalescing) `
+            -AdaptiveRuntimeAdmissionPerformanceManifestContentSha256 (
+                [string]$manifest.content_sha256) `
             -Force `
             -AllowDirtySource:$false |
                 ConvertFrom-Json

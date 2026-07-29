@@ -28,6 +28,9 @@ param(
     [ValidateSet("", "legacy_current", "memory_conservative")]
     [string] $AdaptiveRuntimeBufferCopyPolicy = "",
 
+    [ValidatePattern("^$|^[0-9a-f]{64}$")]
+    [string] $AdaptiveRuntimeAdmissionPerformanceManifestContentSha256 = "",
+
     [ValidateSet("", "legacy_current", "prompt", "observe_only", "shadow")]
     [string] $AdaptiveRuntimePacketFlushCadencePolicy = "",
 
@@ -154,47 +157,106 @@ function Get-AdmissionPerformancePackagePathCell {
         [string] $ApplicationSendBatchPolicy,
 
         [Parameter(Mandatory = $true)]
-        [string] $BufferCopyPolicy
+        [string] $BufferCopyPolicy,
+
+        [string] $ManifestContentSha256
     )
 
+    $pilotManifestContentSha256 =
+        "257b31f3f93c6a34e14066b2c5d77bfc15ab5f2cfe54603b8d9244eb93fb7fd9"
+    $balancedManifestContentSha256 =
+        "19f4b05440e74f3952632eb65dd302ad1b738f0d5d7a04d606cdf3d12aeb1e77"
+    $selectedManifestContentSha256 = if (
+        [string]::IsNullOrWhiteSpace($ManifestContentSha256)
+    ) {
+        $pilotManifestContentSha256
+    }
+    else {
+        $ManifestContentSha256
+    }
+    if ($selectedManifestContentSha256 -notin @(
+        $pilotManifestContentSha256,
+        $balancedManifestContentSha256
+    )) {
+        throw "Admission-performance package path requires a reviewed pilot or balanced manifest hash."
+    }
+
     $tupleKey = "$OversizedWriteAdmissionPolicy|$ApplicationSendBatchPolicy|$BufferCopyPolicy"
-    switch ($tupleKey) {
+    $cell = switch ($tupleKey) {
         "legacy_current|legacy_current|legacy_current" {
-            return [ordered]@{
+            [ordered]@{
                 campaignId = "campaign.send_admission_composition.performance.v1"
-                manifestContentSha256 = "257b31f3f93c6a34e14066b2c5d77bfc15ab5f2cfe54603b8d9244eb93fb7fd9"
                 cellId = "cell.send_admission_composition.correctness.a0"
                 cellContentSha256 = "c9e070a0880872c9c9dce62f07e933a0de96c7590d343ce7f923f121278bba28"
             }
         }
-        "legacy_current|single_eligible|memory_conservative" {
-            return [ordered]@{
+        "legacy_current|legacy_current|memory_conservative" {
+            [ordered]@{
                 campaignId = "campaign.send_admission_composition.performance.v1"
-                manifestContentSha256 = "257b31f3f93c6a34e14066b2c5d77bfc15ab5f2cfe54603b8d9244eb93fb7fd9"
+                cellId = "cell.send_admission_composition.correctness.a1"
+                cellContentSha256 = "c41ed6674829898c3dc4e9af34cca11d159c07642c267a893b9d7097c3cc4f25"
+            }
+        }
+        "legacy_current|single_eligible|legacy_current" {
+            [ordered]@{
+                campaignId = "campaign.send_admission_composition.performance.v1"
+                cellId = "cell.send_admission_composition.correctness.a2"
+                cellContentSha256 = "68c4112be72f82a9eb11b8a6dcf0594542337960c85bcc5f7386d91a172341db"
+            }
+        }
+        "legacy_current|single_eligible|memory_conservative" {
+            [ordered]@{
+                campaignId = "campaign.send_admission_composition.performance.v1"
                 cellId = "cell.send_admission_composition.correctness.a3"
                 cellContentSha256 = "1b7b63f5d53d39416d999b4bda0cc0c80e8817a535ceed9bc91e36aa12bcc2b1"
             }
         }
         "single_fragment|legacy_current|legacy_current" {
-            return [ordered]@{
+            [ordered]@{
                 campaignId = "campaign.send_admission_composition.performance.v1"
-                manifestContentSha256 = "257b31f3f93c6a34e14066b2c5d77bfc15ab5f2cfe54603b8d9244eb93fb7fd9"
                 cellId = "cell.send_admission_composition.correctness.a4"
                 cellContentSha256 = "99c02f1b21aaef38b13b996a8e25d31b1e78d1f6927433470dd743ddc3a37598"
             }
         }
-        "single_fragment|single_eligible|memory_conservative" {
-            return [ordered]@{
+        "single_fragment|legacy_current|memory_conservative" {
+            [ordered]@{
                 campaignId = "campaign.send_admission_composition.performance.v1"
-                manifestContentSha256 = "257b31f3f93c6a34e14066b2c5d77bfc15ab5f2cfe54603b8d9244eb93fb7fd9"
+                cellId = "cell.send_admission_composition.correctness.a5"
+                cellContentSha256 = "e3635faeb1b2435fc40487bd1cc5060f822624607c2c2202b78d1c1894041b2a"
+            }
+        }
+        "single_fragment|single_eligible|legacy_current" {
+            [ordered]@{
+                campaignId = "campaign.send_admission_composition.performance.v1"
+                cellId = "cell.send_admission_composition.correctness.a6"
+                cellContentSha256 = "ac2a8d830612027da8f85d90d6bf9624c344078ae0067dd9fca3b8e7c6ae6fd1"
+            }
+        }
+        "single_fragment|single_eligible|memory_conservative" {
+            [ordered]@{
+                campaignId = "campaign.send_admission_composition.performance.v1"
                 cellId = "cell.send_admission_composition.correctness.a7"
                 cellContentSha256 = "281b32fd62406993adbffb6c6717e8a73d8ced29524b8f0a82b2d470cbda409f"
             }
         }
         default {
-            throw "Admission-performance package path requires one of the reviewed A0, A3, A4, or A7 tuples."
+            throw "Admission-performance package path requires one of the reviewed A0-A7 tuples."
         }
     }
+    if (
+        $selectedManifestContentSha256 -eq
+            $pilotManifestContentSha256 -and
+        $cell.cellId -notin @(
+            "cell.send_admission_composition.correctness.a0",
+            "cell.send_admission_composition.correctness.a3",
+            "cell.send_admission_composition.correctness.a4",
+            "cell.send_admission_composition.correctness.a7"
+        )
+    ) {
+        throw "Admission-performance pilot package path requires one of the reviewed A0, A3, A4, or A7 tuples."
+    }
+    $cell.manifestContentSha256 = $selectedManifestContentSha256
+    return $cell
 }
 
 function Get-OptionalToolVersion {
@@ -582,7 +644,8 @@ if ($admissionPerformancePathRequested) {
     $admissionPerformanceCell = Get-AdmissionPerformancePackagePathCell `
         -OversizedWriteAdmissionPolicy $AdaptiveRuntimeOversizedWriteAdmissionPolicy `
         -ApplicationSendBatchPolicy $AdaptiveRuntimeApplicationSendBatchPolicy `
-        -BufferCopyPolicy $AdaptiveRuntimeBufferCopyPolicy
+        -BufferCopyPolicy $AdaptiveRuntimeBufferCopyPolicy `
+        -ManifestContentSha256 $AdaptiveRuntimeAdmissionPerformanceManifestContentSha256
 }
 if ($adaptiveRuntimeEnvironmentRequested) {
     $implementationManifestPath = Join-Path $stageRoot "implementations/quic-dotnet-raw-dev.yaml"

@@ -212,6 +212,8 @@ Assert-Ready (
     $driverText.Contains('[switch] $Resume') -and
     $driverText.Contains(
         '[int] $StopAfterCompletedRunCount = 64') -and
+    $driverText.Contains(
+        'AdaptiveRuntimeAdmissionPerformanceManifestContentSha256') -and
     $driverText.Contains('Write-CampaignState') -and
     $driverText.Contains('CaptureCounters = $true') -and
     $driverText.Contains(

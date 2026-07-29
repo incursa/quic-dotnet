@@ -12,6 +12,8 @@ public sealed class REQ_QUIC_CRT_0248
         "campaign.send_admission_composition.performance.v1";
     private const string PackagePathManifestHash =
         "257b31f3f93c6a34e14066b2c5d77bfc15ab5f2cfe54603b8d9244eb93fb7fd9";
+    private const string BalancedPackagePathManifestHash =
+        "19f4b05440e74f3952632eb65dd302ad1b738f0d5d7a04d606cdf3d12aeb1e77";
     private const string FamilyCatalogHash =
         "cfee17afcc28da35e657b2d1331bde68c752b5a3487f0af69087c12df6530b93";
     private const string RelationshipCatalogHash =
@@ -113,6 +115,53 @@ public sealed class REQ_QUIC_CRT_0248
         Assert.Equal(cellHash, authorization.CellContentSha256);
         Assert.Equal(PackagePathManifestHash, authorization.ManifestContentSha256);
         Assert.Equal(CampaignId, authorization.CampaignId);
+    }
+
+    [Theory]
+    [MemberData(nameof(ExactCells))]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ExactBalancedPackagePathCellMayConfigureOnlyForOfflineMeasurement(
+        string cellId,
+        string cellHash,
+        int oversizedModeValue,
+        int batchModeValue,
+        int bufferValueValue)
+    {
+        QuicOversizedWriteAdmissionPolicyMode oversizedMode =
+            (QuicOversizedWriteAdmissionPolicyMode)oversizedModeValue;
+        QuicApplicationSendBatchPolicyMode batchMode =
+            (QuicApplicationSendBatchPolicyMode)batchModeValue;
+        QuicBufferCopyPolicyValue bufferValue =
+            (QuicBufferCopyPolicyValue)bufferValueValue;
+
+        QuicAdaptiveRuntimeAdmissionPerformanceAuthorization authorization =
+            QuicAdaptiveRuntimeAdmissionPerformanceAuthorization
+                .CreateForReviewedPackagePath(
+                    CampaignId,
+                    BalancedPackagePathManifestHash,
+                    cellId,
+                    cellHash,
+                    oversizedMode,
+                    batchMode,
+                    bufferValue);
+
+        using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport
+                .CreateFinishedClientRuntimeWithValidatedActivePath();
+        runtime.ConfigureAdaptiveRuntimePolicy(CreateOptions(
+            authorization,
+            oversizedMode,
+            batchMode,
+            bufferValue));
+
+        Assert.Equal(cellId, authorization.CellId);
+        Assert.Equal(cellHash, authorization.CellContentSha256);
+        Assert.Equal(
+            BalancedPackagePathManifestHash,
+            authorization.ManifestContentSha256);
+        Assert.False(authorization.PerformanceAcceptanceAuthorization);
+        Assert.False(authorization.ActiveBehaviorAuthorization);
     }
 
     [Theory]
@@ -308,6 +357,16 @@ public sealed class REQ_QUIC_CRT_0248
                 QuicOversizedWriteAdmissionPolicyMode.SingleFragment,
                 QuicApplicationSendBatchPolicyMode.SingleEligible,
                 QuicBufferCopyPolicyValue.LegacyCurrent));
+        Assert.Throws<ArgumentException>(() =>
+            QuicAdaptiveRuntimeAdmissionPerformanceAuthorization
+                .CreateForReviewedPackagePath(
+                    CampaignId,
+                    Hash,
+                    "cell.send_admission_composition.correctness.a0",
+                    "c9e070a0880872c9c9dce62f07e933a0de96c7590d343ce7f923f121278bba28",
+                    QuicOversizedWriteAdmissionPolicyMode.LegacyCurrent,
+                    QuicApplicationSendBatchPolicyMode.LegacyCurrent,
+                    QuicBufferCopyPolicyValue.LegacyCurrent));
     }
 
     [Fact]
