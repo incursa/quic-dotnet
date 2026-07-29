@@ -162,7 +162,9 @@ Assert-Ready (
 ) 'driver_terminal_failure_retention_missing'
 Assert-Ready (
     $driverText.Contains('independent_physical_hosts') -and
-    $driverText.Contains('pilot_cell_topology_not_credible')
+    $driverText.Contains('pilot_cell_topology_not_credible') -and
+    $driverText.Contains('$Job.crossWorkerRun.target.nodeId') -and
+    $driverText.Contains('$Job.crossWorkerRun.load.nodeId')
 ) 'driver_credible_topology_gate_missing'
 Assert-Ready (
     $driverText.Contains('$sourceCommit.Substring(0, 8)')

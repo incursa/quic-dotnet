@@ -62,11 +62,45 @@ function Get-PilotTopology {
         [Parameter(Mandatory = $true)] [object[]] $Nodes
     )
 
-    $leases = @($Job.reservation.leases)
-    $sutLease = @($leases | Where-Object roleId -ceq 'sut' | Select-Object -First 1)
-    $loadLease = @($leases | Where-Object roleId -ceq 'load' | Select-Object -First 1)
-    $sutNodeId = if ($sutLease.Count -eq 1) { [string]$sutLease[0].nodeId } else { $null }
-    $loadNodeId = if ($loadLease.Count -eq 1) { [string]$loadLease[0].nodeId } else { $null }
+    $leases = if (
+        $Job.PSObject.Properties.Name -contains 'reservation' -and
+        $null -ne $Job.reservation -and
+        $Job.reservation.PSObject.Properties.Name -contains 'leases') {
+        @($Job.reservation.leases)
+    }
+    else {
+        @()
+    }
+    $sutLease = @($leases |
+        Where-Object roleId -ceq 'sut' |
+        Select-Object -First 1)
+    $loadLease = @($leases |
+        Where-Object roleId -ceq 'load' |
+        Select-Object -First 1)
+    $sutNodeId = if ($sutLease.Count -eq 1) {
+        [string]$sutLease[0].nodeId
+    }
+    elseif (
+        $Job.PSObject.Properties.Name -contains 'crossWorkerRun' -and
+        $null -ne $Job.crossWorkerRun -and
+        $null -ne $Job.crossWorkerRun.target) {
+        [string]$Job.crossWorkerRun.target.nodeId
+    }
+    else {
+        $null
+    }
+    $loadNodeId = if ($loadLease.Count -eq 1) {
+        [string]$loadLease[0].nodeId
+    }
+    elseif (
+        $Job.PSObject.Properties.Name -contains 'crossWorkerRun' -and
+        $null -ne $Job.crossWorkerRun -and
+        $null -ne $Job.crossWorkerRun.load) {
+        [string]$Job.crossWorkerRun.load.nodeId
+    }
+    else {
+        $null
+    }
     $sutNode = @($Nodes |
         Where-Object { [string]$_.nodeId -ceq $sutNodeId } |
         Select-Object -First 1)
