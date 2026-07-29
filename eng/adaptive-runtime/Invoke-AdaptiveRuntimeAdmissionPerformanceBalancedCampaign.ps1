@@ -623,11 +623,14 @@ Assert-Campaign ($LASTEXITCODE -eq 0 -and $dirty.Count -eq 0) `
     'source_tree_not_clean'
 
 $controllerUri = [string]$control.controller_uri
+$nodeResponse = Invoke-ControllerJson `
+    -Uri "$controllerUri/api/lab/nodes" `
+    -Method 'GET'
 $nodes = @(
-    Invoke-ControllerJson `
-        -Uri "$controllerUri/api/lab/nodes" `
-        -Method 'GET'
+    $nodeResponse |
+        ForEach-Object { $_ }
 )
+Assert-Campaign ($nodes.Count -gt 0) 'controller_nodes_missing'
 Write-JsonFile $nodesPath $nodes
 
 $protocolLabRootFull = Resolve-AbsolutePath `
@@ -931,7 +934,10 @@ foreach ($plannedRun in @(
             [string]$evidence.measurement_summary_path
     }
     catch {
-        if ([string]$attempt.outcome -ceq 'submitted') {
+        if ([string]$attempt.outcome -ceq 'Completed') {
+            $attempt.outcome = 'failed_evidence_validation'
+        }
+        elseif ([string]$attempt.outcome -ceq 'submitted') {
             $attempt.outcome = 'failed'
         }
         $attempt.failure_reason_code = $_.Exception.Message
