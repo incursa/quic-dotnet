@@ -1807,16 +1807,24 @@ independently reviewed their runtime-derived proofs, promoted
 Factor-cell-space v3 now binds that reviewed eight-cell exhaustive subset to
 family catalog v5 while retaining all four bounded cells as blocked.
 
-Measurement execution scope is now selected: a package-backed ProtocolLab rack
-pilot over exactly `A0`, `A3`, `A4`, and `A7`, in `A0`, `A4`, `A3`, `A7`
-execution order. The retained
+Measurement execution completed as a package-backed ProtocolLab rack pilot
+over exactly `A0`, `A3`, `A4`, and `A7`, in `A0`, `A4`, `A3`, `A7` execution
+order. All four cells and eight repetitions transferred exact bytes with zero
+failures, zero timeouts, no detected load-generator saturation, and bounded
+aggregate output below 64 KiB per cell. The descriptive requests-per-second
+midpoints were 115.53, 118.51, 116.37, and 117.58 respectively. The retained
 `send_admission_composition_performance_v1` dry-run campaign remains immutable
 and timing-disabled; a separate pilot control owns the timing authorization.
+The result is directional only: two repetitions, serial nonrandomized order,
+worker asymmetry, incomplete resource metrics, and the selected treatment
+structure do not authorize performance acceptance or rule derivation.
 Performance acceptance and active production behavior remain unauthorized.
 The four cells identify the oversized seam and the combined
 batch-plus-buffer effect, but do not separate batch from buffer independently.
-Covering arrays remain deferred until a future reviewed family has at least 65
-effective cells and a separately traced generator.
+Covering arrays do not block the current numbers; the eight-cell reviewed
+family remains below the trigger of 65. Generator implementation stays
+deferred until a future reviewed family reaches that trigger or additional
+factors make exhaustive enumeration impractical.
 
 ## Final Constraint
 

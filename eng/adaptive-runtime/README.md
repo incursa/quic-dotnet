@@ -847,3 +847,41 @@ Only an explicit `-Execute` submits rack work. Performance acceptance, active
 behavior, and production activation remain false. The four-cell pilot can
 measure the oversized seam and the combined batch-plus-buffer effect; it
 cannot attribute batch and buffer independently.
+
+The bounded rack execution completed from clean source
+`fc82651ce20ec2cdd55a5ea6c902e9ff285bd13d` on
+`plab-worker-x64-02` (system under test) and `plab-worker-x64-03` (load).
+All four cells and eight repetitions completed with exact transferred bytes,
+zero failures, zero timeouts, and no detected load-generator saturation.
+The compact server evidence remained between 41,827 and 43,740 bytes per cell.
+The canonical
+[pilot result](../../eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-pilot-result-v1.json)
+has content SHA-256
+`2887fed8f5769acbd90bafaf18418f0de81ed8f969ad2c23705e422f292ff610`.
+
+| Cell | R1 requests/s | R2 requests/s | Midpoint requests/s | Midpoint p95 | Requests/s versus A0 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| A0 | 112.18 | 118.89 | 115.53 | 909.04 ms | baseline |
+| A4 | 118.89 | 118.13 | 118.51 | 902.80 ms | +2.57% |
+| A3 | 117.81 | 114.94 | 116.37 | 894.49 ms | +0.73% |
+| A7 | 114.62 | 120.55 | 117.58 | 882.57 ms | +1.77% |
+
+These are directional pilot values, not acceptance statistics. Two repetitions,
+serial nonrandomized order, worker CPU asymmetry, incomplete resource metrics,
+and the combined batch-plus-buffer treatment prevent rule derivation. Verify
+the committed result, or replay it byte-for-byte from retained rack evidence,
+with:
+
+```powershell
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformancePilotResult.ps1
+
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformancePilotResult.ps1 `
+  -ExecutionRoot <execution-root>
+```
+
+Covering arrays do not block these numbers. The reviewed family has only eight
+effective cells, below the trigger of 65, so exhaustive enumeration remains
+the smaller design and the generator remains intentionally unimplemented. See
+the full
+[pilot closeout](../../docs/design/adaptive-runtime-send-admission-performance-pilot.md)
+for limitations and the next-campaign decision.
